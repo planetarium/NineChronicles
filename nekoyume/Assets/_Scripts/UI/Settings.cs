@@ -203,8 +203,8 @@ namespace Nekoyume.UI
 
         public void OpenLogDirectory()
         {
-            var path = Path.Combine(Application.persistentDataPath, "Player.log");
-            EditorUtility.RevealInFinder(path);
+//            var path = Path.Combine(Application.persistentDataPath, "Player.log");
+//            EditorUtility.RevealInFinder(path);
         }
 
         public void ResetStore()

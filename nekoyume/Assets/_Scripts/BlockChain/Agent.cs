@@ -78,6 +78,7 @@ namespace Nekoyume.BlockChain
         protected DefaultStore store;
         private ImmutableList<Peer> _seedPeers;
         private IImmutableSet<Address> _trustedPeers;
+        private ImmutableList<Peer> _peerList;
 
         private static CancellationTokenSource _cancellationTokenSource;
 
@@ -93,7 +94,6 @@ namespace Nekoyume.BlockChain
         public Address Address { get; set; }
 
         public event EventHandler BootstrapStarted;
-        public event EventHandler PreloadStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
         public event EventHandler<long> TipChanged;
@@ -160,10 +160,10 @@ namespace Nekoyume.BlockChain
 
             if (!consoleSink) InitializeTelemetryClient(_swarm.Address);
 
-            ImmutableList<Peer> peerList = peers
+            _peerList = peers
                 .Where(peer => peer.PublicKey != privateKey.PublicKey)
                 .ToImmutableList();
-            _seedPeers = (peerList.Count > MaxSeed ? peerList.Sample(MaxSeed) : peerList)
+            _seedPeers = (_peerList.Count > MaxSeed ? _peerList.Sample(MaxSeed) : _peerList)
                 .ToImmutableList();
             // Init SyncSucceed
             SyncSucceed = true;
@@ -494,86 +494,84 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoSwarmRunner()
         {
             BootstrapStarted?.Invoke(this, null);
-            var bootstrapTask = Task.Run(async () =>
+            if (_peerList.Any())
             {
-                try
+                var bootstrapTask = Task.Run(async () =>
                 {
-                    await _swarm.BootstrapAsync(
-                        seedPeers: _seedPeers,
-                        pingSeedTimeout: 5000,
-                        findPeerTimeout: 5000,
-                        cancellationToken: _cancellationTokenSource.Token
-                    );
-                }
-                catch (SwarmException e)
-                {
-                    Debug.LogFormat("Bootstrap failed. {0}", e.Message);
-                    throw;
-                }
-                catch (Exception e)
-                {
-                    Debug.LogFormat("Exception occurred during bootstrap {0}", e);
-                    throw;
-                }
-            });
-            yield return new WaitUntil(() => bootstrapTask.IsCompleted);
+                    try
+                    {
+                        await _swarm.BootstrapAsync(
+                            seedPeers: _seedPeers,
+                            pingSeedTimeout: 5000,
+                            findPeerTimeout: 5000,
+                            cancellationToken: _cancellationTokenSource.Token
+                        );
+                    }
+                    catch (SwarmException e)
+                    {
+                        Debug.LogFormat("Bootstrap failed. {0}", e.Message);
+                        throw;
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogFormat("Exception occurred during bootstrap {0}", e);
+                        throw;
+                    }
+                });
+                yield return new WaitUntil(() => bootstrapTask.IsCompleted);
 #if !UNITY_EDITOR
-            if (!Application.isBatchMode && (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled))
-            {
-                var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
-                    LocalizationManager.Localize("BOOTSTRAP_FAIL"));
+                if (!Application.isBatchMode && (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled))
+                {
+                    var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
+                        LocalizationManager.Localize("BOOTSTRAP_FAIL"));
 
-                Widget.Find<SystemPopup>().Show(
-                    LocalizationManager.Localize("UI_ERROR"),
-                    errorMsg,
-                    LocalizationManager.Localize("UI_QUIT"),
-                    false
-                );
-                yield break;
-            }
+                    Widget.Find<SystemPopup>().Show(
+                        LocalizationManager.Localize("UI_ERROR"),
+                        errorMsg,
+                        LocalizationManager.Localize("UI_QUIT"),
+                        false
+                    );
+                    yield break;
+                }
 #endif
-            PreloadStarted?.Invoke(this, null);
-            Debug.Log("PreloadingStarted event was invoked");
+                var started = DateTimeOffset.UtcNow;
+                var existingBlocks = blocks?.Tip?.Index ?? 0;
+                Debug.Log("Preloading starts");
 
-            var started = DateTimeOffset.UtcNow;
-            var existingBlocks = blocks?.Tip?.Index ?? 0;
-            Debug.Log("Preloading starts");
+                // _swarm.PreloadAsync() 에서 대기가 발생하기 때문에
+                // 이를 다른 스레드에서 실행하여 우회하기 위해 Task로 감쌉니다.
+                var swarmPreloadTask = Task.Run(async () =>
+                {
+                    await _swarm.PreloadAsync(
+                        TimeSpan.FromMilliseconds(SwarmDialTimeout),
+                        new Progress<PreloadState>(state =>
+                            PreloadProcessed?.Invoke(this, state)
+                        ),
+                        trustedStateValidators: _trustedPeers,
+                        cancellationToken: _cancellationTokenSource.Token,
+                        blockDownloadFailed: PreloadBLockDownloadFailed
+                    );
+                });
 
-            // _swarm.PreloadAsync() 에서 대기가 발생하기 때문에
-            // 이를 다른 스레드에서 실행하여 우회하기 위해 Task로 감쌉니다.
-            var swarmPreloadTask = Task.Run(async () =>
-            {
-                await _swarm.PreloadAsync(
-                    TimeSpan.FromMilliseconds(SwarmDialTimeout),
-                    new Progress<PreloadState>(state =>
-                        PreloadProcessed?.Invoke(this, state)
-                    ),
-                    trustedStateValidators: _trustedPeers,
-                    cancellationToken: _cancellationTokenSource.Token,
-                    blockDownloadFailed: PreloadBLockDownloadFailed
+                yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
+                var ended = DateTimeOffset.UtcNow;
+
+                if (swarmPreloadTask.Exception is Exception exc)
+                {
+                    Debug.LogErrorFormat(
+                        "Preloading terminated with an exception: {0}",
+                        exc
+                    );
+                    throw exc;
+                }
+
+                var index = blocks?.Tip?.Index ?? 0;
+                Debug.LogFormat(
+                    "Preloading finished; elapsed time: {0}; blocks: {1}",
+                    ended - started,
+                    index - existingBlocks
                 );
-            });
-
-            yield return new WaitUntil(() => swarmPreloadTask.IsCompleted);
-            var ended = DateTimeOffset.UtcNow;
-
-            if (swarmPreloadTask.Exception is Exception exc)
-            {
-                Debug.LogErrorFormat(
-                    "Preloading terminated with an exception: {0}",
-                    exc
-                );
-                throw exc;
             }
-
-            var index = blocks?.Tip?.Index ?? 0;
-            Debug.LogFormat(
-                "Preloading finished; elapsed time: {0}; blocks: {1}",
-                ended - started,
-                index - existingBlocks
-            );
-
-
             PreloadEnded?.Invoke(this, null);
 
             var swarmStartTask = Task.Run(async () =>
