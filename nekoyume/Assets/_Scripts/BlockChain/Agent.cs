@@ -506,6 +506,10 @@ namespace Nekoyume.BlockChain
                         Debug.LogFormat("Bootstrap failed. {0}", e.Message);
                         throw;
                     }
+                    catch (TimeoutException e)
+                    {
+                        Debug.LogFormat("TimeOutException occurred during bootstrap {0}", e);
+                    }
                     catch (Exception e)
                     {
                         Debug.LogFormat("Exception occurred during bootstrap {0}", e);
