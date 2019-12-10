@@ -29,8 +29,9 @@ namespace Nekoyume
 
         public const int CombineConsumableCostAP = 5;
         public const int CombineEquipmentCostAP = 5;
-        public const int CombineEquipmentCostNCG = 5;
+        public const int CombineEquipmentCostNCG = 10;
         public const int EnhanceEquipmentCostAP = 5;
+        public const int EnhanceEquipmentCostNCG = 10;
         public const decimal CombinationValueP1 = 3m; // 30f;
         public const decimal CombinationValueP2 = 1m; // 1.2f;
         public const decimal CombinationValueL1 = 10m;
