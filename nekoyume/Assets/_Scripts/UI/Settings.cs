@@ -3,8 +3,6 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
 
 namespace Nekoyume.UI
 {
@@ -25,7 +23,6 @@ namespace Nekoyume.UI
         public TextMeshProUGUI confirmText;
         public TextMeshProUGUI resetKeyStoreText;
         public TextMeshProUGUI resetStoreText;
-        public TextMeshProUGUI openLogText;
         //public TextMeshProUGUI volumeMusicText;
         //public Slider volumeMusicSlider;
         //public Toggle volumeMusicToggle;
@@ -66,7 +63,6 @@ namespace Nekoyume.UI
             confirmText.text = LocalizationManager.Localize("UI_CLOSE");
             resetStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
             resetKeyStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");
-            openLogText.text = LocalizationManager.Localize("UI_OPEN_LOG");
         }
 
         #endregion
@@ -200,12 +196,6 @@ namespace Nekoyume.UI
 
         //    volumeSfxText.text = $"{LocalizationManager.Localize("UI_SFX_VOLUME")} : {volumeString}";
         //}
-
-        public void OpenLogDirectory()
-        {
-//            var path = Path.Combine(Application.persistentDataPath, "Player.log");
-//            EditorUtility.RevealInFinder(path);
-        }
 
         public void ResetStore()
         {
