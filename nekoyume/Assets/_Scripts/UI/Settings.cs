@@ -17,7 +17,8 @@ namespace Nekoyume.UI
         private const string VolumeSfxKey = "SETTINGS_VOLUME_SFX";
         private const string VolumeSfxIsMutedKey = "SETTINGS_VOLUME_SFX_ISMUTED";
 
-        public TextMeshProUGUI addressText;
+        public TextMeshProUGUI addressTitle;
+        public TMP_InputField addressContent;
         public TextMeshProUGUI volumeMasterText;
         public Slider volumeMasterSlider;
         public Toggle volumeMasterToggle;
@@ -72,8 +73,9 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            var addressString = $"{LocalizationManager.Localize("UI_YOUR_ADDRESS")}\n<color=white>{Game.Game.instance.agent.Address}</color>";
-            addressText.text = addressString;
+            var addressString = $"{LocalizationManager.Localize("UI_YOUR_ADDRESS")}";
+            addressTitle.text = addressString;
+            addressContent.text = Game.Game.instance.agent.Address.ToString();
 
             var muteString = LocalizationManager.Localize("UI_MUTE_AUDIO");
             foreach (var text in muteTexts)
