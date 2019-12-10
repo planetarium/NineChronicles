@@ -43,6 +43,8 @@ namespace Nekoyume.State
         public int ear;
         public int tail;
 
+        public string NameWithHash => $"{name} <size=80%><color=#A68F7E>#{address.ToString().Substring(0, 4)}";
+
         public AvatarState(
             Address address, 
             Address agentAddress, 
@@ -54,7 +56,7 @@ namespace Nekoyume.State
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
             
-            this.name = name ?? "";
+            this.name = name ?? string.Empty;
             characterId = GameConfig.DefaultAvatarCharacterId;
             level = 1;
             exp = 0;

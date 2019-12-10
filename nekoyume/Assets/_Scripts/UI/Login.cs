@@ -82,7 +82,7 @@ namespace Nekoyume.UI
                 if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))
                 {
                     playerSlot.LabelLevel.text = $"LV.{avatarState.level}";
-                    playerSlot.LabelName.text = $"{avatarState.name}";
+                    playerSlot.LabelName.text = avatarState.NameWithHash;
                     playerSlot.CreateView.SetActive(false);
                     playerSlot.DeleteView.SetActive(true);
                     playerSlot.NameView.SetActive(true);
