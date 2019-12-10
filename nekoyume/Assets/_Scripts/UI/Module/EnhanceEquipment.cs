@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostNCG()
         {
-            return 0;
+            return baseMaterial.IsEmpty ? 0 : GameConfig.EnhanceEquipmentCostNCG;
         }
 
         protected override int GetCostAP()

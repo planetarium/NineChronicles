@@ -127,19 +127,29 @@ namespace Nekoyume.Action
             var equipmentOptions = enhancementEquipment.GetOptions();
             options.AddRange(equipmentOptions);
             var equipmentOptionCount = Math.Max(materialOptionCount, equipmentOptions.Count);
-            
-            enhancementEquipment = UpgradeEquipment(enhancementEquipment, ctx.Random, options, equipmentOptionCount);
-            
-            var requiredGold = Math.Max(GameConfig.EnhanceEquipmentCostAP,
-                GameConfig.EnhanceEquipmentCostAP * enhancementEquipment.level * enhancementEquipment.level);
 
-            if (agentState.gold < requiredGold)
+            enhancementEquipment = UpgradeEquipment(enhancementEquipment, ctx.Random, options, equipmentOptionCount);
+
+            var requiredAP = Math.Max(GameConfig.EnhanceEquipmentCostAP,
+                GameConfig.EnhanceEquipmentCostAP * enhancementEquipment.level * enhancementEquipment.level);
+            if (avatarState.actionPoint < requiredAP)
             {
+                // AP 부족 에러.
                 return states;
             }
 
-            agentState.gold -= requiredGold;
+            avatarState.actionPoint -= requiredAP;
+
+            var requiredNCG = Math.Max(GameConfig.EnhanceEquipmentCostNCG,
+                GameConfig.EnhanceEquipmentCostNCG * enhancementEquipment.level * enhancementEquipment.level);
+            if (agentState.gold < requiredNCG)
+            {
+                // NCG 부족 에러.
+                return states;
+            }
             
+            agentState.gold -= requiredNCG;
+
             foreach (var material in materials)
             {
                 avatarState.inventory.RemoveNonFungibleItem(material);
