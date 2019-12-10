@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace NineChroniclesSnapshot
@@ -83,10 +84,14 @@ namespace NineChroniclesSnapshot
                 nsmgr
             );
 
+            var filenamePattern = new Regex(@"9c-[0-9]{14}\.zip");
             foreach (XmlNode node in nodes)
             {
                 string filename = node.Value;
-                yield return (filename, new Uri(rootUrl, filename));
+                if (filenamePattern.IsMatch(filename))
+                {
+                    yield return (filename, new Uri(rootUrl, filename));
+                }
             }
         }
 

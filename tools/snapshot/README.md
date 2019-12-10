@@ -1,6 +1,15 @@
 9C Data Snapshot Manager
 ========================
 
+Prebuilt binaries
+-----------------
+
+- [macOS](https://9c-data-snapshots.s3.amazonaws.com/9c-snapshot.osx-x64.tar.gz)
+- [Windows](https://9c-data-snapshots.s3.amazonaws.com/9c-snapshot.win-x64.zip)
+
+Above binaries are automatically generated using GitHub Actions.
+
+
 How to use
 ----------
 
