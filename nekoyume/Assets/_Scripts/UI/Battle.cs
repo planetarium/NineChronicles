@@ -18,10 +18,10 @@ namespace Nekoyume.UI
             Game.Event.OnGetItem.AddListener(OnGetItem);
         }
 
-        public void Show(int stage, bool isExitReserved)
+        public void Show(int stageId, bool isExitReserved)
         {
             base.Show();
-            stageTitle.Show(stage);
+            stageTitle.Show(stageId);
 
             var bottomMenu = Find<BottomMenu>();
             bottomMenu.leaveBattleButton.SharedModel.IsEnabled.Value = false;
