@@ -10,9 +10,11 @@ namespace Nekoyume
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
         public const string PasswordPattern = @"^[A-Za-z\d!@#$%^&*()_+{}|?]+$";
         public const string DiscordLink = "https://discord.gg/NqshYve";
+        public const string BlockExplorerLinkFormat = "https://explorer.libplanet.io/9c-alpha/account/?{0}";
         public const float PlayerSpeechBreakTime = 2f;
 
         //TODO 온체인으로 옮겨야함.
+        // re: 그렇네요. 가장 확인된 방법은 테이블로 빼는 방법이네요.
         #region action
 
         public const int DefaultAvatarCharacterId = 100010;

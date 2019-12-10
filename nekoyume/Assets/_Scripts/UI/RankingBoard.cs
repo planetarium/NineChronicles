@@ -137,8 +137,15 @@ namespace Nekoyume.UI
                 }
 
                 rankingInfo.Set(index + 1, avatarState);
+                rankingInfo.onClick = OnClickRankingInfo;
                 rankingInfo.gameObject.SetActive(true);
             }
+        }
+
+        private void OnClickRankingInfo(RankingInfo info)
+        {
+            // todo: 블록 익스플로러 연결.
+            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarState.address));
         }
 
         private void GetAvatars(DateTimeOffset? dt)
