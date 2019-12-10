@@ -787,9 +787,9 @@ namespace Nekoyume.BlockChain
             {
                 new RankingReward
                 {
-                    gold1 = 10,
-                    gold2 = 5,
-                    gold3 = 3,
+                    gold1 = 50,
+                    gold2 = 30,
+                    gold3 = 10,
                     agentAddresses = States.Instance.RankingState.Value.GetAgentAddresses(3, null),
                 }
             };
