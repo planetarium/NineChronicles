@@ -22,7 +22,6 @@ namespace Nekoyume.UI
         public Slider volumeMasterSlider;
         public Toggle volumeMasterToggle;
         public TextMeshProUGUI confirmText;
-        public TextMeshProUGUI cancelText;
         public TextMeshProUGUI resetKeyStoreText;
         public TextMeshProUGUI resetStoreText;
         public TextMeshProUGUI openLogText;
@@ -63,8 +62,7 @@ namespace Nekoyume.UI
             //{
             //    SetVolumeSfxMute(value);
             //});
-            confirmText.text = LocalizationManager.Localize("UI_SETTINGS_CONFIRM");
-            cancelText.text = LocalizationManager.Localize("UI_CANCEL");
+            confirmText.text = LocalizationManager.Localize("UI_CLOSE");
             resetStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
             resetKeyStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");
             openLogText.text = LocalizationManager.Localize("UI_OPEN_LOG");
