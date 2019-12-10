@@ -43,7 +43,7 @@ namespace Nekoyume.State
         public int ear;
         public int tail;
 
-        public string NameWithHash => $"{name} <size=80%><color=#A68F7E>#{address.ToString().Substring(0, 4)}";
+        public string NameWithHash => $"{name} <size=80%><color=#A68F7E>#{address.ToString().Substring(2, 4)}";
 
         public AvatarState(
             Address address, 
