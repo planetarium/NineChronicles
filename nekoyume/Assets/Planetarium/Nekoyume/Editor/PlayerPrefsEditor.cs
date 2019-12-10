@@ -7,6 +7,12 @@ namespace Planetarium.Nekoyume.Editor
 {
     public static class PlayerPrefsEditor
     {
+        [MenuItem("Tools/Delete All Of PlayerPrefs")]
+        public static void DeleteAllOfPlayerPrefs()
+        {
+            PlayerPrefs.DeleteAll();
+        }
+        
         [MenuItem("Tools/Delete Dialog PlayerPrefs Of Current AvatarState(Play Mode)", true)]
         public static bool ValidateDeleteDialogPlayerPrefsOfCurrentAvatarState()
         {

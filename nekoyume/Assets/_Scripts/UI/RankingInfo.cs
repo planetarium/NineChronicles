@@ -44,7 +44,7 @@ namespace Nekoyume.UI
             icon.sprite = SpriteHelper.GetItemIcon(armorId);
             icon.SetNativeSize();
             level.text = avatarState.level.ToString();
-            id.text = avatarState.name;
+            id.text = avatarState.NameWithHash;
             stage.text = avatarState.exp.ToString();
             tweenMove.StartDelay = ranking * 0.16f;
             tweenAlpha.StartDelay = ranking * 0.16f;

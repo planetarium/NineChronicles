@@ -134,7 +134,7 @@ namespace Nekoyume.UI
             if (!_isCreateMode)
             {
                 var level = player.Level;
-                var name = States.Instance.CurrentAvatarState.Value.name;
+                var name = States.Instance.CurrentAvatarState.Value.NameWithHash;
                 levelAndNameInfo.text = $"LV. {level} {name}";
             }
 
