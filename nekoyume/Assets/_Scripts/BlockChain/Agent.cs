@@ -276,12 +276,10 @@ namespace Nekoyume.BlockChain
             _miner = options.NoMiner ? null : CoMiner();
             _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
-#if DEBUG
             if (development)
             {
                 _logger = CoLogger();
             }
-#endif
 
             StartSystemCoroutines();
             StartCoroutine(CoCheckStagedTxs());
@@ -464,6 +462,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoLogger()
         {
+            Widget.Create<Cheat>(true);
             while (true)
             {
                 Cheat.Display("Logs", _tipInfo);

@@ -81,10 +81,6 @@ namespace Nekoyume.UI
                 Widget.Create<BlockChainMessageBoard>(true),
                 Widget.Create<Notification>(true),
 
-                //개발용 최상단 영역.
-#if DEBUG
-                Widget.Create<Cheat>(true),
-#endif
             };
 
             foreach (var value in _firstWidgets)
