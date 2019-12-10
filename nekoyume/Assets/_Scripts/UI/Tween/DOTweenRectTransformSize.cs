@@ -12,8 +12,9 @@ namespace Nekoyume.UI.Tween
         private Vector2 EndValue;
         private RectTransform _rectTransform;
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
             _rectTransform = GetComponent<RectTransform>();
             BeginValue = _rectTransform.sizeDelta;
             EndValue = BeginValue * multiplier;

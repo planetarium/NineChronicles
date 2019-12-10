@@ -96,13 +96,12 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public void BackClick()
+        public void BackToLogin()
         {
             Close();
             Game.Event.OnNestEnter.Invoke();
             var login = Find<Login>();
             login.Show();
-            AudioController.PlayClick();
         }
 
         private void Init(int index)
@@ -187,6 +186,9 @@ namespace Nekoyume.UI
                 paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear + 1}";
                 paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
             }
+
+            var bottomMenu = Find<BottomMenu>();
+            bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
             base.Show();
         }
 
@@ -250,6 +252,12 @@ namespace Nekoyume.UI
                 throw new NullReferenceException(nameof(player));
             
             player.UpdateTail(_tail);
+        }
+
+        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        {
+            bottomMenu.Close();
+            BackToLogin();
         }
 
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
