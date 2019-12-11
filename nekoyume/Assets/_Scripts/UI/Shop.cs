@@ -130,6 +130,7 @@ namespace Nekoyume.UI
             var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
             _npc = go.GetComponent<Npc>();
             go.SetActive(true);
+            _sequenceOfShopItems = null;
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
@@ -147,6 +148,7 @@ namespace Nekoyume.UI
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             _sequenceOfShopItems?.Kill();
+            _sequenceOfShopItems = null;
             bg1.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
             right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight, right.anchoredPosition.y);
             speechBubble.gameObject.SetActive(false);
@@ -167,6 +169,8 @@ namespace Nekoyume.UI
             inventory.Tooltip.Close();
             inventory.SharedModel.DeselectItemView();
             shopItems.SharedModel.DeselectItemView();
+            buyButton.button.interactable = false;
+            sellButton.button.interactable = false;
             switch (stateType)
             {
                 case StateType.Show:
@@ -176,15 +180,11 @@ namespace Nekoyume.UI
                     return;
                 case StateType.Buy:
                     inventory.SharedModel.DimmedFunc.Value = null;
-                    buyButton.button.interactable = false;
-                    sellButton.button.interactable = true;
                     shopNotice.SetActive(false);
                     _toggleGroup.SetToggledOn(buyButton);
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
-                    buyButton.button.interactable = true;
-                    sellButton.button.interactable = false;
                     shopNotice.SetActive(true);
                     _toggleGroup.SetToggledOn(sellButton);
                     break;
@@ -194,16 +194,23 @@ namespace Nekoyume.UI
 
             canvasGroup.interactable = false;
             rightCanvasGroup.alpha = 0;
-            _sequenceOfShopItems?.Kill();
-            _sequenceOfShopItems = DOTween.Sequence();
-            SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
-            _sequenceOfShopItems.AppendCallback(() => shopItems.SharedModel.State.Value = stateType);
-            SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
-            _sequenceOfShopItems.OnComplete(() =>
+            if (_sequenceOfShopItems is null)
             {
-                canvasGroup.interactable = true;
-                rightCanvasGroup.DOFade(1f, 0.5f);
-            });
+                _sequenceOfShopItems = DOTween.Sequence();
+                SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
+                _sequenceOfShopItems.AppendCallback(() => shopItems.SharedModel.State.Value = stateType);
+                SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
+                _sequenceOfShopItems.OnComplete(() =>
+                {
+                    rightCanvasGroup.DOFade(1f, 0.5f).OnComplete(() =>
+                    {
+                        canvasGroup.interactable = true;
+                        _sequenceOfShopItems = null;
+                        buyButton.button.interactable = stateType == StateType.Sell;
+                        sellButton.button.interactable = stateType == StateType.Buy;
+                    });
+                });
+            }
         }
 
         private void ShowTooltip(InventoryItemView view)
