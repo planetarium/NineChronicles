@@ -176,6 +176,111 @@ namespace Nekoyume.Game
             }
         }
 
+        public IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false)
+        {
+            if (ignoreZero)
+            {
+                if (HasHP)
+                    yield return (StatType.HP, HP);
+                if (HasATK)
+                    yield return (StatType.ATK, ATK);
+                if (HasDEF)
+                    yield return (StatType.DEF, DEF);
+                if (HasCRI)
+                    yield return (StatType.CRI, CRI);
+                if (HasDOG)
+                    yield return (StatType.DOG, DOG);
+                if (HasSPD)
+                    yield return (StatType.SPD, SPD);
+            }
+            else
+            {
+                yield return (StatType.HP, HP);
+                yield return (StatType.ATK, ATK);
+                yield return (StatType.DEF, DEF);
+                yield return (StatType.CRI, CRI);
+                yield return (StatType.DOG, DOG);
+                yield return (StatType.SPD, SPD);
+            }
+        }
+
+        public IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false)
+        {
+            if (ignoreZero)
+            {
+                if (HasAdditionalHP)
+                    yield return (StatType.HP, AdditionalHP);
+                if (HasAdditionalATK)
+                    yield return (StatType.ATK, AdditionalATK);
+                if (HasAdditionalDEF)
+                    yield return (StatType.DEF, AdditionalDEF);
+                if (HasAdditionalCRI)
+                    yield return (StatType.CRI, AdditionalCRI);
+                if (HasAdditionalDOG)
+                    yield return (StatType.DOG, AdditionalDOG);
+                if (HasAdditionalSPD)
+                    yield return (StatType.SPD, AdditionalSPD);
+            }
+            else
+            {
+                yield return (StatType.HP, AdditionalHP);
+                yield return (StatType.ATK, AdditionalATK);
+                yield return (StatType.DEF, AdditionalDEF);
+                yield return (StatType.CRI, AdditionalCRI);
+                yield return (StatType.DOG, AdditionalDOG);
+                yield return (StatType.SPD, AdditionalSPD);
+            }
+        }
+
+        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false)
+        {
+            //var levelStats = LevelStats.GetStats();
+            //var additionalStats = GetAdditionalStats();
+
+            //var enumerable =
+            //    levelStats.Join(additionalStats,
+            //                    levelStat => levelStat.statType,
+            //                    additionalStat => additionalStat.statType,
+            //                    (levelStat, additionalStat)
+            //                        => (levelStat.statType, levelStat.value, additionalStat.additionalValue));
+
+            //foreach (var row in eumerable)
+            //    yield return row;
+
+            var hp = _statMaps[StatType.HP];
+            var atk = _statMaps[StatType.ATK];
+            var def = _statMaps[StatType.DEF];
+            var cri = _statMaps[StatType.CRI];
+            var dog = _statMaps[StatType.DOG];
+            var spd = _statMaps[StatType.SPD];
+
+            if (ignoreZero)
+            {
+                if (hp.HasValue && hp.HasAdditionalValue)
+                    yield return (StatType.HP, hp.ValueAsInt, hp.AdditionalValueAsInt);
+                if (atk.HasValue && atk.HasAdditionalValue)
+                    yield return (StatType.ATK, atk.ValueAsInt, atk.AdditionalValueAsInt);
+                if (def.HasValue && def.HasAdditionalValue)
+                    yield return (StatType.DEF, def.ValueAsInt, def.AdditionalValueAsInt);
+                if (cri.HasValue && cri.HasAdditionalValue)
+                    yield return (StatType.CRI, cri.ValueAsInt, cri.AdditionalValueAsInt);
+                if (dog.HasValue && dog.HasAdditionalValue)
+                    yield return (StatType.DOG, dog.ValueAsInt, dog.AdditionalValueAsInt);
+                if (spd.HasValue && spd.HasAdditionalValue)
+                    yield return (StatType.SPD, spd.ValueAsInt, spd.AdditionalValueAsInt);
+
+            }
+            else
+            {
+                yield return (StatType.HP, hp.ValueAsInt, hp.AdditionalValueAsInt);
+                yield return (StatType.ATK, atk.ValueAsInt, atk.AdditionalValueAsInt);
+                yield return (StatType.DEF, def.ValueAsInt, def.AdditionalValueAsInt);
+                yield return (StatType.CRI, cri.ValueAsInt, cri.AdditionalValueAsInt);
+                yield return (StatType.DOG, dog.ValueAsInt, dog.AdditionalValueAsInt);
+                yield return (StatType.SPD, spd.ValueAsInt, spd.AdditionalValueAsInt);
+            }
+        }
+
         public IEnumerable<StatMapEx> GetStats()
         {
             if (HasHP)

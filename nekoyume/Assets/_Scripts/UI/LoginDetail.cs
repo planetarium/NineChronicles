@@ -148,7 +148,7 @@ namespace Nekoyume.UI
 
         private void SetInformation(Player player)
         {
-            var tuples = player.GetStatTuples();
+            var tuples = player.Stats.GetBaseAndAdditionalStats();
             int idx = 0;
             foreach(var (statType, value, additionalValue) in tuples)
             {

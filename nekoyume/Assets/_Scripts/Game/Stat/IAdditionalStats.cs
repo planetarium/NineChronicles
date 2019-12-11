@@ -1,3 +1,6 @@
+using Nekoyume.EnumType;
+using System.Collections.Generic;
+
 namespace Nekoyume.Game
 {
     public interface IAdditionalStats
@@ -16,5 +19,8 @@ namespace Nekoyume.Game
         bool HasAdditionalDOG { get; }
         bool HasAdditionalSPD { get; }
         bool HasAdditionalStats { get; }
+
+        IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false);
+        IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false);
     }
 }

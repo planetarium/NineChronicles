@@ -21,7 +21,7 @@ namespace Nekoyume.Game
         public int CRI => cri.ValueAsInt;
         public int DOG => dog.ValueAsInt;
         public int SPD => spd.ValueAsInt;
-        
+
         public bool HasHP => HP > 0;
         public bool HasATK => ATK > 0;
         public bool HasDEF => DEF > 0;
@@ -41,12 +41,12 @@ namespace Nekoyume.Game
 
         protected Stats(Stats value)
         {
-            hp = (IntStatWithCurrent) value.hp.Clone();
-            atk = (IntStat) value.atk.Clone();
-            def = (IntStat) value.def.Clone();
-            cri = (DecimalStat) value.cri.Clone();
-            dog = (DecimalStat) value.dog.Clone();
-            spd = (DecimalStat) value.spd.Clone();
+            hp = (IntStatWithCurrent)value.hp.Clone();
+            atk = (IntStat)value.atk.Clone();
+            def = (IntStat)value.def.Clone();
+            cri = (DecimalStat)value.cri.Clone();
+            dog = (DecimalStat)value.dog.Clone();
+            spd = (DecimalStat)value.spd.Clone();
         }
 
         public void Reset()
@@ -82,7 +82,7 @@ namespace Nekoyume.Game
         public void Set(IEnumerable<StatModifier> statModifiers, params Stats[] baseStatsArray)
         {
             Reset();
-            
+
             foreach (var statModifier in statModifiers)
             {
                 switch (statModifier.StatType)
@@ -110,7 +110,7 @@ namespace Nekoyume.Game
                 }
             }
         }
-        
+
         /// <summary>
         /// value 값 그대로 초기화한다.
         /// </summary>
@@ -124,7 +124,7 @@ namespace Nekoyume.Game
             dog.SetValue(value.DOG);
             spd.SetValue(value.SPD);
         }
-        
+
         /// <summary>
         /// Please to use only test.
         /// </summary>
@@ -157,8 +157,8 @@ namespace Nekoyume.Game
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
         }
-        
-        public IEnumerable<(StatType, int)> GetStats(bool ignoreZero = false)
+
+        public IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false)
         {
             if (ignoreZero)
             {
@@ -183,6 +183,27 @@ namespace Nekoyume.Game
                 yield return (StatType.CRI, CRI);
                 yield return (StatType.DOG, DOG);
                 yield return (StatType.SPD, SPD);
+            }
+        }
+
+        public int GetStat(StatType statType)
+        {
+            switch(statType)
+            {
+                case StatType.HP:
+                    return HP;
+                case StatType.ATK:
+                    return ATK;
+                case StatType.DEF:
+                    return DEF;
+                case StatType.CRI:
+                    return CRI;
+                case StatType.DOG:
+                    return DOG;
+                case StatType.SPD:
+                    return SPD;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
         }
 
