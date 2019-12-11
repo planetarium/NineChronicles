@@ -53,7 +53,6 @@ namespace Nekoyume.UI
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
-            blur?.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

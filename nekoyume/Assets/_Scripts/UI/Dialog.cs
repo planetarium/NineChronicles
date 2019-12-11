@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
@@ -30,6 +31,8 @@ namespace Nekoyume.UI
         private string _text;
         private string _itemTextColor;
         private Dictionary<int, DialogEffect> _effects = new Dictionary<int, DialogEffect>();
+
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         public static string GetPlayerPrefsKeyOfCurrentAvatarState(int dialogId)
         {
