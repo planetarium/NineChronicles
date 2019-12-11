@@ -82,7 +82,6 @@ namespace Nekoyume.UI
             accountText.text = LocalizationManager.Localize("UI_LOGIN_ACCOUNT");
             base.Awake();
         }
-
         private void SubscribeState(State state)
         {
             contentText.gameObject.SetActive(false);
@@ -100,6 +99,14 @@ namespace Nekoyume.UI
             {
                 case State.Show:
                     contentText.gameObject.SetActive(true);
+                    incorrectText.gameObject.SetActive(false);
+                    correctText.gameObject.SetActive(false);
+                    strongText.gameObject.SetActive(false);
+                    weakText.gameObject.SetActive(false);
+                    passPhraseField.text = "";
+                    retypeField.text = "";
+                    loginField.text = "";
+                    findPassphraseField.text = "";
                     submitButton.interactable = true;
                     informationText.text = "Sign up";
                     submitText.text = LocalizationManager.Localize("UI_GAME_SIGN_UP");
