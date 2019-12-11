@@ -70,7 +70,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 2263a70c9bbb27f41855e2e49d1d0a75, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -182,6 +182,7 @@ MonoBehaviour:
   CompleteDelay: 2
   BeginValue: 0
   EndValue: 1
+  ClearOnStop: 0
 --- !u!114 &3023081454464605907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -205,6 +206,7 @@ MonoBehaviour:
   CompleteDelay: 1
   BeginValue: 1
   EndValue: 0
+  ClearOnStop: 0
 --- !u!1 &2633071246989685419
 GameObject:
   m_ObjectHideFlags: 0
@@ -275,7 +277,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 2263a70c9bbb27f41855e2e49d1d0a75, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -387,6 +389,7 @@ MonoBehaviour:
   CompleteDelay: 2
   BeginValue: 0
   EndValue: 1
+  ClearOnStop: 0
 --- !u!114 &5918270008438085354
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -410,6 +413,7 @@ MonoBehaviour:
   CompleteDelay: 1
   BeginValue: 1
   EndValue: 0
+  ClearOnStop: 0
 --- !u!1 &3557542614535672747
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,7 +484,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 2263a70c9bbb27f41855e2e49d1d0a75, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -592,6 +596,7 @@ MonoBehaviour:
   CompleteDelay: 2
   BeginValue: 0
   EndValue: 1
+  ClearOnStop: 0
 --- !u!114 &3470457355951877121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -615,6 +620,7 @@ MonoBehaviour:
   CompleteDelay: 1
   BeginValue: 1
   EndValue: 0
+  ClearOnStop: 0
 --- !u!1 &5016851818164464127
 GameObject:
   m_ObjectHideFlags: 0
@@ -714,6 +720,7 @@ MonoBehaviour:
   CompleteDelay: 0
   BeginValue: 0
   EndValue: 1
+  ClearOnStop: 0
 --- !u!114 &894030996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -737,6 +744,7 @@ MonoBehaviour:
   CompleteDelay: 0
   BeginValue: 1
   EndValue: 0
+  ClearOnStop: 0
 --- !u!1 &5016851818203654896
 GameObject:
   m_ObjectHideFlags: 0
@@ -965,7 +973,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 2263a70c9bbb27f41855e2e49d1d0a75, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1077,6 +1085,7 @@ MonoBehaviour:
   CompleteDelay: 2
   BeginValue: 0
   EndValue: 1
+  ClearOnStop: 0
 --- !u!114 &5645206623426418928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1100,6 +1109,7 @@ MonoBehaviour:
   CompleteDelay: 1
   BeginValue: 1
   EndValue: 0
+  ClearOnStop: 0
 --- !u!1 &7240887405460631456
 GameObject:
   m_ObjectHideFlags: 0
@@ -1170,7 +1180,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 2263a70c9bbb27f41855e2e49d1d0a75, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1282,6 +1292,7 @@ MonoBehaviour:
   CompleteDelay: 2
   BeginValue: 0
   EndValue: 1
+  ClearOnStop: 0
 --- !u!114 &2847067404422781980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1305,6 +1316,7 @@ MonoBehaviour:
   CompleteDelay: 1
   BeginValue: 1
   EndValue: 0
+  ClearOnStop: 0
 --- !u!1 &7722360348702863236
 GameObject:
   m_ObjectHideFlags: 0
@@ -1375,7 +1387,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 2263a70c9bbb27f41855e2e49d1d0a75, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7a651b26cd62dc0479659cbcab053405, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1487,6 +1499,7 @@ MonoBehaviour:
   CompleteDelay: 2
   BeginValue: 0
   EndValue: 3
+  ClearOnStop: 0
 --- !u!114 &5329379628070096445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1510,3 +1523,4 @@ MonoBehaviour:
   CompleteDelay: 1
   BeginValue: 1
   EndValue: 0
+  ClearOnStop: 0

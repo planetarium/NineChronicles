@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: PoorStory-Regular Atlas Material - Button Yellow
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: UNDERLAY_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -51,7 +51,7 @@ Material:
     - _BumpOutline: 0
     - _ColorMask: 15
     - _Diffuse: 0
-    - _FaceDilate: 0
+    - _FaceDilate: 0.23
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlowInner: 1
@@ -65,12 +65,12 @@ Material:
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0
+    - _OutlineWidth: 0.25
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
     - _ScaleRatioA: 0.9
-    - _ScaleRatioB: 0.365625
-    - _ScaleRatioC: 0.40178573
+    - _ScaleRatioB: 0.26212502
+    - _ScaleRatioC: 0.26212502
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -84,9 +84,9 @@ Material:
     - _TextureHeight: 4096
     - _TextureWidth: 4096
     - _UnderlayDilate: 1
-    - _UnderlayOffsetX: 0
-    - _UnderlayOffsetY: -0.52
-    - _UnderlaySoftness: 0.3
+    - _UnderlayOffsetX: -0.29
+    - _UnderlayOffsetY: -1
+    - _UnderlaySoftness: 0
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
     - _WeightBold: 0.75
@@ -97,8 +97,8 @@ Material:
     - _FaceColor: {r: 1, g: 1, b: 1, a: 1}
     - _GlowColor: {r: 0, g: 0, b: 0, a: 1}
     - _MaskCoord: {r: 0, g: 0, b: 32767, a: 32767}
-    - _OutlineColor: {r: 0.12941177, g: 0.23137255, b: 0.3254902, a: 1}
+    - _OutlineColor: {r: 0.7019608, g: 0.43137255, b: 0, a: 1}
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 0, g: 0, b: 0, a: 1}
-    - _UnderlayColor: {r: 0.57254905, g: 0.35686275, b: 0.12941177, a: 1}
+    - _UnderlayColor: {r: 0.6981132, g: 0.4296081, b: 0, a: 1}
