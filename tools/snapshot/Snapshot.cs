@@ -17,40 +17,15 @@ namespace NineChroniclesSnapshot
         public static readonly Uri DefaultBucketUrl =
             new Uri("https://9c-data-snapshots.s3.ap-northeast-2.amazonaws.com/");
 
-        public static string AppDataPath
-        {
-            get
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    return Path.Join(
-                        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                        "..",
-                        "LocalLow"
-                    );
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    return Path.Join(
-                        Environment.GetFolderPath(Environment.SpecialFolder.InternetCache),
-                        "..",
-                        "Application Support"
-                    );
-                }
-                else
-                {
-                    return Environment.GetFolderPath(
-                        Environment.SpecialFolder.LocalApplicationData
-                    );
-                }
-            }
-        }
-
         public static string DefaultStorePath
         {
             get
             {
-                string s = Path.Join(AppDataPath, "Planetarium", "Nine Chronicles", "planetarium");
+                string s = Path.Join(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "planetarium",
+                    "9c"
+                );
                 return Path.GetFullPath(s);
             }
         }

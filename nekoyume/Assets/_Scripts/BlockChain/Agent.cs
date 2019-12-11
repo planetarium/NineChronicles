@@ -42,12 +42,6 @@ namespace Nekoyume.BlockChain
     /// </summary>
     public class Agent : MonoBehaviour, IDisposable
     {
-        private const string PlayerPrefsKeyOfAgentPrivateKey = "private_key_agent";
-#if UNITY_EDITOR
-        private const string AgentStoreDirName = "planetarium_dev";
-#else
-        private const string AgentStoreDirName = "planetarium";
-#endif
         private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
         
 #if UNITY_EDITOR
@@ -62,7 +56,7 @@ namespace Nekoyume.BlockChain
             Path.Combine(Application.streamingAssetsPath, "clo.json");
         private const int MaxSeed = 3;
 
-        private string _defaultStoragePath;
+        private static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
         public ReactiveProperty<long> blockIndex = new ReactiveProperty<long>();
 
@@ -121,7 +115,6 @@ namespace Nekoyume.BlockChain
         private void Awake()
         {
             ForceDotNet.Force();
-            _defaultStoragePath = Path.Combine(Application.persistentDataPath, AgentStoreDirName);
         }
 
         public void Initialize(Action<bool> callback)
@@ -195,7 +188,7 @@ namespace Nekoyume.BlockChain
             var host = GetHost(options);
             var port = options.Port;
             var consoleSink = options.ConsoleSink;
-            var storagePath = options.StoragePath ?? _defaultStoragePath;
+            var storagePath = options.StoragePath ?? DefaultStoragePath;
             var development = options.Development;
             Init(
                 privateKey,
@@ -958,9 +951,9 @@ namespace Nekoyume.BlockChain
                 if (result == ConfirmResult.No)
                     return;
                 Dispose();
-                if (Directory.Exists(_defaultStoragePath))
+                if (Directory.Exists(DefaultStoragePath))
                 {
-                    Directory.Delete(_defaultStoragePath, true);
+                    Directory.Delete(DefaultStoragePath, true);
                 }
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.ExitPlaymode();

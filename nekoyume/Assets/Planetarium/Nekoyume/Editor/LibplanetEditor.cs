@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using UnityEditor;
-using UnityEngine;
+using Nekoyume.BlockChain;
 
 namespace Planetarium.Nekoyume.Editor
 {
@@ -9,15 +9,13 @@ namespace Planetarium.Nekoyume.Editor
         [MenuItem("Tools/Libplanet/Delete All(Editor)")]
         public static void DeleteAllEditor()
         {
-            var path = Path.Combine(Application.persistentDataPath, "planetarium_dev");
-            DeleteAll(path);
+            DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
         }
         
         [MenuItem("Tools/Libplanet/Delete All(Player)")]
         public static void DeleteAllPlayer()
         {
-            var path = Path.Combine(Application.persistentDataPath, "planetarium");
-            DeleteAll(path);
+            DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Production));
         }
 
         private static void DeleteAll(string path)
