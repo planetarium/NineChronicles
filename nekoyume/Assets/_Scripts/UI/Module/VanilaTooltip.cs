@@ -1,4 +1,5 @@
 ﻿using Assets.SimpleLocalization;
+using Nekoyume.EnumType;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +11,7 @@ namespace Nekoyume.UI.Module
         public Image panelImage;
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI contentText;
+        public override WidgetType WidgetType => WidgetType.Tooltip;
 
         public void Show(string title, string content, Vector2 position, bool localize = true)
         {
