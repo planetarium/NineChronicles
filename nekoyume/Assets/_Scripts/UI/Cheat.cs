@@ -394,7 +394,9 @@ namespace Nekoyume
                 .Add("ShopState", States.Instance.ShopState.Value.Serialize())
                 .Add("TableSheetsState", TableSheetsState.Current.Serialize());
             var codec = new Bencodex.Codec();
-            var path = Path.Combine(Application.persistentDataPath, DateTimeOffset.Now + ".states");
+            var path = Path.Combine(
+                Application.persistentDataPath,
+                $"{DateTimeOffset.UtcNow:yyyyMMddHHmmss}.states");
             using (FileStream stream = File.Create(path))
             {
                 codec.Encode(states, stream);
