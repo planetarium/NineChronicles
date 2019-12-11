@@ -16,7 +16,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8233713883531201415
 RectTransform:
   m_ObjectHideFlags: 0
@@ -649,6 +649,7 @@ MonoBehaviour:
   speechBubble: {fileID: 1484383931328634777}
   sellImage: {fileID: 3222184147127393690}
   buyImage: {fileID: 1710791541015848229}
+  rightCanvasGroup: {fileID: 2361294867113778263}
 --- !u!95 &5874525038533338079
 Animator:
   serializedVersion: 3
