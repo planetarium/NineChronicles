@@ -6,22 +6,33 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class Battle : Widget
+    public class Battle : Widget, IToggleListener
     {
         public StageTitle stageTitle;
         public BossStatus bossStatus;
-        public bool IsBossAlive => bossStatus.hpBar.fillAmount > 0f;
-
+        public ToggleableButton repeatButton;
+        
         protected override void Awake()
         {
             base.Awake();
+            repeatButton.SetToggleListener(this);
             Game.Event.OnGetItem.AddListener(OnGetItem);
         }
 
-        public void Show(int stageId, bool isExitReserved)
+        public void Show(int stageId, bool isRepeat)
         {
             base.Show();
             stageTitle.Show(stageId);
+            bossStatus.Close();
+
+            if (isRepeat)
+            {
+                repeatButton.SetToggledOn();
+            }
+            else
+            {
+                repeatButton.SetToggledOff();
+            }
 
             var bottomMenu = Find<BottomMenu>();
             bottomMenu.leaveBattleButton.SharedModel.IsEnabled.Value = false;
@@ -82,5 +93,38 @@ namespace Nekoyume.UI
             base.OnCompleteOfCloseAnimation();
             stageTitle.Close();
         }
+
+        #region IToggleListener
+
+        public void OnToggle(IToggleable toggleable)
+        {
+            if (toggleable.IsToggledOn)
+            {
+                toggleable.SetToggledOff();
+                if ((ToggleableButton) toggleable == repeatButton)
+                {
+                    Game.Game.instance.stage.repeatStage = false;
+                }
+            }
+            else
+            {
+                toggleable.SetToggledOn();
+                if ((ToggleableButton) toggleable == repeatButton)
+                {
+                    Game.Game.instance.stage.repeatStage = true;
+                }
+            }
+        }
+
+        public void RequestToggledOff(IToggleable toggleable)
+        {
+            toggleable.SetToggledOff();
+            if ((ToggleableButton) toggleable == repeatButton)
+            {
+                Game.Game.instance.stage.repeatStage = false;
+            }
+        }
+
+        #endregion
     }
 }

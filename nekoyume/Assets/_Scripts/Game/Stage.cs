@@ -324,8 +324,7 @@ namespace Nekoyume.Game
             status.ShowBattleStatus();
 
             var battle = Widget.Find<UI.Battle>();
-            isExitReserved = false;
-            battle.Show(stageId, isExitReserved);
+            battle.Show(stageId, repeatStage);
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
