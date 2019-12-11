@@ -30,6 +30,7 @@ namespace Nekoyume.UI
         //public Slider volumeSfxSlider;
         //public Toggle volumeSfxToggle;
         public List<TextMeshProUGUI> muteTexts;
+        public Blur blur;
 
         #region Mono
 
@@ -90,6 +91,7 @@ namespace Nekoyume.UI
             //volumeSfxToggle.isOn = settings.isVolumeSfxMuted;
 
             base.Show();
+            blur?.Show();
         }
 
         public void ApplyCurrentSettings()
@@ -205,6 +207,12 @@ namespace Nekoyume.UI
         public void ResetKeyStore()
         {
             Game.Game.instance.agent.ResetKeyStore();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            blur?.Close();
+            base.Close(ignoreCloseAnimation);
         }
     }
 }

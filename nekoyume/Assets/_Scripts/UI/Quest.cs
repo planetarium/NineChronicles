@@ -58,6 +58,7 @@ namespace Nekoyume.UI
         public TabButton obtainButton;
         public TabButton craftingButton;
         public TabButton exchangeButton;
+        public Blur blur;
 
         private static Sprite _selectedButtonSprite;
         private QuestList _questList;
@@ -77,19 +78,17 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            var blur = Find<ModuleBlur>();
-            blur.onClick = () => Close();
-            blur?.Show();
             tabState = QuestTabState.Adventure;
             _questList = States.Instance.CurrentAvatarState.Value.questList;
             ChangeState(0);
             base.Show();
+            blur?.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            blur?.Close();
             base.Close(ignoreCloseAnimation);
-            Find<ModuleBlur>()?.Close();
         }
 
         #endregion

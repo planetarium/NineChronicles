@@ -5,22 +5,22 @@ using UniRx;
 
 namespace Nekoyume.UI
 {
-    public class Blur : Widget
+    public class Blur : MonoBehaviour
     {
         private static readonly int RadiusPropertyID = Shader.PropertyToID("_Radius");
 
+        public Image image;
         public Button button;
         public System.Action onClick;
 
-        private static Material _glass;
         private Material _glassOriginal;
+        private Material _glass;
         private float _originalBlurRadius;
 
         #region override
 
-        protected override void Awake()
+        protected void Awake()
         {
-            base.Awake();
             FindGlassMaterial(gameObject);
             button.OnClickAsObservable()
                 .Subscribe(_ => onClick?.Invoke())
@@ -29,31 +29,32 @@ namespace Nekoyume.UI
 
         public virtual void Show(float time = 0.33f)
         {
-            base.Show();
+            gameObject.SetActive(true);
             StartBlur(_originalBlurRadius, time);
         }
 
         public virtual void Show(float radius, float time = 0.33f)
         {
-            base.Show();
+            gameObject.SetActive(true);
             StartBlur(radius, time);
         }
 
         public void Close()
         {
-            base.Close();
+            gameObject.SetActive(false);
         }
 
         #endregion
 
         public virtual void StartBlur(float radius, float time)
         {
+            if (!gameObject.activeSelf)
+                return;
             StartCoroutine(CoBlur(radius, time));
         }
 
         private void FindGlassMaterial(GameObject go)
         {
-            var image = go.GetComponent<UnityEngine.UI.Image>();
             if (!image ||
                 !image.material ||
                 !image.material.shader.name.Equals("UI/Unlit/FrostedGlass"))
@@ -78,7 +79,7 @@ namespace Nekoyume.UI
             var elapsedTime = 0f;
             while (true)
             {
-                var current = Mathf.Lerp(from, to, elapsedTime);
+                var current = Mathf.Lerp(from, to, elapsedTime / time);
                 _glass.SetFloat(RadiusPropertyID, current);
 
                 elapsedTime += Time.deltaTime;
@@ -93,9 +94,8 @@ namespace Nekoyume.UI
             _glass.SetFloat(RadiusPropertyID, to);
         }
 
-        protected override void OnDisable()
+        protected void OnDisable()
         {
-            base.OnDisable();
             if (!_glass)
                 return;
             _glass.SetFloat(RadiusPropertyID, _originalBlurRadius);

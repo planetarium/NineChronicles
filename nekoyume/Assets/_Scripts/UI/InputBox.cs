@@ -21,14 +21,13 @@ namespace Nekoyume.UI
         public TextMeshProUGUI labelYes;
         public TextMeshProUGUI labelNo;
         public InputBoxDelegate CloseCallback { get; set; }
+        public Blur blur;
+
         public string text;
 
         public void Show(string placeHolderText, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
-            var blur = Find<ModuleBlur>();
-            blur.onClick = () => No();
-            blur?.Show();
 
             text = inputField.text = string.Empty;
             if (localize)
@@ -47,7 +46,7 @@ namespace Nekoyume.UI
             }
 
             base.Show();
-
+            blur?.Show();
             inputField.Select();
         }
 
@@ -69,7 +68,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<ModuleBlur>()?.Close();
+            blur?.Close();
             base.Close(ignoreCloseAnimation);
         }
     }

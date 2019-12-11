@@ -187,8 +187,6 @@ namespace Nekoyume.UI
                 paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
             }
 
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
             base.Show();
         }
 
@@ -254,9 +252,8 @@ namespace Nekoyume.UI
             player.UpdateTail(_tail);
         }
 
-        private void SubscribeBackButtonClick(BottomMenu bottomMenu)
+        public void BackClick()
         {
-            bottomMenu.Close();
             BackToLogin();
         }
 

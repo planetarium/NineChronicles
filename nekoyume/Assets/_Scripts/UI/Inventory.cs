@@ -16,6 +16,7 @@ namespace Nekoyume.UI
     {
         public Module.Inventory inventory;
         public Button closeButton;
+        public Blur blur;
 
         private IDisposable _disposableForSelectItem;
 
@@ -40,17 +41,15 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            var blur = Find<ModuleBlur>();
-            blur.onClick = () => Close();
-            blur?.Show();
             base.Show();
             inventory.SharedModel.State.Value = ItemType.Equipment;
+            blur?.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            blur?.Close();
             base.Close(ignoreCloseAnimation);
-            Find<ModuleBlur>()?.Close();
         }
 
         #endregion

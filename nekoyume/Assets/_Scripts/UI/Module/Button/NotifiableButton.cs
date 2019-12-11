@@ -72,7 +72,12 @@ namespace Nekoyume.UI.Module
                 return;
 
             _disposableForWidgetControllable?.Dispose();
-            _widget.Close(true);
+            if (_widget is Confirm)
+            {
+                (_widget as Confirm)?.No();
+            }
+            else
+                _widget.Close(true);
         }
         
         #endregion

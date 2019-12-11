@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1531019149702684459}
   - component: {fileID: 2630355418658099446}
   m_Layer: 5
-  m_Name: UI_Blur
+  m_Name: Blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -144,4 +144,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0398d8905be44004b803f2412d77ef52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  image: {fileID: 8333806674666052705}
   button: {fileID: 1531019149702684459}
