@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
@@ -61,6 +62,8 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         public readonly Model SharedModel = new Model();
+
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         #region Mono
 

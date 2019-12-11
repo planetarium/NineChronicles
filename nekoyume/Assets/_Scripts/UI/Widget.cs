@@ -137,6 +137,15 @@ namespace Nekoyume.UI
 
         public virtual void Show()
         {
+            if (WidgetType == WidgetType.Screen)
+            {
+                MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Popup);
+            }
+            else if (WidgetType == WidgetType.Popup)
+            {
+                MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Screen);
+            }
+
             gameObject.SetActive(true);
             if (_animator)
             {

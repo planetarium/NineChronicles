@@ -20,6 +20,7 @@ namespace Nekoyume.UI
         public EquipmentSlots equipmentSlots;
         public GameObject textOption;
         public GameObject optionGroup;
+        public Blur blur;
         public DetailedStatView[] statusRows;
 
         private Game.Character.Player _player;
@@ -52,9 +53,6 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            var blur = Find<ModuleBlur>();
-            blur.onClick = () => Close();
-            blur?.Show();
             _player = FindObjectOfType<Game.Character.Player>();
             var player = _player.Model;
 
@@ -91,12 +89,13 @@ namespace Nekoyume.UI
             }
 
             base.Show();
+            blur?.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            blur?.Close();
             base.Close(ignoreCloseAnimation);
-            Find<ModuleBlur>()?.Close();
             equipmentSlots.Clear();
         }
         

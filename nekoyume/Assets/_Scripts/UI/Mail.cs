@@ -70,6 +70,7 @@ namespace Nekoyume.UI
         public TabButton workshopButton;
         public TabButton auctionButton;
         public TabButton systemButton;
+        public Blur blur;
 
         private static Sprite _selectedButtonSprite;
         private MailBox _mailBox;
@@ -99,16 +100,14 @@ namespace Nekoyume.UI
             tabState = MailTabState.All;
             _mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
             ChangeState(0);
-            var blur = Find<ModuleBlur>();
-            blur.onClick = () => Close();
-            blur?.Show();
             base.Show();
+            blur?.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            blur?.Close();
             base.Close(ignoreCloseAnimation);
-            Find<ModuleBlur>()?.Close();
         }
 
         #endregion

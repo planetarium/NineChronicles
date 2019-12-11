@@ -113,8 +113,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Status>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<ModuleBlur>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Shop>());
@@ -139,8 +137,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Quest>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<BottomMenu>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<Dialog>());
             yield return null;
 
@@ -161,6 +157,9 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<InputBox>());
             yield return null;
+            // 임시로 팝업보다 상단에 배치
+            _secondWidgets.Add(Widget.Create<BottomMenu>());
+            yield return null;
 
             Widget last = null;
             foreach (var value in _secondWidgets)
@@ -176,6 +175,72 @@ namespace Nekoyume.UI
             }
 
             Notification.RegisterWidgetTypeForUX<Mail>();
+        }
+
+        public void SetSiblingOrderNext(WidgetType fromWidgetType, WidgetType targetWidgetType)
+        {
+            GameObject from = null;
+            switch (fromWidgetType)
+            {
+                case WidgetType.Hud:
+                    from = hud;
+                    break;
+                case WidgetType.Popup:
+                    from = popup;
+                    break;
+                case WidgetType.Screen:
+                    from = screen;
+                    break;
+                case WidgetType.Tooltip:
+                    from = tooltip;
+                    break;
+                case WidgetType.Widget:
+                    from = widget;
+                    break;
+                case WidgetType.SystemInfo:
+                    from = systemInfo;
+                    break;
+                case WidgetType.Development:
+                    from = development;
+                    break;
+            }
+
+            GameObject target = null;
+            switch (targetWidgetType)
+            {
+                case WidgetType.Hud:
+                    target = hud;
+                    break;
+                case WidgetType.Popup:
+                    target = popup;
+                    break;
+                case WidgetType.Screen:
+                    target = screen;
+                    break;
+                case WidgetType.Tooltip:
+                    target = tooltip;
+                    break;
+                case WidgetType.Widget:
+                    target = widget;
+                    break;
+                case WidgetType.SystemInfo:
+                    target = systemInfo;
+                    break;
+                case WidgetType.Development:
+                    target = development;
+                    break;
+            }
+
+            var fromIndex = from.transform.GetSiblingIndex();
+            var targetIndex = target.transform.GetSiblingIndex();
+            if (fromIndex > targetIndex)
+            {
+                from.transform.SetSiblingIndex(targetIndex + 1);
+            }
+            else
+            {
+                from.transform.SetSiblingIndex(targetIndex);
+            }
         }
     }
 }
