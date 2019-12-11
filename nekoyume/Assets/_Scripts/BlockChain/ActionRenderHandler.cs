@@ -347,8 +347,12 @@ namespace Nekoyume.BlockChain
             else
             {
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
+                var buyerName =
+                    new AvatarState(
+                            (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
+                        .NameWithHash;
                 var result = eval.Action.sellerResult;
-                UI.Notification.Push(MailType.Auction, string.Format(format, result.itemUsable.GetLocalizedName(), result.gold));
+                UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, result.itemUsable.GetLocalizedName()));
             }
 
             UpdateCurrentAvatarState(eval);

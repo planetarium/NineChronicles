@@ -5,7 +5,7 @@ NOTIFICATION_BUY_START,Purchase complete! I'm delivering the {0},{0} 을 구매�
 NOTIFICATION_SELL_COMPLETE,I registered to sell the {0},{0} 상점 등록 완료.
 NOTIFICATION_SELL_CANCEL_COMPLETE,I've finished unregistered the {0},{0} 판매 취소 완료.
 NOTIFICATION_BUY_BUYER_COMPLETE,The delivery of the {0} is complete!,{0} 구매 완료.
-NOTIFICATION_BUY_SELLER_COMPLETE,{0} was sold![newline]Gained {1} gold.,{0} 판매 완료.[newline]{1} gold 획득
+NOTIFICATION_BUY_SELLER_COMPLETE,{{{0}}} bought your {1}!,{{{0}}}가 방금 {1}를 사갔어!
 NOTIFICATION_QUEST_COMPLETE,'{0}' quest completed.,'{0}' 퀘스트 완료.
 NOTIFICATION_MULTIPLE_QUEST_COMPLETE,You have {0} completed quests.,{0} 개의 완료된 퀘스트가 있습니다.
 NOTIFICATION_QUEST_REWARD,You've received {0} quest rewards.,{0} 퀘스트의 보상을 수령했습니다.

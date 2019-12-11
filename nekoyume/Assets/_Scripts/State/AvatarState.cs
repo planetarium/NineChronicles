@@ -43,7 +43,7 @@ namespace Nekoyume.State
         public int ear;
         public int tail;
 
-        public string NameWithHash => $"{name} <size=80%><color=#A68F7E>#{address.ToString().Substring(2, 4)}";
+        public string NameWithHash { get; private set; }
 
         public AvatarState(
             Address address, 
@@ -84,6 +84,8 @@ namespace Nekoyume.State
             };
             UpdateGeneralQuest(new []{createEvent, levelEvent});
             UpdateCompletedQuest();
+            
+            PostConstructor();
         }
         
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
@@ -112,6 +114,8 @@ namespace Nekoyume.State
             lens = avatarState.lens;
             ear = avatarState.ear;
             tail = avatarState.tail;
+            
+            PostConstructor();
         }
 
         public AvatarState(Bencodex.Types.Dictionary serialized)
@@ -141,6 +145,13 @@ namespace Nekoyume.State
             lens = (int) ((Integer) serialized["lens"]).Value;
             ear = (int) ((Integer) serialized["ear"]).Value;
             tail = (int) ((Integer) serialized["tail"]).Value;
+            
+            PostConstructor();
+        }
+
+        private void PostConstructor()
+        {
+            NameWithHash = $"{name} <size=80%><color=#A68F7E>#{address.ToHex().Substring(0, 4)}</color></size>";
         }
 
         public void Update(Simulator simulator)

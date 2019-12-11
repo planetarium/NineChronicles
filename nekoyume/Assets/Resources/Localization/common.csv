@@ -218,7 +218,7 @@ UI_GET_REWARD,Receive Reward,보상 받기
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]I've finished upgrade the {0},{0} 강화를 완료했소
 UI_SELL_CANCEL_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]I canceled the sales of the {0},{0} 판매를 취소했어!
 UI_BUYER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]Purchased! {0} is yours now!,구매 완료! {0}는 이제 네거야!
-UI_SELLER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]{0} was sold! You got Gold.,{0} 판매 완료! 골드를 얻었어.
+UI_SELLER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]You earned {0}G by selling {1},{1}을 팔아서 {0}G 를 얻었어!
 UI_SELECT,Select,선택
 UI_PROCEED_DISCORD,Join user group,디스코드 채팅 이동
 UI_PROCEED_DISCORD_CONTENT,Open the link to Nine Chronicles Discord channel?,나인 크로니클 디스코드 채널로 이동하시겠습니까?
