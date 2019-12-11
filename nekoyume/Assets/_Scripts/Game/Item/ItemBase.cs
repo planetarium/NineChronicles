@@ -39,7 +39,8 @@ namespace Nekoyume.Game.Item
 
         public virtual string GetLocalizedName()
         {
-            return Data.GetLocalizedName();
+            var name = Data.GetLocalizedName();
+            return $"<color=#{GetColorHexByGrade()}>{name}</color>";
         }
 
         public string GetLocalizedDescription()
@@ -51,7 +52,7 @@ namespace Nekoyume.Game.Item
         {
             return SpriteHelper.GetItemIcon(Data.Id);
         }
-        
+
         public Sprite GetBackgroundSprite()
         {
             return SpriteHelper.GetItemBackground(Data.Grade);
@@ -62,5 +63,24 @@ namespace Nekoyume.Game.Item
             {
                 [(Text) "data"] = Data.Serialize(),
             });
+        
+        protected string GetColorHexByGrade()
+        {
+            switch (Data.Grade)
+            {
+                case 1:
+                    return GameConfig.ColorHexForGrade1;
+                case 2:
+                    return GameConfig.ColorHexForGrade2;
+                case 3:
+                    return GameConfig.ColorHexForGrade3;
+                case 4:
+                    return GameConfig.ColorHexForGrade4;
+                case 5:
+                    return GameConfig.ColorHexForGrade5;
+                default:
+                    return GameConfig.ColorHexForGrade1;
+            }
+        }
     }
 }

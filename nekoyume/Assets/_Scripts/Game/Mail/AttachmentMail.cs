@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Action;
-using Nekoyume.Game.Item;
-using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Mail
 {

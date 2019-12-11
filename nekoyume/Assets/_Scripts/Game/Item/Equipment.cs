@@ -46,27 +46,8 @@ namespace Nekoyume.Game.Item
             var name = base.GetLocalizedName();
 
             return level > 0
-                ? $"<color=#{GetColorHexByGrade()}>+{level} {name}</color>"
-                : $"<color=#{GetColorHexByGrade()}>{name}</color>";
-        }
-
-        private string GetColorHexByGrade()
-        {
-            switch (Data.Grade)
-            {
-                case 1:
-                    return GameConfig.ColorHexForGrade1;
-                case 2:
-                    return GameConfig.ColorHexForGrade2;
-                case 3:
-                    return GameConfig.ColorHexForGrade3;
-                case 4:
-                    return GameConfig.ColorHexForGrade4;
-                case 5:
-                    return GameConfig.ColorHexForGrade5;
-                default:
-                    return GameConfig.ColorHexForGrade1;
-            }
+                ? $"<color=#{GetColorHexByGrade()}>+{level}</color> {name}"
+                : name;
         }
 
         public override IValue Serialize() =>
