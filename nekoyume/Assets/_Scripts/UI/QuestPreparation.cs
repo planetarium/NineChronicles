@@ -30,7 +30,6 @@ namespace Nekoyume.UI
         public EquipmentSlots equipmentSlots;
 
         public Button questButton;
-        public NormalButton questRepeatButton;
         public GameObject equipSlotGlow;
         public GameObject statusRowPrefab;
         public Transform statusRowParent;
@@ -71,7 +70,6 @@ namespace Nekoyume.UI
             requiredPointText.text = GameConfig.HackAndSlashCostAP.ToString();
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
-            questRepeatButton.button.OnClickAsObservable().Subscribe(_ => QuestClick(true)).AddTo(gameObject);
         }
 
         public override void Show()
@@ -227,7 +225,6 @@ namespace Nekoyume.UI
         private void SubscribeReadyToQuest(bool ready)
         {
             questButton.interactable = ready;
-            questRepeatButton.button.interactable = ready;
             requiredPointText.color = ready ? Color.white : Color.red;
         }
 
