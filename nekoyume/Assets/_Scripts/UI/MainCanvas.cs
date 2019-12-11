@@ -111,6 +111,8 @@ namespace Nekoyume.UI
             // 메뉴보단 더 앞에 나와야 합니다.
             _secondWidgets.Add(Widget.Create<VanilaTooltip>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<Battle>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Blind>());
@@ -124,8 +126,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Combination>());
             yield return null;
             _secondWidgets.Add(Widget.Create<RankingBoard>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
 
             // 모듈류.
