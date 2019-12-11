@@ -109,25 +109,23 @@ namespace Nekoyume.Action
             if (simulator.Result == BattleLog.Result.Win)
             {
                 simulator.Player.worldInformation.ClearStage(
-                    worldId, 
-                    stageId, 
+                    worldId,
+                    stageId,
                     ctx.BlockIndex,
                     tableSheets.WorldUnlockSheet
                 );
-                
-                if (!states.TryGetState(RankingState.Address, out Bencodex.Types.Dictionary d))
-                {
-                    return states;
-                }
-
-                var ranking = new RankingState(d);
-                ranking.Update(avatarState);
-                states = states.SetState(RankingState.Address, ranking.Serialize());
             }
 
             avatarState.Update(simulator);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());
+            if (states.TryGetState(RankingState.Address, out Dictionary d) && simulator.Result == BattleLog.Result.Win)
+            {
+                var ranking = new RankingState(d);
+                ranking.Update(avatarState);
+                states = states.SetState(RankingState.Address, ranking.Serialize());
+            }
+
             Result = simulator.Log;
             return states.SetState(ctx.Signer, agentState.Serialize());
         }
