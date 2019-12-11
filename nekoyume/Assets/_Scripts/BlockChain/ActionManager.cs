@@ -265,7 +265,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public void PatchTableSheet(string tableName, string tableCsv)
+        public static void PatchTableSheet(string tableName, string tableCsv)
         {
             var action = new PatchTableSheet
             {
