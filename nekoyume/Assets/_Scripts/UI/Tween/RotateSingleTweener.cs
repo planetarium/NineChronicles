@@ -18,7 +18,9 @@ namespace Nekoyume.UI.Tween
 
         [SerializeField] private bool isLocal = true;
         [SerializeField] private Single single = Single.Z;
+        // todo: `from` -> `begin`
         [SerializeField] private float from = 0f;
+        // todo: `to` -> `end`
         [SerializeField] private float to = 0f;
         [SerializeField] private float duration = 1f;
         [SerializeField] private RotateMode rotateMode = RotateMode.Fast;
@@ -83,6 +85,7 @@ namespace Nekoyume.UI.Tween
 
         private void OnDisable()
         {
+            // todo: _tween.Kill();
             _tween?.Kill();
             _tween = null;
         }

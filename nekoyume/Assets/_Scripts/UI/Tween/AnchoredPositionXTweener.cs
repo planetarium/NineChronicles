@@ -9,11 +9,14 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionXTweener : MonoBehaviour
     {
+        // todo: add `begin`
+        // todo: `to` -> `end`
         [SerializeField] private float to = 0f;
         [SerializeField] private float duration = 1f;
         [SerializeField] private bool snapping = false;
 
         [SerializeField] private Ease ease = Ease.Linear;
+        // todo: `from` -> `isFrom`
         [SerializeField] private bool from = false;
 
         private RectTransform _rectTransform;
@@ -41,7 +44,8 @@ namespace Nekoyume.UI.Tween
 
         private void OnDisable()
         {
-            _tween?.Kill();
+            // todo: _tween.Kill();
+            _tween.Complete();
             _tween = null;
         }
     }
