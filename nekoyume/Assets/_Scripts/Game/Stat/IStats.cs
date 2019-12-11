@@ -1,3 +1,6 @@
+using Nekoyume.EnumType;
+using System.Collections.Generic;
+
 namespace Nekoyume.Game
 {
     public interface IStats
@@ -15,5 +18,7 @@ namespace Nekoyume.Game
         bool HasCRI { get; }
         bool HasDOG { get; }
         bool HasSPD { get; }
+
+        IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false);
     }
 }

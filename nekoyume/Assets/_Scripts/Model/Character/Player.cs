@@ -242,27 +242,6 @@ namespace Nekoyume.Model
             Simulator.Log.Add(spawn);
         }
 
-        public IEnumerable<(StatType statType, int value, int additionalValue)> GetStatTuples()
-        {
-            if (Stats.HasHP)
-                yield return (StatType.HP, Stats.LevelStats.HP, Stats.AdditionalHP);
-
-            if (Stats.HasATK)
-                yield return (StatType.ATK, Stats.LevelStats.ATK, Stats.AdditionalATK);
-            
-            if (Stats.HasDEF)
-                yield return (StatType.DEF, Stats.LevelStats.DEF, Stats.AdditionalDEF);
-            
-            if (Stats.HasCRI)
-                yield return (StatType.CRI, Stats.LevelStats.CRI, Stats.AdditionalCRI);
-            
-            if (Stats.HasDOG)
-                yield return (StatType.DOG, Stats.LevelStats.DOG, Stats.AdditionalDOG);
-            
-            if (Stats.HasSPD)
-                yield return (StatType.SPD, Stats.LevelStats.SPD, Stats.AdditionalSPD);
-        }
-
         public IEnumerable<string> GetOptions()
         {
             var atkOptions = atkElementType.GetOptions(StatType.ATK);

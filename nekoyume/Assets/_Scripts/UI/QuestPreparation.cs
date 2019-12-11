@@ -105,7 +105,7 @@ namespace Nekoyume.UI
                 es.SetOnClickAction(ShowTooltip, Unequip);
             }
 
-            var tuples = _player.Model.GetStatTuples();
+            var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
 
             var idx = 0;
             foreach (var (statType, value, additionalValue) in tuples)

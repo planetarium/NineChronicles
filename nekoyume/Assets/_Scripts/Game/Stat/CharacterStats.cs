@@ -4,7 +4,6 @@ using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Game
 {
@@ -73,27 +72,6 @@ namespace Nekoyume.Game
             _buffStatModifiers = value._buffStatModifiers;
 
             Level = value.Level;
-        }
-
-        public int Get(StatType statType)
-        {
-            switch (statType)
-            {
-                case StatType.HP:
-                    return HP;
-                case StatType.ATK:
-                    return ATK;
-                case StatType.DEF:
-                    return DEF;
-                case StatType.CRI:
-                    return CRI;
-                case StatType.DOG:
-                    return DOG;
-                case StatType.SPD:
-                    return SPD;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
-            }
         }
 
         public CharacterStats SetAll(int level, IReadOnlyList<Equipment> equipments,
@@ -347,7 +325,7 @@ namespace Nekoyume.Game
             return new CharacterStats(this);
         }
 
-        public IEnumerable<(StatType, int)> GetAdditionalStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false)
         {
             if (ignoreZero)
             {
@@ -357,10 +335,10 @@ namespace Nekoyume.Game
                     yield return (StatType.ATK, AdditionalATK);
                 if (HasAdditionalDEF)
                     yield return (StatType.DEF, AdditionalDEF);
-                if (HasAdditionalDOG)
-                    yield return (StatType.DOG, AdditionalDOG);
                 if (HasAdditionalCRI)
                     yield return (StatType.CRI, AdditionalCRI);
+                if (HasAdditionalDOG)
+                    yield return (StatType.DOG, AdditionalDOG);
                 if (HasAdditionalSPD)
                     yield return (StatType.SPD, AdditionalSPD);
             }
@@ -369,10 +347,30 @@ namespace Nekoyume.Game
                 yield return (StatType.HP, AdditionalHP);
                 yield return (StatType.ATK, AdditionalATK);
                 yield return (StatType.DEF, AdditionalDEF);
-                yield return (StatType.DOG, AdditionalDOG);
                 yield return (StatType.CRI, AdditionalCRI);
+                yield return (StatType.DOG, AdditionalDOG);
                 yield return (StatType.SPD, AdditionalSPD);
             }
+        }
+
+        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false)
+        {
+            var levelStats = LevelStats.GetStats();
+            var additionalStats = GetAdditionalStats();
+
+            // 기본 스탯과 추가 스탯을 StatType 기준으로 새로운 하나의 튜플로 조인
+            var enumerable =
+                levelStats.Join(additionalStats,
+                                levelStat => levelStat.statType,
+                                additionalStat => additionalStat.statType,
+                                (levelStat, additionalStat)
+                                    => (levelStat.statType, levelStat.value, additionalStat.additionalValue));
+
+            if (ignoreZero)
+                enumerable = enumerable.Where(row => row.value != 0 && row.additionalValue != 0);
+
+            foreach (var row in enumerable)
+                yield return row;
         }
     }
 }
