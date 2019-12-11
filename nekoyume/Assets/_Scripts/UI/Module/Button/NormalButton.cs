@@ -9,9 +9,9 @@ namespace Nekoyume.UI.Module
 {
     public class NormalButton : MonoBehaviour
     {
-        public TextMeshProUGUI text;
-        public Image image;
         public Button button;
+        public Image image;
+        public TextMeshProUGUI text;
         public string localizationKey;
         
         #region Mono

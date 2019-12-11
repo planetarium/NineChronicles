@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Tween
 {
+    // todo: `AnchoredPositionSingleTweener`로 바꾸고, 좌표계를 선택할 수 있도록. `RotateSingleTweener` 참고. 
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionXTweener : MonoBehaviour
     {
@@ -40,7 +41,8 @@ namespace Nekoyume.UI.Tween
 
         private void OnDisable()
         {
-            _tween?.Complete();
+            _tween?.Kill();
+            _tween = null;
         }
     }
 }
