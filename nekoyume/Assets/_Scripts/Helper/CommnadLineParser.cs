@@ -104,7 +104,10 @@ namespace Nekoyume.Helper
             set
             {
                 iceServers = value.ToArray();
-                Empty = !value.Any();
+                if (value.Any())
+                {
+                    Empty = false;
+                }
             }
         }
 
@@ -115,7 +118,10 @@ namespace Nekoyume.Helper
             set
             {
                 peers = value.ToArray();
-                Empty = !value.Any();
+                if (value.Any())
+                {
+                    Empty = false;
+                }
             }
         }
 
