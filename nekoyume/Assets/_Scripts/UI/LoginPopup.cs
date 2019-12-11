@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Nekoyume.EnumType;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -51,7 +52,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI loginText;
         public TextMeshProUGUI enterPrivateKeyText;
         public TextMeshProUGUI accountText;
-        public Button submitButton;
+        public SubmitButton submitButton;
         public Button findPassphraseButton;
         public Button backToLoginButton;
         public TextMeshProUGUI submitText;
@@ -82,7 +83,6 @@ namespace Nekoyume.UI
             accountText.text = LocalizationManager.Localize("UI_LOGIN_ACCOUNT");
             base.Awake();
         }
-
         private void SubscribeState(State state)
         {
             contentText.gameObject.SetActive(false);
@@ -91,7 +91,7 @@ namespace Nekoyume.UI
             loginGroup.SetActive(false);
             findPassphraseGroup.SetActive(false);
             accountGroup.SetActive(false);
-            submitButton.interactable = false;
+            submitButton.SetSubmittable(false);
             findPassphraseButton.gameObject.SetActive(false);
             backToLoginButton.gameObject.SetActive(false);
             titleText.gameObject.SetActive(true);
@@ -100,7 +100,15 @@ namespace Nekoyume.UI
             {
                 case State.Show:
                     contentText.gameObject.SetActive(true);
-                    submitButton.interactable = true;
+                    incorrectText.gameObject.SetActive(false);
+                    correctText.gameObject.SetActive(false);
+                    strongText.gameObject.SetActive(false);
+                    weakText.gameObject.SetActive(false);
+                    passPhraseField.text = "";
+                    retypeField.text = "";
+                    loginField.text = "";
+                    findPassphraseField.text = "";
+                    submitButton.SetSubmittable(true);
                     informationText.text = "Sign up";
                     submitText.text = LocalizationManager.Localize("UI_GAME_SIGN_UP");
                     break;
@@ -123,7 +131,7 @@ namespace Nekoyume.UI
                     passPhraseField.Select();
                     break;
                 case State.Login:
-                    submitButton.interactable = true;
+                    submitButton.SetSubmittable(true);
                     titleText.gameObject.SetActive(false);
                     submitText.text = LocalizationManager.Localize("UI_GAME_START");
                     informationText.text = "Login";
@@ -149,7 +157,7 @@ namespace Nekoyume.UI
                     var contentFormat = LocalizationManager.Localize($"UI_LOGIN_{upper}_CONTENT");
                     contentText.text = string.Format(contentFormat);
                     submitText.text = LocalizationManager.Localize("UI_OK");
-                    submitButton.interactable = true;
+                    submitButton.SetSubmittable(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -162,12 +170,13 @@ namespace Nekoyume.UI
             var strong = CheckPassWord(text);
             strongText.gameObject.SetActive(strong);
             weakText.gameObject.SetActive(!strong);
+            retypeField.interactable = strong;
         }
 
         private static bool CheckPassWord(string text)
         {
             var result = Zxcvbn.Zxcvbn.MatchPassword(text);
-            return result.Score >= 2 && Regex.IsMatch(text, GameConfig.PasswordPattern);
+            return result.Score >= 2 && !Regex.IsMatch(text, GameConfig.UnicodePattern);
         }
 
         public void CheckRetypePassphrase()
@@ -175,7 +184,7 @@ namespace Nekoyume.UI
 
             var text = passPhraseField.text;
             var same = text == retypeField.text && CheckPassWord(text);
-            submitButton.interactable = same;
+            submitButton.SetSubmittable(same);
             correctText.gameObject.SetActive(same);
             incorrectText.gameObject.SetActive(!same);
         }
@@ -206,11 +215,12 @@ namespace Nekoyume.UI
 
         public void Submit()
         {
-            if (!submitButton.interactable)
+            if (!submitButton.button.interactable)
             {
                 return;
             }
-            submitButton.interactable = false;
+
+            submitButton.SetSubmittable(false);
             switch (_state.Value)
             {
                 case State.Show:
