@@ -974,32 +974,9 @@ namespace Nekoyume.BlockChain
                 Dispose();
                 var options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathLogin);
                 var keyPath = options.keyStorePath;
-                var keyPaths = Directory.EnumerateFiles(keyPath);
-
-                foreach (var path in keyPaths)
+                if (Directory.Exists(keyPath))
                 {
-                    if (Path.GetFileName(keyPath) is string f && f.StartsWith("."))
-                    {
-                        continue;
-                    }
-                    ProtectedPrivateKey ppk = null;
-
-                    using (Stream stream = new FileStream(path, FileMode.Open))
-                    using (var reader = new StreamReader(stream))
-                    {
-                        try
-                        {
-                            ppk = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogWarningFormat("The key file {0} is invalid: {1}", keyPath, e);
-                        }
-                    }
-                    if (ppk?.Address == Address)
-                    {
-                        File.Delete(path);
-                    }
+                    Directory.Delete(keyPath, true);
                 }
 
 #if UNITY_EDITOR
