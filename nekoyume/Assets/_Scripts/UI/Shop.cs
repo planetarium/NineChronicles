@@ -57,6 +57,7 @@ namespace Nekoyume.UI
         public SpeechBubble speechBubble;
         public SpriteRenderer sellImage;
         public SpriteRenderer buyImage;
+        public CanvasGroup rightCanvasGroup;
 
         public Model.Shop SharedModel { get; private set; }
 
@@ -166,7 +167,6 @@ namespace Nekoyume.UI
             inventory.Tooltip.Close();
             inventory.SharedModel.DeselectItemView();
             shopItems.SharedModel.DeselectItemView();
-            
             switch (stateType)
             {
                 case StateType.Show:
@@ -180,8 +180,6 @@ namespace Nekoyume.UI
                     sellButton.button.interactable = true;
                     shopNotice.SetActive(false);
                     _toggleGroup.SetToggledOn(buyButton);
-                    buyImage.gameObject.SetActive(true);
-                    sellImage.gameObject.SetActive(false);
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
@@ -189,14 +187,13 @@ namespace Nekoyume.UI
                     sellButton.button.interactable = false;
                     shopNotice.SetActive(true);
                     _toggleGroup.SetToggledOn(sellButton);
-                    buyImage.gameObject.SetActive(false);
-                    sellImage.gameObject.SetActive(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
             }
 
             canvasGroup.interactable = false;
+            rightCanvasGroup.alpha = 0;
             _sequenceOfShopItems?.Kill();
             _sequenceOfShopItems = DOTween.Sequence();
             SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
@@ -205,6 +202,7 @@ namespace Nekoyume.UI
             _sequenceOfShopItems.OnComplete(() =>
             {
                 canvasGroup.interactable = true;
+                rightCanvasGroup.DOFade(1f, 0.5f);
             });
         }
 
@@ -444,6 +442,11 @@ namespace Nekoyume.UI
                         var p = bg1.anchoredPosition;
                         p.x = value;
                         bg1.anchoredPosition = p;
+                        if (!isGoOut)
+                        {
+                            buyImage.gameObject.SetActive(SharedModel.State.Value == StateType.Buy);
+                            sellImage.gameObject.SetActive(SharedModel.State.Value == StateType.Sell);
+                        }
                     },
                     isGoOut
                         ? _defaultAnchoredPositionXOfBg1 + GoOutTweenX
