@@ -11,7 +11,7 @@ namespace Tests
         [Test]
         public void EmptyJson()
         {
-            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_empty.json"));
+            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_empty.json"), string.Empty);
             Assert.Null(opt.Port);
             Assert.Null(opt.Host);
             Assert.IsFalse(opt.NoMiner);
@@ -23,7 +23,7 @@ namespace Tests
         [Test]
         public void P2PSeed() 
         {
-            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_seed.json"));
+            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_seed.json"), string.Empty);
             Assert.AreEqual(5555, opt.Port);
             Assert.AreEqual("test.planetariumhq.com", opt.Host);
             Assert.IsFalse(opt.NoMiner);
@@ -35,7 +35,7 @@ namespace Tests
         [Test]
         public void P2PNoMiner()
         {
-            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_nominer.json"));
+            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_nominer.json"), string.Empty);
             Assert.Null(opt.Port);
             Assert.Null(opt.Host);
             Assert.IsTrue(opt.NoMiner);
