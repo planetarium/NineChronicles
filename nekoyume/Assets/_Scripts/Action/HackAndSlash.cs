@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -12,7 +13,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -59,12 +59,19 @@ namespace Nekoyume.Action
                 states = states.SetState(avatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"HAS exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS Get AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
 
             if (avatarState.actionPoint < GameConfig.HackAndSlashCostAP)
             {
@@ -82,6 +89,10 @@ namespace Nekoyume.Action
                 equipment.Unequip();
             }
 
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS Unequip items: {sw.Elapsed}");
+            sw.Restart();
+
             foreach (var equipment in equipments)
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
@@ -93,7 +104,17 @@ namespace Nekoyume.Action
             }
             
             var tableSheetState = TableSheetsState.FromActionContext(ctx);
+
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS Get TableSheetsState: {sw.Elapsed}");
+            sw.Restart();
+
             var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
+
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS Initialize TableSheets: {sw.Elapsed}");
+            sw.Restart();
+
             var simulator = new Simulator(
                 ctx.Random, 
                 avatarState, 
@@ -102,8 +123,18 @@ namespace Nekoyume.Action
                 stageId,
                 tableSheets
             );
+
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS Initialize Simulator: {sw.Elapsed}");
+            sw.Restart();
+
             simulator.Simulate();
-            Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result} " +
+
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS Simulator.Simulate(): {sw.Elapsed}");
+            sw.Restart();
+
+            UnityEngine.Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result} " +
                       $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
             if (simulator.Result == BattleLog.Result.Win)
@@ -116,17 +147,40 @@ namespace Nekoyume.Action
                 );
             }
 
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS ClearStage: {sw.Elapsed}");
+            sw.Restart();
+
             avatarState.Update(simulator);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());
+
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS Set AvatarState: {sw.Elapsed}");
+            sw.Restart();
             if (states.TryGetState(RankingState.Address, out Dictionary d) && simulator.Result == BattleLog.Result.Win)
             {
                 var ranking = new RankingState(d);
                 ranking.Update(avatarState);
-                states = states.SetState(RankingState.Address, ranking.Serialize());
+
+                sw.Stop();
+                UnityEngine.Debug.Log($"HAS Update RankingState: {sw.Elapsed}");
+                sw.Restart();
+
+                var serilized = ranking.Serialize();
+
+                sw.Stop();
+                UnityEngine.Debug.Log($"HAS Serialize RankingState: {sw.Elapsed}");
+                sw.Restart();
+                states = states.SetState(RankingState.Address, serilized);
             }
 
             Result = simulator.Log;
+
+            sw.Stop();
+            var ended = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"HAS Set RankingState : {sw.Elapsed}");
+            UnityEngine.Debug.Log($"HAS Total Executed Time: {ended - started}");
             return states.SetState(ctx.Signer, agentState.Serialize());
         }
     }
