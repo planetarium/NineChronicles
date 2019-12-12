@@ -32,12 +32,15 @@ namespace Nekoyume.Game.Quest
 
         public override void Check()
         {
+            if (Complete)
+                return;
+            
             Complete = _count == _current;
         }
 
         public override string ToInfo()
         {
-            return string.Format(GoalFormat, GetName(), _current, _count);
+            return string.Format(GoalFormat, GetName(), Math.Min(_count, _current), _count);
         }
 
         public override string GetName()
@@ -48,8 +51,14 @@ namespace Nekoyume.Game.Quest
 
         public void Update(Equipment equipment)
         {
+            if (Complete)
+                return;
+
             if (equipment.level == Goal)
+            {
                 _current++;
+            }
+            
             Check();
         }
 

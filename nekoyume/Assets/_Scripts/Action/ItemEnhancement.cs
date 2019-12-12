@@ -159,7 +159,7 @@ namespace Nekoyume.Action
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex);
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
-            avatarState.UpdateItemEnhancementQuest(enhancementEquipment);
+            avatarState.UpdateFromItemEnhancement(enhancementEquipment);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize());

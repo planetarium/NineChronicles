@@ -219,7 +219,7 @@ namespace Nekoyume.Action
                 Result.itemUsable = equipment;
                 var mail = new CombinationMail(Result, ctx.BlockIndex);
                 avatarState.Update(mail);
-                avatarState.UpdateCombinationQuest(equipment);
+                avatarState.UpdateFromCombination(equipment);
             }
             else
             {
@@ -257,7 +257,7 @@ namespace Nekoyume.Action
                     Result.itemUsable = itemUsable;
                     var mail = new CombinationMail(Result, ctx.BlockIndex);
                     avatarState.Update(mail);
-                    avatarState.UpdateCombinationQuest(itemUsable);
+                    avatarState.UpdateFromCombination(itemUsable);
                 }
             }
 

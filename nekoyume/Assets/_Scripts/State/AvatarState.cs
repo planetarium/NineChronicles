@@ -46,16 +46,16 @@ namespace Nekoyume.State
         public string NameWithHash { get; private set; }
 
         public AvatarState(
-            Address address, 
-            Address agentAddress, 
-            long blockIndex, 
+            Address address,
+            Address agentAddress,
+            long blockIndex,
             WorldSheet worldSheet,
             QuestSheet questSheet,
             string name = null) : base(address)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
-            
+
             this.name = name ?? string.Empty;
             characterId = GameConfig.DefaultAvatarCharacterId;
             level = 1;
@@ -82,17 +82,17 @@ namespace Nekoyume.State
                 new KeyValuePair<int, int>((int) createEvent, 1),
                 new KeyValuePair<int, int>((int) levelEvent, level),
             };
-            UpdateGeneralQuest(new []{createEvent, levelEvent});
+            UpdateGeneralQuest(new[] {createEvent, levelEvent});
             UpdateCompletedQuest();
-            
+
             PostConstructor();
         }
-        
+
         public AvatarState(AvatarState avatarState) : base(avatarState.address)
         {
             if (avatarState == null)
                 throw new ArgumentNullException(nameof(avatarState));
-            
+
             name = avatarState.name;
             characterId = avatarState.characterId;
             level = avatarState.level;
@@ -114,7 +114,7 @@ namespace Nekoyume.State
             lens = avatarState.lens;
             ear = avatarState.ear;
             tail = avatarState.tail;
-            
+
             PostConstructor();
         }
 
@@ -145,7 +145,7 @@ namespace Nekoyume.State
             lens = (int) ((Integer) serialized["lens"]).Value;
             ear = (int) ((Integer) serialized["ear"]).Value;
             tail = (int) ((Integer) serialized["tail"]).Value;
-            
+
             PostConstructor();
         }
 
@@ -166,14 +166,17 @@ namespace Nekoyume.State
             {
                 monsterMap.Add(pair);
             }
+
             foreach (var pair in player.eventMap)
             {
                 eventMap.Add(pair);
             }
+
             if (simulator.Result == BattleLog.Result.Win)
             {
                 stageMap.Add(new KeyValuePair<int, int>(simulator.StageId, 1));
             }
+
             foreach (var pair in simulator.ItemMap)
             {
                 itemMap.Add(pair);
@@ -187,7 +190,7 @@ namespace Nekoyume.State
             return MemberwiseClone();
         }
 
-        public void Update(Game.Mail.Mail mail)
+        public void Update(Mail mail)
         {
             mailBox.Add(mail);
         }
@@ -216,20 +219,22 @@ namespace Nekoyume.State
             questList.UpdateMonsterQuest(monsterMap);
             questList.UpdateCollectQuest(itemMap);
             questList.UpdateItemTypeCollectQuest(items);
-            UpdateGeneralQuest(new []{QuestEventType.Level, QuestEventType.Die});
+            UpdateGeneralQuest(new[] {QuestEventType.Level, QuestEventType.Die});
             UpdateCompletedQuest();
         }
 
-        public void UpdateCombinationQuest(ItemUsable itemUsable)
+        #region From Action
+
+        public void UpdateFromCombination(ItemUsable itemUsable)
         {
             questList.UpdateCombinationQuest(itemUsable);
-            questList.UpdateItemTypeCollectQuest(new []{itemUsable});
             var type = itemUsable is Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
             eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
             UpdateGeneralQuest(new[] {type});
             UpdateCompletedQuest();
         }
-        public void UpdateItemEnhancementQuest(Equipment equipment)
+
+        public void UpdateFromItemEnhancement(Equipment equipment)
         {
             questList.UpdateItemEnhancementQuest(equipment);
             var type = QuestEventType.Enhancement;
@@ -238,19 +243,18 @@ namespace Nekoyume.State
             UpdateCompletedQuest();
         }
 
-        public void UpdateQuestFromAddItem(ItemUsable itemUsable, bool canceled)
+        public void UpdateFromAddItem(ItemUsable itemUsable, bool canceled)
         {
             var pair = inventory.AddItem(itemUsable);
-            if (!itemMap.ContainsKey(itemUsable.Data.Id))
-            {
-                itemMap.Add(pair);
-            }
+            itemMap.Add(pair);
 
             if (!canceled)
             {
+                questList.UpdateCollectQuest(itemMap);
                 questList.UpdateItemGradeQuest(itemUsable);
-                questList.UpdateItemTypeCollectQuest(new []{itemUsable});
+                questList.UpdateItemTypeCollectQuest(new[] {itemUsable});
             }
+
             UpdateCompletedQuest();
         }
 
@@ -269,13 +273,14 @@ namespace Nekoyume.State
                 {
                     questList.UpdateItemGradeQuest(itemUsable);
                 }
-
             }
+
             questList.UpdateCollectQuest(itemMap);
             questList.UpdateItemTypeCollectQuest(items);
             UpdateCompletedQuest();
-
         }
+
+        #endregion
 
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
@@ -302,9 +307,5 @@ namespace Nekoyume.State
                 [(Text) "ear"] = (Integer) ear,
                 [(Text) "tail"] = (Integer) tail,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-
-        public void UpdateQuestFromQuestReward(Dictionary<int, int> rewardItemMap, IRandom random)
-        {
-        }
     }
 }

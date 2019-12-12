@@ -32,11 +32,15 @@ namespace Nekoyume.Game.Quest
 
         public void Update(ItemBase item)
         {
+            if (Complete)
+                return;
+            
             if (!_itemIds.Contains(item.Data.Id))
             {
                 _count++;
                 _itemIds.Add(item.Data.Id);
             }
+            
             Check();
         }
 
@@ -44,12 +48,15 @@ namespace Nekoyume.Game.Quest
 
         public override void Check()
         {
+            if (Complete)
+                return;
+            
             Complete = _count >= Goal;
         }
 
         public override string ToInfo()
         {
-            return string.Format(GoalFormat, GetName(), _count, Goal);
+            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _count), Goal);
         }
 
         public override string GetName()
