@@ -76,8 +76,8 @@ namespace Tests
             state.Update(avatar1);
             var result = state.GetAvatars(null);
             Assert.AreEqual(2, result.Length);
-            Assert.AreEqual(avatar1.updatedAt, result.First().updatedAt);
-            Assert.AreEqual(avatar2.updatedAt, result.Last().updatedAt);
+            Assert.AreEqual(avatar1.updatedAt, result.First().UpdatedAt);
+            Assert.AreEqual(avatar2.updatedAt, result.Last().UpdatedAt);
         }
 
         [Test]
@@ -104,11 +104,11 @@ namespace Tests
             state.Update(avatar2);
             state.Update(avatar1);
             state.Update(avatar3);
-            Assert.AreEqual(3, state.GetAvatars(null).First().exp);
+            Assert.AreEqual(3, state.GetAvatars(null).First().Exp);
             var result = state.GetAvatars(DateTimeOffset.UtcNow);
             Assert.AreEqual(2, result.Length);
-            Assert.AreEqual(avatar1.updatedAt, result.First().updatedAt);
-            Assert.AreEqual(avatar2.updatedAt, result.Last().updatedAt);
+            Assert.AreEqual(avatar1.updatedAt, result.First().UpdatedAt);
+            Assert.AreEqual(avatar2.updatedAt, result.Last().UpdatedAt);
         }
 
         [Test]
@@ -122,15 +122,15 @@ namespace Tests
             };
 
             state.Update(avatar1);
-            Assert.AreEqual(2, state.GetAvatars(null).First().exp);
+            Assert.AreEqual(2, state.GetAvatars(null).First().Exp);
 
             avatar1.exp = 1;
             state.Update(avatar1);
-            Assert.AreEqual(1, state.GetAvatars(null).First().exp);
+            Assert.AreEqual(1, state.GetAvatars(null).First().Exp);
 
             avatar1.exp = 3;
             state.Update(avatar1);
-            Assert.AreEqual(3, state.GetAvatars(null).First().exp);
+            Assert.AreEqual(3, state.GetAvatars(null).First().Exp);
         }
 
         [Test]
@@ -141,7 +141,7 @@ namespace Tests
             var agentAddress = GetNewAddress();
             var avatar = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets.WorldSheet,
                 Game.instance.TableSheets.QuestSheet);
-            rankingInfo.Set(1, avatar);
+            rankingInfo.Set(1, new Nekoyume.State.RankingInfo(avatar));
             Assert.NotNull(rankingInfo.icon.sprite);
         }
     }

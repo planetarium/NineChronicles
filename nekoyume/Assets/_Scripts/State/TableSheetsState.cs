@@ -25,6 +25,7 @@ namespace Nekoyume.State
 
         public TableSheetsState() : base(Address)
         {
+            TableSheets = new Dictionary<string, string>().ToImmutableDictionary();
         }
 
         public TableSheetsState(IDictionary<string, string> sheets) : base(Address)

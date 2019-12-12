@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume.Game.Item;
 
 namespace Nekoyume.State
 {
@@ -20,12 +21,12 @@ namespace Nekoyume.State
                 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
             }
         );
-        
-        private readonly Dictionary<Address, AvatarState> _map;
+
+        private readonly Dictionary<Address, RankingInfo> _map;
 
         public RankingState() : base(Address)
         {
-            _map = new Dictionary<Address, AvatarState>();
+            _map = new Dictionary<Address, RankingInfo>();
         }
 
         public RankingState(Bencodex.Types.Dictionary serialized)
@@ -33,7 +34,7 @@ namespace Nekoyume.State
         {
             _map = ((Bencodex.Types.Dictionary) serialized["map"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
-                kv => new AvatarState((Bencodex.Types.Dictionary) kv.Value)
+                kv => new RankingInfo((Bencodex.Types.Dictionary) kv.Value)
             );
         }
         
@@ -41,30 +42,24 @@ namespace Nekoyume.State
         {
             if (_map.TryGetValue(state.address, out var current))
             {
-                if (current.exp < state.exp)
+                if (current.Exp < state.exp)
                 {
-                    _map[state.address] = (AvatarState) state.Clone();
+                    _map[state.address] = new RankingInfo(state);
                 }
             }
             else
             {
-                _map[state.address] = (AvatarState) state.Clone();
+                _map[state.address] = new RankingInfo(state);
             }
         }
 
-        public AvatarState[] GetAvatars(DateTimeOffset? dt)
+        public RankingInfo[] GetAvatars(DateTimeOffset? dt)
         {
-            IEnumerable<AvatarState> map =
-                _map.Values.OrderByDescending(c => c.exp).ThenBy(c =>
-                {
-                    if (!c.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(out var detail))
-                        throw new Exception($"worldInformation.TryGetLastNewlyClearedDetail() failed.");
-
-                    return detail.StageClearedBlockIndex;
-                });
+            IEnumerable<RankingInfo> map =
+                _map.Values.OrderByDescending(c => c.Exp).ThenBy(c => c.StageClearedBlockIndex);
             if (dt != null)
             {
-                map = map.Where(context => ((TimeSpan) (dt - context.updatedAt)).Days <= 1);
+                map = map.Where(context => ((TimeSpan) (dt - context.UpdatedAt)).Days <= 1);
             }
 
             return map.ToArray();
@@ -76,7 +71,7 @@ namespace Nekoyume.State
             var result = new HashSet<Address>();
             foreach (var avatar in avatars)
             {
-                result.Add(avatar.agentAddress);
+                result.Add(avatar.AgentAddress);
                 if (result.Count == count)
                     break;
             }
@@ -94,5 +89,55 @@ namespace Nekoyume.State
                     )
                 ))
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+    }
+
+    public class RankingInfo: IState
+    {
+        public readonly Address AvatarAddress;
+        public readonly Address AgentAddress;
+        public readonly int ArmorId;
+        public readonly int Level;
+        public readonly string AvatarName;
+        public readonly long Exp;
+        public readonly long StageClearedBlockIndex;
+        public readonly DateTimeOffset UpdatedAt;
+
+        public RankingInfo(AvatarState avatarState)
+        {
+            AvatarAddress = avatarState.address;
+            AgentAddress = avatarState.agentAddress;
+            var armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
+            ArmorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
+            Level = avatarState.level;
+            AvatarName = avatarState.NameWithHash;
+            Exp = avatarState.exp;
+            avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(out var detail);
+            StageClearedBlockIndex = detail.StageClearedBlockIndex;
+            UpdatedAt = avatarState.updatedAt;
+        }
+
+        public RankingInfo(Bencodex.Types.Dictionary serialized)
+        {
+            AvatarAddress = serialized.GetAddress("avatarAddress");
+            AgentAddress = serialized.GetAddress("agentAddress");
+            ArmorId = serialized.GetInteger("armorId");
+            Level = serialized.GetInteger("level");
+            AvatarName = serialized.GetString("avatarName");
+            Exp = serialized.GetLong("exp");
+            StageClearedBlockIndex = serialized.GetLong("stageClearedBlockIndex");
+            UpdatedAt = serialized.GetDateTimeOffset("updatedAt");
+        }
+        public IValue Serialize() =>
+            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Bencodex.Types.Text) "avatarAddress"] = AvatarAddress.Serialize(),
+                [(Bencodex.Types.Text) "agentAddress"] = AgentAddress.Serialize(),
+                [(Bencodex.Types.Text) "armorId"] = ArmorId.Serialize(),
+                [(Bencodex.Types.Text) "level"] = Level.Serialize(),
+                [(Bencodex.Types.Text) "avatarName"] = AvatarName.Serialize(),
+                [(Bencodex.Types.Text) "exp"] = Exp.Serialize(),
+                [(Bencodex.Types.Text) "stageClearedBlockIndex"] = StageClearedBlockIndex.Serialize(),
+                [(Bencodex.Types.Text) "updatedAt"] = UpdatedAt.Serialize(),
+            });
     }
 }
