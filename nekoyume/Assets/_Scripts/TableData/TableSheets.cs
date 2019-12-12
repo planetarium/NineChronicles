@@ -229,6 +229,7 @@ namespace Nekoyume.TableData
         {
             if (_cache.TryGetValue(tableSheetsState, out var cached)) 
             {
+                Debug.Log("Using cached TableSheets...");
                 return cached;
             }
             var tableSheets = new TableSheets();
