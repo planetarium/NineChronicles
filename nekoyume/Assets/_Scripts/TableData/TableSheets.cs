@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Libplanet.Action;
+using LruCacheNet;
 using Nekoyume.Data.Table;
 using Nekoyume.State;
 using UniRx;
@@ -13,6 +14,9 @@ namespace Nekoyume.TableData
 {
     public class TableSheets
     {
+        private static readonly LruCache<TableSheetsState, TableSheets> _cache = 
+        new LruCache<TableSheetsState, TableSheets>();
+        
         public readonly ReactiveProperty<float> loadProgress = new ReactiveProperty<float>();
 
         public Dictionary<string, string> TableCsvAssets;
@@ -223,8 +227,15 @@ namespace Nekoyume.TableData
 
         public static TableSheets FromTableSheetsState(TableSheetsState tableSheetsState)
         {
+            if (_cache.TryGetValue(tableSheetsState, out var cached)) 
+            {
+                Debug.Log("Using cached TableSheets...");
+                return cached;
+            }
             var tableSheets = new TableSheets();
             tableSheets.InitializeWithTableSheetsState(tableSheetsState);
+
+            _cache.Add(tableSheetsState, tableSheets);
             return tableSheets;
         }
 

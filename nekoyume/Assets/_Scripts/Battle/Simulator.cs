@@ -33,6 +33,27 @@ namespace Nekoyume.Battle
         public readonly TableSheets TableSheets;
         private const int MaxTurn = 3000;
 
+        public Simulator(
+            IRandom random, 
+            AvatarState avatarState, 
+            List<Consumable> foods, 
+            int worldId, 
+            int stageId,
+            TableSheets tableSheets)
+        {
+            Random = random;
+            TableSheets = tableSheets;
+            WorldId = worldId;
+            StageId = stageId;
+            Log = new BattleLog();
+            _waves = new List<Wave>();
+            Player = new Player(avatarState, this);
+            Player.Use(foods);
+            Player.Stats.EqualizeCurrentHPWithHP();
+            _waveRewards = new List<List<ItemBase>>();
+            SetWave();
+        }
+
         public Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods, int worldId, int stageId,
             Game.Skill skill = null, TableSheetsState tableSheetsState = null)
         {

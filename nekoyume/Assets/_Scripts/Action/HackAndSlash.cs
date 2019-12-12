@@ -100,7 +100,7 @@ namespace Nekoyume.Action
                 foods, 
                 worldId, 
                 stageId,
-                tableSheetsState: tableSheetState
+                tableSheets
             );
             simulator.Simulate();
             Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result} " +
