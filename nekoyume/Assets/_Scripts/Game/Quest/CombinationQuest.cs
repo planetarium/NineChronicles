@@ -35,17 +35,18 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
+            
             Complete = current >= Goal;
         }
 
         public override string ToInfo()
         {
-            return string.Format(GoalFormat, GetName(), current, Goal);
+            return string.Format(GoalFormat, GetName(), Math.Min(Goal, current), Goal);
         }
 
         public override string GetName()
         {
-            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            var format = LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT");
             return string.Format(format, ItemSubType.GetLocalizedString());
         }
 
@@ -53,6 +54,9 @@ namespace Nekoyume.Game.Quest
 
         public void Update(List<ItemBase> items)
         {
+            if (Complete)
+                return;
+            
             current += items.Count(i => i.Data.ItemType == ItemType && i.Data.ItemSubType == ItemSubType);
             Check();
         }

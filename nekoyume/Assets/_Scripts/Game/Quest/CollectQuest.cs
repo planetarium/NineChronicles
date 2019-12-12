@@ -32,12 +32,13 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
+            
             Complete = _current >= Goal;
         }
 
         public override string ToInfo()
         {
-            return string.Format(GoalFormat, GetName(), _current, Goal);
+            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _current), Goal);
         }
 
         public override string GetName()
@@ -51,6 +52,9 @@ namespace Nekoyume.Game.Quest
 
         public void Update(CollectionMap itemMap)
         {
+            if (Complete)
+                return;
+            
             itemMap.TryGetValue(_itemId, out _current);
             Check();
         }

@@ -28,16 +28,19 @@ namespace Nekoyume.Game.Quest
             _itemIds = serialized["itemIds"].ToList(i => (int) ((Integer) i).Value);
         }
 
-        public override QuestType QuestType => QuestType.Craft;
+        public override QuestType QuestType => QuestType.Obtain;
 
         public override void Check()
         {
+            if (Complete)
+                return;
+            
             Complete = _count >= Goal;
         }
 
         public override string ToInfo()
         {
-            return string.Format(GoalFormat, GetName(), _count, Goal);
+            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _count), Goal);
         }
 
         public override string GetName()
@@ -48,6 +51,9 @@ namespace Nekoyume.Game.Quest
 
         public void Update(ItemUsable itemUsable)
         {
+            if (Complete)
+                return;
+            
             if (!_itemIds.Contains(itemUsable.Data.Id))
             {
                 _count++;

@@ -44,6 +44,9 @@ namespace Nekoyume.Game.Quest
 
         public void Update(CollectionMap stageMap)
         {
+            if (Complete)
+                return;
+            
             Complete = stageMap.TryGetValue(Goal, out _);
         }
 

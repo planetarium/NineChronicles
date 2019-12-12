@@ -38,10 +38,9 @@ namespace Nekoyume.Game.Quest
                     case QuestEventType.Complete:
                         return QuestType.Adventure;
                     case QuestEventType.Enhancement:
-                        return QuestType.Craft;
                     case QuestEventType.Equipment:
                     case QuestEventType.Consumable:
-                        return QuestType.Obtain;
+                        return QuestType.Craft;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -50,12 +49,15 @@ namespace Nekoyume.Game.Quest
 
         public override void Check()
         {
+            if (Complete)
+                return;
+            
             Complete = _current >= Goal;
         }
 
         public override string ToInfo()
         {
-            return string.Format(GoalFormat, GetName(), _current, Goal);
+            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _current), Goal);
         }
 
         public override string GetName()
@@ -67,9 +69,11 @@ namespace Nekoyume.Game.Quest
 
         public void Update(CollectionMap eventMap)
         {
+            if (Complete)
+                return;
+            
             var key = (int) Event;
-            eventMap.TryGetValue(key, out var current);
-            _current = current;
+            eventMap.TryGetValue(key, out _current);
             Check();
         }
 

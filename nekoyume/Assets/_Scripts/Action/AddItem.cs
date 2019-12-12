@@ -38,7 +38,7 @@ namespace Nekoyume.Action
                 return states;
 
             mail.New = false;
-            avatarState.UpdateQuestFromAddItem(mail.attachment.itemUsable, canceled);
+            avatarState.UpdateFromAddItem(mail.attachment.itemUsable, canceled);
             avatarState.blockIndex = ctx.BlockIndex;
             states = states.SetState(avatarAddress, avatarState.Serialize());
             return states;

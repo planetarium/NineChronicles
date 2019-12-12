@@ -30,12 +30,15 @@ namespace Nekoyume.Game.Quest
 
         public override void Check()
         {
+            if (Complete)
+                return;
+            
             Complete = _current >= Goal;
         }
 
         public override string ToInfo()
         {
-            return string.Format(GoalFormat, GetName(), _current, Goal);
+            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _current), Goal);
         }
 
         public override string GetName()
@@ -47,6 +50,9 @@ namespace Nekoyume.Game.Quest
 
         public void Update(decimal gold)
         {
+            if (Complete)
+                return;
+            
             _current += gold;
             Check();
         }

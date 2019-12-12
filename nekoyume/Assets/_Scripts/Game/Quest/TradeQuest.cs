@@ -30,18 +30,19 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
+            
             _current += 1;
             Complete = _current >= Goal;
         }
 
         public override string ToInfo()
         {
-            return string.Format(GoalFormat, GetName(), _current, Goal);
+            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _current), Goal);
         }
 
         public override string GetName()
         {
-            var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
+            var format = LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT");
             return string.Format(format, Type.GetLocalizedString());
         }
 
