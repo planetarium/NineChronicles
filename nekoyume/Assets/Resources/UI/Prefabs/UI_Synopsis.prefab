@@ -173,7 +173,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 1
+  Duration: 5
   TweenType_: 0
   Ease_: 1
   CompleteMethod: PlayForward
@@ -181,7 +181,7 @@ MonoBehaviour:
   Target: {fileID: 2021358624827245335}
   CompleteDelay: 2
   BeginValue: 0
-  EndValue: 1
+  EndValue: 5
   ClearOnStop: 0
 --- !u!114 &3023081454464605907
 MonoBehaviour:
@@ -380,7 +380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 1
+  Duration: 5
   TweenType_: 0
   Ease_: 1
   CompleteMethod: PlayForward
@@ -388,7 +388,7 @@ MonoBehaviour:
   Target: {fileID: 2633071246989685419}
   CompleteDelay: 2
   BeginValue: 0
-  EndValue: 1
+  EndValue: 5
   ClearOnStop: 0
 --- !u!114 &5918270008438085354
 MonoBehaviour:
@@ -587,7 +587,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 1
+  Duration: 5
   TweenType_: 0
   Ease_: 1
   CompleteMethod: PlayForward
@@ -595,7 +595,7 @@ MonoBehaviour:
   Target: {fileID: 3557542614535672747}
   CompleteDelay: 2
   BeginValue: 0
-  EndValue: 1
+  EndValue: 5
   ClearOnStop: 0
 --- !u!114 &3470457355951877121
 MonoBehaviour:
@@ -1076,7 +1076,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 1
+  Duration: 5
   TweenType_: 0
   Ease_: 1
   CompleteMethod: PlayForward
@@ -1084,7 +1084,7 @@ MonoBehaviour:
   Target: {fileID: 5391833746830564374}
   CompleteDelay: 2
   BeginValue: 0
-  EndValue: 1
+  EndValue: 5
   ClearOnStop: 0
 --- !u!114 &5645206623426418928
 MonoBehaviour:
@@ -1283,7 +1283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 1
+  Duration: 5
   TweenType_: 0
   Ease_: 1
   CompleteMethod: PlayForward
@@ -1291,7 +1291,7 @@ MonoBehaviour:
   Target: {fileID: 7240887405460631456}
   CompleteDelay: 2
   BeginValue: 0
-  EndValue: 1
+  EndValue: 5
   ClearOnStop: 0
 --- !u!114 &2847067404422781980
 MonoBehaviour:
@@ -1490,7 +1490,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartWithPlay: 0
   StartDelay: 0
-  Duration: 2
+  Duration: 5
   TweenType_: 0
   Ease_: 1
   CompleteMethod: PlayForward
@@ -1498,7 +1498,7 @@ MonoBehaviour:
   Target: {fileID: 7722360348702863236}
   CompleteDelay: 2
   BeginValue: 0
-  EndValue: 3
+  EndValue: 5
   ClearOnStop: 0
 --- !u!114 &5329379628070096445
 MonoBehaviour:
