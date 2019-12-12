@@ -153,6 +153,7 @@ MonoBehaviour:
   content: {fileID: 827001764177913710}
   labelOK: {fileID: 6328602431243258988}
   titleBorder: {fileID: 8413180054573326355}
+  blur: {fileID: 0}
 --- !u!1001 &2241263195338151797
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -300,6 +301,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1266827682708924010, guid: 5bcf368b3e0fac54b8a77bc20075a229,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 8317938912015892596}
+    - target: {fileID: 1266827682708924010, guid: 5bcf368b3e0fac54b8a77bc20075a229,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: Close
       objectReference: {fileID: 0}
     - target: {fileID: 1261207273602709749, guid: 5bcf368b3e0fac54b8a77bc20075a229,
         type: 3}
