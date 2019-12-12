@@ -1,13 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.TableData;
 
 namespace Nekoyume.State
 {
-    public class TableSheetsState : State
+    public class TableSheetsState : State, IEquatable<TableSheetsState>
     {
         public static readonly Address Address = new Address(new byte[]
             {
@@ -15,17 +16,52 @@ namespace Nekoyume.State
             }
         );
 
+        private IValue _serialized;
+
+        private int _hashCode;
+
         // key = TableSheet Name / value = TableSheet csv.
-        public Dictionary<string, string> TableSheets = new Dictionary<string, string>();
+        public IImmutableDictionary<string, string> TableSheets { get; }
 
         public TableSheetsState() : base(Address)
         {
         }
 
-        public TableSheetsState(Bencodex.Types.Dictionary serialized) : base(serialized)
+        public TableSheetsState(IDictionary<string, string> sheets) : base(Address)
         {
-            TableSheets = serialized.GetValue<Bencodex.Types.Dictionary>("table_sheets")
-                .ToDictionary(pair => (string) (Text) pair.Key, pair => (string) (Text) pair.Value);
+            TableSheets = sheets.ToImmutableDictionary();
+            _serialized = Serialize();
+
+            int ComputeHash(byte[] bytes)
+            {
+                unchecked
+                {
+                    var result = 0;
+                    foreach (byte b in bytes)
+                    {
+                        result = (result*31) ^ b;
+                    }
+                    return result;
+                }
+            }
+            
+            _hashCode = _serialized
+                .EncodeIntoChunks()
+                .Aggregate(0, (prev, bytes) => prev ^ ComputeHash(bytes));
+        }
+
+        public TableSheetsState(Bencodex.Types.Dictionary serialized) 
+            : this(
+                serialized
+                .GetValue<Bencodex.Types.Dictionary>("table_sheets")
+                .ToDictionary(pair => (string) (Text) pair.Key, pair => (string) (Text) pair.Value))
+        {
+        }
+
+        public TableSheetsState UpdateTableSheet(string name, string csv)
+        {
+            var updatedSheets = TableSheets.SetItem(name, csv);
+            return new TableSheetsState(updatedSheets.ToDictionary(kv => kv.Key, kv => kv.Value));
         }
 
         public override IValue Serialize() =>
@@ -62,6 +98,26 @@ namespace Nekoyume.State
             {
                 return new TableSheetsState((Bencodex.Types.Dictionary)serialized);
             }
+        }
+
+        public override bool Equals(object other)
+        {
+            if (other is TableSheetsState otherState) 
+            {
+                return Equals(otherState);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return _hashCode;
+        }
+
+        public bool Equals(TableSheetsState other)
+        {
+            return _serialized?.Equals(other._serialized) ?? false;
         }
     }
 }

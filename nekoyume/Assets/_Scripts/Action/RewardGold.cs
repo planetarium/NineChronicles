@@ -42,10 +42,7 @@ namespace Nekoyume.Action
                     .SetState(RankingState.Address, new RankingState().Serialize())
                     .SetState(ShopState.Address, new ShopState().Serialize())
                     .SetState(DailyBlockState.Address, new DailyBlockState(0).Serialize())
-                    .SetState(TableSheetsState.Address, new TableSheetsState
-                    {
-                        TableSheets = Game.Game.instance.TableSheets.TableCsvAssets
-                    }.Serialize());
+                    .SetState(TableSheetsState.Address, new TableSheetsState(Game.Game.instance.TableSheets.TableCsvAssets).Serialize());
             }
             else
             {

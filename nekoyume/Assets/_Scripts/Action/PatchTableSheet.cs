@@ -34,10 +34,10 @@ namespace Nekoyume.Action
                       TableCsv
             );
 
-            tableSheetsState.TableSheets[TableName] = TableCsv;
+            TableSheetsState nextState = tableSheetsState.UpdateTableSheet(TableName, TableCsv);
             Game.Game.instance.TableSheets.SetToSheet(TableName, TableCsv);
 
-            return states.SetState(TableSheetsState.Address, tableSheetsState.Serialize());
+            return states.SetState(TableSheetsState.Address, nextState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
