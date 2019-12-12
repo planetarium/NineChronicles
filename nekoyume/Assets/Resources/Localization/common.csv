@@ -84,7 +84,6 @@ UI_BATTLE_AGAIN,Again,다시 전투
 UI_BATTLE_AGAIN_FORMAT,{0} battle starts again,{0} 다시 전투를 시작합니다.
 UI_BATTLE_EXIT_FORMAT,{0} you will return to the main,{0} 메인으로 이동합니다.
 UI_BATTLE_WIN,Stage Won!,전투 승리!
-UI_REWARDS,Rewards,획득한 아이템
 UI_BATTLE_RETRY,Retry,다시 도전
 UI_BATTLE_RETRY_FORMAT,You can become stronger[newline]by leveling up[newline]or crafting stronger equipment.,지난 스테이지를 플레이하여 레벨을 올리거나[newline]장비를 제작하면 더 강해질 수 있습니다.
 UI_BATTLE_LOSE,Lost...,전투 패배
@@ -102,7 +101,7 @@ UI_COMBINATION_ITEM,Combine,아이템 제작
 UI_COMBINATION_ERROR,Error,조합 에러
 UI_COMBINATION_SUCCESS,Success!,조합 성공!
 UI_COMBINATION_NOTIFY_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]I've finished crafting {0},<size=12><color=#a2b4d6>[대장장이 고양이]</color></size>[newline]{0} 제작을 완료하였네.
-UI_COMBINATION_FAIL,Oh[comma] I failed crafting. My hand slipped...,어이쿠, 조합을 실패헸네. 손이 미끄러졌어.
+UI_COMBINATION_FAIL,Oh[comma] I failed crafting. My hand slipped...,어이쿠[comma] 조합을 실패헸네. 손이 미끄러졌어.
 UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amount,재료 수량 선택
 UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE,Equipment to enhance,강화할 장비
 UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME,Equipment to consume,소모할 장비
@@ -161,6 +160,9 @@ NPC_05_NAME,Workshop Cat,대장장이 고양이
 NPC_06_NAME,Market Cat,경매장 고양이
 NPC_07_NAME,The Goddess Freya,여신 프레이야
 NPC_08_NAME,Cat Knight,발키리 전사
+NPC_09_NAME,Little Black Cat,작은 검은고양이
+NPC_10_NAME,Pig Trespasser,돼지부족 도살자
+NPC_11_NAME,Fenrir,펜리르
 UI_COMBINE_EQUIPMENT,Equip,장비 제작
 UI_COMBINE_CONSUMABLE,Food,소모품 제작
 UI_ENHANCE_EQUIPMENT,Enhancement,장비 강화
@@ -195,7 +197,7 @@ UI_AVATARINFO,Character,캐릭터
 UI_WORLD_MAP_ENTER,Enter,입장
 UI_WORLD_MAP,WorldMap,월드맵
 UI_WORLD_MAP_MONSTERS,Monsters,몬스터
-UI_WORLD_MAP_REWARDS,Rewards,보상
+UI_REWARDS,Rewards,보상
 UI_STAGE,Stage,스테이지
 UI_REMAININGTURN,Remaining Turn : {0},남은 턴 : {0}
 UI_ALERT_NOT_IMPLEMENTED_TITLE,In Development,준비 중
@@ -214,7 +216,7 @@ UI_LOADING_BLOCK_DOWNLOAD,Downloading blocks... {0} / {1},블록 다운로드 �
 UI_LOADING_STATE_REFERENCE_DOWNLOAD,Downloading states... {0} / {1},상태 다운로드 중... {0} / {1}
 UI_RECEIVE,Receive,받기
 UI_RECEIVED,Received,받음
-UI_GET_REWARD,Receive Reward,보상 받기
+UI_GET_REWARDS,Receive Rewards,보상 받기
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]I've finished upgrade the {0},{0} 강화를 완료했소
 UI_SELL_CANCEL_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]I canceled the sales of the {0},{0} 판매를 취소했어!
 UI_BUYER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]Purchased! {0} is yours now!,구매 완료! {0}는 이제 네거야!

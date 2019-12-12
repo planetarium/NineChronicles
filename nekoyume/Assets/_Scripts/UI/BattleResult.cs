@@ -188,7 +188,7 @@ namespace Nekoyume.UI
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
 
-            if (SharedModel.ActionPointNotEnough)
+            if (SharedModel.ShouldExit || SharedModel.ActionPointNotEnough)
             {
                 submitButton.gameObject.SetActive(false);
             }
