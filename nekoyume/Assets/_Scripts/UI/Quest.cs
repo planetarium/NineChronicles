@@ -4,6 +4,7 @@ using Nekoyume.Game.Quest;
 using Nekoyume.Helper;
 using Nekoyume.UI.Scroller;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using TMPro;
@@ -103,8 +104,37 @@ namespace Nekoyume.UI
 
             var list = _questList.ToList();
             list = list.FindAll(quest => quest.QuestType == (QuestType) state);
+            // todo: 퀘스트 정렬.
+//            list = list.FindAll(e => e.QuestType == (QuestType) state)
+//                .OrderBy(e => e, new QuestOrderComparer())
+//                .ToList();
 
             scroller.SetData(list);
         }
     }
+
+    // todo: 퀘스트 정렬.
+//    public class QuestOrderComparer : IComparer<Game.Quest.Quest>
+//    {
+//        public int Compare(Game.Quest.Quest x, Game.Quest.Quest y)
+//        {
+//            if (x.Complete)
+//            {
+//                if (!y.Complete)
+//                
+//                if (x.Receive)
+//                {
+//                    
+//                }
+//                else
+//                {
+//                    
+//                }
+//            }
+//            else
+//            {
+//                
+//            }
+//        }
+//    }
 }
