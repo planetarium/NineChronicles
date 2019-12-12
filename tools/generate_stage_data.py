@@ -204,7 +204,8 @@ def expand_wave_id(wid):
 
 
 # TODO food grade
-FOOD_MATERIAL = [302000, 302001, 302002, 302003, 302004, 302005, 302006, 302007, 302008, 302009]
+FOOD_MATERIAL = [302000, 302000, 302000, 302001, 302001, 302002, 302002, 302003, 302003, 302004,
+        302005, 302005, 302006, 302007, 302007, 302007, 302008, 302008, 302009]
 FOOD_DROP_RATE = 0.15;
 
 EQ_MAT_G1 = [303000, 303100, 303200, 303300, 303400]
@@ -343,9 +344,11 @@ for stage in stage_ids:
     if stage < 151:
         reward_row += [MONSTER_PARTS[random_monster], MONSTER_PARTS_DROP_RATE, 1, max(1, int(stage_idx/8))]
         reward_row += [MONSTER_PARTS[last_monster], MONSTER_PARTS_DROP_RATE/2.0, 1, max(1, int(stage_idx/12))]
-        reward_row += [food_mat, FOOD_DROP_RATE, 1, 2]
+        reward_row += [food_mat, FOOD_DROP_RATE, 1, 1]
 
-    if stage < 11:
+    if stage is 2:
+        reward_row += [303000, 0.75, 1, 1]
+    elif stage < 11:
         reward_row += [g1_mat, 0.25, 1, 1]
         g1_mat_2 = random.choice(EQ_MAT_G1)
         reward_row += [g1_mat_2, 0.10, 1, 1]
