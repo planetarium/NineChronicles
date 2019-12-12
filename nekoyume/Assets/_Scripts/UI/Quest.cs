@@ -103,38 +103,48 @@ namespace Nekoyume.UI
             exchangeButton.ChangeColor(tabState == QuestTabState.Exchange);
 
             var list = _questList.ToList();
-            list = list.FindAll(quest => quest.QuestType == (QuestType) state);
-            // todo: 퀘스트 정렬.
-//            list = list.FindAll(e => e.QuestType == (QuestType) state)
-//                .OrderBy(e => e, new QuestOrderComparer())
-//                .ToList();
+            list = list.FindAll(e => e.QuestType == (QuestType) state)
+                .OrderBy(e => e, new QuestOrderComparer())
+                .ToList();
 
             scroller.SetData(list);
         }
     }
 
-    // todo: 퀘스트 정렬.
-//    public class QuestOrderComparer : IComparer<Game.Quest.Quest>
-//    {
-//        public int Compare(Game.Quest.Quest x, Game.Quest.Quest y)
-//        {
-//            if (x.Complete)
-//            {
-//                if (!y.Complete)
-//                
-//                if (x.Receive)
-//                {
-//                    
-//                }
-//                else
-//                {
-//                    
-//                }
-//            }
-//            else
-//            {
-//                
-//            }
-//        }
-//    }
+    public class QuestOrderComparer : IComparer<Game.Quest.Quest>
+    {
+        public int Compare(Game.Quest.Quest x, Game.Quest.Quest y)
+        {
+            // null
+            if (x is null)
+                return y is null ? 0 : 1;
+
+            if (y is null)
+                return -1;
+            
+            // receive
+            if (x.Receive)
+            {
+                if (!y.Receive)
+                    return 1;
+                
+                if (x.Id > y.Id)
+                    return 1;
+                    
+                if (x.Id == y.Id)
+                    return 0;
+                    
+                return -1;
+            }
+
+            if (y.Receive)
+                return -1;
+            
+            // complete
+            if (x.Complete)
+                return y.Complete ? 0 : -1;
+            
+            return y.Complete ? 1 : 0;
+        }
+    }
 }
