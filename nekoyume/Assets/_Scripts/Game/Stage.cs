@@ -291,10 +291,9 @@ namespace Nekoyume.Game
             }
 
             _battleResultModel.State = log.result;
+            _battleResultModel.ActionPointNotEnough = AvatarState.actionPoint < GameConfig.HackAndSlashCostAP;
             _battleResultModel.ShouldExit = isExitReserved;
             _battleResultModel.ShouldRepeat = repeatStage;
-            _battleResultModel.ActionPointNotEnough =
-                States.Instance.CurrentAvatarState.Value.actionPoint < GameConfig.HackAndSlashCostAP;
 
             if (!_battleResultModel.ShouldRepeat)
             {
