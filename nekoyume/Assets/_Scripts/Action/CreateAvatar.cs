@@ -78,10 +78,6 @@ namespace Nekoyume.Action
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
-            if (!states.TryGetState(DailyBlockState.Address, out Bencodex.Types.Dictionary d))
-            {
-                return states;
-            }
             
             // Avoid NullReferenceException in test
             avatarState = CreateAvatarState(name, avatarAddress, ctx);

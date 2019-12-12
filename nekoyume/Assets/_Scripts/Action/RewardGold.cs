@@ -29,7 +29,6 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
-                states = states.SetState(DailyBlockState.Address, MarkChanged);
                 states = states.SetState(TableSheetsState.Address, MarkChanged);
                 return states.SetState(ctx.Miner, MarkChanged);
             }
@@ -41,18 +40,7 @@ namespace Nekoyume.Action
                 states = states
                     .SetState(RankingState.Address, new RankingState().Serialize())
                     .SetState(ShopState.Address, new ShopState().Serialize())
-                    .SetState(DailyBlockState.Address, new DailyBlockState(0).Serialize())
                     .SetState(TableSheetsState.Address, new TableSheetsState(Game.Game.instance.TableSheets.TableCsvAssets).Serialize());
-            }
-            else
-            {
-                if (ctx.BlockIndex % DailyBlockState.UpdateInterval == 0)
-                {
-                    states = states.SetState(
-                        DailyBlockState.Address,
-                        new DailyBlockState(ctx.BlockIndex).Serialize()
-                    );
-                }
             }
 
             AgentState agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);

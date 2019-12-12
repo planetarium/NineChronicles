@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.BlockChain;
 using Nekoyume.Model;
-using Nekoyume.State;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -30,8 +29,8 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            slider.maxValue = DailyBlockState.UpdateInterval;
-            text.text = $"0 / {DailyBlockState.UpdateInterval}";
+            slider.maxValue = GameConfig.DailyRewardInterval;
+            text.text = $"0 / {GameConfig.DailyRewardInterval}";
             button.interactable = false;
             _animation = GetComponent<Animation>();
             _updateEnable = true;
@@ -54,11 +53,11 @@ namespace Nekoyume.UI.Module
         private void SetIndex(long index)
         {
             var min = Math.Max(index - _receivedIndex, 0);
-            var value = Math.Min(min, DailyBlockState.UpdateInterval);
-            text.text = $"{value} / {DailyBlockState.UpdateInterval}";
+            var value = Math.Min(min, GameConfig.DailyRewardInterval);
+            text.text = $"{value} / {GameConfig.DailyRewardInterval}";
             slider.value = value;
 
-            _isFull = value >= DailyBlockState.UpdateInterval;
+            _isFull = value >= GameConfig.DailyRewardInterval;
             button.interactable = _isFull;
             canvasGroup.interactable = _isFull;
             if (_isFull && _updateEnable)
