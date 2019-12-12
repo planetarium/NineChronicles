@@ -408,6 +408,7 @@ namespace Nekoyume.UI
                 }
             }
 
+            _stage.isExitReserved = false;
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
             ActionManager.instance.HackAndSlash(equipments, consumables, _worldId, _stageId)
