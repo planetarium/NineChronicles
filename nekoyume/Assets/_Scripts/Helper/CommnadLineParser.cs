@@ -40,6 +40,10 @@ namespace Nekoyume.Helper
 
         public bool development;
 
+        public bool maintenance;
+
+        public bool testEnd;
+
         public bool Empty { get; private set; } = true;
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
@@ -165,6 +169,28 @@ namespace Nekoyume.Helper
             set
             {
                 development = value;
+                Empty = false;
+            }
+        }
+
+        [Option("maintenance", Required = false, HelpText = "Turn on maintenance mode.")]
+        public bool Maintenance
+        {
+            get => maintenance;
+            set
+            {
+                maintenance = value;
+                Empty = false;
+            }
+        }
+
+        [Option("testEnd", Required = false, HelpText = "Test has ended.")]
+        public bool TestEnd
+        {
+            get => testEnd;
+            set
+            {
+                testEnd = value;
                 Empty = false;
             }
         }

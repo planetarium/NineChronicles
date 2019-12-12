@@ -178,6 +178,46 @@ namespace Nekoyume.BlockChain
         private void InitAgent(Action<bool> callback, PrivateKey privateKey)
         {
             var options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
+            if (options.maintenance)
+            {
+                var w = Widget.Create<Alert>();
+                w.CloseCallback = () =>
+                {
+                    Application.OpenURL(GameConfig.DiscordLink);
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                w.Show(
+                    LocalizationManager.Localize("UI_MAINTENANCE"),
+                    LocalizationManager.Localize("UI_MAINTENANCE_CONTENT"),
+                    LocalizationManager.Localize("UI_OK"),
+                    false
+                );
+                return;
+            }
+            if (options.testEnd)
+            {
+                var w = Widget.Find<Confirm>();
+                w.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
+                        Application.OpenURL(GameConfig.DiscordLink);
+                    }
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                w.Show("Test Ended", "Thank you for participating in the Nine Chronicle play test.",
+                    "Go to discord", "Quit", false);
+
+                return;
+            }
             var peers = options.Peers.Select(LoadPeer);
             var iceServers = options.IceServers.Select(LoadIceServer);
 
