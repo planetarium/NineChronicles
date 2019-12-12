@@ -26,7 +26,7 @@ namespace Nekoyume.UI
         public ScrollRect board;
         public SpeechBubble speechBubble;
 
-        private AvatarState[] _avatarStates;
+        private State.RankingInfo[] _avatarStates;
         private Npc _npc;
 
         private readonly ReactiveProperty<StateType> _state = new ReactiveProperty<StateType>(StateType.Filtered);
@@ -145,12 +145,12 @@ namespace Nekoyume.UI
         private void OnClickRankingInfo(RankingInfo info)
         {
             // todo: 블록 익스플로러 연결.
-            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarState.address));
+            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarInfo.AvatarAddress));
         }
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            _avatarStates = States.Instance.RankingState.Value?.GetAvatars(dt) ?? new AvatarState[0];
+            _avatarStates = States.Instance.RankingState.Value?.GetAvatars(dt) ?? new State.RankingInfo[0];
         }
 
         private void ClearBoard()
