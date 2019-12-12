@@ -217,7 +217,6 @@ namespace Nekoyume.TableData
         public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState = null)
         {
             tableSheetsState = tableSheetsState ?? TableSheetsState.Current;
-            Debug.Log(tableSheetsState.TableSheets);
             foreach (var pair in tableSheetsState.TableSheets)
             {
                 SetToSheet(pair.Key, pair.Value);

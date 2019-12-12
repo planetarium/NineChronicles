@@ -346,7 +346,7 @@ for stage in stage_ids:
         reward_row += [food_mat, FOOD_DROP_RATE, 1, 2]
 
     if stage < 11:
-        reward_row += [g1_mat, 0.15, 1, 1]
+        reward_row += [g1_mat, 0.25, 1, 1]
         g1_mat_2 = random.choice(EQ_MAT_G1)
         reward_row += [g1_mat_2, 0.10, 1, 1]
     elif stage < 31:
