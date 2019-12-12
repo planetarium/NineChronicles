@@ -26,13 +26,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!states.TryGetState(DailyBlockState.Address, out Bencodex.Types.Dictionary d))
-            {
-                return states;
-            }
-            var dailyBlockState = new DailyBlockState(d);
-
-            if (dailyBlockState.nextBlockIndex - avatarState.dailyRewardReceivedIndex  >= DailyBlockState.UpdateInterval)
+            if (ctx.BlockIndex - avatarState.dailyRewardReceivedIndex >= GameConfig.DailyRewardInterval)
             {
                 avatarState.dailyRewardReceivedIndex = ctx.BlockIndex;
                 avatarState.actionPoint = refillPoint;
