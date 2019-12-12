@@ -28,9 +28,9 @@ namespace Nekoyume.UI
 
             public BattleLog.Result State;
             public long Exp;
+            public bool ActionPointNotEnough;
             public bool ShouldExit;
             public bool ShouldRepeat;
-            public bool ActionPointNotEnough;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -188,7 +188,7 @@ namespace Nekoyume.UI
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
 
-            if (SharedModel.ShouldExit || SharedModel.ActionPointNotEnough)
+            if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
             {
                 submitButton.gameObject.SetActive(false);
             }
@@ -283,13 +283,13 @@ namespace Nekoyume.UI
         {
             var secondsFormat = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
             string fullFormat;
-            if (SharedModel.ShouldExit)
-            {
-                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
-            }
-            else if (SharedModel.ActionPointNotEnough)
+            if (SharedModel.ActionPointNotEnough)
             {
                 fullFormat = LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
+            }
+            else if (SharedModel.ShouldExit)
+            {
+                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
             }
             else
             {
@@ -319,7 +319,7 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            if (SharedModel.ShouldExit || SharedModel.ActionPointNotEnough)
+            if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
             {
                 GoToMain();
             }
@@ -333,6 +333,7 @@ namespace Nekoyume.UI
         {
             if (!submitButton.interactable)
                 yield break;
+            
             closeButton.interactable = false;
             submitButton.interactable = false;
             suggestionsArea.submitButton1.interactable = false;
