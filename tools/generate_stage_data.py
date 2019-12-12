@@ -254,7 +254,7 @@ for idx, row in enumerate(stage_to_wave_csv):
         wave3 = row[5]
         boss_wave = row[6]
         last_wave = boss_wave or wave3 or wave2
-        waves = filter(lambda wave: wave, [wave1, wave2, wave3])
+        waves = filter(lambda wave: wave, [wave1, wave2, wave2, wave3])
 
         grouped = []
         for wave_idx in range(0, wave_cnt):
@@ -301,6 +301,8 @@ for stage in stage_ids:
         m_level = wave_info[1]
         is_last_wave = (wave_idx == wave_cnt - 1)
         is_boss_wave = int(bool(is_last_wave and is_boss_level))
+        if int(stage) > 1000:
+            is_boss_wave = 1
 
         if wave in wave_dict:
             monster_picked = wave_dict[wave]
@@ -344,7 +346,7 @@ for stage in stage_ids:
         reward_row += [food_mat, FOOD_DROP_RATE, 1, 2]
 
     if stage < 11:
-        reward_row += [g1_mat, 0.15, 1, 1]
+        reward_row += [g1_mat, 0.25, 1, 1]
         g1_mat_2 = random.choice(EQ_MAT_G1)
         reward_row += [g1_mat_2, 0.10, 1, 1]
     elif stage < 31:
@@ -361,17 +363,16 @@ for stage in stage_ids:
         reward_row += [g1_mat, 0.10, 1, 1]
         reward_row += [g2_mat, 0.10, 1, 1]
         reward_row += [g3_mat, 0.05, 1, 1]
+        reward_row += [g4_mat, 0.01, 1, 1]
     elif stage < 101:
         reward_row += [g1_mat, 0.05, 1, 1]
         reward_row += [g2_mat, 0.15, 1, 1]
         reward_row += [g3_mat, 0.04, 1, 1]
-        reward_row += [g4_mat, 0.01, 1, 1]
     elif stage < 111:
         reward_row += [g2_mat, 0.15, 1, 1]
-        reward_row += [g3_mat, 0.09, 1, 1]
-        reward_row += [g4_mat, 0.01, 1, 1]
+        reward_row += [g3_mat, 0.03, 1, 1]
     elif stage < 131:
-        reward_row += [g2_mat, 0.12, 1, 1]
+        reward_row += [g2_mat, 0.10, 1, 1]
         reward_row += [g3_mat, 0.11, 1, 1]
         reward_row += [g4_mat, 0.02, 1, 1]
     elif stage < 151:
