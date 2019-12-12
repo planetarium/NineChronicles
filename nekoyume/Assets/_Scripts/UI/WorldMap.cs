@@ -42,9 +42,9 @@ namespace Nekoyume.UI
 
         public GameObject worldMapRoot;
         public Button alfheimButton;
-        public Button svartalfaheimrButton;
+        public Button svartalfheimButton;
         public Button asgardButton;
-        public Button hardModeButton;
+        public Button ChallengeModeButton;
 
         public StageInformation stageInformation;
         public SubmitButton submitButton;
@@ -108,7 +108,7 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                     ShowWorld(1);
                 }).AddTo(gameObject);
-            svartalfaheimrButton.OnClickAsObservable()
+            svartalfheimButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
@@ -120,7 +120,7 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                     ShowWorld(3);
                 }).AddTo(gameObject);
-            hardModeButton.OnClickAsObservable()
+            ChallengeModeButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
