@@ -43,14 +43,14 @@ namespace Nekoyume.BlockChain
     public class Agent : MonoBehaviour, IDisposable
     {
         private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
-        
+
 #if UNITY_EDITOR
         private static readonly string WebCommandLineOptionsPathInit = string.Empty;
         private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
 #else
         private const string WebCommandLineOptionsPathInit = "https://9c-test.s3.ap-northeast-2.amazonaws.com/clo.json";
         private const string WebCommandLineOptionsPathLogin = "https://9c-test.s3.ap-northeast-2.amazonaws.com/clo.json";
-#endif        
+#endif
 
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
@@ -179,12 +179,15 @@ namespace Nekoyume.BlockChain
         {
             var options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
             var peers = options.Peers.Select(LoadPeer);
-            var iceServers = options.IceServers.Select(LoadIceServer);
+            var iceServerList = options.IceServers.Select(LoadIceServer).ToImmutableList();
 
-            if (!iceServers.Any())
+            if (!iceServerList.Any())
             {
-                iceServers = new[] { LoadIceServer(DefaultIceServer) };
+                iceServerList = new[] { LoadIceServer(DefaultIceServer) }.ToImmutableList();
             }
+
+            var iceServers = iceServerList.Sample(1).ToImmutableList();
+
             var host = GetHost(options);
             var port = options.Port;
             var consoleSink = options.ConsoleSink;
@@ -329,7 +332,7 @@ namespace Nekoyume.BlockChain
             {
                 Debug.LogWarning(e);
             }
-                
+
             if (File.Exists(localPath))
             {
                 Debug.Log($"Get options from local: {localPath}");
