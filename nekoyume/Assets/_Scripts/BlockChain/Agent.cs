@@ -525,6 +525,7 @@ namespace Nekoyume.BlockChain
                             seedPeers: _seedPeers,
                             pingSeedTimeout: 5000,
                             findPeerTimeout: 5000,
+                            depth: 1,
                             cancellationToken: _cancellationTokenSource.Token
                         );
                     }
@@ -533,9 +534,8 @@ namespace Nekoyume.BlockChain
                         Debug.LogFormat("Bootstrap failed. {0}", e.Message);
                         throw;
                     }
-                    catch (TimeoutException e)
+                    catch (TimeoutException)
                     {
-                        Debug.LogFormat("TimeOutException occurred during bootstrap {0}", e);
                     }
                     catch (Exception e)
                     {
