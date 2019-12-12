@@ -525,6 +525,7 @@ namespace Nekoyume.BlockChain
                             seedPeers: _seedPeers,
                             pingSeedTimeout: 5000,
                             findPeerTimeout: 5000,
+                            depth: 1,
                             cancellationToken: _cancellationTokenSource.Token
                         );
                     }
