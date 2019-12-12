@@ -81,6 +81,11 @@ MONSTER_PARTS = {
     '204012': 306042,
     '204013': 306043,
     '204014': 306044,
+    '204020': 306045,
+    '204021': 306046,
+    '204022': 306047,
+    '204023': 306048,
+    '204024': 306049,
     '205000': 306050,
     '205003': 306051,
     '205007': 306054
@@ -240,10 +245,35 @@ for idx, row in enumerate(wave_csv):
         wave_dict[row_id] = monsters
 
 for idx, row in enumerate(stage_to_wave_csv):
-    row_id = row[0]
-    waves = row[1:]
-    grouped = filter(lambda row: row[0] , [waves[i:i+2] for i in range(0, len(waves), 2)])
     if idx > 0:
+        row_id = row[0]
+        base_lv = int(row[1])
+        wave_cnt = int(row[2])
+        wave1 = row[3]
+        wave2 = row[4]
+        wave3 = row[5]
+        boss_wave = row[6]
+        last_wave = boss_wave or wave3 or wave2
+        waves = filter(lambda wave: wave, [wave1, wave2, wave3])
+
+        grouped = []
+        for wave_idx in range(0, wave_cnt):
+            is_last_wave = wave_idx == wave_cnt - 1
+            random_lv = base_lv
+            if random.random < 0.4 and random_lv > 1:
+                random_lv -= 1
+
+            if is_last_wave:
+                grouped.append([last_wave, base_lv])
+            elif wave_idx is 0:
+                grouped.append([wave1, max(1, base_lv - 1)])
+            elif wave_idx is 1:
+                grouped.append([wave2, random_lv])
+            else:
+                grouped.append([random.choice(waves), random_lv])
+
+        #grouped = filter(lambda row: row[0] , [waves[i:i+2] for i in range(0, len(waves), 2)])
+
         stage_dict[int(row_id)] = grouped
         stage_ids.append(int(row_id))
 
