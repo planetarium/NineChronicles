@@ -132,15 +132,13 @@ namespace Nekoyume.State
             questList = new QuestList((Bencodex.Types.List) serialized["questList"]);
             mailBox = new MailBox((Bencodex.Types.List) serialized["mailBox"]);
             blockIndex = (long) ((Integer) serialized["blockIndex"]).Value;
-            dailyRewardReceivedIndex = (long) ((Integer) serialized["nextDailyRewardIndex"]).Value;
+            dailyRewardReceivedIndex = (long) ((Integer) serialized["dailyRewardReceivedIndex"]).Value;
             actionPoint = (int) ((Integer) serialized["actionPoint"]).Value;
             stageMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["stageMap"]);
             serialized.TryGetValue((Text) "monsterMap", out var value2);
             monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Bencodex.Types.Dictionary) value2);
             itemMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["itemMap"]);
             eventMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["eventMap"]);
-            serialized.TryGetValue((Text) "dailyRewardReceivedIndex", out var dri);
-            dailyRewardReceivedIndex = dri is null ? 0 : (long) ((Integer) dri).Value;
             hair = (int) ((Integer) serialized["hair"]).Value;
             lens = (int) ((Integer) serialized["lens"]).Value;
             ear = (int) ((Integer) serialized["ear"]).Value;
@@ -296,7 +294,7 @@ namespace Nekoyume.State
                 [(Text) "questList"] = questList.Serialize(),
                 [(Text) "mailBox"] = mailBox.Serialize(),
                 [(Text) "blockIndex"] = (Integer) blockIndex,
-                [(Text) "nextDailyRewardIndex"] = (Integer) dailyRewardReceivedIndex,
+                [(Text) "dailyRewardReceivedIndex"] = (Integer) dailyRewardReceivedIndex,
                 [(Text) "actionPoint"] = (Integer) actionPoint,
                 [(Text) "stageMap"] = stageMap.Serialize(),
                 [(Text) "monsterMap"] = monsterMap.Serialize(),
