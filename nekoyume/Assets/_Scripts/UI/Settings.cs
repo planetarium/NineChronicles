@@ -54,7 +54,7 @@ namespace Nekoyume.UI
             var settings = Nekoyume.Settings.Instance;
             UpdateSoundSettings();
 
-            volumeMasterSlider.value = settings.VolumeMaster;
+            volumeMasterSlider.value = settings.volumeMaster;
             volumeMasterToggle.isOn = settings.isVolumeMasterMuted;
 
             base.Show();
@@ -77,7 +77,7 @@ namespace Nekoyume.UI
         public void UpdateSoundSettings()
         {
             var settings = Nekoyume.Settings.Instance;
-            SetVolumeMaster(settings.VolumeMaster);
+            SetVolumeMaster(settings.volumeMaster);
             SetVolumeMasterMute(settings.isVolumeMasterMuted);
         }
 
@@ -96,8 +96,8 @@ namespace Nekoyume.UI
         private void SetVolumeMaster(float value)
         {
             var settings = Nekoyume.Settings.Instance;
-            settings.VolumeMaster = value;
-            AudioListener.volume = settings.isVolumeMasterMuted ? 0f : settings.VolumeMaster;
+            settings.volumeMaster = value;
+            AudioListener.volume = settings.isVolumeMasterMuted ? 0f : settings.volumeMaster;
             UpdateVolumeMasterText();
         }
 
@@ -105,7 +105,7 @@ namespace Nekoyume.UI
         {
             var settings = Nekoyume.Settings.Instance;
             settings.isVolumeMasterMuted = value;
-            AudioListener.volume = value ? 0f : settings.VolumeMaster;
+            AudioListener.volume = value ? 0f : settings.volumeMaster;
             UpdateVolumeMasterText();
         }
 
@@ -119,7 +119,7 @@ namespace Nekoyume.UI
         private void SetVolumeSfx(float value)
         {
             var settings = Nekoyume.Settings.Instance;
-            settings.VolumeSfx = value;
+            settings.volumeSfx = value;
         }
 
         private void SetVolumeSfxMute(bool value)

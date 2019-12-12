@@ -182,7 +182,7 @@ namespace Nekoyume.Game.Controller
 
         public void Initialize()
         {
-            AudioListener.volume = Settings.Instance.VolumeMaster;
+            AudioListener.volume = Settings.Instance.volumeMaster;
 
             if (CurrentState != State.None)
             {
@@ -264,7 +264,7 @@ namespace Nekoyume.Game.Controller
 
             var audioInfo = PopFromSfxPool(audioName);
             Push(_sfxPlaylist, audioName, audioInfo);
-            audioInfo.source.volume = audioInfo.volume * volume * Settings.Instance.VolumeSfx;
+            audioInfo.source.volume = audioInfo.volume * volume * Settings.Instance.volumeSfx;
             audioInfo.source.Play();
         }
 
@@ -392,12 +392,12 @@ namespace Nekoyume.Game.Controller
             while (deltaTime < duration)
             {
                 deltaTime += Time.deltaTime;
-                audioInfo.source.volume += (audioInfo.volume * Settings.Instance.VolumeMusic) * Time.deltaTime / duration;
+                audioInfo.source.volume += (audioInfo.volume * Settings.Instance.volumeMusic) * Time.deltaTime / duration;
 
                 yield return null;
             }
 
-            audioInfo.source.volume = audioInfo.volume * Settings.Instance.VolumeMusic;
+            audioInfo.source.volume = audioInfo.volume * Settings.Instance.volumeMusic;
         }
 
         private static IEnumerator CoFadeOut(AudioInfo audioInfo, float duration)
