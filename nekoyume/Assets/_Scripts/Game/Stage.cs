@@ -295,6 +295,16 @@ namespace Nekoyume.Game
             _battleResultModel.ShouldRepeat = repeatStage;
             _battleResultModel.ActionPointNotEnough =
                 States.Instance.CurrentAvatarState.Value.actionPoint < GameConfig.HackAndSlashCostAP;
+
+            if (!_battleResultModel.ShouldRepeat)
+            {
+                Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow, true);
+                if (stageId == worldRow.StageEnd)
+                {
+                    _battleResultModel.ShouldExit = true;
+                }
+            }
+
             Widget.Find<BattleResult>().Show(_battleResultModel);
 
             IsInStage = false;
