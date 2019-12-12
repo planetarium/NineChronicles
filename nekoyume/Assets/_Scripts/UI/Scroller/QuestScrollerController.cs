@@ -32,9 +32,8 @@ namespace Nekoyume.UI.Scroller
             }
 
             cellView.name = $"Cell {dataIndex}";
-            if (cellView.onClickSubmitButton is null)
-                cellView.onClickSubmitButton = _buttonDisabledCells.Add;
-            cellView.SetData(_data[dataIndex], _buttonDisabledCells.Contains(dataIndex), dataIndex);
+            cellView.onClickSubmitButton = _buttonDisabledCells.Add;
+            cellView.SetData(_data[dataIndex], _buttonDisabledCells.Contains(dataIndex));
             return cellView;
         }
 

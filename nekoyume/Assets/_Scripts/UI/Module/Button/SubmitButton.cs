@@ -23,6 +23,10 @@ namespace Nekoyume.UI.Module
                 OnSubmitClick.OnNext(this);
             }).AddTo(gameObject);
         }
+
+        public void Show() => gameObject.SetActive(true);
+
+        public void Hide() => gameObject.SetActive(false);
         
         public virtual void SetSubmittable(bool submittable)
         {

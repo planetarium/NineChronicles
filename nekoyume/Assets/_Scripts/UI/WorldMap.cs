@@ -99,7 +99,7 @@ namespace Nekoyume.UI
             }
 
             stageInformation.monstersAreaText.text = LocalizationManager.Localize("UI_WORLD_MAP_MONSTERS");
-            stageInformation.rewardsAreaText.text = LocalizationManager.Localize("UI_WORLD_MAP_REWARDS");
+            stageInformation.rewardsAreaText.text = LocalizationManager.Localize("UI_REWARDS");
             submitButton.submitText.text = LocalizationManager.Localize("UI_WORLD_MAP_ENTER");
 
             alfheimButton.OnClickAsObservable()
