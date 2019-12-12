@@ -83,6 +83,7 @@ namespace Nekoyume.Action
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)
                 .OfType<Equipment>()
+                .Where(i => i.equipped)
                 .ToImmutableHashSet();
             foreach (var equipment in inventoryEquipments)
             {
