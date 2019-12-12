@@ -290,8 +290,9 @@ namespace Nekoyume.Game
                 objectPool.ReleaseAll();
             }
 
+            var avatarState = new AvatarState((Bencodex.Types.Dictionary) Game.instance.agent.GetState(States.Instance.CurrentAvatarState.Value.address));
             _battleResultModel.State = log.result;
-            _battleResultModel.ActionPointNotEnough = AvatarState.actionPoint < GameConfig.HackAndSlashCostAP;
+            _battleResultModel.ActionPointNotEnough = avatarState.actionPoint < GameConfig.HackAndSlashCostAP;
             _battleResultModel.ShouldExit = isExitReserved;
             _battleResultModel.ShouldRepeat = repeatStage;
 
