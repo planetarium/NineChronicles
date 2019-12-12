@@ -45,7 +45,8 @@ namespace Nekoyume.UI
                         Destroy(child.gameObject);
                 }
             }
-            
+
+            Find<ItemInformationTooltip>().Close();
             base.OnDisable();
         }
 
