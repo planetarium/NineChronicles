@@ -10,7 +10,7 @@ namespace Nekoyume
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
         public const string UnicodePattern = @"[^\u0000-\u007F]";
         public const string DiscordLink = "https://discord.gg/NqshYve";
-        public const string BlockExplorerLinkFormat = "https://explorer.libplanet.io/9c-alpha/account/?{0}";
+        public const string BlockExplorerLinkFormat = "http://explorer.libplanet.io/9c-alpha/account/?{0}";
         public const float PlayerSpeechBreakTime = 2f;
 
         //TODO 온체인으로 옮겨야함.
@@ -25,9 +25,9 @@ namespace Nekoyume
         public const string DefaultPlayerEyeOpenResource = "eye_red_open";
         public const string DefaultPlayerEyeHalfResource = "eye_red_half";
         public const string DefaultPlayerTailResource = "tail_0001";
-        public const int ActionPoint = 400;
+        public const int ActionPoint = 250;
 
-        public const int DailyRewardInterval = 8640;
+        public const int DailyRewardInterval = 1000;
         
         public const int HackAndSlashCostAP = 5;
 
