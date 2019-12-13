@@ -310,7 +310,6 @@ namespace Nekoyume.UI
                 privateKey = new PrivateKey();
                 CreateProtectedPrivateKey(privateKey);
             }
-            Debug.Log(ByteUtil.Hex(privateKey.ByteArray));
 
             _privateKey = privateKey;
         }
