@@ -123,8 +123,8 @@ namespace Nekoyume.UI
             _avatarName = States.Instance.CurrentAvatarState.Value.NameWithHash;
             textLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
             var displayHp = _player.CurrentHP;
-            textHp.text = $"HP {displayHp} / {_player.HP}";
-            textExp.text = $"EXP {_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
+            textHp.text = $"{displayHp} / {_player.HP}";
+            textExp.text = $"{_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
 
             float hpValue = _player.CurrentHP / (float)_player.HP;
             hpBar.gameObject.SetActive(hpValue > 0.0f);
