@@ -938,6 +938,7 @@ namespace Nekoyume.BlockChain
             }
             else
             {
+                Widget.Find<UI.Settings>().UpdateSoundSettings();
                 var title = Widget.Find<Title>();
                 title.Show(options.keyStorePath, options.privateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
