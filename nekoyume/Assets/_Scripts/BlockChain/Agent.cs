@@ -436,7 +436,7 @@ namespace Nekoyume.BlockChain
             LoggerConfiguration loggerConfiguration;
             if (development)
             {
-                loggerConfiguration = new LoggerConfiguration().MinimumLevel.Verbose();
+                loggerConfiguration = new LoggerConfiguration().MinimumLevel.Debug();
             }
             else
             {
