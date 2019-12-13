@@ -66,6 +66,22 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var requiredAP = GetRequiredAp();
+            if (avatarState.actionPoint < requiredAP)
+            {
+                // AP 부족 에러.
+                return states;
+            }
+
+            avatarState.actionPoint -= requiredAP;
+
+            var requiredNCG = GetRequiredGold(enhancementEquipment);
+            if (agentState.gold < requiredNCG)
+            {
+                // NCG 부족 에러.
+                return states;
+            }
+
             _tableSheets = TableSheets.FromActionContext(ctx);
             var materials = new List<Equipment>();
             var options = new List<object>();
@@ -130,24 +146,6 @@ namespace Nekoyume.Action
 
             enhancementEquipment = UpgradeEquipment(enhancementEquipment, ctx.Random, options, equipmentOptionCount);
 
-            var requiredAP = Math.Max(GameConfig.EnhanceEquipmentCostAP,
-                GameConfig.EnhanceEquipmentCostAP * enhancementEquipment.level * enhancementEquipment.level);
-            if (avatarState.actionPoint < requiredAP)
-            {
-                // AP 부족 에러.
-                return states;
-            }
-
-            avatarState.actionPoint -= requiredAP;
-
-            var requiredNCG = Math.Max(GameConfig.EnhanceEquipmentCostNCG,
-                GameConfig.EnhanceEquipmentCostNCG * enhancementEquipment.level * enhancementEquipment.level);
-            if (agentState.gold < requiredNCG)
-            {
-                // NCG 부족 에러.
-                return states;
-            }
-            
             agentState.gold -= requiredNCG;
 
             foreach (var material in materials)
@@ -220,6 +218,17 @@ namespace Nekoyume.Action
             equipment.LevelUp();
 
             return equipment;
+        }
+
+        public static int GetRequiredAp()
+        {
+            return GameConfig.EnhanceEquipmentCostAP;
+        }
+
+        public static decimal GetRequiredGold(Equipment enhancementEquipment)
+        {
+            return Math.Max(GameConfig.EnhanceEquipmentCostNCG,
+                GameConfig.EnhanceEquipmentCostNCG * enhancementEquipment.Data.Grade);
         }
     }
 }

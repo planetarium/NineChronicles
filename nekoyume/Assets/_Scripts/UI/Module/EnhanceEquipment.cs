@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
@@ -86,12 +87,15 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostNCG()
         {
-            return baseMaterial.IsEmpty ? 0 : GameConfig.EnhanceEquipmentCostNCG;
+            if (baseMaterial.IsEmpty)
+                return 0;
+            var baseEquipment = (Equipment) baseMaterial.Model.ItemBase.Value;
+            return (int) ItemEnhancement.GetRequiredGold(baseEquipment);
         }
 
         protected override int GetCostAP()
         {
-            return baseMaterial.IsEmpty ? 0 : GameConfig.EnhanceEquipmentCostAP;
+            return baseMaterial.IsEmpty ? 0 : ItemEnhancement.GetRequiredAp();
         }
 
         protected override bool TryAddBaseMaterial(InventoryItem viewModel, int count, out EnhancementMaterialView materialView)
