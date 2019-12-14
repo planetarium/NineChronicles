@@ -47,8 +47,8 @@ namespace Nekoyume.BlockChain
         private static readonly string WebCommandLineOptionsPathInit = string.Empty;
         private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
 #else
-        private const string WebCommandLineOptionsPathInit = "https://9c-test.s3.ap-northeast-2.amazonaws.com/clo.json";
-        private const string WebCommandLineOptionsPathLogin = "https://9c-test.s3.ap-northeast-2.amazonaws.com/clo.json";
+        private const string WebCommandLineOptionsPathInit = "https://planetarium.dev/9c-alpha-clo.json";
+        private const string WebCommandLineOptionsPathLogin = "https://planetarium.dev/9c-alpha-clo.json";
 #endif
 
         private static readonly string CommandLineOptionsJsonPath =
