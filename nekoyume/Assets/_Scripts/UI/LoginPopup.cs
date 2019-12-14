@@ -236,7 +236,6 @@ namespace Nekoyume.UI
             Login = !(_privateKey is null);
             if (Login)
             {
-                Debug.Log(ByteUtil.Hex(_privateKey.ByteArray));
                 Close();
             }
             else

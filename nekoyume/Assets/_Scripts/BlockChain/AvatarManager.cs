@@ -19,8 +19,7 @@ namespace Nekoyume.BlockChain
         public static Address CreateAvatarAddress()
         {
             var key = new PrivateKey();
-            var privateKeyHex = ByteUtil.Hex(key.ByteArray);
-            Debug.Log($"Avatar PrivateKey Created. {privateKeyHex}");
+            Debug.Log($"Avatar Address Created. {key.PublicKey.ToAddress()}");
 
             return key.PublicKey.ToAddress();
         }
@@ -33,7 +32,7 @@ namespace Nekoyume.BlockChain
             }
 
             Debug.Log($"Avatar PrivateKey Deleted. {index}");
-            
+
             return true;
         }
 
@@ -43,7 +42,7 @@ namespace Nekoyume.BlockChain
             {
                 return null;
             }
-            
+
             States.Instance.CurrentAvatarKey.Value = index;
             return States.Instance.CurrentAvatarState.Value;
         }

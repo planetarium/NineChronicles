@@ -645,6 +645,9 @@ namespace Nekoyume.BlockChain
                     _swarm.EndPoint.Host,
                     _swarm.EndPoint.Port
                 );
+                Debug.LogFormat("Address: {0}, PublicKey: {1}",
+                    PrivateKey.PublicKey.ToAddress(),
+                    ByteUtil.Hex(PrivateKey.PublicKey.Format(true)));
             });
 
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
