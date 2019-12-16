@@ -711,6 +711,8 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 ProcessHeal(target, info);
             }
+
+            Animator.Idle();
         }
 
         public IEnumerator CoBuff(IReadOnlyList<Model.Skill.SkillInfo> skillInfos)
@@ -726,6 +728,8 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 ProcessBuff(target, info);
             }
+
+            Animator.Idle();
         }
 
         #endregion
