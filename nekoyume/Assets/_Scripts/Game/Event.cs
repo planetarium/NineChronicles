@@ -26,7 +26,7 @@ namespace Nekoyume.Game
         public class GetItem : UnityEvent<DropItem>
         {
         }
-        public static readonly  GetItem OnGetItem = new GetItem();
+        public static readonly GetItem OnGetItem = new GetItem();
 
         public static readonly UnityEvent OnUseSkill = new UnityEvent();
 

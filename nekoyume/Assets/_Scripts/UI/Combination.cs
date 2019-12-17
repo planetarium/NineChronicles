@@ -106,7 +106,8 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook);
+                BottomMenu.ToggleableType.IllustratedBook,
+                BottomMenu.ToggleableType.Character);
 
             var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
             _npc = go.GetComponent<Npc>();

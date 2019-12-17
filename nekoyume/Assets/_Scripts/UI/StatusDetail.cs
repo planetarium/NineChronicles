@@ -54,7 +54,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            _player = FindObjectOfType<Game.Character.Player>();
+            _player = Game.Game.instance.stage.selectedPlayer;
             var player = _player.Model;
 
             // equip slot
