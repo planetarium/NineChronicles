@@ -85,7 +85,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            AudioController.PlayPopup();
             SetData(data);
             base.Show();
         }

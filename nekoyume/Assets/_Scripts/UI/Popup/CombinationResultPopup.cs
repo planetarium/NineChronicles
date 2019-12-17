@@ -14,6 +14,7 @@ namespace Nekoyume.UI
 {
     public class CombinationResultPopup : PopupWidget
     {
+        public VerticalLayoutGroup verticalLayoutGroup;
         public TextMeshProUGUI itemNameText;
         public CombinationItemInformation itemInformation;
         public TextMeshProUGUI materialText;
@@ -21,7 +22,6 @@ namespace Nekoyume.UI
         public Button submitButton;
         public TextMeshProUGUI submitButtonText;
         public Image materialPlusImage;
-        public GameObject resultItemVfx;
         public GameObject materialView;
         
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -61,10 +61,9 @@ namespace Nekoyume.UI
                 return;
             }
             
-            AudioController.PlayPopup();
-
-            SetData(data);
             base.Show();
+            SetData(data);
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) verticalLayoutGroup.transform);
         }
 
         private void SetData(Model.CombinationResultPopup data)
@@ -103,12 +102,10 @@ namespace Nekoyume.UI
             var isEquipment = item is Equipment;
             materialPlusImage.gameObject.SetActive(isEquipment);
             
-            //resultItemVfx.SetActive(false);
             if (Model.isSuccess)
             {
                 itemNameText.text = item.GetLocalizedName();
                 itemInformation.gameObject.SetActive(true);
-                //resultItemVfx.SetActive(true);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Success);
             }
             else

@@ -233,6 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a90b92fd87764025b48df031986518f2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  verticalLayoutGroup: {fileID: 114644213431685884}
   itemNameText: {fileID: 4988184969452711583}
   itemInformation: {fileID: 3311237151439854233}
   materialText: {fileID: 3623971193080071877}
@@ -245,7 +246,6 @@ MonoBehaviour:
   submitButton: {fileID: 114289733729642582}
   submitButtonText: {fileID: 4535022345402805481}
   materialPlusImage: {fileID: 9205657743481172278}
-  resultItemVfx: {fileID: 0}
   materialView: {fileID: 1288558196986728}
 --- !u!1 &1636495486902114
 GameObject:
