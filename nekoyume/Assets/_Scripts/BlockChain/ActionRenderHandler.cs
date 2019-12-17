@@ -361,14 +361,18 @@ namespace Nekoyume.BlockChain
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             UpdateCurrentAvatarState(eval);
+
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
             actionFailPopup.Close();
-            if (Widget.Find<QuestPreparation>().IsActive())
+
+            if (Widget.Find<QuestPreparation>().IsActive() &&
+                Widget.Find<LoadingScreen>().IsActive())
             {
                 Widget.Find<QuestPreparation>().GoToStage(eval);
             }
-            if (Widget.Find<BattleResult>().IsActive())
+            else if (Widget.Find<BattleResult>().IsActive() &&
+                Widget.Find<StageLoadingScreen>().IsActive())
             {
                 Widget.Find<BattleResult>().NextStage(eval);
             }
