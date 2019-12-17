@@ -234,19 +234,6 @@ namespace Nekoyume.Game
 
         public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false)
         {
-            //var levelStats = LevelStats.GetStats();
-            //var additionalStats = GetAdditionalStats();
-
-            //var enumerable =
-            //    levelStats.Join(additionalStats,
-            //                    levelStat => levelStat.statType,
-            //                    additionalStat => additionalStat.statType,
-            //                    (levelStat, additionalStat)
-            //                        => (levelStat.statType, levelStat.value, additionalStat.additionalValue));
-
-            //foreach (var row in eumerable)
-            //    yield return row;
-
             var hp = _statMaps[StatType.HP];
             var atk = _statMaps[StatType.ATK];
             var def = _statMaps[StatType.DEF];
@@ -297,6 +284,10 @@ namespace Nekoyume.Game
                 yield return _statMaps[StatType.SPD];
         }
 
+        /// <summery>
+        /// 추가 스탯이 붙어 있는 스탯맵을 열거형으로 반환합니다.
+        /// 이 스탯맵에는 기본 스탯이 포함되어 있기 때문에 구분해서 사용해야 합니다.
+        /// </summery>
         public IEnumerable<StatMapEx> GetAdditionalStats()
         {
             if (HasAdditionalHP)

@@ -64,7 +64,7 @@ namespace Nekoyume.Game.Item
             options.AddRange(BuffSkills);
             foreach (var statMapEx in StatsMap.GetAdditionalStats())
             {
-                options.Add(new StatModifier(statMapEx));
+                options.Add(new StatModifier(statMapEx.StatType, StatModifier.OperationType.Add, statMapEx.AdditionalValueAsInt));
             }
 
             return options;
