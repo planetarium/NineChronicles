@@ -9,7 +9,7 @@ namespace Nekoyume.Game.Factory
     {
         public static GameObject Create(Enemy spawnCharacter, Vector2 position, Character.Player player)
         {
-            var objectPool = Game.instance.stage.objectPool;
+            var objectPool = Game.instance.Stage.objectPool;
             var enemy = objectPool.Get<Character.Enemy>(position);
             if (!enemy)
                 throw new NotFoundComponentException<Character.Enemy>();
@@ -27,7 +27,7 @@ namespace Nekoyume.Game.Factory
 
         public static GameObject Create(EnemyPlayer spawnCharacter, Vector2 position)
         {
-            var objectPool = Game.instance.stage.objectPool;
+            var objectPool = Game.instance.Stage.objectPool;
             var enemy = objectPool.Get<Character.EnemyPlayer>(position);
             if (!enemy)
                 throw new NotFoundComponentException<Character.EnemyPlayer>();

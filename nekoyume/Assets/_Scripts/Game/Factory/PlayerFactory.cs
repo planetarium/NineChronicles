@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Factory
                 // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
                 model = new Player(1, TableSheets.FromTableSheetsState(TableSheetsState.Current));
 
-            var objectPool = Game.instance.stage.objectPool;
+            var objectPool = Game.instance.Stage.objectPool;
             var player = objectPool.Get<Character.Player>();
             if (!player)
                 throw new NotFoundComponentException<Character.Player>();

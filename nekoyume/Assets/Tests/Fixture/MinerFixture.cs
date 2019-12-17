@@ -75,12 +75,12 @@ namespace Tests
                 try
                 {
                     Debug.Log("Mine 2");
-                    Game.instance.agent.AppendBlock(block);
+                    Game.instance.Agent.AppendBlock(block);
                     Debug.Log("Mine 3");
                 }
                 catch (Exception e)
                 {
-                    Debug.LogFormat("Miner: {0} NoMiner: {1} Exception: {2}", BlockIndex, Game.instance.agent.BlockIndex, e);
+                    Debug.LogFormat("Miner: {0} NoMiner: {1} Exception: {2}", BlockIndex, Game.instance.Agent.BlockIndex, e);
                 }
             }
         }

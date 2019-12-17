@@ -9,6 +9,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
@@ -92,7 +93,7 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            var stage = Game.Game.instance.stage;
+            var stage = Game.Game.instance.Stage;
             stage.LoadBackground("combination");
             var player = stage.GetPlayer();
             player.gameObject.SetActive(false);
@@ -109,7 +110,7 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character);
 
-            var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NpcId, NpcPosition);
             _npc = go.GetComponent<Npc>();
             go.SetActive(true);
 

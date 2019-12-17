@@ -78,7 +78,7 @@ namespace Nekoyume.Game.Character
         {
             base.UpdateHpBar();
 
-            var boss = Game.instance.stage.Boss;
+            var boss = Game.instance.Stage.Boss;
             if (!(boss is null) && !Id.Equals(boss.Id))
                 return;
 

@@ -1,4 +1,5 @@
 using Nekoyume.BlockChain;
+using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEditor;
 using UnityEngine;

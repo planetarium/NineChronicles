@@ -366,7 +366,7 @@ namespace Nekoyume
             simulator.Simulate();
             simulator.Log.result = _result;
 
-            var stage = Game.Game.instance.stage;
+            var stage = Game.Game.instance.Stage;
             stage.Play(simulator.Log);
 
             Close();

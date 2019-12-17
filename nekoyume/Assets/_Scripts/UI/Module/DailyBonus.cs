@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.BlockChain;
 using Nekoyume.Model;
+using Nekoyume.State;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -38,7 +39,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            Game.Game.instance.agent.blockIndex.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
+            Game.Game.instance.Agent.blockIndex.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
             ReactiveCurrentAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
             canvasGroup.alpha = 0;
         }

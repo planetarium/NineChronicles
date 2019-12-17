@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
 using Nekoyume.BlockChain;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UniRx;
 

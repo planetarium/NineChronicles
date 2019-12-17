@@ -169,8 +169,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   languageType: 0
   stage: {fileID: 1333831682}
-  agent: {fileID: 76870000}
-  initialized: 0
 --- !u!114 &76869999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -619,8 +617,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPool: {fileID: 1333831684}
-  playerFactory: {fileID: 1333831687}
-  enemyFactory: {fileID: 1333831685}
   npcFactory: {fileID: 1333831690}
   dropItemFactory: {fileID: 1333831686}
   skillController: {fileID: 1333831688}

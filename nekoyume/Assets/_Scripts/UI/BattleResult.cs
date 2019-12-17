@@ -341,7 +341,7 @@ namespace Nekoyume.UI
 
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
-            var stage = Game.Game.instance.stage;
+            var stage = Game.Game.instance.Stage;
             var stageLoadingScreen = Find<StageLoadingScreen>();
             stageLoadingScreen.Show(stage.zone);
             Find<Status>().Close();
@@ -408,7 +408,7 @@ namespace Nekoyume.UI
 
         private void SetShouldRepeatFalse()
         {
-            var stage = Game.Game.instance.stage;
+            var stage = Game.Game.instance.Stage;
             stage.repeatStage = false;
             SharedModel.ShouldRepeat = false;
         }

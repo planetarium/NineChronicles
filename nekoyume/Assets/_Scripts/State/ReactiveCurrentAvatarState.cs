@@ -1,11 +1,11 @@
 using Libplanet;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
-using Nekoyume.State;
+using Nekoyume.Model;
 using UniRx;
 using Inventory = Nekoyume.Game.Item.Inventory;
 
-namespace Nekoyume.Model
+namespace Nekoyume.State
 {
     /// <summary>
     /// 현재 선택된 AvatarState가 포함하는 값의 변화를 각각의 ReactiveProperty<T> 필드를 통해 외부에 변화를 알린다.

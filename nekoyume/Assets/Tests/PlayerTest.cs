@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
 using UnityEngine;
@@ -24,12 +25,12 @@ namespace Tests
             Widget.Find<Login>().SlotClick(2);
             var loginDetail = Widget.Find<LoginDetail>();
             loginDetail.CreateAndLogin("DoFade");
-            yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
-            var createAvatarTx = Game.instance.agent.StagedTransactions.First();
+            yield return new WaitUntil(() => Game.instance.Agent.StagedTransactions.Any());
+            var createAvatarTx = Game.instance.Agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
 
-            var player = Game.instance.stage.GetPlayer();
+            var player = Game.instance.Stage.GetPlayer();
             var skeleton = player.GetComponentInChildren<SkeletonAnimationController>().SkeletonAnimation.skeleton;
             Assert.AreEqual(1f, skeleton.A);
             player.DoFade(0f, 1f);

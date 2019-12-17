@@ -5,6 +5,7 @@ using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;

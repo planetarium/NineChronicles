@@ -14,7 +14,7 @@ namespace Nekoyume.Action
         public static ImmutableHashSet<Address> Administrators =>
 #if UNITY_EDITOR
             ImmutableHashSet<Address>.Empty
-                .Add(Game.Game.instance.agent.Address);
+                .Add(Game.Game.instance.Agent.Address);
 #else
             ImmutableHashSet<Address>.Empty;
 #endif

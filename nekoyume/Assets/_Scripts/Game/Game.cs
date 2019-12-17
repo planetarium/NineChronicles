@@ -5,6 +5,7 @@ using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Pattern;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
@@ -32,14 +33,21 @@ namespace Nekoyume.Game
         }
     }
 
+    [RequireComponent(typeof(Agent))]
     public class Game : MonoSingleton<Game>
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
-        public Stage stage;
-        public Agent agent;
+
+        private Agent _agent;
+        
+        [SerializeField] private Stage stage;
+        
+        public States States { get; private set; }
+        public Agent Agent => _agent;
+        public Stage Stage => stage;
 
         public TableSheets TableSheets { get; private set; }
-        public bool initialized;
+        public bool IsInitialized { get; private set; }
 
         #region Mono & Initialization
 
@@ -47,11 +55,13 @@ namespace Nekoyume.Game
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
+            _agent = GetComponent<Agent>();
 #if UNITY_EDITOR
             LocalizationManager.Initialize(languageType);
 #else
             LocalizationManager.Initialize();
 #endif
+            States = new States();
             MainCanvas.instance.InitializeFirst();
         }
 
@@ -69,7 +79,7 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            agent.Initialize(succeed =>
+            _agent.Initialize(succeed =>
             {
                 agentInitialized = true;
                 agentInitializeSucceed = succeed;
@@ -78,9 +88,9 @@ namespace Nekoyume.Game
             TableSheets.InitializeWithTableSheetsState();
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
-            stage.objectPool.Initialize();
+            Stage.objectPool.Initialize();
             yield return null;
-            stage.dropItemFactory.Initialize();
+            Stage.dropItemFactory.Initialize();
             yield return null;
 
             Observable.EveryUpdate()
@@ -94,14 +104,14 @@ namespace Nekoyume.Game
 
         private void ShowNext(bool succeed)
         {
-            initialized = true;
+            IsInitialized = true;
             if (succeed)
             {
                 Widget.Find<PreloadingScreen>().Close();
             }
             else
             {
-                if (agent.BlockDownloadFailed)
+                if (_agent.BlockDownloadFailed)
                 {
                     var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
                         LocalizationManager.Localize("BLOCK_DOWNLOAD_FAIL"));
@@ -150,11 +160,7 @@ namespace Nekoyume.Game
 
         public void Init()
         {
-            if (GetComponent<Agent>() is null)
-            {
-                agent = gameObject.AddComponent<Agent>();
-                agent.Initialize(ShowNext);
-            }
+            _agent.Initialize(ShowNext);
         }
 
         public IEnumerator TearDown()

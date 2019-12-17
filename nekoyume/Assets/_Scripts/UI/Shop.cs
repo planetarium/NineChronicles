@@ -10,6 +10,7 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -110,7 +111,7 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
-            Game.Game.instance.stage.GetPlayer().gameObject.SetActive(false);
+            Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
             base.Show();
 
@@ -127,7 +128,7 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook);
 
-            var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NpcId, NpcPosition);
             _npc = go.GetComponent<Npc>();
             go.SetActive(true);
             _sequenceOfShopItems = null;

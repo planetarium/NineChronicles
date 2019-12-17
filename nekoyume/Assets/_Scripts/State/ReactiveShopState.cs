@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Game.Item;
-using Nekoyume.State;
 using UniRx;
 
-namespace Nekoyume.Model
+namespace Nekoyume.State
 {
     /// <summary>
     /// ShopState가 포함하는 값의 변화를 각각의 ReactiveProperty<T> 필드를 통해 외부에 변화를 알린다.

@@ -5,6 +5,7 @@ using DG.Tweening;
 using JetBrains.Annotations;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;

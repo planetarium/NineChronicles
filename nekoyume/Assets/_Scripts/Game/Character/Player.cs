@@ -55,7 +55,7 @@ namespace Nekoyume.Game.Character
 
             touchHandler.OnClick.Subscribe(_ =>
                 {
-                    if (Game.instance.stage.IsInStage)
+                    if (Game.instance.Stage.IsInStage)
                         return;
 
                     Animator.Touch();

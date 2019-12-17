@@ -98,7 +98,7 @@ namespace Tests
             Assert.NotNull(_player);
             Assert.NotNull(((CharacterBase) _player).Model);
 
-            var pool = Game.instance.stage.objectPool;
+            var pool = Game.instance.Stage.objectPool;
             var objects = pool.objects["area_l_water"];
             var current = objects.Count;
             foreach (var effect in objects)

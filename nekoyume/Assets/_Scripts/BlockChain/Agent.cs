@@ -274,8 +274,9 @@ namespace Nekoyume.BlockChain
                     GetState(ShopState.Address) is Bencodex.Types.Dictionary shopDict
                         ? new ShopState(shopDict)
                         : new ShopState();
-                // 그리고 모든 액션에 대한 랜더를 핸들링하기 시작한다.
+                // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 ActionRenderHandler.Instance.Start();
+                ActionUnrenderHandler.Instance.Start();
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
                 StartCoroutine(CoCheckBlockTip());
@@ -492,7 +493,7 @@ namespace Nekoyume.BlockChain
                 })
                 .Wait(SwarmLinger + 1 * 1000);
 
-            States.Dispose();
+            States.Instance.Dispose();
             SaveQueuedActions();
             disposed = true;
         }
