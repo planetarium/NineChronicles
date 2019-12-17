@@ -3,7 +3,6 @@ using Nekoyume.Action;
 using Nekoyume.Model;
 using Nekoyume.State;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
