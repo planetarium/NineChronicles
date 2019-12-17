@@ -100,7 +100,7 @@ namespace Nekoyume.UI
             equipmentSlots.Clear();
         }
         
-        private void ShowTooltip(EquipSlot slot)
+        private void ShowTooltip(EquipmentSlot slot)
         {
             var tooltip = Find<ItemInformationTooltip>();
             

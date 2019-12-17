@@ -7,17 +7,17 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
-    public class EquipmentSlots : MonoBehaviour, IEnumerable<EquipSlot>
+    public class EquipmentSlots : MonoBehaviour, IEnumerable<EquipmentSlot>
     {
-        public EquipSlot[] slots;
+        public EquipmentSlot[] slots;
 
         private void Awake()
         {
             if (slots is null)
-                throw new NotFoundComponentException<EquipSlot>(gameObject);
+                throw new NotFoundComponentException<EquipmentSlot>(gameObject);
         }
 
-        public bool TryGet(ItemSubType type, out EquipSlot slot)
+        public bool TryGet(ItemSubType type, out EquipmentSlot slot)
         {
             if (type == ItemSubType.Ring)
             {
@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Model
             return slot;
         }
 
-        public EquipSlot FindSlotWithItem(ItemUsable item)
+        public EquipmentSlot FindSlotWithItem(ItemUsable item)
         {
             foreach (var slot in slots)
             {
@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Model
             }
         }
 
-        public IEnumerator<EquipSlot> GetEnumerator()
+        public IEnumerator<EquipmentSlot> GetEnumerator()
         {
             return slots.ToList().GetEnumerator();
         }

@@ -38,7 +38,7 @@ namespace Tests
 
             var es = _fx.GetComponent<EquipmentSlots>();
 
-            es.slots = new[] {_fx.GetComponent<EquipSlot>()};
+            es.slots = new[] {_fx.GetComponent<EquipmentSlot>()};
 
             Assert.IsTrue(_fx.GetComponent<EquipmentSlots>().TryGet(ItemSubType.Armor, out var slot));
             Assert.AreEqual(ItemSubType.Armor, slot.itemSubType);
@@ -62,7 +62,7 @@ namespace Tests
             LogAssert.Expect(LogType.Exception,
                 "NotFoundComponentException`1: Not found `EquipSlot` component in MonoBehaviourTest: Tests.EquipmentSlotsFixture.");
             gameObject.AddComponent<EventTrigger>();
-            var slot = gameObject.AddComponent<EquipSlot>();
+            var slot = gameObject.AddComponent<EquipmentSlot>();
             slot.itemSubType = ItemSubType.Armor;
             gameObject.AddComponent<EquipmentSlots>().slots = new [] {slot};
             IsTestFinished = true;
