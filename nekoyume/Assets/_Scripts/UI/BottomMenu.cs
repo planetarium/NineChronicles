@@ -67,6 +67,40 @@ namespace Nekoyume.UI.Module
 
         #region Mono
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            backButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+            mainButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+            quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+            exitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+
+            mailButton.SetWidgetType<Mail>();
+            questButton.SetWidgetType<Quest>();
+            characterButton.SetWidgetType<StatusDetail>();
+            inventoryButton.SetWidgetType<UI.Inventory>();
+            // todo: 지금 월드맵 띄우는 것을 위젯으로 빼고, 여기서 설정하기?
+            // worldMapButton.SetWidgetType<WorldMapPaper>();
+
+            chatButton.button.OnClickAsObservable().Subscribe(SubScribeOnClickChat).AddTo(gameObject);
+            // 미구현
+            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            illustratedBookButton.SetWidgetType<Alert>();
+            settingsButton.SetWidgetType<Settings>();
+            chatButton.SetWidgetType<Confirm>();
+
+            _toggleGroup = new ToggleGroup();
+            _toggleGroup.RegisterToggleable(mailButton);
+            _toggleGroup.RegisterToggleable(questButton);
+            _toggleGroup.RegisterToggleable(illustratedBookButton);
+            _toggleGroup.RegisterToggleable(characterButton);
+            _toggleGroup.RegisterToggleable(inventoryButton);
+            _toggleGroup.RegisterToggleable(worldMapButton);
+            _toggleGroup.RegisterToggleable(settingsButton);
+            _toggleGroup.RegisterToggleable(chatButton);
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -84,35 +118,6 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
             SharedModel.HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
-
-            backButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
-            mainButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
-            quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
-            exitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
-
-            _toggleGroup = new ToggleGroup();
-            _toggleGroup.RegisterToggleable(mailButton);
-            _toggleGroup.RegisterToggleable(questButton);
-            _toggleGroup.RegisterToggleable(illustratedBookButton);
-            _toggleGroup.RegisterToggleable(characterButton);
-            _toggleGroup.RegisterToggleable(inventoryButton);
-            _toggleGroup.RegisterToggleable(worldMapButton);
-            _toggleGroup.RegisterToggleable(settingsButton);
-            _toggleGroup.RegisterToggleable(chatButton);
-
-            mailButton.SetWidgetType<Mail>();
-            questButton.SetWidgetType<Quest>();
-            characterButton.SetWidgetType<StatusDetail>();
-            inventoryButton.SetWidgetType<UI.Inventory>();
-            // todo: 지금 월드맵 띄우는 것을 위젯으로 빼고, 여기서 설정하기?
-            // worldMapButton.SetWidgetType<WorldMapPaper>();
-
-            chatButton.button.OnClickAsObservable().Subscribe(SubScribeOnClickChat).AddTo(gameObject);
-            // 미구현
-            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
-            illustratedBookButton.SetWidgetType<Alert>();
-            settingsButton.SetWidgetType<Settings>();
-            chatButton.SetWidgetType<Confirm>();
         } 
 
         private void SubScribeOnClickChat(Unit unit)
