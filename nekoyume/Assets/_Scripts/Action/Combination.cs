@@ -21,6 +21,7 @@ namespace Nekoyume.Action
 {
     // todo: `CombineEquipment`와 `CombineConsumable`로 분리해야 함. 공용 로직은 별도로 뺌.
     [ActionType("combination")]
+    [Serializable]
     public class Combination : GameAction
     {
         private TableSheets _tableSheets;
@@ -31,6 +32,8 @@ namespace Nekoyume.Action
         public class ResultModel : AttachmentActionResult
         {
             public Dictionary<Material, int> materials;
+            public decimal gold;
+            public int actionPoint;
 
             protected override string TypeId => "combination.result-model";
 
@@ -80,6 +83,7 @@ namespace Nekoyume.Action
                 states = states.SetState(AvatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
@@ -90,6 +94,7 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+
             sw.Stop();
             UnityEngine.Debug.Log($"Combination Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
@@ -98,15 +103,15 @@ namespace Nekoyume.Action
             {
                 return states;
             }
-            
+
             _tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
             UnityEngine.Debug.Log($"Combination Get TableSheetsState: {sw.Elapsed}");
             sw.Restart();
 
             UnityEngine.Debug.Log($"Execute Combination. player : `{AvatarAddress}` " +
-                                  $"node : `{States.Instance?.AgentState?.Value?.address}` " +
-                                  $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
+                                  $"node : `{States.Instance?.AgentState?.address}` " +
+                                  $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
 
             // 사용한 재료를 인벤토리에서 제거.
             foreach (var pair in Materials)
@@ -117,14 +122,14 @@ namespace Nekoyume.Action
                     return states;
                 }
             }
+
             sw.Stop();
             UnityEngine.Debug.Log($"Combination Remove Materials: {sw.Elapsed}");
             sw.Restart();
 
-            // 액션 결과
             Result = new ResultModel
             {
-                materials = Materials,
+                materials = Materials
             };
 
             var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
@@ -145,7 +150,8 @@ namespace Nekoyume.Action
 
                 // ap 차감.
                 avatarState.actionPoint -= GameConfig.CombineEquipmentCostAP;
-                
+                Result.actionPoint = GameConfig.CombineEquipmentCostAP;
+
                 if (equipmentMaterials.Count != 1)
                 {
                     // 장비 베이스의 수량 에러.
@@ -197,6 +203,7 @@ namespace Nekoyume.Action
 
                     // gold 차감.
                     agentState.gold -= costNCG;
+                    Result.gold = costNCG;
                 }
 
                 if (!TryGetItemEquipmentRow(
@@ -215,6 +222,7 @@ namespace Nekoyume.Action
                     // 장비 생성 실패.
                     return states;
                 }
+
                 sw.Stop();
                 UnityEngine.Debug.Log($"Combination Create Equipment: {sw.Elapsed}");
                 sw.Restart();
@@ -226,7 +234,8 @@ namespace Nekoyume.Action
                     sw.Stop();
                     UnityEngine.Debug.Log($"Combination Add Additional Stats: {sw.Elapsed}");
                     sw.Restart();
-                    if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill, _tableSheets))
+                    if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill,
+                        _tableSheets))
                         equipment.Skills.Add(skill);
                     sw.Stop();
                     UnityEngine.Debug.Log($"Combination Add Skill: {sw.Elapsed}");
@@ -246,8 +255,9 @@ namespace Nekoyume.Action
                     sw.Restart();
                 }
 
+                // 액션 결과
                 Result.itemUsable = equipment;
-                var mail = new CombinationMail(Result, ctx.BlockIndex);
+                var mail = new CombinationMail(Result, ctx.BlockIndex) {New = false};
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(equipment);
                 sw.Stop();
@@ -273,6 +283,7 @@ namespace Nekoyume.Action
 
                 // ap 차감.
                 avatarState.actionPoint -= costAP;
+                Result.actionPoint = costAP;
 
                 // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
                 var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
@@ -289,12 +300,18 @@ namespace Nekoyume.Action
                 }
 
                 // 조합 결과 획득.
+                foreach (var pair in Result.materials)
+                {
+                    Result.materials[pair.Key] = 1;
+                }
+
                 for (var i = 0; i < foodCount; i++)
                 {
                     var itemId = ctx.Random.GenerateRandomGuid();
                     var itemUsable = GetFood(consumableItemRow, itemId);
+                    // 액션 결과
                     Result.itemUsable = itemUsable;
-                    var mail = new CombinationMail(Result, ctx.BlockIndex);
+                    var mail = new CombinationMail(Result, ctx.BlockIndex) {New = false};
                     avatarState.Update(mail);
                     avatarState.UpdateFromCombination(itemUsable);
                     sw.Stop();
@@ -487,7 +504,8 @@ namespace Nekoyume.Action
             return true;
         }
 
-        public static bool TryGetSkill(MaterialItemSheet.Row monsterParts, decimal roll, out Skill skill, TableSheets tableSheets = null)
+        public static bool TryGetSkill(MaterialItemSheet.Row monsterParts, decimal roll, out Skill skill,
+            TableSheets tableSheets = null)
         {
             tableSheets = tableSheets ?? Game.Game.instance.TableSheets;
             try

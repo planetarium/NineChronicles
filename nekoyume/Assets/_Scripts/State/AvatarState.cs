@@ -4,6 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Crypto;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Factory;
@@ -12,6 +13,7 @@ using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 using Nekoyume.TableData;
+using UnityEngine;
 
 namespace Nekoyume.State
 {
@@ -44,6 +46,15 @@ namespace Nekoyume.State
         public int tail;
 
         public string NameWithHash { get; private set; }
+        
+        public static Address CreateAvatarAddress()
+        {
+            var key = new PrivateKey();
+            var privateKeyHex = ByteUtil.Hex(key.ByteArray);
+            Debug.Log($"Avatar PrivateKey Created. {privateKeyHex}");
+
+            return key.PublicKey.ToAddress();
+        }
 
         public AvatarState(
             Address address,
@@ -221,15 +232,18 @@ namespace Nekoyume.State
             UpdateCompletedQuest();
         }
 
-        #region From Action
+        // todo 1: 퀘스트 전용 함수임을 알 수 있는 네이밍이 필요함.
+        // todo 2: 혹은 분리된 객체에게 위임하면 좋겠음.
+        #region Quest From Action
 
         public void UpdateFromCombination(ItemUsable itemUsable)
         {
             questList.UpdateCombinationQuest(itemUsable);
-            var type = itemUsable is Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
+            var type = itemUsable.Data.ItemType == ItemType.Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
             eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
             UpdateGeneralQuest(new[] {type});
             UpdateCompletedQuest();
+            UpdateFromAddItem(itemUsable, false);
         }
 
         public void UpdateFromItemEnhancement(Equipment equipment)

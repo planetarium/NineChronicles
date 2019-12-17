@@ -209,20 +209,22 @@ namespace Nekoyume.BlockChain
 
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
         {
-            var itemUsable = evaluation.Action.Result.itemUsable;
-            var isSuccess = !(itemUsable is null);
-            if (isSuccess)
+            var agentAddress = evaluation.InputContext.Signer;
+            var avatarAddress = evaluation.Action.AvatarAddress;
+            var result = evaluation.Action.Result;
+            var itemUsable = result.itemUsable;
+            
+            LocalStateModifier.ModifyGold(agentAddress, result.gold);
+            LocalStateModifier.ModifyActionPoint(avatarAddress, result.actionPoint);
+            foreach (var pair in result.materials)
             {
-                var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-                UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
             }
-            else
-            {
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationFail);
-                var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_FAIL");
-                UI.Notification.Push(MailType.Workshop, format);
-            }
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemUsable.ItemId);
+                
+            var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             UpdateCurrentAvatarState(evaluation);
         }
 
@@ -242,7 +244,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
         {
-            if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.Value.address)
+            if (eval.Action.buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
             {
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));

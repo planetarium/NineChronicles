@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             Game.Game.instance.Agent.blockIndex.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
-            ReactiveCurrentAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
+            ReactiveAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
             canvasGroup.alpha = 0;
         }
 

@@ -402,7 +402,7 @@ namespace Nekoyume.UI
             var price = SharedModel.ItemCountAndPricePopup.Value.Price.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
-            States.Instance.CurrentAvatarState.Value.inventory.RemoveNonFungibleItem((ItemUsable) item.ItemBase.Value);
+            States.Instance.CurrentAvatarState.inventory.RemoveNonFungibleItem((ItemUsable) item.ItemBase.Value);
             inventory.SharedModel.RemoveItem(item.ItemBase.Value);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
@@ -417,7 +417,7 @@ namespace Nekoyume.UI
             var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 
-            States.Instance.ShopState.Value.Unregister(sellerAgentAddress, productId);
+            States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
             shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
@@ -432,7 +432,7 @@ namespace Nekoyume.UI
             var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 
-            States.Instance.ShopState.Value.Unregister(sellerAgentAddress, productId);
+            States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
             shopItems.SharedModel.RemoveOtherProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);

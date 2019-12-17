@@ -127,8 +127,8 @@ namespace Nekoyume.Action
             sw.Restart();
 
             UnityEngine.Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`" +
-                      $"node : `{States.Instance?.AgentState?.Value?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.AgentState?.address}` " +
+                      $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
             // 상점에서 구매할 아이템을 찾는다.
             if (!shopState.TryGet(sellerAgentAddress, productId, out var outPair))
             {

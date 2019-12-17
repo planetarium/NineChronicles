@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            _disposable = ReactiveCurrentAvatarState.ActionPoint.Subscribe(SetPoint);
+            _disposable = ReactiveAvatarState.ActionPoint.Subscribe(SetPoint);
         }
 
         private void OnDisable()

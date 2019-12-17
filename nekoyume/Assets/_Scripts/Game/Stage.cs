@@ -345,7 +345,7 @@ namespace Nekoyume.Game
                 objectPool.ReleaseAll();
             }
 
-            var avatarState = new AvatarState((Bencodex.Types.Dictionary) Game.instance.Agent.GetState(States.Instance.CurrentAvatarState.Value.address));
+            var avatarState = new AvatarState((Bencodex.Types.Dictionary) Game.instance.Agent.GetState(States.Instance.CurrentAvatarState.address));
             _battleResultModel.State = log.result;
             _battleResultModel.ActionPointNotEnough = avatarState.actionPoint < GameConfig.HackAndSlashCostAP;
             _battleResultModel.ShouldExit = isExitReserved;
@@ -656,7 +656,7 @@ namespace Nekoyume.Game
             if (!(selectedPlayer is null))
                 return selectedPlayer;
 
-            var go = PlayerFactory.Create(States.Instance.CurrentAvatarState.Value);
+            var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
             selectedPlayer = go.GetComponent<Character.Player>();
 
             if (selectedPlayer is null)

@@ -78,7 +78,7 @@ namespace Nekoyume.BlockChain
                 foods = foods,
                 worldId = worldId,
                 stageId = stageId,
-                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
             };
             ProcessAction(action);
 
@@ -110,7 +110,7 @@ namespace Nekoyume.BlockChain
                     action.Materials.Add(material, count);
                 }
             });
-            action.AvatarAddress = States.Instance.CurrentAvatarState.Value.address;
+            action.AvatarAddress = States.Instance.CurrentAvatarState.address;
             ProcessAction(action);
 
             return ActionBase.EveryRender<Combination>()
@@ -125,7 +125,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new Sell
             {
-                sellerAvatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                sellerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 productId = Guid.NewGuid(),
                 itemUsable = itemUsable,
                 price = price
@@ -146,7 +146,7 @@ namespace Nekoyume.BlockChain
             var action = new SellCancellation
             {
                 productId = productId,
-                sellerAvatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                sellerAvatarAddress = States.Instance.CurrentAvatarState.address,
             };
             ProcessAction(action);
 
@@ -163,7 +163,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new Buy
             {
-                buyerAvatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 sellerAgentAddress = sellerAgentAddress,
                 sellerAvatarAddress = sellerAvatarAddress,
                 productId = productId
@@ -182,7 +182,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new AddItem
             {
-                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
                 itemId = itemId,
                 canceled = canceled
             };
@@ -200,8 +200,8 @@ namespace Nekoyume.BlockChain
         {
             var action = new AddGold
             {
-                agentAddress = States.Instance.AgentState.Value.address,
-                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                agentAddress = States.Instance.AgentState.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
             };
             ProcessAction(action);
 
@@ -218,7 +218,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new DailyReward
             {
-                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
                 refillPoint = GameConfig.ActionPoint
             };
             ProcessAction(action);
@@ -237,7 +237,7 @@ namespace Nekoyume.BlockChain
             {
                 itemId = itemId,
                 materialIds = materialIds,
-                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
             };
             ProcessAction(action);
 
@@ -254,7 +254,7 @@ namespace Nekoyume.BlockChain
             var action = new QuestReward
             {
                 questId = id,
-                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
             };
             ProcessAction(action);
 
@@ -270,7 +270,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new RankingBattle
             {
-                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                avatarAddress = States.Instance.CurrentAvatarState.address,
                 enemyAddress = enemyAddress
             };
             ProcessAction(action);

@@ -49,7 +49,7 @@ namespace Nekoyume.UI
             btnShop.Set(player);
             btnRanking.Set(player);
 
-            var addressHax = ReactiveCurrentAvatarState.Address.Value.ToHex();
+            var addressHax = ReactiveAvatarState.Address.Value.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
@@ -75,7 +75,7 @@ namespace Nekoyume.UI
         public void QuestClick()
         {
             Close();
-            var avatarState = States.Instance.CurrentAvatarState.Value;
+            var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainBattle);
@@ -83,11 +83,11 @@ namespace Nekoyume.UI
 
         public void ShopClick()
         {
-            if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.ShopRequiredLevel)
+            if (States.Instance.CurrentAvatarState.level >= GameConfig.ShopRequiredLevel)
             {
                 if (shopExclamationMark.gameObject.activeSelf)
                 {
-                    var addressHax = ReactiveCurrentAvatarState.Address.Value.ToHex();
+                    var addressHax = ReactiveAvatarState.Address.Value.ToHex();
                     var key = string.Format(FirstOpenShopKeyFormat, addressHax);
                     PlayerPrefs.SetInt(key, 1);
                 }
@@ -105,11 +105,11 @@ namespace Nekoyume.UI
 
         public void CombinationClick()
         {
-            if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.CombinationRequiredLevel)
+            if (States.Instance.CurrentAvatarState.level >= GameConfig.CombinationRequiredLevel)
             {
                 if (combinationExclamationMark.gameObject.activeSelf)
                 {
-                    var addressHax = ReactiveCurrentAvatarState.Address.Value.ToHex();
+                    var addressHax = ReactiveAvatarState.Address.Value.ToHex();
                     var key = string.Format(FirstOpenCombinationKeyFormat, addressHax);
                     PlayerPrefs.SetInt(key, 1);
                 }
@@ -127,11 +127,11 @@ namespace Nekoyume.UI
 
         public void RankingClick()
         {
-            if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.RankingRequiredLevel)
+            if (States.Instance.CurrentAvatarState.level >= GameConfig.RankingRequiredLevel)
             {
                 if (rankingExclamationMark.gameObject.activeSelf)
                 {
-                    var addressHax = ReactiveCurrentAvatarState.Address.Value.ToHex();
+                    var addressHax = ReactiveAvatarState.Address.Value.ToHex();
                     var key = string.Format(FirstOpenRankingKeyFormat, addressHax);
                     PlayerPrefs.SetInt(key, 1);
                 }

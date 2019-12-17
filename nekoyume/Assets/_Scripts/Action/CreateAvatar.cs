@@ -82,8 +82,8 @@ namespace Nekoyume.Action
             sw.Restart();
 
             UnityEngine.Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}` " +
-                      $"node : `{States.Instance?.AgentState?.Value?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.AgentState?.address}` " +
+                      $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
             

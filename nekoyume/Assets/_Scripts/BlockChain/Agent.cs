@@ -250,33 +250,28 @@ namespace Nekoyume.BlockChain
             };
             PreloadEnded += (_, __) =>
             {
-                // 에이전트의 준비단계가 끝나면 에이전트의 상태를 한 번 동기화 한다.
-                States.Instance.AgentState.Value =
-                    GetState(Address) is Bencodex.Types.Dictionary agentDict
-                        ? new AgentState(agentDict)
-                        : new AgentState(Address);
-                // 에이전트에 포함된 모든 아바타의 상태를 한 번씩 동기화 한다.
-                foreach (var pair in States.Instance.AgentState.Value.avatarAddresses)
-                {
-                    var avatarState = new AvatarState(
-                        (Bencodex.Types.Dictionary) GetState(pair.Value)
-                    );
-                    States.Instance.AvatarStates.Add(pair.Key, avatarState);
-                }
-
                 // 랭킹의 상태를 한 번 동기화 한다.
-                States.Instance.RankingState.Value =
+                States.Instance.SetRankingState(
                     GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
                         ? new RankingState(rankingDict)
-                        : new RankingState();
+                        : new RankingState());
+                
                 // 상점의 상태를 한 번 동기화 한다.
-                States.Instance.ShopState.Value =
+                States.Instance.SetShopState(
                     GetState(ShopState.Address) is Bencodex.Types.Dictionary shopDict
                         ? new ShopState(shopDict)
-                        : new ShopState();
+                        : new ShopState());
+                
+                // 에이전트의 상태를 한 번 동기화 한다.
+                States.Instance.SetAgentState(
+                    GetState(Address) is Bencodex.Types.Dictionary agentDict
+                        ? new AgentState(agentDict)
+                        : new AgentState(Address));
+
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 ActionRenderHandler.Instance.Start();
                 ActionUnrenderHandler.Instance.Start();
+                
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
                 StartCoroutine(CoCheckBlockTip());
@@ -693,7 +688,7 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoAutoPlayer()
         {
             var avatarIndex = 0;
-            var avatarAddress = AvatarManager.CreateAvatarAddress();
+            var avatarAddress = AvatarState.CreateAvatarAddress();
             var dummyName = Address.ToHex().Substring(0, 8);
 
             yield return ActionManager.instance
@@ -701,7 +696,7 @@ namespace Nekoyume.BlockChain
                 .ToYieldInstruction();
             Debug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
 
-            AvatarManager.SetIndex(avatarIndex);
+            States.Instance.SelectAvatar(avatarIndex);
             var waitForSeconds = new WaitForSeconds(TxProcessInterval);
 
             while (true)
@@ -835,7 +830,7 @@ namespace Nekoyume.BlockChain
                     gold1 = 50,
                     gold2 = 30,
                     gold3 = 10,
-                    agentAddresses = States.Instance.RankingState.Value.GetAgentAddresses(3, null),
+                    agentAddresses = States.Instance.RankingState.GetAgentAddresses(3, null),
                 }
             };
             return MakeTransaction(actions);

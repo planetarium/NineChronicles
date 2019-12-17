@@ -131,7 +131,7 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Chat,
                     BottomMenu.ToggleableType.IllustratedBook);
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
-            ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
+            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
         }
 

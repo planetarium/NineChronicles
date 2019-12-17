@@ -73,7 +73,7 @@ namespace Nekoyume.UI.Scroller
             Notification.Push(MailType.System, msg);
 
             // 로컬 아바타의 퀘스트 상태 업데이트.
-            var quest = States.Instance.CurrentAvatarState.Value.questList.FirstOrDefault(q => q == _quest);
+            var quest = States.Instance.CurrentAvatarState.questList.FirstOrDefault(q => q == _quest);
             if (quest is null)
                 return;
 

@@ -5,6 +5,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
@@ -102,7 +103,7 @@ namespace Nekoyume.UI
         public override void Show()
         {
             tabState = MailTabState.All;
-            _mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
+            _mailBox = States.Instance.CurrentAvatarState.mailBox;
             ChangeState(0);
             base.Show();
             blur?.Show();
@@ -118,7 +119,7 @@ namespace Nekoyume.UI
 
         public void UpdateList()
         {
-            _mailBox = States.Instance.CurrentAvatarState.Value.mailBox;
+            _mailBox = States.Instance.CurrentAvatarState.mailBox;
             if (_mailBox is null)
                 return;
 
@@ -146,6 +147,7 @@ namespace Nekoyume.UI
 
         public void Read(CombinationMail mail)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (Action.Combination.ResultModel) mail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
@@ -160,7 +162,8 @@ namespace Nekoyume.UI
             };
             popup.Pop(model);
 
-            AddItem(item, false);
+            LocalStateModifier.AddItem(avatarAddress, item.ItemId);
+            LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
         }
 
         public void Read(SellCancelMail mail)
@@ -233,7 +236,7 @@ namespace Nekoyume.UI
             ActionManager.instance.AddItem(item.ItemId, canceled);
 
             //게임상의 인벤토리 업데이트
-            States.Instance.CurrentAvatarState.Value.inventory.AddItem(item);
+            States.Instance.CurrentAvatarState.inventory.AddItem(item);
         }
 
         private static void AddGold(decimal gold)
@@ -242,9 +245,8 @@ namespace Nekoyume.UI
             ActionManager.instance.AddGold();
 
             //게임상의 골드 업데이트
-            States.Instance.AgentState.Value.gold += gold;
-            ReactiveAgentState.Gold.SetValueAndForceNotify(States.Instance.AgentState.Value.gold);
+            States.Instance.AgentState.gold += gold;
+            ReactiveAgentState.Gold.SetValueAndForceNotify(States.Instance.AgentState.gold);
         }
-
     }
 }

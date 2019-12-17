@@ -361,7 +361,7 @@ namespace Nekoyume
             if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
                 throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
-            var simulator = new StageSimulator(new DebugRandom(), States.Instance.CurrentAvatarState.Value,
+            var simulator = new StageSimulator(new DebugRandom(), States.Instance.CurrentAvatarState,
                 new List<Consumable>(), worldRow.Id, stageId, _selectedSkill);
             simulator.Simulate();
             simulator.Log.result = _result;
@@ -388,10 +388,10 @@ namespace Nekoyume
                 )
             );
             var states = Bencodex.Types.Dictionary.Empty
-                .Add("AgentState", States.Instance.AgentState.Value.Serialize())
+                .Add("AgentState", States.Instance.AgentState.Serialize())
                 .Add("AvatarStates", avatarStates)
-                .Add("RankingState", States.Instance.RankingState.Value.Serialize())
-                .Add("ShopState", States.Instance.ShopState.Value.Serialize())
+                .Add("RankingState", States.Instance.RankingState.Serialize())
+                .Add("ShopState", States.Instance.ShopState.Serialize())
                 .Add("TableSheetsState", TableSheetsState.Current.Serialize());
             var codec = new Bencodex.Codec();
             var path = Path.Combine(

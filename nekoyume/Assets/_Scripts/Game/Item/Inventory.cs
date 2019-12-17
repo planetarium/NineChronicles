@@ -279,8 +279,19 @@ namespace Nekoyume.Game.Item
         {
             return _items.Exists(item => item.item.Data.Id == id && item.count >= count);
         }
+        
+        public bool HasItem(HashDigest<SHA256> id, int count = 1)
+        {
+            return _items.Exists(item =>
+            {
+                if (!(item.item is Material material))
+                    return false;
+                
+                return material.Data.ItemId.Equals(id) && item.count >= count;
+            });
+        }
 
-        public bool HasItemUsable(Guid itemId) =>
+        public bool HasItem(Guid itemId) =>
             _items.Select(i => i.item).OfType<ItemUsable>().Any(i => i.ItemId == itemId);
 
         public bool TryGetNonFungibleItem(Guid itemId, out ItemUsable outNonFungibleItem)

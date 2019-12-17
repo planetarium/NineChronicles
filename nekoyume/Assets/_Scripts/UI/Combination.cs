@@ -337,34 +337,33 @@ namespace Nekoyume.UI
         private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
             IEnumerable<(Material material, int count)> materialInfoList)
         {
-            States.Instance.AgentState.Value.gold -= combinationPanel.CostNCG;
-            States.Instance.CurrentAvatarState.Value.actionPoint -= combinationPanel.CostAP;
-            ReactiveCurrentAvatarState.ActionPoint.SetValueAndForceNotify(
-                States.Instance.CurrentAvatarState.Value.actionPoint);
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            
+            LocalStateModifier.ModifyGold(agentAddress, -combinationPanel.CostNCG);
+            LocalStateModifier.ModifyActionPoint(avatarAddress, -combinationPanel.CostAP);
+            
             foreach (var (material, count) in materialInfoList)
             {
-                States.Instance.CurrentAvatarState.Value.inventory.RemoveFungibleItem(material, count);
+                LocalStateModifier.RemoveItem(avatarAddress, material.Data.ItemId, count);
             }
-
-            ReactiveCurrentAvatarState.Inventory.SetValueAndForceNotify(
-                States.Instance.CurrentAvatarState.Value.inventory);
         }
 
         private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel, Guid baseItemGuid,
             IEnumerable<Guid> otherItemGuidList)
         {
-            States.Instance.AgentState.Value.gold -= combinationPanel.CostNCG;
-            States.Instance.CurrentAvatarState.Value.actionPoint -= combinationPanel.CostAP;
-            ReactiveCurrentAvatarState.ActionPoint.SetValueAndForceNotify(
-                States.Instance.CurrentAvatarState.Value.actionPoint);
-            States.Instance.CurrentAvatarState.Value.inventory.RemoveNonFungibleItem(baseItemGuid);
+            States.Instance.AgentState.gold -= combinationPanel.CostNCG;
+            States.Instance.CurrentAvatarState.actionPoint -= combinationPanel.CostAP;
+            ReactiveAvatarState.ActionPoint.SetValueAndForceNotify(
+                States.Instance.CurrentAvatarState.actionPoint);
+            States.Instance.CurrentAvatarState.inventory.RemoveNonFungibleItem(baseItemGuid);
             foreach (var itemGuid in otherItemGuidList)
             {
-                States.Instance.CurrentAvatarState.Value.inventory.RemoveNonFungibleItem(itemGuid);
+                States.Instance.CurrentAvatarState.inventory.RemoveNonFungibleItem(itemGuid);
             }
 
-            ReactiveCurrentAvatarState.Inventory.SetValueAndForceNotify(
-                States.Instance.CurrentAvatarState.Value.inventory);
+            ReactiveAvatarState.Inventory.SetValueAndForceNotify(
+                States.Instance.CurrentAvatarState.inventory);
         }
 
         private void CreateCombinationAction(List<(Material material, int count)> materialInfoList)
