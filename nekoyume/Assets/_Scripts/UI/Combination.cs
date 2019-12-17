@@ -288,7 +288,7 @@ namespace Nekoyume.UI
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             Close();
-            Find<Menu>().ShowRoom();
+            Game.Event.OnRoomEnter.Invoke();
         }
 
         #region Action

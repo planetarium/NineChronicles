@@ -30,6 +30,7 @@ namespace Nekoyume.UI
 
             Stage = GameObject.Find("Stage").GetComponent<Stage>();
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
+            Game.Event.OnRoomEnter.AddListener(Show);
         }
 
         private void ShowButtons(Player player)
@@ -46,28 +47,6 @@ namespace Nekoyume.UI
             btnCombination.gameObject.SetActive(false);
             btnShop.gameObject.SetActive(false);
             btnRanking.gameObject.SetActive(false);
-        }
-
-        public void ShowRoom()
-        {
-            Find<QuestPreparation>().Close();
-            var stage = Game.Game.instance.stage;
-            stage.LoadBackground("room");
-            _player =  stage.GetPlayer(stage.roomPosition);
-
-            if (!(stage.AvatarState is null))
-            {
-                ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
-            }
-            _player.UpdateEquipments(_player.Model.armor, _player.Model.weapon);
-            _player.UpdateCustomize();
-            _player.gameObject.SetActive(true);
-
-            Show();
-            StartCoroutine(ShowSpeeches());
-            ShowButtons(_player);
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         public void ShowWorld()
@@ -133,18 +112,9 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-            Find<Status>().Show();
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Quit,
-                _ => Game.Game.Quit(),
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory,
-                BottomMenu.ToggleableType.Settings);
+
+            StartCoroutine(ShowSpeeches());
+            ShowButtons(Game.Game.instance.stage.selectedPlayer);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -166,7 +136,7 @@ namespace Nekoyume.UI
 
         private IEnumerator ShowSpeeches()
         {
-            ShowButtons(_player);
+            ShowButtons(Game.Game.instance.stage.selectedPlayer);
 
             yield return new WaitForSeconds(2.0f);
 

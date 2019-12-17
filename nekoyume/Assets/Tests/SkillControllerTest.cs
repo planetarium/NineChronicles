@@ -3,6 +3,7 @@ using System.Collections;
 using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Game.Factory;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
@@ -43,7 +44,7 @@ namespace Tests
         public IEnumerator GetSkillAreaVFX()
         {
             //FIXME Setup이나 Constructor에서 플레이어를 설정하면 파괴되는 MonoSingleton의 상태가 꼬이는 문제가 있음.
-            var go = Game.instance.stage.playerFactory.Create(_avatarState);
+            var go = PlayerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
             _player.Model.Targets.Add(_player.Model);
             Assert.NotNull(_player);
@@ -59,7 +60,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator GetSkillDoubleVFX()
         {
-            var go = Game.instance.stage.playerFactory.Create(_avatarState);
+            var go = PlayerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
             _player.Model.Targets.Add(_player.Model);
             Assert.NotNull(_player);
@@ -75,7 +76,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator GetSkillBlowVFX()
         {
-            var go = Game.instance.stage.playerFactory.Create(_avatarState);
+            var go = PlayerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
             _player.Model.Targets.Add(_player.Model);
             Assert.NotNull(_player);
@@ -91,7 +92,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator GetSkillVFXWithCreate()
         {
-            var go = Game.instance.stage.playerFactory.Create(_avatarState);
+            var go = PlayerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
             _player.Model.Targets.Add(_player.Model);
             Assert.NotNull(_player);
