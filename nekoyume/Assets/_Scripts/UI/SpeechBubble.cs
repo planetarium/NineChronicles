@@ -34,6 +34,13 @@ namespace Nekoyume.UI
         private Coroutine _coroutine;
         private Sequence _tweenScale;
         private Sequence _tweenMoveBy;
+        private string _defaultKey;
+
+        protected override void Awake()
+        {
+            base.Awake();
+            _defaultKey = localizationKey;
+        }
 
         public void Init(bool active=true)
         {
@@ -178,6 +185,11 @@ namespace Nekoyume.UI
             bubbleContainer.DOKill();
             textSize.transform.DOKill();
             gameObject.SetActive(false);
+        }
+
+        public void ResetKey()
+        {
+            localizationKey = _defaultKey;
         }
     }
 }

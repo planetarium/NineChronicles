@@ -21,6 +21,8 @@ namespace Nekoyume.UI
         public SpeechBubble speechBubble;
 
         public Stage Stage;
+        private Coroutine _coroutine;
+        private Player _player;
 
         protected override void Awake()
         {
@@ -51,20 +53,19 @@ namespace Nekoyume.UI
             Find<QuestPreparation>().Close();
             var stage = Game.Game.instance.stage;
             stage.LoadBackground("room");
-            stage.GetPlayer(stage.roomPosition);
+            _player =  stage.GetPlayer(stage.roomPosition);
 
             if (!(stage.AvatarState is null))
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
             }
-            var player = stage.GetPlayer();
-            player.UpdateEquipments(player.Model.armor, player.Model.weapon);
-            player.UpdateCustomize();
-            player.gameObject.SetActive(true);
+            _player.UpdateEquipments(_player.Model.armor, _player.Model.weapon);
+            _player.UpdateCustomize();
+            _player.gameObject.SetActive(true);
 
             Show();
             StartCoroutine(ShowSpeeches());
-            ShowButtons(player);
+            ShowButtons(_player);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
@@ -95,7 +96,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                ShowRequiredLevelSpeech(btnShop.pointerClickKey, GameConfig.ShopRequiredLevel);
+                StartCoroutine(CoShowRequiredLevelSpeech(btnShop.pointerClickKey, GameConfig.ShopRequiredLevel));
             }
         }
 
@@ -110,7 +111,8 @@ namespace Nekoyume.UI
             }
             else
             {
-                ShowRequiredLevelSpeech(btnCombination.pointerClickKey, GameConfig.CombinationRequiredLevel);
+                StartCoroutine(CoShowRequiredLevelSpeech(btnCombination.pointerClickKey,
+                    GameConfig.CombinationRequiredLevel));
             }
         }
 
@@ -124,7 +126,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                ShowRequiredLevelSpeech(btnRanking.pointerClickKey, GameConfig.RankingRequiredLevel);
+                StartCoroutine(CoShowRequiredLevelSpeech(btnRanking.pointerClickKey, GameConfig.RankingRequiredLevel));
             }
         }
 
@@ -164,10 +166,7 @@ namespace Nekoyume.UI
 
         private IEnumerator ShowSpeeches()
         {
-            foreach (var bubble in SpeechBubbles)
-            {
-                bubble.Init();
-            }
+            ShowButtons(_player);
 
             yield return new WaitForSeconds(2.0f);
 
@@ -191,17 +190,23 @@ namespace Nekoyume.UI
             }
         }
 
-        private void ShowRequiredLevelSpeech(string pointerClickKey, int level)
+        private IEnumerator CoShowRequiredLevelSpeech(string pointerClickKey, int level)
         {
+            _coroutine = null;
             speechBubble.SetKey(pointerClickKey);
             var format =
                 LocalizationManager.Localize(
                     $"{pointerClickKey}{Random.Range(0, speechBubble.SpeechCount)}");
             var speech = string.Format(format, level);
-            StartCoroutine(speechBubble.CoShowText(speech, true));
+            yield return StartCoroutine(speechBubble.CoShowText(speech, true));
             if (npc)
             {
                 npc.Emotion();
+            }
+            speechBubble.ResetKey();
+            if (_coroutine is null)
+            {
+                _coroutine = StartCoroutine(ShowSpeeches());
             }
         }
     }
