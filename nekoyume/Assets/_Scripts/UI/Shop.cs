@@ -236,7 +236,7 @@ namespace Nekoyume.UI
                     view.Model,
                     value => !DimmedFuncForSell(view.Model),
                     LocalizationManager.Localize("UI_SELL"),
-                    tooltip => SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value),
+                    tooltip => ShowTooltipForAction(tooltip.itemInformation.Model.item.Value),
                     tooltip => inventory.SharedModel.DeselectItemView());
             }
         }
@@ -259,7 +259,7 @@ namespace Nekoyume.UI
                     view.Model,
                     value => ButtonEnabledFuncForBuy(view.Model),
                     LocalizationManager.Localize("UI_BUY"),
-                    tooltip => SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value),
+                    tooltip => ShowTooltipForAction(tooltip.itemInformation.Model.item.Value),
                     tooltip => { shopItems.SharedModel.DeselectItemView(); });
             }
             else
@@ -271,7 +271,7 @@ namespace Nekoyume.UI
                     LocalizationManager.Localize("UI_RETRIEVE"),
                     tooltip =>
                     {
-                        SharedModel.ShowItemPopup(tooltip.itemInformation.Model.item.Value);
+                        ShowTooltipForAction(tooltip.itemInformation.Model.item.Value);
                         inventory.Tooltip.Close();
                     },
                     tooltip => { shopItems.SharedModel.DeselectItemView(); });
@@ -280,6 +280,9 @@ namespace Nekoyume.UI
 
         private void ShowTooltipForAction(CountableItem viewModel)
         {
+            if (viewModel.Dimmed.Value)
+                return;
+
             SharedModel.ShowItemPopup(viewModel);
         }
 
