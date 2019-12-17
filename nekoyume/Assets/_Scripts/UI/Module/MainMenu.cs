@@ -26,7 +26,6 @@ namespace Nekoyume.UI.Module
         public string pointerClickKey;
         public Npc npc;
         public Transform bgTransform;
-        private string _defaultKey;
         private Vector3 _scaler;
         public MenuType type;
         public GameObject[] lockObjects;
@@ -41,11 +40,6 @@ namespace Nekoyume.UI.Module
         {
             if (!GetComponentInParent<Menu>())
                 throw new NotFoundComponentException<Menu>();
-
-            if (speechBubble)
-            {
-                _defaultKey = speechBubble.localizationKey;
-            }
 
             _scaler = bgTransform.localScale;
 
@@ -98,7 +92,7 @@ namespace Nekoyume.UI.Module
         {
             if (speechBubble)
             {
-                speechBubble.SetKey(_defaultKey);
+                speechBubble.ResetKey();
                 speechBubble.Hide();
             }
         }
