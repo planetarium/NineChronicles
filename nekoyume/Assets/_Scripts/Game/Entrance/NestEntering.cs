@@ -47,13 +47,13 @@ namespace Nekoyume.Game.Entrance
                     endPos.y = -0.45f;
                 if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))
                 {
-                    player = factory.Create(avatarState).GetComponent<Player>();
+                    player = PlayerFactory.Create(avatarState).GetComponent<Player>();
                     player.Animator.Appear();
                     active = true;
                 }
                 else
                 {
-                    player = factory.Create().GetComponent<Player>();
+                    player = PlayerFactory.Create().GetComponent<Player>();
                     active = false;
                 }
 

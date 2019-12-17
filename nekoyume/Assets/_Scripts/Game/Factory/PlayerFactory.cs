@@ -1,5 +1,4 @@
 using System;
-using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -9,16 +8,16 @@ namespace Nekoyume.Game.Factory
 {
     public class PlayerFactory : MonoBehaviour
     {
-        public GameObject Create(AvatarState avatarState)
+        public static GameObject Create(AvatarState avatarState)
         {
             if (avatarState is null)
-                throw new ArgumentNullException("`Model.Avatar` can't be null.");
+                throw new ArgumentNullException(nameof(avatarState));
 
             // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
             return Create(new Player(avatarState, TableSheets.FromTableSheetsState(TableSheetsState.Current)));
         }
 
-        public GameObject Create(Player model = null)
+        public static GameObject Create(Player model = null)
         {
             if (model is null)
                 // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
