@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         public Module.Inventory inventory;
 
         public TextMeshProUGUI consumableTitleText;
-        public EquipSlot[] consumableSlots;
+        public EquipmentSlot[] consumableSlots;
         public DetailedStatView[] statusRows;
         public TextMeshProUGUI equipmentTitleText;
         public EquipmentSlots equipmentSlots;
@@ -37,7 +37,7 @@ namespace Nekoyume.UI
 
         private Stage _stage;
         private Game.Character.Player _player;
-        private EquipSlot _weaponSlot;
+        private EquipmentSlot _weaponSlot;
 
         private int _worldId;
         private int _stageId;
@@ -178,7 +178,7 @@ namespace Nekoyume.UI
                 });
         }
 
-        private void ShowTooltip(EquipSlot slot)
+        private void ShowTooltip(EquipmentSlot slot)
         {
             if (slot is null ||
                 slot.RectTransform == inventory.Tooltip.Target)
@@ -264,7 +264,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void Unequip(EquipSlot slot)
+        private void Unequip(EquipmentSlot slot)
         {
             if (slot.item is null)
             {
@@ -422,7 +422,7 @@ namespace Nekoyume.UI
             Close();
         }
 
-        public EquipSlot FindSelectedItemSlot(ItemSubType type)
+        public EquipmentSlot FindSelectedItemSlot(ItemSubType type)
         {
             if (type == ItemSubType.Food)
             {
@@ -433,7 +433,7 @@ namespace Nekoyume.UI
             return es;
         }
 
-        private EquipSlot FindSlot(ItemUsable item, ItemSubType type)
+        private EquipmentSlot FindSlot(ItemUsable item, ItemSubType type)
         {
             if (type == ItemSubType.Food)
             {

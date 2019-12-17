@@ -1,5 +1,6 @@
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,17 +8,18 @@ using UnityEngine.UI;
 namespace Nekoyume.UI
 {
     [RequireComponent(typeof(RectTransform))]
-    public class EquipSlot : MonoBehaviour
+    public class EquipmentSlot : MonoBehaviour
     {
         public Image gradeImage;
         public Image defaultImage;
         public Image itemImage;
         public ItemUsable item;
+        public TextMeshProUGUI enhancementText;
         public ItemSubType itemSubType;
 
         private EventTrigger _eventTrigger;
-        private System.Action<EquipSlot> _onClick;
-        private System.Action<EquipSlot> _onDoubleClick;
+        private System.Action<EquipmentSlot> _onClick;
+        private System.Action<EquipmentSlot> _onDoubleClick;
         
         public RectTransform RectTransform { get; private set; }
 
@@ -45,6 +47,7 @@ namespace Nekoyume.UI
             }
             itemImage.enabled = false;
             gradeImage.enabled = false;
+            enhancementText.enabled = false;
             item = null;
         }
 
@@ -68,9 +71,19 @@ namespace Nekoyume.UI
 
             gradeImage.enabled = true;
             gradeImage.overrideSprite = gradeSprite;
+
+            if(equipment is Equipment equip && equip.level > 0)
+            {
+                enhancementText.enabled = true;
+                enhancementText.text = $"+{equip.level}";
+            }
+            else
+            {
+                enhancementText.enabled = false;
+            }
         }
 
-        public void SetOnClickAction(System.Action<EquipSlot> onClick, System.Action<EquipSlot> onDoubleClick)
+        public void SetOnClickAction(System.Action<EquipmentSlot> onClick, System.Action<EquipmentSlot> onDoubleClick)
         {
             _onClick = onClick;
             _onDoubleClick = onDoubleClick;
