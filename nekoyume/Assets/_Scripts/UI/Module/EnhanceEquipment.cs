@@ -124,10 +124,7 @@ namespace Nekoyume.UI.Module
                 otherMaterial.Unlock();
             }
 
-            message.SetActive(true);
-            messageText.text = string.Format(
-                LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
-                equipment.GetOptionCount());
+            UpdateMessageText();
 
             return true;
         }
@@ -144,7 +141,7 @@ namespace Nekoyume.UI.Module
                 otherMaterial.Lock();
             }
 
-            message.SetActive(false);
+            UpdateMessageText();
 
             return true;
         }
@@ -158,24 +155,8 @@ namespace Nekoyume.UI.Module
             var statValue = equipment.StatsMap.GetStatValue(equipment.UniqueStatType, true);
             var resultValue = statValue + equipment.levelStats;
             baseMaterial.UpdateStatView(resultValue.ToString());
-
-            if (!(baseMaterial.Model.ItemBase.Value is Equipment baseEquipment))
-                throw new InvalidCastException(nameof(viewModel.ItemBase.Value));
-
-            var maxCount = baseEquipment.GetOptionCount();
-
-            foreach (var otherMaterial in otherMaterials.Where(e => !e.IsLocked && !e.IsEmpty))
-            {
-                if (!(otherMaterial.Model.ItemBase.Value is Equipment otherEquipment))
-                    throw new InvalidCastException(nameof(viewModel.ItemBase.Value));
-
-                maxCount = Math.Max(maxCount, otherEquipment.GetOptionCount());
-            }
-
-            messageText.text = string.Format(
-                LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
-                maxCount);
-
+            UpdateMessageText();
+            
             return true;
         }
 
@@ -186,8 +167,38 @@ namespace Nekoyume.UI.Module
                 return false;
             
             baseMaterial.UpdateStatView();
+            UpdateMessageText();
 
             return true;
+        }
+
+        private void UpdateMessageText()
+        {
+            if (baseMaterial.IsEmpty)
+            {
+                message.SetActive(false);
+                return;
+            }
+
+            if (!(baseMaterial.Model.ItemBase.Value is Equipment baseEquipment))
+                throw new InvalidCastException(nameof(baseMaterial.Model.ItemBase.Value));
+
+            var count = baseEquipment.GetOptionCount();
+            foreach (var otherMaterial in otherMaterials.Where(e => !e.IsLocked && !e.IsEmpty))
+            {
+                if (!(otherMaterial.Model.ItemBase.Value is Equipment otherEquipment))
+                    throw new InvalidCastException(nameof(otherMaterial.Model.ItemBase.Value));
+
+                count = Math.Max(count, otherEquipment.GetOptionCount());
+            }
+
+            if (count == 0)
+                return;
+
+            message.SetActive(true);
+            messageText.text = string.Format(
+                LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
+                count);
         }
     }
 }
