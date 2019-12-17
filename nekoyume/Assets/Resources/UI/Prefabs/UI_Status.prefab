@@ -448,7 +448,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: "<color=#B38271>LV.100</color> \uAC00\uB098\uB2E4\uB77C\uB9C8"
+  m_text: <color=#B38271>LV.100</color> GNDRM
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -2379,6 +2379,12 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 5896183991247822218}
   m_PrefabAsset: {fileID: 0}
+--- !u!224 &1887987046806128112 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
+    type: 3}
+  m_PrefabInstance: {fileID: 5896183991247822218}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8661425528217430742 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3017663235593451356, guid: 3f592bbdd28ed9047860b8c5f43ab585,
@@ -2391,9 +2397,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d0e701cb83fe2c42a3275a51342202e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &1887987046806128112 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5467385540938619002, guid: 3f592bbdd28ed9047860b8c5f43ab585,
-    type: 3}
-  m_PrefabInstance: {fileID: 5896183991247822218}
-  m_PrefabAsset: {fileID: 0}

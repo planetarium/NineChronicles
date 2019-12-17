@@ -113,8 +113,6 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Status>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Shop>());
@@ -122,6 +120,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<QuestPreparation>());
             yield return null;
             _secondWidgets.Add(Widget.Create<WorldMap>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Combination>());
             yield return null;

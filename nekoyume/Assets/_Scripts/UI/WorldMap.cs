@@ -75,7 +75,8 @@ namespace Nekoyume.UI
             var firstStageId = Game.Game.instance.TableSheets.StageSheet.First?.Id ?? 1;
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
-            SharedViewModel.IsWorldShown.Subscribe(UpdateWorld).AddTo(gameObject);
+            // 초기 값 설정 1회 무시
+            SharedViewModel.IsWorldShown.Skip(1).Subscribe(UpdateWorld).AddTo(gameObject);
             SharedViewModel.SelectedStageId.Subscribe(UpdateStageInformation).AddTo(gameObject);
 
             var sheet = Game.Game.instance.TableSheets.WorldSheet;
@@ -239,12 +240,15 @@ namespace Nekoyume.UI
 
         private void UpdateWorld(bool active)
         {
+            var status = Find<Status>();
+
             if (active)
             {
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.worldMapButton.Hide();
                 bottomMenu.backButton.Show();
                 worldMapRoot.SetActive(true);
+                status.Close();
             }
             else
             {
@@ -253,6 +257,7 @@ namespace Nekoyume.UI
                 bottomMenu.worldMapButton.Show();
                 bottomMenu.backButton.Hide();
                 bottomMenu.ToggleGroup?.SetToggledOffAll();
+                status.Show();
             }
         }
 
@@ -317,6 +322,7 @@ namespace Nekoyume.UI
         private void GoToQuestPreparation()
         {
             Close();
+            Find<Status>().Close();
             Find<QuestPreparation>().ToggleWorldMap();
         }
     }
