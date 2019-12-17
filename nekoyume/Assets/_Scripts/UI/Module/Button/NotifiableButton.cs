@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    // todo: ToggleableButton 상속하기.
     public class NotifiableButton : NormalButton, IWidgetControllable, IToggleable
     {
         public class Model : IDisposable

@@ -2,6 +2,7 @@
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -35,9 +36,9 @@ namespace Nekoyume.UI
             }
 
             var bottomMenu = Find<BottomMenu>();
-            bottomMenu.leaveBattleButton.SharedModel.IsEnabled.Value = false;
-            bottomMenu?.Show(
-                UINavigator.NavigationType.Battle,
+            bottomMenu.exitButton.SharedModel.IsEnabled.Value = false;
+            bottomMenu.Show(
+                UINavigator.NavigationType.Exit,
                 SubscribeOnExitButtonClick,
                 true,
                 BottomMenu.ToggleableType.Mail,
@@ -53,9 +54,7 @@ namespace Nekoyume.UI
             var stage = Game.Game.instance.stage;
             if (stage.isExitReserved)
             {
-                stage.isExitReserved = false;
-                bottomMenu.leaveBattleButton.SharedModel.IsEnabled.Value = false;
-                return;
+                SetExitButtonToggledOff();
             }
             else
             {
@@ -65,11 +64,18 @@ namespace Nekoyume.UI
                     if (result == ConfirmResult.Yes)
                     {
                         stage.isExitReserved = true;
-                        bottomMenu.leaveBattleButton.SharedModel.IsEnabled.Value = true;
+                        bottomMenu.exitButton.SharedModel.IsEnabled.Value = true;
+                        repeatButton.SetToggledOff();
                     }
                 };
                 confirm?.Show("UI_BATTLE_EXIT_RESERVATION_TITLE", "UI_BATTLE_EXIT_RESERVATION_CONTENT");
             }
+        }
+
+        private void SetExitButtonToggledOff()
+        {
+            Game.Game.instance.stage.isExitReserved = false;
+            Find<BottomMenu>().exitButton.SharedModel.IsEnabled.Value = false;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -100,11 +106,7 @@ namespace Nekoyume.UI
         {
             if (toggleable.IsToggledOn)
             {
-                toggleable.SetToggledOff();
-                if ((ToggleableButton) toggleable == repeatButton)
-                {
-                    Game.Game.instance.stage.repeatStage = false;
-                }
+                RequestToggledOff(toggleable);
             }
             else
             {
@@ -112,6 +114,7 @@ namespace Nekoyume.UI
                 if ((ToggleableButton) toggleable == repeatButton)
                 {
                     Game.Game.instance.stage.repeatStage = true;
+                    SetExitButtonToggledOff();
                 }
             }
         }
