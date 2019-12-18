@@ -613,7 +613,9 @@ namespace Nekoyume.BlockChain
             {
                 try
                 {
-                    await _swarm.StartAsync(preloadBlockDownloadFailed: PreloadBLockDownloadFailed);
+                    await _swarm.StartAsync(
+                        millisecondsBroadcastTxInterval: 15000,
+                        preloadBlockDownloadFailed: PreloadBLockDownloadFailed);
                 }
                 catch (TaskCanceledException)
                 {
@@ -847,7 +849,13 @@ namespace Nekoyume.BlockChain
             var polymorphicActions = actions.ToArray();
             Debug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
-            return blocks.MakeTransaction(PrivateKey, polymorphicActions);
+            Transaction<PolymorphicAction<ActionBase>> tx = blocks.MakeTransaction(PrivateKey, polymorphicActions);
+            if (_swarm.Running)
+            {
+                _swarm.BroadcastTxs(new[] { tx });
+            }
+            
+            return tx;
         }
 
         private void LoadQueuedActions()
