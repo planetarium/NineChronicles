@@ -35,16 +35,14 @@ namespace Editor
         public static void BuildMacOS()
         {
             Debug.Log("Build MacOS");
-            // TODO: snapshotName 추가하기
-            Build(BuildTarget.StandaloneOSX, targetDirName: "MacOS", scriptName: "run");
+            Build(BuildTarget.StandaloneOSX, targetDirName: "MacOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
         }
 
         [MenuItem("Build/Standalone/Windows")]
         public static void BuildWindows()
         {
             Debug.Log("Build Windows");
-            // TODO: snapshotName 추가하기
-            Build(BuildTarget.StandaloneWindows64, targetDirName: "Windows", scriptName: "run.bat");
+            Build(BuildTarget.StandaloneWindows64, targetDirName: "Windows", scriptName: "run.bat", snapshotName: "NineChroniclesSnapshot.exe");
         }
 
         [MenuItem("Build/Standalone/Linux")]
@@ -87,16 +85,14 @@ namespace Editor
         public static void BuildMacOSDevelopment()
         {
             Debug.Log("Build MacOS Development");
-            // TODO: snapshotName 추가하기
-            Build(BuildTarget.StandaloneOSX, BuildOptions.Development, targetDirName: "MacOS", scriptName: "run");
+            Build(BuildTarget.StandaloneOSX, BuildOptions.Development, targetDirName: "MacOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
         }
 
         [MenuItem("Build/Development/Windows")]
         public static void BuildWindowsDevelopment()
         {
             Debug.Log("Build Windows Development");
-            // TODO: snapshotName 추가하기
-            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development, targetDirName: "Windows", scriptName: "run.bat");
+            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development, targetDirName: "Windows", scriptName: "run.bat", snapshotName: "NineChroniclesSnapshot.exe");
         }
 
         [MenuItem("Build/Development/Linux")]
