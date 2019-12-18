@@ -1,3 +1,4 @@
+using Libplanet;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.State;
@@ -11,6 +12,7 @@ namespace Nekoyume.Model
     /// </summary>
     public static class ReactiveCurrentAvatarState
     {
+        public static readonly ReactiveProperty<Address> Address = new ReactiveProperty<Address>();
         public static readonly ReactiveProperty<Inventory> Inventory = new ReactiveProperty<Inventory>();
         public static readonly ReactiveProperty<MailBox> MailBox = new ReactiveProperty<MailBox>();
         public static readonly ReactiveProperty<WorldInformation> WorldInformation = new ReactiveProperty<WorldInformation>();
@@ -23,6 +25,7 @@ namespace Nekoyume.Model
             if (avatarState is null)
                 return;
             
+            Address.SetValueAndForceNotify(avatarState.address);
             Inventory.SetValueAndForceNotify(avatarState.inventory);
             MailBox.SetValueAndForceNotify(avatarState.mailBox);
             WorldInformation.SetValueAndForceNotify(avatarState.worldInformation);
