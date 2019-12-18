@@ -38,6 +38,7 @@ namespace Nekoyume.UI.Scroller
             receiveButton.SetSubmittable(true);
 
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
+            
         }
 
         #endregion
@@ -54,7 +55,9 @@ namespace Nekoyume.UI.Scroller
         {
             AudioController.PlayClick();
             AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
+            var quest = Widget.Find<Quest>();
             RequestReward();
+            quest.UpdateTabs();
             onClickSubmitButton?.Invoke(_currentDataIndex);
         }
 
