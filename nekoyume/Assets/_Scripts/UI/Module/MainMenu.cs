@@ -30,10 +30,11 @@ namespace Nekoyume.UI.Module
         public MenuType type;
         public GameObject[] lockObjects;
         public GameObject[] unLockObjects;
-        private bool _unlock;
-
+        
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
 
+        public bool IsUnlocked { get; private set; }
+        
         #region Mono
 
         private void Awake()
@@ -112,25 +113,25 @@ namespace Nekoyume.UI.Module
                     break;
             }
 
-            _unlock = player.Level >= requiredLevel;
+            IsUnlocked = player.Level >= requiredLevel;
 
             if (npc)
             {
-                npc.gameObject.SetActive(_unlock);
+                npc.gameObject.SetActive(IsUnlocked);
             }
 
             foreach (var go in lockObjects)
             {
-                go.SetActive(!_unlock);
+                go.SetActive(!IsUnlocked);
             }
 
             foreach (var go in unLockObjects)
             {
-                go.SetActive(_unlock);
+                go.SetActive(IsUnlocked);
             }
 
             gameObject.SetActive(true);
-            speechBubble.Init(_unlock);
+            speechBubble.Init(IsUnlocked);
         }
     }
 }

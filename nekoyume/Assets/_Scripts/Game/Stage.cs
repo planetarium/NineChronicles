@@ -329,7 +329,7 @@ namespace Nekoyume.Game
             var player = playerCharacter.gameObject;
 
             var status = Widget.Find<Status>();
-            status.UpdatePlayer(player);
+            status.UpdatePlayer(playerCharacter);
             status.Show();
             status.ShowBattleStatus();
 
@@ -550,17 +550,16 @@ namespace Nekoyume.Game
 
         public Character.Player GetPlayer()
         {
-            var player = GetComponentInChildren<Character.Player>();
-            if (!(player is null))
-                return player;
+            if (!(selectedPlayer is null))
+                return selectedPlayer;
 
-            var go = playerFactory.Create(States.Instance.CurrentAvatarState.Value);
-            player = go.GetComponent<Character.Player>();
+            var go = PlayerFactory.Create(States.Instance.CurrentAvatarState.Value);
+            selectedPlayer = go.GetComponent<Character.Player>();
 
-            if (player is null)
+            if (selectedPlayer is null)
                 throw new NotFoundComponentException<Character.Player>();
 
-            return player;
+            return selectedPlayer;
         }
 
         public Character.Player GetPlayer(Vector2 position)

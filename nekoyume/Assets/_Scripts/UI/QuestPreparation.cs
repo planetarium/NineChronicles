@@ -70,6 +70,7 @@ namespace Nekoyume.UI
             requiredPointText.text = GameConfig.HackAndSlashCostAP.ToString();
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
+            Game.Event.OnRoomEnter.AddListener(() => Close());
         }
 
         public override void Show()
@@ -135,12 +136,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-
-            Find<Inventory>().Close(ignoreCloseAnimation);
-            Find<StatusDetail>().Close(ignoreCloseAnimation);
-            Find<Quest>().Close(ignoreCloseAnimation);
-
             foreach (var slot in consumableSlots)
             {
                 slot.Unequip();

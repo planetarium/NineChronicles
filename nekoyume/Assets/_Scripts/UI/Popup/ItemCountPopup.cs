@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
+using TMPro;
 using UniRx;
 using UnityEngine.UI;
 
@@ -10,14 +11,14 @@ namespace Nekoyume.UI
 {
     public class ItemCountPopup<T> : PopupWidget where T : Model.ItemCountPopup<T>
     {
-        public Text titleText;
-        public Text countText;
+        public TextMeshProUGUI titleText;
+        public TextMeshProUGUI countText;
         public Button minusButton;
         public Button plusButton;
         public Button cancelButton;
-        public Text cancelButtonText;
+        public TextMeshProUGUI cancelButtonText;
         public Button submitButton;
-        public Text submitButtonText;
+        public TextMeshProUGUI submitButtonText;
         public SimpleCountableItemView itemView;
         
         private T _data;

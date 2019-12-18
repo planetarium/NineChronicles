@@ -5,6 +5,7 @@ using Nekoyume.Data;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -24,7 +25,7 @@ namespace Tests
             var agentAddress = new Address();
             var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets.WorldSheet,
                 Game.instance.TableSheets.QuestSheet);
-            var go = Game.instance.stage.playerFactory.Create(avatarState);
+            var go = PlayerFactory.Create(avatarState);
             _player = go.GetComponent<Player>();
 
             var data = Game.instance.TableSheets.EquipmentItemSheet.OrderedList.FirstOrDefault(row =>

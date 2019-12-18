@@ -1,7 +1,8 @@
 using System.Collections;
 using Nekoyume.BlockChain;
-using Nekoyume.State;
+using Nekoyume.Game.Controller;
 using Nekoyume.UI;
+using Nekoyume.UI.Module;
 using UnityEngine;
 
 namespace Nekoyume.Game.Entrance
@@ -15,11 +16,14 @@ namespace Nekoyume.Game.Entrance
 
         private IEnumerator Act()
         {
+            Widget.Find<LoadingScreen>().Show();
+            Widget.Find<BottomMenu>().Close();
+            Widget.Find<UI.Inventory>().Close();
+            Widget.Find<StatusDetail>().Close();
+            Widget.Find<UI.Quest>().Close();
+
             var stage = Game.instance.stage;
             var objectPool = stage.objectPool;
-
-            Widget.Find<LoadingScreen>().Show();
-
             stage.stageId = 0;
             stage.LoadBackground("room");
 
@@ -30,18 +34,15 @@ namespace Nekoyume.Game.Entrance
                 objectPool.Remove<Character.Player>(clearPlayer.gameObject);
             }
             objectPool.ReleaseAll();
-
-            var boss = stage.GetComponentInChildren<Character.Boss.BossBase>();
-            if (boss != null)
+            yield return new WaitForEndOfFrame();
+            stage.selectedPlayer = null;
+            if (!(stage.AvatarState is null))
             {
-                Destroy(boss.gameObject);
+                ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
             }
 
-            var playerFactory = Game.instance.stage.playerFactory;
-            GameObject player = playerFactory.Create(States.Instance.CurrentAvatarState.Value);
-            player.transform.position = stage.roomPosition - new Vector2(3.0f, 0.0f);
-            var playerComp = player.GetComponent<Character.Player>();
-            playerComp.StartRun();
+            var player = stage.GetPlayer(stage.roomPosition - new Vector2(3.0f, 0.0f));
+            player.StartRun();
 
             var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
@@ -57,11 +58,23 @@ namespace Nekoyume.Game.Entrance
                 {
                     yield return null;
                 }
-            playerComp.RunSpeed = 0.0f;
-            playerComp.Animator.Idle();
+            player.RunSpeed = 0.0f;
+            player.Animator.Idle();
 
             var dialog = Widget.Find<Dialog>();
             dialog.Show(1);
+            Widget.Find<Status>().Show();
+            Widget.Find<BottomMenu>().Show(
+                UINavigator.NavigationType.Quit,
+                _ => Game.Quit(),
+                true,
+                BottomMenu.ToggleableType.Mail,
+                BottomMenu.ToggleableType.Quest,
+                BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.IllustratedBook,
+                BottomMenu.ToggleableType.Character,
+                BottomMenu.ToggleableType.Inventory,
+                BottomMenu.ToggleableType.Settings);
 
             Destroy(this);
         }

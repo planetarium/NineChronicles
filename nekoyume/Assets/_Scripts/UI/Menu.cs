@@ -1,17 +1,22 @@
 using System.Collections;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
-using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
+using Nekoyume.Model;
 using UnityEngine;
+using Player = Nekoyume.Game.Character.Player;
 
 namespace Nekoyume.UI
 {
     public class Menu : Widget
     {
+        private const string FirstOpenShopKeyFormat = "Nekoyume.UI.Menu.FirstOpenShopKey_{0}";
+        private const string FirstOpenCombinationKeyFormat = "Nekoyume.UI.Menu.FirstOpenCombinationKey_{0}";
+        private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
+        
         public MainMenu btnQuest;
         public MainMenu btnCombination;
         public MainMenu btnShop;
@@ -19,8 +24,10 @@ namespace Nekoyume.UI
         public SpeechBubble[] SpeechBubbles;
         public Npc npc;
         public SpeechBubble speechBubble;
+        public GameObject shopExclamationMark;
+        public GameObject combinationExclamationMark;
+        public GameObject rankingExclamationMark;
 
-        public Stage Stage;
         private Coroutine _coroutine;
         private Player _player;
 
@@ -28,8 +35,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            Stage = GameObject.Find("Stage").GetComponent<Stage>();
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
+            Game.Event.OnRoomEnter.AddListener(Show);
         }
 
         private void ShowButtons(Player player)
@@ -38,6 +45,14 @@ namespace Nekoyume.UI
             btnCombination.Set(player);
             btnShop.Set(player);
             btnRanking.Set(player);
+
+            var addressHax = ReactiveCurrentAvatarState.Address.Value.ToHex();
+            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
+            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
+            var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
+            combinationExclamationMark.gameObject.SetActive(btnCombination.IsUnlocked && PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
+            shopExclamationMark.gameObject.SetActive(btnShop.IsUnlocked && PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
+            rankingExclamationMark.gameObject.SetActive(btnRanking.IsUnlocked && PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
         }
 
         private void HideButtons()
@@ -46,28 +61,6 @@ namespace Nekoyume.UI
             btnCombination.gameObject.SetActive(false);
             btnShop.gameObject.SetActive(false);
             btnRanking.gameObject.SetActive(false);
-        }
-
-        public void ShowRoom()
-        {
-            Find<QuestPreparation>().Close();
-            var stage = Game.Game.instance.stage;
-            stage.LoadBackground("room");
-            _player =  stage.GetPlayer(stage.roomPosition);
-
-            if (!(stage.AvatarState is null))
-            {
-                ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
-            }
-            _player.UpdateEquipments(_player.Model.armor, _player.Model.weapon);
-            _player.UpdateCustomize();
-            _player.gameObject.SetActive(true);
-
-            Show();
-            StartCoroutine(ShowSpeeches());
-            ShowButtons(_player);
-
-            AudioController.instance.PlayMusic(AudioController.MusicCode.Main);
         }
 
         public void ShowWorld()
@@ -89,6 +82,13 @@ namespace Nekoyume.UI
         {
             if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.ShopRequiredLevel)
             {
+                if (shopExclamationMark.gameObject.activeSelf)
+                {
+                    var addressHax = ReactiveCurrentAvatarState.Address.Value.ToHex();
+                    var key = string.Format(FirstOpenShopKeyFormat, addressHax);
+                    PlayerPrefs.SetInt(key, 1);
+                }
+
                 Close();
                 Find<Shop>().Show();
                 AudioController.PlayClick();
@@ -104,6 +104,13 @@ namespace Nekoyume.UI
         {
             if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.CombinationRequiredLevel)
             {
+                if (combinationExclamationMark.gameObject.activeSelf)
+                {
+                    var addressHax = ReactiveCurrentAvatarState.Address.Value.ToHex();
+                    var key = string.Format(FirstOpenCombinationKeyFormat, addressHax);
+                    PlayerPrefs.SetInt(key, 1);
+                }
+                
                 Close();
                 Find<Combination>().Show();
                 AudioController.PlayClick();
@@ -120,6 +127,13 @@ namespace Nekoyume.UI
         {
             if (States.Instance.CurrentAvatarState.Value.level >= GameConfig.RankingRequiredLevel)
             {
+                if (rankingExclamationMark.gameObject.activeSelf)
+                {
+                    var addressHax = ReactiveCurrentAvatarState.Address.Value.ToHex();
+                    var key = string.Format(FirstOpenRankingKeyFormat, addressHax);
+                    PlayerPrefs.SetInt(key, 1);
+                }
+                
                 Close();
                 Find<RankingBoard>().Show();
                 AudioController.PlayClick();
@@ -133,18 +147,9 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-            Find<Status>().Show();
-            Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Quit,
-                _ => Game.Game.Quit(),
-                true,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory,
-                BottomMenu.ToggleableType.Settings);
+            
+            StartCoroutine(ShowSpeeches());
+            ShowButtons(Game.Game.instance.stage.selectedPlayer);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -166,8 +171,8 @@ namespace Nekoyume.UI
 
         private IEnumerator ShowSpeeches()
         {
-            ShowButtons(_player);
-
+            ShowButtons(Game.Game.instance.stage.selectedPlayer);
+            
             yield return new WaitForSeconds(2.0f);
 
             while (true)

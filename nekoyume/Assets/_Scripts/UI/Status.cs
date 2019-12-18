@@ -36,7 +36,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            Game.Event.OnRoomEnter.AddListener(OnRoomEnter);
+            Game.Event.OnRoomEnter.AddListener(Show);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus).AddTo(gameObject);
         }
 
@@ -78,13 +78,13 @@ namespace Nekoyume.UI
             SetBuffs(player.Model.Buffs);
         }
         
-        public void UpdatePlayer(GameObject playerObj)
+        public void UpdatePlayer(Player player)
         {
             Show();
 
-            if (playerObj)
+            if (player)
             {
-                _player = playerObj.GetComponent<Player>();
+                _player = player;
             }
 
             UpdateExp();
@@ -202,11 +202,6 @@ namespace Nekoyume.UI
                 if (selected != widget)
                     widget.Close();
             }
-        }
-
-        private void OnRoomEnter()
-        {
-            Find<Menu>()?.ShowRoom();
         }
     }
 }
