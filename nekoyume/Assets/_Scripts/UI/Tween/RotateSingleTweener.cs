@@ -85,7 +85,6 @@ namespace Nekoyume.UI.Tween
 
         private void OnDisable()
         {
-            // todo: _tween.Kill();
             _tween?.Kill();
             _tween = null;
         }
