@@ -31,6 +31,7 @@ namespace Nekoyume.UI
             private static readonly Vector2 _minusRightTop = new Vector2(15f, 13f);
             public Sprite highlightedSprite;
             public Button button;
+            public Image hasNotificationImage;
             public Image image;
             public Image icon;
             public TextMeshProUGUI text;
@@ -55,10 +56,7 @@ namespace Nekoyume.UI
 
         public QuestTabState tabState;
         public QuestScrollerController scroller;
-        public TabButton adventureButton;
-        public TabButton obtainButton;
-        public TabButton craftingButton;
-        public TabButton exchangeButton;
+        public TabButton[] tabButtons;
         public Blur blur;
 
         private static Sprite _selectedButtonSprite;
@@ -71,10 +69,10 @@ namespace Nekoyume.UI
             base.Initialize();
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
 
-            adventureButton.Init("ADVENTURE");
-            obtainButton.Init("OBTAIN");
-            craftingButton.Init("CRAFT");
-            exchangeButton.Init("EXCHANGE");
+            tabButtons[0].Init("ADVENTURE");
+            tabButtons[1].Init("OBTAIN");
+            tabButtons[2].Init("CRAFT");
+            tabButtons[3].Init("EXCHANGE");
         }
 
         public override void Show()
@@ -82,6 +80,7 @@ namespace Nekoyume.UI
             tabState = QuestTabState.Adventure;
             _questList = States.Instance.CurrentAvatarState.Value.questList;
             ChangeState(0);
+            UpdateTabs();
             base.Show();
             blur?.Show();
         }
@@ -96,11 +95,12 @@ namespace Nekoyume.UI
 
         public void ChangeState(int state)
         {
-            tabState = (QuestTabState) state;
-            adventureButton.ChangeColor(tabState == QuestTabState.Adventure);
-            obtainButton.ChangeColor(tabState == QuestTabState.Obtain);
-            craftingButton.ChangeColor(tabState == QuestTabState.Crafting);
-            exchangeButton.ChangeColor(tabState == QuestTabState.Exchange);
+            tabState = (QuestTabState)state;
+
+            for (int i = 0; i < tabButtons.Length; ++i)
+            {
+                tabButtons[i].ChangeColor(i == state);
+            }
 
             var list = _questList.ToList();
             list = list.FindAll(e => e.QuestType == (QuestType) state)
@@ -108,6 +108,15 @@ namespace Nekoyume.UI
                 .ToList();
 
             scroller.SetData(list);
+        }
+
+        public void UpdateTabs()
+        {
+            for (int i = 0; i < tabButtons.Length; ++i)
+            {
+                int cnt = _questList.Where(quest => quest.QuestType == (QuestType) i && quest.Complete && !quest.Receive).Count();
+                tabButtons[i].hasNotificationImage.enabled = cnt > 0;
+            }
         }
     }
 
