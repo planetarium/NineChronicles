@@ -511,6 +511,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss)
         {
+            yield return new WaitForSeconds(.3f);
             Widget.Find<UI.Battle>().bossStatus.Close();
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
@@ -537,6 +538,13 @@ namespace Nekoyume.Game
                     sprite);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
+
+            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            foreach (var prev in prevEnemies)
+            {
+                objectPool.Remove<Character.Enemy>(prev.gameObject);
+            }
+            yield return new WaitForEndOfFrame();
 
             yield return StartCoroutine(spawner.CoSetData(stageId, enemies));
         }

@@ -572,7 +572,7 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.stage.GetCharacter(info.Target);
-                ProcessAttack(target, info, i == skillInfosCount - 1, false);
+                ProcessAttack(target, info, info.Target.IsDead, false);
             }
         }
 
@@ -594,7 +594,7 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.stage.GetCharacter(info.Target);
                 var effect = Game.instance.stage.skillController.Get<SkillBlowVFX>(target, info);
                 effect.Play();
-                ProcessAttack(target, info, i == skillInfosCount - 1, true);
+                ProcessAttack(target, info, info.Target.IsDead, true);
             }
         }
 
@@ -623,7 +623,7 @@ namespace Nekoyume.Game.Character
                     effect.SecondStrike();
                 }
 
-                ProcessAttack(target, info, i == skillInfosCount - 1, true);
+                ProcessAttack(target, info, !first, true);
             }
         }
 

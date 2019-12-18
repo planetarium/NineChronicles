@@ -55,10 +55,10 @@ namespace Nekoyume.Battle
         }
 
         public Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods, int worldId, int stageId,
-            Game.Skill skill = null, TableSheetsState tableSheetsState = null)
+            Game.Skill skill = null)
         {
             Random = random;
-            TableSheets = TableSheets.FromTableSheetsState(tableSheetsState);
+            TableSheets = Game.Game.instance.TableSheets;
             WorldId = worldId;
             StageId = stageId;
             Log = new BattleLog();

@@ -58,6 +58,11 @@ namespace Nekoyume.Game
                         target.CurrentHP -= damage;
                     }
 
+                    // 연타공격은 항상 연출이 크리티컬로 보이도록 처리
+                    if (skillRow.SkillCategory == SkillCategory.DoubleAttack)
+                    {
+                        critical = true;
+                    }
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), damage, critical,
                         skillRow.SkillCategory, skillRow.ElementalType));
                 }
