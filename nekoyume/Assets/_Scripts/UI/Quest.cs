@@ -34,6 +34,7 @@ namespace Nekoyume.UI
             public Image image;
             public Image icon;
             public TextMeshProUGUI text;
+            public TextMeshProUGUI textSelected;
 
             public void Init(string localizationKey)
             {
@@ -41,6 +42,7 @@ namespace Nekoyume.UI
                 var localized = LocalizationManager.Localize(localizationKey);
                 var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
                 text.text = content;
+                textSelected.text = content;
             }
 
             public void ChangeColor(bool isHighlighted = false)
@@ -49,7 +51,8 @@ namespace Nekoyume.UI
                 image.rectTransform.offsetMin = isHighlighted ? _leftBottom : Vector2.zero;
                 image.rectTransform.offsetMax = isHighlighted ? _minusRightTop : Vector2.zero;
                 icon.overrideSprite = isHighlighted ? highlightedSprite : null;
-                // 마테리얼 변경시켜줘야함
+                text.gameObject.SetActive(!isHighlighted);
+                textSelected.gameObject.SetActive(isHighlighted);
             }
         }
 

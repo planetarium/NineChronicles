@@ -21,6 +21,7 @@ namespace Nekoyume.UI.Scroller
         public TextMeshProUGUI content;
         public Button button;
         public TextMeshProUGUI submitText;
+        public TextMeshProUGUI submitTextSelected;
 
         private Mail _mail;
 
@@ -43,18 +44,23 @@ namespace Nekoyume.UI.Scroller
             _mail = Widget.Find<Mail>();
             data = mail;
             var text = mail.ToInfo();
-            Color32 color = mail.New ? ColorHelper.HexToColorRGB("fff9dd") : ColorHelper.HexToColorRGB("7a7a7a");
-            button.interactable = mail.New;
-            submitText.text = mail.New ? LocalizationManager.Localize("UI_RECEIVE") : LocalizationManager.Localize("UI_RECEIVED");
-            buttonImage.rectTransform.offsetMin = mail.New ? _leftBottom : Vector2.zero;
-            buttonImage.rectTransform.offsetMax = mail.New ? _minusRightTop : Vector2.zero;
+            var isNew = mail.New;
+            var color = isNew ? ColorHelper.HexToColorRGB("fff9dd") : ColorHelper.HexToColorRGB("7a7a7a");
+            button.interactable = isNew;
+            submitText.text = isNew
+                ? LocalizationManager.Localize("UI_RECEIVE")
+                : LocalizationManager.Localize("UI_RECEIVED");
+            submitTextSelected.text = submitText.text;
+            buttonImage.rectTransform.offsetMin = isNew ? _leftBottom : Vector2.zero;
+            buttonImage.rectTransform.offsetMax = isNew ? _minusRightTop : Vector2.zero;
             icon.overrideSprite = Mail.mailIcons[mail.MailType];
             content.text = text;
             content.color = color;
-            // 버튼 텍스트의 마테리얼 변경처리해줘야함
+            submitText.gameObject.SetActive(!isNew);
+            submitTextSelected.gameObject.SetActive(isNew);
         }
 
-        public void Read()
+        private void Read()
         {
             submitText.text = LocalizationManager.Localize("UI_RECEIVED");
             buttonImage.rectTransform.offsetMin = Vector2.zero;
@@ -64,7 +70,8 @@ namespace Nekoyume.UI.Scroller
 
             data.New = false;
             button.interactable = false;
-            // 버튼 텍스트의 마테리얼 변경처리해줘야함
+            submitText.gameObject.SetActive(true);
+            submitTextSelected.gameObject.SetActive(false);
             content.color = ColorHelper.HexToColorRGB("7a7a7a");
             data.Read(_mail);
         }

@@ -27,14 +27,17 @@ namespace Nekoyume.UI.Module
         public Image equipmentsButtonImage;
         public Image equipmentsButtonIconImage;
         public TextMeshProUGUI equipmentsButtonText;
+        public TextMeshProUGUI equipmentsButtonSelectedText;
         public Button consumablesButton;
         public Image consumablesButtonImage;
         public Image consumablesButtonIconImage;
         public TextMeshProUGUI consumablesButtonText;
+        public TextMeshProUGUI consumablesButtonSelectedText;
         public Button materialsButton;
         public Image materialsButtonImage;
         public Image materialsButtonIconImage;
         public TextMeshProUGUI materialsButtonText;
+        public TextMeshProUGUI materialsButtonSelectedText;
         public InventoryScrollerController scrollerController;
 
         private Sprite _selectedButtonSprite;
@@ -81,8 +84,11 @@ namespace Nekoyume.UI.Module
 
             titleText.text = LocalizationManager.Localize("UI_INVENTORY");
             equipmentsButtonText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
+            equipmentsButtonSelectedText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
             consumablesButtonText.text = LocalizationManager.Localize("UI_CONSUMABLES");
+            consumablesButtonSelectedText.text = LocalizationManager.Localize("UI_CONSUMABLES");
             materialsButtonText.text = LocalizationManager.Localize("UI_MATERIALS");
+            materialsButtonSelectedText.text = LocalizationManager.Localize("UI_MATERIALS");
 
             RectTransform = GetComponent<RectTransform>();
 
@@ -135,6 +141,12 @@ namespace Nekoyume.UI.Module
 
         private void SubscribeState(ItemType stateType)
         {
+            equipmentsButtonText.gameObject.SetActive(false);
+            equipmentsButtonSelectedText.gameObject.SetActive(false);
+            consumablesButtonText.gameObject.SetActive(false);
+            consumablesButtonSelectedText.gameObject.SetActive(false);
+            materialsButtonText.gameObject.SetActive(false);
+            materialsButtonSelectedText.gameObject.SetActive(false);
             switch (stateType)
             {
                 case ItemType.Equipment:
@@ -145,6 +157,9 @@ namespace Nekoyume.UI.Module
                     materialsButtonImage.sprite = _deselectedButtonSprite;
                     materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlack;
                     scrollerController.SetData(SharedModel.Equipments);
+                    equipmentsButtonSelectedText.gameObject.SetActive(true);
+                    consumablesButtonText.gameObject.SetActive(true);
+                    materialsButtonText.gameObject.SetActive(true);
                     break;
                 case ItemType.Consumable:
                     equipmentsButtonImage.sprite = _deselectedButtonSprite;
@@ -154,6 +169,9 @@ namespace Nekoyume.UI.Module
                     materialsButtonImage.sprite = _deselectedButtonSprite;
                     materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlack;
                     scrollerController.SetData(SharedModel.Consumables);
+                    equipmentsButtonText.gameObject.SetActive(true);
+                    consumablesButtonSelectedText.gameObject.SetActive(true);
+                    materialsButtonText.gameObject.SetActive(true);
                     break;
                 case ItemType.Material:
                     equipmentsButtonImage.sprite = _deselectedButtonSprite;
@@ -163,6 +181,9 @@ namespace Nekoyume.UI.Module
                     materialsButtonImage.sprite = _selectedButtonSprite;
                     materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlue;
                     scrollerController.SetData(SharedModel.Materials);
+                    equipmentsButtonText.gameObject.SetActive(true);
+                    consumablesButtonText.gameObject.SetActive(true);
+                    materialsButtonSelectedText.gameObject.SetActive(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);

@@ -143,8 +143,6 @@ namespace Nekoyume.UI
             //yield return null;
             _secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<SimpleItemCountPopup>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationResultPopup>());
