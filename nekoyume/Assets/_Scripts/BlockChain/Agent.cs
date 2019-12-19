@@ -18,7 +18,6 @@ using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
-using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Store;
 using Libplanet.Tx;
@@ -57,7 +56,8 @@ namespace Nekoyume.BlockChain
         private const int MaxSeed = 3;
 
         private static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
-        private static readonly string DefaultPreviousStoragePath = $"{DefaultStoragePath}_prev";
+
+        private const string PrevStoragePostFix = "_prev_storage";
 
         public ReactiveProperty<long> blockIndex = new ReactiveProperty<long>();
 
@@ -87,6 +87,7 @@ namespace Nekoyume.BlockChain
         private static CancellationTokenSource _cancellationTokenSource;
 
         private string _tipInfo = string.Empty;
+        private CommandLineOptions _options;
 
         public long BlockIndex => blocks?.Tip?.Index ?? 0;
 
@@ -116,6 +117,7 @@ namespace Nekoyume.BlockChain
         private void Awake()
         {
             ForceDotNet.Force();
+            _options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
             DeletePreviousStore();
         }
 
@@ -179,9 +181,8 @@ namespace Nekoyume.BlockChain
 
         private void InitAgent(Action<bool> callback, PrivateKey privateKey)
         {
-            var options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
-            var peers = options.Peers.Select(LoadPeer);
-            var iceServerList = options.IceServers.Select(LoadIceServer).ToImmutableList();
+            var peers = _options.Peers.Select(LoadPeer);
+            var iceServerList = _options.IceServers.Select(LoadIceServer).ToImmutableList();
 
             if (!iceServerList.Any())
             {
@@ -190,11 +191,11 @@ namespace Nekoyume.BlockChain
 
             var iceServers = iceServerList.Sample(1).ToImmutableList();
 
-            var host = GetHost(options);
-            var port = options.Port;
-            var consoleSink = options.ConsoleSink;
-            var storagePath = options.StoragePath ?? DefaultStoragePath;
-            var development = options.Development;
+            var host = GetHost(_options);
+            var port = _options.Port;
+            var consoleSink = _options.ConsoleSink;
+            var storagePath = _options.StoragePath ?? DefaultStoragePath;
+            var development = _options.Development;
             Init(
                 privateKey,
                 storagePath,
@@ -280,8 +281,8 @@ namespace Nekoyume.BlockChain
                 LoadQueuedActions();
                 TipChanged += (___, index) => { blockIndex.Value = index; };
             };
-            _miner = options.NoMiner ? null : CoMiner();
-            _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
+            _miner = _options.NoMiner ? null : CoMiner();
+            _autoPlayer = _options.AutoPlay ? CoAutoPlayer() : null;
 
             if (development)
             {
@@ -894,8 +895,7 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoLogin(Action<bool> callback)
         {
-            var options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathLogin);
-            if (options.maintenance)
+            if (_options.maintenance)
             {
                 var w = Widget.Create<Alert>();
                 w.CloseCallback = () =>
@@ -915,7 +915,7 @@ namespace Nekoyume.BlockChain
                 );
                 yield break;
             }
-            if (options.testEnd)
+            if (_options.testEnd)
             {
                 var w = Widget.Find<Confirm>();
                 w.CloseCallback = result =>
@@ -939,13 +939,13 @@ namespace Nekoyume.BlockChain
 
             if (Application.isBatchMode)
             {
-                loginPopup.Show(options.KeyStorePath, options.PrivateKey);
+                loginPopup.Show(_options.KeyStorePath, _options.PrivateKey);
             }
             else
             {
                 Widget.Find<UI.Settings>().UpdateSoundSettings();
                 var title = Widget.Find<Title>();
-                title.Show(options.keyStorePath, options.privateKey);
+                title.Show(_options.keyStorePath, _options.privateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
                 title.Close();
             }
@@ -954,9 +954,11 @@ namespace Nekoyume.BlockChain
 
         private static void DeletePreviousStore()
         {
-            if (Directory.Exists(DefaultPreviousStoragePath))
+            var dirs = Directory.GetDirectories(StorePath.GetPrefixPath()).Where(d => d.Contains(PrevStoragePostFix))
+                .ToList();
+            foreach (var dir in dirs)
             {
-                Task.Run(() => { Directory.Delete(DefaultPreviousStoragePath, true); });
+                Task.Run(() => { Directory.Delete(dir, true); });
             }
         }
 
@@ -1000,14 +1002,16 @@ namespace Nekoyume.BlockChain
         public void ResetStore()
         {
             var confirm = Widget.Find<Confirm>();
+            var storagePath = _options.StoragePath ?? DefaultStoragePath;
+            var prevStoragePath = Path.Combine(StorePath.GetPrefixPath(), $"{storagePath}{PrevStoragePostFix}");
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
                     return;
                 Dispose();
-                if (Directory.Exists(DefaultStoragePath))
+                if (Directory.Exists(storagePath))
                 {
-                    Directory.Move(DefaultStoragePath, DefaultPreviousStoragePath);
+                    Directory.Move(storagePath, prevStoragePath);
                 }
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.ExitPlaymode();
@@ -1026,8 +1030,7 @@ namespace Nekoyume.BlockChain
                 if (result == ConfirmResult.No)
                     return;
                 Dispose();
-                var options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathLogin);
-                var keyPath = options.keyStorePath;
+                var keyPath = _options.keyStorePath;
                 if (Directory.Exists(keyPath))
                 {
                     Directory.Delete(keyPath, true);
