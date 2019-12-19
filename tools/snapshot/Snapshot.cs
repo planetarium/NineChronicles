@@ -40,8 +40,10 @@ namespace NineChroniclesSnapshot
             if (Directory.Exists(storePath))
             {
                 var mtime = new FileInfo(storePath).LastWriteTime.ToUniversalTime();
-                var staledTime = mtime - DateTimeOffset.UtcNow;
+                var staledTime = DateTimeOffset.UtcNow - mtime;
                 // When mtime should be earlier than latest snapshot and store isn't updated during staleTime minutes, it will be assumed staled.
+                Console.Error.WriteLine($"mtime: {mtime} | utc-now: {DateTimeOffset.UtcNow} | staled-time: {staledTime}");
+                Console.Error.WriteLine($"snapshotCreated: {snapshotCreated} | mtime < snapshotCreated: {mtime < snapshotCreated} | staled-time > staleTime-as-timespan: {staledTime > TimeSpan.FromMinutes(staleTime)}");
                 return mtime < snapshotCreated && staledTime > TimeSpan.FromMinutes(staleTime);
             }
             else
@@ -290,7 +292,7 @@ namespace NineChroniclesSnapshot
                         latestSnapshotUri
                     );
                     DownloadSnapshot(latestSnapshotUri, storePath);
-                    Console.WriteLine("Finished.");                    
+                    Console.WriteLine("Finished.");
                 }
             }
 
