@@ -3,6 +3,7 @@ using ShellProgressBar;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -34,13 +35,14 @@ namespace NineChroniclesSnapshot
         // unit: minutes
         public static int DefaultStaleTime => 3600; 
 
-        public static bool IsStaled(string storePath, int staleTime)
+        public static bool IsStaled(string storePath, int staleTime, DateTimeOffset snapshotCreated)
         {
             if (Directory.Exists(storePath))
             {
                 var mtime = new FileInfo(storePath).LastWriteTime;
                 var staledTime = mtime - DateTimeOffset.Now;
-                return staledTime > TimeSpan.FromMinutes(staleTime);
+                // When mtime should be earlier than latest snapshot and store isn't updated during staleTime minutes, it will be assumed staled.
+                return mtime < snapshotCreated && staledTime > TimeSpan.FromMinutes(staleTime);
             }
             else
             {
@@ -205,7 +207,7 @@ namespace NineChroniclesSnapshot
             bool dump = false;
             string storePath = DefaultStorePath;
             string playerPath = string.Empty;
-            int staleTime = 3600; 
+            int staleTime = DefaultStaleTime; 
             Uri bucketUrl = DefaultBucketUrl;
             var options = new OptionSet
             {
@@ -269,16 +271,23 @@ namespace NineChroniclesSnapshot
                 string destination = MakeSnapshot(storePath);
                 Console.WriteLine(destination);
             }
-            else if (playerPath == string.Empty || IsStaled(storePath, staleTime))
+            else
             {
                 var snapshots = ListSnapshotUrls(bucketUrl);
-                (_, Uri latestSnapshotUri) = snapshots.OrderBy(p => p.Item1).Last();
-                Console.WriteLine(
-                    "Downloading the latest snapshot from {0}",
-                    latestSnapshotUri
-                );
-                DownloadSnapshot(latestSnapshotUri, storePath);
-                Console.WriteLine("Finished.");
+                (string filename, Uri latestSnapshotUri) = snapshots.OrderByDescending(p => p.Item1).First();
+                var snapshotCreated = DateTimeOffset.ParseExact(
+                    filename.Substring(3, 14),
+                    new[] { "yyyyMMddHHmmss" },
+                    CultureInfo.InvariantCulture.DateTimeFormat);
+                if (IsStaled(storePath, staleTime, snapshotCreated))
+                {
+                    Console.WriteLine(
+                        "Downloading the latest snapshot from {0}",
+                        latestSnapshotUri
+                    );
+                    DownloadSnapshot(latestSnapshotUri, storePath);
+                    Console.WriteLine("Finished.");                    
+                }
             }
 
             if (File.Exists(playerPath))
