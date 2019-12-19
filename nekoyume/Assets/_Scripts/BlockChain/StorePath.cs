@@ -13,9 +13,9 @@ namespace Nekoyume.BlockChain
             Development,
         }
 
-        public const string Postfix = "";  // E.g., "_20191211"
+        private const string Postfix = "";  // E.g., "_20191211"
 
-        public static IImmutableDictionary<Env, string> DirNames = new Dictionary<Env, string>
+        private static readonly IImmutableDictionary<Env, string> DirNames = new Dictionary<Env, string>
         {
             [Env.Production] = "9c",
             [Env.Development] = "9c_dev",
@@ -31,16 +31,22 @@ namespace Nekoyume.BlockChain
 #endif
             }
 
-            string prefix =
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string dirname = DirNames.TryGetValue(env.Value, out string dirName) ? dirName : DirNames[Env.Production];
-            // Linux/macOS: $HOME/.local/share/planetarium/9c
-            // Windows: %LOCALAPPDATA%\planetarium\9c (i.e., %HOME%\AppData\Local\planetarium\9c)
+            var dirname = DirNames.TryGetValue(env.Value, out var dirName) ? dirName : DirNames[Env.Production];
+            // Linux/macOS: $HOME/.local/share/planetarium/
+            // Windows: %LOCALAPPDATA%\planetarium\ (i.e., %HOME%\AppData\Local\planetarium\)
             return Path.Combine(
-                prefix,
-                "planetarium",
+                GetPrefixPath(),
                 dirname + Postfix
             );
+
+        }
+
+        public static string GetPrefixPath()
+        {
+            var prefix = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            // Linux/macOS: $HOME/.local/share/planetarium/
+            // Windows: %LOCALAPPDATA%\planetarium\ (i.e., %HOME%\AppData\Local\planetarium\9c)
+            return Path.Combine(prefix, "planetarium");
         }
     }
 }
