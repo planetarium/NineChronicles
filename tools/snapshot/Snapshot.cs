@@ -129,8 +129,12 @@ namespace NineChroniclesSnapshot
                 Directory.Delete(oldStorePath, true);
             }
 
-            Directory.Move(storePath, oldStorePath);
+            if (Directory.Exists(storePath))
+            {
+                Directory.Move(storePath, oldStorePath);
+            }
 
+            string tmp = Path.GetTempFileName();
             var downloadSnapshotTask = Task.Run(() =>
             {
                 string tmp = Path.GetTempFileName();
