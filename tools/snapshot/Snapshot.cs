@@ -123,10 +123,10 @@ namespace NineChroniclesSnapshot
                 Console.WriteLine("Extracting the snapshot archive...");
             };
 
-            string oldStorePath = storePath + "_old";
+            var oldStorePath = storePath + "_old";
             if (Directory.Exists(oldStorePath))
             {
-                Directory.Delete(oldStorePath, true);
+                Directory.Delete(oldStorePath, recursive: true);
             }
 
             if (Directory.Exists(storePath))
@@ -283,7 +283,7 @@ namespace NineChroniclesSnapshot
                     filename.Substring(3, 14),
                     new[] { "yyyyMMddHHmmss" },
                     CultureInfo.InvariantCulture.DateTimeFormat);
-                if (IsStaled(storePath, staleTime, snapshotCreated))
+                if (playerPath == string.Empty || IsStaled(storePath, staleTime, snapshotCreated))
                 {
                     Console.WriteLine(
                         "Downloading the latest snapshot from {0}",
