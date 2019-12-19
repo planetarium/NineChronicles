@@ -57,7 +57,7 @@ namespace Nekoyume.BlockChain
 
         private static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
-        private const string PrevStoragePostFix = "_prev_storage";
+        private static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
 
         public ReactiveProperty<long> blockIndex = new ReactiveProperty<long>();
 
@@ -118,6 +118,10 @@ namespace Nekoyume.BlockChain
         {
             ForceDotNet.Force();
             _options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
+            if (!Directory.Exists(PrevStorageDirectoryPath))
+            {
+                Directory.CreateDirectory(PrevStorageDirectoryPath);
+            }
             DeletePreviousStore();
         }
 
@@ -954,8 +958,7 @@ namespace Nekoyume.BlockChain
 
         private static void DeletePreviousStore()
         {
-            var dirs = Directory.GetDirectories(StorePath.GetPrefixPath()).Where(d => d.Contains(PrevStoragePostFix))
-                .ToList();
+            var dirs = Directory.GetDirectories(PrevStorageDirectoryPath).ToList();
             foreach (var dir in dirs)
             {
                 Task.Run(() => { Directory.Delete(dir, true); });
@@ -1003,7 +1006,7 @@ namespace Nekoyume.BlockChain
         {
             var confirm = Widget.Find<Confirm>();
             var storagePath = _options.StoragePath ?? DefaultStoragePath;
-            var prevStoragePath = Path.Combine(StorePath.GetPrefixPath(), $"{storagePath}{PrevStoragePostFix}");
+            var prevStoragePath = Path.Combine(PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
