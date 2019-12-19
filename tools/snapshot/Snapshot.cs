@@ -39,8 +39,8 @@ namespace NineChroniclesSnapshot
         {
             if (Directory.Exists(storePath))
             {
-                var mtime = new FileInfo(storePath).LastWriteTime;
-                var staledTime = mtime - DateTimeOffset.Now;
+                var mtime = new FileInfo(storePath).LastWriteTime.ToUniversalTime();
+                var staledTime = mtime - DateTimeOffset.UtcNow;
                 // When mtime should be earlier than latest snapshot and store isn't updated during staleTime minutes, it will be assumed staled.
                 return mtime < snapshotCreated && staledTime > TimeSpan.FromMinutes(staleTime);
             }
@@ -282,7 +282,7 @@ namespace NineChroniclesSnapshot
                 var snapshotCreated = DateTimeOffset.ParseExact(
                     filename.Substring(3, 14),
                     new[] { "yyyyMMddHHmmss" },
-                    CultureInfo.InvariantCulture.DateTimeFormat);
+                    CultureInfo.InvariantCulture);
                 if (playerPath == string.Empty || IsStaled(storePath, staleTime, snapshotCreated))
                 {
                     Console.WriteLine(
