@@ -57,6 +57,7 @@ namespace Nekoyume.BlockChain
         private const int MaxSeed = 3;
 
         private static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
+        private static readonly string DefaultPreviousStoragePath = $"{DefaultStoragePath}_prev";
 
         public ReactiveProperty<long> blockIndex = new ReactiveProperty<long>();
 
@@ -115,6 +116,7 @@ namespace Nekoyume.BlockChain
         private void Awake()
         {
             ForceDotNet.Force();
+            DeletePreviousStore();
         }
 
         public void Initialize(Action<bool> callback)
@@ -950,6 +952,14 @@ namespace Nekoyume.BlockChain
             InitAgent(callback, loginPopup.GetPrivateKey());
         }
 
+        private static void DeletePreviousStore()
+        {
+            if (Directory.Exists(DefaultPreviousStoragePath))
+            {
+                Task.Run(() => { Directory.Delete(DefaultPreviousStoragePath, true); });
+            }
+        }
+
         private IEnumerator CoCheckStagedTxs()
         {
             var hasOwnTx = false;
@@ -997,7 +1007,7 @@ namespace Nekoyume.BlockChain
                 Dispose();
                 if (Directory.Exists(DefaultStoragePath))
                 {
-                    Directory.Delete(DefaultStoragePath, true);
+                    Directory.Move(DefaultStoragePath, DefaultPreviousStoragePath);
                 }
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.ExitPlaymode();
