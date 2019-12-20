@@ -215,7 +215,6 @@ namespace NineChroniclesSnapshot
             bool help = false;
             bool dump = false;
             string storePath = DefaultStorePath;
-            string playerPath = string.Empty;
             int staleTime = DefaultStaleTime; 
             Uri bucketUrl = DefaultBucketUrl;
             var options = new OptionSet
@@ -231,11 +230,6 @@ namespace NineChroniclesSnapshot
                     value => storePath = Directory.Exists(value)
                         ? value
                         : throw new OptionException("not a directory", "-s/--store-path")
-                },
-                {
-                    "p|player-path=",
-                    "The path of the Nine Chronicles player",
-                    value => playerPath = value
                 },
                 {
                     "t|stale-time=",
@@ -288,7 +282,7 @@ namespace NineChroniclesSnapshot
                     filename.Substring(3, 14),
                     new[] { "yyyyMMddHHmmss" },
                     CultureInfo.InvariantCulture).ToUniversalTime();
-                if (playerPath == string.Empty || IsStaled(storePath, staleTime, snapshotCreated))
+                if (IsStaled(storePath, staleTime, snapshotCreated))
                 {
                     Console.WriteLine(
                         "Downloading the latest snapshot from {0}",
@@ -297,13 +291,6 @@ namespace NineChroniclesSnapshot
                     DownloadSnapshot(latestSnapshotUri, storePath);
                     Console.WriteLine("Finished.");
                 }
-            }
-
-            if (File.Exists(playerPath))
-            {
-                Console.Error.WriteLine("Run Nine Chronicles.");
-                var process = new Process {StartInfo = {FileName = playerPath, UseShellExecute = false}};
-                process.Start();
             }
 
             return 0;
