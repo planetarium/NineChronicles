@@ -11,6 +11,9 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
+using Bencodex.Types;
+using Libplanet.Action;
+using Libplanet.Store;
 
 namespace NineChroniclesSnapshot
 {
@@ -39,12 +42,12 @@ namespace NineChroniclesSnapshot
         {
             if (Directory.Exists(storePath))
             {
-                var mtime = new FileInfo(storePath).LastWriteTime.ToUniversalTime();
-                var staledTime = DateTimeOffset.UtcNow - mtime;
-                // When mtime should be earlier than latest snapshot and store isn't updated during staleTime minutes, it will be assumed staled.
-                Console.Error.WriteLine($"mtime: {mtime} | utc-now: {DateTimeOffset.UtcNow} | staled-time: {staledTime}");
-                Console.Error.WriteLine($"snapshotCreated: {snapshotCreated} | mtime < snapshotCreated: {mtime < snapshotCreated} | staled-time > staleTime-as-timespan: {staledTime > TimeSpan.FromMinutes(staleTime)}");
-                return mtime < snapshotCreated && staledTime > TimeSpan.FromMinutes(staleTime);
+                using var store = new DefaultStore(storePath);
+                Guid chainId = store.GetCanonicalChainId() ?? throw new ArgumentNullException(nameof(chainId));
+                var tipHash = store.IterateIndexes(chainId, (int)store.CountIndex(chainId) - 1, 1).First();
+                var tip = store.GetBlock<DumbAction>(tipHash);
+                Console.Error.Write($"tip.Timestamp: {tip.Timestamp} | snapshotCreated: {snapshotCreated}");
+                return snapshotCreated - tip.Timestamp > TimeSpan.FromMinutes(staleTime);
             }
             else
             {
@@ -284,7 +287,7 @@ namespace NineChroniclesSnapshot
                 var snapshotCreated = DateTimeOffset.ParseExact(
                     filename.Substring(3, 14),
                     new[] { "yyyyMMddHHmmss" },
-                    CultureInfo.InvariantCulture);
+                    CultureInfo.InvariantCulture).ToUniversalTime();
                 if (playerPath == string.Empty || IsStaled(storePath, staleTime, snapshotCreated))
                 {
                     Console.WriteLine(
@@ -305,5 +308,27 @@ namespace NineChroniclesSnapshot
 
             return 0;
         }
+    }
+    
+    class DumbAction : IAction
+    {
+        public void LoadPlainValue(IValue plainValue)
+        {
+        }
+
+        public IAccountStateDelta Execute(IActionContext context)
+        {
+            return context.PreviousStates;
+        }
+
+        public void Render(IActionContext context, IAccountStateDelta nextStates)
+        {
+        }
+
+        public void Unrender(IActionContext context, IAccountStateDelta nextStates)
+        {
+        }
+
+        public IValue PlainValue => default(Null);
     }
 }

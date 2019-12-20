@@ -13,4 +13,12 @@
     <PackageReference Include="Mono.Options" Version="5.3.0.1" />
     <PackageReference Include="ShellProgressBar" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Libplanet">
+      <HintPath>..\..\nekoyume\Assets\Packages\Libplanet.dll</HintPath>
+    </Reference>
+    <Reference Include="Bencodex">
+      <HintPath>..\..\nekoyume\Assets\Packages\Bencodex.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
