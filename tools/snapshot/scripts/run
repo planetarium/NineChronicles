@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cwd="$(dirname $0)"
+cwd="$(dirname "$0")"
 $cwd/NineChroniclesSnapshot --player-path "$cwd/Nine Chronicles.app/Contents/MacOS/Nine Chronicles"

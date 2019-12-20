@@ -1,7 +1,7 @@
 Scripts for 9C Data Snapshot Manager
 ====================================
 
-실행 전에 s3에 배포되어 있는 스냅샷으로 부터 스토어 데이터를 받아옵니다. 
+게임 실행 전에 s3에 배포되어 있는 스냅샷으로 부터 스토어 데이터를 받아옵니다.
 
 store-path의 mtime을 보아 일정 시간 동안 파일이 수정되지 않았으면 블록이 많이 쌓였을 것이라 가정하고 s3으로 부터 스냅샷을 불러옵니다.
 
@@ -15,7 +15,7 @@ store-path의 mtime을 보아 일정 시간 동안 파일이 수정되지 않았
   run.bat
   < extra files (e.g. MonoBleedingEdge, Nine Chronicles_Data...) >
 
-# macos
+# macOS
 /
   Nine Chronicles.app
   NineChroniclesSnapshot
@@ -27,4 +27,4 @@ store-path의 mtime을 보아 일정 시간 동안 파일이 수정되지 않았
 ----
 
 윈도우에서는 `run.bat`, MacOS에서는 `run`을 더블클릭하여 사용합니다.  
-만약 스냅샷을 가져오고 싶지 않다면 게임을 `Nine Chronicles`을 실행하고 스냅샷 가져오기만 하고 싶다면 `NineChroniclesSnapshot`을 실행하면 됩니다.
+만약 스냅샷을 가져오고 싶지 않다면 `Nine Chronicles`을 통해 게임을 직접 실행하고, 스냅샷 가져오기만 하고 싶다면 `NineChroniclesSnapshot`을 실행하면 됩니다.
