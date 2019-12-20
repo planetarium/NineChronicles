@@ -45,12 +45,11 @@ namespace Nekoyume.UI
                 addedAt = DateTime.Now
             });
         }
-        
+
         /// <summary>
         /// This class consider if there is any widget raise `OnEnableSubject` subject in the `WidgetTypesForUX` property.
         /// Widget type can registered once and cannot unregistered.
         /// </summary>
-        /// <param name="widget"></param>
         public static void RegisterWidgetTypeForUX<T>() where T : Widget
         {
             var type = typeof(T);
@@ -90,7 +89,7 @@ namespace Nekoyume.UI
         
         #endregion
 
-        private void SubscribeOnEnable(Widget widget)
+        private static void SubscribeOnEnable(Widget widget)
         {
             var type = widget.GetType();
             if (!WidgetTypesForUX.Contains(type))
@@ -105,8 +104,8 @@ namespace Nekoyume.UI
                 Models.Clear();
             }
         }
-        
-        private void SubscribeOnDisable(Widget widget)
+
+        private static void SubscribeOnDisable(Widget widget)
         {
             var type = widget.GetType();
             if (!WidgetTypesForUX.Contains(type))

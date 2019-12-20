@@ -67,10 +67,11 @@ namespace Nekoyume.UI
                 Widget.Create<PreloadingScreen>(true),
                 Widget.Create<Title>(true),
 
-                //팝업
+                // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
-                // 알림 영역.
+                
+                // 팝업 영역: 알림.
                 Widget.Create<UpdatePopup>(),
                 Widget.Create<BlockFailPopup>(),
                 Widget.Create<ActionFailPopup>(),
@@ -95,10 +96,6 @@ namespace Nekoyume.UI
         {
             _secondWidgets = new List<Widget>();
             
-            // 툴팁류.
-            _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
-            yield return null;
-
             // 일반.
             _secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
@@ -157,6 +154,12 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<BottomMenu>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Dialog>());
+            yield return null;
+            
+            // 툴팁류.
+            _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
             Widget last = null;
