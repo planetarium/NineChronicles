@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -72,25 +71,70 @@ namespace NineChroniclesSnapshot
 
         public static void DownloadSnapshot(
             Uri snapshotUrl,
-            string storePath,
-            DownloadProgressChangedEventHandler downloadProgressHandler = null)
+            string storePath)
         {
-            var client = new WebClient();
-            if (downloadProgressHandler is DownloadProgressChangedEventHandler f)
+            var progOptions = new ProgressBarOptions
             {
-                client.DownloadProgressChanged += f;
-            }
+                ForegroundColor = ConsoleColor.Yellow,
+                BackgroundColor = ConsoleColor.DarkGreen,
+                ProgressCharacter = '-',
+                BackgroundCharacter = '-',
+                ProgressBarOnBottom = false,
+                DisplayTimeInRealTime = true,
+            };
+            ProgressBar progBar = new ProgressBar(
+                0,
+                "Downloading",
+                progOptions
+            );
+
+            var client = new WebClient();
+            client.DownloadProgressChanged += (_, e) =>
+                {
+                    progBar.MaxTicks = (int) (e.TotalBytesToReceive / 1024L);
+                    progBar.Tick((int) (e.BytesReceived / 1024L));
+                    progBar.Message = $"Downloading... ({(int) (e.BytesReceived / 1024L)}KB/{(int) (e.TotalBytesToReceive / 1024L)}KB)";
+                };
+            client.DownloadFileCompleted += (_, __) =>
+                {
+                    progBar.Dispose();
+                    Console.WriteLine("Finished to download the snapshop.");
+                    Console.WriteLine("Extracting the snapshot archive...");
+                };
             string tmp = Path.GetTempFileName();
             try
             {
-                client.DownloadFile(snapshotUrl, tmp);
+                Console.WriteLine( $"Downloading the latest snapshot from {snapshotUrl}...");
+                client.DownloadFileTaskAsync(snapshotUrl, tmp).Wait();
                 while (Directory.Exists(storePath))
                 {
                     Directory.Delete(storePath, true);
                 }
 
                 Directory.CreateDirectory(storePath);
-                ZipFile.ExtractToDirectory(tmp, storePath, System.Text.Encoding.UTF8);
+                using(FileStream stream = new FileStream(tmp, FileMode.OpenOrCreate))
+                using(ZipArchive archive = new ZipArchive(stream, ZipArchiveMode.Read, false, System.Text.Encoding.UTF8))
+                {
+                    var totalProgress = archive.Entries.Count;
+                    var count = 0;
+                    progBar = new ProgressBar(
+                        totalProgress,
+                        $"Extracting files... (0/{totalProgress})",
+                        progOptions
+                    );
+
+                    foreach (var entry in archive.Entries)
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(storePath, entry.FullName)));
+                        entry.ExtractToFile(Path.Combine(storePath, entry.FullName), true);
+                        count++;
+
+                        // update progess there
+                        progBar.Tick(count);
+                        progBar.Message = $"Extracting files... ({count}/{totalProgress})";
+                    }
+                    Console.WriteLine();
+                }
             }
             finally
             {
@@ -179,41 +223,12 @@ namespace NineChroniclesSnapshot
             {
                 var snapshots = ListSnapshotUrls(bucketUrl);
                 (_, Uri latestSnapshotUri) = snapshots.OrderBy(p => p.Item1).Last();
-                var progOptions = new ProgressBarOptions
-                {
-                    ProgressBarOnBottom = false,
-                    DisplayTimeInRealTime = true,
-                };
-                ProgressBar progBar = null;
-                Console.Error.WriteLine(
+                Console.WriteLine(
                     "Downloading the latest snapshot from {0}",
                     latestSnapshotUri
                 );
-                DownloadSnapshot(
-                    latestSnapshotUri,
-                    storePath,
-                    downloadProgressHandler: (_, e) =>
-                    {
-                        if (progBar is null)
-                        {
-                            progBar = new ProgressBar(
-                                (int) (e.TotalBytesToReceive / 1024L),
-                                $"Downloading the latest snapshot from {latestSnapshotUri}",
-                                progOptions
-                            );
-                        }
-
-                        progBar.Tick((int) (e.BytesReceived / 1024L));
-
-                        if (e.TotalBytesToReceive <= e.BytesReceived)
-                        {
-                            progBar.Dispose();
-                            Console.Error.WriteLine("Finished to download the snapshop.");
-                            Console.Error.WriteLine("Extracting the snapshot archive...");
-                        }
-                    }
-                );
-                Console.Error.WriteLine("Finished.");
+                DownloadSnapshot(latestSnapshotUri, storePath);
+                Console.WriteLine("Finished.");
             }
 
             return 0;
