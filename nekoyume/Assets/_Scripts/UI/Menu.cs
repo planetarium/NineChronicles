@@ -6,6 +6,8 @@ using Nekoyume.Game.Controller;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
 using Nekoyume.Model;
+using Nekoyume.UI.AnimatedGraphics;
+using UniRx;
 using UnityEngine;
 using Player = Nekoyume.Game.Character.Player;
 

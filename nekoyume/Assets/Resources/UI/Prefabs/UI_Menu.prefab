@@ -260,6 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localizationKey: UI_MAIN_MENU_COMBINATION
   TweenDuration: 0.3
   BgScale: 1.05
   speechBubble: {fileID: 4769887766838422465}
@@ -418,6 +419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localizationKey: UI_MAIN_MENU_SHOP
   TweenDuration: 0.3
   BgScale: 1.05
   speechBubble: {fileID: 8183431771832999457}
@@ -688,6 +690,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localizationKey: UI_MAIN_MENU_QUEST
   TweenDuration: 0.3
   BgScale: 1.05
   speechBubble: {fileID: 1090556309660753493}
@@ -843,6 +846,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75dd30a88f5deec4ebd3e75a76ac45f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  localizationKey: UI_MAIN_MENU_RANKING
   TweenDuration: 0.3
   BgScale: 1.05
   speechBubble: {fileID: 3239636364240440590}
@@ -2165,25 +2169,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 9025542563811566916, guid: ca4711bdd599c584ea128753f69cde81,
+    - target: {fileID: 9025542563812569182, guid: ca4711bdd599c584ea128753f69cde81,
         type: 3}
-      propertyPath: m_SortingOrder
-      value: 10
+      propertyPath: simulationSpeed
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 9025542563812605026, guid: ca4711bdd599c584ea128753f69cde81,
         type: 3}
       propertyPath: m_SortingOrder
       value: 10
       objectReference: {fileID: 0}
-    - target: {fileID: 9025542563812569182, guid: ca4711bdd599c584ea128753f69cde81,
-        type: 3}
-      propertyPath: simulationSpeed
-      value: 0.3
-      objectReference: {fileID: 0}
     - target: {fileID: 9025542563812526506, guid: ca4711bdd599c584ea128753f69cde81,
         type: 3}
       propertyPath: simulationSpeed
       value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9025542563811566916, guid: ca4711bdd599c584ea128753f69cde81,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ca4711bdd599c584ea128753f69cde81, type: 3}
@@ -4626,17 +4630,17 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 571783222440733499, guid: 1699bc9f413f4f849b386d12d86445ce,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4745791726096184736, guid: 1699bc9f413f4f849b386d12d86445ce,
         type: 3}
       propertyPath: m_SortingOrder
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 108136971322823303, guid: 1699bc9f413f4f849b386d12d86445ce,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 571783222440733499, guid: 1699bc9f413f4f849b386d12d86445ce,
         type: 3}
       propertyPath: m_SortingOrder
       value: 4

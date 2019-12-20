@@ -6,11 +6,11 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class OrganicMiniJumpTweener : MonoBehaviour
     {
-        [SerializeField] private Vector2 endValue;
+        [SerializeField] private Vector2 endValue = Vector2.zero;
         [SerializeField] private float jumpPower = 1;
         [SerializeField] private int jumpCount = 1;
         [SerializeField] private float duration = 1f;
-        [SerializeField] private bool snapping;
+        [SerializeField] private bool snapping = false;
         [SerializeField] private int loopCount = -1;
         [SerializeField] private float loopDelay;
         

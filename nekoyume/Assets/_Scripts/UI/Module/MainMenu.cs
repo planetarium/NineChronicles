@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
+using Nekoyume.UI.AnimatedGraphics;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -17,8 +18,10 @@ namespace Nekoyume.UI.Module
         Shop,
         Quest,
     }
+
     public class MainMenu : MonoBehaviour
     {
+        public string localizationKey = string.Empty;
         public float TweenDuration = 0.3f;
         public float BgScale = 1.05f;
         public SpeechBubble speechBubble;
@@ -26,15 +29,19 @@ namespace Nekoyume.UI.Module
         public string pointerClickKey;
         public Npc npc;
         public Transform bgTransform;
-        private Vector3 _scaler;
+        private Vector3 _originLocalScale;
         public MenuType type;
         public GameObject[] lockObjects;
         public GameObject[] unLockObjects;
-        
+
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
 
-        public bool IsUnlocked { get; private set; }
+        private int _requiredLevel;
+        private string _messageForCat;
+        private MessageCat _cat;
         
+        public bool IsUnlocked { get; private set; }
+
         #region Mono
 
         private void Awake()
@@ -42,30 +49,73 @@ namespace Nekoyume.UI.Module
             if (!GetComponentInParent<Menu>())
                 throw new NotFoundComponentException<Menu>();
 
-            _scaler = bgTransform.localScale;
+            _originLocalScale = bgTransform.localScale;
 
-            gameObject.AddComponent<ObservablePointerClickTrigger>()
-                .OnPointerClickAsObservable()
-                .Subscribe(x => {
-                    bgTransform.DOScale(_scaler * 1.0f, 0.0f);
-                })
-                .AddTo(_disposablesForAwake);
+            switch (type)
+            {
+                case MenuType.Combination:
+                    _requiredLevel = GameConfig.CombinationRequiredLevel;
+                    break;
+                case MenuType.Ranking:
+                    _requiredLevel = GameConfig.RankingRequiredLevel;
+                    break;
+                case MenuType.Shop:
+                    _requiredLevel = GameConfig.ShopRequiredLevel;
+                    break;
+                case MenuType.Quest:
+                    _requiredLevel = GameConfig.QuestRequiredLevel;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            
+            _messageForCat = $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requiredLevel}";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()
-                .Subscribe(x => {
-                    bgTransform.DOScale(_scaler * BgScale, TweenDuration);
+                .Subscribe(x =>
+                {
+                    if (!IsUnlocked)
+                    {
+                        if (_cat)
+                        {
+                            _cat.Hide();
+                        }
+
+                        _cat = Widget.Find<MessageCatManager>().Show(true, _messageForCat);
+
+                        return;
+                    }
+
+                    bgTransform.DOScale(_originLocalScale * BgScale, TweenDuration);
                     ShowSpeech(pointerEnterKey);
                 })
                 .AddTo(_disposablesForAwake);
 
             gameObject.AddComponent<ObservablePointerExitTrigger>()
                 .OnPointerExitAsObservable()
-                .Subscribe(x => {
-                    bgTransform.DOScale(_scaler * 1.0f, TweenDuration);
+                .Subscribe(x =>
+                {
+                    if (!IsUnlocked)
+                    {
+                        if (!_cat)
+                            return;
+
+                        _cat.Hide();
+                        _cat = null;
+
+                        return;
+                    }
+
+                    bgTransform.DOScale(_originLocalScale, TweenDuration);
                     ResetLocalizationKey();
                 })
-                .AddTo(_disposablesForAwake); ;
+                .AddTo(_disposablesForAwake);
+        }
+
+        private void OnEnable()
+        {
+            bgTransform.localScale = _originLocalScale;
         }
 
         private void OnDestroy()
@@ -97,23 +147,10 @@ namespace Nekoyume.UI.Module
                 speechBubble.Hide();
             }
         }
+        
         public void Set(Player player)
         {
-            var requiredLevel = 1;
-            switch (type)
-            {
-                case MenuType.Combination:
-                    requiredLevel = GameConfig.CombinationRequiredLevel;
-                    break;
-                case MenuType.Ranking:
-                    requiredLevel = GameConfig.RankingRequiredLevel;
-                    break;
-                case MenuType.Shop:
-                    requiredLevel = GameConfig.ShopRequiredLevel;
-                    break;
-            }
-
-            IsUnlocked = player.Level >= requiredLevel;
+            IsUnlocked = player.Level >= _requiredLevel;
 
             if (npc)
             {

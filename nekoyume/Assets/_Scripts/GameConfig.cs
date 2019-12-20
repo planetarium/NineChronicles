@@ -44,10 +44,12 @@ namespace Nekoyume
         public const int CombinationDefaultFoodId = 200000;
 
 #if UNITY_EDITOR
+        public const int QuestRequiredLevel = 1;
         public const int CombinationRequiredLevel = 1;
         public const int ShopRequiredLevel = 1;
         public const int RankingRequiredLevel = 1;
 #else
+        public const int QuestRequiredLevel = 1;
         public const int CombinationRequiredLevel = 3;
         public const int ShopRequiredLevel = 7;
         public const int RankingRequiredLevel = 5;

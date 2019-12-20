@@ -7,9 +7,9 @@ namespace Nekoyume.UI.Module
 {
     public class ToggleableButton : MonoBehaviour, IToggleable
     {
-        [SerializeField] public Button button;
-        [SerializeField] public Image toggledOffImage;
-        [SerializeField] private Image toggledOnImage;
+        [SerializeField] public Button button = null;
+        [SerializeField] public Image toggledOffImage = null;
+        [SerializeField] private Image toggledOnImage = null;
 
         private IToggleListener _toggleListener;
         
