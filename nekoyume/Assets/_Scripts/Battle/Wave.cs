@@ -16,18 +16,18 @@ namespace Nekoyume.Battle
             _enemies.Add(enemy);
         }
 
-        public void Spawn(Simulator simulator)
+        public void Spawn(StageSimulator stageSimulator)
         {
             foreach (var enemy in _enemies)
             {
-                simulator.Player.Targets.Add(enemy);
-                simulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
+                stageSimulator.Player.Targets.Add(enemy);
+                stageSimulator.Characters.Enqueue(enemy, StageSimulator.TurnPriority / enemy.SPD);
                 enemy.InitAI();
             }
 
             var enemies = _enemies.Select(enemy => (Enemy) enemy.Clone()).ToList();
             var spawnWave = new SpawnWave(null, enemies, IsBoss);
-            simulator.Log.Add(spawnWave);
+            stageSimulator.Log.Add(spawnWave);
         }
     }
 }

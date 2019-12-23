@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -144,8 +145,9 @@ namespace Nekoyume.UI
 
         private void OnClickRankingInfo(RankingInfo info)
         {
-            // todo: 블록 익스플로러 연결.
-            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarInfo.AvatarAddress));
+//            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarInfo.AvatarAddress));
+            ActionManager.instance.RankingBattle(info.AvatarInfo.AvatarAddress);
+            Find<LoadingScreen>().Show();
         }
 
         private void GetAvatars(DateTimeOffset? dt)
@@ -183,5 +185,13 @@ namespace Nekoyume.UI
                 StartCoroutine(speechBubble.CoShowText());
             }
         }
+
+        public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
+        {
+            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            Find<LoadingScreen>().Close();
+            Close();
+        }
+
     }
 }

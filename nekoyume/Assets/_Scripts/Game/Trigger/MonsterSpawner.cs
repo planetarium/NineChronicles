@@ -14,20 +14,17 @@ namespace Nekoyume.Game.Trigger
 
         private Enemy _enemy;
 
-        private int _stageId;
         private int _wave;
         private const float SpawnOffset = 6.0f;
 
-        public void SetData(int stageId, Enemy enemy)
+        public void SetData(Enemy enemy)
         {
-            _stageId = stageId;
             _enemy = enemy;
             SpawnWave();
         }
 
         private void SpawnWave()
         {
-            var factory = Game.instance.stage.enemyFactory;
             var player = Game.instance.stage.GetComponentInChildren<Character.Player>();
             var offsetX = player.transform.position.x + 2.8f;
             var randIndex = Enumerable.Range(0, spawnPoints.Length / 2)
@@ -37,13 +34,12 @@ namespace Nekoyume.Game.Trigger
                 var pos = new Vector2(
                     spawnPoints[r].x + offsetX,
                     spawnPoints[r].y);
-                factory.Create(_enemy, pos, player);
+                EnemyFactory.Create(_enemy, pos, player);
             }
         }
 
-        public IEnumerator CoSetData(int stageId, List<Enemy> monsters)
+        public IEnumerator CoSetData(List<Enemy> monsters)
         {
-            _stageId = stageId;
             yield return StartCoroutine(CoSpawnWave(monsters));
         }
 
@@ -75,13 +71,35 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        private IEnumerator CoSpawnMonster(Enemy enemy, Vector2 pos, Character.Player player)
+        private static IEnumerator CoSpawnMonster(Enemy enemy, Vector2 pos, Character.Player player)
         {
-            Game.instance.stage.enemyFactory.Create(enemy, pos, player);
+            EnemyFactory.Create(enemy, pos, player);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
         public class InvalidWaveException: Exception
         {}
+
+        public IEnumerator CoSetData(EnemyPlayer enemyPlayer)
+        {
+            yield return StartCoroutine(CoSpawnEnemy(enemyPlayer));
+        }
+
+        private IEnumerator CoSpawnEnemy(EnemyPlayer enemyPlayer)
+        {
+            var stage = Game.instance.stage;
+            var player = stage.GetPlayer();
+
+            var offsetX = player.transform.position.x + SpawnOffset;
+            var pos = new Vector2(offsetX, player.transform.position.y);
+            yield return StartCoroutine(CoSpawnEnemy(enemyPlayer, pos));
+        }
+
+        private static IEnumerator CoSpawnEnemy(EnemyPlayer enemy, Vector2 pos)
+        {
+            EnemyFactory.Create(enemy, pos);
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
+        }
+
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
-using Libplanet.Action;
 using Nekoyume.Action;
 using Nekoyume.Game.Mail;
 using Nekoyume.Manager;
@@ -57,6 +56,7 @@ namespace Nekoyume.BlockChain
             DailyReward();
             ItemEnhancement();
             QuestReward();
+            RankingBattle();
         }
 
         public void Stop()
@@ -273,6 +273,14 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseQuestReward).AddTo(_disposables);
         }
 
+        private void RankingBattle()
+        {
+            ActionBase.EveryRender<RankingBattle>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRankingBattle).AddTo(_disposables);
+        }
+
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
         {
             var itemUsable = evaluation.Action.Result.itemUsable;
@@ -393,6 +401,17 @@ namespace Nekoyume.BlockChain
                 string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
+        {
+            UpdateCurrentAvatarState(eval);
+
+            var actionFailPopup = Widget.Find<ActionFailPopup>();
+            actionFailPopup.CloseCallback = null;
+            actionFailPopup.Close();
+
+            Widget.Find<RankingBoard>().GoToStage(eval);
         }
 
         public void UpdateCurrentAvatarState(AvatarState avatarState)

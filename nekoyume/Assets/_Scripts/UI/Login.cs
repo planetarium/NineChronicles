@@ -1,8 +1,9 @@
 using System;
-using System.IO;
-using Assets.SimpleLocalization;
+using System.Collections.Generic;
 using Nekoyume.BlockChain;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Util;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,8 @@ namespace Nekoyume.UI
     {
         public bool ready = false;
         public GameObject[] slots;
+        public List<Player> players;
+        private ObjectPool _objectPool;
 
         protected override void Awake()
         {
@@ -22,6 +25,9 @@ namespace Nekoyume.UI
             {
                 throw new Exception("Login widget's slots.Length is not equals GameConfig.SlotCount.");
             }
+            _objectPool = Game.Game.instance.stage.objectPool;
+            Game.Event.OnNestEnter.AddListener(ClearPlayers);
+            Game.Event.OnRoomEnter.AddListener(ClearPlayers);
         }
 
         public void SlotClick(int index)
@@ -96,6 +102,17 @@ namespace Nekoyume.UI
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);
+        }
+
+        private void ClearPlayers()
+        {
+            foreach (var player in players)
+            {
+                player.DisableHUD();
+                _objectPool.Remove<Player>(player.gameObject);
+            }
+            _objectPool.ReleaseAll();
+            players.Clear();
         }
     }
 }
