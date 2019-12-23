@@ -95,7 +95,9 @@ namespace Nekoyume.UI
         public IEnumerator InitializeSecond()
         {
             _secondWidgets = new List<Widget>();
-            
+
+            _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
+            yield return null;
             // 일반.
             _secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
@@ -157,8 +159,6 @@ namespace Nekoyume.UI
             yield return null;
             
             // 툴팁류.
-            _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
-            yield return null;
             _secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
