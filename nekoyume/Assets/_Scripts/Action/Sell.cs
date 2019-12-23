@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
+using System.Diagnostics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -9,7 +9,6 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -55,6 +54,11 @@ namespace Nekoyume.Action
                 states = states.SetState(sellerAvatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"Sell exec started.");
+
 
             if (price < 0)
             {
@@ -65,14 +69,20 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Get AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
                 return states;
             }
-            ShopState shopState = new ShopState(d);
+            var shopState = new ShopState(d);
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Get ShopState: {sw.Elapsed}");
+            sw.Restart();
 
-            Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}` " +
+            UnityEngine.Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}` " +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
 
@@ -95,14 +105,25 @@ namespace Nekoyume.Action
                 nonFungibleItem,
                 price
             ));
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Get Register Item: {sw.Elapsed}");
+            sw.Restart();
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
 
-            return states
-                .SetState(sellerAvatarAddress, avatarState.Serialize())
-                .SetState(ctx.Signer, agentState.Serialize())
-                .SetState(ShopState.Address, shopState.Serialize());
+            states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Set AvatarState: {sw.Elapsed}");
+            sw.Restart();
+
+            states = states.SetState(ShopState.Address, shopState.Serialize());
+            sw.Stop();
+            var ended = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"Sell Set ShopState: {sw.Elapsed}");
+            UnityEngine.Debug.Log($"Sell Total Executed Time: {ended - started}");
+
+            return states;
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -59,27 +60,41 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 states = states.SetState(ShopState.Address, MarkChanged);
-                states = states.SetState(sellerAvatarAddress, MarkChanged);
-                return states.SetState(ctx.Signer, MarkChanged);
+                return states.SetState(sellerAvatarAddress, MarkChanged);
             }
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"Sell Cancel exec started.");
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out AgentState agentState, out AvatarState avatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out _, out var avatarState))
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Cancel Get AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
+
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
                 return states;
             }
-            ShopState shopState = new ShopState(d);
+            var shopState = new ShopState(d);
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Cancel Get ShopState: {sw.Elapsed}");
+            sw.Restart();
 
             // 상점에서 아이템을 빼온다.
             if (!shopState.TryUnregister(ctx.Signer, productId, out var outUnregisteredItem))
             {
                 return states;
             }
-            
+
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Cancel Get Unregister Item: {sw.Elapsed}");
+            sw.Restart();
+
             // 메일에 아이템을 넣는다.
             result = new Result
             {
@@ -90,11 +105,21 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
-            
-            return states
-                .SetState(ctx.Signer, agentState.Serialize())
-                .SetState(sellerAvatarAddress, avatarState.Serialize())
-                .SetState(ShopState.Address, shopState.Serialize());
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Cancel Update AvatarState: {sw.Elapsed}");
+            sw.Restart();
+
+            states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
+            sw.Stop();
+            UnityEngine.Debug.Log($"Sell Cancel Set AvatarState: {sw.Elapsed}");
+            sw.Restart();
+
+            states = states.SetState(ShopState.Address, shopState.Serialize());
+            sw.Stop();
+            var ended = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"Sell Cancel Set ShopState: {sw.Elapsed}");
+            UnityEngine.Debug.Log($"Sell Cancel Total Executed Time: {ended - started}");
+            return states;
         }
     }
 }

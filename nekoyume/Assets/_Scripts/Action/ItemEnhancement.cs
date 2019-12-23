@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -13,7 +14,6 @@ using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -49,12 +49,19 @@ namespace Nekoyume.Action
                 states = states.SetState(avatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log("ItemEnhancement exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"ItemEnhancement Get AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
 
             if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable enhancementItem))
             {
@@ -65,6 +72,9 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"ItemEnhancement Get Equipment: {sw.Elapsed}");
+            sw.Restart();
 
             var requiredAP = GetRequiredAp();
             if (avatarState.actionPoint < requiredAP)
@@ -83,6 +93,9 @@ namespace Nekoyume.Action
             }
 
             _tableSheets = TableSheets.FromActionContext(ctx);
+            sw.Stop();
+            UnityEngine.Debug.Log($"ItemEnhancement Get TableSheets: {sw.Elapsed}");
+            sw.Restart();
             var materials = new List<Equipment>();
             var options = new List<object>();
             var materialOptionCount = 0;
@@ -102,7 +115,7 @@ namespace Nekoyume.Action
                 if (materials.Contains(materialEquipment))
                 {
                     // 같은 guid의 아이템이 중복해서 등록된 에러.
-                    Debug.LogWarning($"Duplicate materials found. {materialEquipment}");
+                    UnityEngine.Debug.LogWarning($"Duplicate materials found. {materialEquipment}");
                     return states;
                 }
 
@@ -115,7 +128,7 @@ namespace Nekoyume.Action
                 if (materialEquipment.Data.ItemSubType != enhancementEquipment.Data.ItemSubType)
                 {
                     // 서브 타입이 다른 에러.
-                    Debug.LogWarning($"Expected ItemSubType is {enhancementEquipment.Data.ItemSubType}. " +
+                    UnityEngine.Debug.LogWarning($"Expected ItemSubType is {enhancementEquipment.Data.ItemSubType}. " +
                                      "but Material SubType is {material.Data.ItemSubType}");
                     return states;
                 }
@@ -131,7 +144,9 @@ namespace Nekoyume.Action
                     // 강화도가 다른 에러.
                     return states;
                 }
-
+                sw.Stop();
+                UnityEngine.Debug.Log($"ItemEnhancement Get Material: {sw.Elapsed}");
+                sw.Restart();
                 materialEquipment.Unequip();
                 materials.Add(materialEquipment);
                 var materialOptions = materialEquipment.GetOptions();
@@ -145,6 +160,9 @@ namespace Nekoyume.Action
             var equipmentOptionCount = Math.Max(materialOptionCount, equipmentOptions.Count);
 
             enhancementEquipment = UpgradeEquipment(enhancementEquipment, ctx.Random, options, equipmentOptionCount);
+            sw.Stop();
+            UnityEngine.Debug.Log($"ItemEnhancement Upgrade Equipment: {sw.Elapsed}");
+            sw.Restart();
 
             agentState.gold -= requiredNCG;
 
@@ -152,15 +170,25 @@ namespace Nekoyume.Action
             {
                 avatarState.inventory.RemoveNonFungibleItem(material);
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"ItemEnhancement Remove Materials: {sw.Elapsed}");
+            sw.Restart();
 
             result = new Result {itemUsable = enhancementEquipment};
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex);
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
+            sw.Stop();
+            UnityEngine.Debug.Log($"ItemEnhancement Update AvatarState: {sw.Elapsed}");
+            sw.Restart();
+            states = states.SetState(avatarAddress, avatarState.Serialize());
+            sw.Stop();
+            UnityEngine.Debug.Log($"ItemEnhancement Set AvatarState: {sw.Elapsed}");
+            var ended = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"ItemEnhancement Total Executed Time: {ended - started}");
             return states
-                .SetState(ctx.Signer, agentState.Serialize())
-                .SetState(avatarAddress, avatarState.Serialize());
+                .SetState(ctx.Signer, agentState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
