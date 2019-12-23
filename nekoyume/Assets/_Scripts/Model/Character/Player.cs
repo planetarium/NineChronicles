@@ -140,6 +140,12 @@ namespace Nekoyume.Model
             Simulator.Characters.TryRemove(enemy);
         }
 
+        public void RemoveTarget(EnemyPlayer enemy)
+        {
+            Targets.Remove(enemy);
+            Simulator.Characters.TryRemove(enemy);
+        }
+
         protected override void OnDead()
         {
             base.OnDead();
@@ -235,7 +241,7 @@ namespace Nekoyume.Model
             return map;
         }
 
-        public void Spawn()
+        public virtual void Spawn()
         {
             InitAI();
             var spawn = new SpawnPlayer((CharacterBase) Clone());

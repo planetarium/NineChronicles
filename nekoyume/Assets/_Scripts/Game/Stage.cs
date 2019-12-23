@@ -29,8 +29,6 @@ namespace Nekoyume.Game
         public const float StageStartPosition = -1.2f;
         private const float SkillDelay = 0.1f;
         public ObjectPool objectPool;
-        public PlayerFactory playerFactory;
-        public EnemyFactory enemyFactory;
         public NpcFactory npcFactory;
         public DropItemFactory dropItemFactory;
         public SkillController skillController;
@@ -104,11 +102,12 @@ namespace Nekoyume.Game
         private void OnLoginDetail(int index)
         {
             DOTween.KillAll();
-            var players = GetComponentsInChildren<Character.Player>(true);
-            for (int i = 0; i < players.Length; ++i)
+            var players = Widget.Find<Login>().players;
+            for (var i = 0; i < players.Count; ++i)
             {
-                GameObject playerObject = players[i].gameObject;
-                var anim = players[i].Animator;
+                var player = players[i];
+                var playerObject = player.gameObject;
+                var anim = player.Animator;
                 if (index == i)
                 {
                     var moveTo = new Vector3(-0.05f, -0.5f);
@@ -327,6 +326,7 @@ namespace Nekoyume.Game
             playerCharacter.Set(character, true);
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
+            player.SetActive(true);
 
             var status = Widget.Find<Status>();
             status.UpdatePlayer(playerCharacter);
@@ -344,6 +344,11 @@ namespace Nekoyume.Game
 
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;
+        }
+
+        public IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character)
+        {
+            yield return StartCoroutine(spawner.CoSetData(character));
         }
 
         #region Skill
@@ -546,7 +551,7 @@ namespace Nekoyume.Game
             }
             yield return new WaitForEndOfFrame();
 
-            yield return StartCoroutine(spawner.CoSetData(stageId, enemies));
+            yield return StartCoroutine(spawner.CoSetData(enemies));
         }
 
         public IEnumerator CoGetExp(long exp)

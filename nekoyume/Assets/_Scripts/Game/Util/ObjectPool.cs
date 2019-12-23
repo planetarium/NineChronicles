@@ -88,25 +88,20 @@ namespace Nekoyume.Game.Util
 
         public bool Remove<T>(GameObject go)
         {
-            string name = typeof(T).Name;
-            List<GameObject> list;
-            if (objects.TryGetValue(name, out list))
+            var key = typeof(T).Name;
+            if (objects.TryGetValue(key, out var gameObjects))
             {
                 Destroy(go);
-                return list.Remove(go);
+                return gameObjects.Remove(go);
             }
             return false;
         }
 
         public void ReleaseAll()
         {
-            foreach (var pair in objects)
+            foreach (var go in objects.Select(pair => pair.Value).SelectMany(l => l.Where(go => go != null)))
             {
-                List<GameObject> list = pair.Value;
-                foreach (GameObject go in list)
-                {
-                    go.SetActive(false);
-                }
+                go.SetActive(false);
             }
         }
 

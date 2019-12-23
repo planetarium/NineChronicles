@@ -265,6 +265,23 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
+        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(Address enemyAddress)
+        {
+            var action = new RankingBattle
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.Value.address,
+                enemyAddress = enemyAddress
+            };
+            ProcessAction(action);
+
+            return ActionBase.EveryRender<RankingBattle>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
         public static void PatchTableSheet(string tableName, string tableCsv)
         {
             var action = new PatchTableSheet

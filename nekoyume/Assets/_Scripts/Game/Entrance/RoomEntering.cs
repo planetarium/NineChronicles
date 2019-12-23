@@ -1,6 +1,5 @@
 using System.Collections;
 using Nekoyume.BlockChain;
-using Nekoyume.Game.Controller;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -23,17 +22,9 @@ namespace Nekoyume.Game.Entrance
             Widget.Find<UI.Quest>().Close();
 
             var stage = Game.instance.stage;
-            var objectPool = stage.objectPool;
             stage.stageId = 0;
             stage.LoadBackground("room");
 
-            var clearPlayers = stage.GetComponentsInChildren<Character.Player>();
-            foreach (var clearPlayer in clearPlayers)
-            {
-                clearPlayer.DisableHUD();
-                objectPool.Remove<Character.Player>(clearPlayer.gameObject);
-            }
-            objectPool.ReleaseAll();
             yield return new WaitForEndOfFrame();
             stage.selectedPlayer = null;
             if (!(stage.AvatarState is null))

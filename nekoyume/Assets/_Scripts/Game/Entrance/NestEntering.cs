@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
@@ -19,14 +20,6 @@ namespace Nekoyume.Game.Entrance
 
             Widget.Find<Login>().ready = false;
 
-            var objectPool = GetComponent<Util.ObjectPool>();
-            var clearPlayers = GetComponentsInChildren<Player>(true);
-            foreach (var clearPlayer in clearPlayers)
-            {
-                clearPlayer.DisableHUD();
-                objectPool.Remove<Player>(clearPlayer.gameObject);
-            }
-
             stage.selectedPlayer = null;
             yield return null;
 
@@ -36,6 +29,7 @@ namespace Nekoyume.Game.Entrance
                 throw new NotFoundComponentException<PlayerFactory>();
             }
 
+            var players = new List<Player>();
             for (var i = 0; i < GameConfig.SlotCount; i++)
             {
                 Player player;
@@ -74,6 +68,7 @@ namespace Nekoyume.Game.Entrance
                 seq.Append(playerTransform.DOMove(seqPos, Random.Range(4.0f, 5.0f)));
                 seq.Append(playerTransform.DOMove(endPos, Random.Range(4.0f, 5.0f)));
                 seq.Play().SetDelay(2.0f).SetLoops(-1);
+                players.Add(player);
 
                 yield return new WaitForSeconds(0.2f);
             }
@@ -83,6 +78,7 @@ namespace Nekoyume.Game.Entrance
             yield return new WaitForSeconds(1.0f);
 
             Widget.Find<Login>().ready = true;
+            Widget.Find<Login>().players = players;
 
             Destroy(this);
         }

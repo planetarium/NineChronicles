@@ -7,6 +7,7 @@ namespace Nekoyume.Model
     public interface IStage
     {
         IEnumerator CoSpawnPlayer(Player character);
+        IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character);
 
         #region Skill
 
