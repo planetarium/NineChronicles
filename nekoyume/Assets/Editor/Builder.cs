@@ -135,6 +135,12 @@ namespace Editor
             };
 
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            DownloadSnapshotManager(buildTarget, targetDirName);
+            File.Copy(
+                Path.Combine(Application.dataPath, "README.txt"),
+                Path.Combine(targetDirName, "README.txt")
+            );
+            
             BuildSummary summary = report.summary;
 
             if (summary.result == BuildResult.Succeeded)
