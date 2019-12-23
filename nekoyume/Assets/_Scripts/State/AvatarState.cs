@@ -152,9 +152,9 @@ namespace Nekoyume.State
             NameWithHash = $"{name} <size=80%><color=#A68F7E>#{address.ToHex().Substring(0, 4)}</color></size>";
         }
 
-        public void Update(Simulator simulator)
+        public void Update(StageSimulator stageSimulator)
         {
-            var player = simulator.Player;
+            var player = stageSimulator.Player;
             characterId = player.RowData.Id;
             level = player.Level;
             exp = player.Exp.Current;
@@ -170,17 +170,17 @@ namespace Nekoyume.State
                 eventMap.Add(pair);
             }
 
-            if (simulator.Result == BattleLog.Result.Win)
+            if (stageSimulator.Result == BattleLog.Result.Win)
             {
-                stageMap.Add(new KeyValuePair<int, int>(simulator.StageId, 1));
+                stageMap.Add(new KeyValuePair<int, int>(stageSimulator.StageId, 1));
             }
 
-            foreach (var pair in simulator.ItemMap)
+            foreach (var pair in stageSimulator.ItemMap)
             {
                 itemMap.Add(pair);
             }
 
-            UpdateStageQuest(simulator.rewards);
+            UpdateStageQuest(stageSimulator.Rewards);
         }
 
         public object Clone()

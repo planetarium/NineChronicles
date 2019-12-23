@@ -116,7 +116,7 @@ namespace Nekoyume.Action
             UnityEngine.Debug.Log($"HAS Initialize TableSheets: {sw.Elapsed}");
             sw.Restart();
 
-            var simulator = new Simulator(
+            var simulator = new StageSimulator(
                 ctx.Random, 
                 avatarState, 
                 foods, 

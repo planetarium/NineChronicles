@@ -361,7 +361,7 @@ namespace Nekoyume
             if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
                 throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
-            var simulator = new Simulator(new DebugRandom(), States.Instance.CurrentAvatarState.Value,
+            var simulator = new StageSimulator(new DebugRandom(), States.Instance.CurrentAvatarState.Value,
                 new List<Consumable>(), worldRow.Id, stageId, _selectedSkill);
             simulator.Simulate();
             simulator.Log.result = _result;
