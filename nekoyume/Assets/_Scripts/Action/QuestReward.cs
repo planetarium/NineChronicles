@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -23,11 +25,18 @@ namespace Nekoyume.Action
                 states = states.SetState(avatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log("QuestReward exec started.");
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out var agentState, out var avatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out _, out var avatarState))
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"QuestReward Get AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
 
             var quest = avatarState.questList.FirstOrDefault(i => i.Id == questId && i.Complete && !i.Receive);
             if (quest is null)
@@ -36,13 +45,19 @@ namespace Nekoyume.Action
             }
 
             avatarState.UpdateFromQuestReward(quest, ctx.Random, ctx);
+            sw.Stop();
+            UnityEngine.Debug.Log($"QuestReward Update AvatarState: {sw.Elapsed}");
+            sw.Restart();
 
             quest.Receive = true;
 
             Result = quest;
-
-            return states
-                .SetState(avatarAddress, avatarState.Serialize());
+            states = states.SetState(avatarAddress, avatarState.Serialize());
+            sw.Stop();
+            var ended = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"QuestReward Set AvatarState: {sw.Elapsed}");
+            UnityEngine.Debug.Log($"QuestReward Total Executed Time: {ended - started}");
+            return states;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
