@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
@@ -10,7 +12,6 @@ using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -61,8 +62,12 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            AgentState agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);
-            AvatarState avatarState = states.GetAvatarState(avatarAddress);
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"CreateAvatar exec started.");
+            var agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);
+            var avatarState = states.GetAvatarState(avatarAddress);
             if (!(avatarState is null))
             {
                 return states;
@@ -72,8 +77,11 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"CreateAvatar Get AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
 
-            Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}` " +
+            UnityEngine.Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}` " +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
 
@@ -81,6 +89,8 @@ namespace Nekoyume.Action
             
             // Avoid NullReferenceException in test
             avatarState = CreateAvatarState(name, avatarAddress, ctx);
+            sw.Stop();
+            UnityEngine.Debug.Log($"CreateAvatar CreateAvatarState: {sw.Elapsed}");
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;
@@ -88,7 +98,8 @@ namespace Nekoyume.Action
             if (tail < 0) tail = 0;
 
             avatarState.Customize(hair, lens, ear, tail);
-
+            var ended = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"CreateAvatar Total Executed Time: {ended - started}");
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize());
