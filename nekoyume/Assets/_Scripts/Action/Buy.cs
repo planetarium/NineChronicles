@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -10,7 +11,6 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
-using UnityEngine;
 
 namespace Nekoyume.Action
 {
@@ -104,19 +104,29 @@ namespace Nekoyume.Action
             if (ctx.Signer.Equals(sellerAgentAddress))
                 return states;
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out AgentState buyerAgentState, out AvatarState buyerAvatarState))
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"Buy exec started.");
+
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out var buyerAgentState, out var buyerAvatarState))
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"Buy Get Buyer AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
 
-            ShopState shopState;
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
                 return states;
             }
-            shopState = new ShopState(d);
+            var shopState = new ShopState(d);
+            sw.Stop();
+            UnityEngine.Debug.Log($"Buy Get ShopState: {sw.Elapsed}");
+            sw.Restart();
 
-            Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`" +
+            UnityEngine.Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`" +
                       $"node : `{States.Instance?.AgentState?.Value?.address}` " +
                       $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
             // 상점에서 구매할 아이템을 찾는다.
@@ -124,11 +134,17 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"Buy Get Item: {sw.Elapsed}");
+            sw.Restart();
 
-            if (!states.TryGetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out AgentState sellerAgentState, out AvatarState sellerAvatarState))
+            if (!states.TryGetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out var sellerAgentState, out var sellerAvatarState))
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"Buy Get Seller AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
 
             // 돈은 있냐?
             if (buyerAgentState.gold < outPair.Value.Price)
@@ -173,12 +189,25 @@ namespace Nekoyume.Action
             sellerAvatarState.updatedAt = timestamp;
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
+            states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
+            sw.Stop();
+            UnityEngine.Debug.Log($"Buy Set Seller AvatarState: {sw.Elapsed}");
+            sw.Restart();
+
+            states = states.SetState(buyerAvatarAddress, buyerAvatarState.Serialize());
+            sw.Stop();
+            UnityEngine.Debug.Log($"Buy Set Buyer AvatarState: {sw.Elapsed}");
+            sw.Restart();
+
+            states = states.SetState(ShopState.Address, shopState.Serialize());
+            sw.Stop();
+            var ended = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"Buy Set ShopState: {sw.Elapsed}");
+            UnityEngine.Debug.Log($"Buy Total Executed Time: {ended - started}");
+
             return states
-                .SetState(buyerAvatarAddress, buyerAvatarState.Serialize())
                 .SetState(ctx.Signer, buyerAgentState.Serialize())
-                .SetState(sellerAvatarAddress, sellerAvatarState.Serialize())
-                .SetState(sellerAgentAddress, sellerAgentState.Serialize())
-                .SetState(ShopState.Address, shopState.Serialize());
+                .SetState(sellerAgentAddress, sellerAgentState.Serialize());
         }
     }
 }
