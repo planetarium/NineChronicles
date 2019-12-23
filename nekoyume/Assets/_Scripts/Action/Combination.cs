@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using Bencodex.Types;
 using DecimalMath;
@@ -14,7 +15,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using UnityEngine;
 using Material = Nekoyume.Game.Item.Material;
 
 namespace Nekoyume.Action
@@ -80,12 +80,19 @@ namespace Nekoyume.Action
                 states = states.SetState(AvatarAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+            var sw = new Stopwatch();
+            sw.Start();
+            var started = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log("Combination exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
                 return states;
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"Combination Get AgentAvatarStates: {sw.Elapsed}");
+            sw.Restart();
 
             if (avatarState.level < GameConfig.CombinationRequiredLevel)
             {
@@ -93,10 +100,13 @@ namespace Nekoyume.Action
             }
             
             _tableSheets = TableSheets.FromActionContext(ctx);
+            sw.Stop();
+            UnityEngine.Debug.Log($"Combination Get TableSheetsState: {sw.Elapsed}");
+            sw.Restart();
 
-            Debug.Log($"Execute Combination. player : `{AvatarAddress}` " +
-                      $"node : `{States.Instance?.AgentState?.Value?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
+            UnityEngine.Debug.Log($"Execute Combination. player : `{AvatarAddress}` " +
+                                  $"node : `{States.Instance?.AgentState?.Value?.address}` " +
+                                  $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
 
             // 사용한 재료를 인벤토리에서 제거.
             foreach (var pair in Materials)
@@ -107,6 +117,9 @@ namespace Nekoyume.Action
                     return states;
                 }
             }
+            sw.Stop();
+            UnityEngine.Debug.Log($"Combination Remove Materials: {sw.Elapsed}");
+            sw.Restart();
 
             // 액션 결과
             Result = new ResultModel
@@ -119,6 +132,9 @@ namespace Nekoyume.Action
             var equipmentMaterials = materialRows
                 .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.EquipmentMaterial)
                 .ToList();
+            sw.Stop();
+            UnityEngine.Debug.Log($"Combination Get EquipmentMaterial rows: {sw.Elapsed}");
+            sw.Restart();
             if (equipmentMaterials.Count > 0)
             {
                 if (avatarState.actionPoint < GameConfig.CombineEquipmentCostAP)
@@ -146,6 +162,9 @@ namespace Nekoyume.Action
                 var monsterParts = materialRows
                     .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.MonsterPart)
                     .ToList();
+                sw.Stop();
+                UnityEngine.Debug.Log($"Combination Get MonsterPart rows: {sw.Elapsed}");
+                sw.Restart();
                 var monsterPartsCount = monsterParts.Count;
                 if (monsterPartsCount == 0)
                 {
@@ -196,14 +215,22 @@ namespace Nekoyume.Action
                     // 장비 생성 실패.
                     return states;
                 }
+                sw.Stop();
+                UnityEngine.Debug.Log($"Combination Create Equipment: {sw.Elapsed}");
+                sw.Restart();
 
                 foreach (var monsterPart in monsterParts)
                 {
                     if (TryGetStat(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var statMap))
                         equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-
+                    sw.Stop();
+                    UnityEngine.Debug.Log($"Combination Add Additional Stats: {sw.Elapsed}");
+                    sw.Restart();
                     if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill, _tableSheets))
                         equipment.Skills.Add(skill);
+                    sw.Stop();
+                    UnityEngine.Debug.Log($"Combination Add Skill: {sw.Elapsed}");
+                    sw.Restart();
                 }
 
                 var buffSkillCount = Math.Min(
@@ -214,12 +241,18 @@ namespace Nekoyume.Action
                 {
                     if (TryGetBuffSkill(ctx.Random, out var buffSkill))
                         equipment.BuffSkills.Add(buffSkill);
+                    sw.Stop();
+                    UnityEngine.Debug.Log($"Combination Add Buff Skill: {sw.Elapsed}");
+                    sw.Restart();
                 }
 
                 Result.itemUsable = equipment;
                 var mail = new CombinationMail(Result, ctx.BlockIndex);
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(equipment);
+                sw.Stop();
+                UnityEngine.Debug.Log($"Combination Update AvatarState: {sw.Elapsed}");
+                sw.Restart();
             }
             else
             {
@@ -228,7 +261,10 @@ namespace Nekoyume.Action
                 var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
                 var foodCount = materialRows.Min(pair => pair.Value);
                 var costAP = foodCount * GameConfig.CombineConsumableCostAP;
-                
+                sw.Stop();
+                UnityEngine.Debug.Log($"Combination Get Food Material rows: {sw.Elapsed}");
+                sw.Restart();
+
                 if (avatarState.actionPoint < costAP)
                 {
                     // ap 부족 에러.
@@ -242,6 +278,9 @@ namespace Nekoyume.Action
                 var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
                     ? GameConfig.CombinationDefaultFoodId
                     : recipeRow.ResultConsumableItemId;
+                sw.Stop();
+                UnityEngine.Debug.Log($"Combination Get Food id: {sw.Elapsed}");
+                sw.Restart();
 
                 if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
                 {
@@ -258,14 +297,20 @@ namespace Nekoyume.Action
                     var mail = new CombinationMail(Result, ctx.BlockIndex);
                     avatarState.Update(mail);
                     avatarState.UpdateFromCombination(itemUsable);
+                    sw.Stop();
+                    UnityEngine.Debug.Log($"Combination Update AvatarState: {sw.Elapsed}");
+                    sw.Restart();
                 }
             }
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
-            return states
-                .SetState(AvatarAddress, avatarState.Serialize())
-                .SetState(ctx.Signer, agentState.Serialize());
+            states = states.SetState(AvatarAddress, avatarState.Serialize());
+            sw.Stop();
+            UnityEngine.Debug.Log($"Combination Set AvatarState: {sw.Elapsed}");
+            var ended = DateTimeOffset.UtcNow;
+            UnityEngine.Debug.Log($"Combination Total Executed Time: {ended - started}");
+            return states.SetState(ctx.Signer, agentState.Serialize());
         }
 
         private static ElementalType GetElementalType(IRandom random,
