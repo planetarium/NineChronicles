@@ -1,4 +1,3 @@
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI;

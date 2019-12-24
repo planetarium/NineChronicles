@@ -2,7 +2,6 @@ using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -24,7 +23,27 @@ namespace Nekoyume.UI
         public ConfirmDelegate CloseCallback { get; set; }
         public Blur blur;
 
+        public override void Show()
+        {
+            base.Show();
+            blur?.Show();
+        }
+
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
+            bool localize = true)
+        {
+            if (gameObject.activeSelf)
+            {
+                Close(true);
+                Show(title, content, labelYes, labelNo, localize);
+                return;
+            }
+
+            Set(title, content, labelYes, labelNo, localize);
+            Show();
+        }
+
+        public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
@@ -40,15 +59,12 @@ namespace Nekoyume.UI
             {
                 this.title.text = title;
                 this.content.text = content;
-                this.labelYes.text = "OK";
-                this.labelNo.text = "CANCEL";
+                this.labelYes.text = labelYes;
+                this.labelNo.text = labelNo;
             }
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
-
-            base.Show();
-            blur?.Show();
         }
 
         public void Yes()

@@ -14,6 +14,8 @@ namespace Nekoyume.UI.Module
 
         protected void Awake()
         {
+            IsToggleable = true;
+
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -24,7 +26,7 @@ namespace Nekoyume.UI.Module
         #region IToggleable
 
         public string Name => name;
-        
+        public bool IsToggleable { get; set; }
         public bool IsToggledOn => effectImage.enabled;
 
         public void SetToggleListener(IToggleListener toggleListener)
