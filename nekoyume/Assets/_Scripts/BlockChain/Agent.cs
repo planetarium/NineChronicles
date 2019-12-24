@@ -493,7 +493,6 @@ namespace Nekoyume.BlockChain
                 })
                 .Wait(SwarmLinger + 1 * 1000);
 
-            States.Instance.Dispose();
             SaveQueuedActions();
             disposed = true;
         }

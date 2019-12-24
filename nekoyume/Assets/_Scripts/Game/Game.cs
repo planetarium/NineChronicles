@@ -38,11 +38,12 @@ namespace Nekoyume.Game
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
 
+        private States _states;
         private Agent _agent;
         
-        [SerializeField] private Stage stage;
-        
-        public States States { get; private set; }
+        [SerializeField] private Stage stage = null;
+
+        public States States => _states is null || _states.IsDisposed ? _states = new States() : _states;
         public Agent Agent => _agent;
         public Stage Stage => stage;
 
@@ -61,7 +62,6 @@ namespace Nekoyume.Game
 #else
             LocalizationManager.Initialize();
 #endif
-            States = new States();
             MainCanvas.instance.InitializeFirst();
         }
 

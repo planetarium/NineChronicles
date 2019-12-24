@@ -9,6 +9,8 @@ namespace Nekoyume.State
     public class States : IDisposable
     {
         public static States Instance => Game.Game.instance.States;
+        
+        public bool IsDisposed { get; private set; }
 
         public readonly ReactiveProperty<AgentState> AgentState = new ReactiveProperty<AgentState>();
         public readonly ReactiveDictionary<int, AvatarState> AvatarStates = new ReactiveDictionary<int, AvatarState>();
@@ -19,6 +21,8 @@ namespace Nekoyume.State
 
         public States()
         {
+            IsDisposed = false;
+            
             AgentState.Subscribe(SubscribeAgent);
             AvatarStates.ObserveAdd().Subscribe(SubscribeAvatarStatesAdd);
             AvatarStates.ObserveRemove().Subscribe(SubscribeAvatarStatesRemove);
@@ -32,6 +36,8 @@ namespace Nekoyume.State
         
         public void Dispose()
         {
+            IsDisposed = true;
+            
             AgentState?.Dispose();
             AvatarStates?.Dispose();
             CurrentAvatarKey?.Dispose();

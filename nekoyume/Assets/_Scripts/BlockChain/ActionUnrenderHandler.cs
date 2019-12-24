@@ -20,22 +20,6 @@ namespace Nekoyume.BlockChain
 
         public void Start()
         {
-            // Shop();
-            // Ranking();
-            // RewardGold();
-            // CreateAvatar();
-            // DeleteAvatar();
-            // HackAndSlash();
-            // Combination();
-            // Sell();
-            // SellCancellation();
-            // Buy();
-            // RankingReward();
-            // AddItem();
-            // AddGold();
-            // DailyReward();
-            // ItemEnhancement();
-            // QuestReward();
         }
 
         public void Stop()
@@ -43,5 +27,4 @@ namespace Nekoyume.BlockChain
             _disposables.DisposeAllAndClear();
         }
     }
-
 }
