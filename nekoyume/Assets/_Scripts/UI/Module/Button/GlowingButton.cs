@@ -1,5 +1,4 @@
 using Assets.SimpleLocalization;
-using Nekoyume.UI.Tween;
 using System;
 using TMPro;
 using UniRx;
@@ -7,11 +6,11 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class GlowingButton : NormalButton
+    public class GlowingButton : ToggleableButton
     {
         public class Model : IDisposable
         {
-            public readonly ReactiveProperty<bool> IsEnabled = new ReactiveProperty<bool>(false);
+            public readonly ReactiveProperty<bool> IsEnabled = new ReactiveProperty<bool>();
 
             public void Dispose()
             {
@@ -19,8 +18,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public GraphicAlphaTweener imageTweener;
-        public GraphicAlphaTweener textTweener;
+        public Image glowImage;
         public TextMeshProUGUI glowText;
 
         public readonly Model SharedModel = new Model();
@@ -28,12 +26,9 @@ namespace Nekoyume.UI.Module
         protected override void Awake()
         {
             base.Awake();
-            glowText.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
-            SharedModel.IsEnabled.Subscribe(value =>
-            {
-                imageTweener.enabled = value;
-                textTweener.enabled = value;
-            }).AddTo(gameObject);
+
+            toggledOnText.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
+            SharedModel.IsEnabled.SubscribeTo(glowImage.gameObject).AddTo(gameObject);
         }
     }
 }

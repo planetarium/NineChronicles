@@ -136,6 +136,8 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            Find<BottomMenu>().Close();
+
             foreach (var slot in consumableSlots)
             {
                 slot.Unequip();

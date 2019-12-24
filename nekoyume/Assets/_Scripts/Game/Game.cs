@@ -136,7 +136,7 @@ namespace Nekoyume.Game
                 Application.Quit();
 #endif
             };
-            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT");
+            confirm.Set("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT");
         }
 
         private void PlayMouseOnClickVFX(Vector3 position)

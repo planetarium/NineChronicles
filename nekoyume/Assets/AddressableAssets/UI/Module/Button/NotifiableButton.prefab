@@ -494,12 +494,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe56f7032221468393dbdc9b17a70dc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 7987499385581054481}
-  image: {fileID: 4762450328774488394}
   button: {fileID: 6658072964451777913}
+  toggledOffText: {fileID: 7987499385581054481}
+  toggledOffImage: {fileID: 4762450328774488394}
+  toggledOnText: {fileID: 1571147999940200585}
+  toggledOnImage: {fileID: 4920672120595063965}
   localizationKey: 
-  selectedText: {fileID: 1571147999940200585}
-  selectedImage: {fileID: 4920672120595063965}
   hasNotificationImage: {fileID: 1180201202315359299}
 --- !u!1 &7660063735809131133
 GameObject:

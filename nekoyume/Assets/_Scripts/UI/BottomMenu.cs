@@ -42,14 +42,15 @@ namespace Nekoyume.UI.Module
         }
 
         // 네비게이션 버튼.
-        public NormalButton quitButton;
+        // todo: 이놈들도 ToggleableButton으로 바꿔야 함..
         public NormalButton mainButton;
         public NormalButton backButton;
-        public GlowingButton exitButton;
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
         public IToggleGroup ToggleGroup => _toggleGroup;
+        public ToggleableButton quitButton;
+        public GlowingButton exitButton;
         public NotifiableButton chatButton;
         public NotifiableButton mailButton;
         public NotifiableButton questButton;
@@ -76,10 +77,14 @@ namespace Nekoyume.UI.Module
             quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
             exitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
 
+            quitButton.SetWidgetType<Confirm>();
+            exitButton.SetWidgetType<Confirm>();
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
             characterButton.SetWidgetType<StatusDetail>();
             inventoryButton.SetWidgetType<UI.Inventory>();
+            settingsButton.SetWidgetType<Settings>();
+            chatButton.SetWidgetType<Confirm>();
             // todo: 지금 월드맵 띄우는 것을 위젯으로 빼고, 여기서 설정하기?
             // worldMapButton.SetWidgetType<WorldMapPaper>();
 
@@ -87,10 +92,10 @@ namespace Nekoyume.UI.Module
             // 미구현
             illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
             illustratedBookButton.SetWidgetType<Alert>();
-            settingsButton.SetWidgetType<Settings>();
-            chatButton.SetWidgetType<Confirm>();
 
             _toggleGroup = new ToggleGroup();
+            _toggleGroup.RegisterToggleable(quitButton);
+            _toggleGroup.RegisterToggleable(exitButton);
             _toggleGroup.RegisterToggleable(mailButton);
             _toggleGroup.RegisterToggleable(questButton);
             _toggleGroup.RegisterToggleable(illustratedBookButton);
@@ -129,7 +134,7 @@ namespace Nekoyume.UI.Module
                     return;
                 Application.OpenURL(GameConfig.DiscordLink);
             };
-            confirm?.Show("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT");
+            confirm?.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT");
         }
 
         private void SubscribeOnClick(Unit unit)
