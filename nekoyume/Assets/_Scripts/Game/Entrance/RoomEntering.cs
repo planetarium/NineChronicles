@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Entrance
             Widget.Find<StatusDetail>().Close();
             Widget.Find<UI.Quest>().Close();
 
-            var stage = Game.instance.stage;
+            var stage = Game.instance.Stage;
             stage.stageId = 0;
             stage.LoadBackground("room");
 

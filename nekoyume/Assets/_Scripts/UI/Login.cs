@@ -4,6 +4,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Util;
+using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -25,7 +26,7 @@ namespace Nekoyume.UI
             {
                 throw new Exception("Login widget's slots.Length is not equals GameConfig.SlotCount.");
             }
-            _objectPool = Game.Game.instance.stage.objectPool;
+            _objectPool = Game.Game.instance.Stage.objectPool;
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
             Game.Event.OnRoomEnter.AddListener(ClearPlayers);
         }
@@ -77,7 +78,7 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            var stage = Game.Game.instance.stage;
+            var stage = Game.Game.instance.Stage;
             for (var i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];

@@ -2,6 +2,7 @@
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Quest;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using System;
 using System.Collections.Generic;

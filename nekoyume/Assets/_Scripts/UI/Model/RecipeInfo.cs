@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.BlockChain;
+using Nekoyume.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.UI.Model

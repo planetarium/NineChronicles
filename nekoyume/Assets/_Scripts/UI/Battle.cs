@@ -50,8 +50,7 @@ namespace Nekoyume.UI
 
         public void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
         {
-            var stage = Game.Game.instance.stage;
-            
+            var stage = Game.Game.instance.Stage;
             if (stage.isExitReserved)
             {
                 stage.isExitReserved = false;
@@ -112,7 +111,8 @@ namespace Nekoyume.UI
                 toggleable.SetToggledOn();
                 if ((ToggleableButton) toggleable == repeatButton)
                 {
-                    Game.Game.instance.stage.repeatStage = true;
+                    Game.Game.instance.Stage.repeatStage = true;
+                    SetExitButtonToggledOff();
                 }
             }
         }
@@ -122,7 +122,7 @@ namespace Nekoyume.UI
             toggleable.SetToggledOff();
             if ((ToggleableButton) toggleable == repeatButton)
             {
-                Game.Game.instance.stage.repeatStage = false;
+                Game.Game.instance.Stage.repeatStage = false;
             }
         }
 

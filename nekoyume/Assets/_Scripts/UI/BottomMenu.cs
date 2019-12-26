@@ -5,6 +5,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
+using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 

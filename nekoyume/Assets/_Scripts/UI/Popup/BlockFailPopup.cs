@@ -21,7 +21,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoCheckBlockIndex()
         {
-            yield return new WaitWhile(() => Game.Game.instance.agent.BlockIndex == _index);
+            yield return new WaitWhile(() => Game.Game.instance.Agent.BlockIndex == _index);
             CloseCallback = null;
             Close();
         }

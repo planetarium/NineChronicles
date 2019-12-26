@@ -1,20 +1,16 @@
-using System.IO;
-using Nekoyume.Action;
-using Nekoyume.Model;
-using Nekoyume.State;
+using System;
 using UniRx;
 
-namespace Nekoyume.BlockChain
+namespace Nekoyume.State
 {
     /// <summary>
     /// 각 주소 고유의 상태들을 모아서 데이터 지역성을 확보한다.
     /// </summary>
-    public class States
+    public class States : IDisposable
     {
-        public const string CurrentAvatarFileNameFormat = "agent_{0}_avatar_{1}.dat";
+        public static States Instance => Game.Game.instance.States;
         
-        public static States Instance => _instance ?? (_instance = new States());
-        private static States _instance;
+        public bool IsDisposed { get; private set; }
 
         public readonly ReactiveProperty<AgentState> AgentState = new ReactiveProperty<AgentState>();
         public readonly ReactiveDictionary<int, AvatarState> AvatarStates = new ReactiveDictionary<int, AvatarState>();
@@ -23,8 +19,10 @@ namespace Nekoyume.BlockChain
         public readonly ReactiveProperty<RankingState> RankingState = new ReactiveProperty<RankingState>();
         public readonly ReactiveProperty<ShopState> ShopState = new ReactiveProperty<ShopState>();
 
-        private States()
+        public States()
         {
+            IsDisposed = false;
+            
             AgentState.Subscribe(SubscribeAgent);
             AvatarStates.ObserveAdd().Subscribe(SubscribeAvatarStatesAdd);
             AvatarStates.ObserveRemove().Subscribe(SubscribeAvatarStatesRemove);
@@ -35,24 +33,36 @@ namespace Nekoyume.BlockChain
             RankingState.Subscribe(SubscribeRanking);
             ShopState.Subscribe(SubscribeShop);
         }
+        
+        public void Dispose()
+        {
+            IsDisposed = true;
+            
+            AgentState?.Dispose();
+            AvatarStates?.Dispose();
+            CurrentAvatarKey?.Dispose();
+            CurrentAvatarState?.Dispose();
+            RankingState?.Dispose();
+            ShopState?.Dispose();
+        }
 
         #region Subscribe
-        
+
         private static void SubscribeAgent(AgentState value)
         {
             ReactiveAgentState.Initialize(value);
         }
-        
+
         private static void SubscribeCurrentAvatar(AvatarState value)
         {
             ReactiveCurrentAvatarState.Initialize(value);
         }
-        
+
         private static void SubscribeRanking(RankingState value)
         {
             ReactiveRankingState.Initialize(value);
         }
-        
+
         private static void SubscribeShop(ShopState value)
         {
             ReactiveShopState.Initialize(value);
@@ -65,7 +75,7 @@ namespace Nekoyume.BlockChain
                 CurrentAvatarState.Value = AvatarStates[e.Key];
             }
         }
-        
+
         private void SubscribeAvatarStatesRemove(DictionaryRemoveEvent<int, AvatarState> e)
         {
             if (e.Key == CurrentAvatarKey.Value)
@@ -73,7 +83,7 @@ namespace Nekoyume.BlockChain
                 CurrentAvatarKey.Value = -1;
             }
         }
-        
+
         private void SubscribeAvatarStatesReplace(DictionaryReplaceEvent<int, AvatarState> e)
         {
             if (e.Key == CurrentAvatarKey.Value)
@@ -81,7 +91,7 @@ namespace Nekoyume.BlockChain
                 SubscribeCurrentAvatarKey(e.Key);
             }
         }
-        
+
         private void SubscribeAvatarStatesReset(Unit unit)
         {
             CurrentAvatarKey.Value = -1;
@@ -99,11 +109,5 @@ namespace Nekoyume.BlockChain
         }
 
         #endregion
-
-        internal static void Dispose()
-        {
-            _instance = null;
-        }
-
     }
 }

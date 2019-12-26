@@ -19,22 +19,19 @@ namespace Nekoyume.BlockChain
     ///       이를 핸들링하면, 즉시 게임 정보에 반영시길 수 없기 때문에 에러가 발생함.
     /// 참고 : 이후 언랜더 처리를 고려한 해법이 필요함.
     /// 해법 1: 랜더 단계에서 얻는 `eval` 자체 혹은 변경점을 queue에 넣고, 게임의 상태에 따라 꺼내 쓰도록.
-    ///
-    /// ToDo. `ActionRenderHandler`의 형태가 완성되면, `ActionUnrenderHandler`도 작성해야 함.
     /// </summary>
-    public class ActionRenderHandler
+    public class ActionRenderHandler : ActionHandler
     {
         private static class Singleton
         {
             internal static readonly ActionRenderHandler Value = new ActionRenderHandler();
         }
 
-        public static readonly ActionRenderHandler Instance = Singleton.Value;
+        public static ActionRenderHandler Instance => Singleton.Value;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        public bool Pending;
 
-        private ActionRenderHandler()
+        private ActionRenderHandler() : base()
         {
         }
 
@@ -62,77 +59,6 @@ namespace Nekoyume.BlockChain
         public void Stop()
         {
             _disposables.DisposeAllAndClear();
-        }
-
-        private bool ValidateEvaluationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            if (States.Instance.AgentState.Value == null)
-            {
-                return false;
-            }
-
-            return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.AgentState.Value.address);
-        }
-
-        private bool ValidateEvaluationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation)
-            where T : ActionBase =>
-            !(States.Instance.CurrentAvatarState.Value is null)
-            && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.CurrentAvatarState.Value.address);
-
-        private AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            var agentAddress = States.Instance.AgentState.Value.address;
-            return evaluation.OutputStates.GetAgentState(agentAddress);
-        }
-
-        private void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
-                string.Join(",", evaluation.OutputStates.UpdatedAddresses));
-            var state = GetAgentState(evaluation);
-            UpdateAgentState(state);
-        }
-
-        private void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
-        {
-            Debug.LogFormat("Called UpdateAvatarState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
-                string.Join(",", evaluation.OutputStates.UpdatedAddresses));
-            if (!States.Instance.AgentState.Value.avatarAddresses.ContainsKey(index))
-            {
-                States.Instance.AvatarStates.Remove(index);
-                AvatarManager.DeleteAvatarPrivateKey(index);
-                return;
-            }
-
-            var avatarAddress = States.Instance.AgentState.Value.avatarAddresses[index];
-            var avatarState = evaluation.OutputStates.GetAvatarState(avatarAddress);
-            if (avatarState is null)
-            {
-                return;
-            }
-
-            UpdateAvatarState(avatarState, index);
-        }
-
-        private void UpdateCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            //전투중이면 게임에서의 아바타상태를 바로 업데이트하지말고 쌓아둔다.
-            var avatarState = evaluation.OutputStates.GetAvatarState(States.Instance.CurrentAvatarState.Value.address);
-            UpdateCurrentAvatarState(avatarState);
-        }
-
-        private void UpdateShopState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            States.Instance.ShopState.Value = new ShopState(
-                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(ShopState.Address)
-            );
-        }
-
-        private void UpdateRankingState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            States.Instance.RankingState.Value = new RankingState(
-                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(RankingState.Address)
-            );
         }
 
         private void Shop()
@@ -191,7 +117,7 @@ namespace Nekoyume.BlockChain
 
         private void Combination()
         {
-            ActionBase.EveryRender<Action.Combination>()
+            ActionBase.EveryRender<Combination>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombination).AddTo(_disposables);
@@ -239,7 +165,7 @@ namespace Nekoyume.BlockChain
 
         private void AddGold()
         {
-            ActionBase.EveryRender<AddItem>()
+            ActionBase.EveryRender<AddGold>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
@@ -298,37 +224,6 @@ namespace Nekoyume.BlockChain
                 UI.Notification.Push(MailType.Workshop, format);
             }
             UpdateCurrentAvatarState(evaluation);
-        }
-
-        private void UpdateAvatarState(AvatarState avatarState, int index)
-        {
-            if (States.Instance.AvatarStates.ContainsKey(index))
-            {
-                States.Instance.AvatarStates[index] = avatarState;
-            }
-            else
-            {
-                States.Instance.AvatarStates.Add(index, avatarState);
-            }
-        }
-
-        private static void UpdateAgentState(AgentState state)
-        {
-            States.Instance.AgentState.Value = state;
-        }
-
-        public void UpdateLocalAvatarState(AvatarState avatarState, int index)
-        {
-            Debug.LogFormat("Update local avatarState. agentAddress: {0} address: {1} BlockIndex: {2}",
-                avatarState.agentAddress, avatarState.address, avatarState.blockIndex);
-            UpdateAvatarState(avatarState, index);
-        }
-
-        public static void UpdateLocalAgentState(AgentState agentState)
-        {
-            Debug.LogFormat("Update local agentSTate. agentAddress: {0} BlockIndex: {1}",
-                agentState.address, Game.Game.instance.agent.BlockIndex);
-            UpdateAgentState(agentState);
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
@@ -412,36 +307,6 @@ namespace Nekoyume.BlockChain
             actionFailPopup.Close();
 
             Widget.Find<RankingBoard>().GoToStage(eval);
-        }
-
-        public void UpdateCurrentAvatarState(AvatarState avatarState)
-        {
-            if (Pending)
-            {
-                Game.Game.instance.stage.AvatarState = avatarState;
-                return;
-            }
-
-            Game.Game.instance.stage.AvatarState = null;
-            var questList = avatarState.questList.Where(i => i.Complete && !i.Receive).ToList();
-            if (questList.Count >= 1)
-            {
-                if (questList.Count == 1)
-                {
-                    var quest = questList.First();
-                    var format = LocalizationManager.Localize("NOTIFICATION_QUEST_COMPLETE");
-                    var msg = string.Format(format, quest.GetName());
-                    UI.Notification.Push(MailType.System, msg);
-                }
-                else
-                {
-                    var format = LocalizationManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
-                    var msg = string.Format(format, questList.Count);
-                    UI.Notification.Push(MailType.System, msg);
-
-                }
-            }
-            UpdateAvatarState(avatarState, States.Instance.CurrentAvatarKey.Value);
         }
     }
 }

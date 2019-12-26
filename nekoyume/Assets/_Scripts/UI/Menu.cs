@@ -3,6 +3,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
 using Nekoyume.Model;
@@ -151,7 +152,7 @@ namespace Nekoyume.UI
             base.Show();
             
             StartCoroutine(ShowSpeeches());
-            ShowButtons(Game.Game.instance.stage.selectedPlayer);
+            ShowButtons(Game.Game.instance.Stage.selectedPlayer);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -173,7 +174,7 @@ namespace Nekoyume.UI
 
         private IEnumerator ShowSpeeches()
         {
-            ShowButtons(Game.Game.instance.stage.selectedPlayer);
+            ShowButtons(Game.Game.instance.Stage.selectedPlayer);
             
             yield return new WaitForSeconds(2.0f);
 

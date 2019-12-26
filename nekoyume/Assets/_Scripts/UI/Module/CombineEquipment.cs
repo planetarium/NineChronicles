@@ -3,6 +3,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI.Module

@@ -25,7 +25,7 @@ namespace Nekoyume.Game.Trigger
 
         private void SpawnWave()
         {
-            var player = Game.instance.stage.GetComponentInChildren<Character.Player>();
+            var player = Game.instance.Stage.GetComponentInChildren<Character.Player>();
             var offsetX = player.transform.position.x + 2.8f;
             var randIndex = Enumerable.Range(0, spawnPoints.Length / 2)
                 .OrderBy(n => Guid.NewGuid()).ToArray();
@@ -45,7 +45,7 @@ namespace Nekoyume.Game.Trigger
 
         private IEnumerator CoSpawnWave(List<Enemy> monsters)
         {
-            var stage = Game.instance.stage;
+            var stage = Game.instance.Stage;
             for (var index = 0; index < monsters.Count; index++)
             {
                 var monster = monsters[index];
@@ -87,7 +87,7 @@ namespace Nekoyume.Game.Trigger
 
         private IEnumerator CoSpawnEnemy(EnemyPlayer enemyPlayer)
         {
-            var stage = Game.instance.stage;
+            var stage = Game.instance.Stage;
             var player = stage.GetPlayer();
 
             var offsetX = player.transform.position.x + SpawnOffset;

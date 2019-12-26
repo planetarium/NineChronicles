@@ -10,6 +10,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;

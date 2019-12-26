@@ -5,6 +5,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;

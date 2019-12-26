@@ -5,6 +5,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Tween;
+using Nekoyume.State;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -15,7 +16,7 @@ namespace Nekoyume.Game.Entrance
         private IEnumerator Start()
         {
             DOTween.KillAll();
-            var stage = Game.instance.stage;
+            var stage = Game.instance.Stage;
             stage.LoadBackground("nest");
 
             Widget.Find<Login>().ready = false;

@@ -69,7 +69,7 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            var stage = Game.Game.instance.stage;
+            var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
             stage.GetPlayer().gameObject.SetActive(false);
 
@@ -77,7 +77,7 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
 
-            var go = Game.Game.instance.stage.npcFactory.Create(NpcId, NpcPosition);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NpcId, NpcPosition);
             _npc = go.GetComponent<Npc>();
             _npc.gameObject.SetActive(false);
 

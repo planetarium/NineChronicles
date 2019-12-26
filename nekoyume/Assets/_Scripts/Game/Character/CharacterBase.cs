@@ -148,7 +148,7 @@ namespace Nekoyume.Game.Character
 
         public virtual void UpdateHpBar()
         {
-            if (!Game.instance.stage.IsInStage)
+            if (!Game.instance.Stage.IsInStage)
                 return;
 
             if (!HPBar)
@@ -428,7 +428,7 @@ namespace Nekoyume.Game.Character
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
-                var effect = Game.instance.stage.buffController.Get<BuffVFX>(target, buff);
+                var effect = Game.instance.Stage.buffController.Get<BuffVFX>(target, buff);
                 effect.Play();
                 target.UpdateHpBar();
 //                Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
@@ -523,7 +523,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.stage.skillController.Get(pos, info);
+            var effect = Game.instance.Stage.skillController.Get(pos, info);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
@@ -538,7 +538,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.stage.buffController.Get(pos, info.Buff);
+            var effect = Game.instance.Stage.buffController.Get(pos, info.Buff);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
@@ -571,7 +571,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessAttack(target, info, info.Target.IsDead, false);
             }
         }
@@ -591,8 +591,8 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.stage.GetCharacter(info.Target);
-                var effect = Game.instance.stage.skillController.Get<SkillBlowVFX>(target, info);
+                var target = Game.instance.Stage.GetCharacter(info.Target);
+                var effect = Game.instance.Stage.skillController.Get<SkillBlowVFX>(target, info);
                 effect.Play();
                 ProcessAttack(target, info, info.Target.IsDead, true);
             }
@@ -609,9 +609,9 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetCharacter(info.Target);
                 var first = skillInfosFirst == info;
-                var effect = Game.instance.stage.skillController.Get<SkillDoubleVFX>(target, info);
+                var effect = Game.instance.Stage.skillController.Get<SkillDoubleVFX>(target, info);
 
                 yield return StartCoroutine(CoAnimationAttack(info.Critical));
                 if (first)
@@ -638,8 +638,8 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationCast(skillInfosFirst));
 
-            var effectTarget = Game.instance.stage.GetCharacter(skillInfosFirst.Target);
-            var effect = Game.instance.stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfosFirst);
+            var effectTarget = Game.instance.Stage.GetCharacter(skillInfosFirst.Target);
+            var effect = Game.instance.Stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfosFirst);
             Model.Skill.SkillInfo trigger = null;
             if (effect.finisher)
             {
@@ -654,7 +654,7 @@ namespace Nekoyume.Game.Character
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
-                var target = Game.instance.stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetCharacter(info.Target);
                 yield return new WaitForSeconds(0.14f);
                 if (trigger == info)
                 {
@@ -708,7 +708,7 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in skillInfos)
             {
-                var target = Game.instance.stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessHeal(target, info);
             }
 
@@ -725,7 +725,7 @@ namespace Nekoyume.Game.Character
 
             foreach (var info in skillInfos)
             {
-                var target = Game.instance.stage.GetCharacter(info.Target);
+                var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessBuff(target, info);
             }
 

@@ -43,7 +43,7 @@ namespace Tests
             Debug.Log(File.ReadAllText(_path));
             var load = SceneManager.LoadSceneAsync("Game");
             yield return new WaitUntil(() => load.isDone);
-            yield return new WaitUntil(() => Game.instance.initialized);
+            yield return new WaitUntil(() => Game.instance.IsInitialized);
             Game.instance.Init();
         }
 

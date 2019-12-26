@@ -10,6 +10,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -82,7 +83,7 @@ namespace Nekoyume.UI
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
 
-            _stage = Game.Game.instance.stage;
+            _stage = Game.Game.instance.Stage;
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)

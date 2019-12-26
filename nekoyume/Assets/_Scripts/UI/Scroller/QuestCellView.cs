@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;

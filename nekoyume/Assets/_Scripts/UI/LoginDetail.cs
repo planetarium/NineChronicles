@@ -211,7 +211,7 @@ namespace Nekoyume.UI
             
             paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens + 1}";
             
-            var player = Game.Game.instance.stage.selectedPlayer;
+            var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
                 throw new NullReferenceException(nameof(player));
             
@@ -228,7 +228,7 @@ namespace Nekoyume.UI
             
             paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear + 1}";
             
-            var player = Game.Game.instance.stage.selectedPlayer;
+            var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
                 throw new NullReferenceException(nameof(player));
             
@@ -245,7 +245,7 @@ namespace Nekoyume.UI
             
             paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
             
-            var player = Game.Game.instance.stage.selectedPlayer;
+            var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
                 throw new NullReferenceException(nameof(player));
             

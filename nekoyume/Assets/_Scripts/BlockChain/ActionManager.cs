@@ -6,6 +6,7 @@ using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.Pattern;
+using Nekoyume.State;
 using UniRx;
 
 namespace Nekoyume.BlockChain
@@ -19,7 +20,7 @@ namespace Nekoyume.BlockChain
         
         private static void ProcessAction(GameAction gameAction)
         {
-            Game.Game.instance.agent.EnqueueAction(gameAction);
+            Game.Game.instance.Agent.EnqueueAction(gameAction);
         }
 
         #region Actions

@@ -76,7 +76,7 @@ namespace Nekoyume.State
         {
             get
             {
-                var d = Game.Game.instance.agent.GetState(Address);
+                var d = Game.Game.instance.Agent.GetState(Address);
                 if (d == null)
                 {
                     return new TableSheetsState();

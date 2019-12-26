@@ -7,6 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
+using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
 using UnityEngine;
@@ -101,8 +102,8 @@ namespace Tests
             Widget.Find<Login>().SlotClick(2);
             var loginDetail = Widget.Find<LoginDetail>();
             loginDetail.CreateAndLogin("HackAndSlash");
-            yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
-            var createAvatarTx = Game.instance.agent.StagedTransactions.First();
+            yield return new WaitUntil(() => Game.instance.Agent.StagedTransactions.Any());
+            var createAvatarTx = Game.instance.Agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
             yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
@@ -122,9 +123,9 @@ namespace Tests
 
             _widget.Show();
             _widget.QuestClick(false);
-            yield return new WaitUntil(() => Game.instance.agent.StagedTransactions.Any());
+            yield return new WaitUntil(() => Game.instance.Agent.StagedTransactions.Any());
             // Transaction.Id 가 랜덤하게 생성되어 순서가 보장이 되지 않기때문에 정렬처리
-            var tx = Game.instance.agent.StagedTransactions.First();
+            var tx = Game.instance.Agent.StagedTransactions.First();
             yield return miner.CoMine(tx);
             yield return new WaitUntil(() => Widget.Find<BattleResult>().isActiveAndEnabled);
             Widget.Find<BattleResult>().GoToMain();

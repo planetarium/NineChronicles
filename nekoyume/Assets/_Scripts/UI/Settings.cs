@@ -43,7 +43,7 @@ namespace Nekoyume.UI
         {
             var addressString = $"{LocalizationManager.Localize("UI_YOUR_ADDRESS")}";
             addressTitle.text = addressString;
-            addressContent.text = Game.Game.instance.agent.Address.ToString();
+            addressContent.text = Game.Game.instance.Agent.Address.ToString();
 
             var muteString = LocalizationManager.Localize("UI_MUTE_AUDIO");
             foreach (var text in muteTexts)
@@ -83,7 +83,7 @@ namespace Nekoyume.UI
 
         public void CopyAddressToClipboard()
         {
-            var address = Game.Game.instance.agent.Address;
+            var address = Game.Game.instance.Agent.Address;
 
             TextEditor editor = new TextEditor()
             {
@@ -130,12 +130,12 @@ namespace Nekoyume.UI
 
         public void ResetStore()
         {
-            Game.Game.instance.agent.ResetStore();
+            Game.Game.instance.Agent.ResetStore();
         }
 
         public void ResetKeyStore()
         {
-            Game.Game.instance.agent.ResetKeyStore();
+            Game.Game.instance.Agent.ResetKeyStore();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
