@@ -1,6 +1,4 @@
-using Assets.SimpleLocalization;
 using System;
-using TMPro;
 using UniRx;
 using UnityEngine.UI;
 
@@ -20,8 +18,6 @@ namespace Nekoyume.UI.Module
         }
 
         public Image hasNotificationImage;
-        
-        private IToggleListener _toggleListener;
 
         public readonly Model SharedModel = new Model();
 
@@ -31,9 +27,6 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
             SharedModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
-
-            button.OnClickAsObservable().Subscribe(_ => _toggleListener?.OnToggle(this))
-                .AddTo(gameObject);
         }
 
         protected void OnDestroy()
