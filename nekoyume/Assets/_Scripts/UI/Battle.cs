@@ -112,7 +112,6 @@ namespace Nekoyume.UI
                 if ((ToggleableButton) toggleable == repeatButton)
                 {
                     Game.Game.instance.Stage.repeatStage = true;
-                    SetExitButtonToggledOff();
                 }
             }
         }
