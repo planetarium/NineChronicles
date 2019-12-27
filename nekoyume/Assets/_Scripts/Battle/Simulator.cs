@@ -15,8 +15,8 @@ namespace Nekoyume.Battle
         public bool Lose = false;
         public readonly Player Player;
         public BattleLog.Result Result { get; protected set; }
-        public SimplePriorityQueue<CharacterBase> Characters;
-        public const float TurnPriority = 100f;
+        public SimplePriorityQueue<CharacterBase, decimal> Characters;
+        public const decimal TurnPriority = 100m;
         public readonly TableSheets TableSheets;
         protected const int MaxTurn = 3000;
 

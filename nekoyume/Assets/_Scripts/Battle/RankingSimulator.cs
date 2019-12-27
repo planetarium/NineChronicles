@@ -40,7 +40,7 @@ namespace Nekoyume.Battle
             Spawn();
             Log.worldId = 1;
             Log.stageId = 1;
-            Characters = new SimplePriorityQueue<CharacterBase>();
+            Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
             var turn = 0;
@@ -76,7 +76,7 @@ namespace Nekoyume.Battle
                 foreach (var other in Characters)
                 {
                     var current = Characters.GetPriority(other);
-                    var speed = current * 0.6f;
+                    var speed = current * 0.6m;
                     Characters.UpdatePriority(other, speed);
                 }
 

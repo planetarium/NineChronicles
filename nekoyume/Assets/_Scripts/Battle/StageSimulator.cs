@@ -62,7 +62,7 @@ namespace Nekoyume.Battle
             var turn = 0;
             foreach (var wave in _waves)
             {
-                Characters = new SimplePriorityQueue<CharacterBase>();
+                Characters = new SimplePriorityQueue<CharacterBase, decimal>();
                 Characters.Enqueue(Player, TurnPriority / Player.SPD);
                 var lastWave = _totalWave - 1;
                 wave.Spawn(this);
@@ -114,7 +114,7 @@ namespace Nekoyume.Battle
                     foreach (var other in Characters)
                     {
                         var current = Characters.GetPriority(other);
-                        var speed = current * 0.6f;
+                        var speed = current * 0.6m;
                         Characters.UpdatePriority(other, speed);
                     }
 
