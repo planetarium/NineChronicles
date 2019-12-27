@@ -276,7 +276,7 @@ UI_YOUR_ADDRESS,Your Address,당신의 주소
 BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 채굴 중
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패
-UI_GAME_SIGN_UP,Create Account,가입하기
+UI_GAME_SIGN_UP,Create ID,가입하기
 UI_CONFIRM_RESET_STORE_TITLE,Clear Cache,캐시 비우기
 UI_CONFIRM_RESET_KEYSTORE_TITLE,Revoke Private Key,비밀키 폐기
 UI_CONFIRM_RESET_STORE_CONTENT,Clear Cache with close Nine Chronicles.,캐시를 비우고 나인 크로니클을 종료합니다.
@@ -291,3 +291,6 @@ UI_MAIN_MENU_COMBINATION,Combination!,조합!
 UI_MAIN_MENU_QUEST,Stage!,스테이지!
 UI_MAIN_MENU_RANKING,Ranking!,랭킹!
 UI_MAIN_MENU_SHOP,Shop!,상점!
+UI_GAME_CREATE_PASSWORD,Create Password,비밀번호 생성
+UI_LOGIN_PASSWORD_INFO,* 문자[comma]숫자[comma]기호를 조합하여 8자 이상을 사용하세요.,* 문자[comma]숫자[comma]기호를 조합하여 8자 이상을 사용하세요.
+UI_LOGIN_RETYPE_INFO,* 암호를 확인해 주세요.,* 암호를 확인해 주세요.
