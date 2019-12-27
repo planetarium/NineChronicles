@@ -3,12 +3,20 @@ using System.IO;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
+using System.Net;
+using ICSharpCode.SharpZipLib.Zip;
+using ICSharpCode.SharpZipLib.GZip;
+using ICSharpCode.SharpZipLib.Tar;
 
 namespace Editor
 {
     public class Builder {
 
         public static string PlayerName = PlayerSettings.productName;
+
+        public const string BuildBasePath = "Build";
+
+        public static readonly string ProjectBasePath = Path.Combine(Application.dataPath, "..", "..");
 
         [MenuItem("Build/Standalone/Windows + Mac OSX + Linux")]
         public static void BuildAll()
@@ -120,10 +128,12 @@ namespace Editor
             string targetDirName = null)
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
-            const string basePath = "Build";
+            targetDirName = Path.Combine(
+                BuildBasePath,
+                targetDirName ?? buildTarget.ToString()
+            );
             string locationPathName = Path.Combine(
-                basePath,
-                targetDirName ?? buildTarget.ToString(),
+                targetDirName,
                 buildTarget.HasFlag(BuildTarget.StandaloneWindows64) ? $"{PlayerName}.exe" : PlayerName);
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
@@ -135,6 +145,12 @@ namespace Editor
             };
 
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            DownloadSnapshotManager(buildTarget, targetDirName);
+            File.Copy(
+                Path.Combine(Application.dataPath, "README.txt"),
+                Path.Combine(targetDirName, "README.txt")
+            );
+            
             BuildSummary summary = report.summary;
 
             if (summary.result == BuildResult.Succeeded)
@@ -147,6 +163,55 @@ namespace Editor
                 Debug.LogError("Build failed");
             }
         }
-    }
 
+        private static void DownloadSnapshotManager(BuildTarget buildTarget, string targetDir)
+        {
+            string url;
+            
+            if (buildTarget == BuildTarget.StandaloneWindows64)
+            {
+                url = "https://9c-data-snapshots.s3.amazonaws.com/9c-snapshot.win-x64.zip";
+            }
+            else if (buildTarget == BuildTarget.StandaloneOSX)
+            {
+                url = "https://9c-data-snapshots.s3.amazonaws.com/9c-snapshot.osx-x64.tar.gz";
+            }
+            else 
+            {
+                Debug.LogWarning($"Snapshot Manager for {buildTarget} isn't supported. skipping...");
+                return;
+            }
+            
+            using (var client = new WebClient())
+            {
+                var tempFilePath = Path.GetTempFileName();
+                try 
+                {
+                    client.DownloadFile(url, tempFilePath);
+                    
+                    if (url.EndsWith(".zip")) 
+                    {
+                        var fz = new FastZip();
+                        fz.ExtractZip(tempFilePath, targetDir, null);
+                    }
+                    else if (url.EndsWith(".tar.gz"))
+                    {
+                        using (var tempFile = File.OpenRead(tempFilePath))
+                        using (var gz = new GZipInputStream(tempFile))
+                        using (var tar = TarArchive.CreateInputTarArchive(gz))
+                        {
+                            tar.ExtractContents(targetDir);
+                        }
+                    }
+                }
+                finally
+                {
+                    if (File.Exists(tempFilePath)) 
+                    {
+                        File.Delete(tempFilePath);
+                    }
+                }
+            }
+        }
+    }
 }

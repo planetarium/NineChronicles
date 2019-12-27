@@ -47,8 +47,8 @@ namespace Nekoyume.BlockChain
         private static readonly string WebCommandLineOptionsPathInit = string.Empty;
         private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
 #else
-        private const string WebCommandLineOptionsPathInit = "https://9c-test.s3.ap-northeast-2.amazonaws.com/clo.json";
-        private const string WebCommandLineOptionsPathLogin = "https://9c-test.s3.ap-northeast-2.amazonaws.com/clo.json";
+        private const string WebCommandLineOptionsPathInit = "https://planetarium.dev/9c-alpha-clo.json";
+        private const string WebCommandLineOptionsPathLogin = "https://planetarium.dev/9c-alpha-clo.json";
 #endif
 
         private static readonly string CommandLineOptionsJsonPath =
@@ -613,7 +613,9 @@ namespace Nekoyume.BlockChain
             {
                 try
                 {
-                    await _swarm.StartAsync(preloadBlockDownloadFailed: PreloadBLockDownloadFailed);
+                    await _swarm.StartAsync(
+                        millisecondsBroadcastTxInterval: 15000,
+                        preloadBlockDownloadFailed: PreloadBLockDownloadFailed);
                 }
                 catch (TaskCanceledException)
                 {
@@ -643,6 +645,9 @@ namespace Nekoyume.BlockChain
                     _swarm.EndPoint.Host,
                     _swarm.EndPoint.Port
                 );
+                Debug.LogFormat("Address: {0}, PublicKey: {1}",
+                    PrivateKey.PublicKey.ToAddress(),
+                    ByteUtil.Hex(PrivateKey.PublicKey.Format(true)));
             });
 
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
@@ -847,7 +852,13 @@ namespace Nekoyume.BlockChain
             var polymorphicActions = actions.ToArray();
             Debug.LogFormat("Make Transaction with Actions: `{0}`",
                 string.Join(",", polymorphicActions.Select(i => i.InnerAction)));
-            return blocks.MakeTransaction(PrivateKey, polymorphicActions);
+            Transaction<PolymorphicAction<ActionBase>> tx = blocks.MakeTransaction(PrivateKey, polymorphicActions);
+            if (_swarm.Running)
+            {
+                _swarm.BroadcastTxs(new[] { tx });
+            }
+            
+            return tx;
         }
 
         private void LoadQueuedActions()
