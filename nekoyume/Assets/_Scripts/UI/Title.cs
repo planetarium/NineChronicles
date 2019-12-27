@@ -25,7 +25,12 @@ namespace Nekoyume.UI
             if (!_ready)
                 return;
 
-            Find<LoginPopup>().Show(_keyStorePath, _privateKey);
+            var w = Find<LoginPopup>();
+            w.Show(_keyStorePath, _privateKey);
+            if (w.State.Value == LoginPopup.States.Show)
+            {
+                animator.gameObject.SetActive(false);
+            }
         }
 
         public void Ready()
