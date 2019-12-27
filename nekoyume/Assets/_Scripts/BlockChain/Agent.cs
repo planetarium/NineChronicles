@@ -72,7 +72,7 @@ namespace Nekoyume.BlockChain
         private const string QueuedActionsFileName = "queued_actions.dat";
 
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(3);
+        private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(15);
 
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
