@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Model;
 using Nekoyume.State;
@@ -53,29 +54,41 @@ namespace Nekoyume.UI.Module
 
         private void SetIndex(long index)
         {
+            if(!_updateEnable)
+            {
+                return;
+            }
+
             var min = Math.Max(index - _receivedIndex, 0);
             var value = Math.Min(min, GameConfig.DailyRewardInterval);
-            text.text = $"{value} / {GameConfig.DailyRewardInterval}";
-            slider.value = value;
-
             _isFull = value >= GameConfig.DailyRewardInterval;
+            
             button.interactable = _isFull;
             canvasGroup.interactable = _isFull;
-            if (_isFull && _updateEnable)
+            if (_isFull)
             {
                 _animation.Play();
             }
+
+            text.text = $"{value} / {GameConfig.DailyRewardInterval}";
+            slider.value = value;
         }
 
         public void GetReward()
         {
-            _updateEnable = false;
-            ActionManager.instance.DailyReward().Subscribe(_ => { _updateEnable = true; });
+            ActionManager.instance.DailyReward().Subscribe(_ =>
+            {
+                _updateEnable = true;
+                Notification.Push(Game.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
+            });
+            Notification.Push(Game.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
             _animation.Stop();
             canvasGroup.alpha = 0;
             canvasGroup.interactable = false;
             button.interactable = false;
             _isFull = false;
+            SetIndex(0);
+            _updateEnable = false;
         }
 
         public void ShowTooltip()
@@ -95,7 +108,6 @@ namespace Nekoyume.UI.Module
             if (index != _receivedIndex)
             {
                 _receivedIndex = index;
-                _updateEnable = true;
             }
         }
     }
