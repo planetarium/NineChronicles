@@ -5,7 +5,6 @@ using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 using Unity.Mathematics;
-using UnityEngine;
 
 namespace Nekoyume.Game
 {
@@ -71,12 +70,12 @@ namespace Nekoyume.Game
             return infos;
         }
 
-        private static float[] GetMultiplier(int hitCount, float totalDamage)
+        private static decimal[] GetMultiplier(int hitCount, decimal totalDamage)
         {
             if (hitCount == 1) return new[] {totalDamage};
-            var multiplier = new List<float>();
+            var multiplier = new List<decimal>();
             var avg = totalDamage / hitCount;
-            var lastDamage = avg * 1.3f;
+            var lastDamage = avg * 1.3m;
             var lastHitIndex = hitCount - 1;
             var eachDamage = (totalDamage - lastDamage) / lastHitIndex;
             for (var i = 0; i < hitCount; i++)
