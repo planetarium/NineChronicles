@@ -45,6 +45,7 @@ namespace Nekoyume.UI
         public GameObject header;
         public GameObject bg;
         public GameObject loginWarning;
+        public GameObject findPrivateKeyWarning;
         public TextMeshProUGUI strongText;
         public TextMeshProUGUI weakText;
         public TextMeshProUGUI correctText;
@@ -85,13 +86,15 @@ namespace Nekoyume.UI
             passPhraseText.text = LocalizationManager.Localize("UI_LOGIN_PASSWORD_INFO");
             retypeText.text = LocalizationManager.Localize("UI_LOGIN_RETYPE_INFO");
             loginText.text = LocalizationManager.Localize("UI_LOGIN_INFO");
-            enterPrivateKeyText.text = LocalizationManager.Localize("UI_LOGIN_ENTER_PRIVATE_KEY");
+            enterPrivateKeyText.text = LocalizationManager.Localize("UI_LOGIN_PRIVATE_KEY_INFO");
             passPhraseField.placeholder.GetComponent<Text>().text =
                 LocalizationManager.Localize("UI_LOGIN_INPUT_PASSPHRASE");
             retypeField.placeholder.GetComponent<Text>().text =
                 LocalizationManager.Localize("UI_LOGIN_RETYPE_PASSPHRASE");
             loginField.placeholder.GetComponent<Text>().text =
                 LocalizationManager.Localize("UI_LOGIN_LOGIN");
+            findPassphraseField.placeholder.GetComponent<Text>().text =
+                LocalizationManager.Localize("UI_LOGIN_ENTER_PRIVATE_KEY");
             base.Awake();
         }
         private void SubscribeState(States states)
@@ -111,6 +114,7 @@ namespace Nekoyume.UI
             accountWarningText.gameObject.SetActive(false);
             retypeText.gameObject.SetActive(false);
             loginWarning.SetActive(false);
+            findPrivateKeyWarning.SetActive(false);
 
             switch (states)
             {
@@ -270,8 +274,14 @@ namespace Nekoyume.UI
                     break;
                 case States.FindPassphrase:
                 {
-                    var state = CheckPrivateKeyHex() ? States.ResetPassphrase : States.Failed;
-                    SetState(state);
+                    if (CheckPrivateKeyHex())
+                    {
+                        SetState(States.ResetPassphrase);
+                    }
+                    else
+                    {
+                        findPrivateKeyWarning.SetActive(true);
+                    }
                     break;
                 }
                 case States.ResetPassphrase:
