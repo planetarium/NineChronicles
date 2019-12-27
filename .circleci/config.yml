@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  azure-acr: circleci/azure-acr@0.1.2
+  aws-ecr: circleci/aws-ecr@6.6.0
   azure-cli: circleci/azure-cli@1.1.0
   kubernetes: circleci/kubernetes@0.3.0
 
@@ -37,11 +37,9 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - azure-acr/build-and-push-image:
+      - aws-ecr/build-and-push-image:
           name: build-and-push-image
           tag: "git-$CIRCLE_SHA1"
-          login-server-name: "$DOCKER_SERVER"
-          registry-name: "planetarium"
           repo: $CIRCLE_PROJECT_REPONAME
           extra-build-args: >-
             --build-arg ulf="$ULF"
