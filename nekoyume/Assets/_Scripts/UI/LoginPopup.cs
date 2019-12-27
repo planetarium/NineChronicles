@@ -44,6 +44,7 @@ namespace Nekoyume.UI
         public GameObject accountGroup;
         public GameObject header;
         public GameObject bg;
+        public GameObject loginWarning;
         public TextMeshProUGUI strongText;
         public TextMeshProUGUI weakText;
         public TextMeshProUGUI correctText;
@@ -83,12 +84,14 @@ namespace Nekoyume.UI
             backToLoginText.text = LocalizationManager.Localize("UI_LOGIN_BACK_TO_LOGIN");
             passPhraseText.text = LocalizationManager.Localize("UI_LOGIN_PASSWORD_INFO");
             retypeText.text = LocalizationManager.Localize("UI_LOGIN_RETYPE_INFO");
-            loginText.text = LocalizationManager.Localize("UI_LOGIN_LOGIN");
+            loginText.text = LocalizationManager.Localize("UI_LOGIN_INFO");
             enterPrivateKeyText.text = LocalizationManager.Localize("UI_LOGIN_ENTER_PRIVATE_KEY");
             passPhraseField.placeholder.GetComponent<Text>().text =
                 LocalizationManager.Localize("UI_LOGIN_INPUT_PASSPHRASE");
             retypeField.placeholder.GetComponent<Text>().text =
                 LocalizationManager.Localize("UI_LOGIN_RETYPE_PASSPHRASE");
+            loginField.placeholder.GetComponent<Text>().text =
+                LocalizationManager.Localize("UI_LOGIN_LOGIN");
             base.Awake();
         }
         private void SubscribeState(States states)
@@ -107,6 +110,7 @@ namespace Nekoyume.UI
             accountAddressHolder.gameObject.SetActive(false);
             accountWarningText.gameObject.SetActive(false);
             retypeText.gameObject.SetActive(false);
+            loginWarning.SetActive(false);
 
             switch (states)
             {
@@ -222,7 +226,7 @@ namespace Nekoyume.UI
             }
             catch (Exception e)
             {
-                SetState(States.Failed);
+                loginWarning.SetActive(true);
                 return;
             }
             Login = !(_privateKey is null);
@@ -233,7 +237,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                SetState(States.Failed);
+                loginWarning.SetActive(true);
             }
 
         }
