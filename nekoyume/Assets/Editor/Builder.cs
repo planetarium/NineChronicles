@@ -143,7 +143,6 @@ namespace Editor
                 buildTarget.HasFlag(BuildTarget.StandaloneWindows64) ? $"{PlayerName}.exe" : PlayerName);
 
             CopyToBuildDirectory(ScriptBasePath, targetDirName, scriptName);
-            CopyToBuildDirectory(SnapshotBinaryBasePath, targetDirName, snapshotName);
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
@@ -157,7 +156,7 @@ namespace Editor
             DownloadSnapshotManager(buildTarget, targetDirName);
             File.Copy(
                 Path.Combine(Application.dataPath, "README.txt"),
-                Path.Combine(targetDirName, "README.txt")
+                Path.Combine(BuildBasePath, targetDirName, "README.txt")
             );
             
             BuildSummary summary = report.summary;
