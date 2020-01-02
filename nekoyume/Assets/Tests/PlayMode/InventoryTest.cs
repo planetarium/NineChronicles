@@ -1,9 +1,8 @@
 using System;
-using System.Linq;
-using Nekoyume.Data;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 using UnityEngine;
 using UnityEngine.TestTools;
 

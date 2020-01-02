@@ -17,7 +17,7 @@ using NetMQ;
 using NUnit.Framework;
 using UnityEngine;
 
-namespace Tests.PlayMode
+namespace Tests.PlayMode.Fixtures
 {
     [TestFixture]
     public class MinerFixture

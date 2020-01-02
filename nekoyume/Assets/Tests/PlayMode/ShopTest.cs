@@ -5,6 +5,7 @@ using Nekoyume.Game;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;

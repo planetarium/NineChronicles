@@ -7,7 +7,7 @@ namespace Tests.EditMode
 {
     public class CommandLineOptionsTest
     {
-        private static string jsonFixturePath = $"{Application.dataPath}/EditorTests/JSONFixture";
+        private static string jsonFixturePath = $"{Application.dataPath}/EditorTests/Fixtures";
         [Test]
         public void EmptyJson()
         {

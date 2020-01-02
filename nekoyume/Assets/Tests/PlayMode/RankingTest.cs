@@ -6,6 +6,7 @@ using Nekoyume.Game;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 
 namespace Tests.PlayMode
 {

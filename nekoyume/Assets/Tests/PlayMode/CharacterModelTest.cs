@@ -4,13 +4,13 @@ using System.Linq;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Data;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 using UnityEngine.TestTools;
 
 namespace Tests.PlayMode

@@ -3,13 +3,13 @@ using System.Linq;
 using Libplanet;
 using Nekoyume;
 using Nekoyume.Battle;
-using Nekoyume.Data;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 using BlowAttack = Nekoyume.Game.BlowAttack;
 using NormalAttack = Nekoyume.Game.NormalAttack;
 

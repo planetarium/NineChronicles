@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-namespace Tests.PlayMode
+namespace Tests.PlayMode.Fixtures
 {
     public abstract class PlayModeTest
     {
