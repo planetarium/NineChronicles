@@ -2,11 +2,6 @@
 
 # 준비하기
 
-## Azure CLI
-
-1. Swen 에게 요청해서 Azure 포탈 계정을 생성합니다.
-2. [공식 문서](https://docs.microsoft.com/ko-kr/cli/azure/install-azure-cli?view=azure-cli-latest)를 참조하여 Azure CLI 를 설치합니다.
-
 ## AWS CLI
 
 1. Swen 에게 요청해서 AWS IAM 계정을 생성합니다.
@@ -64,20 +59,20 @@
 
 Docker가 설치된 환경이라면 다음 명령어로 이미지를 빌드할 수 있습니다.
 
-    docker build -t planetarium.azurecr.io/nekoyume-unity:<적절한 TAG> --build-arg ulf="<Base64로 인코딩 된 ULF>" .
+    docker build -t 319679068466.dkr.ecr.ap-northeast-2.amazonaws.com/nekoyume-unity:<적절한 TAG> --build-arg ulf="<Base64로 인코딩 된 ULF>" .
 
 - ULF(Unity License File)은 다음과 같은 방법으로 만들 수 있습니다.
     - [이 링크](https://docs.unity3d.com/kr/2019.1/Manual/ManualActivationGuide.html)를 참고하여 직접 만든 다음 base64로 인코딩 하거나
         - 주의) Docker 컨테이너 안에 있는 Unity 에디터에서 요청을 생성해야 합니다.
     - 1Password Vault에서 `Swen's ULF (base64 encoded)`항목을 복붙
 
-만들어진 이미지를 저장소에 푸시하기 위해서는 우선 [Azure Container Registry](https://azure.microsoft.com/ko-kr/services/container-registry/) 인증을 사용하고 있는 Docker 클라이언트에 통합해야 합니다.
+만들어진 이미지를 저장소에 푸시하기 위해서는 우선 [Amazon ECR](https://aws.amazon.com/ko/ecr/) 인증을 사용하고 있는 Docker 클라이언트에 통합해야 합니다.
 
-    $ az acr login --name planetarium
+    $ aws ecr get-login --region ap-northeast-2 --no-include-email
 
 그 다음 Docker 이미지를 지정한 레지스트리에 푸시합니다.
 
-    docker push planetarium.azurecr.io/nekoyume-unity:<빌드에 사용한 TAG>
+    $ docker push 319679068466.dkr.ecr.ap-northeast-2.amazonaws.com/nekoyume-unity:<빌드에 사용한 TAG>
 
 # k8s 클러스터 설정하기
 
