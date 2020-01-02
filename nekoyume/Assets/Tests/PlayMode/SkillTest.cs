@@ -13,7 +13,7 @@ using NUnit.Framework;
 using BlowAttack = Nekoyume.Game.BlowAttack;
 using NormalAttack = Nekoyume.Game.NormalAttack;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class SkillTest : PlayModeTest
     {

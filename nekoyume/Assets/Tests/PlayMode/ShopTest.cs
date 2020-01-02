@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class ShopTest : PlayModeTest
     {

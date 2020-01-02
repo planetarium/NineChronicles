@@ -7,7 +7,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class RankingTest : PlayModeTest
     {

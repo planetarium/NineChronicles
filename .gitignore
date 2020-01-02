@@ -56,6 +56,7 @@ nekoyume/compose/results
 
 # UnityTestRunner
 /nekoyume/Assets/InitTestscene*.unity*
+/nekoyume/test_*
 
 # AddressableAssets
 # 꼭 필요한 설정파일 이외에 에셋 빌드로 생성되는 불특정 파일들 모두를 무시하기 위해서 아래처럼 설정함.
@@ -81,7 +82,6 @@ nekoyume/compose/results
 
 # Personal Assets
 /nekoyume/Assets/PersonalAssets*
-
-# ETC.
-/nekoyume/Assets/_MyTest*
+/nekoyume/Assets/Plugins/CodeStage*
+/nekoyume/ProjectSettings/ACTkSettings.asset
 

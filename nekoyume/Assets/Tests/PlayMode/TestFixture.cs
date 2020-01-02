@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Planetarium.Nekoyume.Editor;
 using UnityEngine;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     [SetUpFixture]
     public class TestFixture

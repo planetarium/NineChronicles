@@ -13,7 +13,7 @@ using Nekoyume.TableData;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class CharacterModelTest : PlayModeTest
     {

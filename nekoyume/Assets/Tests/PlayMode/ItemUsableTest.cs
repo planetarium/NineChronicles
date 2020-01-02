@@ -4,7 +4,7 @@ using Nekoyume.Data;
 using Nekoyume.Game.Factory;
 using NUnit.Framework;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class ItemUsableTest : PlayModeTest
     {

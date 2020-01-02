@@ -10,7 +10,7 @@ using NUnit.Framework;
 using UnityEngine.TestTools;
 using CharacterBase = Nekoyume.Game.Character.CharacterBase;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class SkillControllerTest
     {

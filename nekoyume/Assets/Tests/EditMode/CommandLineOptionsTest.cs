@@ -3,7 +3,7 @@ using Nekoyume.BlockChain;
 using UnityEngine;
 using System.IO;
 
-namespace Tests
+namespace Tests.EditMode
 {
     public class CommandLineOptionsTest
     {
