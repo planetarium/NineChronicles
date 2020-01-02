@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Linq;
-using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
@@ -10,11 +9,12 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class CombinationTest : PlayModeTest
     {

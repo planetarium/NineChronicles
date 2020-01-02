@@ -6,8 +6,9 @@ using Nekoyume.Game;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class RankingTest : PlayModeTest
     {

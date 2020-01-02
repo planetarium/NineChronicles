@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using NUnit.Framework;
@@ -9,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class EquipmentSlotsTest
     {

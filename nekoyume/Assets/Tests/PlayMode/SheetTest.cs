@@ -1,9 +1,11 @@
 using System.Collections;
+using Nekoyume;
+using Nekoyume.TableData;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Nekoyume.TableData
+namespace Tests.PlayMode
 {
     public class SheetTest
     {

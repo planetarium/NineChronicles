@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Linq;
-using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class PlayerTest : PlayModeTest
     {

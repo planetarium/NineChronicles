@@ -1,10 +1,9 @@
 using System;
-using System.Linq;
-using Nekoyume.Data;
 using Nekoyume.Game.Factory;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class ItemUsableTest : PlayModeTest
     {

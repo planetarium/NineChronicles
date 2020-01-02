@@ -1,20 +1,17 @@
 using System;
 using System.Collections;
 using System.Linq;
-using Nekoyume.BlockChain;
-using Nekoyume.Data;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
+using Tests.PlayMode.Fixtures;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 
-namespace Tests
+namespace Tests.PlayMode
 {
     public class QuestPreparationTest : PlayModeTest
     {
