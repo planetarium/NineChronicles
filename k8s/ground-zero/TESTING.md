@@ -53,7 +53,7 @@
 
 [](https://www.notion.so/7410267a49e947799e15169f8955e87d#5c6914008a594a72a43e5dbb4241684c)
 
-예를 들어 [https://circleci.com/gh/planetarium/nekoyume-unity/1523](https://circleci.com/gh/planetarium/nekoyume-unity/1523) 배포는 [`planetariumtest.azurecr.io/nekoyume-unity:git-4610a11c4075a226446b4ea40252753ecb5af8db`](http://planetariumtest.azurecr.io/nekoyume-unity:git-4610a11c4075a226446b4ea40252753ecb5af8db) 로 태깅되어 planetariumtest.azurecr.io 에 푸시됩니다.
+예를 들어 [https://app.circleci.com/jobs/github/planetarium/nekoyume-unity/5073](https://app.circleci.com/jobs/github/planetarium/nekoyume-unity/5073) 배포는 [`319679068466.dkr.ecr.ap-northeast-2.amazonaws.com/nekoyume-unity:git-6ab486c284443f944c9dbd4ff3e12913538ad59a`](http://319679068466.dkr.ecr.ap-northeast-2.amazonaws.com/nekoyume-unity:git-6ab486c284443f944c9dbd4ff3e12913538ad59a) 로 태깅되어 319679068466.dkr.ecr.ap-northeast-2.amazonaws.com 에 푸시됩니다.
 
 ## 개발 환경에서 직접 빌드 & 푸시하기
 
@@ -68,7 +68,7 @@ Docker가 설치된 환경이라면 다음 명령어로 이미지를 빌드할 �
 
 만들어진 이미지를 저장소에 푸시하기 위해서는 우선 [Amazon ECR](https://aws.amazon.com/ko/ecr/) 인증을 사용하고 있는 Docker 클라이언트에 통합해야 합니다.
 
-    $ aws ecr get-login --region ap-northeast-2 --no-include-email
+    $ aws ecr get-login --region ap-northeast-2 --no-include-email | sh
 
 그 다음 Docker 이미지를 지정한 레지스트리에 푸시합니다.
 
