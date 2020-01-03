@@ -54,10 +54,5 @@ namespace Nekoyume.UI.Module
             gradeImage.color = isDim ? DimmedColor : OriginColor;
             iconImage.color = isDim ? DimmedColor : OriginColor;
         }
-        
-        protected static Color GetColor(Color color, float alpha)
-        {
-            return new Color(color.r, color.g, color.b, alpha);
-        }
     }
 }
