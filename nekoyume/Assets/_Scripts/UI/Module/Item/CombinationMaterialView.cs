@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using Nekoyume.UI.Model;
 using UnityEngine;

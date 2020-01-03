@@ -112,9 +112,8 @@ namespace Nekoyume.UI.Module
         {
             base.SetDim(isDim);
             
-            var alpha = isDim ? .3f : 1f;
-            enhancementText.color = GetColor(enhancementText.color, alpha);
-            selectionImage.color = GetColor(selectionImage.color, alpha);
+            enhancementText.color = isDim ? DimmedColor : OriginColor;
+            selectionImage.color = isDim ? DimmedColor : OriginColor;
         }
 
         private void UpdateView()
