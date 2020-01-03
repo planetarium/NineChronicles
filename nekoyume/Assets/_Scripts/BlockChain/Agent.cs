@@ -167,7 +167,9 @@ namespace Nekoyume.BlockChain
                 genesisBlock = newGenesisBlock;
             }
 #endif
-            Debug.Log(path);
+            Debug.Log($"Store Path: {path}");
+            Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
+
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
@@ -179,9 +181,7 @@ namespace Nekoyume.BlockChain
             }
             catch (InvalidGenesisBlockException e)
             {
-                Debug.Log(e.Message);
-                // FIXME: 팝업으로 유저에게 정보알리고 게임 종료하기.
-                // NOTE: 다른 체인이 사용한 스토어에 붙었을 때 발생. 
+                Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
 
 #if BLOCK_LOG_USE

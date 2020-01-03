@@ -2,6 +2,7 @@
 using Nekoyume.BlockChain;
 using UnityEditor;
 using Nekoyume.BlockChain;
+using UnityEngine;
 
 namespace Planetarium.Nekoyume.Editor
 {

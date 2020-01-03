@@ -27,16 +27,7 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                states = states.SetState(DailyBlockState.Address, MarkChanged);
                 return states.SetState(ctx.Miner, MarkChanged);
-            }
-
-            if (ctx.BlockIndex % DailyBlockState.UpdateInterval == 0)
-            {
-                states = states.SetState(
-                    DailyBlockState.Address,
-                    new DailyBlockState(ctx.BlockIndex).Serialize()
-                );
             }
 
             AgentState agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);

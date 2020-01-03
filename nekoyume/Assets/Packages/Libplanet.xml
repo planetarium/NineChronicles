@@ -474,10 +474,21 @@
             or networking.  These bring an action indeterministic.  You maybe
             fine to log messages for debugging purpose, but equivalent messages
             could be logged multiple times.</para>
-            <para>Lastly, although it might be surprising, <a
+            <para>Although it might be surprising, <a
             href="https://wp.me/p1fTCO-kT">floating-point arithmetics are
             underspecified so that it can make different results on different
             machines, platforms, runtimes, compilers, and builds</a>.</para>
+            <para>Lastly, you need to be aware and keep in mind that there
+            is a global state named <see
+            cref="P:System.Globalization.CultureInfo.CurrentCulture"/> on .NET;
+            if you format numbers, dates and times, currencies, or other such
+            things into strings and parse these strings back these can rely on
+            <see cref="P:System.Globalization.CultureInfo.CurrentCulture"/>,
+            so that the same action make different results on two differently
+            configured systems like Thai language and French language.
+            In order to make these types of conversions deterministic,
+            you have to explicitly pass <see
+            cref="P:System.Globalization.CultureInfo.InvariantCulture"/>.</para>
             <para>For more on determinism in general, please read also <a
             href="https://tendermint.com/docs/spec/abci/abci.html#determinism"
             >Tendermint ABCI's docs on determinism</a>.</para>
@@ -1720,7 +1731,9 @@
             <summary>
             The exception that is thrown when the genesis block the <see cref="T:Libplanet.Store.IStore"/> contains
             mismatches to the genesis block the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> constructor (i.e., network)
-            expects.
+            expects or the first block of <see cref="T:Libplanet.Blockchain.BlockLocator"/> which the <see cref="T:Libplanet.Store.IStore"/>
+            doesn't contain, because the block which <see cref="T:Libplanet.Store.IStore"/> doesn't means
+            the genesis block in other network.
             </summary>
         </member>
         <member name="M:Libplanet.Blocks.InvalidGenesisBlockException.#ctor(Libplanet.HashDigest{System.Security.Cryptography.SHA256},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
@@ -2979,6 +2992,25 @@
             that this operation should be canceled.</param>
             <returns>>An awaitable task without value.</returns>
         </member>
+        <member name="M:Libplanet.Net.Protocols.KademliaProtocol.FindSpecificPeerAsync(System.Collections.Concurrent.ConcurrentBag{Libplanet.Net.BoundPeer},Libplanet.Address,Libplanet.Net.BoundPeer,System.Int32,Libplanet.Address,System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/> messages to <paramref name="viaPeer"/>
+            to find <see cref="T:Libplanet.Net.Peer"/>s near <paramref name="target"/>
+            to see if the <see cref="T:Libplanet.Net.Peer"/>s have a specific address.
+            </summary>
+            <param name="history">The <see cref="T:Libplanet.Net.Peer"/> that searched.</param>
+            <param name="target">The <see cref="T:Libplanet.Address"/> to find.</param>
+            <param name="viaPeer">The target <see cref="T:Libplanet.Net.Peer"/> to send <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>
+            message. If null, selects 3 <see cref="T:Libplanet.Net.Peer"/>s from <see cref="T:Libplanet.Net.Protocols.RoutingTable"/> of
+            self.</param>
+            <param name="depth">Target depth of recursive operation.</param>
+            <param name="searchTarget">The address to search for among peers.</param>
+            <param name="timeout"><see cref="T:System.TimeSpan"/> for waiting reply of
+            <see cref="T:Libplanet.Net.Messages.FindNeighbors"/>.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>BoundPeer containing the <paramref name="searchTarget"/>'s address.</returns>
+        </member>
         <member name="M:Libplanet.Net.Protocols.KademliaProtocol.ValidateAsync(Libplanet.Net.BoundPeer,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Validate peer by send <see cref="T:Libplanet.Net.Messages.Ping"/> to <paramref name="peer"/>. If target peer
@@ -3220,13 +3252,8 @@
         <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.Guid)">
             <inheritdoc />
         </member>
-<<<<<<< HEAD
         <member name="M:Libplanet.Store.BaseStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
             <inheritdoc/>
-=======
-        <member name="M:Libplanet.Store.BaseStore.ListAllStateReferences(System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
-            <inheritdoc />
->>>>>>> Bump Libplanet 0.8.0-dev.20191204071245
         </member>
         <member name="M:Libplanet.Store.BaseStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
             <inheritdoc />
@@ -3244,6 +3271,9 @@
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.BaseStore.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc />
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.LookupStateReference``1(System.Guid,Libplanet.Address,Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
@@ -3343,11 +3373,7 @@
         <member name="M:Libplanet.Store.DefaultStore.ListAddresses(System.Guid)">
             <inheritdoc/>
         </member>
-<<<<<<< HEAD
         <member name="M:Libplanet.Store.DefaultStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
-=======
-        <member name="M:Libplanet.Store.DefaultStore.ListAllStateReferences(System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
->>>>>>> Bump Libplanet 0.8.0-dev.20191204071245
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.StageTransactionIds(System.Collections.Immutable.IImmutableSet{Libplanet.Tx.TxId})">
@@ -3484,27 +3510,16 @@
             <returns>All addresses in an arbitrary order.  The order might
             be vary for each call.</returns>
         </member>
-<<<<<<< HEAD
         <member name="M:Libplanet.Store.IStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
-=======
-        <member name="M:Libplanet.Store.IStore.ListAllStateReferences(System.Guid,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
->>>>>>> Bump Libplanet 0.8.0-dev.20191204071245
             <summary>
             Lists all accounts, that have any states, in the given <paramref name="chainId"/> and
             their state references.
             </summary>
             <param name="chainId">The chain ID to look up state references.</param>
-<<<<<<< HEAD
             <param name="lowestIndex">Includes state references only made after the block
             this argument refers to.</param>
             <param name="highestIndex">Excludes state references made after the block
             this argument refers to.</param>
-=======
-            <param name="onlyAfter">Includes state references only made after the block
-            this argument refers to, if present.</param>
-            <param name="ignoreAfter">Excludes state references made after the block
-            this argument refers to, if present.</param>
->>>>>>> Bump Libplanet 0.8.0-dev.20191204071245
             <returns>A dictionary of account addresses to lists of their corresponding state
             references.  Each list of state references is in ascending order, i.e., the block
             closest to the genesis goes first and the block closest to the tip goes last.</returns>
@@ -3599,6 +3614,23 @@
             <c>a = 1; b = 2; c = 1</c> (all states) nor
             <c>b = 1; c = 1</c> (delta).</para>
             </remarks>
+        </member>
+        <member name="M:Libplanet.Store.IStore.LookupStateReference``1(System.Guid,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+            <summary>
+            Looks up a state reference, which is a block's <see cref="P:Libplanet.Blocks.Block`1.Hash"/> that contains
+            an action mutating the <paramref name="address"/>' state.
+            </summary>
+            <param name="chainId">The chain ID to look up a state reference.</param>
+            <param name="address">The <see cref="T:Libplanet.Address"/> to look up.</param>
+            <param name="lookupUntil">The upper bound (i.e., the latest block) of the search range.
+            <see cref="T:Libplanet.Blocks.Block`1"/>s after <paramref name="lookupUntil"/> are ignored.</param>
+            <returns>Returns a nullable tuple consisting of <see cref="P:Libplanet.Blocks.Block`1.Hash"/> and
+            <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> with the state of the
+            address.</returns>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
+            <paramref name="lookupUntil"/>.</typeparam>
+            <seealso cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
         </member>
         <member name="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <summary>

@@ -130,7 +130,6 @@ namespace Editor
             Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
         }
 
-
         public static void Build(
             BuildTarget buildTarget,
             BuildOptions options = BuildOptions.None,
@@ -162,7 +161,8 @@ namespace Editor
             DownloadSnapshotManager(buildTarget, targetDirName);
             File.Copy(
                 Path.Combine(Application.dataPath, "README.txt"),
-                Path.Combine(BuildBasePath, targetDirName, "README.txt")
+                Path.Combine(BuildBasePath, targetDirName, "README.txt"),
+                overwrite: true
             );
             
             BuildSummary summary = report.summary;
@@ -238,11 +238,12 @@ namespace Editor
 
         private static void Prebuild()
         {
-            string blockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathProd);
-            var genesisBlock = BlockHelper.ImportBlock(blockPath);
+            Debug.Log(nameof(Prebuild));
+            var genesisBlock = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPathProd);
             var newGenesisBlock = BlockHelper.MineGenesisBlock();
             if (BlockHelper.CheckGenesisBlocksDifference(genesisBlock, newGenesisBlock))
             {
+                Debug.Log("Export new genesis-block.");
                 BlockHelper.ExportBlock(newGenesisBlock, BlockHelper.GenesisBlockPathProd);
             }
         }

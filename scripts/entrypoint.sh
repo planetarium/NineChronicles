@@ -7,6 +7,7 @@ UNITY_MANAGED_PATH="$UNITY_PATH/Managed"
 # now, the genesis block's name is *genesis-block*.  
 # If you renamed, you must do to this, too.
 GENESIS_BLOCK_PATH=/data/genesis-block
+S3_GENESIS_BLOCK_URL="https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block"
 UNITY_STREAMING_ASSETS_PATH="$UNITY_PATH/StreamingAssets"
 
 # replace dlls with uploaded dlls if exists.
@@ -14,14 +15,8 @@ if [ -d "$PRIOR_DLLS_PATH" ]; then
     /bin/cp "$PRIOR_DLLS_PATH"/*.dll "$UNITY_MANAGED_PATH"
 fi
 
-# replace the genesis block if exists.
-if [ -f "$GENESIS_BLOCK_PATH" ]; then
-    /bin/cp "$GENESIS_BLOCK_PATH" "$UNITY_STREAMING_ASSETS_PATH"
-else
-    echo "The genesis block is required to run this image but there doesn't exist at $GENESIS_BLOCK_PATH."
-fi
-
-env
+# download genesis block from s3 storage.
+wget "$S3_GENESIS_BLOCK_URL" -O "$UNITY_STREAMING_ASSETS_PATH/genesis-block"
 
 # entrypoint.
 "/app/Nine Chronicles" "$@"
