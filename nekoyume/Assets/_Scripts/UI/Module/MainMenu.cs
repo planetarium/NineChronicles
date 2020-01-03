@@ -25,7 +25,6 @@ namespace Nekoyume.UI.Module
         public float TweenDuration = 0.3f;
         public float BgScale = 1.05f;
         public SpeechBubble speechBubble;
-        public string pointerEnterKey;
         public string pointerClickKey;
         public Npc npc;
         public Transform bgTransform;
@@ -88,7 +87,6 @@ namespace Nekoyume.UI.Module
                     }
 
                     bgTransform.DOScale(_originLocalScale * BgScale, TweenDuration);
-                    ShowSpeech(pointerEnterKey);
                 })
                 .AddTo(_disposablesForAwake);
 
@@ -125,20 +123,14 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        private void ShowSpeech(string key)
+        public void JingleTheCat()
         {
-            if (speechBubble is null)
+            if (!_cat)
                 return;
-            if (speechBubble.gameObject.activeSelf)
-                return;
-            speechBubble.SetKey(key);
-            StartCoroutine(speechBubble.CoShowText());
-            if (npc)
-            {
-                npc.Emotion();
-            }
+            
+            _cat.Jingle();
         }
-
+        
         private void ResetLocalizationKey()
         {
             if (speechBubble)
