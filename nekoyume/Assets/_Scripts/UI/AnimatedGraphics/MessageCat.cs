@@ -51,6 +51,11 @@ namespace Nekoyume.UI.AnimatedGraphics
             animator.Play("Show");
         }
 
+        public void Jingle()
+        {
+            animator.Play("Jingle");
+        }
+
         public void Hide(bool lazyHide = true)
         {
             constraintsToMousePosition.enabled = false;

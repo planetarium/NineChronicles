@@ -99,7 +99,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                StartCoroutine(CoShowRequiredLevelSpeech(btnShop.pointerClickKey, GameConfig.ShopRequiredLevel));
+                btnShop.JingleTheCat();
             }
         }
 
@@ -121,8 +121,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                StartCoroutine(CoShowRequiredLevelSpeech(btnCombination.pointerClickKey,
-                    GameConfig.CombinationRequiredLevel));
+                btnCombination.JingleTheCat();
             }
         }
 
@@ -143,7 +142,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                StartCoroutine(CoShowRequiredLevelSpeech(btnRanking.pointerClickKey, GameConfig.RankingRequiredLevel));
+                btnRanking.JingleTheCat();
             }
         }
 
