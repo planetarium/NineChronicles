@@ -69,10 +69,9 @@ namespace Nekoyume.UI.Module
         {
             base.SetDim(isDim);
             
-            var alpha = isDim ? .3f : 1f;
-            effectImage.color = GetColor(effectImage.color, alpha);
-            glowImage.color = GetColor(glowImage.color, alpha);
-            equippedIcon.color = GetColor(equippedIcon.color, alpha);
+            effectImage.color = isDim ? DimmedColor : OriginColor;
+            glowImage.color = isDim ? DimmedColor : OriginColor;
+            equippedIcon.color = isDim ? DimmedColor : OriginColor;
         }
 
         #endregion

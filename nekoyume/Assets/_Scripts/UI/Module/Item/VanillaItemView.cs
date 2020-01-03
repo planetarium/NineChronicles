@@ -7,6 +7,9 @@ namespace Nekoyume.UI.Module
 {
     public class VanillaItemView : MonoBehaviour
     {
+        protected static readonly Color OriginColor = Color.white;
+        protected static readonly Color DimmedColor = ColorHelper.HexToColorRGB("353535");
+        
         public Image gradeImage;
         public Image iconImage;
         
@@ -48,14 +51,8 @@ namespace Nekoyume.UI.Module
 
         protected virtual void SetDim(bool isDim)
         {
-            var alpha = isDim ? .3f : 1f;
-            gradeImage.color = GetColor(gradeImage.color, alpha);
-            iconImage.color = GetColor(iconImage.color, alpha);
-        }
-        
-        protected Color GetColor(Color color, float alpha)
-        {
-            return new Color(color.r, color.g, color.b, alpha);
+            gradeImage.color = isDim ? DimmedColor : OriginColor;
+            iconImage.color = isDim ? DimmedColor : OriginColor;
         }
     }
 }

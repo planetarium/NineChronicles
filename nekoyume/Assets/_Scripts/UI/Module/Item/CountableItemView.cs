@@ -43,8 +43,7 @@ namespace Nekoyume.UI.Module
         {
             base.SetDim(isDim);
 
-            var alpha = isDim ? .3f : 1f;
-            countText.color = GetColor(countText.color, alpha);
+            countText.color = isDim ? DimmedColor : OriginColor;
         }
 
         #endregion
