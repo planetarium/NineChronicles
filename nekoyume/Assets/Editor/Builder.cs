@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using UnityEngine;
 using UnityEditor;
@@ -18,6 +17,12 @@ namespace Editor
 
         public static readonly string ProjectBasePath = Path.Combine(Application.dataPath, "..", "..");
 
+        public static readonly string ScriptBasePath =
+            Path.Combine(ProjectBasePath, "tools", "snapshot", "scripts");
+        
+        public static readonly string SnapshotBinaryBasePath =
+            Path.Combine(ProjectBasePath, "tools", "snapshot");
+
         [MenuItem("Build/Standalone/Windows + Mac OSX + Linux")]
         public static void BuildAll()
         {
@@ -30,14 +35,14 @@ namespace Editor
         public static void BuildMacOS()
         {
             Debug.Log("Build MacOS");
-            Build(BuildTarget.StandaloneOSX, targetDirName: "MacOS");
+            Build(BuildTarget.StandaloneOSX, targetDirName: "MacOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
         }
 
         [MenuItem("Build/Standalone/Windows")]
         public static void BuildWindows()
         {
             Debug.Log("Build Windows");
-            Build(BuildTarget.StandaloneWindows64, targetDirName: "Windows");
+            Build(BuildTarget.StandaloneWindows64, targetDirName: "Windows", scriptName: "run.bat", snapshotName: "NineChroniclesSnapshot.exe");
         }
 
         [MenuItem("Build/Standalone/Linux")]
@@ -80,14 +85,14 @@ namespace Editor
         public static void BuildMacOSDevelopment()
         {
             Debug.Log("Build MacOS Development");
-            Build(BuildTarget.StandaloneOSX, BuildOptions.Development, targetDirName: "MacOS");
+            Build(BuildTarget.StandaloneOSX, BuildOptions.Development, targetDirName: "MacOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
         }
 
         [MenuItem("Build/Development/Windows")]
         public static void BuildWindowsDevelopment()
         {
             Debug.Log("Build Windows Development");
-            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development, targetDirName: "Windows");
+            Build(BuildTarget.StandaloneWindows64, BuildOptions.Development, targetDirName: "Windows", scriptName: "run.bat", snapshotName: "NineChroniclesSnapshot.exe");
         }
 
         [MenuItem("Build/Development/Linux")]
@@ -125,16 +130,19 @@ namespace Editor
         public static void Build(
             BuildTarget buildTarget,
             BuildOptions options = BuildOptions.None,
-            string targetDirName = null)
+            string targetDirName = null,
+            string scriptName = null,
+            string snapshotName = null)
         {
             string[] scenes = { "Assets/_Scenes/Game.unity" };
-            targetDirName = Path.Combine(
-                BuildBasePath,
-                targetDirName ?? buildTarget.ToString()
-            );
+
+            targetDirName = targetDirName ?? buildTarget.ToString();
             string locationPathName = Path.Combine(
+                BuildBasePath,
                 targetDirName,
                 buildTarget.HasFlag(BuildTarget.StandaloneWindows64) ? $"{PlayerName}.exe" : PlayerName);
+
+            CopyToBuildDirectory(ScriptBasePath, targetDirName, scriptName);
 
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
@@ -148,7 +156,7 @@ namespace Editor
             DownloadSnapshotManager(buildTarget, targetDirName);
             File.Copy(
                 Path.Combine(Application.dataPath, "README.txt"),
-                Path.Combine(targetDirName, "README.txt")
+                Path.Combine(BuildBasePath, targetDirName, "README.txt")
             );
             
             BuildSummary summary = report.summary;
@@ -162,6 +170,14 @@ namespace Editor
             {
                 Debug.LogError("Build failed");
             }
+        }
+
+        private static void CopyToBuildDirectory(string basePath, string targetDirName, string filename)
+        {
+            if (filename == null) return;
+            var source = Path.Combine(basePath, filename);
+            var destination = Path.Combine(BuildBasePath, targetDirName, filename);
+            File.Copy(source, destination, true);
         }
 
         private static void DownloadSnapshotManager(BuildTarget buildTarget, string targetDir)
