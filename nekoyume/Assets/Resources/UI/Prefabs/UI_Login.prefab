@@ -734,7 +734,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: f4eb7ebc60e83ca439e7bd6c6f327649, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ea1e44b615e5aea4a9cb20055e5d443c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2675,7 +2675,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: f4eb7ebc60e83ca439e7bd6c6f327649, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ea1e44b615e5aea4a9cb20055e5d443c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4243,7 +4243,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: f4eb7ebc60e83ca439e7bd6c6f327649, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ea1e44b615e5aea4a9cb20055e5d443c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5158,10 +5158,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224677300634831676}
     m_Modifications:
-    - target: {fileID: 2281915797853084, guid: 9958b2722fb81124bb04cd5640d9b4fc, type: 3}
-      propertyPath: m_Name
-      value: SettingButton
-      objectReference: {fileID: 0}
     - target: {fileID: 8906158154467180903, guid: 9958b2722fb81124bb04cd5640d9b4fc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5266,6 +5262,10 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2281915797853084, guid: 9958b2722fb81124bb04cd5640d9b4fc, type: 3}
+      propertyPath: m_Name
+      value: SettingButton
       objectReference: {fileID: 0}
     - target: {fileID: 3608999211004217049, guid: 9958b2722fb81124bb04cd5640d9b4fc,
         type: 3}
