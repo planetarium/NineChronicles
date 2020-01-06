@@ -240,11 +240,11 @@ namespace Editor
         {
             Debug.Log(nameof(Prebuild));
             var genesisBlock = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPathProd);
-            var newGenesisBlock = BlockHelper.MineGenesisBlock();
-            if (BlockHelper.CheckGenesisBlocksDifference(genesisBlock, newGenesisBlock))
+            var calculatedGenesis = BlockHelper.MineGenesisBlock();
+            if (BlockHelper.CompareGenesisBlocks(genesisBlock, calculatedGenesis))
             {
                 Debug.Log("Export new genesis-block.");
-                BlockHelper.ExportBlock(newGenesisBlock, BlockHelper.GenesisBlockPathProd);
+                BlockHelper.ExportBlock(calculatedGenesis, BlockHelper.GenesisBlockPathProd);
             }
         }
     }

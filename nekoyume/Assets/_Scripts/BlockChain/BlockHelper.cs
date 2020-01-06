@@ -79,19 +79,27 @@ namespace Nekoyume.BlockChain
         /// </summary>
         /// <param name="blockA">블록.</param>
         /// <param name="blockB">블록.</param>
-        /// <returns>블록이 다르다면 true, 같다면 false를 밥환합니다.</returns>
-        public static bool CheckGenesisBlocksDifference(Block<PolymorphicAction<ActionBase>> blockA,
+        /// <returns>블록이 다르다면 true, 같다면 false를 반환합니다.</returns>
+        public static bool CompareGenesisBlocks(Block<PolymorphicAction<ActionBase>> blockA,
             Block<PolymorphicAction<ActionBase>> blockB)
         {
             return blockA == null || blockB == null ||
                    !GetHashOfFirstAction(blockA).Equals(GetHashOfFirstAction(blockB));
         }
         
+        /// <summary>
+        /// 제네시스 블록에 포함되어 있는 <see cref="InitializeStates"/> 액션의
+        /// <see cref="InitializeStates.PlainValue"/>로 부터 <see cref="HashDigest{T}"/> 값을 계산합니다. 
+        /// </summary>
+        /// <param name="block"><see cref="InitializeStates"/> 액션만을 포함하고 있는 제네시스 블록.</param>
+        /// <returns><see cref="InitializeStates"/> 액션의 <see cref="InitializeStates.PlainValue"/>
+        /// 중 <see cref="GameAction.Id"/>를 제외하고 계산한 <see cref="HashDigest{T}"/>.</returns>
         private static HashDigest<SHA256> GetHashOfFirstAction(Block<PolymorphicAction<ActionBase>> block)
         {
-            Bencodex.Types.Dictionary action = (Bencodex.Types.Dictionary)block.Transactions.First().Actions[0].InnerAction.PlainValue;
-            action = action.SetItem("id", default(Null)); // except GameAction.Id
-            var bytes = action.EncodeIntoChunks().SelectMany(b => b).ToArray();
+            var initializeStatesAction = (InitializeStates)block.Transactions.First().Actions[0].InnerAction;
+            Bencodex.Types.Dictionary plainValue = (Bencodex.Types.Dictionary) initializeStatesAction.PlainValue;
+            plainValue = (Bencodex.Types.Dictionary) plainValue.Remove((Text)"id");  // except GameAction.Id.
+            var bytes = plainValue.EncodeIntoChunks().SelectMany(b => b).ToArray();
             return Hashcash.Hash(bytes);
         }
 
@@ -100,7 +108,7 @@ namespace Nekoyume.BlockChain
         // Copied from Planetarium.Nekoyume.LibplanetEditor.
         public static void DeleteAllEditor()
         {
-            var path = Path.Combine(Application.persistentDataPath, "planetarium_dev");
+            var path = StorePath.GetDefaultStoragePath(StorePath.Env.Development);
             DeleteAll(path);
         }
         

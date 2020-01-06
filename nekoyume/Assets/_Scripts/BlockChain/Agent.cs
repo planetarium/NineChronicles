@@ -154,18 +154,18 @@ namespace Nekoyume.BlockChain
             // 변경사항을 바로 적용하기 위해 새로운 제네시스 블럭을 만듭니다.
             var newGenesisBlock = BlockHelper.MineGenesisBlock();
             var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathDev);
-#else
-            var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathProd);
-#endif
+
             var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
-#if UNITY_EDITOR
-            if (BlockHelper.CheckGenesisBlocksDifference(genesisBlock, newGenesisBlock))
+            if (BlockHelper.CompareGenesisBlocks(genesisBlock, newGenesisBlock))
             {
                 Debug.Log("The genesis block was changed.");
                 BlockHelper.ExportBlock(newGenesisBlock, genesisBlockPath);
                 BlockHelper.DeleteAllEditor();  // 변경사항이 생기면 자동 체인 초기화.
                 genesisBlock = newGenesisBlock;
             }
+#else
+            var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathProd);
+            var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
 #endif
             Debug.Log($"Store Path: {path}");
             Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
