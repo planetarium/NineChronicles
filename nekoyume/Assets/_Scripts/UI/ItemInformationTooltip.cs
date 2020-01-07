@@ -7,7 +7,6 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -18,8 +17,11 @@ namespace Nekoyume.UI
         public Module.ItemInformation itemInformation;
         public GameObject footerRoot;
         public GameObject submitGameObject;
+        public GameObject submitGameObjectForRetrieve;
         public Button submitButton;
         public TextMeshProUGUI submitButtonText;
+        public Button submitButtonForRetrieve;
+        public TextMeshProUGUI submitButtonForRetrieveText;
         public GameObject priceContainer;
         public TextMeshProUGUI priceText;
         
@@ -40,6 +42,12 @@ namespace Nekoyume.UI
                 Model.OnSubmitClick.OnNext(this);
                 Close();
             }).AddTo(gameObject);
+            submitButtonForRetrieve.OnClickAsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                Model.OnSubmitClick.OnNext(this);
+                Close();
+            }).AddTo(gameObject);
         }
 
         protected override void OnDestroy()
@@ -54,7 +62,9 @@ namespace Nekoyume.UI
             Show(target, item, null, null, null, onClose);
         }
 
-        public void Show(RectTransform target, CountableItem item, Func<CountableItem, bool> submitEnabledFunc, string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null)
+        public void Show(RectTransform target, CountableItem item, Func<CountableItem, bool> submitEnabledFunc,
+            string submitText, Action<ItemInformationTooltip> onSubmit, Action<ItemInformationTooltip> onClose = null,
+            bool retrieve = false)
         {
             if (item is null)
             {
@@ -66,7 +76,7 @@ namespace Nekoyume.UI
             Model.ItemInformation.item.Value = item;
             Model.SubmitButtonEnabledFunc.Value = submitEnabledFunc;
             Model.SubmitButtonText.Value = submitText;
-            
+
             // Show(Model)을 먼저 호출함으로써 Widget.Show()가 호출되고, 게임 오브젝트가 활성화 됨. 그래야 레이아웃 정리가 가능함.
             Show(Model);
             // itemInformation UI의 모든 요소에 적절한 값이 들어가야 레이아웃 정리가 유효함.
@@ -75,9 +85,19 @@ namespace Nekoyume.UI
             Model.TitleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
             Model.PriceEnabled.Subscribe(priceContainer.SetActive).AddTo(_disposablesForModel);
             Model.PriceEnabled.SubscribeTo(priceText).AddTo(_disposablesForModel);
-            Model.Price.SubscribeToText(priceText).AddTo(_disposablesForModel);
-            Model.SubmitButtonText.SubscribeToText(submitButtonText).AddTo(_disposablesForModel);
-            Model.SubmitButtonEnabled.SubscribeTo(submitGameObject).AddTo(_disposablesForModel);
+            Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
+            if (retrieve)
+            {
+                Model.SubmitButtonText.SubscribeToText(submitButtonForRetrieveText).AddTo(_disposablesForModel);
+                Model.SubmitButtonEnabled.SubscribeTo(submitGameObjectForRetrieve).AddTo(_disposablesForModel);
+            }
+            else
+            {
+                Model.SubmitButtonText.SubscribeToText(submitButtonText).AddTo(_disposablesForModel);
+                Model.SubmitButtonEnabled.SubscribeTo(submitGameObject).AddTo(_disposablesForModel);
+            }
+            submitGameObject.SetActive(!retrieve);
+            submitGameObjectForRetrieve.SetActive(retrieve);
             Model.OnSubmitClick.Subscribe(onSubmit).AddTo(_disposablesForModel);
             if (onClose != null)
             {
@@ -113,9 +133,9 @@ namespace Nekoyume.UI
                 if (EventSystem.current.currentSelectedGameObject != temp)
                 {
                     var current = EventSystem.current.currentSelectedGameObject;
-                    if (current == submitButton.gameObject)
+                    if (current == submitButton.gameObject || current == submitButtonForRetrieve.gameObject)
                         yield break;
-                    
+
                     Model.OnCloseClick.OnNext(this);
                     Close();
                     yield break;

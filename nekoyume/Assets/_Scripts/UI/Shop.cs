@@ -6,10 +6,8 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
-using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -146,6 +144,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            ItemCountAndPricePopup.Close();
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             _sequenceOfShopItems?.Kill();
@@ -275,7 +274,8 @@ namespace Nekoyume.UI
                         ShowTooltipForAction(tooltip.itemInformation.Model.item.Value);
                         inventory.Tooltip.Close();
                     },
-                    tooltip => { shopItems.SharedModel.DeselectItemView(); });
+                    tooltip => { shopItems.SharedModel.DeselectItemView(); },
+                    true);
             }
         }
 
