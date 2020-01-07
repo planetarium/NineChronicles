@@ -90,9 +90,9 @@ namespace Nekoyume.UI
             priceInputField.Select();
         }
 
-        public void OnValueChanged(string value)
+        public void OnValueChanged()
         {
-            int.TryParse(value, NumberStyles.Number, new NumberFormatInfo(), out var price);
+            int.TryParse(priceInputField.text, NumberStyles.Number, new NumberFormatInfo(), out var price);
             priceInputField.text = price.ToString("N0");
         }
     }
