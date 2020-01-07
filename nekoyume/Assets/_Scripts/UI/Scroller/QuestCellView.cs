@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             receiveButton.submitText.text = LocalizationManager.Localize("UI_RECEIVE");
-            receiveButton.disabledText.text = LocalizationManager.Localize("UI_ONGOING");
+            receiveButton.disabledText.text = LocalizationManager.Localize("UI_COMPLETED");
             receiveButton.SetSubmittable(true);
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
         }
@@ -105,7 +105,8 @@ namespace Nekoyume.UI.Scroller
                     contentText.color = ColorHelper.HexToColorRGB("3f3f3f");
                     contentTextBullet.color = ColorHelper.HexToColorRGB("3f3f3f");
                     progressText.color = ColorHelper.HexToColorRGB("282828");
-                    receiveButton.Hide();
+                    receiveButton.Show();
+                    receiveButton.SetSubmittable(false);
                 }
                 else
                 {
@@ -125,8 +126,7 @@ namespace Nekoyume.UI.Scroller
                 contentText.color = ColorHelper.HexToColorRGB("e0a491");
                 contentTextBullet.color = ColorHelper.HexToColorRGB("e0a491");
                 progressText.color = ColorHelper.HexToColorRGB("e0a491");
-                receiveButton.Show();
-                receiveButton.SetSubmittable(false);
+                receiveButton.Hide();
             }
 
             var itemMap = _quest.Reward.ItemMap;
@@ -136,6 +136,7 @@ namespace Nekoyume.UI.Scroller
                 {
                     var pair = itemMap.ElementAt(i);
                     var rewardView = rewardViews[i];
+                    rewardView.ignoreOne = true;
                     var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
                     var item = ItemFactory.Create(row, new Guid());
                     var countableItem = new CountableItem(item, pair.Value);

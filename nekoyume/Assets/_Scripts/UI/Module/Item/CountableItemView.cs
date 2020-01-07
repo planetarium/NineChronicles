@@ -9,6 +9,7 @@ namespace Nekoyume.UI.Module
     {
         private const string CountTextFormat = "{0}";
 
+        public bool ignoreOne;
         public TextMeshProUGUI countText;
 
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
@@ -50,6 +51,11 @@ namespace Nekoyume.UI.Module
 
         protected void SetCount(int count)
         {
+            if(ignoreOne && count == 1)
+            {
+                countText.text = string.Empty;
+                return;
+            }
             countText.text = string.Format(CountTextFormat, count);
         }
 
