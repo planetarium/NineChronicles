@@ -66,9 +66,10 @@ namespace Nekoyume
             return source.SubscribeWithState(text, (x, t) => t.text = x);
         }
 
-        public static IDisposable SubscribeToText<T>(this IObservable<T> source, TextMeshProUGUI text)
+        public static IDisposable SubscribeToPrice(this IObservable<decimal> source, TextMeshProUGUI text)
         {
-            return source.SubscribeWithState(text, (x, t) => t.text = x.ToString());
+            return source.SubscribeWithState(text, (x, t) => t.text = x.ToString("N0"));
         }
+
     }
 }

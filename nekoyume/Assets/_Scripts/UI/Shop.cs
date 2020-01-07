@@ -274,7 +274,8 @@ namespace Nekoyume.UI
                         ShowTooltipForAction(tooltip.itemInformation.Model.item.Value);
                         inventory.Tooltip.Close();
                     },
-                    tooltip => { shopItems.SharedModel.DeselectItemView(); });
+                    tooltip => { shopItems.SharedModel.DeselectItemView(); },
+                    true);
             }
         }
 
