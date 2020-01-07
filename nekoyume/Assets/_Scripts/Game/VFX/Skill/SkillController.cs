@@ -65,5 +65,23 @@ namespace Nekoyume.Game.VFX.Skill
             effect.Stop();
             return effect;
         }
+
+        public SkillBlowVFX GetBlow(Vector3 position, Model.Skill.SkillInfo skillInfo)
+        {
+            position.y += 0.55f;
+            var skillName = $"{skillInfo.SkillCategory}_l_fire".ToLower();
+            var go = _pool.Get(skillName, false, position);
+            if (go == null)
+            {
+                go = _pool.Get(skillName, true, position);
+            }
+            var effect = go.GetComponent<SkillBlowVFX>();
+            if (effect == null)
+            {
+                Debug.LogError(skillName);
+            }
+            effect.Stop();
+            return effect;
+        }
     }
 }
