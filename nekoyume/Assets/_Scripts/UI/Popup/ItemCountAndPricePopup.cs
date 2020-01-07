@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
+using System.Globalization;
 using TMPro;
 using UniRx;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -89,6 +88,12 @@ namespace Nekoyume.UI
             priceInputField.text = _data.Price.Value.ToString("N0");
             priceInputField.interactable = _data.PriceInteractable.Value;
             priceInputField.Select();
+        }
+
+        public void OnValueChanged(string value)
+        {
+            int.TryParse(value, NumberStyles.Number, new NumberFormatInfo(), out var price);
+            priceInputField.text = price.ToString("N0");
         }
     }
 }
