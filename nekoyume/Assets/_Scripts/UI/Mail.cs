@@ -170,7 +170,9 @@ namespace Nekoyume.UI
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             var popup = Find<ItemCountAndPricePopup>();
             var model = new UI.Model.ItemCountAndPricePopup();
-            model.PriceInteractable.Value = true;
+            model.TitleText.Value = LocalizationManager.Localize("UI_RETRIEVE");
+            model.InfoText.Value = LocalizationManager.Localize("UI_SELL_CANCEL_INFO");
+            model.PriceInteractable.Value = false;
             model.Price.Value = attachment.shopItem.Price;
             model.CountEnabled.Value = false;
             model.Item.Value = new CountEditableItem(item, 1, 1, 1);
