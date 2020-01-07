@@ -13,7 +13,6 @@ namespace Nekoyume.Game.Quest
     public class GeneralQuest : Quest
     {
         public readonly QuestEventType Event;
-        private int _current;
 
         public GeneralQuest(GeneralQuestSheet.Row data) : base(data)
         {
@@ -22,7 +21,6 @@ namespace Nekoyume.Game.Quest
 
         public GeneralQuest(Dictionary serialized) : base(serialized)
         {
-            _current = (int) ((Integer) serialized["current"]).Value;
             Event = (QuestEventType) (int) ((Integer) serialized["event"]).Value;
         }
 
@@ -55,14 +53,14 @@ namespace Nekoyume.Game.Quest
             Complete = _current >= Goal;
         }
 
-        public override string ToInfo()
-        {
-            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _current), Goal);
-        }
-
         public override string GetName()
         {
             return LocalizationManager.Localize($"QUEST_GENERAL_{Event}_FORMAT");
+        }
+
+        public override string GetProgressText()
+        {
+            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
         }
 
         protected override string TypeId => "generalQuest";
@@ -80,7 +78,6 @@ namespace Nekoyume.Game.Quest
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "current"] = (Integer) _current,
                 [(Text) "event"] = (Integer) (int) Event,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 

@@ -13,7 +13,6 @@ namespace Nekoyume.Game.Quest
     public class GoldQuest : Quest
     {
         public readonly TradeType Type;
-        private decimal _current;
 
         public GoldQuest(GoldQuestSheet.Row data) : base(data)
         {
@@ -22,7 +21,6 @@ namespace Nekoyume.Game.Quest
 
         public GoldQuest(Dictionary serialized) : base(serialized)
         {
-            _current = serialized["current"].ToDecimal();
             Type = (TradeType) (int) ((Integer) serialized["type"]).Value;
         }
 
@@ -36,14 +34,14 @@ namespace Nekoyume.Game.Quest
             Complete = _current >= Goal;
         }
 
-        public override string ToInfo()
-        {
-            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _current), Goal);
-        }
-
         public override string GetName()
         {
             return string.Format(LocalizationManager.Localize($"QUEST_GOLD_{Type}_FORMAT"), Goal);
+        }
+
+        public override string GetProgressText()
+        {
+            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
         }
 
         protected override string TypeId => "GoldQuest";
@@ -53,14 +51,13 @@ namespace Nekoyume.Game.Quest
             if (Complete)
                 return;
             
-            _current += gold;
+            _current += (int) gold;
             Check();
         }
 
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "current"] = _current.Serialize(),
                 [(Text) "type"] = (Integer) (int) Type,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 

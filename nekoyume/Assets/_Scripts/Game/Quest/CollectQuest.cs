@@ -13,8 +13,6 @@ namespace Nekoyume.Game.Quest
     {
         public override QuestType QuestType => QuestType.Obtain;
 
-        private int _current;
-
         private readonly int _itemId;
 
         public CollectQuest(CollectQuestSheet.Row data) : base(data)
@@ -25,7 +23,6 @@ namespace Nekoyume.Game.Quest
         public CollectQuest(Dictionary serialized) : base(serialized)
         {
             _itemId = (int) ((Integer) serialized["itemId"]).Value;
-            _current = (int) ((Integer) serialized["current"]).Value;
         }
 
         public override void Check()
@@ -36,16 +33,16 @@ namespace Nekoyume.Game.Quest
             Complete = _current >= Goal;
         }
 
-        public override string ToInfo()
-        {
-            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _current), Goal);
-        }
-
         public override string GetName()
         {
             var format = LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT");
             var itemName = LocalizationManager.LocalizeItemName(_itemId);
             return string.Format(format, itemName);
+        }
+
+        public override string GetProgressText()
+        {
+            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
         }
 
         protected override string TypeId => "collectQuest";
@@ -62,9 +59,7 @@ namespace Nekoyume.Game.Quest
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "current"] = (Integer) _current,
                 [(Text) "itemId"] = (Integer) _itemId,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-
     }
 }

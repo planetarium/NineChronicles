@@ -11,7 +11,6 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public class TradeQuest : Quest
     {
-        private int _current;
         public override QuestType QuestType => QuestType.Exchange;
         public readonly TradeType Type;
 
@@ -22,7 +21,6 @@ namespace Nekoyume.Game.Quest
 
         public TradeQuest(Dictionary serialized) : base(serialized)
         {
-            _current = (int) ((Integer) serialized["current"]).Value;
             Type = (TradeType) (int) ((Integer) serialized["type"]).Value;
         }
 
@@ -35,22 +33,21 @@ namespace Nekoyume.Game.Quest
             Complete = _current >= Goal;
         }
 
-        public override string ToInfo()
-        {
-            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _current), Goal);
-        }
-
         public override string GetName()
         {
             var format = LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT");
             return string.Format(format, Type.GetLocalizedString());
         }
 
+        public override string GetProgressText()
+        {
+            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
+        }
+
         protected override string TypeId => "tradeQuest";
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "current"] = (Integer) _current,
                 [(Text) "type"] = (Integer) (int) Type,
             }.Union((Dictionary) base.Serialize()));
 

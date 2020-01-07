@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
@@ -42,7 +41,7 @@ namespace Nekoyume.UI.Module
             }
 
             message.SetActive(false);
-            submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT");
+            submitButton.SetText("UI_COMBINATION_ENHANCEMENT");
         }
 
         public override bool Show(bool forced = false)

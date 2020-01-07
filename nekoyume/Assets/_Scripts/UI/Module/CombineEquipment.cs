@@ -1,7 +1,5 @@
 using System;
 using System.Linq;
-using Assets.SimpleLocalization;
-using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -27,7 +25,7 @@ namespace Nekoyume.UI.Module
             if (baseMaterial is null)
                 throw new SerializeFieldNullException();
 
-            submitButton.submitText.text = LocalizationManager.Localize("UI_COMBINATION_ITEM");
+            submitButton.SetText("UI_COMBINATION_ITEM");
         }
 
         public override bool Show(bool forced = false)

@@ -23,6 +23,8 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public abstract class Quest : IState
     {
+        protected int _current;
+
         public abstract QuestType QuestType { get; }
 
         private static readonly Dictionary<string, Func<Dictionary, Quest>> Deserializers =
@@ -50,7 +52,9 @@ namespace Nekoyume.Game.Quest
 
         public bool Receive { get; set; }
 
-        public const string GoalFormat = "{0} ({1} / {2})";
+        public float Progress => (float) _current / Goal;
+
+        public const string GoalFormat = "({0}/{1})";
 
         protected Quest(QuestSheet.Row data)
         {
@@ -72,7 +76,6 @@ namespace Nekoyume.Game.Quest
         }
 
         public abstract void Check();
-        public abstract string ToInfo();
         public abstract string GetName();
         protected abstract string TypeId { get; }
 
@@ -80,11 +83,14 @@ namespace Nekoyume.Game.Quest
         {
             Complete = ((Bencodex.Types.Boolean) serialized["complete"]).Value;
             Goal = (int) ((Integer) serialized["goal"]).Value;
+            _current = (int) ((Integer) serialized["current"]).Value;
             Id = (int) ((Integer) serialized["id"]).Value;
             Reward = new QuestReward((Dictionary) serialized["reward"]);
             serialized.TryGetValue((Text) "receive", out var receive);
             Receive = ((Bencodex.Types.Boolean?) receive)?.Value ?? false;
         }
+
+        public abstract string GetProgressText();
 
         public virtual IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
@@ -92,6 +98,7 @@ namespace Nekoyume.Game.Quest
                 [(Bencodex.Types.Text) "typeId"] = (Bencodex.Types.Text) TypeId,
                 [(Bencodex.Types.Text) "complete"] = new Bencodex.Types.Boolean(Complete),
                 [(Text) "goal"] = (Integer) Goal,
+                [(Text) "current"] = (Integer) _current,
                 [(Text) "id"] = (Integer) Id,
                 [(Text) "reward"] = Reward.Serialize(),
                 [(Bencodex.Types.Text) "receive"] = new Bencodex.Types.Boolean(Receive),
