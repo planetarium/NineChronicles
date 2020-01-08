@@ -12,6 +12,7 @@ namespace Nekoyume.UI
         public StageTitle stageTitle;
         public BossStatus bossStatus;
         public ToggleableButton repeatButton;
+        public BossStatus enemyPlayerStatus;
         
         protected override void Awake()
         {
@@ -79,6 +80,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>()?.Close(ignoreCloseAnimation);
+            enemyPlayerStatus.Close();
             base.Close(ignoreCloseAnimation);
         }
 

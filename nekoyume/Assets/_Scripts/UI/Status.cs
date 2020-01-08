@@ -71,8 +71,7 @@ namespace Nekoyume.UI
 
         private void SubscribeOnUpdatePlayerStatus(Player player)
         {
-            if (player is null ||
-                player.Model is null)
+            if (player?.Model is null || player is EnemyPlayer)
                 return;
             
             UpdateExp();
