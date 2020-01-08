@@ -10,7 +10,7 @@ namespace Nekoyume.Game.Character
 
             var battle = Widget.Find<UI.Battle>();
             battle.enemyPlayerStatus.SetHp(CurrentHP, HP);
-            battle.enemyPlayerStatus.SetBuff(Model?.Buffs);
+            battle.enemyPlayerStatus.SetBuff(CharacterModel.Buffs);
         }
     }
 }

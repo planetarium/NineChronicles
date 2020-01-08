@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using Nekoyume.EnumType;
-using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -26,7 +25,7 @@ namespace Nekoyume.Game.Character
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
-        public Model.CharacterBase Model { get; private set; }
+        public Model.CharacterBase CharacterModel { get; protected set; }
 
         public readonly Subject<CharacterBase> OnUpdateHPBar = new Subject<CharacterBase>();
 
@@ -36,17 +35,17 @@ namespace Nekoyume.Game.Character
 
         public string TargetTag { get; protected set; }
 
-        public Guid Id => Model.Id;
-        public SizeType SizeType => Model.SizeType;
-        private float AttackRange => Model.attackRange;
+        public Guid Id => CharacterModel.Id;
+        public SizeType SizeType => CharacterModel.SizeType;
+        private float AttackRange => CharacterModel.attackRange;
 
         public int Level
         {
-            get => Model.Stats.Level;
-            set => Model.Stats.SetLevel(value);
+            get => CharacterModel.Stats.Level;
+            set => CharacterModel.Stats.SetLevel(value);
         }
 
-        public int HP => Model.HP;
+        public int HP => CharacterModel.HP;
 
         public int CurrentHP
         {
@@ -114,7 +113,7 @@ namespace Nekoyume.Game.Character
         public virtual void Set(Model.CharacterBase model, bool updateCurrentHP = false)
         {
             _disposablesForModel.DisposeAllAndClear();
-            Model = model;
+            CharacterModel = model;
 
             if (updateCurrentHP)
             {
@@ -157,8 +156,8 @@ namespace Nekoyume.Game.Character
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
-            HPBar.Set(CurrentHP, Model.Stats.BuffStats.HP, HP);
-            HPBar.SetBuffs(Model.Buffs);
+            HPBar.Set(CurrentHP, CharacterModel.Stats.BuffStats.HP, HP);
+            HPBar.SetBuffs(CharacterModel.Buffs);
             HPBar.SetLevel(Level);
 
             OnUpdateHPBar.OnNext(this);

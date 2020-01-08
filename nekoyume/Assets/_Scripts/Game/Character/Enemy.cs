@@ -11,8 +11,6 @@ namespace Nekoyume.Game.Character
 {
     public class Enemy : CharacterBase
     {
-        public new Model.Enemy Model { get; private set; }
-        
         private Player _player;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
@@ -60,7 +58,6 @@ namespace Nekoyume.Game.Character
             base.Set(model, updateCurrentHP);
 
             _disposablesForModel.DisposeAllAndClear();
-            Model = model;
 
             UpdateArmor();
             
@@ -84,7 +81,7 @@ namespace Nekoyume.Game.Character
 
             var battle = Widget.Find<UI.Battle>();
             battle.bossStatus.SetHp(CurrentHP, HP);
-            battle.bossStatus.SetBuff(Model.Buffs);
+            battle.bossStatus.SetBuff(CharacterModel.Buffs);
         }
 
         protected override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie,
@@ -122,7 +119,7 @@ namespace Nekoyume.Game.Character
             var center = HitPointBoxCollider.center;
             var size = HitPointBoxCollider.size;
             HitPointLocalOffset = new Vector3(center.x - size.x / 2, center.y - size.y / 2);
-            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - Model.attackRange, 0f);
+            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - CharacterModel.attackRange, 0f);
         }
         
         #endregion
@@ -133,7 +130,7 @@ namespace Nekoyume.Game.Character
         
         private void UpdateArmor()
         {
-            var armorId = Model?.RowData.Id ?? DefaultCharacter;
+            var armorId = CharacterModel?.RowData.Id ?? DefaultCharacter;
             var spineResourcePath = $"Character/Monster/{armorId}";
             
             if (!(Animator.Target is null))
