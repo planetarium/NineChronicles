@@ -107,6 +107,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Menu>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<RankingBattleLoadingScreen>());
+            yield return null;
             // 메뉴보단 더 앞에 나와야 합니다.
             _secondWidgets.Add(Widget.Create<VanilaTooltip>());
             yield return null;

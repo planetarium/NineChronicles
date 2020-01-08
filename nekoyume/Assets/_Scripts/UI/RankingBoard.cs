@@ -148,6 +148,7 @@ namespace Nekoyume.UI
 //            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarInfo.AvatarAddress));
             ActionManager.instance.RankingBattle(info.AvatarInfo.AvatarAddress);
             Find<LoadingScreen>().Show();
+            Find<RankingBattleLoadingScreen>().Show(info.AvatarInfo);
         }
 
         private void GetAvatars(DateTimeOffset? dt)
@@ -190,6 +191,7 @@ namespace Nekoyume.UI
         {
             Game.Event.OnStageStart.Invoke(eval.Action.Result);
             Find<LoadingScreen>().Close();
+            Find<RankingBattleLoadingScreen>().Close();
             Close();
         }
 
