@@ -1,0 +1,23 @@
+using Nekoyume.Helper;
+using Nekoyume.State;
+using Nekoyume.UI.Module;
+
+namespace Nekoyume.UI
+{
+    public class RankingBattleLoadingScreen : ScreenWidget
+    {
+        public CharacterProfile profile;
+        public CharacterProfile enemyProfile;
+
+        public void Show(State.RankingInfo enemyInfo)
+        {
+            var player = Game.Game.instance.Stage.GetPlayer();
+            var sprite = SpriteHelper.GetItemIcon(player.Model.armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId);
+            profile.Set(player.Level, States.Instance.CurrentAvatarState.Value.NameWithHash, sprite);
+            var enemySprite = SpriteHelper.GetItemIcon(enemyInfo.ArmorId);
+            enemyProfile.Set(enemyInfo.Level, enemyInfo.AvatarName, enemySprite);
+
+            base.Show();
+        }
+    }
+}
