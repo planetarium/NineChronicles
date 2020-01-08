@@ -14,7 +14,6 @@ namespace Nekoyume.Game.Quest
     public class ItemTypeCollectQuest : Quest
     {
         public readonly ItemType ItemType;
-        private int _count;
         private readonly List<int> _itemIds = new List<int>();
 
 
@@ -25,7 +24,6 @@ namespace Nekoyume.Game.Quest
 
         public ItemTypeCollectQuest(Dictionary serialized) : base(serialized)
         {
-            _count = (int) ((Integer) serialized["count"]).Value;
             _itemIds = serialized["itemIds"].ToList(i => (int) ((Integer) i).Value);
             ItemType = (ItemType) (int) ((Integer) serialized["itemType"]).Value;
         }
@@ -37,7 +35,7 @@ namespace Nekoyume.Game.Quest
             
             if (!_itemIds.Contains(item.Data.Id))
             {
-                _count++;
+                _current++;
                 _itemIds.Add(item.Data.Id);
             }
             
@@ -51,12 +49,7 @@ namespace Nekoyume.Game.Quest
             if (Complete)
                 return;
             
-            Complete = _count >= Goal;
-        }
-
-        public override string ToInfo()
-        {
-            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _count), Goal);
+            Complete = _current >= Goal;
         }
 
         public override string GetName()
@@ -65,12 +58,16 @@ namespace Nekoyume.Game.Quest
             return string.Format(format, ItemType.GetLocalizedString());
         }
 
+        public override string GetProgressText()
+        {
+            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
+        }
+
         protected override string TypeId => "itemTypeCollectQuest";
 
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "count"] = (Integer) _count,
                 [(Text) "itemType"] = (Integer) (int) ItemType,
                 [(Text) "itemIds"] = (Bencodex.Types.List) _itemIds.Select(i => (Integer) i).Serialize(),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));

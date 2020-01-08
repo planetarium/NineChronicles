@@ -13,7 +13,6 @@ namespace Nekoyume.Game.Quest
     public class MonsterQuest: Quest
     {
         private readonly int _monsterId;
-        private int _count;
 
         public MonsterQuest(MonsterQuestSheet.Row data) : base(data)
         {
@@ -22,7 +21,6 @@ namespace Nekoyume.Game.Quest
 
         public MonsterQuest(Bencodex.Types.Dictionary serialized) : base(serialized)
         {
-            _count = (int) ((Integer) serialized["count"]).Value;
             _monsterId = (int) ((Integer) serialized["monsterId"]).Value;
         }
 
@@ -33,18 +31,18 @@ namespace Nekoyume.Game.Quest
             if (Complete)
                 return;
             
-            Complete = _count >= Goal;
-        }
-
-        public override string ToInfo()
-        {
-            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _count), Goal);
+            Complete = _current >= Goal;
         }
 
         public override string GetName()
         {
             var format = LocalizationManager.Localize("QUEST_MONSTER_FORMAT");
             return string.Format(format, LocalizationManager.LocalizeCharacterName(_monsterId));
+        }
+
+        public override string GetProgressText()
+        {
+            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
         }
 
         protected override string TypeId => "monsterQuest";
@@ -54,14 +52,13 @@ namespace Nekoyume.Game.Quest
             if (Complete)
                 return;
             
-            monsterMap.TryGetValue(_monsterId, out _count);
+            monsterMap.TryGetValue(_monsterId, out _current);
             Check();
         }
 
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "count"] = (Integer) _count,
                 [(Text) "monsterId"] = (Integer) _monsterId,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
     }

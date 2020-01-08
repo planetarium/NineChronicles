@@ -25,11 +25,6 @@ namespace Nekoyume.Game.Quest
         {
         }
 
-        public override string ToInfo()
-        {
-            return GetName();
-        }
-
         public override string GetName()
         {
             if (Game.instance.TableSheets.WorldSheet.TryGetByStageId(Goal, out var worldRow))
@@ -38,6 +33,11 @@ namespace Nekoyume.Game.Quest
                 return string.Format(format, worldRow.GetLocalizedName());
             }
             throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", Goal.ToString());
+        }
+
+        public override string GetProgressText()
+        {
+            return string.Empty;
         }
 
         protected override string TypeId => "worldQuest";
@@ -49,6 +49,5 @@ namespace Nekoyume.Game.Quest
             
             Complete = stageMap.TryGetValue(Goal, out _);
         }
-
     }
 }

@@ -28,8 +28,8 @@ namespace Nekoyume.UI
         public class TabButton
         {
             private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
-            private static readonly Vector2 _leftBottom = new Vector2(-15f, -10.5f);
-            private static readonly Vector2 _minusRightTop = new Vector2(15f, 13f);
+            private static readonly Vector2 _leftBottom = new Vector2(-13f, -11f);
+            private static readonly Vector2 _minusRightTop = new Vector2(13f, 13f);
             public Sprite highlightedSprite;
             public Button button;
             public Image hasNotificationImage;

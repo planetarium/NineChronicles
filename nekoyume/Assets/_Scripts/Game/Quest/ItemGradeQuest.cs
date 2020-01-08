@@ -13,7 +13,6 @@ namespace Nekoyume.Game.Quest
     public class ItemGradeQuest : Quest
     {
         public readonly int Grade;
-        private int _count;
         private readonly List<int> _itemIds = new List<int>();
 
         public ItemGradeQuest(ItemGradeQuestSheet.Row data) : base(data)
@@ -24,7 +23,6 @@ namespace Nekoyume.Game.Quest
         public ItemGradeQuest(Dictionary serialized) : base(serialized)
         {
             Grade = (int) ((Integer) serialized["grade"]).Value;
-            _count = (int) ((Integer) serialized["count"]).Value;
             _itemIds = serialized["itemIds"].ToList(i => (int) ((Integer) i).Value);
         }
 
@@ -35,18 +33,18 @@ namespace Nekoyume.Game.Quest
             if (Complete)
                 return;
             
-            Complete = _count >= Goal;
-        }
-
-        public override string ToInfo()
-        {
-            return string.Format(GoalFormat, GetName(), Math.Min(Goal, _count), Goal);
+            Complete = _current >= Goal;
         }
 
         public override string GetName()
         {
             var format = LocalizationManager.Localize("QUEST_ITEM_GRADE_FORMAT");
             return string.Format(format, Grade);
+        }
+
+        public override string GetProgressText()
+        {
+            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
         }
 
         public void Update(ItemUsable itemUsable)
@@ -56,7 +54,7 @@ namespace Nekoyume.Game.Quest
             
             if (!_itemIds.Contains(itemUsable.Data.Id))
             {
-                _count++;
+                _current++;
                 _itemIds.Add(itemUsable.Data.Id);
             }
             Check();
@@ -68,7 +66,6 @@ namespace Nekoyume.Game.Quest
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "grade"] = (Integer) Grade,
-                [(Text) "count"] = (Integer) _count,
                 [(Text) "itemIds"] = (Bencodex.Types.List) _itemIds.Select(i => (Integer) i).Serialize(),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
 

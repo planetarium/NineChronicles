@@ -20,8 +20,11 @@ namespace Nekoyume.UI.Scroller
     public class QuestCellView : EnhancedScrollerCellView
     {
         public Image background;
+        public Image contentTextBullet;
+        public Image fillImage;
         public TextMeshProUGUI contentText;
-        public TextMeshProUGUI rewardsText;
+        public TextMeshProUGUI progressText;
+        public Slider progressBar;
         public SimpleCountableItemView[] rewardViews;
         public SubmitButton receiveButton;
 
@@ -34,12 +37,10 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            rewardsText.text = LocalizationManager.Localize("UI_REWARDS");
-            receiveButton.submitText.text = LocalizationManager.Localize("UI_GET_REWARDS");
+            receiveButton.submitText.text = LocalizationManager.Localize("UI_RECEIVE");
+            receiveButton.disabledText.text = LocalizationManager.Localize("UI_COMPLETED");
             receiveButton.SetSubmittable(true);
-
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
-            
         }
 
         #endregion
@@ -82,32 +83,49 @@ namespace Nekoyume.UI.Scroller
         private void UpdateView(bool isLocalReceived)
         {
             var isReceived = false;
-            contentText.text = _quest.ToInfo();
+            contentText.text = _quest.GetName();
+
+            string text = _quest.GetProgressText();
+            bool showProgressBar = !string.IsNullOrEmpty(text);
+            progressText.gameObject.SetActive(showProgressBar);
+            progressBar.gameObject.SetActive(showProgressBar);
+            if (showProgressBar)
+            {
+                progressText.text = text;
+                progressBar.value = _quest.Progress;
+            }
 
             if (_quest.Complete)
             {
                 if (_quest.Receive || isLocalReceived)
                 {
                     isReceived = true;
-                    
+                    fillImage.color = ColorHelper.HexToColorRGB("282828");
                     background.color = ColorHelper.HexToColorRGB("7b7b7b");
                     contentText.color = ColorHelper.HexToColorRGB("3f3f3f");
-                    rewardsText.color = ColorHelper.HexToColorRGB("3f3f3f");
-                    receiveButton.Hide();
+                    contentTextBullet.color = ColorHelper.HexToColorRGB("3f3f3f");
+                    progressText.color = ColorHelper.HexToColorRGB("282828");
+                    receiveButton.Show();
+                    receiveButton.SetSubmittable(false);
                 }
                 else
                 {
                     background.color = Color.white;
-                    contentText.color = ColorHelper.HexToColorRGB("d3a03b");
-                    rewardsText.color = ColorHelper.HexToColorRGB("e5d1a7");
+                    fillImage.color = ColorHelper.HexToColorRGB("ffffff");
+                    contentText.color = ColorHelper.HexToColorRGB("e0a491");
+                    contentTextBullet.color = ColorHelper.HexToColorRGB("e0a491");
+                    progressText.color = ColorHelper.HexToColorRGB("e0a491");
                     receiveButton.Show();
+                    receiveButton.SetSubmittable(true);
                 }
             }
             else
             {
                 background.color = Color.white;
-                contentText.color = ColorHelper.HexToColorRGB("d3a03b");
-                rewardsText.color = ColorHelper.HexToColorRGB("e5d1a7");
+                fillImage.color = ColorHelper.HexToColorRGB("ffffff");
+                contentText.color = ColorHelper.HexToColorRGB("e0a491");
+                contentTextBullet.color = ColorHelper.HexToColorRGB("e0a491");
+                progressText.color = ColorHelper.HexToColorRGB("e0a491");
                 receiveButton.Hide();
             }
 
@@ -118,11 +136,13 @@ namespace Nekoyume.UI.Scroller
                 {
                     var pair = itemMap.ElementAt(i);
                     var rewardView = rewardViews[i];
+                    rewardView.ignoreOne = true;
                     var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
                     var item = ItemFactory.Create(row, new Guid());
                     var countableItem = new CountableItem(item, pair.Value);
                     countableItem.Dimmed.Value = isReceived;
                     rewardView.SetData(countableItem);
+                    rewardView.iconImage.rectTransform.sizeDelta *= 0.7f;
                     rewardView.gameObject.SetActive(true);
                 }
                 else

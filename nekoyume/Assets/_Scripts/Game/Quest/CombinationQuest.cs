@@ -12,7 +12,6 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public class CombinationQuest : Quest
     {
-        public int current;
         public readonly ItemType ItemType;
         public readonly ItemSubType ItemSubType;
 
@@ -26,7 +25,6 @@ namespace Nekoyume.Game.Quest
 
         public CombinationQuest(Bencodex.Types.Dictionary serialized) : base(serialized)
         {
-            current = (int) ((Integer) serialized["current"]).Value;
             ItemType = (ItemType) (int) ((Integer) serialized["itemType"]).Value;
             ItemSubType = (ItemSubType) (int) ((Integer) serialized["itemSubType"]).Value;
         }
@@ -36,18 +34,18 @@ namespace Nekoyume.Game.Quest
             if (Complete)
                 return;
             
-            Complete = current >= Goal;
-        }
-
-        public override string ToInfo()
-        {
-            return string.Format(GoalFormat, GetName(), Math.Min(Goal, current), Goal);
+            Complete = _current >= Goal;
         }
 
         public override string GetName()
         {
             var format = LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT");
             return string.Format(format, ItemSubType.GetLocalizedString());
+        }
+
+        public override string GetProgressText()
+        {
+            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
         }
 
         protected override string TypeId => "combinationQuest";
@@ -57,14 +55,13 @@ namespace Nekoyume.Game.Quest
             if (Complete)
                 return;
             
-            current += items.Count(i => i.Data.ItemType == ItemType && i.Data.ItemSubType == ItemSubType);
+            _current += items.Count(i => i.Data.ItemType == ItemType && i.Data.ItemSubType == ItemSubType);
             Check();
         }
 
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "current"] = (Integer) current,
                 [(Text) "itemType"] = (Integer) (int) ItemType,
                 [(Text) "itemSubType"] = (Integer) (int) ItemSubType,
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));

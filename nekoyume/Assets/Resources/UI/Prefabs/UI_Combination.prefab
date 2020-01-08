@@ -14136,6 +14136,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SubmitWithCostButton
       objectReference: {fileID: 0}
+    - target: {fileID: 8829394730994905627, guid: d4d32797afbb34139908d57cfc36bcc8,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3295112531194159851, guid: d4d32797afbb34139908d57cfc36bcc8,
         type: 3}
       propertyPath: m_LocalPosition.x

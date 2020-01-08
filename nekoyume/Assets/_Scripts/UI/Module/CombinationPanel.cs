@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using DG.Tweening;
 using JetBrains.Annotations;
 using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
@@ -516,7 +514,7 @@ namespace Nekoyume.UI.Module
                     otherMaterial.effectImage.enabled = false;
                     continue;
                 }
-                
+
                 if (otherMaterial.IsLocked)
                 {
                     otherMaterial.SetTwinkled(false);
