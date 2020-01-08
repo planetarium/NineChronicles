@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
     {
         public GameObject iconPrefab;
         public readonly HashSet<Buff> addedBuffs = new HashSet<Buff>();
-        public IReadOnlyDictionary<int, Buff> buffData;
+        public IReadOnlyDictionary<int, Buff> buffData = new Dictionary<int, Buff>();
 
         private Transform _buffParent;
         private readonly List<BuffIcon> _pool = new List<BuffIcon>(10);
