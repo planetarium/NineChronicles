@@ -6,8 +6,10 @@ namespace Nekoyume.Model
 {
     public class EnemyPlayer: Player
     {
+        public readonly string NameWithHash;
         public EnemyPlayer(AvatarState avatarState, Simulator simulator) : base(avatarState, simulator)
         {
+            NameWithHash = avatarState.NameWithHash;
         }
 
         public EnemyPlayer(AvatarState avatarState, TableSheets tableSheets) : base(avatarState, tableSheets)
@@ -18,8 +20,9 @@ namespace Nekoyume.Model
         {
         }
 
-        private EnemyPlayer(Player value) : base(value)
+        private EnemyPlayer(EnemyPlayer value) : base(value)
         {
+            NameWithHash = value.NameWithHash;
         }
 
         public override void Spawn()

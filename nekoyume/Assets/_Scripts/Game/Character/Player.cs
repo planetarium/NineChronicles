@@ -19,8 +19,6 @@ namespace Nekoyume.Game.Character
     // todo: 경험치 정보를 `CharacterBase`로 옮기는 것이 좋겠음.
     public class Player : CharacterBase
     {
-        public new Model.Player Model { get; private set; }
-
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         public long EXP = 0;
@@ -32,12 +30,13 @@ namespace Nekoyume.Game.Character
         public List<Equipment> Equipments =>
             Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
-        protected override float RunSpeedDefault => Model.RunSpeed;
+        protected override float RunSpeedDefault => CharacterModel.RunSpeed;
 
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
         private PlayerAnimationController AnimationController { get; set; }
+        public Model.Player Model => (Model.Player) CharacterModel;
 
         #region Mono
 
@@ -85,7 +84,7 @@ namespace Nekoyume.Game.Character
             base.Set(model, updateCurrentHP);
 
             _disposablesForModel.DisposeAllAndClear();
-            Model = model;
+            CharacterModel = model;
 
             InitStats(model);
             UpdateEquipments(model.armor, model.weapon);
@@ -131,7 +130,7 @@ namespace Nekoyume.Game.Character
             var center = HitPointBoxCollider.center;
             var size = HitPointBoxCollider.size;
             HitPointLocalOffset = new Vector3(center.x + size.x / 2, center.y - size.y / 2);
-            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x + Model.attackRange, 0f);
+            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
         }
         
         #endregion

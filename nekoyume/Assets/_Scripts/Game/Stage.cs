@@ -348,6 +348,13 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character)
         {
+            var battle = Widget.Find<UI.Battle>();
+            battle.bossStatus.Close();
+            battle.enemyPlayerStatus.Show();
+            battle.enemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
+
+            var sprite = SpriteHelper.GetItemIcon(character.armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId);
+            battle.enemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
             yield return StartCoroutine(spawner.CoSetData(character));
         }
 
@@ -518,6 +525,7 @@ namespace Nekoyume.Game
         {
             yield return new WaitForSeconds(.3f);
             Widget.Find<UI.Battle>().bossStatus.Close();
+            Widget.Find<UI.Battle>().enemyPlayerStatus.Close();
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
             var battle = Widget.Find<UI.Battle>();

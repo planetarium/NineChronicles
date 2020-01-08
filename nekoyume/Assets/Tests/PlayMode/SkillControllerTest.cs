@@ -48,11 +48,11 @@ namespace Tests.PlayMode
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
             _player.Model.Targets.Add(_player.Model);
             Assert.NotNull(_player);
-            Assert.NotNull(((CharacterBase) _player).Model);
+            Assert.NotNull(_player.CharacterModel);
 
             foreach (var elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model, 0, false, SkillCategory.AreaAttack, elemental);
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.AreaAttack, elemental);
                 yield return _player.CoAreaAttack(new[] {info});
             }
         }
@@ -62,13 +62,13 @@ namespace Tests.PlayMode
         {
             var go = PlayerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
-            _player.Model.Targets.Add(_player.Model);
+            _player.CharacterModel.Targets.Add(_player.CharacterModel);
             Assert.NotNull(_player);
-            Assert.NotNull(((CharacterBase) _player).Model);
+            Assert.NotNull(_player.CharacterModel);
 
             foreach (ElementalType elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model, 0, false, SkillCategory.DoubleAttack, elemental);
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.DoubleAttack, elemental);
                 yield return _player.CoDoubleAttack(new[] {info});
             }
         }
@@ -78,13 +78,13 @@ namespace Tests.PlayMode
         {
             var go = PlayerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
-            _player.Model.Targets.Add(_player.Model);
+            _player.CharacterModel.Targets.Add(_player.CharacterModel);
             Assert.NotNull(_player);
-            Assert.NotNull(((CharacterBase) _player).Model);
+            Assert.NotNull(((CharacterBase) _player).CharacterModel);
 
             foreach (ElementalType elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model, 0, false, SkillCategory.BlowAttack, elemental);
+                var info = new Nekoyume.Model.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.BlowAttack, elemental);
                 yield return _player.CoHeal(new[] {info});
             }
         }
@@ -94,9 +94,9 @@ namespace Tests.PlayMode
         {
             var go = PlayerFactory.Create(_avatarState);
             _player = go.GetComponent<Nekoyume.Game.Character.Player>();
-            _player.Model.Targets.Add(_player.Model);
+            _player.CharacterModel.Targets.Add(_player.CharacterModel);
             Assert.NotNull(_player);
-            Assert.NotNull(((CharacterBase) _player).Model);
+            Assert.NotNull(((CharacterBase) _player).CharacterModel);
 
             var pool = Game.instance.Stage.objectPool;
             var objects = pool.objects["area_l_water"];
@@ -106,7 +106,7 @@ namespace Tests.PlayMode
                 effect.SetActive(true);
             }
 
-            var info = new Nekoyume.Model.Skill.SkillInfo(_player.Model, 0, false, SkillCategory.AreaAttack,
+            var info = new Nekoyume.Model.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.AreaAttack,
                 ElementalType.Water);
             yield return _player.CoAreaAttack(new[] {info});
             Assert.Greater(pool.objects["area_l_water"].Count, current);

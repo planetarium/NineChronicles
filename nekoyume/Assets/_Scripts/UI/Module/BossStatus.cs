@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using Nekoyume.Game;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -12,7 +14,11 @@ namespace Nekoyume.UI.Module
         public Image portrait;
         public BuffLayout buffLayout;
 
-        public void Show() => gameObject.SetActive(true);
+        public void Show()
+        {
+            gameObject.SetActive(true);
+            buffLayout.SetBuff(null);
+        }
 
         public void Close() => gameObject.SetActive(false);
 
@@ -29,9 +35,9 @@ namespace Nekoyume.UI.Module
             portrait.overrideSprite = sprite; 
         }
 
-        public void SetBuff()
+        public void SetBuff(Dictionary<int, Buff> modelBuffs)
         {
-
+            buffLayout.SetBuff(modelBuffs);
         }
     }
 }
