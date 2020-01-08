@@ -25,8 +25,6 @@ namespace Nekoyume.Game.VFX.Skill
         public T Get<T>(CharacterBase target, Model.Skill.SkillInfo skillInfo) where T : SkillVFX
         {
             var position = target.transform.position;
-            position.x -= 0.2f;
-            position.y += 0.32f;
             var size = target.SizeType == SizeType.XS ? SizeType.S : SizeType.M;
             var elemental = skillInfo.ElementalType;
             if (skillInfo.SkillCategory == SkillCategory.AreaAttack)
@@ -41,6 +39,16 @@ namespace Nekoyume.Game.VFX.Skill
                 position.y = Stage.StageStartPosition;
             }
             var skillName = $"{skillInfo.SkillCategory}_{size}_{elemental}".ToLower();
+            if (skillInfo.SkillCategory == SkillCategory.BlowAttack &&
+                skillInfo.SkillTargetType == SkillTargetType.Enemies)
+            {
+                skillName = $"{skillInfo.SkillCategory}_m_{elemental}_area".ToLower();
+            }
+            else
+            {
+                position.x -= 0.2f;
+                position.y += 0.32f;
+            }
             var go = _pool.Get(skillName, false, position);
             if (go == null)
             {
@@ -62,6 +70,23 @@ namespace Nekoyume.Game.VFX.Skill
             var skillName = $"casting_{elemental}".ToLower();
             var go = _pool.Get(skillName, false, position);
             var effect = go.GetComponent<SkillCastingVFX>();
+            effect.Stop();
+            return effect;
+        }
+
+        public SkillCastingVFX GetBlowCasting(Vector3 position, Model.Skill.SkillInfo skillInfo)
+        {
+            var skillName = $"casting_{skillInfo.SkillCategory}_{skillInfo.ElementalType}".ToLower();
+            var go = _pool.Get(skillName, false, position);
+            if (go == null)
+            {
+                go = _pool.Get(skillName, true, position);
+            }
+            var effect = go.GetComponent<SkillCastingVFX>();
+            if (effect == null)
+            {
+                Debug.LogError(skillName);
+            }
             effect.Stop();
             return effect;
         }

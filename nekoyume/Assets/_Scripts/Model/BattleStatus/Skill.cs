@@ -17,10 +17,11 @@ namespace Nekoyume.Model
             public readonly bool Critical;
             public readonly SkillCategory SkillCategory;
             public readonly ElementalType ElementalType;
+            public readonly SkillTargetType SkillTargetType;
             [CanBeNull] public readonly Game.Buff Buff;
 
             public SkillInfo(CharacterBase character, int effect, bool critical, SkillCategory skillCategory,
-                ElementalType elementalType = ElementalType.Normal,
+                ElementalType elementalType = ElementalType.Normal, SkillTargetType targetType = SkillTargetType.Enemy,
                 [CanBeNull] Game.Buff buff = null)
             {
                 Target = character;
@@ -28,6 +29,7 @@ namespace Nekoyume.Model
                 Critical = critical;
                 SkillCategory = skillCategory;
                 ElementalType = elementalType;
+                SkillTargetType = targetType;
                 Buff = buff;
             }
         }

@@ -63,7 +63,7 @@ namespace Nekoyume.Game
                         critical = true;
                     }
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), damage, critical,
-                        skillRow.SkillCategory, skillRow.ElementalType));
+                        skillRow.SkillCategory, skillRow.ElementalType, skillRow.SkillTargetType));
                 }
             }
 

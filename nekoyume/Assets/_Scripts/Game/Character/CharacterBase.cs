@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using BTAI;
 using Nekoyume.EnumType;
-using Nekoyume.Game.CC;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -92,9 +91,9 @@ namespace Nekoyume.Game.Character
 
         protected virtual void Awake()
         {
-            #if !UNITY_EDITOR
+#if !UNITY_EDITOR
             attackPoint.SetActive(false);
-            #endif
+#endif
         
             HitPointBoxCollider = GetComponent<BoxCollider>();
 
@@ -515,6 +514,23 @@ namespace Nekoyume.Game.Character
             PostAnimationForTheKindOfAttack();
         }
 
+
+        private IEnumerator CoAnimationCastBlow(IReadOnlyList<Model.Skill.SkillInfo> infos)
+        {
+            var info = infos.First();
+            var copy = new Model.Skill.SkillInfo(info.Target, info.Effect, info.Critical, info.SkillCategory,
+                ElementalType.Normal, info.SkillTargetType, info.Buff);
+            yield return StartCoroutine(CoAnimationCast(copy));
+
+            var pos = transform.position;
+            yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
+            var effect = Game.instance.Stage.skillController.GetBlowCasting(pos, info);
+            effect.Play();
+            yield return new WaitForSeconds(0.2f);
+
+            PostAnimationForTheKindOfAttack();
+        }
+
         protected virtual IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
         {
             PreAnimationForTheKindOfAttack();
@@ -584,9 +600,15 @@ namespace Nekoyume.Game.Character
 
             var skillInfosCount = skillInfos.Count;
 
-            yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
-
-            yield return StartCoroutine(CoAnimationCastAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
+            if (skillInfos.First().SkillTargetType == SkillTargetType.Enemy)
+            {
+                yield return StartCoroutine(CoAnimationCast(skillInfos.First()));
+                yield return StartCoroutine(CoAnimationCastAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
+            }
+            else
+            {
+                yield return StartCoroutine(CoAnimationCastBlow(skillInfos));
+            }
 
             for (var i = 0; i < skillInfosCount; i++)
             {
