@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class CombinationMaterialView : CountEditableItemView<CombinationMaterial>, ILockable
+    public class CombinationMaterialView : CountEditableItemView<CombinationMaterial>
     {
         public Image ncgEffectImage;
         public Image effectImage;
@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Module
             base.Clear();
         }
 
-        public void Lock()
+        public void Lock(bool withCountEditButtons = true)
         {
             Clear();
             itemButton.interactable = false;
@@ -74,26 +74,42 @@ namespace Nekoyume.UI.Module
             backgroundImage.SetNativeSize();
             ncgEffectImage.enabled = false;
             effectImage.enabled = false;
+
+            if (withCountEditButtons)
+            {
+                minusButton.gameObject.SetActive(false);
+                plusButton.gameObject.SetActive(false);
+            }
+
             SetTwinkled(false);
         }
         
-        public void Unlock()
+        public void Unlock(bool withCountEditButtons = true)
         {
+            _isUnlockedAsNCG = false;
             itemButton.interactable = true;
             backgroundImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_02");
             backgroundImage.SetNativeSize();
             ncgEffectImage.enabled = false;
-            _isUnlockedAsNCG = false;
+            
+            if (withCountEditButtons)
+            {
+                minusButton.gameObject.SetActive(true);
+                plusButton.gameObject.SetActive(true);
+            }
+
             SetTwinkled(_isTwinkledOn);
         }
 
         public void UnlockAsNCG()
         {
+            _isUnlockedAsNCG = true;
             itemButton.interactable = true;
             backgroundImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_04");
             backgroundImage.SetNativeSize();
             ncgEffectImage.enabled = true;
-            _isUnlockedAsNCG = true;
+            minusButton.gameObject.SetActive(true);
+            plusButton.gameObject.SetActive(true);
             SetTwinkled(_isTwinkledOn);
         }
 

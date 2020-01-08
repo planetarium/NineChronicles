@@ -50,7 +50,7 @@ namespace Nekoyume.UI.Module
             if (!base.Show(forced))
                 return false;
 
-            baseMaterial.Unlock();
+            baseMaterial.Unlock(false);
 
             foreach (var otherMaterial in otherMaterials)
             {
