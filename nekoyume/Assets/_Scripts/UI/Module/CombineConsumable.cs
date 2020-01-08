@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -27,10 +28,10 @@ namespace Nekoyume.UI.Module
         public Button recipeButton;
 
         public override bool IsSubmittable =>
-            !(States.Instance.AgentState is null) &&
-            States.Instance.AgentState.gold >= CostNCG &&
-            !(States.Instance.CurrentAvatarState is null) &&
-            States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
+            !(States.Instance.AgentState.Value is null) &&
+            States.Instance.AgentState.Value.gold >= CostNCG &&
+            !(States.Instance.CurrentAvatarState.Value is null) &&
+            States.Instance.CurrentAvatarState.Value.actionPoint >= CostAP &&
             otherMaterials.Count(e => !e.IsLocked && !e.IsEmpty) >= 2;
 
         private readonly ReactiveProperty<int> _count = new ReactiveProperty<int>();
@@ -39,7 +40,7 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
 
-            submitButton.SetText("UI_COMBINATION_ITEM");
+            submitButton.SetSubmitText(LocalizationManager.Localize("UI_COMBINATION_ITEM"));
 
             countMinusButton.OnClickAsObservable().Subscribe(SubscribeCountMinusClick).AddTo(gameObject);
             countPlusButton.OnClickAsObservable().Subscribe(SubscribeCountPlusClick).AddTo(gameObject);

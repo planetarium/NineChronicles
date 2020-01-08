@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
@@ -19,10 +20,10 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI messageText;
 
         public override bool IsSubmittable =>
-            !(States.Instance.AgentState is null) &&
-            States.Instance.AgentState.gold >= CostNCG &&
-            !(States.Instance.CurrentAvatarState is null) &&
-            States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
+            !(States.Instance.AgentState.Value is null) &&
+            States.Instance.AgentState.Value.gold >= CostNCG &&
+            !(States.Instance.CurrentAvatarState.Value is null) &&
+            States.Instance.CurrentAvatarState.Value.actionPoint >= CostAP &&
             !(baseMaterial is null) &&
             !baseMaterial.IsEmpty &&
             otherMaterials.Count(e => !e.IsEmpty) > 0;
@@ -41,7 +42,7 @@ namespace Nekoyume.UI.Module
             }
 
             message.SetActive(false);
-            submitButton.SetText("UI_COMBINATION_ENHANCEMENT");
+            submitButton.SetSubmitText(LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT"));
         }
 
         public override bool Show(bool forced = false)

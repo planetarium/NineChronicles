@@ -1,4 +1,3 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using TMPro;
 using UniRx;
@@ -13,9 +12,11 @@ namespace Nekoyume.UI.Module
         public Image backgroundImage;
         public Image backgroundImageForSubmittable;
         public TextMeshProUGUI submitText;
-        public TextMeshProUGUI disabledText;
+        public TextMeshProUGUI submitTextForSubmittable;
         
         public readonly Subject<SubmitButton> OnSubmitClick = new Subject<SubmitButton>();
+        
+        public bool IsSubmittable { get; private set; }
 
         private void Awake()
         {
@@ -32,17 +33,23 @@ namespace Nekoyume.UI.Module
         
         public virtual void SetSubmittable(bool submittable)
         {
+            IsSubmittable = submittable;
             button.interactable = submittable;
-            backgroundImage.enabled = !submittable; 
+            backgroundImage.enabled = !submittable;
             backgroundImageForSubmittable.enabled = submittable;
-            submitText.gameObject.SetActive(submittable);
-            disabledText.gameObject.SetActive(!submittable);
+            submitText.gameObject.SetActive(!submittable);
+            submitTextForSubmittable.gameObject.SetActive(submittable);
         }
 
-        public void SetText(string value, bool localize = true)
+        public void SetSubmitText(string text)
         {
-            submitText.text = LocalizationManager.Localize(value);
-            disabledText.text = LocalizationManager.Localize(value);
+            SetSubmitText(text, text);
+        }
+        
+        public void SetSubmitText(string nonSubmittableText, string submittableText)
+        {
+            submitText.text = nonSubmittableText;
+            submitTextForSubmittable.text = submittableText;
         }
     }
 }
