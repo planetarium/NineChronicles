@@ -26,6 +26,7 @@ namespace Nekoyume.UI
             base.Show();
             stageTitle.Show(stageId);
             bossStatus.Close();
+            enemyPlayerStatus.Close();
 
             if (isRepeat)
             {
