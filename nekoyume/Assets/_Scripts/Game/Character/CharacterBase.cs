@@ -524,7 +524,7 @@ namespace Nekoyume.Game.Character
 
             var pos = transform.position;
             yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
-            var effect = Game.instance.Stage.skillController.GetBlow(pos, info);
+            var effect = Game.instance.Stage.skillController.GetBlowCasting(pos, info);
             effect.Play();
             yield return new WaitForSeconds(0.2f);
 
