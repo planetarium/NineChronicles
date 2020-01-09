@@ -12,9 +12,11 @@ namespace Nekoyume.EnumType
 
     public enum ItemSubType
     {
+        // todo: Consumable or Consumable Material
         // Consumable
         Food,
         
+        // todo: Equipment or Equipment Material
         // Equipment
         Weapon,
         RangedWeapon,
@@ -26,6 +28,8 @@ namespace Nekoyume.EnumType
         Set,
         Shoes,
         
+        // todo: Remove `EquipmentMaterial` and `FoodMaterial`
+        // todo: Material -> ETC
         // Material
         EquipmentMaterial,
         FoodMaterial,

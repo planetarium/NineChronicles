@@ -123,6 +123,9 @@ namespace Nekoyume.Model
 
         public WorldInformation(long blockIndex, WorldSheet worldSheet, bool openAllOfWorldsAndStages = false)
         {
+            if (worldSheet is null)
+                return;
+            
             var orderedSheet = worldSheet.OrderedList;
 
             if (openAllOfWorldsAndStages)

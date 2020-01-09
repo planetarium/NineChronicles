@@ -78,10 +78,10 @@ namespace Nekoyume.UI
             Find<GrayLoadingScreen>().Show();
 
             ActionManager.instance
-                .CreateAvatar(AvatarManager.CreateAvatarAddress(), _selectedIndex, nickName, _hair, _lens, _ear, _tail)
+                .CreateAvatar(AvatarState.CreateAvatarAddress(), _selectedIndex, nickName, _hair, _lens, _ear, _tail)
                 .Subscribe(eval =>
                 {
-                    var avatarState = AvatarManager.SetIndex(_selectedIndex);
+                    var avatarState = States.Instance.SelectAvatar(_selectedIndex);
                     OnDidAvatarStateLoaded(avatarState);
                     Find<GrayLoadingScreen>()?.Close();
                 }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
@@ -91,7 +91,7 @@ namespace Nekoyume.UI
         public void LoginClick()
         {
             btnLogin.SetActive(false);
-            var avatarState = AvatarManager.SetIndex(_selectedIndex);
+            var avatarState = States.Instance.SelectAvatar(_selectedIndex);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
         }
@@ -119,9 +119,9 @@ namespace Nekoyume.UI
             }
             else
             {
-                States.Instance.CurrentAvatarState.Value = States.Instance.AvatarStates[_selectedIndex];
+                States.Instance.SelectAvatar(_selectedIndex);
                 player = new Player(
-                    States.Instance.CurrentAvatarState.Value,
+                    States.Instance.CurrentAvatarState,
                     tableSheets
                 );
             }
@@ -133,7 +133,7 @@ namespace Nekoyume.UI
             if (!_isCreateMode)
             {
                 var level = player.Level;
-                var name = States.Instance.CurrentAvatarState.Value.NameWithHash;
+                var name = States.Instance.CurrentAvatarState.NameWithHash;
                 levelAndNameInfo.text = $"LV. {level} {name}";
             }
 

@@ -153,7 +153,7 @@ namespace Nekoyume.UI
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            _avatarStates = States.Instance.RankingState.Value?.GetAvatars(dt) ?? new State.RankingInfo[0];
+            _avatarStates = States.Instance.RankingState?.GetAvatars(dt) ?? new State.RankingInfo[0];
         }
 
         private void ClearBoard()

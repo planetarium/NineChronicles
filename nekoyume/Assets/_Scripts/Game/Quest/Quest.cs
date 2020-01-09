@@ -143,6 +143,9 @@ namespace Nekoyume.Game.Quest
         public QuestList(QuestSheet sheet)
         {
             quests = new List<Quest>();
+            if (sheet is null)
+                return;
+            
             foreach (var questData in sheet.OrderedList)
             {
                 Quest quest;

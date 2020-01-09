@@ -1,3 +1,4 @@
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace Nekoyume.UI.Module
         public void ShowNCG(decimal ncg, bool isEnough)
         {
             costNCG.SetActive(true);
-            costNCGText.text = ncg.ToString();
+            costNCGText.text = ncg.ToString(CultureInfo.InvariantCulture);
             costNCGText.color = isEnough ? Color.white : Color.red;
             UpdateRightSpacer();
         }

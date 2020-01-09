@@ -82,7 +82,7 @@ namespace Nekoyume.UI
         public override void Show()
         {
             tabState = QuestTabState.Adventure;
-            _questList = States.Instance.CurrentAvatarState.Value.questList;
+            _questList = States.Instance.CurrentAvatarState.questList;
             ChangeState(0);
             UpdateTabs();
             base.Show();

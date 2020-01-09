@@ -83,8 +83,8 @@ namespace Nekoyume.Action
             sw.Restart();
 
             UnityEngine.Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}` " +
-                      $"node : `{States.Instance?.AgentState?.Value?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
+                      $"node : `{States.Instance?.AgentState?.address}` " +
+                      $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (!avatarState.inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable nonFungibleItem))

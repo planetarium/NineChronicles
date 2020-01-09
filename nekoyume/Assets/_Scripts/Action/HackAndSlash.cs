@@ -136,8 +136,8 @@ namespace Nekoyume.Action
             sw.Restart();
 
             UnityEngine.Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result} " +
-                      $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.Value?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.Value?.address}`");
+                      $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.address}` " +
+                      $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
             if (simulator.Result == BattleLog.Result.Win)
             {
                 simulator.Player.worldInformation.ClearStage(

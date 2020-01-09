@@ -102,7 +102,7 @@ namespace Tests.PlayMode
             yield return new WaitUntil(() => Game.instance.Agent.StagedTransactions.Any());
             var createAvatarTx = Game.instance.Agent.StagedTransactions.First();
             yield return miner.CoMine(createAvatarTx);
-            yield return new WaitWhile(() => States.Instance.CurrentAvatarState.Value is null);
+            yield return new WaitWhile(() => States.Instance.CurrentAvatarState is null);
             yield return new WaitUntil(() => Widget.Find<Login>().ready);
 
             // Login

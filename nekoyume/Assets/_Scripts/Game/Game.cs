@@ -38,16 +38,20 @@ namespace Nekoyume.Game
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
 
-        private States _states;
         private Agent _agent;
         
         [SerializeField] private Stage stage = null;
+        
+        public States States { get; private set; }
 
-        public States States => _states is null || _states.IsDisposed ? _states = new States() : _states;
+        public LocalStateSettings LocalStateSettings { get; private set; }
+
         public Agent Agent => _agent;
+
         public Stage Stage => stage;
 
         public TableSheets TableSheets { get; private set; }
+        
         public bool IsInitialized { get; private set; }
 
         #region Mono & Initialization
@@ -62,6 +66,8 @@ namespace Nekoyume.Game
 #else
             LocalizationManager.Initialize();
 #endif
+            States = new States();
+            LocalStateSettings = new LocalStateSettings();
             MainCanvas.instance.InitializeFirst();
         }
 
@@ -148,7 +154,7 @@ namespace Nekoyume.Game
             };
             confirm.Set("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT");
         }
-
+        
         private void PlayMouseOnClickVFX(Vector3 position)
         {
             position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);

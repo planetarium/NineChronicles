@@ -147,8 +147,8 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
             _disposablesAtOnEnable.DisposeAllAndClear();
-            ReactiveCurrentAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
-            ReactiveCurrentAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
         }
 
         protected override void OnDisable()
@@ -287,7 +287,10 @@ namespace Nekoyume.UI.Module
         private void SubscribeAvatarMailBox(MailBox mailBox)
         {
             if (mailBox is null)
+            {
+                Debug.LogWarning($"{nameof(mailBox)} is null.");
                 return;
+            }
 
             mailButton.SharedModel.HasNotification.Value = mailBox.Any(i => i.New);
             Find<Mail>().UpdateList();
@@ -296,7 +299,10 @@ namespace Nekoyume.UI.Module
         private void SubscribeAvatarQuestList(QuestList questList)
         {
             if (questList is null)
+            {
+                Debug.LogWarning($"{nameof(questList)} is null.");
                 return;
+            }
 
             questButton.SharedModel.HasNotification.Value = questList.Any(i => i.Complete && !i.Receive);
         }

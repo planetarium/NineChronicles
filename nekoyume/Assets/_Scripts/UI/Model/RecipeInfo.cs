@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Model
             public MaterialInfo(int id)
             {
                 Id = id;
-                IsEnough = States.Instance.CurrentAvatarState.Value.inventory.HasItem(id);
+                IsEnough = States.Instance.CurrentAvatarState.inventory.HasItem(id);
             }
         }
 

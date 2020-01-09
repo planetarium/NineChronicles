@@ -12,8 +12,11 @@ using UnityEngine;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class TableSheets
     {
+        private static readonly string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
+        
         private static readonly LruCache<TableSheetsState, TableSheets> _cache = 
         new LruCache<TableSheetsState, TableSheets>();
         
@@ -56,13 +59,26 @@ namespace Nekoyume.TableData
         public IEnumerator CoInitialize()
         {
             loadProgress.Value = 0f;
-            var request = Resources.LoadAsync<AddressableAssetsContainer>("AddressableAssetsContainer");
+            var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
             yield return request;
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-                throw new NullReferenceException(nameof(addressableAssetsContainer));
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
 
-            TableCsvAssets =
-                addressableAssetsContainer.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
+            InitializeInternal(addressableAssetsContainer.tableCsvAssets);
+        }
+
+        public void InitializeAsSync()
+        {
+            var asset = Resources.Load<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            if (asset is null)
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            
+            InitializeInternal(asset.tableCsvAssets);
+        }
+
+        private void InitializeInternal(List<TextAsset> tableCsvAssets)
+        {
+            TableCsvAssets = tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
             var loadTaskCount = TableCsvAssets.Count;
             var loadedTaskCount = 0;
             //어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.

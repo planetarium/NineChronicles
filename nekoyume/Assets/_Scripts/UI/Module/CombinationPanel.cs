@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module
             OnMaterialAddedOrRemoved();
             OnMaterialCountChanged();
             ReactiveAgentState.Gold.Subscribe(SubscribeNCG).AddTo(_disposablesAtShow);
-            ReactiveCurrentAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposablesAtShow);
+            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposablesAtShow);
             return true;
         }
 
@@ -482,7 +482,7 @@ namespace Nekoyume.UI.Module
             CostNCG = GetCostNCG();
             SubscribeNCG(ReactiveAgentState.Gold.Value);
             CostAP = GetCostAP();
-            SubscribeActionPoint(ReactiveCurrentAvatarState.ActionPoint.Value);
+            SubscribeActionPoint(ReactiveAvatarState.ActionPoint.Value);
             UpdateSubmittable();
             OnCostNCGChange.OnNext(CostNCG);
             OnCostAPChange.OnNext(CostAP);
