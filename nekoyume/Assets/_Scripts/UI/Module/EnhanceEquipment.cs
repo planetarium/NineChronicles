@@ -20,10 +20,10 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI messageText;
 
         public override bool IsSubmittable =>
-            !(States.Instance.AgentState.Value is null) &&
-            States.Instance.AgentState.Value.gold >= CostNCG &&
-            !(States.Instance.CurrentAvatarState.Value is null) &&
-            States.Instance.CurrentAvatarState.Value.actionPoint >= CostAP &&
+            !(States.Instance.AgentState is null) &&
+            States.Instance.AgentState.gold >= CostNCG &&
+            !(States.Instance.CurrentAvatarState is null) &&
+            States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
             !(baseMaterial is null) &&
             !baseMaterial.IsEmpty &&
             otherMaterials.Count(e => !e.IsEmpty) > 0;

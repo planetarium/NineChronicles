@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Scroller
         {
             receiveButton.SetSubmitText(
                 LocalizationManager.Localize("UI_COMPLETED"),
-                LocalizationManager.Localize("UI_GET_REWARDS"));
+                LocalizationManager.Localize("UI_RECEIVE"));
             receiveButton.SetSubmittable(true);
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
         }

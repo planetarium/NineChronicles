@@ -95,6 +95,7 @@ namespace Nekoyume.UI
                 LocalizationManager.Localize("UI_LOGIN_LOGIN");
             findPassphraseField.placeholder.GetComponent<Text>().text =
                 LocalizationManager.Localize("UI_LOGIN_ENTER_PRIVATE_KEY");
+            submitText.text = LocalizationManager.Localize("UI_GAME_START");
             base.Awake();
         }
         private void SubscribeState(States states)

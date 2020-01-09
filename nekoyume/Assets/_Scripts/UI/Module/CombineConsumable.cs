@@ -28,10 +28,10 @@ namespace Nekoyume.UI.Module
         public Button recipeButton;
 
         public override bool IsSubmittable =>
-            !(States.Instance.AgentState.Value is null) &&
-            States.Instance.AgentState.Value.gold >= CostNCG &&
-            !(States.Instance.CurrentAvatarState.Value is null) &&
-            States.Instance.CurrentAvatarState.Value.actionPoint >= CostAP &&
+            !(States.Instance.AgentState is null) &&
+            States.Instance.AgentState.gold >= CostNCG &&
+            !(States.Instance.CurrentAvatarState is null) &&
+            States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
             otherMaterials.Count(e => !e.IsLocked && !e.IsEmpty) >= 2;
 
         private readonly ReactiveProperty<int> _count = new ReactiveProperty<int>();
