@@ -25,21 +25,9 @@ namespace Nekoyume.Battle
             _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
         }
 
-        public RankingSimulator(
-            IRandom random,
-            AvatarState avatarState,
-            AvatarState enemyAvatarState,
-            List<Consumable> foods) : base(random, avatarState, foods)
-        {
-            _enemyPlayer = new EnemyPlayer(enemyAvatarState, this);
-            _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
-        }
-
         public override Player Simulate()
         {
             Spawn();
-            Log.worldId = 1;
-            Log.stageId = 1;
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);

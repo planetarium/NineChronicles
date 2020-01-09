@@ -142,6 +142,8 @@ namespace Nekoyume.UI
             // 팝업류.
             _secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<RankingBattleResult>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationResultPopup>());

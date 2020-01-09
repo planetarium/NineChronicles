@@ -189,7 +189,7 @@ namespace Nekoyume.UI
 
         public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
         {
-            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
             Find<LoadingScreen>().Close();
             Find<RankingBattleLoadingScreen>().Close();
             Close();

@@ -55,6 +55,7 @@ namespace Nekoyume.Game
         private Camera _camera;
         private BattleLog _battleLog;
         private BattleResult.Model _battleResultModel;
+        private bool _rankingBattle;
 
         public bool IsInStage { get; private set; }
         public Enemy Boss { get; private set; }
@@ -79,14 +80,30 @@ namespace Nekoyume.Game
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageStart.AddListener(OnStageStart);
+            Event.OnRankingBattleStart.AddListener(OnRankingBattleStart);
         }
 
         private void OnStageStart(BattleLog log)
         {
+            _rankingBattle = false;
             if (_battleLog?.id != log.id)
             {
                 _battleLog = log;
-                Play(_battleLog);
+                PlayStage(_battleLog);
+            }
+            else
+            {
+                Debug.Log("Skip duplicated battle");
+            }
+        }
+
+        private void OnRankingBattleStart(BattleLog log)
+        {
+            _rankingBattle = true;
+            if (_battleLog?.id != log.id)
+            {
+                _battleLog = log;
+                PlayRankingBattle(_battleLog);
             }
             else
             {
@@ -202,15 +219,23 @@ namespace Nekoyume.Game
             }
         }
 
-        public void Play(BattleLog log)
+        public void PlayStage(BattleLog log)
         {
             if (log?.Count > 0)
             {
-                StartCoroutine(PlayAsync(log));
+                StartCoroutine(CoPlayStage(log));
             }
         }
 
-        private IEnumerator PlayAsync(BattleLog log)
+        private void PlayRankingBattle(BattleLog log)
+        {
+            if (log?.Count > 0)
+            {
+                StartCoroutine(CoPlayRankingBattle(log));
+            }
+        }
+
+        private IEnumerator CoPlayStage(BattleLog log)
         {
             yield return StartCoroutine(CoStageEnter(log.worldId, log.stageId));
             foreach (EventBase e in log)
@@ -219,6 +244,17 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(CoStageEnd(log));
+        }
+
+        private IEnumerator CoPlayRankingBattle(BattleLog log)
+        {
+            yield return StartCoroutine(CoRankingBattleEnter());
+            foreach (var e in log)
+            {
+                yield return StartCoroutine(e.CoExecute(this));
+            }
+
+            yield return StartCoroutine(CoRankingBattleEnd(log));
         }
 
         private static IEnumerator CoDialog(int worldStage)
@@ -264,6 +300,26 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(2.0f);
 
             yield return StartCoroutine(title.CoClose());
+
+            AudioController.instance.PlayMusic(data.BGM);
+        }
+
+        private IEnumerator CoRankingBattleEnter()
+        {
+            IsInStage = true;
+            if (!Game.instance.TableSheets.BackgroundSheet.TryGetValue(1, out var data))
+            {
+                yield break;
+            }
+
+            _battleResultModel = new BattleResult.Model();
+
+            zone = data.Background;
+            LoadBackground(zone, 3.0f);
+            PlayBGVFX(false);
+            RunPlayer();
+
+            yield return new WaitForSeconds(2.0f);
 
             AudioController.instance.PlayMusic(data.BGM);
         }
@@ -320,6 +376,25 @@ namespace Nekoyume.Game
             }
         }
 
+        private IEnumerator CoRankingBattleEnd(BattleLog log)
+        {
+            Boss = null;
+            var playerCharacter = log.result == BattleLog.Result.Win
+                ? GetPlayer()
+                : GetComponentInChildren<Character.EnemyPlayer>();
+
+            yield return new WaitForSeconds(0.75f);
+            playerCharacter.Animator.Win();
+            playerCharacter.ShowSpeech("PLAYER_WIN");
+            Widget.Find<UI.Battle>().Close();
+            Widget.Find<Status>().Close();
+            Widget.Find<RankingBattleResult>().Show(log.result);
+
+            IsInStage = false;
+            ActionRenderHandler.Instance.Pending = false;
+            yield return null;
+        }
+
         public IEnumerator CoSpawnPlayer(Player character)
         {
             var playerCharacter = RunPlayer();
@@ -334,7 +409,14 @@ namespace Nekoyume.Game
             status.ShowBattleStatus();
 
             var battle = Widget.Find<UI.Battle>();
-            battle.Show(stageId, repeatStage);
+            if (_rankingBattle)
+            {
+                battle.Show();
+            }
+            else
+            {
+                battle.Show(stageId, repeatStage);
+            }
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
