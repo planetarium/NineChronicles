@@ -55,6 +55,7 @@ namespace Nekoyume.Game
         private Camera _camera;
         private BattleLog _battleLog;
         private BattleResult.Model _battleResultModel;
+        private bool _rankingBattle;
 
         public bool IsInStage { get; private set; }
         public Enemy Boss { get; private set; }
@@ -84,6 +85,7 @@ namespace Nekoyume.Game
 
         private void OnStageStart(BattleLog log)
         {
+            _rankingBattle = false;
             if (_battleLog?.id != log.id)
             {
                 _battleLog = log;
@@ -97,6 +99,7 @@ namespace Nekoyume.Game
 
         private void OnRankingBattleStart(BattleLog log)
         {
+            _rankingBattle = true;
             if (_battleLog?.id != log.id)
             {
                 _battleLog = log;
@@ -406,7 +409,14 @@ namespace Nekoyume.Game
             status.ShowBattleStatus();
 
             var battle = Widget.Find<UI.Battle>();
-            battle.Show(stageId, repeatStage);
+            if (_rankingBattle)
+            {
+                battle.Show();
+            }
+            else
+            {
+                battle.Show(stageId, repeatStage);
+            }
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
