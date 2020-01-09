@@ -1,3 +1,4 @@
+using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
 using Nekoyume.UI;
@@ -48,6 +49,7 @@ namespace Nekoyume.Game
         {
         }
         public static readonly StageStart OnStageStart = new StageStart();
+        public static readonly StageStart OnRankingBattleStart = new StageStart();
 
         public class TipChanged : UnityEvent<long>
         {
