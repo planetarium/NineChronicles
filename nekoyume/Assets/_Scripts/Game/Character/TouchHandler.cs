@@ -7,11 +7,11 @@ namespace Nekoyume.Game.Character
 {
     public class TouchHandler : MonoBehaviour, IPointerClickHandler
     {
-        public readonly Subject<TouchHandler> OnClick = new Subject<TouchHandler>();
-        public readonly Subject<TouchHandler> OnDoubleClick = new Subject<TouchHandler>();
-        public readonly Subject<TouchHandler> OnMultipleClick = new Subject<TouchHandler>();
-        public readonly Subject<TouchHandler> OnMiddleClick = new Subject<TouchHandler>();
-        public readonly Subject<TouchHandler> OnRightClick = new Subject<TouchHandler>();
+        public readonly Subject<PointerEventData> OnClick = new Subject<PointerEventData>();
+        public readonly Subject<PointerEventData> OnDoubleClick = new Subject<PointerEventData>();
+        public readonly Subject<PointerEventData> OnMultipleClick = new Subject<PointerEventData>();
+        public readonly Subject<PointerEventData> OnMiddleClick = new Subject<PointerEventData>();
+        public readonly Subject<PointerEventData> OnRightClick = new Subject<PointerEventData>();
         
         public PointerEventData PointerEventData { get; private set; }
         
@@ -25,21 +25,21 @@ namespace Nekoyume.Game.Character
                     switch (PointerEventData.clickCount)
                     {
                         case 1:
-                            OnClick.OnNext(this);
+                            OnClick.OnNext(eventData);
                             break;
                         case 2:
-                            OnDoubleClick.OnNext(this);
+                            OnDoubleClick.OnNext(eventData);
                             break;
                         default:
-                            OnMultipleClick.OnNext(this);
+                            OnMultipleClick.OnNext(eventData);
                             break;
                     }
                     break;
                 case PointerEventData.InputButton.Right:
-                    OnRightClick.OnNext(this);
+                    OnRightClick.OnNext(eventData);
                     break;
                 case PointerEventData.InputButton.Middle:
-                    OnMiddleClick.OnNext(this);
+                    OnMiddleClick.OnNext(eventData);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

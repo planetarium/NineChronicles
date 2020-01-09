@@ -37,8 +37,9 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            receiveButton.submitText.text = LocalizationManager.Localize("UI_RECEIVE");
-            receiveButton.disabledText.text = LocalizationManager.Localize("UI_COMPLETED");
+            receiveButton.SetSubmitText(
+                LocalizationManager.Localize("UI_COMPLETED"),
+                LocalizationManager.Localize("UI_RECEIVE"));
             receiveButton.SetSubmittable(true);
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
         }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.UI.Module;
@@ -23,7 +24,8 @@ namespace Nekoyume.UI
         public TextMeshProUGUI submitButtonText;
         public Image materialPlusImage;
         public GameObject materialView;
-        
+        public TouchHandler touchHandler;
+
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         private Model.CombinationResultPopup Model { get; set; }
@@ -36,14 +38,20 @@ namespace Nekoyume.UI
 
             materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
             submitButtonText.text = LocalizationManager.Localize("UI_OK");
-            
-            submitButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    Close();
-                })
-                .AddTo(gameObject);
+
+            submitButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                Close();
+            }).AddTo(gameObject);
+            touchHandler.OnClick.Subscribe(pointerEventData =>
+            {
+                if (!pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
+                    return;
+                
+                AudioController.PlayClick();
+                Close();
+            }).AddTo(gameObject);
         }
 
         protected override void OnDestroy()
@@ -60,7 +68,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             base.Show();
             SetData(data);
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) verticalLayoutGroup.transform);
@@ -69,23 +77,23 @@ namespace Nekoyume.UI
         private void SetData(Model.CombinationResultPopup data)
         {
             if (data is null)
-            {                   
+            {
                 Clear();
                 return;
             }
-            
+
             _disposablesForModel.DisposeAllAndClear();
             Model = data;
             Model.itemInformation.Subscribe(itemInformation.SetData).AddTo(_disposablesForModel);
-            
+
             UpdateView();
         }
-        
+
         private void Clear()
         {
             _disposablesForModel.DisposeAllAndClear();
             Model = null;
-            
+
             UpdateView();
         }
 
@@ -97,11 +105,11 @@ namespace Nekoyume.UI
                 itemInformation.gameObject.SetActive(false);
                 return;
             }
-            
+
             var item = Model.itemInformation.Value.item.Value.ItemBase.Value;
             var isEquipment = item is Equipment;
             materialPlusImage.gameObject.SetActive(isEquipment);
-            
+
             if (Model.isSuccess)
             {
                 itemNameText.text = item.GetLocalizedName();

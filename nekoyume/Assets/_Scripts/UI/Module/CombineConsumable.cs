@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
@@ -39,7 +40,7 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
 
-            submitButton.SetText("UI_COMBINATION_ITEM");
+            submitButton.SetSubmitText(LocalizationManager.Localize("UI_COMBINATION_ITEM"));
 
             countMinusButton.OnClickAsObservable().Subscribe(SubscribeCountMinusClick).AddTo(gameObject);
             countPlusButton.OnClickAsObservable().Subscribe(SubscribeCountPlusClick).AddTo(gameObject);

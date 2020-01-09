@@ -75,7 +75,7 @@ namespace Nekoyume.UI
             var firstStageId = Game.Game.instance.TableSheets.StageSheet.First?.Id ?? 1;
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
-            // ÃÊ±â °ª ¼³Á¤ 1È¸ ¹«½Ã
+            // ï¿½Ê±ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ 1È¸ ï¿½ï¿½ï¿½ï¿½
             SharedViewModel.IsWorldShown.Skip(1).Subscribe(UpdateWorld).AddTo(gameObject);
             SharedViewModel.SelectedStageId.Subscribe(UpdateStageInformation).AddTo(gameObject);
 
@@ -101,7 +101,7 @@ namespace Nekoyume.UI
 
             stageInformation.monstersAreaText.text = LocalizationManager.Localize("UI_WORLD_MAP_MONSTERS");
             stageInformation.rewardsAreaText.text = LocalizationManager.Localize("UI_REWARDS");
-            submitButton.submitText.text = LocalizationManager.Localize("UI_WORLD_MAP_ENTER");
+            submitButton.SetSubmitText(LocalizationManager.Localize("UI_WORLD_MAP_ENTER"));
 
             alfheimButton.OnClickAsObservable()
                 .Subscribe(_ =>

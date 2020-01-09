@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.State;
@@ -41,7 +42,7 @@ namespace Nekoyume.UI.Module
             }
 
             message.SetActive(false);
-            submitButton.SetText("UI_COMBINATION_ENHANCEMENT");
+            submitButton.SetSubmitText(LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT"));
         }
 
         public override bool Show(bool forced = false)
@@ -49,7 +50,7 @@ namespace Nekoyume.UI.Module
             if (!base.Show(forced))
                 return false;
 
-            baseMaterial.Unlock();
+            baseMaterial.Unlock(false);
 
             foreach (var otherMaterial in otherMaterials)
             {
