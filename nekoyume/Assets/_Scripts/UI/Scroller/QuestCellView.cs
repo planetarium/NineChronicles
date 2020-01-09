@@ -46,12 +46,12 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
 
-        public void SetData(Game.Quest.Quest quest, bool isLocalReceived)
+        public void SetData(Game.Quest.Quest quest)
         {
             _quest = quest;
             _currentDataIndex = dataIndex;
 
-            UpdateView(isLocalReceived);
+            UpdateView(_quest.isLocalCompleted);
         }
 
         private void OnReceiveClick(SubmitButton submitButton)
@@ -79,6 +79,7 @@ namespace Nekoyume.UI.Scroller
                 return;
 
             quest.Receive = true;
+            quest.isLocalCompleted = true;
         }
 
         private void UpdateView(bool isLocalReceived)
