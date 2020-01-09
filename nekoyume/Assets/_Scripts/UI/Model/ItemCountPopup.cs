@@ -12,9 +12,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<CountEditableItem> Item = new ReactiveProperty<CountEditableItem>(null);
         public readonly ReactiveProperty<bool> CountEnabled = new ReactiveProperty<bool>(true);
         public readonly ReactiveProperty<string> SubmitText = new ReactiveProperty<string>("");
-        
-        public readonly Subject<T> OnClickMinus = new Subject<T>();
-        public readonly Subject<T> OnClickPlus = new Subject<T>();
+        public readonly ReactiveProperty<string> InfoText = new ReactiveProperty<string>("");
         public readonly Subject<T> OnClickSubmit = new Subject<T>();
         public readonly Subject<T> OnClickCancel = new Subject<T>();
 
@@ -32,28 +30,6 @@ namespace Nekoyume.UI.Model
                 
                 _originalCount = value.Count.Value;
             });
-            
-            OnClickMinus.Subscribe(value =>
-            {
-                if (ReferenceEquals(value, null) ||
-                    value.Item.Value.Count.Value <= Item.Value.MinCount.Value)
-                {
-                    return;
-                }
-
-                value.Item.Value.Count.Value--;
-            });
-            
-            OnClickPlus.Subscribe(value =>
-            {
-                if (ReferenceEquals(value, null) ||
-                    value.Item.Value.Count.Value >= Item.Value.MaxCount.Value)
-                {
-                    return;
-                }
-
-                value.Item.Value.Count.Value++;
-            });
 
             OnClickCancel.Subscribe(value => value.Item.Value.Count.Value = _originalCount);
         }
@@ -65,8 +41,6 @@ namespace Nekoyume.UI.Model
             CountEnabled.Dispose();
             SubmitText.Dispose();
             
-            OnClickMinus.Dispose();
-            OnClickPlus.Dispose();
             OnClickSubmit.Dispose();
             OnClickCancel.Dispose();
         }
