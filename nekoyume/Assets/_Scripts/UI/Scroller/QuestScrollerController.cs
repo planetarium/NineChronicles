@@ -18,7 +18,6 @@ namespace Nekoyume.UI.Scroller
         {
             scroller.Delegate = this;
             _cellViewHeight = cellViewPrefab.GetComponent<RectTransform>().rect.height;
-            cellViewPrefab.receiveButton.button.onClick.AddListener(RefreshScroll);
         }
 
         #endregion
@@ -32,6 +31,7 @@ namespace Nekoyume.UI.Scroller
             }
 
             cellView.name = $"Cell {dataIndex}";
+            cellView.onClickSubmitButton = RefreshScroll;
             cellView.SetData(_data[dataIndex]);
             return cellView;
         }

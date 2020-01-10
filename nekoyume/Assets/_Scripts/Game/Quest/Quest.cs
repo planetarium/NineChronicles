@@ -24,7 +24,7 @@ namespace Nekoyume.Game.Quest
     public abstract class Quest : IState
     {
         [NonSerialized]
-        public bool isLocalCompleted;
+        public bool isLocalReceived;
 
         protected int _current;
 
@@ -76,6 +76,7 @@ namespace Nekoyume.Game.Quest
             }
 
             Reward = new QuestReward(itemMap);
+            Complete = true;
         }
 
         public abstract void Check();
