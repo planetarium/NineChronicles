@@ -9,8 +9,7 @@ namespace Nekoyume.UI.Scroller
         public EnhancedScroller scroller;
         public QuestCellView cellViewPrefab;
 
-        private readonly HashSet<int> _buttonDisabledCells = new HashSet<int>();
-        private IReadOnlyList<Game.Quest.Quest> _data;
+        private List<Game.Quest.Quest> _data;
         private float _cellViewHeight = 40f;
 
         #region Mono
@@ -32,8 +31,8 @@ namespace Nekoyume.UI.Scroller
             }
 
             cellView.name = $"Cell {dataIndex}";
-            cellView.onClickSubmitButton = _buttonDisabledCells.Add;
-            cellView.SetData(_data[dataIndex], _buttonDisabledCells.Contains(dataIndex));
+            cellView.onClickSubmitButton = RefreshScroll;
+            cellView.SetData(_data[dataIndex]);
             return cellView;
         }
 
@@ -49,16 +48,15 @@ namespace Nekoyume.UI.Scroller
 
         public void SetData(List<Game.Quest.Quest> dataList)
         {
-            _buttonDisabledCells.Clear();
             _data = dataList;
 
-            for (int i = 0; i < dataList.Count; ++i)
-            {
-                if (_data[i].Receive)
-                    _buttonDisabledCells.Add(i);
-            }
-
             scroller.ReloadData();
+        }
+
+        public void RefreshScroll()
+        {
+            _data.Sort(new QuestOrderComparer());
+            SetData(_data);
         }
     }
 }

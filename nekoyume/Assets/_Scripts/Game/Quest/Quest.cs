@@ -23,6 +23,9 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public abstract class Quest : IState
     {
+        [NonSerialized]
+        public bool isLocalReceived;
+
         protected int _current;
 
         public abstract QuestType QuestType { get; }

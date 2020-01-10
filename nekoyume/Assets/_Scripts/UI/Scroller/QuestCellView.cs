@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Scroller
         private Game.Quest.Quest _quest;
         private int _currentDataIndex;
 
-        public Func<int, bool> onClickSubmitButton;
+        public System.Action onClickSubmitButton;
 
         #region Mono
 
@@ -40,18 +40,18 @@ namespace Nekoyume.UI.Scroller
             receiveButton.SetSubmitText(
                 LocalizationManager.Localize("UI_COMPLETED"),
                 LocalizationManager.Localize("UI_RECEIVE"));
-            receiveButton.SetSubmittable(true);
+            receiveButton.SetSubmittable(true); 
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
         }
 
         #endregion
 
-        public void SetData(Game.Quest.Quest quest, bool isLocalReceived)
+        public void SetData(Game.Quest.Quest quest)
         {
             _quest = quest;
             _currentDataIndex = dataIndex;
 
-            UpdateView(isLocalReceived);
+            UpdateView(_quest.isLocalReceived);
         }
 
         private void OnReceiveClick(SubmitButton submitButton)
@@ -61,7 +61,7 @@ namespace Nekoyume.UI.Scroller
             var quest = Widget.Find<Quest>();
             RequestReward();
             quest.UpdateTabs();
-            onClickSubmitButton?.Invoke(_currentDataIndex);
+            onClickSubmitButton?.Invoke();
         }
 
         private void RequestReward()
@@ -76,9 +76,11 @@ namespace Nekoyume.UI.Scroller
             // 로컬 아바타의 퀘스트 상태 업데이트.
             var quest = States.Instance.CurrentAvatarState.questList.FirstOrDefault(q => q == _quest);
             if (quest is null)
+            {
                 return;
-
+            }
             quest.Receive = true;
+            quest.isLocalReceived = true;
         }
 
         private void UpdateView(bool isLocalReceived)
