@@ -76,7 +76,6 @@ namespace Nekoyume.Game.Quest
             }
 
             Reward = new QuestReward(itemMap);
-            Complete = true;
         }
 
         public abstract void Check();

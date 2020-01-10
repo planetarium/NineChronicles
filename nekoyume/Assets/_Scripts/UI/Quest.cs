@@ -160,7 +160,7 @@ namespace Nekoyume.UI
             }
 
             // x xor y is completed
-            return y.Complete ? -1 : 1;
+            return y.Complete ? 1 : -1;
         }
     }
 }
