@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -18,10 +19,8 @@ namespace Nekoyume.UI
         public GameObject footerRoot;
         public GameObject submitGameObject;
         public GameObject submitGameObjectForRetrieve;
-        public Button submitButton;
-        public TextMeshProUGUI submitButtonText;
-        public Button submitButtonForRetrieve;
-        public TextMeshProUGUI submitButtonForRetrieveText;
+        public SubmitButton submitButton;
+        public SubmitButton submitButtonForRetrieve;
         public GameObject priceContainer;
         public TextMeshProUGUI priceText;
         
@@ -36,13 +35,13 @@ namespace Nekoyume.UI
             base.Awake();
             
             Model = new Model.ItemInformationTooltip();
-            submitButton.OnClickAsObservable().Subscribe(_ =>
+            submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 Model.OnSubmitClick.OnNext(this);
                 Close();
             }).AddTo(gameObject);
-            submitButtonForRetrieve.OnClickAsObservable().Subscribe(_ =>
+            submitButtonForRetrieve.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 Model.OnSubmitClick.OnNext(this);
@@ -88,12 +87,12 @@ namespace Nekoyume.UI
             Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
             if (retrieve)
             {
-                Model.SubmitButtonText.SubscribeToText(submitButtonForRetrieveText).AddTo(_disposablesForModel);
+                Model.SubmitButtonText.SubscribeTo(submitButtonForRetrieve).AddTo(_disposablesForModel);
                 Model.SubmitButtonEnabled.SubscribeTo(submitGameObjectForRetrieve).AddTo(_disposablesForModel);
             }
             else
             {
-                Model.SubmitButtonText.SubscribeToText(submitButtonText).AddTo(_disposablesForModel);
+                Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
                 Model.SubmitButtonEnabled.SubscribeTo(submitGameObject).AddTo(_disposablesForModel);
             }
             submitGameObject.SetActive(!retrieve);

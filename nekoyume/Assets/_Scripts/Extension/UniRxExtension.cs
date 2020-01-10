@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -54,6 +55,11 @@ namespace Nekoyume
         public static IDisposable SubscribeTo(this IObservable<string> source, TextMeshProUGUI text)
         {
             return source.SubscribeWithState(text, (x, t) => t.text = x);
+        }
+        
+        public static IDisposable SubscribeTo(this IObservable<string> source, SubmitButton text)
+        {
+            return source.SubscribeWithState(text, (x, t) => t.SetSubmitText(x));
         }
         
         public static IDisposable SubscribeTo<T>(this IObservable<T> source, ReactiveProperty<T> reactiveProperty)

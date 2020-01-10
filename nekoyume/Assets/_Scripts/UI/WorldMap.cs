@@ -44,7 +44,7 @@ namespace Nekoyume.UI
         public Button alfheimButton;
         public Button svartalfheimButton;
         public Button asgardButton;
-        public Button ChallengeModeButton;
+        public Button challengeModeButton;
 
         public StageInformation stageInformation;
         public SubmitButton submitButton;
@@ -121,7 +121,7 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                     ShowWorld(3);
                 }).AddTo(gameObject);
-            ChallengeModeButton.OnClickAsObservable()
+            challengeModeButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();

@@ -57,7 +57,7 @@ namespace Tests.PlayMode
             var item = w.inventory.scrollerController.GetByIndex(0);
             item.GetComponent<Button>().onClick.Invoke();
             Assert.IsTrue(w.inventory.Tooltip.isActiveAndEnabled);
-            w.inventory.Tooltip.submitButton.onClick.Invoke();
+            w.inventory.Tooltip.submitButton.button.onClick.Invoke();
             Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
             w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
             yield return new WaitUntil(() => Game.instance.Agent.StagedTransactions.Any());
@@ -121,7 +121,7 @@ namespace Tests.PlayMode
             var item = w.inventory.scrollerController.GetByIndex(0);
             item.GetComponent<Button>().onClick.Invoke();
             Assert.IsTrue(w.inventory.Tooltip.isActiveAndEnabled);
-            w.inventory.Tooltip.submitButton.onClick.Invoke();
+            w.inventory.Tooltip.submitButton.button.onClick.Invoke();
             Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
             w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
             yield return new WaitUntil(() => Game.instance.Agent.StagedTransactions.Any());
@@ -183,7 +183,7 @@ namespace Tests.PlayMode
             var item = w.inventory.scrollerController.GetByIndex(0);
             item.GetComponent<Button>().onClick.Invoke();
             Assert.IsTrue(w.inventory.Tooltip.isActiveAndEnabled);
-            w.inventory.Tooltip.submitButton.onClick.Invoke();
+            w.inventory.Tooltip.submitButton.button.onClick.Invoke();
             Assert.IsTrue(w.ItemCountAndPricePopup.isActiveAndEnabled);
             w.ItemCountAndPricePopup.submitButton.onClick.Invoke();
             yield return new WaitUntil(() => Game.instance.Agent.StagedTransactions.Any());
