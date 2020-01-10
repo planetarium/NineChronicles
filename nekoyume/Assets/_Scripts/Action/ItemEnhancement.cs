@@ -6,14 +6,12 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Data;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Unity.Mathematics;
 
 namespace Nekoyume.Action
 {
@@ -24,18 +22,21 @@ namespace Nekoyume.Action
         public Guid itemId;
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
-        public Result result;
+        public ResultModel result;
 
         [Serializable]
-        public class Result : AttachmentActionResult
+        public class ResultModel : AttachmentActionResult
         {
             protected override string TypeId => "itemEnhancement.result";
+            public IEnumerable<Guid> materialItemIdList;
+            public decimal gold;
+            public int actionPoint;
 
-            public Result()
+            public ResultModel()
             {
             }
 
-            public Result(Bencodex.Types.Dictionary serialized)
+            public ResultModel(Bencodex.Types.Dictionary serialized)
                 : base(serialized)
             {
             }
@@ -76,6 +77,12 @@ namespace Nekoyume.Action
             UnityEngine.Debug.Log($"ItemEnhancement Get Equipment: {sw.Elapsed}");
             sw.Restart();
 
+            result = new ResultModel
+            {
+                itemUsable = enhancementEquipment,
+                materialItemIdList = materialIds
+            };
+
             var requiredAP = GetRequiredAp();
             if (avatarState.actionPoint < requiredAP)
             {
@@ -84,6 +91,7 @@ namespace Nekoyume.Action
             }
 
             avatarState.actionPoint -= requiredAP;
+            result.actionPoint = requiredAP;
 
             var requiredNCG = GetRequiredGold(enhancementEquipment);
             if (agentState.gold < requiredNCG)
@@ -165,6 +173,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             agentState.gold -= requiredNCG;
+            result.gold = requiredNCG;
 
             foreach (var material in materials)
             {
@@ -173,9 +182,10 @@ namespace Nekoyume.Action
             sw.Stop();
             UnityEngine.Debug.Log($"ItemEnhancement Remove Materials: {sw.Elapsed}");
             sw.Restart();
-
-            result = new Result {itemUsable = enhancementEquipment};
-            var mail = new ItemEnhanceMail(result, ctx.BlockIndex);
+            var mail = new ItemEnhanceMail(result, ctx.BlockIndex)
+            {
+                New = false
+            };
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);

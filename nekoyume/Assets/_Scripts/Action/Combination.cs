@@ -21,7 +21,6 @@ namespace Nekoyume.Action
 {
     // todo: `CombineEquipment`와 `CombineConsumable`로 분리해야 함. 공용 로직은 별도로 뺌.
     [ActionType("combination")]
-    [Serializable]
     public class Combination : GameAction
     {
         private TableSheets _tableSheets;

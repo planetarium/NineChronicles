@@ -253,6 +253,7 @@ namespace Nekoyume.State
             eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
             UpdateGeneralQuest(new[] {type});
             UpdateCompletedQuest();
+            UpdateFromAddItem(equipment, false);
         }
 
         public void UpdateFromAddItem(ItemUsable itemUsable, bool canceled)

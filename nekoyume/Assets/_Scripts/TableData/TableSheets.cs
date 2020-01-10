@@ -1,18 +1,15 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Libplanet.Action;
 using LruCacheNet;
-using Nekoyume.Data.Table;
 using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.TableData
 {
-    [Serializable]
     public class TableSheets
     {
         private static readonly string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
