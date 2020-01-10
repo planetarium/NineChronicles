@@ -326,6 +326,8 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
+            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             Boss = null;
             yield return new WaitForSeconds(2.0f);
             Widget.Find<UI.Battle>().bossStatus.Close();
@@ -448,7 +450,13 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
+//                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
+                var action =
+                    new Tuple<Character.CharacterBase, IEnumerable<Model.Skill.SkillInfo>,
+                        IEnumerable<Model.Skill.SkillInfo>, Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>>(
+                        character, skillInfos, buffInfos, character.CoNormalAttack);
+                character.actions.Add(action);
+                yield return null;
             }
         }
 
@@ -718,6 +726,11 @@ namespace Nekoyume.Game
                 if (defaultBGVFX)
                     defaultBGVFX.Play(true);
             }
+        }
+
+        public IEnumerator CoSkill(Tuple<Character.CharacterBase, IEnumerable<Model.Skill.SkillInfo>, IEnumerable<Model.Skill.SkillInfo>, Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>> tuple)
+        {
+            yield return StartCoroutine(CoSkill(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4));
         }
     }
 }

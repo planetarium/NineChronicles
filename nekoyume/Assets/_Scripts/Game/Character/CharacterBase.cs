@@ -82,6 +82,15 @@ namespace Nekoyume.Game.Character
         protected BoxCollider HitPointBoxCollider { get; private set; }
         protected Vector3 HitPointLocalOffset { get; set; }
 
+        public List<Tuple<CharacterBase, IEnumerable<Model.Skill.SkillInfo>, IEnumerable<Model.Skill.SkillInfo>,
+            Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>>> actions =
+            new List<Tuple<CharacterBase, IEnumerable<Model.Skill.SkillInfo>, IEnumerable<Model.Skill.SkillInfo>,
+                Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>>>();
+
+        public Tuple<CharacterBase, IEnumerable<Model.Skill.SkillInfo>, IEnumerable<Model.Skill.SkillInfo>, Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>> action;
+
+        private int _prevTurn;
+
         #region Mono
 
         private void OnApplicationQuit()
@@ -104,6 +113,7 @@ namespace Nekoyume.Game.Character
         {
             RunSpeed = 0.0f;
             _root = null;
+            actions.Clear();
             if (!_applicationQuitting)
                 DisableHUD();
         }
@@ -123,6 +133,7 @@ namespace Nekoyume.Game.Character
 
         protected virtual IEnumerator Dying()
         {
+            yield return new WaitWhile(() => actions.Any());
             StopRun();
             Animator.Die();
             yield return new WaitForSeconds(.2f);
@@ -234,6 +245,7 @@ namespace Nekoyume.Game.Character
         {
             Animator.Idle();
             gameObject.SetActive(false);
+            actions.Clear();
         }
 
         protected void PopUpDmg(Vector3 position, Vector3 force, Model.Skill.SkillInfo info,
@@ -298,7 +310,12 @@ namespace Nekoyume.Game.Character
                         BT.Call(ExecuteRun)
                     ),
                     BT.If(() => !CanRun).OpenBranch(
-                        BT.Call(StopRun)
+                        BT.Sequence().OpenBranch(
+                            BT.Call(StopRun),
+                            BT.If(() => actions.Any()).OpenBranch(
+                                BT.Call(ExecuteAction)
+                            )
+                        )
                     )
                 )
             );
@@ -755,5 +772,22 @@ namespace Nekoyume.Game.Character
         }
 
         #endregion
+
+        private void ExecuteAction()
+        {
+            StartCoroutine(CoExecuteAction());
+        }
+
+        private IEnumerator CoExecuteAction()
+        {
+            if (action is null)
+            {
+                action = actions.First();
+                actions.Remove(action);
+                yield return StartCoroutine(Game.instance.Stage.CoSkill(action));
+                yield return new WaitForSeconds(0.2f);
+                action = null;
+            }
+        }
     }
 }
