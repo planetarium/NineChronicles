@@ -134,30 +134,33 @@ namespace Nekoyume.UI
 
             if (y is null)
                 return -1;
-            
+
             // receive
-            if (x.Receive || x.isLocalCompleted)
+            if (x.Receive || x.isLocalReceived)
             {
-                if (!y.Receive && !y.isLocalCompleted)
+                if (!y.Receive && !y.isLocalReceived)
                     return 1;
-                
+
                 if (x.Id > y.Id)
                     return 1;
-                    
+
                 if (x.Id == y.Id)
                     return 0;
-                    
+
                 return -1;
             }
 
-            if (y.Receive || y.isLocalCompleted)
+            if (y.Receive || y.isLocalReceived)
                 return -1;
-            
-            // complete
-            if (x.Complete)
-                return y.Complete ? 0 : -1;
-            
-            return y.Complete ? 1 : 0;
+
+            // both are completed or incompleted
+            if (!(x.Complete ^ y.Complete))
+            {
+                return x.Id > y.Id ? 1 : -1;
+            }
+
+            // x xor y is completed
+            return y.Complete ? -1 : 1;
         }
     }
 }
