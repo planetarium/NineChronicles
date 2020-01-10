@@ -96,7 +96,7 @@ namespace Tests.PlayMode
                 }
 
                 item.GetComponent<Button>().onClick.Invoke();
-                w.inventory.Tooltip.submitButton.onClick.Invoke();
+                w.inventory.Tooltip.submitButton.button.onClick.Invoke();
             }
 
             w.combineConsumable.submitButton.button.onClick.Invoke();
