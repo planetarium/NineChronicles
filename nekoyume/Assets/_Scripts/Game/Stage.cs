@@ -450,12 +450,7 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-//                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
-                var action =
-                    new Tuple<Character.CharacterBase, IEnumerable<Model.Skill.SkillInfo>,
-                        IEnumerable<Model.Skill.SkillInfo>, Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>>(
-                        character, skillInfos, buffInfos, character.CoNormalAttack);
-                character.actions.Add(action);
+                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
                 yield return null;
             }
         }
@@ -466,7 +461,8 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoBlowAttack));
+                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoBlowAttack));
+                yield return null;
             }
         }
 
@@ -476,7 +472,8 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoDoubleAttack));
+                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoDoubleAttack));
+                yield return null;
             }
         }
 
@@ -486,7 +483,8 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoAreaAttack));
+                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoAreaAttack));
+                yield return null;
             }
         }
 
@@ -496,7 +494,8 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoHeal));
+                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoHeal));
+                yield return null;
             }
         }
 
@@ -506,7 +505,8 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                yield return StartCoroutine(CoSkill(character, skillInfos, buffInfos, character.CoBuff));
+                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoBuff));
+                yield return null;
             }
         }
 
@@ -572,8 +572,6 @@ namespace Nekoyume.Game
                     if (!buffCharacter)
                         throw new ArgumentNullException(nameof(buffCharacter));
                     buffCharacter.UpdateHpBar();
-//                    Debug.LogWarning(
-//                        $"{buffCharacter.Animator.Target.name}'s {nameof(CoAfterSkill)} called: {buffCharacter.CurrentHP}({buffCharacter.Model.Stats.CurrentHP}) / {buffCharacter.HP}({buffCharacter.Model.Stats.LevelStats.HP}+{buffCharacter.Model.Stats.BuffStats.HP})");
                 }
             }
 
@@ -602,6 +600,8 @@ namespace Nekoyume.Game
 
         public IEnumerator CoGetReward(List<ItemBase> rewards)
         {
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
+            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             foreach (var item in rewards)
             {
                 var countableItem = new CountableItem(item, 1);
@@ -613,6 +613,8 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss)
         {
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
+            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(.3f);
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().enemyPlayerStatus.Close();
@@ -652,8 +654,17 @@ namespace Nekoyume.Game
             yield return StartCoroutine(spawner.CoSetData(enemies));
         }
 
+        public IEnumerator CoWaveTurnEnd(int turn)
+        {
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
+            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
+            Debug.Log($"New WaveTurn End: {turn}");
+        }
+
         public IEnumerator CoGetExp(long exp)
         {
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
+            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             _battleResultModel.Exp += exp;
             var player = GetPlayer();
             yield return StartCoroutine(player.CoGetExp(exp));

@@ -82,12 +82,9 @@ namespace Nekoyume.Game.Character
         protected BoxCollider HitPointBoxCollider { get; private set; }
         protected Vector3 HitPointLocalOffset { get; set; }
 
-        public List<Tuple<CharacterBase, IEnumerable<Model.Skill.SkillInfo>, IEnumerable<Model.Skill.SkillInfo>,
-            Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>>> actions =
-            new List<Tuple<CharacterBase, IEnumerable<Model.Skill.SkillInfo>, IEnumerable<Model.Skill.SkillInfo>,
-                Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>>>();
+        public List<IEnumerator> actions = new List<IEnumerator>();
 
-        public Tuple<CharacterBase, IEnumerable<Model.Skill.SkillInfo>, IEnumerable<Model.Skill.SkillInfo>, Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>> action;
+        public IEnumerator action;
 
         private int _prevTurn;
 
@@ -783,10 +780,12 @@ namespace Nekoyume.Game.Character
             if (action is null)
             {
                 action = actions.First();
+                var coroutine = StartCoroutine(action);
+                yield return coroutine;
                 actions.Remove(action);
-                yield return StartCoroutine(Game.instance.Stage.CoSkill(action));
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(0.5f);
                 action = null;
+                Animator.Idle();
             }
         }
     }
