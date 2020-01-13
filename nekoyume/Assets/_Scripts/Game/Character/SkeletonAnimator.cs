@@ -1,3 +1,4 @@
+using System;
 using Spine;
 using Spine.Unity;
 using UnityEngine;
@@ -9,7 +10,7 @@ namespace Nekoyume.Game.Character
         protected MeshRenderer MeshRenderer { get; private set; }
         protected SkeletonAnimation Skeleton { get; private set; }
 
-        public SkeletonAnimator(CharacterBase root) : base(root)
+        public SkeletonAnimator(GameObject root) : base(root)
         {
         }
 
@@ -31,6 +32,10 @@ namespace Nekoyume.Game.Character
                 throw new NotFoundComponentException<SkeletonAnimation>();
 
             Skeleton.timeScale = TimeScale;
+            
+            if (Skeleton.AnimationState is null)
+                throw new NullReferenceException(nameof(Skeleton.AnimationState));
+                
             Skeleton.AnimationState.Event += RaiseEvent;
         }
 

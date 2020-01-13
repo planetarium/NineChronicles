@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Character
         public float exitTime = 1f;
         public bool loop;
 
-        private SkeletonAnimationController _controller;
+        private SpineController _controller;
         private SkeletonAnimation _skeletonAnimation;
         private Spine.AnimationState _spineAnimationState;
         private Spine.TrackEntry _trackEntry;
@@ -23,20 +23,16 @@ namespace Nekoyume.Game.Character
         {
             if (!_controller)
             {
-                _controller = animator.GetComponent<SkeletonAnimationController>();
+                _controller = animator.GetComponent<SpineController>();
                 if (!_controller)
-                {
-                    throw new NotFoundComponentException<SkeletonAnimationController>();
-                }
+                    throw new NotFoundComponentException<SpineController>();
             }
 
             if (!_skeletonAnimation)
             {
                 _skeletonAnimation = animator.GetComponentInChildren<SkeletonAnimation>();
                 if (!_skeletonAnimation)
-                {
                     throw new NotFoundComponentException<SkeletonAnimation>();
-                }
 
                 _spineAnimationState = _skeletonAnimation.state;
             }
@@ -44,6 +40,7 @@ namespace Nekoyume.Game.Character
             _trackEntry = _controller.PlayAnimationForState(animationClip, layer);
             if (_trackEntry is null)
             {
+                Debug.LogError($"{nameof(_trackEntry)} is null!");
                 return;
             }
 

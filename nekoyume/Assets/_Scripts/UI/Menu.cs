@@ -25,7 +25,7 @@ namespace Nekoyume.UI
         public MainMenu btnShop;
         public MainMenu btnRanking;
         public SpeechBubble[] SpeechBubbles;
-        public Npc npc;
+        public NPC npc;
         public SpeechBubble speechBubble;
         public GameObject shopExclamationMark;
         public GameObject combinationExclamationMark;
@@ -208,7 +208,7 @@ namespace Nekoyume.UI
             yield return StartCoroutine(speechBubble.CoShowText(speech, true));
             if (npc)
             {
-                npc.Emotion();
+                npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
             }
             speechBubble.ResetKey();
             if (_coroutine is null)

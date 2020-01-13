@@ -31,7 +31,7 @@ namespace Tests.PlayMode
             yield return new WaitWhile(() => States.Instance.CurrentAvatarState is null);
 
             var player = Game.instance.Stage.GetPlayer();
-            var skeleton = player.GetComponentInChildren<SkeletonAnimationController>().SkeletonAnimation.skeleton;
+            var skeleton = player.GetComponentInChildren<SpineController>().SkeletonAnimation.skeleton;
             Assert.AreEqual(1f, skeleton.A);
             player.DoFade(0f, 1f);
             yield return new WaitForSeconds(1f);

@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Character
         
         protected override bool CanRun => base.CanRun && !TargetInAttackRange(_player);
 
-        private SkeletonAnimationController AnimationController { get; set; }
+        private SpineController SpineController { get; set; }
         
         #region Mono
 
@@ -107,7 +107,7 @@ namespace Nekoyume.Game.Character
 
         protected override BoxCollider GetAnimatorHitPointBoxCollider()
         {
-            return AnimationController.BoxCollider;
+            return SpineController.BoxCollider;
         }
         
         #region AttackPoint & HitPoint
@@ -144,7 +144,7 @@ namespace Nekoyume.Game.Character
             
             var origin = Resources.Load<GameObject>(spineResourcePath);
             var go = Instantiate(origin, gameObject.transform);
-            AnimationController = go.GetComponent<SkeletonAnimationController>();
+            SpineController = go.GetComponent<SpineController>();
             Animator.ResetTarget(go);
             UpdateHitPoint();
         }

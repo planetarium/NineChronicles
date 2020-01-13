@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Module
         public float BgScale = 1.05f;
         public SpeechBubble speechBubble;
         public string pointerClickKey;
-        public Npc npc;
+        public NPC npc;
         public Transform bgTransform;
         private Vector3 _originLocalScale;
         public MenuType type;

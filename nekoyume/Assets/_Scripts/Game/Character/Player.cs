@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Character
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
-        private PlayerAnimationController AnimationController { get; set; }
+        private PlayerSpineController SpineController { get; set; }
         public Model.Player Model => (Model.Player) CharacterModel;
 
         #region Mono
@@ -118,7 +118,7 @@ namespace Nekoyume.Game.Character
 
         protected override BoxCollider GetAnimatorHitPointBoxCollider()
         {
-            return AnimationController.BoxCollider;
+            return SpineController.BoxCollider;
         }
         
         #region AttackPoint & HitPoint
@@ -159,18 +159,18 @@ namespace Nekoyume.Game.Character
 
             var origin = Resources.Load<GameObject>(spineResourcePath);
             var go = Instantiate(origin, gameObject.transform);
-            AnimationController = go.GetComponent<PlayerAnimationController>();
+            SpineController = go.GetComponent<PlayerSpineController>();
             Animator.ResetTarget(go);
             UpdateHitPoint();
         }
 
         public void UpdateWeapon(Weapon weapon)
         {
-            if (!AnimationController)
+            if (!SpineController)
                 return;
 
             var sprite = weapon.GetPlayerSpineTexture();
-            AnimationController.UpdateWeapon(sprite);
+            SpineController.UpdateWeapon(sprite);
         }
 
         public void UpdateCustomize()
@@ -187,7 +187,7 @@ namespace Nekoyume.Game.Character
 
         public void UpdateEar(string earLeftResource, string earRightResource)
         {
-            if (!AnimationController)
+            if (!SpineController)
                 return;
 
             if (string.IsNullOrEmpty(earLeftResource))
@@ -202,7 +202,7 @@ namespace Nekoyume.Game.Character
 
             var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarLeft(earLeftResource);
             var spriteRight = SpriteHelper.GetPlayerSpineTextureEarRight(earRightResource);
-            AnimationController.UpdateEar(spriteLeft, spriteRight);
+            SpineController.UpdateEar(spriteLeft, spriteRight);
         }
 
         public void UpdateEye(int index)
@@ -212,7 +212,7 @@ namespace Nekoyume.Game.Character
 
         public void UpdateEye(string eyeOpenResource, string eyeHalfResource)
         {
-            if (!AnimationController)
+            if (!SpineController)
                 return;
 
             if (string.IsNullOrEmpty(eyeOpenResource))
@@ -227,7 +227,7 @@ namespace Nekoyume.Game.Character
 
             var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeOpen(eyeOpenResource);
             var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeHalf(eyeHalfResource);
-            AnimationController.UpdateEye(eyeOpenSprite, eyeHalfSprite);
+            SpineController.UpdateEye(eyeOpenSprite, eyeHalfSprite);
         }
 
         public void UpdateTail(int index)
@@ -237,7 +237,7 @@ namespace Nekoyume.Game.Character
 
         public void UpdateTail(string tailResource)
         {
-            if (!AnimationController)
+            if (!SpineController)
                 return;
 
             if (string.IsNullOrEmpty(tailResource))
@@ -246,7 +246,7 @@ namespace Nekoyume.Game.Character
             }
 
             var sprite = SpriteHelper.GetPlayerSpineTextureTail(tailResource);
-            AnimationController.UpdateTail(sprite);
+            SpineController.UpdateTail(sprite);
         }
 
         #endregion
@@ -332,15 +332,15 @@ namespace Nekoyume.Game.Character
 
         public void DoFade(float endValue, float sec)
         {
-            var controller = GetComponentInChildren<SkeletonAnimationController>();
+            var skeleton = SpineController.SkeletonAnimation.skeleton;
             DOTween.Sequence()
                 .Append(DOTween.To(
-                    () => controller.SkeletonAnimation.skeleton.A,
-                    co => controller.SkeletonAnimation.skeleton.A = co, 0, 0f
+                    () => skeleton.A,
+                    co => skeleton.A = co, 0, 0f
                 ))
                 .Append(DOTween.To(
-                    () => controller.SkeletonAnimation.skeleton.A,
-                    co => controller.SkeletonAnimation.skeleton.A = co, endValue, sec
+                    () => skeleton.A,
+                    co => skeleton.A = co, endValue, sec
                 ))
                 .Play();
         }

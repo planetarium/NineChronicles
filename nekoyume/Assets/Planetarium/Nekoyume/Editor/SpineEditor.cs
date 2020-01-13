@@ -18,8 +18,10 @@ namespace Planetarium.Nekoyume.Editor
         private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
         private const string PlayerPrefabPath = "Assets/Resources/Character/Player";
         private const string MonsterPrefabPath = "Assets/Resources/Character/Monster";
+        private const string NPCPrefabPath = "Assets/Resources/Character/NPC";
         private const string PlayerSpineRootPath = "Assets/AddressableAssets/Character/Player";
         private const string MonsterSpineRootPath = "Assets/AddressableAssets/Character/Monster";
+        private const string NPCSpineRootPath = "Assets/AddressableAssets/Character/NPC";
 
         private static readonly Vector3 Position = Vector3.zero;
         private static readonly Vector3 LocalScale = new Vector3(.64f, .64f, 1f);
@@ -34,28 +36,32 @@ namespace Planetarium.Nekoyume.Editor
         public static void CreateSpinePrefab()
         {
             if (!(Selection.activeObject is SkeletonDataAsset skeletonDataAsset))
-            {
                 return;
-            }
 
             CreateSpinePrefabInternal(skeletonDataAsset);
         }
 
-        [MenuItem("Tools/9C/Create Spine Prefab All Of Player", false, 0)]
-        public static void CreateSpinePrefabAllOfPlayers()
+        [MenuItem("Tools/9C/Create Spine Prefab(All Player)", false, 0)]
+        public static void CreateSpinePrefabAllOfPlayer()
         {
             CreateSpinePrefabAllOfPath(PlayerSpineRootPath);
         }
 
-        [MenuItem("Tools/9C/Create Spine Prefab All Of Monster", false, 0)]
-        public static void CreateSpinePrefabAllOfMonsters()
+        [MenuItem("Tools/9C/Create Spine Prefab(All Monster)", false, 0)]
+        public static void CreateSpinePrefabAllOfMonster()
         {
             CreateSpinePrefabAllOfPath(MonsterSpineRootPath);
+        }
+        
+        [MenuItem("Tools/9C/Create Spine Prefab(All NPC)", false, 0)]
+        public static void CreateSpinePrefabAllOfNPC()
+        {
+            CreateSpinePrefabAllOfPath(NPCSpineRootPath);
         }
 
         private static void CreateSpinePrefabInternal(SkeletonDataAsset skeletonDataAsset)
         {
-            if (!Validate(skeletonDataAsset))
+            if (!ValidateForPlayerOrMonster(skeletonDataAsset))
                 return;
             
             CreateAnimationReferenceAssets(skeletonDataAsset);
@@ -97,8 +103,8 @@ namespace Planetarium.Nekoyume.Editor
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerPath);
 
             var controller = isPlayer
-                ? gameObject.AddComponent<PlayerAnimationController>()
-                : gameObject.AddComponent<SkeletonAnimationController>();
+                ? gameObject.AddComponent<PlayerSpineController>()
+                : gameObject.AddComponent<CharacterSpineController>();
             foreach (var animationType in CharacterAnimation.List)
             {
                 assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
@@ -150,7 +156,7 @@ namespace Planetarium.Nekoyume.Editor
                 }
 
                 controller.statesAndAnimations.Add(
-                    new SkeletonAnimationController.StateNameToAnimationReference
+                    new SpineController.StateNameToAnimationReference
                     {
                         stateName = animationType.ToString(),
                         animation = asset
@@ -160,7 +166,7 @@ namespace Planetarium.Nekoyume.Editor
             if (File.Exists(prefabPath))
             {
                 var boxCollider = controller.GetComponent<BoxCollider>();
-                var sac = AssetDatabase.LoadAssetAtPath<SkeletonAnimationController>(prefabPath);
+                var sac = AssetDatabase.LoadAssetAtPath<SpineController>(prefabPath);
                 var sourceBoxCollider = AssetDatabase.LoadAssetAtPath<BoxCollider>(prefabPath);
                 boxCollider.center = sourceBoxCollider.center;
                 boxCollider.size = sourceBoxCollider.size;
@@ -181,12 +187,19 @@ namespace Planetarium.Nekoyume.Editor
             }
         }
 
-        private static bool Validate(SkeletonDataAsset skeletonDataAsset)
+        private static bool ValidateForPlayerOrMonster(SkeletonDataAsset skeletonDataAsset)
         {
             var data = skeletonDataAsset.GetSkeletonData(false);
             var hud = data.FindBone("HUD");
             
+            // todo: 커스터마이징 슬롯 검사.
+            
             return !(hud is null);
+        }
+        
+        private static bool ValidateForNPC(SkeletonDataAsset skeletonDataAsset)
+        {
+            return true;
         }
 
         /// <summary>

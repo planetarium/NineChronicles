@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Nekoyume.Game.Character
 {
-    public class CharacterAnimation
+    public static class CharacterAnimation
     {
         public enum Type
         {
@@ -34,7 +34,7 @@ namespace Nekoyume.Game.Character
             {
                 List.Add((Type) value);
             }
-        } 
+        }
     }
 
     public class InvalidCharacterAnimationTypeException : Exception

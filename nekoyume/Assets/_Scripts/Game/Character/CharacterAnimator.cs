@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Character
 {
-    public abstract class CharacterAnimator : SkeletonAnimator, ICharacterAnimator
+    public abstract class CharacterAnimator : SkeletonAnimator
     {
         private const string StringHUD = "HUD";
         private const float ColorTweenFrom = 0f;
@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Character
         
         private Vector3 HUDPosition { get; set; }
 
-        protected CharacterAnimator(CharacterBase root) : base(root)
+        protected CharacterAnimator(CharacterBase root) : base(root.gameObject)
         {
         }
 
@@ -34,7 +34,7 @@ namespace Nekoyume.Game.Character
         {
             return HUDPosition;
         }
-
+        
         #region Animation
 
         public void Appear()
@@ -175,11 +175,6 @@ namespace Nekoyume.Game.Character
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            OnEvent?.Dispose();
-        }
 
         private void ColorTween()
         {
