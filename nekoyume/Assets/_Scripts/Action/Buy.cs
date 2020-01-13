@@ -6,7 +6,6 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;

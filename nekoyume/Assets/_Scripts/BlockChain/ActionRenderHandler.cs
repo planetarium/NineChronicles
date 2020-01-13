@@ -229,18 +229,26 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(evaluation);
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell> evaluation)
         {
+            var avatarAddress = evaluation.Action.sellerAvatarAddress;
+            var itemId = evaluation.Action.itemUsable.ItemId;
+
+            LocalStateModifier.AddItem(avatarAddress, itemId);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
-            UpdateCurrentAvatarState(eval);
+            UI.Notification.Push(MailType.Auction, string.Format(format, evaluation.Action.itemUsable.GetLocalizedName()));
+            UpdateCurrentAvatarState(evaluation);
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> evaluation)
         {
+            var avatarAddress = evaluation.Action.sellerAvatarAddress;
+            var itemId = evaluation.Action.result.itemUsable.ItemId;
+
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemId);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
-            UpdateCurrentAvatarState(eval);
+            UI.Notification.Push(MailType.Auction, string.Format(format, evaluation.Action.result.itemUsable.GetLocalizedName()));
+            UpdateCurrentAvatarState(evaluation);
         }
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
