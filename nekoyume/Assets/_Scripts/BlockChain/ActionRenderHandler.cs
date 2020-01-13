@@ -225,6 +225,7 @@ namespace Nekoyume.BlockChain
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            UpdateAgentState(evaluation);
             UpdateCurrentAvatarState(evaluation);
         }
 
@@ -291,13 +292,27 @@ namespace Nekoyume.BlockChain
             UI.Notification.Push(MailType.System, msg);
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> evaluation)
         {
+            var agentAddress = evaluation.InputContext.Signer;
+            var avatarAddress = evaluation.Action.avatarAddress;
+            var result = evaluation.Action.result;
+            var itemUsable = result.itemUsable;
+
+            LocalStateModifier.ModifyGold(agentAddress, result.gold);
+            LocalStateModifier.ModifyActionPoint(avatarAddress, result.actionPoint);
+            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId);
+            foreach (var itemId in result.materialItemIdList)
+            {
+                LocalStateModifier.AddItem(avatarAddress, itemId);
+            }
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemUsable.ItemId);
+
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,
-                string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
+                string.Format(format, evaluation.Action.result.itemUsable.Data.GetLocalizedName()));
+            UpdateAgentState(evaluation);
+            UpdateCurrentAvatarState(evaluation);
         }
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)

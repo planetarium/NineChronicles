@@ -352,18 +352,17 @@ namespace Nekoyume.UI
         private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel, Guid baseItemGuid,
             IEnumerable<Guid> otherItemGuidList)
         {
-            States.Instance.AgentState.gold -= combinationPanel.CostNCG;
-            States.Instance.CurrentAvatarState.actionPoint -= combinationPanel.CostAP;
-            ReactiveAvatarState.ActionPoint.SetValueAndForceNotify(
-                States.Instance.CurrentAvatarState.actionPoint);
-            States.Instance.CurrentAvatarState.inventory.RemoveNonFungibleItem(baseItemGuid);
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalStateModifier.ModifyGold(agentAddress, -combinationPanel.CostNCG);
+            LocalStateModifier.ModifyActionPoint(avatarAddress, -combinationPanel.CostAP);
+
+            LocalStateModifier.RemoveItem(avatarAddress, baseItemGuid);
             foreach (var itemGuid in otherItemGuidList)
             {
-                States.Instance.CurrentAvatarState.inventory.RemoveNonFungibleItem(itemGuid);
+                LocalStateModifier.RemoveItem(avatarAddress, itemGuid);
             }
-
-            ReactiveAvatarState.Inventory.SetValueAndForceNotify(
-                States.Instance.CurrentAvatarState.inventory);
         }
 
         private void CreateCombinationAction(List<(Material material, int count)> materialInfoList)

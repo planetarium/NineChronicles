@@ -217,7 +217,8 @@ namespace Nekoyume.UI
 
         public void Read(ItemEnhanceMail itemEnhanceMail)
         {
-            var attachment = (ItemEnhancement.Result) itemEnhanceMail.attachment;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var attachment = (ItemEnhancement.ResultModel) itemEnhanceMail.attachment;
             var popup = Find<CombinationResultPopup>();
             var item = attachment.itemUsable;
             var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
@@ -227,7 +228,8 @@ namespace Nekoyume.UI
             };
             popup.Pop(model);
 
-            AddItem(item, false);
+            LocalStateModifier.AddItem(avatarAddress, item.ItemId);
+            LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
         }
 
         private static void AddItem(ItemUsable item, bool canceled)
