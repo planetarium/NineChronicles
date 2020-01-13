@@ -242,7 +242,6 @@ namespace Nekoyume.State
             var type = itemUsable.Data.ItemType == ItemType.Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
             eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
             UpdateGeneralQuest(new[] {type});
-            UpdateCompletedQuest();
             UpdateFromAddItem(itemUsable, false);
         }
 
@@ -252,7 +251,6 @@ namespace Nekoyume.State
             var type = QuestEventType.Enhancement;
             eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
             UpdateGeneralQuest(new[] {type});
-            UpdateCompletedQuest();
             UpdateFromAddItem(equipment, false);
         }
 

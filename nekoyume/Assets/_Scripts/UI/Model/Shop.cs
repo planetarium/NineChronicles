@@ -1,14 +1,6 @@
-using System;
-using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Libplanet;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
-using Nekoyume.Model;
-using Nekoyume.State;
-using Nekoyume.UI.Module;
+using System;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {

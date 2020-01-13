@@ -15,13 +15,6 @@ namespace Nekoyume.Action
     [ActionType("sell")]
     public class Sell : GameAction
     {
-        [Serializable]
-        public class ResultModel
-        {
-            public Address sellerAvatarAddress;
-            public ShopItem shopItem;
-        }
-
         public Address sellerAvatarAddress;
         public Guid productId;
         public ItemUsable itemUsable;
