@@ -371,12 +371,16 @@ namespace Nekoyume.UI
                 .ToList();
 
             var stats = _tempStats.SetAll(_tempStats.Level, equipments, consumables, null);
-            var statMap = stats.GetAdditionalStats();
-            int idx = 0;
-            foreach (var (type, value) in statMap)
+            using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())
             {
-                statusRows[idx].SetAdditional(type, value);
-                ++idx;
+                foreach (var statView in statusRows)
+                {
+                    if (!enumerator.MoveNext())
+                        break;
+
+                    var (statType, baseValue, additionalValue) = enumerator.Current;
+                    statView.Show(statType, baseValue, additionalValue);
+                }   
             }
         }
 

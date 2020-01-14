@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Nekoyume.EnumType;
 using TMPro;
 using UnityEngine;
@@ -19,14 +20,16 @@ namespace Nekoyume.UI.Module
         public void Show(StatType statType, (int valueMin, int valueMax) valueRange)
         {
             statTypeText.text = statType.ToString();
-            valueText.text = $"{valueRange.valueMin} - {valueRange.valueMax}";
+            valueText.text = statType == StatType.SPD
+                ? $"{(valueRange.valueMin / 100f).ToString(CultureInfo.InvariantCulture)} - {(valueRange.valueMax / 100f).ToString(CultureInfo.InvariantCulture)}"
+                : $"{valueRange.valueMin} - {valueRange.valueMax}";
             additionalText.text = string.Empty;
             gameObject.SetActive(true);
         }
 
         public void Show(string keyText, int statValue, int additionalStatValue)
         {
-            if(!Enum.TryParse<StatType>(keyText, out var statType))
+            if (!Enum.TryParse<StatType>(keyText, out var statType))
             {
                 Debug.LogError("Failed to parse StatType.");
             }
@@ -42,9 +45,9 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                additionalText.text = (additionalStatValue > 0) ?
-                $"({GetStatString(statType, additionalStatValue, true)})" :
-                $"<color=red>({GetStatString(statType, additionalStatValue, true)})</color>";
+                additionalText.text = (additionalStatValue > 0)
+                    ? $"({GetStatString(statType, additionalStatValue, true)})"
+                    : $"<color=red>({GetStatString(statType, additionalStatValue, true)})</color>";
             }
 
             gameObject.SetActive(true);
@@ -54,17 +57,25 @@ namespace Nekoyume.UI.Module
         {
             string str = string.Empty;
 
-            switch(statType)
+            switch (statType)
             {
                 case StatType.HP:
                 case StatType.ATK:
                 case StatType.DEF:
+                    str = isSigned
+                        ? value.ToString("+0.#;-0.#")
+                        : value.ToString();
+                    break;
                 case StatType.SPD:
-                    str = isSigned ? value.ToString("+#;-#") : value.ToString();
+                    str = isSigned
+                        ? (value / 100f).ToString("+0.#;-0.#", CultureInfo.InvariantCulture)
+                        : (value / 100f).ToString(CultureInfo.InvariantCulture);
                     break;
                 case StatType.CRI:
                 case StatType.DOG:
-                    str = isSigned ? value.ToString("+0.#\\%;-0.#\\%") : $"{value:0.#\\%}";
+                    str = isSigned
+                        ? value.ToString("+0.#\\%;-0.#\\%")
+                        : $"{value:0.#\\%}";
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
