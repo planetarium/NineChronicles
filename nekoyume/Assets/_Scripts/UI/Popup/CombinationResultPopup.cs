@@ -41,6 +41,7 @@ namespace Nekoyume.UI
 
             submitButton.OnClickAsObservable().Subscribe(_ =>
             {
+                Model.OnClickSubmit.OnNext(Model);
                 AudioController.PlayClick();
                 Close();
             }).AddTo(gameObject);
