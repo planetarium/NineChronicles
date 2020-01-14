@@ -35,7 +35,7 @@ namespace Nekoyume.BlockChain
             Block<PolymorphicAction<ActionBase>> block,
             string path)
         {
-            byte[] encoded = block.ToBencodex(true, true);
+            byte[] encoded = block.Serialize(true, true);
             File.WriteAllBytes(path, encoded);
         }
 
@@ -49,7 +49,7 @@ namespace Nekoyume.BlockChain
             if (File.Exists(path))
             {
                 var buffer = File.ReadAllBytes(path);
-                return Block<PolymorphicAction<ActionBase>>.FromBencodex(buffer);
+                return Block<PolymorphicAction<ActionBase>>.Deserialize(buffer);
             }
             else
             {

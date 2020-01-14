@@ -1641,6 +1641,14 @@
             </param>
             <seealso cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/>
         </member>
+        <member name="M:Libplanet.Blocks.Block`1.#ctor(Bencodex.Types.Dictionary)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Blocks.Block`1"/> instance from its serialization.
+            </summary>
+            <param name="dict">The <see cref="T:Bencodex.Types.Dictionary"/>
+            representation of <see cref="T:Libplanet.Blocks.Block`1"/> instance.
+            </param>
+        </member>
         <member name="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
             <summary>
             Generate a block with given <paramref name="transactions"/>.
@@ -1659,6 +1667,16 @@
             A cancellation token used to propagate notification that this
             operation should be canceled.</param>
             <returns>A <see cref="T:Libplanet.Blocks.Block`1"/> that mined.</returns>
+        </member>
+        <member name="M:Libplanet.Blocks.Block`1.Deserialize(System.Byte[])">
+            <summary>
+            Decodes a <see cref="T:Libplanet.Blocks.Block`1"/>'s
+            <a href="https://bencodex.org/">Bencodex</a> representation.
+            </summary>
+            <param name="bytes">A <a href="https://bencodex.org/">Bencodex</a>
+            representation of a <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
+            <returns>A decoded <see cref="T:Libplanet.Blocks.Block`1"/> object.</returns>
+            <seealso cref="M:Libplanet.Blocks.Block`1.Serialize(System.Boolean,System.Boolean)"/>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter)">
             <summary>
@@ -1820,6 +1838,34 @@
             </returns>
             <exception cref="T:System.ArgumentNullException">Thrown when the given
             <paramref name="bytes"/> is <c>null</c>.</exception>
+        </member>
+        <member name="T:Libplanet.Crypto.CryptoConfig">
+            <summary>
+            Libplanet cryptography configuration information.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Crypto.CryptoConfig.CryptoBackend">
+            <summary>
+            Global cryptography backend to sign and verify messages.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Crypto.ICryptoBackend">
+            <summary>
+            Cryptography backend interface.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Crypto.ICryptoBackend.Verify(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Byte[],Libplanet.Crypto.PublicKey)">
+            <summary>
+            Verifies whether a <paramref name="signature"/> was created from
+            a <paramref name="messageHash"/> with the corresponding <see cref="T:Libplanet.Crypto.PrivateKey"/>.
+            </summary>
+            <param name="messageHash">A 32 bytes message hash digest hashed with SHA256.</param>
+            <param name="signature">A signature that was created from the
+            <paramref name="messageHash"/>.</param>
+            <param name="publicKey"><see cref="T:Libplanet.Crypto.PublicKey"/> used for verification.</param>
+            <returns><c>true</c> if the <paramref name="signature"/> was created
+            from the <paramref name="messageHash"/> with the corresponding
+            <see cref="T:Libplanet.Crypto.PrivateKey"/>. Otherwise <c>false</c>.</returns>
         </member>
         <member name="T:Libplanet.Crypto.PrivateKey">
             <summary>
@@ -2826,7 +2872,7 @@
         <member name="T:Libplanet.Net.DifferentProtocolVersionEventArgs">
             <summary>
             The event data that provides a value when
-            <see cref="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered" /> is occurred.
+            <see cref="E:Libplanet.Net.NetMQTransport.DifferentVersionPeerEncountered" /> is occurred.
             </summary>
         </member>
         <member name="P:Libplanet.Net.DifferentProtocolVersionEventArgs.ExpectedVersion">
@@ -2913,6 +2959,23 @@
             goes first, and the closest to the tip goes last.
             </summary>
         </member>
+        <member name="E:Libplanet.Net.NetMQTransport.DifferentVersionPeerEncountered">
+            <summary>
+            The <see cref="T:System.EventHandler" /> triggered when the different version of
+            <see cref="T:Libplanet.Net.Peer" /> is discovered.
+            </summary>
+        </member>
+        <member name="E:Libplanet.Net.NetMQTransport.ProcessMessageHandler">
+            <summary>
+            The <see cref="T:System.EventHandler" /> triggered when a <see cref="T:Libplanet.Net.Messages.Message"/> is
+            received and needs processing.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.NetMQTransport.Running">
+            <summary>
+            Whether this <see cref="T:Libplanet.Net.NetMQTransport"/> instance is running.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.Peer">
             <summary>
             A representation of peer node.
@@ -2929,7 +2992,7 @@
             <summary>
             The corresponding application protocol version of this peer.
             </summary>
-            <seealso cref="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered"/>
+            <seealso cref="E:Libplanet.Net.NetMQTransport.DifferentVersionPeerEncountered"/>
         </member>
         <member name="P:Libplanet.Net.Peer.Address">
             <summary>The peer's address which is derived from
@@ -3085,28 +3148,17 @@
         <member name="P:Libplanet.Net.StateDownloadState.CurrentPhase">
             <inheritdoc />
         </member>
-        <member name="E:Libplanet.Net.Swarm`1.DifferentVersionPeerEncountered">
-            <summary>
-            The <see cref="T:System.EventHandler" /> triggered when the different version of
-            <see cref="T:Libplanet.Net.Peer" /> is discovered.
-            </summary>
-        </member>
         <member name="P:Libplanet.Net.Swarm`1.BlockChain">
             <summary>
             The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance this <see cref="T:Libplanet.Net.Swarm`1"/> instance
             synchronizes with.
             </summary>
         </member>
-        <member name="P:Libplanet.Net.Swarm`1.Running">
-            <summary>
-            Whether this <see cref="T:Libplanet.Net.Swarm`1"/> instance is running.
-            </summary>
-        </member>
         <member name="M:Libplanet.Net.Swarm`1.WaitForRunningAsync">
             <summary>
             Waits until this <see cref="T:Libplanet.Net.Swarm`1"/> instance gets started to run.
             </summary>
-            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.Swarm`1.Running"/>
+            <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.NetMQTransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
         <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)">
@@ -3323,12 +3375,13 @@
             </summary>
             <seealso cref="T:Libplanet.Store.IStore"/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
+        <member name="M:Libplanet.Store.DefaultStore.#ctor(System.String,System.Boolean,System.Boolean,System.Int32,System.Int32,System.Int32,System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Creates a new <seealso cref="T:Libplanet.Store.DefaultStore"/>.
             </summary>
             <param name="path">The path of the directory where the storage files will be saved.
             If the path is <c>null</c>, the database is created in memory.</param>
+            <param name="compress">Whether to compress data.  Does not compress by default.</param>
             <param name="journal">
             Enables or disables double write check to ensure durability.
             </param>
@@ -3758,6 +3811,39 @@
             <seealso cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
             <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
         </member>
+        <member name="M:Libplanet.Store.StoreExtension.Copy(Libplanet.Store.IStore,Libplanet.Store.IStore)">
+            <summary>
+            Makes a store, <paramref name="to"/>, logically (but not necessarily physically)
+            identical to another store, <paramref name="from"/>.  As this copies the contents
+            of the store, instead of its physicall data, this can be used for migrating
+            between two different types of <see cref="T:Libplanet.Store.IStore"/> implementations.
+            </summary>
+            <param name="from">The store containing the source contents.</param>
+            <param name="to">The store to contain the copied contents. Expected to be empty.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the store passed through
+            <paramref name="to"/> is not empty.</exception>
+        </member>
+        <member name="T:Libplanet.Store.StoreExtension.NullAction">
+            <summary>
+            An action implementation which does nothing for filling type parameter taking of
+            <see cref="T:Libplanet.Action.IAction"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Store.StoreExtension.NullAction.PlainValue">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.StoreExtension.NullAction.Execute(Libplanet.Action.IActionContext)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.StoreExtension.NullAction.LoadPlainValue(Bencodex.Types.IValue)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.StoreExtension.NullAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.StoreExtension.NullAction.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc/>
+        </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
             <summary>
             Serves as the base class for exceptions thrown by
@@ -3969,6 +4055,14 @@
             <paramref name="signer"/> is not derived from its
             <paramref name="publicKey"/>.</exception>
         </member>
+        <member name="M:Libplanet.Tx.Transaction`1.#ctor(Bencodex.Types.Dictionary)">
+            <summary>
+            Creates a <see cref="T:Libplanet.Tx.Transaction`1"/> instance from its serialization.
+            </summary>
+            <param name="dict">The <see cref="T:Bencodex.Types.Dictionary"/>
+            representation of <see cref="T:Libplanet.Tx.Transaction`1"/> instance.
+            </param>
+        </member>
         <member name="P:Libplanet.Tx.Transaction`1.Id">
             <summary>
             A unique identifier derived from this <see cref="T:Libplanet.Tx.Transaction`1"/>'s
@@ -4025,15 +4119,15 @@
             for each transaction.  This cannot be <c>null</c>.
             </summary>
         </member>
-        <member name="M:Libplanet.Tx.Transaction`1.FromBencodex(System.Byte[])">
+        <member name="M:Libplanet.Tx.Transaction`1.Deserialize(System.Byte[])">
             <summary>
-            Decodes a transaction's
+            Decodes a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
             <a href="https://bencodex.org/">Bencodex</a> representation.
             </summary>
             <param name="bytes">A <a href="https://bencodex.org/">Bencodex</a>
-            representation of a transaction.</param>
+            representation of a <see cref="T:Libplanet.Tx.Transaction`1"/>.</param>
             <returns>A decoded <see cref="T:Libplanet.Tx.Transaction`1"/> object.</returns>
-            <seealso cref="M:Libplanet.Tx.Transaction`1.ToBencodex(System.Boolean)"/>
+            <seealso cref="M:Libplanet.Tx.Transaction`1.Serialize(System.Boolean)"/>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
@@ -4134,21 +4228,25 @@
             </para>
             </exception>
         </member>
-        <member name="M:Libplanet.Tx.Transaction`1.ToBencodex(System.Boolean)">
+        <member name="M:Libplanet.Tx.Transaction`1.Serialize(System.Boolean)">
             <summary>
-            Encodes this <see cref="T:Libplanet.Tx.Transaction`1"/> into a <see cref="T:System.Byte"/>
-            array.
-            <para>This is an inverse function of
-            <see cref="M:Libplanet.Tx.Transaction`1.FromBencodex(System.Byte[])"/> method
-            where <paramref name="sign"/> is <c>true</c>.</para>
+            Encodes this <see cref="T:Libplanet.Tx.Transaction`1"/> into a <see cref="T:System.Byte"/> array.
             </summary>
             <param name="sign">Whether to include its <see cref="P:Libplanet.Tx.Transaction`1.Signature"/>.
-            Note that an encoding without signature cannot be decoded using
-            <see cref="M:Libplanet.Tx.Transaction`1.FromBencodex(System.Byte[])"/> method.
             </param>
             <returns>A <a href="https://bencodex.org/">Bencodex</a>
             representation of this <see cref="T:Libplanet.Tx.Transaction`1"/>.</returns>
-            <seealso cref="M:Libplanet.Tx.Transaction`1.FromBencodex(System.Byte[])"/>
+        </member>
+        <member name="M:Libplanet.Tx.Transaction`1.ToBencodex(System.Boolean)">
+            <summary>
+            Encodes this <see cref="T:Libplanet.Tx.Transaction`1"/> into a <see cref="T:Bencodex.Types.IValue"/>.
+            </summary>
+            <param name="sign">Whether to include its <see cref="P:Libplanet.Tx.Transaction`1.Signature"/>.
+            Note that an encoding without signature cannot be decoded.
+            </param>
+            <returns>A <see cref="T:Bencodex.Types.Dictionary"/> typed
+            <a href="https://bencodex.org/">Bencodex</a>
+            representation of this <see cref="T:Libplanet.Tx.Transaction`1"/>.</returns>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)">
             <summary>
@@ -4233,9 +4331,6 @@
             <exception cref="T:Libplanet.Tx.InvalidTxPublicKeyException">Thrown when its
             <see cref="P:Libplanet.Tx.Transaction`1.Signer"/> is not derived from its
             <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>.</exception>
-        </member>
-        <member name="M:Libplanet.Tx.Transaction`1.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <inheritdoc />
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Equals(Libplanet.Tx.Transaction{`0})">
             <inheritdoc />
