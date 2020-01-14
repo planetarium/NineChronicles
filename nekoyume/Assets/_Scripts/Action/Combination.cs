@@ -299,11 +299,8 @@ namespace Nekoyume.Action
                 }
 
                 // 조합 결과 획득.
-                foreach (var pair in Result.materials)
-                {
-                    Result.materials[pair.Key] = 1;
-                }
-
+                // TODO Materials 가 액션의 요소라 값이 변경되면 서명이 바뀔 수 있음.
+                // 액션의 결과를 별도의 주소에 저장해서 렌더러쪽에서 ActionEvaluation.OutputStates.GetState를 사용하면 좋을 것 같음.
                 for (var i = 0; i < foodCount; i++)
                 {
                     var itemId = ctx.Random.GenerateRandomGuid();
