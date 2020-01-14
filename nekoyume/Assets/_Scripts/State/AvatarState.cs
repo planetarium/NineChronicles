@@ -267,6 +267,8 @@ namespace Nekoyume.State
                 questList.UpdateItemGradeQuest(itemUsable);
                 questList.UpdateItemTypeCollectQuest(new[] {itemUsable});
             }
+
+            UpdateCompletedQuest();
         }
 
         public void UpdateFromQuestReward(Quest quest, IRandom random, IActionContext context)
