@@ -1,3 +1,4 @@
+using System.Globalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using TMPro;
@@ -32,7 +33,10 @@ namespace Nekoyume.UI.Module
 
         public virtual void Show(StatType statType, int value)
         {
-            Show(statType.ToString(), value.ToString());
+            Show(statType.ToString(),
+                statType == StatType.SPD
+                    ? (value / 100f).ToString(CultureInfo.InvariantCulture)
+                    : value.ToString());
         }
 
         public virtual void Show(string statType, string value)
