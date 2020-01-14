@@ -398,12 +398,16 @@ namespace Nekoyume.UI
 
         private void ResponseSell()
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
             var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
             var price = SharedModel.ItemCountAndPricePopup.Value.Price.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
-            States.Instance.CurrentAvatarState.inventory.RemoveNonFungibleItem((ItemUsable) item.ItemBase.Value);
-            inventory.SharedModel.RemoveItem(item.ItemBase.Value);
+            if (!(item.ItemBase.Value is ItemUsable itemUsable))
+                return;
+
+            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_START");

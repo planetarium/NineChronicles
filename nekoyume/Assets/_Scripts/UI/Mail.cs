@@ -168,6 +168,7 @@ namespace Nekoyume.UI
 
         public void Read(SellCancelMail mail)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (SellCancellation.Result) mail.attachment;
             var item = attachment.itemUsable;
             //TODO 관련 기획이 끝나면 별도 UI를 생성
@@ -181,15 +182,15 @@ namespace Nekoyume.UI
             model.Item.Value = new CountEditableItem(item, 1, 1, 1);
             model.OnClickSubmit.Subscribe(_ =>
             {
-                AddItem(item, true);
+                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
                 popup.Close();
             }).AddTo(gameObject);
             model.OnClickCancel.Subscribe(_ =>
             {
-                AddItem(item, true);
+                //TODO 재판매 처리추가되야함
+                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
                 popup.Close();
             }).AddTo(gameObject);
-            //TODO 재판매 처리추가되야함
             popup.Pop(model);
         }
 
@@ -211,7 +212,9 @@ namespace Nekoyume.UI
         public void Read(SellerMail sellerMail)
         {
             var attachment = (Buy.SellerResult) sellerMail.attachment;
+
             //TODO 관련 기획이 끝나면 별도 UI를 생성
+            
             AddGold(attachment.gold);
         }
 

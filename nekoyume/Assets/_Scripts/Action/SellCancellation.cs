@@ -101,8 +101,12 @@ namespace Nekoyume.Action
                 shopItem = outUnregisteredItem,
                 itemUsable = outUnregisteredItem.ItemUsable
             };
-            var mail = new SellCancelMail(result, ctx.BlockIndex);
+            var mail = new SellCancelMail(result, ctx.BlockIndex)
+            {
+                New = false
+            };
             avatarState.Update(mail);
+            avatarState.UpdateFromAddItem(result.itemUsable, true);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
             sw.Stop();
