@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
+using Nekoyume.Helper;
 
 namespace Nekoyume.UI
 {
@@ -85,12 +86,7 @@ namespace Nekoyume.UI
         {
             var address = Game.Game.instance.Agent.Address;
 
-            TextEditor editor = new TextEditor()
-            {
-                text = address.ToString()
-            };
-            editor.SelectAll();
-            editor.Copy();
+            ClipboardHelper.CopyToClipboard(address.ToString());
         }
 
         private void SetVolumeMaster(float value)
