@@ -5,6 +5,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
+using Nekoyume.Helper;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -133,14 +134,18 @@ namespace Nekoyume.UI.Module
                 image.SetNativeSize();
             }
 
-            // 텍스트.
+            // 전투력.
             if (Model.item.Value.ItemBase.Value.Data.ItemType == ItemType.Material)
             {
                 iconArea.commonText.enabled = false;
             }
+            else if (Model.item.Value.ItemBase.Value is Equipment equipment)
+            {
+                iconArea.commonText.enabled = true;
+                iconArea.commonText.text = CPHelper.GetCP(equipment).ToString();
+            }
             else
             {
-                // todo: 내구도가 생기면 이곳에서 표시해줘야 함.
                 iconArea.commonText.enabled = false;
             }
         }

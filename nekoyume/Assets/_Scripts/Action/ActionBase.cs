@@ -11,7 +11,7 @@ namespace Nekoyume.Action
     public abstract class ActionBase : IAction
     {
         public static readonly IValue MarkChanged = default(Null);
-        
+
         public abstract IValue PlainValue { get; }
         public abstract void LoadPlainValue(IValue plainValue);
         public abstract IAccountStateDelta Execute(IActionContext ctx);
@@ -26,6 +26,7 @@ namespace Nekoyume.Action
 
         private static readonly Subject<ActionEvaluation<ActionBase>> RenderSubject =
             new Subject<ActionEvaluation<ActionBase>>();
+
         private static readonly Subject<ActionEvaluation<ActionBase>> UnrenderSubject =
             new Subject<ActionEvaluation<ActionBase>>();
 
@@ -47,7 +48,6 @@ namespace Nekoyume.Action
                 InputContext = context,
                 OutputStates = nextStates,
             });
-            
         }
 
         public static IObservable<ActionEvaluation<T>> EveryRender<T>()

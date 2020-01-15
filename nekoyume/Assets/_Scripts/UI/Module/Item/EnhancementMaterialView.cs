@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
                 return;
 
             var statType = equipment.UniqueStatType;
-            var statValue = equipment.StatsMap.GetStatValue(equipment.UniqueStatType, true);
+            var statValue = equipment.StatsMap.GetStat(equipment.UniqueStatType, true);
             if (string.IsNullOrEmpty(additionalValueText))
             {
                 statView.Show(statType, statValue);

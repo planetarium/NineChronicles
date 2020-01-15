@@ -153,7 +153,7 @@ namespace Nekoyume.UI.Module
                 return false;
             
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
-            var statValue = equipment.StatsMap.GetStatValue(equipment.UniqueStatType, true);
+            var statValue = equipment.StatsMap.GetStat(equipment.UniqueStatType, true);
             var resultValue = statValue + equipment.levelStats;
             baseMaterial.UpdateStatView(resultValue.ToString());
             UpdateMessageText();

@@ -3,8 +3,22 @@ using System.Collections.Generic;
 
 namespace Nekoyume.Game
 {
-    public interface IAdditionalStats
+    public interface IBaseAndAdditionalStats
     {
+        int BaseHP { get; }
+        int BaseATK { get; }
+        int BaseDEF { get; }
+        int BaseCRI { get; }
+        int BaseDOG { get; }
+        int BaseSPD { get; }
+        
+        bool HasBaseHP { get; }
+        bool HasBaseATK { get; }
+        bool HasBaseDEF { get; }
+        bool HasBaseCRI { get; }
+        bool HasBaseDOG { get; }
+        bool HasBaseSPD { get; }
+        
         int AdditionalHP { get; }
         int AdditionalATK { get; }
         int AdditionalDEF { get; }
@@ -20,6 +34,7 @@ namespace Nekoyume.Game
         bool HasAdditionalSPD { get; }
         bool HasAdditionalStats { get; }
 
+        IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false);
         IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false);
         IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false);
     }

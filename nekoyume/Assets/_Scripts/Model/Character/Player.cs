@@ -61,7 +61,9 @@ namespace Nekoyume.Model
         public int earIndex;
         public int tailIndex;
 
-        private List<Equipment> Equipments { get; set; }
+        private List<Equipment> _equipments;
+
+        public IReadOnlyList<Equipment> Equipments => _equipments;
 
         public Player(AvatarState avatarState, Simulator simulator) : base(simulator, avatarState.characterId, avatarState.level)
         {
@@ -118,7 +120,7 @@ namespace Nekoyume.Model
             helm = value.helm;
             set = value.set;
 
-            Equipments = value.Equipments;
+            _equipments = value._equipments;
         }
 
         private void PostConstruction(TableSheets sheets)
@@ -155,11 +157,11 @@ namespace Nekoyume.Model
         
         private void Equip(IEnumerable<Inventory.Item> items)
         {
-            Equipments = items.Select(i => i.item)
+            _equipments = items.Select(i => i.item)
                 .OfType<Equipment>()
                 .Where(e => e.equipped)
                 .ToList();
-            foreach (var equipment in Equipments)
+            foreach (var equipment in _equipments)
             {
                 switch (equipment.Data.ItemSubType)
                 {
@@ -193,14 +195,14 @@ namespace Nekoyume.Model
                 }
             }
             
-            Stats.SetEquipments(Equipments);
+            Stats.SetEquipments(_equipments);
 
-            foreach (var skill in Equipments.SelectMany(equipment => equipment.Skills))
+            foreach (var skill in _equipments.SelectMany(equipment => equipment.Skills))
             {
                 Skills.Add(skill);
             }
             
-            foreach (var buffSkill in Equipments.SelectMany(equipment => equipment.BuffSkills))
+            foreach (var buffSkill in _equipments.SelectMany(equipment => equipment.BuffSkills))
             {
                 Skills.Add(buffSkill);
             }

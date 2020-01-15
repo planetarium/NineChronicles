@@ -157,7 +157,7 @@ namespace Nekoyume.Game
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
         }
-
+        
         public IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false)
         {
             if (ignoreZero)
@@ -186,118 +186,6 @@ namespace Nekoyume.Game
             }
         }
 
-        public int GetStat(StatType statType)
-        {
-            switch(statType)
-            {
-                case StatType.HP:
-                    return HP;
-                case StatType.ATK:
-                    return ATK;
-                case StatType.DEF:
-                    return DEF;
-                case StatType.CRI:
-                    return CRI;
-                case StatType.DOG:
-                    return DOG;
-                case StatType.SPD:
-                    return SPD;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
-            }
-        }
-
-        public void Add(StatMap value)
-        {
-            switch (value.StatType)
-            {
-                case StatType.HP:
-                    hp.AddValue(value.ValueAsInt);
-                    break;
-                case StatType.ATK:
-                    atk.AddValue(value.ValueAsInt);
-                    break;
-                case StatType.DEF:
-                    def.AddValue(value.ValueAsInt);
-                    break;
-                case StatType.CRI:
-                    cri.AddValue(value.Value);
-                    break;
-                case StatType.DOG:
-                    dog.AddValue(value.Value);
-                    break;
-                case StatType.SPD:
-                    spd.AddValue(value.Value);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public void Add(StatMapEx value)
-        {
-            switch (value.StatType)
-            {
-                case StatType.HP:
-                    hp.AddValue(value.TotalValueAsInt);
-                    break;
-                case StatType.ATK:
-                    atk.AddValue(value.TotalValueAsInt);
-                    break;
-                case StatType.DEF:
-                    def.AddValue(value.TotalValueAsInt);
-                    break;
-                case StatType.CRI:
-                    cri.AddValue(value.TotalValue);
-                    break;
-                case StatType.DOG:
-                    dog.AddValue(value.TotalValue);
-                    break;
-                case StatType.SPD:
-                    spd.AddValue(value.TotalValue);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        public void Add(StatsMap value)
-        {
-            hp.AddValue(value.HP);
-            atk.AddValue(value.ATK);
-            def.AddValue(value.DEF);
-            cri.AddValue(value.CRI);
-            dog.AddValue(value.DOG);
-            spd.AddValue(value.SPD);
-        }
-
-        public void Add(StatModifier value)
-        {
-            switch (value.StatType)
-            {
-                case StatType.HP:
-                    value.Modify(hp);
-                    break;
-                case StatType.ATK:
-                    value.Modify(atk);
-                    break;
-                case StatType.DEF:
-                    value.Modify(def);
-                    break;
-                case StatType.CRI:
-                    value.Modify(cri);
-                    break;
-                case StatType.DOG:
-                    value.Modify(dog);
-                    break;
-                case StatType.SPD:
-                    value.Modify(spd);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-        
         public void EqualizeCurrentHPWithHP()
         {
             hp.EqualizeCurrentWithValue();
