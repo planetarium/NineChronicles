@@ -10,6 +10,7 @@ using System.Net;
 using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
+using UnityEditor.Callbacks;
 
 namespace Editor
 {
@@ -23,7 +24,7 @@ namespace Editor
 
         public static readonly string ScriptBasePath =
             Path.Combine(ProjectBasePath, "tools", "snapshot", "scripts");
-        
+
         public static readonly string SnapshotBinaryBasePath =
             Path.Combine(ProjectBasePath, "tools", "snapshot");
 
@@ -122,7 +123,7 @@ namespace Editor
                 BuildOptions.EnableHeadlessMode | BuildOptions.Development,
                 "LinuxHeadless");
         }
-        
+
         [MenuItem("Build/Standalone/Windows Headless Development")]
         public static void BuildWindowsHeadlessDevelopment()
         {
@@ -164,7 +165,7 @@ namespace Editor
                 Path.Combine(BuildBasePath, targetDirName, "README.txt"),
                 overwrite: true
             );
-            
+
             BuildSummary summary = report.summary;
 
             if (summary.result == BuildResult.Succeeded)
@@ -176,6 +177,32 @@ namespace Editor
             {
                 Debug.LogError("Build failed");
             }
+        }
+
+        [PostProcessBuild(0)]
+        public static void CopySecp256k1(BuildTarget target, string pathToBuiltProject)
+        {
+            var libname = "";
+            var destLibPath = pathToBuiltProject;
+            switch (target)
+            {
+                case BuildTarget.StandaloneOSX:
+                    libname = "libsecp256k1.dylib";
+                    destLibPath = Path.Combine(destLibPath + ".app", "Contents/Resources/Data/Managed/", libname);
+                    break;
+                case BuildTarget.StandaloneWindows64:
+                    libname = "secp256k1.dll";
+                    destLibPath = Path.Combine(Path.GetDirectoryName(destLibPath), "Nine Chronicles_Data/Managed", libname);
+                    break;
+                default:
+                    libname = "libsecp256k1.so";
+                    destLibPath = Path.Combine(Path.GetDirectoryName(destLibPath), "Nine Chronicles_Data/Managed", libname);
+                    break;
+            }
+
+            var srcLibPath = Path.Combine(Application.dataPath, "Packages", libname);
+            Debug.Log($"Secp256k1 src path = {srcLibPath}, dst path = {destLibPath}");
+            File.Copy(srcLibPath, destLibPath, true);
         }
 
         private static void CopyToBuildDirectory(string basePath, string targetDirName, string filename)
