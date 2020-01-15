@@ -57,6 +57,19 @@ namespace Nekoyume
 
         #endregion
 
+        #region CP
+
+        public const float CPNormalAttackMultiply = 1f;
+        public const float CPBlowAttackMultiply = 1.1f;
+        public const float CPBlowAllAttackMultiply = 1.15f;
+        public const float CPDoubleAttackMultiply = 1.15f;
+        public const float CPAreaAttackMultiply = 1.2f;
+        public const float CPHealMultiply = 1.1f;
+        public const float CPBuffMultiply = 1.1f;
+        public const float CPDebuffMultiply = 1.1f;
+        
+        #endregion
+        
         #region Color
         
         public const string ColorHexForGrade1 = "fff9dd";

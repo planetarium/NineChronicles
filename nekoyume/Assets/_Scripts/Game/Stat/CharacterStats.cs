@@ -16,7 +16,7 @@ namespace Nekoyume.Game
     /// 마지막으로 모든 스탯을 합한 CharacterStats 순서로 계산한다.
     /// </summary>
     [Serializable]
-    public class CharacterStats : Stats, IAdditionalStats, ICloneable
+    public class CharacterStats : Stats, IBaseAndAdditionalStats, ICloneable
     {
         private readonly CharacterSheet.Row _row;
 
@@ -36,6 +36,20 @@ namespace Nekoyume.Game
         public IStats ConsumableStats => _consumableStats;
         public IStats BuffStats => _buffStats;
 
+        public int BaseHP => LevelStats.HP;
+        public int BaseATK => LevelStats.ATK;
+        public int BaseDEF => LevelStats.DEF;
+        public int BaseCRI => LevelStats.CRI;
+        public int BaseDOG => LevelStats.DOG;
+        public int BaseSPD => LevelStats.SPD;
+
+        public bool HasBaseHP => LevelStats.HasHP;
+        public bool HasBaseATK => LevelStats.HasATK;
+        public bool HasBaseDEF => LevelStats.HasDEF;
+        public bool HasBaseCRI => LevelStats.HasCRI;
+        public bool HasBaseDOG => LevelStats.HasDOG;
+        public bool HasBaseSPD => LevelStats.HasSPD;
+
         public int AdditionalHP => HP - _levelStats.HP;
         public int AdditionalATK => ATK - _levelStats.ATK;
         public int AdditionalDEF => DEF - _levelStats.DEF;
@@ -49,8 +63,10 @@ namespace Nekoyume.Game
         public bool HasAdditionalCRI => AdditionalCRI > 0;
         public bool HasAdditionalDOG => AdditionalDOG > 0;
         public bool HasAdditionalSPD => AdditionalSPD > 0;
+
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
                                           HasAdditionalDOG || HasAdditionalSPD;
+
         public CharacterStats(CharacterSheet.Row row, int level = 1, IReadOnlyList<Equipment> equipments = null,
             IReadOnlyList<Consumable> consumables = null, IReadOnlyList<Buff> buffs = null)
         {
@@ -325,6 +341,34 @@ namespace Nekoyume.Game
             return new CharacterStats(this);
         }
 
+        public IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false)
+        {
+            if (ignoreZero)
+            {
+                if (HasBaseHP)
+                    yield return (StatType.HP, BaseHP);
+                if (HasBaseATK)
+                    yield return (StatType.ATK, BaseATK);
+                if (HasBaseDEF)
+                    yield return (StatType.DEF, BaseDEF);
+                if (HasBaseCRI)
+                    yield return (StatType.CRI, BaseCRI);
+                if (HasBaseDOG)
+                    yield return (StatType.DOG, BaseDOG);
+                if (HasBaseSPD)
+                    yield return (StatType.SPD, BaseSPD);
+            }
+            else
+            {
+                yield return (StatType.HP, BaseHP);
+                yield return (StatType.ATK, BaseATK);
+                yield return (StatType.DEF, BaseDEF);
+                yield return (StatType.CRI, BaseCRI);
+                yield return (StatType.DOG, BaseDOG);
+                yield return (StatType.SPD, BaseSPD);
+            }
+        }
+
         public IEnumerable<(StatType statType, int additionalValue)> GetAdditionalStats(bool ignoreZero = false)
         {
             if (ignoreZero)
@@ -352,25 +396,34 @@ namespace Nekoyume.Game
                 yield return (StatType.SPD, AdditionalSPD);
             }
         }
-
-        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false)
+        
+        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(
+            bool ignoreZero = false)
         {
-            var levelStats = LevelStats.GetStats();
-            var additionalStats = GetAdditionalStats();
-
-            // 기본 스탯과 추가 스탯을 StatType 기준으로 새로운 하나의 튜플로 조인
-            var enumerable =
-                levelStats.Join(additionalStats,
-                                levelStat => levelStat.statType,
-                                additionalStat => additionalStat.statType,
-                                (levelStat, additionalStat)
-                                    => (levelStat.statType, levelStat.value, additionalStat.additionalValue));
-
             if (ignoreZero)
-                enumerable = enumerable.Where(row => row.value != 0 && row.additionalValue != 0);
-
-            foreach (var row in enumerable)
-                yield return row;
+            {
+                if (HasBaseHP || HasAdditionalHP)
+                    yield return (StatType.HP, BaseHP, AdditionalHP);
+                if (HasBaseATK || HasAdditionalATK)
+                    yield return (StatType.ATK, BaseATK, AdditionalATK);
+                if (HasBaseDEF || HasAdditionalDEF)
+                    yield return (StatType.DEF, BaseDEF, AdditionalDEF);
+                if (HasBaseCRI || HasAdditionalCRI)
+                    yield return (StatType.CRI, BaseCRI, AdditionalCRI);
+                if (HasBaseDOG || HasAdditionalDOG)
+                    yield return (StatType.DOG, BaseDOG, AdditionalDOG);
+                if (HasBaseSPD || HasAdditionalSPD)
+                    yield return (StatType.SPD, BaseSPD, AdditionalSPD);
+            }
+            else
+            {
+                yield return (StatType.HP, BaseHP, AdditionalHP);
+                yield return (StatType.ATK, BaseATK, AdditionalATK);
+                yield return (StatType.DEF, BaseDEF, AdditionalDEF);
+                yield return (StatType.CRI, BaseCRI, AdditionalCRI);
+                yield return (StatType.DOG, BaseDOG, AdditionalDOG);
+                yield return (StatType.SPD, BaseSPD, AdditionalSPD);
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Nekoyume.Game
 {
     // todo: `Stats`나 `StatModifier`로 대체되어야 함.
     [Serializable]
-    public class StatsMap : IStats, IAdditionalStats, IState
+    public class StatsMap : IStats, IBaseAndAdditionalStats, IState
     {
         public int HP => HasHP ? _statMaps[StatType.HP].TotalValueAsInt : 0;
         public int ATK => HasATK ? _statMaps[StatType.ATK].TotalValueAsInt : 0;
@@ -28,14 +28,28 @@ namespace Nekoyume.Game
         public bool HasDEF => _statMaps.ContainsKey(StatType.DEF) &&
                               (_statMaps[StatType.DEF].HasValue || _statMaps[StatType.DEF].HasAdditionalValue);
 
-        public bool HasCRI => _statMaps.ContainsKey(StatType.CRI) && 
+        public bool HasCRI => _statMaps.ContainsKey(StatType.CRI) &&
                               (_statMaps[StatType.CRI].HasValue || _statMaps[StatType.CRI].HasAdditionalValue);
 
-        public bool HasDOG => _statMaps.ContainsKey(StatType.DOG) && 
+        public bool HasDOG => _statMaps.ContainsKey(StatType.DOG) &&
                               (_statMaps[StatType.DOG].HasValue || _statMaps[StatType.DOG].HasAdditionalValue);
 
         public bool HasSPD => _statMaps.ContainsKey(StatType.SPD) &&
                               (_statMaps[StatType.SPD].HasValue || _statMaps[StatType.SPD].HasAdditionalValue);
+
+        public int BaseHP => HasBaseHP ? _statMaps[StatType.HP].ValueAsInt : 0;
+        public int BaseATK => HasBaseATK ? _statMaps[StatType.ATK].ValueAsInt : 0;
+        public int BaseDEF => HasBaseDEF ? _statMaps[StatType.DEF].ValueAsInt : 0;
+        public int BaseCRI => HasBaseCRI ? _statMaps[StatType.CRI].ValueAsInt : 0;
+        public int BaseDOG => HasBaseDOG ? _statMaps[StatType.DOG].ValueAsInt : 0;
+        public int BaseSPD => HasBaseSPD ? _statMaps[StatType.SPD].ValueAsInt : 0;
+
+        public bool HasBaseHP => _statMaps.ContainsKey(StatType.HP) && _statMaps[StatType.HP].HasValue;
+        public bool HasBaseATK => _statMaps.ContainsKey(StatType.ATK) && _statMaps[StatType.ATK].HasValue;
+        public bool HasBaseDEF => _statMaps.ContainsKey(StatType.DEF) && _statMaps[StatType.DEF].HasValue;
+        public bool HasBaseCRI => _statMaps.ContainsKey(StatType.CRI) && _statMaps[StatType.CRI].HasValue;
+        public bool HasBaseDOG => _statMaps.ContainsKey(StatType.DOG) && _statMaps[StatType.DOG].HasValue;
+        public bool HasBaseSPD => _statMaps.ContainsKey(StatType.SPD) && _statMaps[StatType.SPD].HasValue;
 
         public int AdditionalHP => HasAdditionalHP ? _statMaps[StatType.HP].AdditionalValueAsInt : 0;
         public int AdditionalATK => HasAdditionalATK ? _statMaps[StatType.ATK].AdditionalValueAsInt : 0;
@@ -66,10 +80,6 @@ namespace Nekoyume.Game
 
         private readonly Dictionary<StatType, StatMapEx> _statMaps =
             new Dictionary<StatType, StatMapEx>(StatTypeComparer.Instance);
-
-        public StatsMap()
-        {
-        }
 
         protected bool Equals(StatsMap other)
         {
@@ -176,6 +186,27 @@ namespace Nekoyume.Game
             }
         }
 
+        public int GetStat(StatType statType, bool ignoreAdditional = false)
+        {
+            switch (statType)
+            {
+                case StatType.HP:
+                    return ignoreAdditional ? BaseHP : HP;
+                case StatType.ATK:
+                    return ignoreAdditional ? BaseATK : ATK;
+                case StatType.DEF:
+                    return ignoreAdditional ? BaseDEF : DEF;
+                case StatType.CRI:
+                    return ignoreAdditional ? BaseCRI : CRI;
+                case StatType.DOG:
+                    return ignoreAdditional ? BaseDOG : DOG;
+                case StatType.SPD:
+                    return ignoreAdditional ? BaseSPD : SPD;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+            }
+        }
+
         public IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false)
         {
             if (ignoreZero)
@@ -201,6 +232,34 @@ namespace Nekoyume.Game
                 yield return (StatType.CRI, CRI);
                 yield return (StatType.DOG, DOG);
                 yield return (StatType.SPD, SPD);
+            }
+        }
+
+        public IEnumerable<(StatType statType, int baseValue)> GetBaseStats(bool ignoreZero = false)
+        {
+            if (ignoreZero)
+            {
+                if (HasBaseHP)
+                    yield return (StatType.HP, BaseHP);
+                if (HasBaseATK)
+                    yield return (StatType.ATK, BaseATK);
+                if (HasBaseDEF)
+                    yield return (StatType.DEF, BaseDEF);
+                if (HasBaseCRI)
+                    yield return (StatType.CRI, BaseCRI);
+                if (HasBaseDOG)
+                    yield return (StatType.DOG, BaseDOG);
+                if (HasBaseSPD)
+                    yield return (StatType.SPD, BaseSPD);
+            }
+            else
+            {
+                yield return (StatType.HP, BaseHP);
+                yield return (StatType.ATK, BaseATK);
+                yield return (StatType.DEF, BaseDEF);
+                yield return (StatType.CRI, BaseCRI);
+                yield return (StatType.DOG, BaseDOG);
+                yield return (StatType.SPD, BaseSPD);
             }
         }
 
@@ -232,39 +291,32 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(bool ignoreZero = false)
+        public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(
+            bool ignoreZero = false)
         {
-            var hp = _statMaps[StatType.HP];
-            var atk = _statMaps[StatType.ATK];
-            var def = _statMaps[StatType.DEF];
-            var cri = _statMaps[StatType.CRI];
-            var dog = _statMaps[StatType.DOG];
-            var spd = _statMaps[StatType.SPD];
-
             if (ignoreZero)
             {
-                if (hp.HasValue && hp.HasAdditionalValue)
-                    yield return (StatType.HP, hp.ValueAsInt, hp.AdditionalValueAsInt);
-                if (atk.HasValue && atk.HasAdditionalValue)
-                    yield return (StatType.ATK, atk.ValueAsInt, atk.AdditionalValueAsInt);
-                if (def.HasValue && def.HasAdditionalValue)
-                    yield return (StatType.DEF, def.ValueAsInt, def.AdditionalValueAsInt);
-                if (cri.HasValue && cri.HasAdditionalValue)
-                    yield return (StatType.CRI, cri.ValueAsInt, cri.AdditionalValueAsInt);
-                if (dog.HasValue && dog.HasAdditionalValue)
-                    yield return (StatType.DOG, dog.ValueAsInt, dog.AdditionalValueAsInt);
-                if (spd.HasValue && spd.HasAdditionalValue)
-                    yield return (StatType.SPD, spd.ValueAsInt, spd.AdditionalValueAsInt);
-
+                if (HasBaseHP || HasAdditionalHP)
+                    yield return (StatType.HP, BaseHP, AdditionalHP);
+                if (HasBaseATK || HasAdditionalATK)
+                    yield return (StatType.ATK, BaseATK, AdditionalATK);
+                if (HasBaseDEF || HasAdditionalDEF)
+                    yield return (StatType.DEF, BaseDEF, AdditionalDEF);
+                if (HasBaseCRI || HasAdditionalCRI)
+                    yield return (StatType.CRI, BaseCRI, AdditionalCRI);
+                if (HasBaseDOG || HasAdditionalDOG)
+                    yield return (StatType.DOG, BaseDOG, AdditionalDOG);
+                if (HasBaseSPD || HasAdditionalSPD)
+                    yield return (StatType.SPD, BaseSPD, AdditionalSPD);
             }
             else
             {
-                yield return (StatType.HP, hp.ValueAsInt, hp.AdditionalValueAsInt);
-                yield return (StatType.ATK, atk.ValueAsInt, atk.AdditionalValueAsInt);
-                yield return (StatType.DEF, def.ValueAsInt, def.AdditionalValueAsInt);
-                yield return (StatType.CRI, cri.ValueAsInt, cri.AdditionalValueAsInt);
-                yield return (StatType.DOG, dog.ValueAsInt, dog.AdditionalValueAsInt);
-                yield return (StatType.SPD, spd.ValueAsInt, spd.AdditionalValueAsInt);
+                yield return (StatType.HP, BaseHP, AdditionalHP);
+                yield return (StatType.ATK, BaseATK, AdditionalATK);
+                yield return (StatType.DEF, BaseDEF, AdditionalDEF);
+                yield return (StatType.CRI, BaseCRI, AdditionalCRI);
+                yield return (StatType.DOG, BaseDOG, AdditionalDOG);
+                yield return (StatType.SPD, BaseSPD, AdditionalSPD);
             }
         }
 
@@ -302,48 +354,6 @@ namespace Nekoyume.Game
                 yield return _statMaps[StatType.DOG];
             if (HasAdditionalSPD)
                 yield return _statMaps[StatType.SPD];
-        }
-
-        public int GetStatValue(StatType statType, bool ignoreAdditional = false)
-        {
-            switch (statType)
-            {
-                case StatType.HP:
-                    return ignoreAdditional ? HP - AdditionalHP : HP;
-                case StatType.ATK:
-                    return ignoreAdditional ? ATK - AdditionalATK : ATK;
-                case StatType.DEF:
-                    return ignoreAdditional ? DEF - AdditionalDEF : DEF;
-                case StatType.CRI:
-                    return ignoreAdditional ? CRI - AdditionalCRI : CRI;
-                case StatType.DOG:
-                    return ignoreAdditional ? DOG - AdditionalDOG : DOG;
-                case StatType.SPD:
-                    return ignoreAdditional ? SPD - AdditionalSPD : SPD;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
-            }
-        }
-
-        public int GetAdditionalStatValue(StatType statType)
-        {
-            switch (statType)
-            {
-                case StatType.HP:
-                    return AdditionalHP;
-                case StatType.ATK:
-                    return AdditionalATK;
-                case StatType.DEF:
-                    return AdditionalDEF;
-                case StatType.CRI:
-                    return AdditionalCRI;
-                case StatType.DOG:
-                    return AdditionalDOG;
-                case StatType.SPD:
-                    return AdditionalSPD;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
-            }
         }
 
         public void ClearAdditionalStats()
