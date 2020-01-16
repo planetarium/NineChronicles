@@ -115,6 +115,11 @@ namespace Nekoyume.BlockChain
 
         public bool disposed;
 
+        static Agent()
+        {
+            Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
+        }
+
         private void Awake()
         {
             ForceDotNet.Force();
@@ -183,8 +188,6 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
-
-            Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
 
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
