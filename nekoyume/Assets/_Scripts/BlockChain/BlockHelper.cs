@@ -35,7 +35,7 @@ namespace Nekoyume.BlockChain
             Block<PolymorphicAction<ActionBase>> block,
             string path)
         {
-            byte[] encoded = block.Serialize(true, true);
+            byte[] encoded = block.Serialize();
             File.WriteAllBytes(path, encoded);
         }
 

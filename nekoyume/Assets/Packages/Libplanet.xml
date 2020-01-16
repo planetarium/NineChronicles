@@ -1676,7 +1676,7 @@
             <param name="bytes">A <a href="https://bencodex.org/">Bencodex</a>
             representation of a <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
             <returns>A decoded <see cref="T:Libplanet.Blocks.Block`1"/> object.</returns>
-            <seealso cref="M:Libplanet.Blocks.Block`1.Serialize(System.Boolean,System.Boolean)"/>
+            <seealso cref="M:Libplanet.Blocks.Block`1.Serialize"/>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter)">
             <summary>
@@ -1744,6 +1744,12 @@
             any <see cref="T:Libplanet.Action.IAction"/> of <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> tries
             to update the states of <see cref="T:Libplanet.Address"/>es not included
             in <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/>.</exception>
+        </member>
+        <member name="T:Libplanet.Blocks.BlockDigest">
+            <summary>
+            Class that store uses to save blocks. This contains:
+            <see cref="T:Libplanet.Blocks.BlockHeader"/>, and list of <see cref="T:Libplanet.Tx.TxId"/>s.
+            </summary>
         </member>
         <member name="T:Libplanet.Blocks.InvalidGenesisBlockException">
             <summary>
@@ -3161,7 +3167,7 @@
             <returns>A <see cref="T:System.Threading.Tasks.Task"/> completed when <see cref="P:Libplanet.Net.NetMQTransport.Running"/>
             property becomes <c>true</c>.</returns>
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)">
+        <member name="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)">
             <summary>
             Starts to periodically synchronize the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/>.
             </summary>
@@ -3170,12 +3176,7 @@
             </param>
             <param name="broadcastTxInterval">The time period of exchange of staged transactions.
             </param>
-            <param name="preloadBlockDownloadFailed">
-            The <see cref="T:System.EventHandler" /> triggered when
-            <see cref="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)" />
-            fails to download blocks.
-            </param>
-            /// <param name="cancellationToken">
+            <param name="cancellationToken">
             A cancellation token used to propagate notification that this
             operation should be canceled.
             </param>
@@ -3236,11 +3237,6 @@
             A task without value.
             You only can <c>await</c> until the method is completed.
             </returns>
-            <remarks>This does not render downloaded <see cref="T:Libplanet.Action.IAction"/>s, but fills states only.
-            If you want to render all <see cref="T:Libplanet.Action.IAction"/>s from the genesis block to the recent
-            blocks use
-            <see cref="M:Libplanet.Net.Swarm`1.StartAsync(System.TimeSpan,System.TimeSpan,System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)"/>
-            method instead.</remarks>
             <exception cref="T:System.AggregateException">Thrown when the given the block downloading is
             failed and if <paramref name="blockDownloadFailed "/> is <c>null</c>.</exception>
         </member>

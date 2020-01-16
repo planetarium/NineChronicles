@@ -641,9 +641,7 @@ namespace Nekoyume.BlockChain
             {
                 try
                 {
-                    await _swarm.StartAsync(
-                        millisecondsBroadcastTxInterval: 15000,
-                        preloadBlockDownloadFailed: PreloadBLockDownloadFailed);
+                    await _swarm.StartAsync(millisecondsBroadcastTxInterval: 15000);
                 }
                 catch (TaskCanceledException)
                 {
