@@ -90,6 +90,8 @@ namespace Nekoyume.BlockChain
         private string _tipInfo = string.Empty;
         private CommandLineOptions _options;
 
+        private Queue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)> lastTenBlocks;
+
         public long BlockIndex => blocks?.Tip?.Index ?? 0;
 
         public IEnumerable<Transaction<PolymorphicAction<ActionBase>>> StagedTransactions =>
@@ -187,6 +189,7 @@ namespace Nekoyume.BlockChain
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
+            lastTenBlocks = new Queue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)>();
 
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 blocks,
@@ -532,20 +535,30 @@ namespace Nekoyume.BlockChain
             {
                 Cheat.Display("Logs", _tipInfo);
                 Cheat.Display("Peers", _swarm?.TraceTable());
-                var log = $"Staged Transactions : {store.IterateStagedTransactionIds().Count()}\n";
+                StringBuilder log = new StringBuilder($"Staged Transactions : {store.IterateStagedTransactionIds().Count()}\n");
                 var count = 1;
                 foreach (var id in store.IterateStagedTransactionIds())
                 {
                     var tx = store.GetTransaction<PolymorphicAction<ActionBase>>(id);
-                    log += $"[{count++}] Id : {tx.Id}\n";
-                    log += $"-Signer : {tx.Signer.ToString()}\n";
-                    log += $"-Nonce : {tx.Nonce}\n";
-                    log += $"-Timestamp : {tx.Timestamp}\n";
-                    log += $"-Actions\n";
-                    log = tx.Actions.Aggregate(log, (current, action) => current + $" -{action.InnerAction}\n");
+                    log.Append($"[{count++}] Id : {tx.Id}\n");
+                    log.Append($"-Signer : {tx.Signer.ToString()}\n");
+                    log.Append($"-Nonce : {tx.Nonce}\n");
+                    log.Append($"-Timestamp : {tx.Timestamp}\n");
+                    log.Append($"-Actions\n");
+                    log = tx.Actions.Aggregate(log, (current, action) => current.Append($" -{action.InnerAction}\n"));
                 }
 
-                Cheat.Display("StagedTxs", log);
+                Cheat.Display("StagedTxs", log.ToString());
+                
+                log = new StringBuilder($"Last 10 blocks :\n");
+                foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
+                {
+                    log.Append($"[{block.Index}] {block.Hash}\n");
+                    log.Append($" -Miner : {blocks.Tip.Miner?.ToString()}\n");
+                    log.Append($" -Created at : {block.Timestamp}\n");
+                    log.Append($" -Appended at : {appendedTime}\n");
+                }
+                Cheat.Display("Blocks", log.ToString());
                 yield return new WaitForSeconds(0.1f);
             }
         }
@@ -688,6 +701,11 @@ namespace Nekoyume.BlockChain
             _tipInfo += $" -TimeStamp  : {DateTimeOffset.Now}\n";
             _tipInfo += $" -PrevBlock    : [{args.PreviousIndex}] {args.PreviousHash}\n";
             _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash}";
+            while (lastTenBlocks.Count >= 10)
+            {
+                lastTenBlocks.Dequeue();
+            }
+            lastTenBlocks.Enqueue((blocks.Tip, DateTimeOffset.UtcNow));
             TipChanged?.Invoke(null, args.Index);
         }
 

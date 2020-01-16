@@ -29,6 +29,7 @@ namespace Nekoyume
         public TextMeshProUGUI Logs;
         public Transform Peers;
         public Transform StagedTxs;
+        public Transform Blocks;
         public Button BtnOpen;
         public Button buttonBase;
         public ScrollRect list;
@@ -96,6 +97,9 @@ namespace Nekoyume
                 case "StagedTxs":
                     Instance.StagedTxs.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text;
                     Instance.Refresh(Instance.StagedTxs);
+                    break;
+                case nameof(Blocks):
+                    Instance.Blocks.Find("TextRect/InputField").GetComponent<InputField>().text = text;
                     break;
                 case nameof(OnChainTableSheet):
                     Instance.OnChainTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text = text;
@@ -212,6 +216,10 @@ namespace Nekoyume
                 .GetComponent<Scrollbar>()
                 .onValueChanged
                 .AddListener((location) => ScrollBarHandler(StagedTxs, location));
+            Blocks.Find("Scrollbar")
+                .GetComponent<Scrollbar>()
+                .onValueChanged
+                .AddListener((location) => ScrollBarHandler(Blocks, location));
             OnChainTableSheet.Find("Scrollbar")
                 .GetComponent<Scrollbar>()
                 .onValueChanged
