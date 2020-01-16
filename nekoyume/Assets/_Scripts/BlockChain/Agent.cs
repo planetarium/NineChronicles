@@ -33,6 +33,7 @@ using NetMQ;
 using Serilog;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace Nekoyume.BlockChain
 {
@@ -149,12 +150,40 @@ namespace Nekoyume.BlockChain
         {
             InitializeLogger(consoleSink, development);
 
-            Debug.Log(path);
+#if UNITY_EDITOR
+            // 변경사항을 바로 적용하기 위해 새로운 제네시스 블럭을 만듭니다.
+            var newGenesisBlock = BlockHelper.MineGenesisBlock();
+            var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathDev);
+
+            var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
+            if (BlockHelper.CompareGenesisBlocks(genesisBlock, newGenesisBlock))
+            {
+                Debug.Log("The genesis block was changed.");
+                BlockHelper.ExportBlock(newGenesisBlock, genesisBlockPath);
+                BlockHelper.DeleteAllEditor();  // 변경사항이 생기면 자동 체인 초기화.
+                genesisBlock = newGenesisBlock;
+            }
+#else
+            var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathProd);
+            var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
+#endif
+            Debug.Log($"Store Path: {path}");
+            Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
+
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
             store = new DefaultStore(path, flush: false);
-            blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store);
+
+            try
+            {
+                blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store, genesisBlock);
+            }
+            catch (InvalidGenesisBlockException e)
+            {
+                Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
+            }
+
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
@@ -250,6 +279,10 @@ namespace Nekoyume.BlockChain
             };
             PreloadEnded += (_, __) =>
             {
+                Assert.IsNotNull(GetState(RankingState.Address));
+                Assert.IsNotNull(GetState(ShopState.Address));
+                Assert.IsNotNull(GetState(TableSheetsState.Address));
+
                 // 랭킹의 상태를 한 번 동기화 한다.
                 States.Instance.SetRankingState(
                     GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
@@ -608,9 +641,7 @@ namespace Nekoyume.BlockChain
             {
                 try
                 {
-                    await _swarm.StartAsync(
-                        millisecondsBroadcastTxInterval: 15000,
-                        preloadBlockDownloadFailed: PreloadBLockDownloadFailed);
+                    await _swarm.StartAsync(millisecondsBroadcastTxInterval: 15000);
                 }
                 catch (TaskCanceledException)
                 {

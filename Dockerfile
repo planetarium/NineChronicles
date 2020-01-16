@@ -25,7 +25,7 @@ RUN /scripts/build.sh
 FROM bitnami/minideb:stretch
 
 RUN apt update && \
-  apt install -y ca-certificates
+  apt install -y ca-certificates wget
 
 COPY --from=build /src/Build/LinuxHeadless /app
 COPY --from=build /scripts/entrypoint.sh /entrypoint.sh
@@ -33,6 +33,6 @@ VOLUME /data
 
 ARG prior_dlls="prior_dlls"
 
-ENV PRIOR_DLLS ${PRIOR_DLLS}
+ENV PRIOR_DLLS=$prior_dlls
 
 ENTRYPOINT ["/entrypoint.sh", "--storage-path=/data/planetarium"]
