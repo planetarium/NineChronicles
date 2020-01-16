@@ -1,5 +1,4 @@
 using System;
-using Spine.Unity;
 using UnityEngine;
 
 namespace Nekoyume.Game.Character
