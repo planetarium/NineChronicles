@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.State;
@@ -22,6 +23,8 @@ namespace Nekoyume.Action
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
                 states = states.SetState(TableSheetsState.Address, MarkChanged);
+                states = WeeklyArenaState.Addresses.Aggregate(states,
+                    (current, address) => current.SetState(address, MarkChanged));
                 return states;
             }
 
@@ -30,6 +33,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            states = WeeklyArenaState.Addresses.Aggregate(states,
+                (current, address) => current.SetState(address, new WeeklyArenaState(address).Serialize()));
             states = states
                 .SetState(RankingState.Address, RankingState.Serialize())
                 .SetState(ShopState.Address, ShopState.Serialize())

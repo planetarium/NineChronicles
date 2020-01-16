@@ -146,7 +146,7 @@ namespace Nekoyume.UI
         private void OnClickRankingInfo(RankingInfo info)
         {
 //            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarInfo.AvatarAddress));
-            ActionManager.instance.RankingBattle(info.AvatarInfo.AvatarAddress);
+            ActionManager.RankingBattle(info.AvatarInfo.AvatarAddress);
             Find<LoadingScreen>().Show();
             Find<RankingBattleLoadingScreen>().Show(info.AvatarInfo);
         }

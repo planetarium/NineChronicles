@@ -107,5 +107,30 @@ namespace Nekoyume.Action
             avatarState = states.GetAvatarState(avatarAddress);
             return !(avatarState is null);
         }
+
+        public static WeeklyArenaState GetWeeklyArenaState(this IAccountStateDelta states, Address address)
+        {
+            var serialized = states.GetState(address);
+            if (serialized is null)
+            {
+                Debug.LogWarningFormat("No weekly arena state ({0})", address.ToHex());
+                return null;
+            }
+
+            try
+            {
+                return new WeeklyArenaState((Bencodex.Types.Dictionary) serialized);
+            }
+            catch (InvalidCastException e)
+            {
+                Debug.LogErrorFormat(
+                    "Invalid weekly arena state ({0}): {1}",
+                    address.ToHex(),
+                    serialized
+                );
+                Debug.LogException(e);
+                return null;
+            }
+        }
     }
 }
