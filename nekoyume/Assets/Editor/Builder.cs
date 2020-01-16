@@ -184,6 +184,7 @@ namespace Editor
         {
             var libname = "";
             var destLibPath = pathToBuiltProject;
+            var binaryName = Path.GetFileNameWithoutExtension(pathToBuiltProject);
             switch (target)
             {
                 case BuildTarget.StandaloneOSX:
@@ -192,11 +193,11 @@ namespace Editor
                     break;
                 case BuildTarget.StandaloneWindows64:
                     libname = "secp256k1.dll";
-                    destLibPath = Path.Combine(Path.GetDirectoryName(destLibPath), "Nine Chronicles_Data/Managed", libname);
+                    destLibPath = Path.Combine(Path.GetDirectoryName(destLibPath), $"{binaryName}_Data/Managed", libname);
                     break;
                 default:
                     libname = "libsecp256k1.so";
-                    destLibPath = Path.Combine(Path.GetDirectoryName(destLibPath), "Nine Chronicles_Data/Managed", libname);
+                    destLibPath = Path.Combine(Path.GetDirectoryName(destLibPath), $"{binaryName}_Data/Managed", libname);
                     break;
             }
 
