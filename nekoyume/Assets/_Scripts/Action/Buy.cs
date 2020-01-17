@@ -200,6 +200,17 @@ namespace Nekoyume.Action
             sellerAvatarState.updatedAt = timestamp;
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
+            var buyerCompletedQuests = buyerAvatarState.questList.Where(quest => quest.Complete && !quest.Receive);
+            foreach (var quest in buyerCompletedQuests)
+            {
+                buyerAvatarState.UpdateFromQuestReward(quest, ctx);
+            }
+            var sellerCompletedQuests = sellerAvatarState.questList.Where(quest => quest.Complete && !quest.Receive);
+            foreach (var quest in sellerCompletedQuests)
+            {
+                sellerAvatarState.UpdateFromQuestReward(quest, ctx);
+            }
+
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();
             UnityEngine.Debug.Log($"Buy Set Seller AvatarState: {sw.Elapsed}");
