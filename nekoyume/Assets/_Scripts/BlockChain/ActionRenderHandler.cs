@@ -220,6 +220,7 @@ namespace Nekoyume.BlockChain
             {
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
             }
+            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemUsable.ItemId);
                 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -262,6 +263,7 @@ namespace Nekoyume.BlockChain
                 var itemId = eval.Action.buyerResult.itemUsable.ItemId;
 
                 LocalStateModifier.ModifyGold(buyerAgentAddress, price);
+                LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
                 LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, itemId);
 
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
@@ -272,7 +274,9 @@ namespace Nekoyume.BlockChain
                 var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
                 var sellerAgentAddress = eval.Action.sellerAgentAddress;
                 var itemId = eval.Action.sellerResult.itemUsable.ItemId;
+                var gold = eval.Action.sellerResult.gold;
 
+                LocalStateModifier.ModifyGold(sellerAgentAddress, -gold);
                 LocalStateModifier.AddNewAttachmentMail(sellerAvatarAddress, itemId);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var buyerName =
@@ -329,6 +333,7 @@ namespace Nekoyume.BlockChain
             {
                 LocalStateModifier.AddItem(avatarAddress, itemId);
             }
+            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemUsable.ItemId);
 
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
