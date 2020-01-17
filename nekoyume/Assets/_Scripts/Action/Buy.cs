@@ -16,7 +16,6 @@ namespace Nekoyume.Action
     [ActionType("buy")]
     public class Buy : GameAction
     {
-        public Address buyerAgentAddress;
         public Address buyerAvatarAddress;
         public Address sellerAgentAddress;
         public Address sellerAvatarAddress;
@@ -158,9 +157,6 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            // 구매자의 돈을 감소시킨다.
-            buyerAgentState.gold -= outPair.Value.Price;
-
             // 구매자, 판매자에게 결과 메일 전송
             buyerResult = new BuyerResult
             {
@@ -171,8 +167,6 @@ namespace Nekoyume.Action
             {
                 New = false
             };
-            buyerAvatarState.Update(buyerMail);
-            buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);
 
             sellerResult = new SellerResult
             {
@@ -184,10 +178,15 @@ namespace Nekoyume.Action
             {
                 New = false
             };
-            sellerAvatarState.Update(sellerMail);
 
+            // 구매자의 돈을 감소시킨다.
+            buyerAgentState.gold -= outPair.Value.Price;
             // 판매자의 돈을 증가시킨다.
             sellerAgentState.gold += sellerResult.gold;
+
+            buyerAvatarState.Update(buyerMail);
+            buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);
+            sellerAvatarState.Update(sellerMail);
 
             // 퀘스트 업데이트
             buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, outPair.Value.Price);

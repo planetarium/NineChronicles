@@ -163,7 +163,6 @@ namespace Nekoyume.BlockChain
         {
             var action = new Buy
             {
-                buyerAgentAddress = States.Instance.AgentState.address,
                 buyerAvatarAddress = States.Instance.CurrentAvatarState.address,
                 sellerAgentAddress = sellerAgentAddress,
                 sellerAvatarAddress = sellerAvatarAddress,

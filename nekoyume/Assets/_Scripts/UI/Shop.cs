@@ -433,7 +433,7 @@ namespace Nekoyume.UI
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
-            var buyerAgentAddress = States.Instance.CurrentAvatarState.agentAddress;
+            var buyerAgentAddress = States.Instance.AgentState.address;
             var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 

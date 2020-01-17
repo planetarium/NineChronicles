@@ -258,7 +258,7 @@ namespace Nekoyume.BlockChain
 
             if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
             {
-                var buyerAgentAddress = eval.Action.buyerAgentAddress;
+                var buyerAgentAddress = States.Instance.AgentState.address;
                 var itemId = eval.Action.buyerResult.itemUsable.ItemId;
 
                 LocalStateModifier.ModifyGold(buyerAgentAddress, price);
