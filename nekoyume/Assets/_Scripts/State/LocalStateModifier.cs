@@ -108,7 +108,13 @@ namespace Nekoyume.State
 
         private static void AddItemInternal(Address avatarAddress)
         {
-            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
+            if (!TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState))
+                return;
+
+            if (!isCurrentAvatarState)
+                return;
+
+            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
         }
 
         #endregion
@@ -202,7 +208,14 @@ namespace Nekoyume.State
         {
             var modifier = new AvatarNewAttachmentMailSetter(guid);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
-            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
+
+            if (!TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState))
+                return;
+
+            if (!isCurrentAvatarState)
+                return;
+
+            ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
         }
 
         #endregion
@@ -248,7 +261,6 @@ namespace Nekoyume.State
         /// <summary>
         /// `States.AddOrReplaceAvatarState(address, key, initializeReactiveState)`함수를 사용해서
         /// 이미 로드되어 있는 아바타 상태를 새로 할당한다.
-        /// 따라서 이 함수를 사용한 후에 `ReactiveAvatarState`를 추가로 갱신할 필요가 없다.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="outAvatarState"></param>
@@ -259,7 +271,7 @@ namespace Nekoyume.State
             if (!TryGetLoadedAvatarState(avatarAddress, out outAvatarState, out var outKey, out isCurrentAvatarState))
                 return false;
 
-            outAvatarState = States.Instance.AddOrReplaceAvatarState(avatarAddress, outKey, isCurrentAvatarState);
+            States.Instance.AddOrReplaceAvatarState(avatarAddress, outKey, !isCurrentAvatarState);
             return true;
         }
     }

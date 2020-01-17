@@ -61,8 +61,7 @@ namespace Nekoyume.State
             {
                 // _avatarModifierInfos에는 있지만, 에이전트에는 없는 것 삭제하기.
                 foreach (var info in _avatarModifierInfos
-                    .Where(info => !agentState.avatarAddresses.Values.Any(avatarAddress => avatarAddress.Equals(info.Address)))
-                    .ToList())
+                    .Where(info => !agentState.avatarAddresses.Values.Any(avatarAddress => avatarAddress.Equals(info.Address))))
                 {
                     _avatarModifierInfos.Remove(info);
                 }
