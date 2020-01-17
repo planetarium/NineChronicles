@@ -196,6 +196,7 @@ namespace Nekoyume.UI
 
         public void Read(BuyerMail buyerMail)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (Buy.BuyerResult) buyerMail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
@@ -204,18 +205,21 @@ namespace Nekoyume.UI
                 isSuccess = true,
                 materialItems = new List<CombinationMaterial>()
             };
+            model.OnClickSubmit.Subscribe(_ =>
+            {
+                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
+            }).AddTo(gameObject);
             popup.Pop(model);
-
-            AddItem(item, false);
         }
 
         public void Read(SellerMail sellerMail)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (Buy.SellerResult) sellerMail.attachment;
 
             //TODO 관련 기획이 끝나면 별도 UI를 생성
-            
-            AddGold(attachment.gold);
+
+            LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, attachment.itemUsable.ItemId);
         }
 
         public void Read(ItemEnhanceMail itemEnhanceMail)

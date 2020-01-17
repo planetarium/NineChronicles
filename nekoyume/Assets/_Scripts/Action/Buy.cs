@@ -151,14 +151,18 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var taxedPrice = decimal.Round(outPair.Value.Price * 0.92m);
+
+            // 구매자의 돈을 감소시킨다.
+            buyerAgentState.gold -= outPair.Value.Price;
+            // 판매자의 돈을 증가시킨다.
+            sellerAgentState.gold += taxedPrice;
+
             // 상점에서 구매할 아이템을 제거한다.
             if (!shopState.Unregister(sellerAgentAddress, outPair.Value))
             {
                 return states;
             }
-
-            // 구매자의 돈을 감소 시킨다.
-            buyerAgentState.gold -= outPair.Value.Price;
 
             // 구매자, 판매자에게 결과 메일 전송
             buyerResult = new BuyerResult
@@ -166,16 +170,24 @@ namespace Nekoyume.Action
                 shopItem = outPair.Value,
                 itemUsable = outPair.Value.ItemUsable
             };
-            var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex);
-            buyerAvatarState.Update(buyerMail);
+            var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex)
+            {
+                New = false
+            };
 
             sellerResult = new SellerResult
             {
                 shopItem = outPair.Value,
                 itemUsable = outPair.Value.ItemUsable,
-                gold = decimal.Round(outPair.Value.Price * 0.92m)
+                gold = taxedPrice
             };
-            var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex);
+            var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex)
+            {
+                New = false
+            };
+
+            buyerAvatarState.Update(buyerMail);
+            buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);
             sellerAvatarState.Update(sellerMail);
 
             // 퀘스트 업데이트
