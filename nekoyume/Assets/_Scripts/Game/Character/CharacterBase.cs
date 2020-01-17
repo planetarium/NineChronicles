@@ -86,8 +86,6 @@ namespace Nekoyume.Game.Character
 
         public IEnumerator action;
 
-        private int _prevTurn;
-
         #region Mono
 
         private void OnApplicationQuit()
@@ -298,7 +296,7 @@ namespace Nekoyume.Game.Character
 
         #region Run
 
-        private void InitBT()
+        internal void InitBT()
         {
             _root = new Root();
             _root.OpenBranch(

@@ -12,5 +12,11 @@ namespace Nekoyume.Game.Character
             battle.enemyPlayerStatus.SetHp(CurrentHP, HP);
             battle.enemyPlayerStatus.SetBuff(CharacterModel.Buffs);
         }
+
+        public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
+        {
+            base.Set(model, updateCurrentHP);
+            InitBT();
+        }
     }
 }

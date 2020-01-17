@@ -380,6 +380,9 @@ namespace Nekoyume.Game
 
         private IEnumerator CoRankingBattleEnd(BattleLog log)
         {
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
+            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
+
             Boss = null;
             var playerCharacter = log.result == BattleLog.Result.Win
                 ? GetPlayer()
