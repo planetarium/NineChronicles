@@ -65,6 +65,7 @@ namespace Nekoyume.BlockChain
                 RankingState = new RankingState(),
                 ShopState = new ShopState(),
                 TableSheetsState = new TableSheetsState(tableSheets),
+                WeeklyArenaAddresses = WeeklyArenaState.Addresses,
             };
             var actions = new PolymorphicAction<ActionBase>[]
             {
