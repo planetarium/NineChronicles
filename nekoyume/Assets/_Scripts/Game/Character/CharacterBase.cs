@@ -72,7 +72,7 @@ namespace Nekoyume.Game.Character
         private ProgressBar CastingBar { get; set; }
         protected SpeechBubble SpeechBubble { get; set; }
 
-        public ICharacterAnimator Animator { get; protected set; }
+        public CharacterAnimator Animator { get; protected set; }
         protected Vector3 HUDOffset => Animator.GetHUDPosition();
         public bool AttackEndCalled { get; private set; }
 

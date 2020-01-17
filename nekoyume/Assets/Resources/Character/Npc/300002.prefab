@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 1378734267161096976}
   - component: {fileID: 3471749723470681726}
   - component: {fileID: 4241037091364689851}
-  - component: {fileID: 9181872557351935428}
   - component: {fileID: 3300937179716837617}
+  - component: {fileID: -8713652210562661060}
   m_Layer: 8
   m_Name: 300002
   m_TagString: Untagged
@@ -113,7 +113,7 @@ MonoBehaviour:
     materialsInsideMask: []
     materialsOutsideMask: []
   disableRenderingOnOverride: 1
-  _animationName: Idle
+  _animationName: Idle_01
   loop: 1
   timeScale: 1
 --- !u!95 &4241037091364689851
@@ -126,7 +126,7 @@ Animator:
   m_GameObject: {fileID: 7450033686277532010}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 21ad0e93f82d940989ca46e7a61db8ac, type: 2}
+  m_Controller: {fileID: 9100000, guid: 8e21a119b97524e9790c0860074266b7, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -135,51 +135,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &9181872557351935428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7450033686277532010}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ea4943521264f4fb16186014e900c1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  statesAndAnimations:
-  - stateName: Appear
-    animation: {fileID: 11400000, guid: e7a34d165d9b646489ca470468c49032, type: 2}
-  - stateName: Standing
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: StandingToIdle
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: Idle
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: Touch
-    animation: {fileID: 11400000, guid: 5fe1ca5d7be82d745aa438f80d6c842f, type: 2}
-  - stateName: Run
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: Attack
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: Casting
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: CastingAttack
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: CriticalAttack
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: Hit
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: Die
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: Win
-    animation: {fileID: 11400000, guid: bacedc93e47aa764c8fc89460eaf582b, type: 2}
-  - stateName: Disappear
-    animation: {fileID: 11400000, guid: 2b035237dd5fed14d8db9e33fb1df922, type: 2}
-  - stateName: Greeting
-    animation: {fileID: 11400000, guid: 0df885dfcead2cc4491c64dcaa1716a2, type: 2}
-  - stateName: Emotion
-    animation: {fileID: 11400000, guid: 7e8cd49ff449b05478c036544ef48f80, type: 2}
 --- !u!65 &3300937179716837617
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -193,3 +148,28 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 2.737256, y: 4.6463985, z: 0}
   m_Center: {x: 0.20940387, y: 2.0761979, z: 0}
+--- !u!114 &-8713652210562661060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7450033686277532010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45c9f9f6fb9a40edbb3b19220df6a86d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statesAndAnimations:
+  - stateName: Appear_01
+    animation: {fileID: 11400000, guid: b6316220e29eb485c924c77a64a7c581, type: 2}
+  - stateName: Disappear_01
+    animation: {fileID: 11400000, guid: 308769b97867140a4a6dacf8f7a70b6f, type: 2}
+  - stateName: Emotion_01
+    animation: {fileID: 11400000, guid: 7e8cd49ff449b05478c036544ef48f80, type: 2}
+  - stateName: Greeting_01
+    animation: {fileID: 11400000, guid: 9f3342732063644b3addb1434c6895ee, type: 2}
+  - stateName: Idle_01
+    animation: {fileID: 11400000, guid: a52e138372faa4382a63d1a8bb2dd0f2, type: 2}
+  - stateName: Touch_01
+    animation: {fileID: 11400000, guid: 5a00c2da638ca4db697e7f62d6eae80c, type: 2}

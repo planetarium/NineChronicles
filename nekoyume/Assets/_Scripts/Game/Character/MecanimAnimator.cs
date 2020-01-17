@@ -9,17 +9,22 @@ namespace Nekoyume.Game.Character
     {
         protected int BaseLayerIndex { get; private set; }
 
-        public CharacterBase Root { get; }
+        public GameObject Root { get; }
         public GameObject Target { get; private set; }
         public Subject<string> OnEvent { get; }
         public float TimeScale { get; set; }
 
         protected Animator Animator { get; private set; }
 
-        public MecanimAnimator(CharacterBase root)
+        public MecanimAnimator(GameObject root)
         {
             Root = root;
             OnEvent = new Subject<string>();
+        }
+        
+        public void Dispose()
+        {
+            OnEvent?.Dispose();
         }
 
         public virtual void ResetTarget(GameObject value)

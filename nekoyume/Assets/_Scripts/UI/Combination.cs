@@ -31,8 +31,8 @@ namespace Nekoyume.UI
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.CombineEquipment);
 
-        private const int NpcId = 300001;
-        private static readonly UnityEngine.Vector3 NpcPosition = new UnityEngine.Vector3(2.28f, -2f);
+        private const int NPCId = 300001;
+        private static readonly UnityEngine.Vector3 NPCPosition = new UnityEngine.Vector3(2.28f, -2f);
 
         private ToggleGroup _toggleGroup;
         public CategoryButton combineEquipmentCategoryButton;
@@ -46,7 +46,7 @@ namespace Nekoyume.UI
         public EnhanceEquipment enhanceEquipment;
         public SpeechBubble speechBubble;
 
-        private Npc _npc;
+        private NPC _npc;
 
         public Recipe recipe;
 
@@ -110,8 +110,8 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NpcId, NpcPosition);
-            _npc = go.GetComponent<Npc>();
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
+            _npc = go.GetComponent<NPC>();
             go.SetActive(true);
 
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
@@ -389,11 +389,11 @@ namespace Nekoyume.UI
             {
                 if (type == CharacterAnimation.Type.Greeting)
                 {
-                    _npc.Greeting();
+                    _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
                 }
                 else
                 {
-                    _npc.Emotion();
+                    _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
                 }
                 speechBubble.SetKey(key);
                 StartCoroutine(speechBubble.CoShowText());

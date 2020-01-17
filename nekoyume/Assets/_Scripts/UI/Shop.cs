@@ -29,12 +29,12 @@ namespace Nekoyume.UI
         }
 
         private const float GoOutTweenX = 800f;
-        private const int NpcId = 300000;
-        private static readonly Vector2 NpcPosition = new Vector2(2.76f, -1.72f);
+        private const int NPCId = 300000;
+        private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
 
         private float _defaultAnchoredPositionXOfBg1;
         private float _defaultAnchoredPositionXOfRight;
-        private Npc _npc;
+        private NPC _npc;
 
         private Sequence _sequenceOfShopItems;
 
@@ -126,8 +126,8 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NpcId, NpcPosition);
-            _npc = go.GetComponent<Npc>();
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
+            _npc = go.GetComponent<NPC>();
             go.SetActive(true);
             _sequenceOfShopItems = null;
 
@@ -500,11 +500,11 @@ namespace Nekoyume.UI
         {
             if (type == CharacterAnimation.Type.Greeting)
             {
-                _npc.Greeting();
+                _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
             }
             else
             {
-                _npc.Emotion();
+                _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
             }
             speechBubble.SetKey(key);
             StartCoroutine(speechBubble.CoShowText());

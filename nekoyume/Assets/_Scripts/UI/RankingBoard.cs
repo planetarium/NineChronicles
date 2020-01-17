@@ -18,8 +18,8 @@ namespace Nekoyume.UI
             Filtered,
             Overall
         }
-        private const int NpcId = 300002;
-        private static readonly Vector3 NpcPosition = new Vector3(1.2f, -1.72f);
+        private const int NPCId = 300002;
+        private static readonly Vector3 NPCPosition = new Vector3(1.2f, -1.72f);
 
         public CategoryButton filteredButton;
         public CategoryButton overallButton;
@@ -28,7 +28,7 @@ namespace Nekoyume.UI
         public SpeechBubble speechBubble;
 
         private State.RankingInfo[] _avatarStates;
-        private Npc _npc;
+        private NPC _npc;
 
         private readonly ReactiveProperty<StateType> _state = new ReactiveProperty<StateType>(StateType.Filtered);
 
@@ -61,7 +61,7 @@ namespace Nekoyume.UI
             base.OnCompleteOfShowAnimation();
 
             _npc.gameObject.SetActive(true);
-            _npc.Appear();
+            _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
@@ -77,8 +77,8 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NpcId, NpcPosition);
-            _npc = go.GetComponent<Npc>();
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
+            _npc = go.GetComponent<NPC>();
             _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
@@ -176,11 +176,11 @@ namespace Nekoyume.UI
             {
                 if (type == CharacterAnimation.Type.Greeting)
                 {
-                    _npc.Greeting();
+                    _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
                 }
                 else
                 {
-                    _npc.Emotion();
+                    _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
                 }
                 speechBubble.SetKey(key);
                 StartCoroutine(speechBubble.CoShowText());

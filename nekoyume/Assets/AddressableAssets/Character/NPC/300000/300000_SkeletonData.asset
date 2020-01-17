@@ -17,11 +17,8 @@ MonoBehaviour:
   scale: 0.01
   skeletonJSON: {fileID: 4900000, guid: cc0c491e730b0dd4197f3ca891b5d9aa, type: 3}
   skeletonDataModifiers: []
-  fromAnimation:
-  - Emotion_01
-  toAnimation:
-  - Greeting
-  duration:
-  - 0
+  fromAnimation: []
+  toAnimation: []
+  duration: []
   defaultMix: 0.2
   controller: {fileID: 9100000, guid: 05e2ef1632bba2846a5b40ccb163e1d7, type: 2}
