@@ -7,7 +7,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
@@ -24,6 +23,7 @@ namespace Nekoyume.Action
         public int worldId;
         public int stageId;
         public Address avatarAddress;
+        public Address WeeklyArenaAddress;
         public BattleLog Result { get; private set; }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -34,6 +34,7 @@ namespace Nekoyume.Action
                 ["worldId"] = (Integer) worldId,
                 ["stageId"] = (Integer) stageId,
                 ["avatarAddress"] = avatarAddress.Serialize(),
+                ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
             }.ToImmutableDictionary();
 
 
@@ -48,6 +49,7 @@ namespace Nekoyume.Action
             worldId = (int) ((Integer) plainValue["worldId"]).Value;
             stageId = (int) ((Integer) plainValue["stageId"]).Value;
             avatarAddress = plainValue["avatarAddress"].ToAddress();
+            WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -57,6 +59,7 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
+                states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
             var sw = new Stopwatch();
@@ -136,8 +139,8 @@ namespace Nekoyume.Action
             sw.Restart();
 
             UnityEngine.Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result} " +
-                      $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
+                                  $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.address}` " +
+                                  $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
             if (simulator.Result == BattleLog.Result.Win)
             {
                 simulator.Player.worldInformation.ClearStage(
@@ -168,19 +171,43 @@ namespace Nekoyume.Action
                 UnityEngine.Debug.Log($"HAS Update RankingState: {sw.Elapsed}");
                 sw.Restart();
 
-                var serilized = ranking.Serialize();
+                var serialized = ranking.Serialize();
 
                 sw.Stop();
                 UnityEngine.Debug.Log($"HAS Serialize RankingState: {sw.Elapsed}");
                 sw.Restart();
-                states = states.SetState(RankingState.Address, serilized);
+                states = states.SetState(RankingState.Address, serialized);
+            }
+            sw.Stop();
+            UnityEngine.Debug.Log($"HAS Set RankingState : {sw.Elapsed}");
+            sw.Restart();
+
+            if (states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
+            {
+                var weekly = new WeeklyArenaState(weeklyDict);
+                if (weekly.ContainsKey(avatarAddress))
+                {
+                    var info = weekly[avatarAddress];
+                    info.Update(avatarState);
+                    weekly.Update(info);
+                }
+                else
+                {
+                    weekly.Set(avatarState);
+                }
+                sw.Stop();
+                UnityEngine.Debug.Log($"HAS Update WeeklyArenaState: {sw.Elapsed}");
+                sw.Restart();
+
+                var weeklySerialized = weekly.Serialize();
+                sw.Stop();
+                UnityEngine.Debug.Log($"HAS Serialize RankingState: {sw.Elapsed}");
+                states = states.SetState(weekly.address, weekly.Serialize());
             }
 
             Result = simulator.Log;
 
-            sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"HAS Set RankingState : {sw.Elapsed}");
             UnityEngine.Debug.Log($"HAS Total Executed Time: {ended - started}");
             return states.SetState(ctx.Signer, agentState.Serialize());
         }

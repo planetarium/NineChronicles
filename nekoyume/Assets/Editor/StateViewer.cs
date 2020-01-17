@@ -3,6 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
+using Nekoyume.State;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
@@ -124,6 +125,12 @@ namespace Editor
             if (!(states.CurrentAvatarState is null))
             {
                 stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);
+            }
+
+            for (var index = 0; index < WeeklyArenaState.Addresses.Count; index++)
+            {
+                var address = WeeklyArenaState.Addresses[index];
+                stateProxy.RegisterAlias($"weekly{index}", address);
             }
         }
     }
