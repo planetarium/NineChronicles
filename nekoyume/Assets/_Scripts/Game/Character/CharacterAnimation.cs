@@ -7,7 +7,9 @@ namespace Nekoyume.Game.Character
     {
         public enum Type
         {
+            // todo: `Appear`와 `Disappear`는 없어질 예정.
             Appear,
+            Disappear,
             Standing,
             StandingToIdle,
             Idle,
@@ -20,7 +22,6 @@ namespace Nekoyume.Game.Character
             Hit,
             Die,
             Win,
-            Disappear,
             Greeting,
             Emotion,
         }

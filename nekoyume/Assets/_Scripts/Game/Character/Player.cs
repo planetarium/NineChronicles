@@ -35,7 +35,7 @@ namespace Nekoyume.Game.Character
         protected override Vector3 DamageTextForce => new Vector3(-0.1f, 0.5f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1.7f, 0f);
 
-        private PlayerSpineController SpineController { get; set; }
+        public PlayerSpineController SpineController { get; private set; }
         public Model.Player Model => (Model.Player) CharacterModel;
 
         #region Mono
@@ -328,21 +328,6 @@ namespace Nekoyume.Game.Character
         {
             ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
-        }
-
-        public void DoFade(float endValue, float sec)
-        {
-            var skeleton = SpineController.SkeletonAnimation.skeleton;
-            DOTween.Sequence()
-                .Append(DOTween.To(
-                    () => skeleton.A,
-                    co => skeleton.A = co, 0, 0f
-                ))
-                .Append(DOTween.To(
-                    () => skeleton.A,
-                    co => skeleton.A = co, endValue, sec
-                ))
-                .Play();
         }
     }
 }

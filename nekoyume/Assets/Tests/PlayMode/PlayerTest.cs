@@ -33,7 +33,7 @@ namespace Tests.PlayMode
             var player = Game.instance.Stage.GetPlayer();
             var skeleton = player.GetComponentInChildren<SpineController>().SkeletonAnimation.skeleton;
             Assert.AreEqual(1f, skeleton.A);
-            player.DoFade(0f, 1f);
+            player.SpineController.Disappear(1f);
             yield return new WaitForSeconds(1f);
             Assert.AreEqual(0f, skeleton.A);
         }

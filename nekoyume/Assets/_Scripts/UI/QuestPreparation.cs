@@ -94,7 +94,7 @@ namespace Nekoyume.UI
             _player.UpdateCustomize();
             _player.gameObject.SetActive(false);
             _player.gameObject.SetActive(true);
-            _player.DoFade(1f, 0.3f); 
+            _player.SpineController.Appear();
 
             foreach (var equipment in _player.Equipments)
             {
@@ -123,13 +123,13 @@ namespace Nekoyume.UI
             _stageId = worldMap.SelectedStageId;
 
             Find<BottomMenu>().Show(
-                    UINavigator.NavigationType.Back,
-                    SubscribeBackButtonClick,
-                    true,
-                    BottomMenu.ToggleableType.Mail,
-                    BottomMenu.ToggleableType.Quest,
-                    BottomMenu.ToggleableType.Chat,
-                    BottomMenu.ToggleableType.IllustratedBook);
+                UINavigator.NavigationType.Back,
+                SubscribeBackButtonClick,
+                true,
+                BottomMenu.ToggleableType.Mail,
+                BottomMenu.ToggleableType.Quest,
+                BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.IllustratedBook);
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
@@ -380,7 +380,7 @@ namespace Nekoyume.UI
 
                     var (statType, baseValue, additionalValue) = enumerator.Current;
                     statView.Show(statType, baseValue, additionalValue);
-                }   
+                }
             }
         }
 
@@ -414,7 +414,8 @@ namespace Nekoyume.UI
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
             ActionManager.instance.HackAndSlash(equipments, consumables, _worldId, _stageId)
-                .Subscribe(_ => {}, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash.")).AddTo(this);
+                .Subscribe(_ => { }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+                .AddTo(this);
         }
 
         public void GoToStage(ActionBase.ActionEvaluation<HackAndSlash> eval)

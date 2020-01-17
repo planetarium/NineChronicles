@@ -12,9 +12,9 @@ namespace Nekoyume.Game.Character
         public readonly Subject<PointerEventData> OnMultipleClick = new Subject<PointerEventData>();
         public readonly Subject<PointerEventData> OnMiddleClick = new Subject<PointerEventData>();
         public readonly Subject<PointerEventData> OnRightClick = new Subject<PointerEventData>();
-        
+
         public PointerEventData PointerEventData { get; private set; }
-        
+
         public void OnPointerClick(PointerEventData eventData)
         {
             PointerEventData = eventData;
@@ -34,6 +34,7 @@ namespace Nekoyume.Game.Character
                             OnMultipleClick.OnNext(eventData);
                             break;
                     }
+
                     break;
                 case PointerEventData.InputButton.Right:
                     OnRightClick.OnNext(eventData);

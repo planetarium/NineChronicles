@@ -37,14 +37,6 @@ namespace Nekoyume.Game.Character
         
         #region Animation
 
-        public void Appear()
-        {
-            if (!ValidateAnimator())
-                return;
-
-            Animator.Play(nameof(CharacterAnimation.Type.Appear), BaseLayerIndex, 0f);
-        }
-
         public void Standing()
         {
             if (!ValidateAnimator())
@@ -165,14 +157,6 @@ namespace Nekoyume.Game.Character
 
             Animator.Play(nameof(CharacterAnimation.Type.Die), BaseLayerIndex, 0f);
             ColorTween();
-        }
-
-        public void Disappear()
-        {
-            if (!ValidateAnimator())
-                return;
-
-            Animator.Play(nameof(CharacterAnimation.Type.Disappear), BaseLayerIndex, 0f);
         }
 
         #endregion

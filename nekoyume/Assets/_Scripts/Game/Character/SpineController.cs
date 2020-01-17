@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using Spine;
 using Spine.Unity;
 using Spine.Unity.Modules.AttachmentTools;
@@ -33,6 +34,9 @@ namespace Nekoyume.Game.Character
         private Material _material;
         private AtlasPage _atlasPage;
 
+        private Sequence _doFadeSequence;
+        private Tweener _fadeTweener;
+
         #region Mono
 
         protected virtual void Awake()
@@ -52,8 +56,54 @@ namespace Nekoyume.Game.Character
             _atlasPage = _material.ToSpineAtlasPage();
         }
 
+        private void OnDisable()
+        {
+            StopFade();
+        }
+
         #endregion
 
+        #region Fade
+        
+        public void Appear(float duration = 1f, bool fromZero = true)
+        {
+            if (fromZero)
+            {
+                SkeletonAnimation.skeleton.A = 0f;
+            }
+            
+            duration *= 1f - SkeletonAnimation.skeleton.A;
+            StartFade(1f, duration);
+        }
+
+        public void Disappear(float duration = 1f, bool fromOne = true)
+        {
+            if (fromOne)
+            {
+                SkeletonAnimation.skeleton.A = 1f;
+            }
+            
+            duration *= SkeletonAnimation.skeleton.A;
+            StartFade(0f, duration);
+        }
+        
+        private void StartFade(float toValue, float duration)
+        {
+            StopFade();
+            _fadeTweener = DOTween.To(() => SkeletonAnimation.skeleton.A, value => SkeletonAnimation.skeleton.A = value, toValue, duration);
+        }
+
+        private void StopFade()
+        {
+            if (_fadeTweener is null ||
+                !_fadeTweener.IsPlaying())
+                return;
+            
+            _fadeTweener.Kill();
+        }
+        
+        #endregion
+        
         /// <summary>Sets the horizontal flip state of the skeleton based on a nonzero float. If negative, the skeleton is flipped. If positive, the skeleton is not flipped.</summary>
         public void SetFlip(float horizontal)
         {
@@ -113,7 +163,7 @@ namespace Nekoyume.Game.Character
             return true;
         }
 
-        private int StringToHash(string s)
+        private static int StringToHash(string s)
         {
             return Animator.StringToHash(s);
         }

@@ -61,7 +61,7 @@ namespace Nekoyume.UI
             base.OnCompleteOfShowAnimation();
 
             _npc.gameObject.SetActive(true);
-            _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
+            _npc.SpineController.Appear();
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
         }
 

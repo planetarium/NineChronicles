@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Character
         
         protected override bool CanRun => base.CanRun && !TargetInAttackRange(_player);
 
-        private SpineController SpineController { get; set; }
+        private CharacterSpineController SpineController { get; set; }
         
         #region Mono
 
@@ -144,7 +144,7 @@ namespace Nekoyume.Game.Character
             
             var origin = Resources.Load<GameObject>(spineResourcePath);
             var go = Instantiate(origin, gameObject.transform);
-            SpineController = go.GetComponent<SpineController>();
+            SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
             UpdateHitPoint();
         }
