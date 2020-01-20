@@ -90,7 +90,7 @@ namespace Nekoyume.BlockChain
         private string _tipInfo = string.Empty;
         private CommandLineOptions _options;
 
-        private Queue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)> lastTenBlocks;
+        private ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)> lastTenBlocks;
 
         public long BlockIndex => blocks?.Tip?.Index ?? 0;
 
@@ -189,7 +189,7 @@ namespace Nekoyume.BlockChain
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
-            lastTenBlocks = new Queue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)>();
+            lastTenBlocks = new ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)>();
 
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 blocks,
@@ -703,7 +703,7 @@ namespace Nekoyume.BlockChain
             _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash}";
             while (lastTenBlocks.Count >= 10)
             {
-                lastTenBlocks.Dequeue();
+                lastTenBlocks.TryDequeue(out _);
             }
             lastTenBlocks.Enqueue((blocks.Tip, DateTimeOffset.UtcNow));
             TipChanged?.Invoke(null, args.Index);
