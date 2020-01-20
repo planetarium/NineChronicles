@@ -18,10 +18,10 @@ namespace Nekoyume.BlockChain
     {
         // Editor가 아닌 환경에서 사용할 제네시스 블록의 파일명입니다.
         // 만약 이 값을 수정할 경우 entrypoint.sh도 같이 수정할 필요가 있습니다.
-        private const string GenesisBlockNameProd = "genesis-block";
+        public const string GenesisBlockNameProd = "genesis-block";
 
         // Editor 환경에서 사용할 제네시스 블록의 파일명입니다.
-        private const string GenesisBlockNameDev = "genesis-block-dev";
+        public const string GenesisBlockNameDev = "genesis-block-dev";
 
         public static string GenesisBlockPathProd => BlockPath(GenesisBlockNameProd);
 
