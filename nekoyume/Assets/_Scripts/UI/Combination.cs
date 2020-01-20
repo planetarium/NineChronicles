@@ -80,7 +80,11 @@ namespace Nekoyume.UI
             
             combineConsumable.RemoveMaterialsAll();
             combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
-            combineConsumable.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
+            combineConsumable.submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                ActionCombineConsumable();
+                StartCoroutine(CoCombineNPCAnimation());
+            }).AddTo(gameObject);
             combineConsumable.recipeButton.OnClickAsObservable().Subscribe(_ =>
             {
                 combineConsumable.submitButton.gameObject.SetActive(false);
@@ -89,7 +93,11 @@ namespace Nekoyume.UI
 
             enhanceEquipment.RemoveMaterialsAll();
             enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
-            enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
+            enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                ActionEnhanceEquipment();
+                StartCoroutine(CoCombineNPCAnimation());
+            }).AddTo(gameObject);
 
             recipe.RegisterListener(this);
             recipe.closeButton.OnClickAsObservable()
