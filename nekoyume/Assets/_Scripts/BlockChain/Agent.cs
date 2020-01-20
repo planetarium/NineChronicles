@@ -168,7 +168,7 @@ namespace Nekoyume.BlockChain
 #if UNITY_EDITOR
             // 변경사항을 바로 적용하기 위해 새로운 제네시스 블럭을 만듭니다.
             var newGenesisBlock = BlockHelper.MineGenesisBlock();
-            var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathDev);
+            var genesisBlockPath = BlockHelper.GenesisBlockPathDev;
 
             var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
             if (BlockHelper.CompareGenesisBlocks(genesisBlock, newGenesisBlock))
@@ -179,7 +179,7 @@ namespace Nekoyume.BlockChain
                 genesisBlock = newGenesisBlock;
             }
 #else
-            var genesisBlockPath = BlockHelper.BlockPath(BlockHelper.GenesisBlockPathProd);
+            var genesisBlockPath = BlockHelper.GenesisBlockPathProd;
             var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
 #endif
             Debug.Log($"Store Path: {path}");
