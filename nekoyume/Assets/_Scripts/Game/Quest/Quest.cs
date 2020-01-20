@@ -23,9 +23,6 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public abstract class Quest : IState
     {
-        [NonSerialized]
-        public bool isLocalReceived;
-
         protected int _current;
 
         public abstract QuestType QuestType { get; }
@@ -306,22 +303,12 @@ namespace Nekoyume.Game.Quest
                     .Where(i => i.Event == type && !i.Complete);
                 foreach (var target in targets)
                 {
-                    target.Update(eventMap);
+                    target.Update(eventMap); 
                 }
             }
 
             return eventMap;
         }
-
-        public CollectionMap UpdateCompletedQuest(CollectionMap eventMap)
-        {
-            const QuestEventType type = QuestEventType.Complete;
-            eventMap[(int) type] = quests.Count(i => i.Complete);
-            return UpdateGeneralQuest(new[] {type}, eventMap);
-        }
-
-        public IValue Serialize() =>
-            new Bencodex.Types.List(this.Select(q => q.Serialize()));
 
         public void UpdateItemGradeQuest(ItemUsable itemUsable)
         {
@@ -350,6 +337,16 @@ namespace Nekoyume.Game.Quest
                     target.Update(item);
                 }
             }
+        }
+
+        public IValue Serialize() =>
+            new Bencodex.Types.List(this.Select(q => q.Serialize()));
+        
+        public CollectionMap UpdateCompletedQuest(CollectionMap eventMap)
+        {
+            const QuestEventType type = QuestEventType.Complete;
+            eventMap[(int) type] = quests.Count(i => i.Complete);
+            return UpdateGeneralQuest(new[] {type}, eventMap);
         }
     }
 }

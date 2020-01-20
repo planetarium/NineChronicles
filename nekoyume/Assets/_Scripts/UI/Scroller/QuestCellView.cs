@@ -51,14 +51,14 @@ namespace Nekoyume.UI.Scroller
             _quest = quest;
             _currentDataIndex = dataIndex;
 
-            UpdateView(_quest.isLocalReceived);
+            UpdateView();
         }
-
+         
         private void OnReceiveClick(SubmitButton submitButton)
         {
             AudioController.PlayClick();
             AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
-            var quest = Widget.Find<Quest>();
+            var quest = Widget.Find<Quest>();   
             RequestReward();
             quest.UpdateTabs();
             onClickSubmitButton?.Invoke();
@@ -66,9 +66,8 @@ namespace Nekoyume.UI.Scroller
 
         private void RequestReward()
         {
-            UpdateView(true);
+            UpdateView();
 
-            ActionManager.instance.QuestReward(_quest.Id);
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
             var msg = string.Format(format, _quest.GetName());
             Notification.Push(MailType.System, msg);
@@ -79,17 +78,15 @@ namespace Nekoyume.UI.Scroller
             {
                 return;
             }
-            quest.Receive = true;
-            quest.isLocalReceived = true;
         }
 
-        private void UpdateView(bool isLocalReceived)
+        private void UpdateView()
         {
             var isReceived = false;
             contentText.text = _quest.GetName();
 
             string text = _quest.GetProgressText();
-            bool showProgressBar = !string.IsNullOrEmpty(text);
+            bool showProgressBar = !string.IsNullOrEmpty(text); 
             progressText.gameObject.SetActive(showProgressBar);
             progressBar.gameObject.SetActive(showProgressBar);
             if (showProgressBar)
@@ -100,7 +97,7 @@ namespace Nekoyume.UI.Scroller
 
             if (_quest.Complete)
             {
-                if (_quest.Receive || isLocalReceived)
+                if (_quest.Receive)
                 {
                     isReceived = true;
                     fillImage.color = ColorHelper.HexToColorRGB("282828");

@@ -89,8 +89,6 @@ namespace Nekoyume.Action
             
             // Avoid NullReferenceException in test
             avatarState = CreateAvatarState(name, avatarAddress, ctx);
-            sw.Stop();
-            UnityEngine.Debug.Log($"CreateAvatar CreateAvatarState: {sw.Elapsed}");
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;
@@ -98,6 +96,15 @@ namespace Nekoyume.Action
             if (tail < 0) tail = 0;
 
             avatarState.Customize(hair, lens, ear, tail);
+
+            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
+            foreach (var quest in completedQuest)
+            {
+                avatarState.UpdateFromQuestReward(quest, ctx);
+            }
+
+            sw.Stop();
+            UnityEngine.Debug.Log($"CreateAvatar CreateAvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;
             UnityEngine.Debug.Log($"CreateAvatar Total Executed Time: {ended - started}");
             return states

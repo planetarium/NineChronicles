@@ -189,6 +189,12 @@ namespace Nekoyume.Action
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
+            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
+            foreach (var quest in completedQuest)
+            {
+                avatarState.UpdateFromQuestReward(quest, ctx);
+            }
+
             sw.Stop();
             UnityEngine.Debug.Log($"ItemEnhancement Update AvatarState: {sw.Elapsed}");
             sw.Restart();

@@ -156,6 +156,13 @@ namespace Nekoyume.Action
             sw.Restart();
 
             avatarState.Update(simulator);
+
+            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
+            foreach (var quest in completedQuest)
+            {
+                avatarState.UpdateFromQuestReward(quest, ctx);
+            }
+
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());
 

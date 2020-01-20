@@ -235,7 +235,7 @@ namespace Nekoyume.State
         // todo 1: 퀘스트 전용 함수임을 알 수 있는 네이밍이 필요함.
         // todo 2: 혹은 분리된 객체에게 위임하면 좋겠음.
         #region Quest From Action
-
+        
         public void UpdateFromCombination(ItemUsable itemUsable)
         {
             questList.UpdateCombinationQuest(itemUsable);
@@ -271,8 +271,9 @@ namespace Nekoyume.State
             UpdateCompletedQuest();
         }
 
-        public void UpdateFromQuestReward(Quest quest, IRandom random, IActionContext context)
+        public void UpdateFromQuestReward(Quest quest, IActionContext context)
         {
+            var random = context.Random;
             var items = new List<ItemBase>();
             foreach (var pair in quest.Reward.ItemMap)
             {
@@ -288,6 +289,7 @@ namespace Nekoyume.State
                 }
             }
 
+            quest.Receive = true;
             questList.UpdateCollectQuest(itemMap);
             questList.UpdateItemTypeCollectQuest(items);
             UpdateCompletedQuest();

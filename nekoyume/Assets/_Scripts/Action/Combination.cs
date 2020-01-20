@@ -316,6 +316,12 @@ namespace Nekoyume.Action
                 }
             }
 
+            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
+            foreach (var quest in completedQuest)
+            {
+                avatarState.UpdateFromQuestReward(quest, ctx);
+            }
+
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
             states = states.SetState(AvatarAddress, avatarState.Serialize());

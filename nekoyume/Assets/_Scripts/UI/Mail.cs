@@ -160,10 +160,12 @@ namespace Nekoyume.UI
                 isSuccess = true,
                 materialItems = materialItems
             };
+            model.OnClickSubmit.Subscribe(_ =>
+            {
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
+                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
+            });
             popup.Pop(model);
-
-            LocalStateModifier.AddItem(avatarAddress, item.ItemId);
-            LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
         }
 
         public void Read(SellCancelMail mail)
@@ -207,6 +209,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
             }).AddTo(gameObject);
             popup.Pop(model);
@@ -214,11 +217,12 @@ namespace Nekoyume.UI
 
         public void Read(SellerMail sellerMail)
         {
+            var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var attachment = (Buy.SellerResult) sellerMail.attachment;
 
             //TODO 관련 기획이 끝나면 별도 UI를 생성
-
+            LocalStateModifier.ModifyGold(agentAddress, attachment.gold);
             LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, attachment.itemUsable.ItemId);
         }
 
@@ -233,10 +237,12 @@ namespace Nekoyume.UI
                 isSuccess = true,
                 materialItems = new List<CombinationMaterial>()
             };
+            model.OnClickSubmit.Subscribe(_ =>
+            {
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
+                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
+            });
             popup.Pop(model);
-
-            LocalStateModifier.AddItem(avatarAddress, item.ItemId);
-            LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
         }
 
         private static void AddItem(ItemUsable item, bool canceled)

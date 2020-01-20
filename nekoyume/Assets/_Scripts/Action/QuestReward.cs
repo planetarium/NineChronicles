@@ -44,7 +44,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            avatarState.UpdateFromQuestReward(quest, ctx.Random, ctx);
+            avatarState.UpdateFromQuestReward(quest, ctx);
             sw.Stop();
             UnityEngine.Debug.Log($"QuestReward Update AvatarState: {sw.Elapsed}");
             sw.Restart();

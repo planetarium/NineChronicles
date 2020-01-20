@@ -136,9 +136,9 @@ namespace Nekoyume.UI
                 return -1;
 
             // receive
-            if (x.Receive || x.isLocalReceived)
+            if (x.Receive)
             {
-                if (!y.Receive && !y.isLocalReceived)
+                if (!y.Receive)
                     return 1;
 
                 if (x.Id > y.Id)
@@ -150,7 +150,7 @@ namespace Nekoyume.UI
                 return -1;
             }
 
-            if (y.Receive || y.isLocalReceived)
+            if (y.Receive)
                 return -1;
 
             // both are completed or incompleted
