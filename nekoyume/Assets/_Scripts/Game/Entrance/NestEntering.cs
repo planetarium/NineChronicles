@@ -43,7 +43,7 @@ namespace Nekoyume.Game.Entrance
                 if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))
                 {
                     player = PlayerFactory.Create(avatarState).GetComponent<Player>();
-                    player.Animator.Appear();
+                    player.SpineController.Appear();
                     active = true;
                 }
                 else

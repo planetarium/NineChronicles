@@ -113,11 +113,12 @@ namespace Planetarium.Nekoyume.Editor
                 {
                     switch (animationType)
                     {
+                        // todo: `CharacterAnimation.Type.Appear`와 `CharacterAnimation.Type.Disappear`는 없어질 예정.
                         case CharacterAnimation.Type.Appear:
+                        case CharacterAnimation.Type.Disappear:
                         case CharacterAnimation.Type.Standing:
                         case CharacterAnimation.Type.StandingToIdle:
                         case CharacterAnimation.Type.Win:
-                        case CharacterAnimation.Type.Disappear:
                         case CharacterAnimation.Type.Greeting:
                         case CharacterAnimation.Type.Emotion:
                         case CharacterAnimation.Type.Attack:

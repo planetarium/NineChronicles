@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
@@ -32,7 +33,6 @@ namespace Nekoyume.UI
             new ReactiveProperty<StateType>(StateType.CombineEquipment);
 
         private const int NPCId = 300001;
-        private static readonly UnityEngine.Vector3 NPCPosition = new UnityEngine.Vector3(2.28f, -2f);
 
         private ToggleGroup _toggleGroup;
         public CategoryButton combineEquipmentCategoryButton;
@@ -44,11 +44,14 @@ namespace Nekoyume.UI
         public CombineEquipment combineEquipment;
         public CombineConsumable combineConsumable;
         public EnhanceEquipment enhanceEquipment;
-        public SpeechBubble speechBubble;
-
-        private NPC _npc;
-
         public Recipe recipe;
+        public SpeechBubble speechBubble;
+        public Transform npcPosition01;
+        public Transform npcPosition02;
+
+        private NPC _npc01;
+        private NPC _npc02;
+
 
         #region Override
 
@@ -69,11 +72,19 @@ namespace Nekoyume.UI
 
             combineEquipment.RemoveMaterialsAll();
             combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
-            combineEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineEquipment()).AddTo(gameObject);
+            combineEquipment.submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                ActionCombineEquipment();
+                StartCoroutine(CoCombineNPCAnimation());
+            }).AddTo(gameObject);
             
             combineConsumable.RemoveMaterialsAll();
             combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
-            combineConsumable.submitButton.OnSubmitClick.Subscribe(_ => ActionCombineConsumable()).AddTo(gameObject);
+            combineConsumable.submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                ActionCombineConsumable();
+                StartCoroutine(CoCombineNPCAnimation());
+            }).AddTo(gameObject);
             combineConsumable.recipeButton.OnClickAsObservable().Subscribe(_ =>
             {
                 combineConsumable.submitButton.gameObject.SetActive(false);
@@ -82,11 +93,33 @@ namespace Nekoyume.UI
 
             enhanceEquipment.RemoveMaterialsAll();
             enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
-            enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ => ActionEnhanceEquipment()).AddTo(gameObject);
+            enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                ActionEnhanceEquipment();
+                StartCoroutine(CoCombineNPCAnimation());
+            }).AddTo(gameObject);
 
             recipe.RegisterListener(this);
             recipe.closeButton.OnClickAsObservable()
                 .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true)).AddTo(gameObject);
+        }
+
+        private IEnumerator CoCombineNPCAnimation()
+        {
+            _npc01.SpineController.Disappear();
+            yield return new WaitForSeconds(.5f);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
+            _npc02 = go.GetComponent<NPC>();
+            _npc02.SetSortingLayer(LayerType.UI);
+            _npc02.PlayAnimation(NPCAnimation.Type.Appear_02);
+            yield return new WaitForSeconds(5f);
+            _npc02.PlayAnimation(NPCAnimation.Type.Disappear_02);
+            yield return new WaitForSeconds(1f);
+            _npc02.SpineController.Disappear();
+            yield return new WaitForSeconds(.5f);
+            _npc02.gameObject.SetActive(false);
+            _npc01.SpineController.Appear();
+            yield return new WaitForSeconds(1f);
         }
 
         public override void Show()
@@ -110,9 +143,8 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
-            _npc = go.GetComponent<NPC>();
-            go.SetActive(true);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
+            _npc01 = go.GetComponent<NPC>();
 
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
@@ -125,11 +157,11 @@ namespace Nekoyume.UI
             combineEquipment.RemoveMaterialsAll();
             combineConsumable.RemoveMaterialsAll();
             enhanceEquipment.RemoveMaterialsAll();
+            speechBubble.gameObject.SetActive(false);
+            _npc01.gameObject.SetActive(false);
+            _npc02.gameObject.SetActive(false);
 
             base.Close(ignoreCloseAnimation);
-
-            _npc.gameObject.SetActive(false);
-            speechBubble.gameObject.SetActive(false);
         }
 
         #endregion
@@ -385,15 +417,15 @@ namespace Nekoyume.UI
 
         private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
-            if (_npc)
+            if (_npc01)
             {
                 if (type == CharacterAnimation.Type.Greeting)
                 {
-                    _npc.PlayAnimation(NPCAnimation.Type.Greeting_01);
+                    _npc01.PlayAnimation(NPCAnimation.Type.Greeting_01);
                 }
                 else
                 {
-                    _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
+                    _npc01.PlayAnimation(NPCAnimation.Type.Emotion_01);
                 }
                 speechBubble.SetKey(key);
                 StartCoroutine(speechBubble.CoShowText());

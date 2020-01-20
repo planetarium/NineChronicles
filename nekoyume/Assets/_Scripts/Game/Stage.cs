@@ -141,7 +141,7 @@ namespace Nekoyume.Game
                         var skeleton = anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
                         skeleton.A = 0.0f;
                         DOTween.To(() => skeleton.A, x => skeleton.A = x, 1.0f, 1.0f);
-                        anim.Appear();
+                        player.SpineController.Appear();
                     }
 
                     selectedPlayer = players[i];
@@ -154,7 +154,7 @@ namespace Nekoyume.Game
                     if (!ReferenceEquals(anim, null) && anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
-                        anim.Disappear();
+                        player.SpineController.Disappear();
                     }
                 }
             }
