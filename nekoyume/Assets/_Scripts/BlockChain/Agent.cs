@@ -117,6 +117,11 @@ namespace Nekoyume.BlockChain
 
         public bool disposed;
 
+        static Agent()
+        {
+            Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
+        }
+
         private void Awake()
         {
             ForceDotNet.Force();
@@ -291,13 +296,13 @@ namespace Nekoyume.BlockChain
                     GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
                         ? new RankingState(rankingDict)
                         : new RankingState());
-                
+
                 // 상점의 상태를 한 번 동기화 한다.
                 States.Instance.SetShopState(
                     GetState(ShopState.Address) is Bencodex.Types.Dictionary shopDict
                         ? new ShopState(shopDict)
                         : new ShopState());
-                
+
                 // 에이전트의 상태를 한 번 동기화 한다.
                 States.Instance.SetAgentState(
                     GetState(Address) is Bencodex.Types.Dictionary agentDict
@@ -307,7 +312,7 @@ namespace Nekoyume.BlockChain
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 ActionRenderHandler.Instance.Start();
                 ActionUnrenderHandler.Instance.Start();
-                
+
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
                 StartCoroutine(CoCheckBlockTip());
@@ -901,7 +906,7 @@ namespace Nekoyume.BlockChain
             {
                 _swarm.BroadcastTxs(new[] { tx });
             }
-            
+
             return tx;
         }
 
