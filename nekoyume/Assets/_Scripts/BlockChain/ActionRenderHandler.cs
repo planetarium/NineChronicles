@@ -52,6 +52,7 @@ namespace Nekoyume.BlockChain
             ItemEnhancement();
             QuestReward();
             RankingBattle();
+            WeeklyArenaReward();
         }
 
         public void Stop()
@@ -205,6 +206,14 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
         }
 
+        private void WeeklyArenaReward()
+        {
+            ActionBase.EveryRender<WeeklyArenaReward>()
+                .Where(ValidateEvaluationForAgentState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseWeeklyArenaReward).AddTo(_disposables);
+        }
+
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
         {
             var agentAddress = evaluation.InputContext.Signer;
@@ -350,6 +359,16 @@ namespace Nekoyume.BlockChain
             actionFailPopup.Close();
 
             Widget.Find<RankingBoard>().GoToStage(eval);
+        }
+
+        private void ResponseWeeklyArenaReward(ActionBase.ActionEvaluation<WeeklyArenaReward> eval)
+        {
+            var currentAgentState = States.Instance.AgentState;
+            var agentState = eval.OutputStates.GetAgentState(currentAgentState.address);
+            var gold = agentState.gold - currentAgentState.gold;
+            UpdateAgentState(eval);
+            Widget.Find<LoadingScreen>().Close();
+            UI.Notification.Push(MailType.System, $"Get Arena Reward: {gold}");
         }
     }
 }
