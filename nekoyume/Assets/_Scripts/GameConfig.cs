@@ -28,8 +28,8 @@ namespace Nekoyume
         public const int ActionPoint = 250;
 
         public const int DailyRewardInterval = 1000;
-        public const int DailyArenaInterval = 8000;
-        public const int WeeklyArenaInterval = DailyArenaInterval * 7;
+        public const int DailyArenaInterval = 500; // 8000
+        public const int WeeklyArenaInterval = DailyArenaInterval * 3; // 7
 
         public const int HackAndSlashCostAP = 5;
 

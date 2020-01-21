@@ -90,7 +90,9 @@ namespace Nekoyume.Game.Character
         private void StartFade(float toValue, float duration)
         {
             StopFade();
-            _fadeTweener = DOTween.To(() => SkeletonAnimation.skeleton.A, value => SkeletonAnimation.skeleton.A = value, toValue, duration);
+            _fadeTweener = DOTween
+                .To(() => SkeletonAnimation.skeleton.A, value => SkeletonAnimation.skeleton.A = value, toValue, duration)
+                .Play();
         }
 
         private void StopFade()
