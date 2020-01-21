@@ -119,7 +119,15 @@ namespace Nekoyume.BlockChain
 
         static Agent()
         {
-            Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
+            try
+            {
+                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
+            }
+            catch(Exception e)
+            {
+                Debug.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
+                Debug.LogException(e);
+            }
         }
 
         private void Awake()
