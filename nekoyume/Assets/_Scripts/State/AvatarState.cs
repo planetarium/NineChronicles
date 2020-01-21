@@ -297,6 +297,12 @@ namespace Nekoyume.State
 
         #endregion
 
+        public int GetArmorId()
+        {
+            var armor = inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
+            return armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
+        }
+
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {

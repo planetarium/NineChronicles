@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using DecimalMath;
 using Libplanet;
 using Nekoyume.Game.Item;
+using Nekoyume.Model;
 
 namespace Nekoyume.State
 {
@@ -70,12 +72,6 @@ namespace Nekoyume.State
         {
             Add(avatarState.address, new ArenaInfo(avatarState, active));
         }
-        public ArenaInfo Active(AvatarState avatarState, decimal i)
-        {
-            Gold += i;
-            Update(avatarState, true);
-            return _map[avatarState.address];
-        }
 
         public void Update(ArenaInfo info)
         {
@@ -86,6 +82,18 @@ namespace Nekoyume.State
         {
             Update(avatarState);
         }
+
+        public void ResetCount(long ctxBlockIndex)
+        {
+            foreach (var info in _map.Values)
+            {
+                info.ResetCount();
+            }
+
+            ResetIndex = ctxBlockIndex;
+        }
+
+        #region IDictionary
 
         public IEnumerator<KeyValuePair<Address, ArenaInfo>> GetEnumerator()
         {
@@ -154,29 +162,43 @@ namespace Nekoyume.State
         public ICollection<Address> Keys => _map.Keys;
         public ICollection<ArenaInfo> Values => _map.Values;
 
-        public void ResetCount(long ctxBlockIndex)
-        {
-            var map = _map.ToDictionary(kv => kv.Key, kv => kv.Value);
-            foreach (var pair in map)
-            {
-                var info = pair.Value;
-                info.DailyChallengeCount = 5;
-                _map[pair.Key] = info;
-            }
-
-            ResetIndex = ctxBlockIndex;
-        }
+        #endregion
     }
 
     public class ArenaInfo : IState
     {
+        public class Record : IState
+        {
+            public int Win;
+            public int Lose;
+            public int Draw;
+
+            public Record()
+            {
+            }
+
+            public Record(Bencodex.Types.Dictionary serialized)
+            {
+                Win = serialized.GetInteger("win");
+                Lose = serialized.GetInteger("lose");
+                Draw = serialized.GetInteger("draw");
+            }
+
+            public IValue Serialize() =>
+                Bencodex.Types.Dictionary.Empty
+                    .Add("win", Win.Serialize())
+                    .Add("lose", Lose.Serialize())
+                    .Add("draw", Draw.Serialize());
+        }
+
         public readonly Address AvatarAddress;
         public readonly Address AgentAddress;
-        public readonly int Level;
         public readonly string AvatarName;
         public readonly int CombatPoint;
-        public readonly bool Active;
-        public int DailyChallengeCount;
+        public readonly Record ArenaRecord;
+        public int Level { get; private set; }
+        public bool Active { get; private set; }
+        public int DailyChallengeCount { get; private set; }
         public int ArmorId { get; private set; }
         public int Score { get; private set; }
 
@@ -192,6 +214,7 @@ namespace Nekoyume.State
             Score = 1000;
             DailyChallengeCount = 5;
             Active = active;
+            ArenaRecord = new Record();
         }
 
         public ArenaInfo(Bencodex.Types.Dictionary serialized)
@@ -205,6 +228,9 @@ namespace Nekoyume.State
             Score = serialized.GetInteger("score");
             DailyChallengeCount = serialized.GetInteger("dailyChallengeCount");
             Active = serialized.GetBoolean("active");
+            ArenaRecord = serialized.ContainsKey((Text) "arenaRecord")
+                ? new Record((Bencodex.Types.Dictionary) serialized["arenaRecord"])
+                : new Record();
         }
 
         public IValue Serialize() =>
@@ -219,6 +245,7 @@ namespace Nekoyume.State
                 [(Bencodex.Types.Text) "score"] = Score.Serialize(),
                 [(Bencodex.Types.Text) "dailyChallengeCount"] = DailyChallengeCount.Serialize(),
                 [(Bencodex.Types.Text) "active"] = Active.Serialize(),
+                [(Bencodex.Types.Text) "arenaRecord"] = ArenaRecord.Serialize(),
             });
 
         public void Update(int score)
@@ -230,8 +257,62 @@ namespace Nekoyume.State
 
         public void Update(AvatarState state)
         {
-            var armor = state.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
-            ArmorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
+            ArmorId = state.GetArmorId();
+        }
+
+        public void Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
+        {
+            int score;
+            switch (result)
+            {
+                case BattleLog.Result.Win:
+                    score = GameConfig.BaseVictoryPoint;
+                    ArenaRecord.Win++;
+                    break;
+                case BattleLog.Result.Lose:
+                    score = GameConfig.BaseDefeatPoint;
+                    ArenaRecord.Lose++;
+                    break;
+                case BattleLog.Result.TimeOver:
+                    ArenaRecord.Draw++;
+                    return;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
+            }
+
+            var rating = Score;
+            var enemyRating = enemyInfo.Score;
+            if (rating != enemyRating)
+            {
+                switch (result)
+                {
+                    case BattleLog.Result.Win:
+                        score = (int) (DecimalEx.Pow((decimal) enemyRating / rating, 0.75m) *
+                                       GameConfig.BaseVictoryPoint);
+                        break;
+                    case BattleLog.Result.Lose:
+                        score = (int) (DecimalEx.Pow((decimal) rating / enemyRating, 0.75m) *
+                                       GameConfig.BaseVictoryPoint);
+                        break;
+                }
+            }
+
+            var calculated = Score + score;
+            Score = Math.Max(1000, calculated);
+            DailyChallengeCount--;
+            ArmorId = avatarState.GetArmorId();
+            Level = avatarState.level;
+        }
+
+        public void Activate()
+        {
+            Active = true;
+        }
+
+        public void ResetCount()
+        {
+            DailyChallengeCount = 5;
+
         }
     }
 }
