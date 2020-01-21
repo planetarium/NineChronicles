@@ -21,9 +21,6 @@ namespace Nekoyume.Action
         public Address WeeklyArenaAddress;
         public BattleLog Result { get; private set; }
 
-        private const int BaseVictoryPoint = 20;
-        private const int BaseDefeatPoint = -15;
-
         public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
@@ -66,7 +63,8 @@ namespace Nekoyume.Action
                 if (agentState.gold >= 100)
                 {
                     agentState.gold -= 100;
-                    arenaInfo = weeklyArenaState.Active(avatarState, 100);
+                    weeklyArenaState.Gold += 100;
+                    arenaInfo.Activate();
                 }
                 else
                 {
@@ -96,9 +94,7 @@ namespace Nekoyume.Action
 
             Result = simulator.Log;
 
-            var score = CalculatePoint(arenaInfo, weeklyArenaState[EnemyAddress], simulator.Result);
-            arenaInfo.Update(score);
-            weeklyArenaState.Update(arenaInfo);
+            arenaInfo.Update(avatarState, weeklyArenaState[EnemyAddress], simulator.Result);
 
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
@@ -116,37 +112,6 @@ namespace Nekoyume.Action
         {
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
-        }
-
-        private int CalculatePoint(ArenaInfo info, ArenaInfo enemyInfo, BattleLog.Result result)
-        {
-            if (result == BattleLog.Result.TimeOver)
-            {
-                return 0;
-            }
-
-            var rating = info.Score;
-            var enemyRating = enemyInfo.Score;
-            if (rating == enemyRating)
-            {
-                switch (result)
-                {
-                    case BattleLog.Result.Win:
-                        return BaseVictoryPoint;
-                    case BattleLog.Result.Lose:
-                        return BaseDefeatPoint;
-                }
-            }
-
-            switch (result)
-            {
-                case BattleLog.Result.Win:
-                    return (int) ((decimal) enemyRating / rating / 0.75m) * BaseVictoryPoint;
-                case BattleLog.Result.Lose:
-                    return (int) ((decimal) rating / enemyRating / 0.75m) * BaseDefeatPoint;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(result), result, null);
-            }
         }
     }
 }

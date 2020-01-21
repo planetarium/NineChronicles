@@ -106,8 +106,7 @@ namespace Nekoyume.State
         {
             AvatarAddress = avatarState.address;
             AgentAddress = avatarState.agentAddress;
-            var armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
-            ArmorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
+            ArmorId = avatarState.GetArmorId();
             Level = avatarState.level;
             AvatarName = avatarState.NameWithHash;
             Exp = avatarState.exp;
