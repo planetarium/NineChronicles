@@ -51,6 +51,10 @@ namespace Nekoyume.State
 
             ResetIndex = serialized.GetLong("resetIndex");
         }
+        
+        public WeeklyArenaState(IValue iValue) : this((Bencodex.Types.Dictionary) iValue)
+        {
+        }
 
         public override IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
@@ -63,7 +67,7 @@ namespace Nekoyume.State
                 )),
                 [(Text) "resetIndex"] = ResetIndex.Serialize()
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-
+        
         private void Update(AvatarState avatarState, bool active = false)
         {
             Add(avatarState.address, new ArenaInfo(avatarState, active));

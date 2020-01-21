@@ -25,6 +25,10 @@ namespace Nekoyume.State
             : this(serialized["address"].ToAddress())
         {
         }
+        
+        protected State(IValue iValue) : this((Bencodex.Types.Dictionary) iValue)
+        {
+        }
 
         public virtual IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
