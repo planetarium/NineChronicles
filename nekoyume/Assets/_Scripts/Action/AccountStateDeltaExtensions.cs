@@ -110,8 +110,8 @@ namespace Nekoyume.Action
 
         public static WeeklyArenaState GetWeeklyArenaState(this IAccountStateDelta states, Address address)
         {
-            var serialized = states.GetState(address);
-            if (serialized is null)
+            var iValue = states.GetState(address);
+            if (iValue is null)
             {
                 Debug.LogWarningFormat("No weekly arena state ({0})", address.ToHex());
                 return null;
@@ -119,14 +119,14 @@ namespace Nekoyume.Action
 
             try
             {
-                return new WeeklyArenaState((Bencodex.Types.Dictionary) serialized);
+                return new WeeklyArenaState(iValue);
             }
             catch (InvalidCastException e)
             {
                 Debug.LogErrorFormat(
                     "Invalid weekly arena state ({0}): {1}",
                     address.ToHex(),
-                    serialized
+                    iValue
                 );
                 Debug.LogException(e);
                 return null;

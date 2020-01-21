@@ -24,6 +24,7 @@ namespace Nekoyume.UI
         public MainMenu btnCombination;
         public MainMenu btnShop;
         public MainMenu btnRanking;
+        public ArenaPendingNCG arenaPendingNCG;
         public SpeechBubble[] SpeechBubbles;
         public NPC npc;
         public SpeechBubble speechBubble;
@@ -152,6 +153,15 @@ namespace Nekoyume.UI
             
             StartCoroutine(ShowSpeeches());
             ShowButtons(Game.Game.instance.Stage.selectedPlayer);
+
+            if (ArenaHelper.TryGetThisWeekState(out var weeklyArenaState))
+            {
+                arenaPendingNCG.Show(weeklyArenaState.Gold);
+            }
+            else
+            {
+                arenaPendingNCG.Hide();
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

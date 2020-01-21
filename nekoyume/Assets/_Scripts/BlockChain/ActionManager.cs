@@ -72,7 +72,9 @@ namespace Nekoyume.BlockChain
             int worldId,
             int stageId)
         {
-            var index = (int) Game.Game.instance.Agent.blockIndex.Value / GameConfig.WeeklyArenaInterval;
+            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+                throw new NullReferenceException(nameof(weeklyArenaAddress));
+            
             var action = new HackAndSlash
             {
                 equipments = equipments,
@@ -80,7 +82,7 @@ namespace Nekoyume.BlockChain
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = States.Instance.CurrentAvatarState.address,
-                WeeklyArenaAddress = WeeklyArenaState.Addresses[index],
+                WeeklyArenaAddress = weeklyArenaAddress,
             };
             ProcessAction(action);
 
@@ -270,12 +272,14 @@ namespace Nekoyume.BlockChain
 
         public static IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(Address enemyAddress)
         {
-            var index = (int) Game.Game.instance.Agent.blockIndex.Value / GameConfig.WeeklyArenaInterval;
+            if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+                throw new NullReferenceException(nameof(weeklyArenaAddress));
+            
             var action = new RankingBattle
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EnemyAddress = enemyAddress,
-                WeeklyArenaAddress = WeeklyArenaState.Addresses[index],
+                WeeklyArenaAddress = weeklyArenaAddress,
             };
             ProcessAction(action);
 

@@ -111,11 +111,11 @@ namespace Nekoyume.UI
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
             _npc02 = go.GetComponent<NPC>();
             _npc02.SetSortingLayer(LayerType.UI);
+            _npc02.SpineController.Appear(.3f);
             _npc02.PlayAnimation(NPCAnimation.Type.Appear_02);
             yield return new WaitForSeconds(5f);
+            _npc02.SpineController.Disappear(.3f);
             _npc02.PlayAnimation(NPCAnimation.Type.Disappear_02);
-            yield return new WaitForSeconds(1f);
-            _npc02.SpineController.Disappear();
             yield return new WaitForSeconds(.5f);
             _npc02.gameObject.SetActive(false);
             _npc01.SpineController.Appear();
