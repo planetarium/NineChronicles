@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
+using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Mail;
 using Nekoyume.Manager;
@@ -205,11 +207,15 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
         }
 
-        private void ResponseCombination(ActionBase.ActionEvaluation<Combination> evaluation)
+        private void ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
+        { 
+}
+
+        private void ResponseCombination(ActionBase.ActionEvaluation<Combination> eval)
         {
-            var agentAddress = evaluation.InputContext.Signer;
-            var avatarAddress = evaluation.Action.AvatarAddress;
-            var result = evaluation.Action.Result;
+            var agentAddress = eval.InputContext.Signer;
+            var avatarAddress = eval.Action.AvatarAddress;
+            var result = eval.Action.Result;
             var itemUsable = result.itemUsable;
             
             LocalStateModifier.ModifyGold(agentAddress, result.gold);
@@ -220,34 +226,36 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemUsable.ItemId);
-                
+            RenderQuest(avatarAddress, eval.Action.completedQuestIds);
+
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
-            UpdateAgentState(evaluation);
-            UpdateCurrentAvatarState(evaluation);
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseSell(ActionBase.ActionEvaluation<Sell> evaluation)
+        private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
-            var avatarAddress = evaluation.Action.sellerAvatarAddress;
-            var itemId = evaluation.Action.itemUsable.ItemId;
+            var avatarAddress = eval.Action.sellerAvatarAddress;
+            var itemId = eval.Action.itemUsable.ItemId;
 
             LocalStateModifier.AddItem(avatarAddress, itemId);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, evaluation.Action.itemUsable.GetLocalizedName()));
-            UpdateCurrentAvatarState(evaluation);
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
+            UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> evaluation)
+        private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
-            var avatarAddress = evaluation.Action.sellerAvatarAddress;
-            var itemId = evaluation.Action.result.itemUsable.ItemId;
+            var avatarAddress = eval.Action.sellerAvatarAddress;
+            var itemId = eval.Action.result.itemUsable.ItemId;
 
+            LocalStateModifier.RemoveItem(avatarAddress, itemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemId);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, evaluation.Action.result.itemUsable.GetLocalizedName()));
-            UpdateCurrentAvatarState(evaluation);
+            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
+            UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseBuy(ActionBase.ActionEvaluation<Buy> eval)
@@ -263,7 +271,7 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.ModifyGold(buyerAgentAddress, price);
                 LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
                 LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, itemId);
-
+                RenderQuest(buyerAvatarAddress, eval.Action.buyerCompletedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
             }
@@ -276,6 +284,7 @@ namespace Nekoyume.BlockChain
 
                 LocalStateModifier.ModifyGold(sellerAgentAddress, -gold);
                 LocalStateModifier.AddNewAttachmentMail(sellerAvatarAddress, itemId);
+                RenderQuest(sellerAvatarAddress, eval.Action.sellerCompletedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var buyerName =
                     new AvatarState(
@@ -291,6 +300,12 @@ namespace Nekoyume.BlockChain
         
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            foreach (var questId in eval.Action.completedQuestIds)
+            {
+                LocalStateModifier.AddReceivableQuest(avatarAddress, questId);
+            }
             UpdateCurrentAvatarState(eval);
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
@@ -317,11 +332,11 @@ namespace Nekoyume.BlockChain
             UI.Notification.Push(MailType.System, msg);
         }
 
-        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> evaluation)
+        private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
         {
-            var agentAddress = evaluation.InputContext.Signer;
-            var avatarAddress = evaluation.Action.avatarAddress;
-            var result = evaluation.Action.result;
+            var agentAddress = eval.InputContext.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var result = eval.Action.result;
             var itemUsable = result.itemUsable;
 
             LocalStateModifier.ModifyGold(agentAddress, result.gold);
@@ -333,12 +348,12 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemUsable.ItemId);
-
+            RenderQuest(avatarAddress, eval.Action.completedQuestIds);
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,
-                string.Format(format, evaluation.Action.result.itemUsable.Data.GetLocalizedName()));
-            UpdateAgentState(evaluation);
-            UpdateCurrentAvatarState(evaluation);
+                string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
@@ -350,6 +365,29 @@ namespace Nekoyume.BlockChain
             actionFailPopup.Close();
 
             Widget.Find<RankingBoard>().GoToStage(eval);
+        }
+
+        public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
+        {
+            foreach (int id in ids)
+            {
+                LocalStateModifier.AddReceivableQuest(avatarAddress, id);
+
+                var currentAvatarState = States.Instance.CurrentAvatarState;
+                if (currentAvatarState.address == avatarAddress)
+                {
+                    var quest = currentAvatarState.questList.First(q => q.Id == id);
+                    var rewardMap = quest.Reward.ItemMap;
+
+                    foreach (var reward in rewardMap)
+                    {
+                        var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
+                            .First(pair => pair.Key == reward.Key);
+
+                        LocalStateModifier.RemoveItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
+                    }
+                }
+            }
         }
     }
 }

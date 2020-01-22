@@ -83,6 +83,7 @@ namespace Nekoyume.UI
                 {
                     var avatarState = States.Instance.SelectAvatar(_selectedIndex);
                     OnDidAvatarStateLoaded(avatarState);
+                    ActionRenderHandler.Instance.RenderQuest(avatarState.address, eval.Action.completedQuestIds);
                     Find<GrayLoadingScreen>()?.Close();
                 }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
             AudioController.PlayClick();

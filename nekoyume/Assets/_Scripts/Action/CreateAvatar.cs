@@ -25,6 +25,7 @@ namespace Nekoyume.Action
         public int ear;
         public int tail;
         public string name;
+        public IImmutableList<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {
@@ -97,8 +98,9 @@ namespace Nekoyume.Action
 
             avatarState.Customize(hair, lens, ear, tail);
 
-            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
-            foreach (var quest in completedQuest)
+            var completedQuests = avatarState.questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
+            completedQuestIds = completedQuests.Select(quest => quest.Id).ToImmutableList();
+            foreach (var quest in completedQuests)
             {
                 avatarState.UpdateFromQuestReward(quest, ctx);
             }

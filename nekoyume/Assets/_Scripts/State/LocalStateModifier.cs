@@ -179,7 +179,7 @@ namespace Nekoyume.State
         /// <param name="guid"></param>
         public static void AddNewAttachmentMail(Address avatarAddress, Guid guid)
         {
-            var modifier = new AvatarNewAttachmentMailSetter(guid);
+            var modifier = new AvatarAttachmentMailNewSetter(guid);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
@@ -200,7 +200,44 @@ namespace Nekoyume.State
         /// <param name="guid"></param>
         public static void RemoveNewAttachmentMail(Address avatarAddress, Guid guid)
         {
-            var modifier = new AvatarNewAttachmentMailSetter(guid);
+            var modifier = new AvatarAttachmentMailNewSetter(guid);
+            LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
+        }
+
+        #endregion
+
+        #region Quest
+
+        /// <summary>
+        /// `avatarAddress`에 해당하는 아바타 상태의 `QuestList` 안의 퀘스트 중, 매개변수의 `id`를 가진 퀘스트를 신규 처리한다.(비휘발성)
+        /// </summary>
+        /// <param name="avatarAddress"></param>
+        /// <param name="id"></param>
+        public static void AddReceivableQuest(Address avatarAddress, int id)
+        {
+            var modifier = new AvatarQuestReceivableSetter(id);
+            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
+                return;
+
+            modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+                return;
+
+            ReactiveAvatarState.QuestList.SetValueAndForceNotify(outAvatarState.questList);
+        }
+
+        /// <summary>
+        /// `avatarAddress`에 해당하는 아바타 상태의 `QuestList` 안의 퀘스트 중, 매개변수의 `id`를 가진 퀘스트의 신규 처리를 회귀한다.(비휘발성)
+        /// </summary>
+        /// <param name="avatarAddress"></param>
+        /// <param name="id"></param>
+        public static void RemoveReceivableQuest(Address avatarAddress, int id)
+        {
+            var modifier = new AvatarQuestReceivableSetter(id);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
             TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
         }

@@ -304,7 +304,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            questButton.SharedModel.HasNotification.Value = questList.Any(i => i.Complete && !i.Receive);
+            questButton.SharedModel.HasNotification.Value = questList.Any(quest => quest.IsPaidInAction && quest.isReceivable);
+            Find<Quest>().SetList(questList);
         }
 
         #endregion

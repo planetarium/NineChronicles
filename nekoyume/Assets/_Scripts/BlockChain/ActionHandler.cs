@@ -99,7 +99,7 @@ namespace Nekoyume.BlockChain
             }
 
             Game.Game.instance.Stage.AvatarState = null;
-            var questList = avatarState.questList.Where(i => i.Complete && !i.Receive).ToList();
+            var questList = avatarState.questList.Where(i => i.Complete && !i.IsPaidInAction).ToList();
             if (questList.Count >= 1)
             {
                 if (questList.Count == 1)

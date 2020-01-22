@@ -184,12 +184,14 @@ namespace Nekoyume.UI
             model.Item.Value = new CountEditableItem(item, 1, 1, 1);
             model.OnClickSubmit.Subscribe(_ =>
             {
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
                 popup.Close();
             }).AddTo(gameObject);
             model.OnClickCancel.Subscribe(_ =>
             {
-                //TODO 재판매 처리추가되야함
+                //TODO 재판매 처리추가되야함\
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, item.ItemId);
                 popup.Close();
             }).AddTo(gameObject);

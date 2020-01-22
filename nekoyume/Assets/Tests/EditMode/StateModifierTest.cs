@@ -95,7 +95,7 @@ namespace Tests.EditMode
             Assert.False(attachmentMail.New);
             _avatarState.mailBox.Add(attachmentMail);
             var modifier =
-                JsonTest(new AvatarNewAttachmentMailSetter(attachmentMail.attachment.itemUsable.ItemId));
+                JsonTest(new AvatarAttachmentMailNewSetter(attachmentMail.attachment.itemUsable.ItemId));
             modifier.Modify(_avatarState);
             Assert.True(attachmentMail.New);
         }
