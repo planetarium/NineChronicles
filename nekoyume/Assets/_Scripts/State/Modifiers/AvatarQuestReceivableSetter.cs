@@ -12,7 +12,7 @@ namespace Nekoyume.State.Modifiers
         [SerializeField]
         private List<int> questIdList;
 
-        public override bool IsEmpty => questIdList.Count == 0;
+        public override bool IsEmpty => !questIdList.Any();
 
         public AvatarQuestReceivableSetter(params int[] questIdParams)
         {

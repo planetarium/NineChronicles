@@ -203,20 +203,8 @@ namespace Nekoyume.Action
             sellerAvatarState.updatedAt = timestamp;
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
-
-            var buyerCompletedQuests = buyerAvatarState.questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
-            buyerCompletedQuestIds = buyerCompletedQuests.Select(quest => quest.Id).ToImmutableList();
-            foreach (var quest in buyerCompletedQuests)
-            {
-                buyerAvatarState.UpdateFromQuestReward(quest, ctx);
-            }
-
-            var sellerCompletedQuests = sellerAvatarState.questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
-            sellerCompletedQuestIds = sellerCompletedQuests.Select(quest => quest.Id).ToImmutableList();
-            foreach (var quest in sellerCompletedQuests)
-            {
-                sellerAvatarState.UpdateFromQuestReward(quest, ctx);
-            }
+            buyerCompletedQuestIds = buyerAvatarState.UpdateQuestRewards(ctx).ToImmutableList();
+            sellerCompletedQuestIds = sellerAvatarState.UpdateQuestRewards(ctx).ToImmutableList();
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();

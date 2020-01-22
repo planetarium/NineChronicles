@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             }
 
             avatarState.UpdateFromQuestReward(quest, ctx);
-            quest.IsPaidInAction = true;
+
             sw.Stop();
             UnityEngine.Debug.Log($"QuestReward Update AvatarState: {sw.Elapsed}");
             sw.Restart();
