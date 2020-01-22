@@ -10,6 +10,7 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
+using UniRx;
 
 namespace Nekoyume.Model
 {
@@ -18,12 +19,16 @@ namespace Nekoyume.Model
     {
         public const decimal CriticalMultiplier = 1.5m;
 
-        [NonSerialized] private Root _root;
+        [NonSerialized]
+        private Root _root;
+
         private Skill.Skill _selectedSkill;
         private BattleStatus.Skill _usedSkill;
 
         public readonly Guid Id = Guid.NewGuid();
-        [NonSerialized] public readonly Simulator Simulator;
+
+        [NonSerialized]
+        public readonly Simulator Simulator;
 
         public ElementalType atkElementType;
         public float attackRange;
@@ -231,6 +236,107 @@ namespace Nekoyume.Model
             var correction = result == ElementalResult.Lose ? 50 : 0;
             var chance = Simulator.Random.Next(0, 100);
             return chance >= Stats.DOG + correction;
+        }
+
+        public bool IsHit(CharacterBase caster)
+        {
+            var correction = 0;
+            var diff = caster.Level - Level;
+
+            // 1단계.
+            if (diff <= -14)
+            {
+                correction = -5;
+            }
+            else if (diff >= 10)
+            {
+                correction = 50;
+            }
+            else
+            {
+                switch (diff)
+                {
+                    case -13:
+                        correction = -4;
+                        break;
+                    case -12:
+                        correction = -3;
+                        break;
+                    case -11:
+                        correction = -2;
+                        break;
+                    case -10:
+                        correction = -1;
+                        break;
+                    case -9:
+                        correction = 0;
+                        break;
+                    case -8:
+                        correction = 1;
+                        break;
+                    case -7:
+                        correction = 2;
+                        break;
+                    case -6:
+                        correction = 4;
+                        break;
+                    case -5:
+                        correction = 6;
+                        break;
+                    case -4:
+                        correction = 8;
+                        break;
+                    case -3:
+                        correction = 13;
+                        break;
+                    case -2:
+                        correction = 20;
+                        break;
+                    case -1:
+                        correction = 28;
+                        break;
+                    case 0:
+                        correction = 40;
+                        break;
+                    case 1:
+                        correction = 41;
+                        break;
+                    case 2:
+                        correction = 42;
+                        break;
+                    case 3:
+                        correction = 43;
+                        break;
+                    case 4:
+                        correction = 44;
+                        break;
+                    case 5:
+                        correction = 45;
+                        break;
+                    case 6:
+                        correction = 46;
+                        break;
+                    case 7:
+                        correction = 47;
+                        break;
+                    case 8:
+                        correction = 48;
+                        break;
+                    case 9:
+                        correction = 49;
+                        break;
+                }
+            }
+            
+            // 2단계.
+            var additionalCorrection = (caster.DOG - (float)DOG / 3) / DOG; 
+            correction += (int) Math.Min(Math.Max(additionalCorrection, 0f), 50f);
+            
+            // 3단계.
+            correction = Math.Min(Math.Max(correction, 10), 90);
+
+            var chance = Simulator.Random.Next(0, 100);
+            return chance <= correction;
         }
 
         private bool IsAlive()

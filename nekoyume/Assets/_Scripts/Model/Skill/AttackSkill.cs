@@ -37,7 +37,7 @@ namespace Nekoyume.Model.Skill
                     var damage = 0;
                     var elementalResult = elemental.GetBattleResult(target.defElementType);
                     var critical = elementalResult == ElementalResult.Win;
-                    if (target.IsHit(elementalResult))
+                    if (target.IsHit(caster))
                     {
                         var multiply = multiplier[i];
                         if (!critical)
