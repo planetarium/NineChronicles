@@ -15,6 +15,8 @@ namespace Nekoyume.Game.Character
 
         public PointerEventData PointerEventData { get; private set; }
 
+        
+
         public void OnPointerClick(PointerEventData eventData)
         {
             PointerEventData = eventData;
@@ -44,6 +46,43 @@ namespace Nekoyume.Game.Character
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void SetCollider(BoxCollider boxCollider, Vector3 localPosition, Vector3 localScale)
+        {
+            var size = boxCollider.size;
+            var center = boxCollider.center;
+            var collider2D = GetComponent<BoxCollider2D>();
+            
+            if (!(collider2D is null))
+            {    
+                collider2D.offset = new Vector2(
+                    center.x * localScale.x + localPosition.x,
+                    center.y * localScale.y + localPosition.y
+                    );
+                collider2D.size = new Vector2(
+                    size.x * localScale.x,
+                    size.y * localScale.y);
+                
+                return;
+            }
+            
+            var collider = GetComponent<BoxCollider>();
+
+            if (!(collider is null))
+            {
+                collider.center = new Vector3(
+                    center.x * localScale.x + localPosition.x,
+                    center.y * localScale.y + localPosition.y,
+                    center.z * localScale.z + localPosition.z
+                    );
+                collider.size = new Vector3(
+                    size.x * localScale.x, 
+                    size.y * localScale.y,
+                    size.z * localScale.z);
+                
+                return;
             }
         }
     }

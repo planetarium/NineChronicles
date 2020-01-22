@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 2694758727851113967}
   - component: {fileID: 5063668899789467732}
   - component: {fileID: 4066690425107072514}
-  - component: {fileID: 6877182967224026258}
   - component: {fileID: 141673539472097821}
+  - component: {fileID: 4311234311215119779}
   m_Layer: 8
   m_Name: main_com
   m_TagString: Untagged
@@ -126,7 +126,7 @@ Animator:
   m_GameObject: {fileID: 165991570617174920}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 21ad0e93f82d940989ca46e7a61db8ac, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6dfc8316974b74d4a88a1ad504e42871, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -135,51 +135,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &6877182967224026258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 165991570617174920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ea4943521264f4fb16186014e900c1f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  statesAndAnimations:
-  - stateName: Appear
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Standing
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: StandingToIdle
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Idle
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Touch
-    animation: {fileID: 11400000, guid: be0947900e8361c4ead214ee1624c14c, type: 2}
-  - stateName: Run
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Attack
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Casting
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: CastingAttack
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: CriticalAttack
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Hit
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Die
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Win
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Disappear
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Greeting
-    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
-  - stateName: Emotion
-    animation: {fileID: 11400000, guid: be0947900e8361c4ead214ee1624c14c, type: 2}
 --- !u!65 &141673539472097821
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -193,3 +148,20 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.1770532, y: 1.0156732, z: 0}
   m_Center: {x: 0.05661404, y: 0.4202366, z: 0}
+--- !u!114 &4311234311215119779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 165991570617174920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45c9f9f6fb9a40edbb3b19220df6a86d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statesAndAnimations:
+  - stateName: Idle_01
+    animation: {fileID: 11400000, guid: b41e6f7d85e920c47bf28f961805df0f, type: 2}
+  - stateName: Touch_01
+    animation: {fileID: 11400000, guid: be0947900e8361c4ead214ee1624c14c, type: 2}

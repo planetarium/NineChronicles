@@ -1,3 +1,5 @@
+using Spine;
+
 namespace Nekoyume.Game.Character
 {
     public class NPCSpineController : SpineController
@@ -9,7 +11,8 @@ namespace Nekoyume.Game.Character
                    || animationName == nameof(NPCAnimation.Type.Idle_03)
                    || animationName == nameof(NPCAnimation.Type.Loop_01)
                    || animationName == nameof(NPCAnimation.Type.Loop_02)
-                   || animationName == nameof(NPCAnimation.Type.Loop_03);
+                   || animationName == nameof(NPCAnimation.Type.Loop_03)
+                   || animationName == "Idle";
         }
     }
 }

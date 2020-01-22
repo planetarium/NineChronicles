@@ -119,10 +119,8 @@ namespace Nekoyume.Game.Character
         public TrackEntry PlayAnimationForState(int shortNameHash, int layerIndex)
         {
             var foundAnimation = GetAnimationForState(shortNameHash);
-            if (foundAnimation == null)
-            {
-                return null;
-            }
+            if (foundAnimation is null)
+                throw new KeyNotFoundException(nameof(shortNameHash));
 
             return PlayNewAnimation(foundAnimation, layerIndex);
         }
@@ -130,10 +128,8 @@ namespace Nekoyume.Game.Character
         public TrackEntry PlayAnimationForState(string stateName, int layerIndex)
         {
             var foundAnimation = GetAnimationForState(stateName);
-            if (foundAnimation == null)
-            {
-                return null;
-            }
+            if (foundAnimation is null)
+                throw new KeyNotFoundException(nameof(stateName));
 
             return PlayNewAnimation(foundAnimation, layerIndex);
         }
@@ -182,7 +178,6 @@ namespace Nekoyume.Game.Character
             var foundState = statesAndAnimations.Find(entry => entry.stateName == stateName);
             return foundState?.animation;
         }
-
         /// <summary>Play an animation. If a transition animation is defined, the transition is played before the target animation being passed.</summary>
         private TrackEntry PlayNewAnimation(Spine.Animation target, int layerIndex)
         {
