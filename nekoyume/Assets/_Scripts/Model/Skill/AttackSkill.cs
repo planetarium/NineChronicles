@@ -28,7 +28,7 @@ namespace Nekoyume.Model.Skill
             var targetList = targets.ToArray();
             var elemental = skillRow.ElementalType;
             var multiplier = GetMultiplier(skillRow.HitCount, 1);
-            var skillDamage = caster.ATK + power;
+            var skillDamage = caster.GetDamage(power);
             for (var i = 0; i < skillRow.HitCount; i++)
             {
                 foreach (var target in targetList)
@@ -55,6 +55,10 @@ namespace Nekoyume.Model.Skill
                         }
 
                         target.CurrentHP -= damage;
+                    }
+                    else
+                    {
+                        caster.attackCount = 0;
                     }
 
                     // 연타공격은 항상 연출이 크리티컬로 보이도록 처리

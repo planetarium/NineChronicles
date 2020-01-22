@@ -44,6 +44,8 @@ namespace Nekoyume.Model
         public float RunSpeed => RowData?.RunSpeed ?? 1f;
         public CharacterStats Stats { get; }
 
+        public int attackCount;
+
         public int Level
         {
             get => Stats.Level;
@@ -227,6 +229,10 @@ namespace Nekoyume.Model
         public bool IsCritical(ElementalResult result)
         {
             var correction = result == ElementalResult.Win ? 50 : 0;
+            if (attackCount == 2)
+            {
+                correction += 25;
+            }
             var chance = Simulator.Random.Next(0, 100);
             return CRI + correction > chance;
         }
@@ -241,6 +247,20 @@ namespace Nekoyume.Model
         public virtual bool IsHit(CharacterBase caster)
         {
             return HitHelper.IsHit(caster.Level, caster.HIT, Level, HIT, Simulator.Random.Next(0, 100));
+        }
+
+        public int GetDamage(int power)
+        {
+            if (attackCount != 1)
+            {
+                attackCount = 1;
+            }
+            else
+            {
+                attackCount++;
+            }
+
+            return ATK * attackCount + power;
         }
 
         private bool IsAlive()
