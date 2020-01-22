@@ -15,15 +15,13 @@ namespace Nekoyume.State
         
         public static IReadOnlyDictionary<int, Address> AvatarAddresses => _avatarAddresses;
         
-        public static void Initialize(AgentState agentState)
+        public static void Initialize(AgentState state)
         {
-            if (ReferenceEquals(agentState, null))
-            {
+            if (state is null)
                 return;
-            }
             
-            Gold.Value = agentState.gold;
-            _avatarAddresses = agentState.avatarAddresses;
+            Gold.Value = state.gold;
+            _avatarAddresses = state.avatarAddresses;
         }
     }
 }

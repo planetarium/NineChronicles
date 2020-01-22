@@ -76,7 +76,7 @@ namespace Nekoyume.Data.Table
                         value = arr[index];
 
                     }
-                    catch (IndexOutOfRangeException e)
+                    catch (IndexOutOfRangeException)
                     {
                         Debug.LogError($"Invalid Table: {GetType()}");
                         throw;

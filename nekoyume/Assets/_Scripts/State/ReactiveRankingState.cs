@@ -9,14 +9,12 @@ namespace Nekoyume.State
     {
         public static readonly ReactiveProperty<RankingState> RankingState = new ReactiveProperty<RankingState>();
 
-        public static void Initialize(RankingState rankingState)
+        public static void Initialize(RankingState state)
         {
-            if (ReferenceEquals(rankingState, null))
-            {
+            if (state is null)
                 return;
-            }
 
-            RankingState.Value = rankingState;
+            RankingState.Value = state;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Nekoyume.State.Modifiers
         private List<JsonConvertibleGuid> guidList;
 
         public override bool IsEmpty => guidList.Count == 0;
-        
+
         public AvatarInventoryNonFungibleItemRemover(params Guid[] guidParams)
         {
             guidList = new List<JsonConvertibleGuid>();
@@ -24,7 +24,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override void Add(IStateModifier<AvatarState> modifier)
+        public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarInventoryNonFungibleItemRemover m))
                 return;
@@ -35,7 +35,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override void Remove(IStateModifier<AvatarState> modifier)
+        public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarInventoryNonFungibleItemRemover m))
                 return;
@@ -53,9 +53,9 @@ namespace Nekoyume.State.Modifiers
 
             foreach (var guid in guidList)
             {
-                state.inventory.RemoveNonFungibleItem(guid.Value);                
+                state.inventory.RemoveNonFungibleItem(guid.Value);
             }
-            
+
             return state;
         }
 

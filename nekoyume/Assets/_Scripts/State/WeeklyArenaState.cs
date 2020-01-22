@@ -8,29 +8,39 @@ using DecimalMath;
 using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 
 namespace Nekoyume.State
 {
     public class WeeklyArenaState : State, IDictionary<Address, ArenaInfo>
     {
+        #region static
+
+        private static List<Address> _addresses = null;
+
         public static List<Address> Addresses
         {
             get
             {
-                var addresses = new List<Address>();
+                if (!(_addresses is null))
+                    return _addresses;
+
+                _addresses = new List<Address>();
                 for (byte i = 0x10; i < 0x62; i++)
                 {
                     var addr = new Address(new byte[]
                     {
                         0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, i
                     });
-                    addresses.Add(addr);
+                    _addresses.Add(addr);
                 }
 
-                return addresses;
+                return _addresses;
             }
         }
+
+        #endregion
 
         public decimal Gold;
 
@@ -42,10 +52,9 @@ namespace Nekoyume.State
         public WeeklyArenaState(Address address) : base(address)
         {
             _map = new Dictionary<Address, ArenaInfo>();
-            Gold = 100;
         }
 
-        public WeeklyArenaState(Dictionary serialized) : base(serialized)
+        public WeeklyArenaState(Bencodex.Types.Dictionary serialized) : base(serialized)
         {
             _map = ((Bencodex.Types.Dictionary) serialized["map"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
@@ -63,7 +72,7 @@ namespace Nekoyume.State
 
             Gold = serialized.GetDecimal("gold");
         }
-        
+
         public WeeklyArenaState(IValue iValue) : this((Bencodex.Types.Dictionary) iValue)
         {
         }
@@ -86,7 +95,41 @@ namespace Nekoyume.State
                 )),
                 [(Text) "gold"] = Gold.Serialize(),
             }.Union((Bencodex.Types.Dictionary) base.Serialize()));
-        
+
+        /// <summary>
+        /// 인자로 넘겨 받은 `avatarAddress`를 기준으로 상위와 하위 범위에 해당하는 랭킹 정보를 얻습니다.
+        /// </summary>
+        /// <param name="avatarAddress"></param>
+        /// <param name="upperRange">상위 범위</param>
+        /// <param name="lowerRange">하위 범위</param>
+        /// <returns></returns>
+        public List<(int rank, ArenaInfo arenaInfo)> GetArenaInfos(Address avatarAddress, int upperRange = 10,
+            int lowerRange = 10)
+        {
+            var arenaInfos = _map.Values
+                .OrderByDescending(pair => pair.Score)
+                .ThenBy(pair => pair.CombatPoint)
+                .ToList();
+
+            var avatarIndex = 0;
+            for (var i = 0; i < arenaInfos.Count; i++)
+            {
+                var pair = arenaInfos[i];
+                if (!pair.AvatarAddress.Equals(avatarAddress))
+                    continue;
+
+                avatarIndex = i;
+                break;
+            }
+
+            var firstIndex = Math.Max(0, avatarIndex - upperRange);
+            var lastIndex = Math.Min(avatarIndex + lowerRange, arenaInfos.Count - 1);
+            var offsetIndex = 1;
+            return arenaInfos.GetRange(firstIndex, lastIndex - firstIndex + 1)
+                .Select(arenaInfo => (firstIndex + offsetIndex++, arenaInfo))
+                .ToList();
+        }
+
         private void Update(AvatarState avatarState, bool active = false)
         {
             Add(avatarState.address, new ArenaInfo(avatarState, active));
@@ -271,12 +314,12 @@ namespace Nekoyume.State
         public readonly Address AvatarAddress;
         public readonly Address AgentAddress;
         public readonly string AvatarName;
-        public readonly int CombatPoint;
         public readonly Record ArenaRecord;
         public int Level { get; private set; }
+        public int CombatPoint { get; private set; }
+        public int ArmorId { get; private set; }
         public bool Active { get; private set; }
         public int DailyChallengeCount { get; private set; }
-        public int ArmorId { get; private set; }
         public int Score { get; private set; }
         public bool Receive;
 
@@ -284,31 +327,31 @@ namespace Nekoyume.State
         {
             AvatarAddress = avatarState.address;
             AgentAddress = avatarState.agentAddress;
+            AvatarName = avatarState.NameWithHash;
+            ArenaRecord = new Record();
+            Level = avatarState.level;
             var armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
             ArmorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
-            Level = avatarState.level;
-            AvatarName = avatarState.NameWithHash;
-            CombatPoint = 100;
-            Score = 1000;
-            DailyChallengeCount = 5;
+            CombatPoint = CPHelper.GetCP(avatarState);
             Active = active;
-            ArenaRecord = new Record();
+            DailyChallengeCount = GameConfig.ArenaChallengeCountMax;
+            Score = GameConfig.ArenaScoreDefault;
         }
 
         public ArenaInfo(Bencodex.Types.Dictionary serialized)
         {
             AvatarAddress = serialized.GetAddress("avatarAddress");
             AgentAddress = serialized.GetAddress("agentAddress");
-            ArmorId = serialized.GetInteger("armorId");
-            Level = serialized.GetInteger("level");
             AvatarName = serialized.GetString("avatarName");
-            CombatPoint = serialized.GetInteger("combatPoint");
-            Score = serialized.GetInteger("score");
-            DailyChallengeCount = serialized.GetInteger("dailyChallengeCount");
-            Active = serialized.GetBoolean("active");
             ArenaRecord = serialized.ContainsKey((Text) "arenaRecord")
                 ? new Record((Bencodex.Types.Dictionary) serialized["arenaRecord"])
                 : new Record();
+            Level = serialized.GetInteger("level");
+            ArmorId = serialized.GetInteger("armorId");
+            CombatPoint = serialized.GetInteger("combatPoint");
+            Active = serialized.GetBoolean("active");
+            DailyChallengeCount = serialized.GetInteger("dailyChallengeCount");
+            Score = serialized.GetInteger("score");
         }
 
         public ArenaInfo(ArenaInfo prevInfo)
@@ -330,26 +373,27 @@ namespace Nekoyume.State
             {
                 [(Bencodex.Types.Text) "avatarAddress"] = AvatarAddress.Serialize(),
                 [(Bencodex.Types.Text) "agentAddress"] = AgentAddress.Serialize(),
-                [(Bencodex.Types.Text) "armorId"] = ArmorId.Serialize(),
-                [(Bencodex.Types.Text) "level"] = Level.Serialize(),
                 [(Bencodex.Types.Text) "avatarName"] = AvatarName.Serialize(),
-                [(Bencodex.Types.Text) "combatPoint"] = CombatPoint.Serialize(),
-                [(Bencodex.Types.Text) "score"] = Score.Serialize(),
-                [(Bencodex.Types.Text) "dailyChallengeCount"] = DailyChallengeCount.Serialize(),
-                [(Bencodex.Types.Text) "active"] = Active.Serialize(),
                 [(Bencodex.Types.Text) "arenaRecord"] = ArenaRecord.Serialize(),
+                [(Bencodex.Types.Text) "level"] = Level.Serialize(),
+                [(Bencodex.Types.Text) "armorId"] = ArmorId.Serialize(),
+                [(Bencodex.Types.Text) "combatPoint"] = CombatPoint.Serialize(),
+                [(Bencodex.Types.Text) "active"] = Active.Serialize(),
+                [(Bencodex.Types.Text) "dailyChallengeCount"] = DailyChallengeCount.Serialize(),
+                [(Bencodex.Types.Text) "score"] = Score.Serialize(),
             });
 
         public void Update(int score)
         {
             var calculated = Score + score;
-            Score = Math.Max(1000, calculated);
+            Score = Math.Max(GameConfig.ArenaScoreDefault, calculated);
             DailyChallengeCount--;
         }
 
         public void Update(AvatarState state)
         {
             ArmorId = state.GetArmorId();
+            CombatPoint = CPHelper.GetCP(state);
         }
 
         public int Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)

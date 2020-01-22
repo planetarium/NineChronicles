@@ -13,8 +13,6 @@ namespace Nekoyume.Game.Character
             if (!ValidateAnimator())
                 return;
             
-            Debug.LogWarning($"{nameof(NPCAnimator)}.{nameof(Play)}: {type.ToString()}, {BaseLayerIndex}, {normalizedTime}");
-            
             Animator.Play(type.ToString(), BaseLayerIndex, normalizedTime);
         }
     }

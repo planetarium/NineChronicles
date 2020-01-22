@@ -13,14 +13,12 @@ namespace Nekoyume.State
         public static readonly ReactiveProperty<Dictionary<Address, List<ShopItem>>> Items =
             new ReactiveProperty<Dictionary<Address, List<ShopItem>>>();
 
-        public static void Initialize(ShopState shopState)
+        public static void Initialize(ShopState state)
         {
-            if (ReferenceEquals(shopState, null))
-            {
+            if (state is null)
                 return;
-            }
 
-            Items.Value = shopState.AgentProducts;
+            Items.Value = state.AgentProducts;
         }
     }
 }

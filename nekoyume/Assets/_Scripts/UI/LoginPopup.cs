@@ -231,7 +231,7 @@ namespace Nekoyume.UI
             {
                 _privateKey = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 loginWarning.SetActive(true);
                 return;

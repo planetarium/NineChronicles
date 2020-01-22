@@ -24,6 +24,8 @@ namespace Nekoyume.Helper
         private const string PlayerSpineTextureTailPath = "Character/PlayerSpineTexture/Tail/{0}";
         private const string PlayerSpineTextureWeaponPath = "Character/PlayerSpineTexture/Weapon/{0}";
 
+        private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
+
         public static Sprite GetCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
@@ -131,6 +133,11 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPath, equipmentId)) ??
                    Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPath, GameConfig.DefaultAvatarWeaponId));
+        }
+
+        public static Sprite GetRankIcon(int rank)
+        {
+            return Resources.Load<Sprite>(string.Format(RankIconPath, rank.ToString("D2")));
         }
     }
 }

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
@@ -14,7 +13,7 @@ using UnityEngine;
 namespace Nekoyume.Action
 {
     [ActionType("ranking_battle")]
-    public class RankingBattle: GameAction
+    public class RankingBattle : GameAction
     {
         public Address AvatarAddress;
         public Address EnemyAddress;
@@ -71,7 +70,6 @@ namespace Nekoyume.Action
                     return states;
                 }
             }
-
 
             if (!weeklyArenaState.ContainsKey(EnemyAddress))
 

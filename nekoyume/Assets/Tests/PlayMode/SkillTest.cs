@@ -20,7 +20,7 @@ namespace Tests.PlayMode
         private StageSimulator _stageSimulator;
 
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
             var random = new Cheat.DebugRandom();
             var address = new Address();

@@ -23,9 +23,10 @@ namespace Nekoyume.State.Modifiers
         public class InnerDictionary : JsonConvertibleDictionary<InnerHashDigest, int>
         {
         }
-        
-        [SerializeField] private InnerDictionary idAndCountDictionary;
-        
+
+        [SerializeField]
+        private InnerDictionary idAndCountDictionary;
+
         public override bool IsEmpty => idAndCountDictionary.Value.Count == 0;
 
         public AvatarInventoryFungibleItemRemover(HashDigest<SHA256> id, int count)
@@ -53,7 +54,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override void Add(IStateModifier<AvatarState> modifier)
+        public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarInventoryFungibleItemRemover m))
                 return;
@@ -72,7 +73,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override void Remove(IStateModifier<AvatarState> modifier)
+        public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarInventoryFungibleItemRemover m))
                 return;

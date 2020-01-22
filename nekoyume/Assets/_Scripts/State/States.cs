@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Libplanet;
+using Nekoyume.State.Subjects;
+using UnityEngine;
 
 namespace Nekoyume.State
 {
@@ -15,6 +17,8 @@ namespace Nekoyume.State
         public RankingState RankingState { get; private set; }
 
         public ShopState ShopState { get; private set; }
+        
+        public WeeklyArenaState WeeklyArenaState { get; private set; }
 
         public AgentState AgentState { get; private set; }
 
@@ -39,7 +43,10 @@ namespace Nekoyume.State
         public void SetRankingState(RankingState state)
         {
             if (state is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetRankingState)}] {nameof(state)} is null.");
                 return;
+            }
 
             RankingState = state;
             ReactiveRankingState.Initialize(RankingState);
@@ -52,10 +59,26 @@ namespace Nekoyume.State
         public void SetShopState(ShopState state)
         {
             if (state is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetShopState)}] {nameof(state)} is null.");
                 return;
+            }
 
             ShopState = state;
             ReactiveShopState.Initialize(ShopState);
+        }
+
+        public void SetWeeklyArenaState(WeeklyArenaState state)
+        {
+            if (state is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetWeeklyArenaState)}] {nameof(state)} is null.");
+                return;
+            }
+
+            LocalStateSettings.Instance.InitializeWeeklyArena(state);
+            WeeklyArenaState = LocalStateSettings.Instance.Modify(state);
+            WeeklyArenaStateSubject.OnNext(WeeklyArenaState);
         }
 
         /// <summary>
@@ -67,13 +90,16 @@ namespace Nekoyume.State
         public void SetAgentState(AgentState state)
         {
             if (state is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetAgentState)}] {nameof(state)} is null.");
                 return;
+            }
 
             var getAllOfAvatarStates =
                 AgentState is null ||
                 !AgentState.address.Equals(state.address);
 
-            LocalStateSettings.Instance.Initialize(state);
+            LocalStateSettings.Instance.InitializeAgentAndAvatars(state);
             AgentState = LocalStateSettings.Instance.Modify(state);
             ReactiveAgentState.Initialize(AgentState);
 
@@ -103,7 +129,10 @@ namespace Nekoyume.State
         public AvatarState AddOrReplaceAvatarState(AvatarState state, int index, bool initializeReactiveState = true)
         {
             if (state is null)
+            {
+                Debug.LogWarning($"[{nameof(States)}.{nameof(AddOrReplaceAvatarState)}] {nameof(state)} is null.");
                 return null;
+            }
 
             if (AgentState is null || !AgentState.avatarAddresses.ContainsValue(state.address))
                 throw new Exception(
@@ -120,12 +149,9 @@ namespace Nekoyume.State
                 _avatarStates.Add(index, state);
             }
 
-            if (index == CurrentAvatarKey)
-            {
-                return SelectAvatar(index, initializeReactiveState);
-            }
-
-            return state;
+            return index == CurrentAvatarKey
+                ? SelectAvatar(index, initializeReactiveState)
+                : state;
         }
 
         /// <summary>

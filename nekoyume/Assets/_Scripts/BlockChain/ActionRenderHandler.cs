@@ -223,8 +223,8 @@ namespace Nekoyume.BlockChain
             var result = eval.Action.Result;
             var itemUsable = result.itemUsable;
             
-            LocalStateModifier.ModifyGold(agentAddress, result.gold);
-            LocalStateModifier.ModifyActionPoint(avatarAddress, result.actionPoint);
+            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
@@ -273,7 +273,7 @@ namespace Nekoyume.BlockChain
                 var buyerAgentAddress = States.Instance.AgentState.address;
                 var itemId = eval.Action.buyerResult.itemUsable.ItemId;
 
-                LocalStateModifier.ModifyGold(buyerAgentAddress, price);
+                LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
                 LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
                 LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, itemId);
                 RenderQuest(buyerAvatarAddress, eval.Action.buyerCompletedQuestIds);
@@ -287,7 +287,7 @@ namespace Nekoyume.BlockChain
                 var itemId = eval.Action.sellerResult.itemUsable.ItemId;
                 var gold = eval.Action.sellerResult.gold;
 
-                LocalStateModifier.ModifyGold(sellerAgentAddress, -gold);
+                LocalStateModifier.ModifyAgentGold(sellerAgentAddress, -gold);
                 LocalStateModifier.AddNewAttachmentMail(sellerAvatarAddress, itemId);
                 RenderQuest(sellerAvatarAddress, eval.Action.sellerCompletedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
@@ -312,6 +312,7 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddReceivableQuest(avatarAddress, questId);
             }
             UpdateCurrentAvatarState(eval);
+            UpdateWeeklyArenaState(eval);
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
@@ -344,8 +345,8 @@ namespace Nekoyume.BlockChain
             var result = eval.Action.result;
             var itemUsable = result.itemUsable;
 
-            LocalStateModifier.ModifyGold(agentAddress, result.gold);
-            LocalStateModifier.ModifyActionPoint(avatarAddress, result.actionPoint);
+            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId);
             foreach (var itemId in result.materialItemIdList)
             {
@@ -363,7 +364,18 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
         {
+            var weeklyArenaAddress = eval.Action.WeeklyArenaAddress;
+            var avatarAddress = eval.Action.AvatarAddress;
+            
+            // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 깎은 골드를 더하지 못함.
+            // LocalStateModifier.ModifyAgentGold(States.Instance.AgentState.address, GameConfig.ArenaActivationCostNCG);
+            // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 더한 골드를 빼주지 못함.
+            // LocalStateModifier.ModifyWeeklyArenaGold(-GameConfig.ArenaActivationCostNCG);
+            LocalStateModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
+            
+            UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+            UpdateWeeklyArenaState(eval);
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
