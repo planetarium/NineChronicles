@@ -563,11 +563,11 @@ namespace Nekoyume.BlockChain
 
                 Cheat.Display("StagedTxs", log.ToString());
                 
-                log = new StringBuilder($"Last 10 blocks :\n");
+                log = new StringBuilder($"Last 10 tips :\n");
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
                     log.Append($"[{block.Index}] {block.Hash}\n");
-                    log.Append($" -Miner : {blocks.Tip.Miner?.ToString()}\n");
+                    log.Append($" -Miner : {block.Miner?.ToString()}\n");
                     log.Append($" -Created at : {block.Timestamp}\n");
                     log.Append($" -Appended at : {appendedTime}\n");
                 }
