@@ -78,6 +78,17 @@ namespace Nekoyume.UI.Scroller
             {
                 return;
             }
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var rewardMap = quest.Reward.ItemMap;
+
+            foreach (var reward in rewardMap)
+            {
+                var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
+                    .First(pair => pair.Key == reward.Key);
+
+                LocalStateModifier.AddItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
+            }
+            LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
         }
 
         private void UpdateView()
@@ -97,7 +108,17 @@ namespace Nekoyume.UI.Scroller
 
             if (_quest.Complete)
             {
-                if (_quest.Receive)
+                if (_quest.isReceivable)
+                {
+                    background.color = Color.white;
+                    fillImage.color = ColorHelper.HexToColorRGB("ffffff");
+                    contentText.color = ColorHelper.HexToColorRGB("e0a491");
+                    contentTextBullet.color = ColorHelper.HexToColorRGB("e0a491");
+                    progressText.color = ColorHelper.HexToColorRGB("e0a491");
+                    receiveButton.Show();
+                    receiveButton.SetSubmittable(true);
+                }
+                else
                 {
                     isReceived = true;
                     fillImage.color = ColorHelper.HexToColorRGB("282828");
@@ -107,16 +128,6 @@ namespace Nekoyume.UI.Scroller
                     progressText.color = ColorHelper.HexToColorRGB("282828");
                     receiveButton.Show();
                     receiveButton.SetSubmittable(false);
-                }
-                else
-                {
-                    background.color = Color.white;
-                    fillImage.color = ColorHelper.HexToColorRGB("ffffff");
-                    contentText.color = ColorHelper.HexToColorRGB("e0a491");
-                    contentTextBullet.color = ColorHelper.HexToColorRGB("e0a491");
-                    progressText.color = ColorHelper.HexToColorRGB("e0a491");
-                    receiveButton.Show();
-                    receiveButton.SetSubmittable(true);
                 }
             }
             else

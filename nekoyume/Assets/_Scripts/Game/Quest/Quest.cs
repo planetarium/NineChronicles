@@ -23,6 +23,9 @@ namespace Nekoyume.Game.Quest
     [Serializable]
     public abstract class Quest : IState
     {
+        [NonSerialized]
+        public bool isReceivable = false;
+
         protected int _current;
 
         public abstract QuestType QuestType { get; }
@@ -50,7 +53,10 @@ namespace Nekoyume.Game.Quest
 
         public QuestReward Reward { get; }
 
-        public bool Receive { get; set; }
+        /// <summary>
+        /// 이미 퀘스트 보상이 액션에서 지급되었는가?
+        /// </summary>
+        public bool IsPaidInAction { get; set; }
 
         public float Progress => (float) _current / Goal;
 
@@ -86,8 +92,9 @@ namespace Nekoyume.Game.Quest
             _current = (int) ((Integer) serialized["current"]).Value;
             Id = (int) ((Integer) serialized["id"]).Value;
             Reward = new QuestReward((Dictionary) serialized["reward"]);
-            serialized.TryGetValue((Text) "receive", out var receive);
-            Receive = ((Bencodex.Types.Boolean?) receive)?.Value ?? false;
+            //serialized.TryGetValue((Text)"isPaidInAction", out var isPaidInAction);
+            //IsPaidInAction = ((Bencodex.Types.Boolean?) isPaidInAction)?.Value ?? false;
+            IsPaidInAction = serialized["isPaidInAction"].ToNullableBoolean() ?? false;
         }
 
         public abstract string GetProgressText();
@@ -101,7 +108,7 @@ namespace Nekoyume.Game.Quest
                 [(Text) "current"] = (Integer) _current,
                 [(Text) "id"] = (Integer) Id,
                 [(Text) "reward"] = Reward.Serialize(),
-                [(Bencodex.Types.Text) "receive"] = new Bencodex.Types.Boolean(Receive),
+                [(Bencodex.Types.Text) "isPaidInAction"] = new Bencodex.Types.Boolean(IsPaidInAction),
             });
 
         public static Quest Deserialize(Bencodex.Types.Dictionary serialized)

@@ -118,9 +118,20 @@ namespace Nekoyume.UI
         {
             for (int i = 0; i < tabButtons.Length; ++i)
             {
-                int cnt = _questList.Where(quest => quest.QuestType == (QuestType) i && quest.Complete && !quest.Receive).Count();
+                int cnt = _questList.Where(quest => quest.QuestType == (QuestType) i && quest.Complete && !quest.IsPaidInAction).Count();
                 tabButtons[i].hasNotificationImage.enabled = cnt > 0;
             }
+        }
+
+        public void SetList(QuestList list)
+        {
+            if (list is null)
+                return;
+            _questList = list;
+
+            float pos = scroller.scroller.ScrollPosition;
+            ChangeState((int) tabState);
+            scroller.scroller.ScrollPosition = pos;
         }
     }
 
@@ -135,32 +146,50 @@ namespace Nekoyume.UI
             if (y is null)
                 return -1;
 
-            // receive
-            if (x.Receive)
+            if(x.Complete && y.Complete)
             {
-                if (!y.Receive)
-                    return 1;
+                if(x.isReceivable)
+                {
+                    if (!y.isReceivable)
+                        return -1;
+                }
+                else
+                {
+                    if (y.isReceivable)
+                        return 1;
+                }
 
-                if (x.Id > y.Id)
-                    return 1;
-
-                if (x.Id == y.Id)
-                    return 0;
-
-                return -1;
+                return CompareId(x.Id, y.Id);
             }
 
-            if (y.Receive)
-                return -1;
-
-            // both are completed or incompleted
-            if (!(x.Complete ^ y.Complete))
+            if (x.Complete)
             {
-                return x.Id > y.Id ? 1 : -1;
+                if (x.isReceivable)
+                    return -1;
+                else
+                    return 1;
             }
 
-            // x xor y is completed
-            return y.Complete ? 1 : -1;
+            if (y.Complete)
+            {
+                if (y.isReceivable)
+                    return 1;
+                else
+                    return -1;
+            }
+
+            return CompareId(x.Id, y.Id);
+        }
+
+        private int CompareId(int x, int y)
+        {
+            if (x > y)
+                return 1;
+
+            if (x == y)
+                return 0;
+
+            return -1;
         }
     }
 }

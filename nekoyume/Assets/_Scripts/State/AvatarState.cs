@@ -289,7 +289,7 @@ namespace Nekoyume.State
                 }
             }
 
-            quest.Receive = true;
+            quest.IsPaidInAction = true;
             questList.UpdateCollectQuest(itemMap);
             questList.UpdateItemTypeCollectQuest(items);
             UpdateCompletedQuest();
