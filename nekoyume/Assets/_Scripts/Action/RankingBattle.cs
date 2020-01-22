@@ -107,11 +107,14 @@ namespace Nekoyume.Action
             {
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["enemyAddress"] = EnemyAddress.Serialize(),
+                ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
             }.ToImmutableDictionary();
+
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
+            WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
         }
     }
 }
