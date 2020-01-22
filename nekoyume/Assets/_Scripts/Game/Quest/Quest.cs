@@ -92,8 +92,6 @@ namespace Nekoyume.Game.Quest
             _current = (int) ((Integer) serialized["current"]).Value;
             Id = (int) ((Integer) serialized["id"]).Value;
             Reward = new QuestReward((Dictionary) serialized["reward"]);
-            //serialized.TryGetValue((Text)"isPaidInAction", out var isPaidInAction);
-            //IsPaidInAction = ((Bencodex.Types.Boolean?) isPaidInAction)?.Value ?? false;
             IsPaidInAction = serialized["isPaidInAction"].ToNullableBoolean() ?? false;
         }
 

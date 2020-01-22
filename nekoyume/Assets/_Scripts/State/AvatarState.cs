@@ -295,6 +295,23 @@ namespace Nekoyume.State
             UpdateCompletedQuest();
         }
 
+        /// <summary>
+        /// 완료된 퀘스트의 보상 처리를 한다.
+        /// </summary>
+        /// <returns>
+        /// 완료된 퀘스트의 ID를 반환한다.
+        /// </returns>
+        public IEnumerable<int> UpdateQuestRewards(IActionContext context)
+        {
+            var completedQuests = questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
+            foreach (var quest in completedQuests)
+            {
+                UpdateFromQuestReward(quest, context);
+            }
+
+            return completedQuests.Select(quest => quest.Id);
+        }
+
         #endregion
 
         public int GetArmorId()

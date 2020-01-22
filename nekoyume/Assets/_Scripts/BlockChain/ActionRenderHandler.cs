@@ -207,10 +207,6 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
         }
 
-        private void ResponseCreateAvatar(ActionBase.ActionEvaluation<CreateAvatar> eval)
-        { 
-}
-
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> eval)
         {
             var agentAddress = eval.InputContext.Signer;

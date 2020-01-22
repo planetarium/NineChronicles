@@ -191,12 +191,7 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
 
-            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
-            completedQuestIds = completedQuest.Select(quest => quest.Id).ToImmutableList();
-            foreach (var quest in completedQuest)
-            {
-                avatarState.UpdateFromQuestReward(quest, ctx);
-            }
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToImmutableList();
 
             sw.Stop();
             UnityEngine.Debug.Log($"ItemEnhancement Update AvatarState: {sw.Elapsed}");

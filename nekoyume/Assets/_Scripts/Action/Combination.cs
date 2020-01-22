@@ -317,12 +317,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var completedQuests = avatarState.questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
-            completedQuestIds = completedQuests.Select(quest => quest.Id).ToImmutableList();
-            foreach (var quest in completedQuests)
-            {
-                avatarState.UpdateFromQuestReward(quest, ctx);
-            }
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToImmutableList();
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;

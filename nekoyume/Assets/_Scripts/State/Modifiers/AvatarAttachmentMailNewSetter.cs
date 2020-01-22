@@ -14,7 +14,7 @@ namespace Nekoyume.State.Modifiers
         [SerializeField]
         private List<JsonConvertibleGuid> guidList;
 
-        public override bool IsEmpty => guidList.Count == 0;
+        public override bool IsEmpty => !guidList.Any();
 
         public AvatarAttachmentMailNewSetter(params Guid[] guidParams)
         {
