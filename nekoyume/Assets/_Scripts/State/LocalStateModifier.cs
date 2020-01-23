@@ -216,7 +216,7 @@ namespace Nekoyume.State
         /// <param name="id"></param>
         public static void AddReceivableQuest(Address avatarAddress, int id)
         {
-            var modifier = new AvatarQuestReceivableSetter(id);
+            var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
@@ -237,7 +237,7 @@ namespace Nekoyume.State
         /// <param name="id"></param>
         public static void RemoveReceivableQuest(Address avatarAddress, int id)
         {
-            var modifier = new AvatarQuestReceivableSetter(id);
+            var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
             TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
         }
