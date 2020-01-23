@@ -52,10 +52,7 @@ namespace Nekoyume.Game.Character
             if (target is null)
                 throw new NotFoundComponentException<NPCSpineController>();
 
-            Animator.ResetTarget(target.gameObject);
-            SpineController = target;
-            _touchHandler.SetCollider(SpineController.BoxCollider, target.transform.localPosition,
-                target.transform.localScale);
+            ResetTarget(target.gameObject);
         }
 
         public void ResetTarget(GameObject target)

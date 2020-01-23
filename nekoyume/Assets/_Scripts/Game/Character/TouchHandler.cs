@@ -15,8 +15,6 @@ namespace Nekoyume.Game.Character
 
         public PointerEventData PointerEventData { get; private set; }
 
-        
-
         public void OnPointerClick(PointerEventData eventData)
         {
             PointerEventData = eventData;
