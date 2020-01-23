@@ -71,6 +71,7 @@ namespace Nekoyume.UI
         private PrivateKey _privateKey;
         private States _prevState;
         private Dictionary<string, ProtectedPrivateKey> _protectedPrivateKeys = new Dictionary<string, ProtectedPrivateKey>();
+        public Blur blur;
 
         protected override void Awake()
         {
@@ -311,6 +312,7 @@ namespace Nekoyume.UI
         public void Show(string path, string privateKeyString)
         {
             base.Show();
+            blur?.Show();
 
             _keyStorePath = path;
             _privateKeyString = privateKeyString;
@@ -560,6 +562,12 @@ namespace Nekoyume.UI
                 accountAddressText.text = address.ToString();
                 accountAddressText.gameObject.SetActive(true);
             }
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            blur?.Close();
+            base.Close(ignoreCloseAnimation);
         }
     }
 }
