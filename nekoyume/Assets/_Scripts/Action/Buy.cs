@@ -203,8 +203,8 @@ namespace Nekoyume.Action
             sellerAvatarState.updatedAt = timestamp;
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
-            buyerCompletedQuestIds = buyerAvatarState.UpdateQuestRewards(ctx).ToImmutableList();
-            sellerCompletedQuestIds = sellerAvatarState.UpdateQuestRewards(ctx).ToImmutableList();
+            buyerCompletedQuestIds = buyerAvatarState.UpdateQuestRewards(ctx);
+            sellerCompletedQuestIds = sellerAvatarState.UpdateQuestRewards(ctx);
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();

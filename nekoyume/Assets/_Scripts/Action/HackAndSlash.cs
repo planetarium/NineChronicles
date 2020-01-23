@@ -159,7 +159,7 @@ namespace Nekoyume.Action
 
             avatarState.Update(simulator);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToImmutableList();
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());

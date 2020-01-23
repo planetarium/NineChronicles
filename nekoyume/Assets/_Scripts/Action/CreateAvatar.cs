@@ -98,7 +98,7 @@ namespace Nekoyume.Action
 
             avatarState.Customize(hair, lens, ear, tail);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToImmutableList();
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
             UnityEngine.Debug.Log($"CreateAvatar CreateAvatarState: {sw.Elapsed}");

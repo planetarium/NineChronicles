@@ -7,14 +7,14 @@ using UnityEngine;
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AvatarQuestReceivableSetter : AvatarStateModifier
+    public class AvatarQuestIsReceivableSetter : AvatarStateModifier
     {
         [SerializeField]
         private List<int> questIdList;
 
         public override bool IsEmpty => !questIdList.Any();
 
-        public AvatarQuestReceivableSetter(params int[] questIdParams)
+        public AvatarQuestIsReceivableSetter(params int[] questIdParams)
         {
             questIdList = new List<int>();
             foreach (var id in questIdParams)
@@ -25,7 +25,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Add(IStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarQuestReceivableSetter m))
+            if (!(modifier is AvatarQuestIsReceivableSetter m))
                 return;
 
             foreach (var incoming in m.questIdList.Where(incoming =>
@@ -37,7 +37,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Remove(IStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarQuestReceivableSetter m))
+            if (!(modifier is AvatarQuestIsReceivableSetter m))
                 return;
 
             foreach (var incoming in m.questIdList.Where(incoming =>

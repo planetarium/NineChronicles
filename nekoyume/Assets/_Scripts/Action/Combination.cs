@@ -317,7 +317,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToImmutableList();
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
