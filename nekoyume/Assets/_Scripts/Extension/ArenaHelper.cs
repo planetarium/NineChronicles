@@ -1,3 +1,4 @@
+using System;
 using Libplanet;
 using Nekoyume.State;
 
@@ -24,6 +25,12 @@ namespace Nekoyume
             
             weeklyArenaState = new WeeklyArenaState(Game.Game.instance.Agent.GetState(address));
             return true;
+        }
+
+        public static Address GetPrevWeekAddress()
+        {
+            var index = Math.Max((int) Game.Game.instance.Agent.blockIndex.Value / GameConfig.WeeklyArenaInterval, 0);
+            return WeeklyArenaState.Addresses[index];
         }
     }
 }

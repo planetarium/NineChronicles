@@ -35,13 +35,17 @@ namespace Nekoyume.Action
 
             var index = (int) ctx.BlockIndex / GameConfig.WeeklyArenaInterval;
             var weekly = states.GetWeeklyArenaState(WeeklyArenaState.Addresses[index]);
-            if (!(weekly is null))
+            if (ctx.BlockIndex % GameConfig.WeeklyArenaInterval == 0 && index > 0)
             {
-                if (ctx.BlockIndex - weekly.ResetIndex >= GameConfig.DailyArenaInterval)
-                {
-                    weekly.ResetCount(ctx.BlockIndex);
-                }
-
+                var prevWeekly = states.GetWeeklyArenaState(WeeklyArenaState.Addresses[index - 1]);
+                prevWeekly.End();
+                weekly.Update(prevWeekly, ctx.BlockIndex);
+                states = states.SetState(prevWeekly.address, prevWeekly.Serialize());
+                states = states.SetState(weekly.address, weekly.Serialize());
+            }
+            else if (ctx.BlockIndex - weekly.ResetIndex >= GameConfig.DailyArenaInterval)
+            {
+                weekly.ResetCount(ctx.BlockIndex);
                 states = states.SetState(weekly.address, weekly.Serialize());
             }
             return states.SetState(ctx.Miner, agentState.Serialize());

@@ -291,6 +291,23 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
+        public static IObservable<ActionBase.ActionEvaluation<WeeklyArenaReward>> WeeklyArenaReward()
+        {
+            var action = new WeeklyArenaReward
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                WeeklyArenaAddress = ArenaHelper.GetPrevWeekAddress()
+            };
+            ProcessAction(action);
+
+            return ActionBase.EveryRender<WeeklyArenaReward>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
         public static void PatchTableSheet(string tableName, string tableCsv)
         {
             var action = new PatchTableSheet

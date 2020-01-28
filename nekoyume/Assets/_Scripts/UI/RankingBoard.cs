@@ -146,9 +146,17 @@ namespace Nekoyume.UI
         private void OnClickRankingInfo(RankingInfo info)
         {
 //            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarInfo.AvatarAddress));
-            ActionManager.RankingBattle(info.AvatarInfo.AvatarAddress);
-            Find<LoadingScreen>().Show();
-            Find<RankingBattleLoadingScreen>().Show(info.AvatarInfo);
+            if (info.AvatarInfo.AvatarAddress == States.Instance.CurrentAvatarState.address)
+            {
+                ActionManager.WeeklyArenaReward();
+                Find<LoadingScreen>().Show();
+            }
+            else
+            {
+                ActionManager.RankingBattle(info.AvatarInfo.AvatarAddress);
+                Find<LoadingScreen>().Show();
+                Find<RankingBattleLoadingScreen>().Show(info.AvatarInfo);
+            }
         }
 
         private void GetAvatars(DateTimeOffset? dt)
