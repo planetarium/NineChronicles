@@ -9,6 +9,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
+using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -25,6 +26,7 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public Address WeeklyArenaAddress;
         public BattleLog Result { get; private set; }
+        public IImmutableList<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -157,11 +159,7 @@ namespace Nekoyume.Action
 
             avatarState.Update(simulator);
 
-            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
-            foreach (var quest in completedQuest)
-            {
-                avatarState.UpdateFromQuestReward(quest, ctx);
-            }
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());

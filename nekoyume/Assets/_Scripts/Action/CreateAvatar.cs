@@ -25,6 +25,7 @@ namespace Nekoyume.Action
         public int ear;
         public int tail;
         public string name;
+        public IImmutableList<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {
@@ -97,11 +98,7 @@ namespace Nekoyume.Action
 
             avatarState.Customize(hair, lens, ear, tail);
 
-            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
-            foreach (var quest in completedQuest)
-            {
-                avatarState.UpdateFromQuestReward(quest, ctx);
-            }
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
             UnityEngine.Debug.Log($"CreateAvatar CreateAvatarState: {sw.Elapsed}");

@@ -23,6 +23,7 @@ namespace Nekoyume.Action
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
         public ResultModel result;
+        public IImmutableList<int> completedQuestIds;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult
@@ -189,11 +190,8 @@ namespace Nekoyume.Action
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
-            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
-            foreach (var quest in completedQuest)
-            {
-                avatarState.UpdateFromQuestReward(quest, ctx);
-            }
+
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
             UnityEngine.Debug.Log($"ItemEnhancement Update AvatarState: {sw.Elapsed}");

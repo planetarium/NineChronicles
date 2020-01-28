@@ -5,7 +5,6 @@ using System.Diagnostics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.State;

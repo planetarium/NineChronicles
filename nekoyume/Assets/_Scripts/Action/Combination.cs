@@ -55,6 +55,7 @@ namespace Nekoyume.Action
         public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
         public ResultModel Result;
+        public IImmutableList<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -316,11 +317,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var completedQuest = avatarState.questList.Where(quest => quest.Complete && !quest.Receive);
-            foreach (var quest in completedQuest)
-            {
-                avatarState.UpdateFromQuestReward(quest, ctx);
-            }
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;

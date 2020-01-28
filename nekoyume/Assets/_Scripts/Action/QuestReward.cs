@@ -38,18 +38,17 @@ namespace Nekoyume.Action
             UnityEngine.Debug.Log($"QuestReward Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
-            var quest = avatarState.questList.FirstOrDefault(i => i.Id == questId && i.Complete && !i.Receive);
+            var quest = avatarState.questList.FirstOrDefault(i => i.Id == questId && i.Complete && !i.IsPaidInAction);
             if (quest is null)
             {
                 return states;
             }
 
             avatarState.UpdateFromQuestReward(quest, ctx);
+
             sw.Stop();
             UnityEngine.Debug.Log($"QuestReward Update AvatarState: {sw.Elapsed}");
             sw.Restart();
-
-            quest.Receive = true;
 
             Result = quest;
             states = states.SetState(avatarAddress, avatarState.Serialize());

@@ -9,14 +9,14 @@ using UnityEngine;
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AvatarNewAttachmentMailSetter : AvatarStateModifier
+    public class AvatarAttachmentMailNewSetter : AvatarStateModifier
     {
         [SerializeField]
         private List<JsonConvertibleGuid> guidList;
 
-        public override bool IsEmpty => guidList.Count == 0;
+        public override bool IsEmpty => !guidList.Any();
 
-        public AvatarNewAttachmentMailSetter(params Guid[] guidParams)
+        public AvatarAttachmentMailNewSetter(params Guid[] guidParams)
         {
             guidList = new List<JsonConvertibleGuid>();
             foreach (var guid in guidParams)
@@ -27,7 +27,7 @@ namespace Nekoyume.State.Modifiers
 
         public override void Add(IStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarNewAttachmentMailSetter m))
+            if (!(modifier is AvatarAttachmentMailNewSetter m))
                 return;
 
             foreach (var incoming in m.guidList.Where(incoming =>
@@ -39,11 +39,11 @@ namespace Nekoyume.State.Modifiers
 
         public override void Remove(IStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarNewAttachmentMailSetter m))
+            if (!(modifier is AvatarAttachmentMailNewSetter m))
                 return;
 
             foreach (var incoming in m.guidList.Where(incoming =>
-                guidList.Contains(incoming)))
+                guidList.Contains(incoming)))   
             {
                 guidList.Remove(incoming);
             }

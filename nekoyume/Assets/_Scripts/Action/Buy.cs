@@ -9,6 +9,7 @@ using Libplanet.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
+using Nekoyume.Game.Quest;
 using Nekoyume.State;
 
 namespace Nekoyume.Action
@@ -22,6 +23,8 @@ namespace Nekoyume.Action
         public Guid productId;
         public BuyerResult buyerResult;
         public SellerResult sellerResult;
+        public IImmutableList<int> buyerCompletedQuestIds;
+        public IImmutableList<int> sellerCompletedQuestIds;
 
         [Serializable]
         public class BuyerResult : AttachmentActionResult
@@ -200,16 +203,8 @@ namespace Nekoyume.Action
             sellerAvatarState.updatedAt = timestamp;
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
-            var buyerCompletedQuests = buyerAvatarState.questList.Where(quest => quest.Complete && !quest.Receive);
-            foreach (var quest in buyerCompletedQuests)
-            {
-                buyerAvatarState.UpdateFromQuestReward(quest, ctx);
-            }
-            var sellerCompletedQuests = sellerAvatarState.questList.Where(quest => quest.Complete && !quest.Receive);
-            foreach (var quest in sellerCompletedQuests)
-            {
-                sellerAvatarState.UpdateFromQuestReward(quest, ctx);
-            }
+            buyerCompletedQuestIds = buyerAvatarState.UpdateQuestRewards(ctx);
+            sellerCompletedQuestIds = sellerAvatarState.UpdateQuestRewards(ctx);
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();
