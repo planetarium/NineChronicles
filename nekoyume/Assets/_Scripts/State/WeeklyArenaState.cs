@@ -383,7 +383,7 @@ namespace Nekoyume.State
                         break;
                     case BattleLog.Result.Lose:
                         score = (int) (DecimalEx.Pow((decimal) rating / enemyRating, 0.75m) *
-                                       GameConfig.BaseVictoryPoint);
+                                       GameConfig.BaseDefeatPoint);
                         break;
                 }
             }
