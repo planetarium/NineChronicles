@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Spine.Unity;
 
 namespace Nekoyume.Game.Character
@@ -37,15 +38,16 @@ namespace Nekoyume.Game.Character
                 _spineAnimationState = _skeletonAnimation.state;
             }
 
-            _trackEntry = _controller.PlayAnimationForState(animationClip, layer);
-            if (_trackEntry is null)
+            try
+            {
+                _trackEntry = _controller.PlayAnimationForState(animationClip, layer);
+                _trackEntry.TimeScale = timeScale;
+                _normalizedTime = 0f;
+            }
+            catch (KeyNotFoundException e)
             {
                 Debug.LogError($"{nameof(_trackEntry)} is null!");
-                return;
             }
-
-            _trackEntry.TimeScale = timeScale;
-            _normalizedTime = 0f;
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

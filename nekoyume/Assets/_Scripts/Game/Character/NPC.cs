@@ -14,6 +14,7 @@ namespace Nekoyume.Game.Character
 
         private SortingGroup _sortingGroup;
         private TouchHandler _touchHandler;
+        [SerializeField] private bool _resetTargetOnStart = false;
 
         public NPCAnimator Animator { get; private set; }
         public NPCSpineController SpineController { get; private set; }
@@ -23,8 +24,16 @@ namespace Nekoyume.Game.Character
             _sortingGroup = GetComponent<SortingGroup>();
             _touchHandler = GetComponentInChildren<TouchHandler>();
             _touchHandler.OnClick.Subscribe(_ => PlayAnimation(NPCAnimation.Type.Touch_01)).AddTo(gameObject);
-            
+
             Animator = new NPCAnimator(this) {TimeScale = AnimatorTimeScale};
+        }
+
+        private void Start()
+        {
+            if (_resetTargetOnStart)
+            {
+                ResetTarget();
+            }
         }
 
         private void OnEnable()
@@ -37,12 +46,23 @@ namespace Nekoyume.Game.Character
             _sortingGroup.sortingLayerName = layerType.ToLayerName();
         }
 
+        public void ResetTarget()
+        {
+            var target = GetComponentInChildren<NPCSpineController>();
+            if (target is null)
+                throw new NotFoundComponentException<NPCSpineController>();
+
+            ResetTarget(target.gameObject);
+        }
+
         public void ResetTarget(GameObject target)
         {
             Animator.ResetTarget(target);
-            SpineController = target.GetComponent<NPCSpineController>();
+            SpineController = target.GetComponentInChildren<NPCSpineController>();
+            _touchHandler.SetCollider(SpineController.BoxCollider, target.transform.localPosition,
+                target.transform.localScale);
         }
-        
+
         public void PlayAnimation(NPCAnimation.Type type)
         {
             Animator.Play(type);
