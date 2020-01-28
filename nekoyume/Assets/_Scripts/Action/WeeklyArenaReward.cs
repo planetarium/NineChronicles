@@ -4,7 +4,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.State;
-using UnityEditor.UIElements;
 
 namespace Nekoyume.Action
 {
@@ -22,7 +21,7 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged);
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState, out var avatarState))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState, out _))
             {
                 return states;
             }
