@@ -74,6 +74,7 @@ namespace Nekoyume.Action
 
 
             if (!weeklyArenaState.ContainsKey(EnemyAddress))
+
             {
                 return states;
             }
@@ -92,9 +93,10 @@ namespace Nekoyume.Action
 
             simulator.Simulate();
 
-            Result = simulator.Log;
+            simulator.Log.diffScore = arenaInfo.Update(avatarState, weeklyArenaState[EnemyAddress], simulator.Result);
+            simulator.Log.score = arenaInfo.Score;
 
-            arenaInfo.Update(avatarState, weeklyArenaState[EnemyAddress], simulator.Result);
+            Result = simulator.Log;
 
             return states
                 .SetState(ctx.Signer, agentState.Serialize())

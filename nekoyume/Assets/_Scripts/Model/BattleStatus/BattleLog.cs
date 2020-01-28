@@ -20,6 +20,8 @@ namespace Nekoyume.Model
         public int worldId;
         public int stageId;
         public Result result;
+        public int score;
+        public int diffScore;
 
         public void Add(EventBase e)
         {
