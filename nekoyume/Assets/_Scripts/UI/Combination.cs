@@ -159,7 +159,11 @@ namespace Nekoyume.UI
             enhanceEquipment.RemoveMaterialsAll();
             speechBubble.gameObject.SetActive(false);
             _npc01.gameObject.SetActive(false);
-            _npc02.gameObject.SetActive(false);
+
+            if (_npc02)
+            {
+                _npc02.gameObject.SetActive(false);   
+            }
 
             base.Close(ignoreCloseAnimation);
         }
