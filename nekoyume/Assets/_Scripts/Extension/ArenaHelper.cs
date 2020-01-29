@@ -1,6 +1,7 @@
 using System;
 using Libplanet;
 using Nekoyume.State;
+using UnityEngine;
 
 namespace Nekoyume
 {
@@ -8,7 +9,12 @@ namespace Nekoyume
     {
         public static bool TryGetThisWeekAddress(out Address weeklyArenaAddress)
         {
-            var index = (int) Game.Game.instance.Agent.blockIndex.Value / GameConfig.WeeklyArenaInterval;
+            return TryGetThisWeekAddress(Game.Game.instance.Agent.blockIndex.Value, out weeklyArenaAddress);
+        }
+
+        public static bool TryGetThisWeekAddress(long blockIndex, out Address weeklyArenaAddress)
+        {
+            var index = (int) blockIndex / GameConfig.WeeklyArenaInterval;
             if (index < 0 ||
                 index >= WeeklyArenaState.Addresses.Count)
                 return false;
@@ -16,21 +22,54 @@ namespace Nekoyume
             weeklyArenaAddress = WeeklyArenaState.Addresses[index];
             return true;
         }
-        
+
         public static bool TryGetThisWeekState(out WeeklyArenaState weeklyArenaState)
         {
+            return TryGetThisWeekState(Game.Game.instance.Agent.BlockIndex, out weeklyArenaState);
+        }
+
+        public static bool TryGetThisWeekState(long blockIndex, out WeeklyArenaState weeklyArenaState)
+        {
             weeklyArenaState = null;
-            if (!TryGetThisWeekAddress(out var address))
+            if (blockIndex != Game.Game.instance.Agent.BlockIndex)
+            {
+                Debug.LogError(
+                    $"[{nameof(ArenaHelper)}.{nameof(TryGetThisWeekState)}] `{nameof(blockIndex)}`({blockIndex}) not equals with `Game.Game.instance.Agent.BlockIndex`({Game.Game.instance.Agent.BlockIndex})");
                 return false;
-            
+            }
+
+            if (!TryGetThisWeekAddress(blockIndex, out var address))
+                return false;
+
             weeklyArenaState = new WeeklyArenaState(Game.Game.instance.Agent.GetState(address));
             return true;
         }
 
         public static Address GetPrevWeekAddress()
         {
-            var index = Math.Max((int) Game.Game.instance.Agent.blockIndex.Value / GameConfig.WeeklyArenaInterval, 0);
+            return GetPrevWeekAddress(Game.Game.instance.Agent.blockIndex.Value);
+        }
+        
+        public static Address GetPrevWeekAddress(long thisWeekBlockIndex)
+        {
+            var index = Math.Max((int) thisWeekBlockIndex / GameConfig.WeeklyArenaInterval, 0);
             return WeeklyArenaState.Addresses[index];
+        }
+
+        public static bool TryGetThisWeekStateAndArenaInfo(Address avatarAddress, out WeeklyArenaState weeklyArenaState,
+            out ArenaInfo arenaInfo)
+        {
+            return TryGetThisWeekStateAndArenaInfo(Game.Game.instance.Agent.BlockIndex, avatarAddress,
+                out weeklyArenaState, out arenaInfo);
+        }
+
+        public static bool TryGetThisWeekStateAndArenaInfo(long blockIndex, Address avatarAddress,
+            out WeeklyArenaState weeklyArenaState,
+            out ArenaInfo arenaInfo)
+        {
+            arenaInfo = null;
+            return TryGetThisWeekState(blockIndex, out weeklyArenaState) &&
+                   weeklyArenaState.TryGetValue(avatarAddress, out arenaInfo);
         }
     }
 }

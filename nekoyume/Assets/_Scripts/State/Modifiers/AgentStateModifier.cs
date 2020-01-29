@@ -3,14 +3,11 @@
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public abstract class AgentStateModifier : IStateModifier<AgentState>
+    public abstract class AgentStateModifier : IAccumulatableStateModifier<AgentState>
     {
         public abstract bool IsEmpty { get; }
-        
-        public abstract void Add(IStateModifier<AgentState> modifier);
-        
-        public abstract void Remove(IStateModifier<AgentState> modifier);
-
+        public abstract void Add(IAccumulatableStateModifier<AgentState> modifier);
+        public abstract void Remove(IAccumulatableStateModifier<AgentState> modifier);
         public abstract AgentState Modify(AgentState state);
     }
 }

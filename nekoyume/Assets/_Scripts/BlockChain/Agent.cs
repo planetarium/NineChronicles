@@ -194,7 +194,7 @@ namespace Nekoyume.BlockChain
             {
                 blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store, genesisBlock);
             }
-            catch (InvalidGenesisBlockException e)
+            catch (InvalidGenesisBlockException)
             {
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
@@ -310,6 +310,13 @@ namespace Nekoyume.BlockChain
                     GetState(ShopState.Address) is Bencodex.Types.Dictionary shopDict
                         ? new ShopState(shopDict)
                         : new ShopState());
+
+                if (ArenaHelper.TryGetThisWeekState(BlockIndex, out var weeklyArenaState))
+                {
+                    States.Instance.SetWeeklyArenaState(weeklyArenaState);
+                }
+                else
+                    throw new FailedToInstantiateStateException<WeeklyArenaState>();
 
                 // 에이전트의 상태를 한 번 동기화 한다.
                 States.Instance.SetAgentState(

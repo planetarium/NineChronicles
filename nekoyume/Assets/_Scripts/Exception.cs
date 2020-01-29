@@ -1,4 +1,6 @@
 using System;
+using Libplanet;
+using Nekoyume.State;
 using Nekoyume.UI;
 using Spine;
 using UnityEngine;
@@ -54,21 +56,19 @@ public class FailedToInstantiateGameObjectException : Exception
 
 public class FailedToLoadResourceException<T> : Exception
 {
-    private const string MessageFormat0 = "Failed to load resource. type : `{0}`.";
-    private const string MessageFormat1 = "Failed to load resource. type : `{0}`, path : `{1}`.";
+    private const string MessageFormat = "Failed to load resource. type: `{0}`.";
+    private const string MessageFormatWithPath = "Failed to load resource. type: `{0}`, path: `{1}`.";
 
-    private static readonly string TypeName = typeof(T).Name;
-
-    public FailedToLoadResourceException() : base(string.Format(MessageFormat0, TypeName))
+    public FailedToLoadResourceException() : base(string.Format(MessageFormat, typeof(T).Name))
     {
     }
 
-    public FailedToLoadResourceException(string path) : base(string.Format(MessageFormat1, TypeName, path))
+    public FailedToLoadResourceException(string path) : base(string.Format(MessageFormatWithPath, typeof(T).Name, path))
     {
     }
 
     public FailedToLoadResourceException(string path, Exception inner) : base(
-        string.Format(MessageFormat1, TypeName, path), inner)
+        string.Format(MessageFormatWithPath, typeof(T).Name, path), inner)
     {
     }
 }
@@ -96,13 +96,12 @@ public class NotFoundComponentException<T> : Exception where T : Component
     private const string MessageFormat = "Not found `{0}` component.";
     private const string MessageFormatWithGameObject = "Not found `{0}` component in {1}.";
 
-    private static readonly string TypeName = typeof(T).Name;
-
-    public NotFoundComponentException() : this(string.Format(MessageFormat, TypeName))
+    public NotFoundComponentException() : this(string.Format(MessageFormat, typeof(T).Name))
     {
     }
 
-    public NotFoundComponentException(GameObject gameObject) : this(string.Format(MessageFormatWithGameObject, TypeName,
+    public NotFoundComponentException(GameObject gameObject) : this(string.Format(MessageFormatWithGameObject,
+        typeof(T).Name,
         gameObject.name))
     {
     }
@@ -176,16 +175,14 @@ public class SerializeFieldNullException : Exception
 
 public class AddOutOfSpecificRangeException<T> : Exception
 {
-    private const string MessageFormat0 = "Add out of specific range. type : `{0}`.";
-    private const string MessageFormat1 = "Add out of specific range. type : `{0}`, specific range : `{1}`";
+    private const string MessageFormat = "Add out of specific range. type: `{0}`.";
+    private const string MessageFormatWithRange = "Add out of specific range. type: `{0}`, specific range: `{1}`.";
 
-    private static readonly string TypeName = typeof(T).Name;
-
-    public AddOutOfSpecificRangeException() : base(string.Format(MessageFormat0, TypeName))
+    public AddOutOfSpecificRangeException() : base(string.Format(MessageFormat, typeof(T).Name))
     {
     }
 
-    public AddOutOfSpecificRangeException(int specificRange) : base(string.Format(MessageFormat1, TypeName,
+    public AddOutOfSpecificRangeException(int specificRange) : base(string.Format(MessageFormatWithRange, typeof(T).Name,
         specificRange))
     {
     }
@@ -211,11 +208,9 @@ public class WidgetNotFoundException : Exception
 
 public class WidgetNotFoundException<T> : Exception where T : Widget
 {
-    private const string MessageFormat = "Widget not found. type : {0}";
+    private const string MessageFormat = "Widget not found. type: `{0}`.";
 
-    private static readonly string TypeName = typeof(T).Name;
-
-    public WidgetNotFoundException() : base(string.Format(MessageFormat, TypeName))
+    public WidgetNotFoundException() : base(string.Format(MessageFormat, typeof(T).Name))
     {
     }
 }
@@ -236,6 +231,20 @@ public class FailedToSaveAsPrefabAssetException : Exception
 
     public FailedToSaveAsPrefabAssetException(string path, Exception inner) : base(string.Format(MessageFormat, path),
         inner)
+    {
+    }
+}
+
+public class FailedToInstantiateStateException<T> : Exception where T : State
+{
+    private const string MessageFormat = "Failed to instantiate state. type: `{0}`.";
+    private const string MessageFormatWithAddress = "Failed to instantiate state. type: `{0}` / address: `{1}`.";
+
+    public FailedToInstantiateStateException() : base(string.Format(MessageFormat, typeof(T).Name))
+    {
+    }
+    
+    public FailedToInstantiateStateException(Address address) : base(string.Format(MessageFormatWithAddress, typeof(T).Name, address))
     {
     }
 }

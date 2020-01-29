@@ -65,7 +65,6 @@ namespace Nekoyume.Game.Character
             Animator.Play(nameof(CharacterAnimation.Type.Idle), BaseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), false);
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
-            Animator.SetBool(nameof(CharacterAnimation.Type.Touch), false);
         }
 
         public void Touch()
@@ -77,7 +76,6 @@ namespace Nekoyume.Game.Character
                 return;
 
             Animator.Play(nameof(CharacterAnimation.Type.Touch), BaseLayerIndex, 0f);
-            Animator.SetBool(nameof(CharacterAnimation.Type.Touch), true);
         }
 
         public void Run()

@@ -158,11 +158,15 @@ namespace Nekoyume.UI
             combineConsumable.RemoveMaterialsAll();
             enhanceEquipment.RemoveMaterialsAll();
             speechBubble.gameObject.SetActive(false);
-            _npc01.gameObject.SetActive(false);
+            
+            if (_npc01)
+            {
+                _npc01.gameObject.SetActive(false);
+            }
 
             if (_npc02)
             {
-                _npc02.gameObject.SetActive(false);   
+                _npc02.gameObject.SetActive(false);
             }
 
             base.Close(ignoreCloseAnimation);
@@ -376,8 +380,8 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             
-            LocalStateModifier.ModifyGold(agentAddress, -combinationPanel.CostNCG);
-            LocalStateModifier.ModifyActionPoint(avatarAddress, -combinationPanel.CostAP);
+            LocalStateModifier.ModifyAgentGold(agentAddress, -combinationPanel.CostNCG);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -combinationPanel.CostAP);
             
             foreach (var (material, count) in materialInfoList)
             {
@@ -391,8 +395,8 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            LocalStateModifier.ModifyGold(agentAddress, -combinationPanel.CostNCG);
-            LocalStateModifier.ModifyActionPoint(avatarAddress, -combinationPanel.CostAP);
+            LocalStateModifier.ModifyAgentGold(agentAddress, -combinationPanel.CostNCG);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -combinationPanel.CostAP);
 
             LocalStateModifier.RemoveItem(avatarAddress, baseItemGuid);
             foreach (var itemGuid in otherItemGuidList)
@@ -421,19 +425,15 @@ namespace Nekoyume.UI
 
         private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
-            if (_npc01)
-            {
-                if (type == CharacterAnimation.Type.Greeting)
-                {
-                    _npc01.PlayAnimation(NPCAnimation.Type.Greeting_01);
-                }
-                else
-                {
-                    _npc01.PlayAnimation(NPCAnimation.Type.Emotion_01);
-                }
-                speechBubble.SetKey(key);
-                StartCoroutine(speechBubble.CoShowText());
-            }
+            if (!_npc01)
+                return;
+
+            _npc01.PlayAnimation(type == CharacterAnimation.Type.Greeting
+                ? NPCAnimation.Type.Greeting_01
+                : NPCAnimation.Type.Emotion_01);
+            
+            speechBubble.SetKey(key);
+            StartCoroutine(speechBubble.CoShowText());
         }
     }
 }

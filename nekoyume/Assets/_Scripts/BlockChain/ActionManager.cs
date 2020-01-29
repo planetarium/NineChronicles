@@ -223,7 +223,7 @@ namespace Nekoyume.BlockChain
             var action = new DailyReward
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
-                refillPoint = GameConfig.ActionPoint
+                refillPoint = GameConfig.ActionPointMax
             };
             ProcessAction(action);
 

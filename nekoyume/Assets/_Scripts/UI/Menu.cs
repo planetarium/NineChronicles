@@ -153,15 +153,7 @@ namespace Nekoyume.UI
             
             StartCoroutine(ShowSpeeches());
             ShowButtons(Game.Game.instance.Stage.selectedPlayer);
-
-            if (ArenaHelper.TryGetThisWeekState(out var weeklyArenaState))
-            {
-                arenaPendingNCG.Show(weeklyArenaState.Gold);
-            }
-            else
-            {
-                arenaPendingNCG.Hide();
-            }
+            arenaPendingNCG.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

@@ -6,16 +6,17 @@ namespace Nekoyume.State.Modifiers
     [Serializable]
     public class AvatarActionPointModifier : AvatarStateModifier
     {
-        [SerializeField] private int actionPoint;
+        [SerializeField]
+        private int actionPoint;
 
         public override bool IsEmpty => actionPoint == 0;
-        
+
         public AvatarActionPointModifier(int actionPoint)
         {
             this.actionPoint = actionPoint;
         }
-        
-        public override void Add(IStateModifier<AvatarState> modifier)
+
+        public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarActionPointModifier m))
                 return;
@@ -23,7 +24,7 @@ namespace Nekoyume.State.Modifiers
             actionPoint += m.actionPoint;
         }
 
-        public override void Remove(IStateModifier<AvatarState> modifier)
+        public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarActionPointModifier m))
                 return;

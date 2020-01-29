@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Libplanet;
 using Nekoyume.State.Modifiers;
+using Nekoyume.State.Subjects;
 
 namespace Nekoyume.State
 {
@@ -14,14 +15,14 @@ namespace Nekoyume.State
     /// </summary>
     public static class LocalStateModifier
     {
-        #region Currency
+        #region Agent, Avatar / Currency
 
         /// <summary>
         /// 에이전트의 골드를 변경한다.(휘발성)
         /// </summary>
         /// <param name="agentAddress"></param>
         /// <param name="gold"></param>
-        public static void ModifyGold(Address agentAddress, decimal gold)
+        public static void ModifyAgentGold(Address agentAddress, decimal gold)
         {
             if (gold is 0m)
                 return;
@@ -43,7 +44,7 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="actionPoint"></param>
-        public static void ModifyActionPoint(Address avatarAddress, int actionPoint)
+        public static void ModifyAvatarActionPoint(Address avatarAddress, int actionPoint)
         {
             if (actionPoint is 0)
                 return;
@@ -64,7 +65,7 @@ namespace Nekoyume.State
 
         #endregion
 
-        #region AddItem
+        #region Avatar / AddItem
 
         /// <summary>
         /// (휘발성)
@@ -108,12 +109,12 @@ namespace Nekoyume.State
 
         private static void AddItemInternal(Address avatarAddress)
         {
-            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         #endregion
 
-        #region RemoveItem
+        #region Avatar / RemoveItem
 
         /// <summary>
         /// (휘발성)
@@ -170,7 +171,7 @@ namespace Nekoyume.State
 
         #endregion
 
-        #region Mail
+        #region Avatar / Mail
 
         /// <summary>
         /// `avatarAddress`에 해당하는 아바타 상태의 `MailBox` 안에 `AttachmentMail` 리스트 중, `guid`를 보상으로 갖고 있는 메일을 신규 처리한다.(비휘발성)
@@ -194,7 +195,7 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// `avatarAddress`에 해당하는 아바타 상태의 `MailBox` 안에 `AttachmentMail` 리스트 중, `guid`를 보상으로 갖고 있는 메일의 신규 처리를 회귀한다.(비휘발성)
+        /// `AddNewAttachmentMail()` 메서드 로직을 회귀한다.(비휘발성)
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="guid"></param>
@@ -207,7 +208,7 @@ namespace Nekoyume.State
 
         #endregion
 
-        #region Quest
+        #region Avatar / Quest
 
         /// <summary>
         /// `avatarAddress`에 해당하는 아바타 상태의 `QuestList` 안의 퀘스트 중, 매개변수의 `id`를 가진 퀘스트를 신규 처리한다.(비휘발성)
@@ -239,7 +240,71 @@ namespace Nekoyume.State
         {
             var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
-            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+        }
+
+        #endregion
+
+        #region WeeklyArena
+
+        /// <summary>
+        /// 현재 바라보고 있는 주간 아레나 상태의 `Gold`를 변경한다.(휘발)
+        /// </summary>
+        /// <param name="gold"></param>
+        public static void ModifyWeeklyArenaGold(decimal gold)
+        {
+            if (gold is 0m)
+                return;
+            
+            var state = States.Instance.WeeklyArenaState;
+            if (state is null)
+                return;
+
+            var modifier = new WeeklyArenaGoldModifier(gold);
+            LocalStateSettings.Instance.Add(state.address, modifier, true);
+            modifier.Modify(state);
+            WeeklyArenaStateSubject.Gold.OnNext(state.Gold);
+        }
+
+        /// <summary>
+        /// 현재 바라보고 있는 주간 아레나 상태가 포함하고 있는 `ArenaInfo` 중 현재 아바타 상태의 주소에 해당하는 것을 활성화 시킨다.(휘발)
+        /// </summary>
+        /// <param name="addArenaInfoIfNotContained">주간 아레나 상태에 현재 아바타 정보가 없으면 넣어준다.</param>
+        public static void AddWeeklyArenaInfoActivator(bool addArenaInfoIfNotContained = true)
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            var avatarAddress = avatarState.address;
+            var weeklyArenaState = States.Instance.WeeklyArenaState;
+            var weeklyArenaAddress = weeklyArenaState.address;
+
+            if (addArenaInfoIfNotContained &&
+                !weeklyArenaState.ContainsKey(avatarAddress))
+            {
+                weeklyArenaState.Set(avatarState);
+            }
+            
+            var modifier = new WeeklyArenaInfoActivator(avatarAddress);
+            LocalStateSettings.Instance.Add(weeklyArenaAddress, modifier, true);
+            modifier.Modify(weeklyArenaState);
+            WeeklyArenaStateSubject.WeeklyArenaState.OnNext(weeklyArenaState);
+        }
+        
+        /// <summary>
+        /// `AddWeeklyArenaInfoActivator()` 메서드 로직을 회귀한다.(휘발)
+        /// </summary>
+        /// <param name="weeklyArenaAddress"></param>
+        /// <param name="avatarAddress"></param>
+        public static void RemoveWeeklyArenaInfoActivator(Address weeklyArenaAddress, Address avatarAddress)
+        {
+            var modifier = new WeeklyArenaInfoActivator(avatarAddress);
+            LocalStateSettings.Instance.Remove(weeklyArenaAddress, modifier, true);
+            
+            var state = States.Instance.WeeklyArenaState;
+            if (!state.address.Equals(weeklyArenaAddress))
+                return;
+            
+            modifier.Modify(state);
+            WeeklyArenaStateSubject.WeeklyArenaState.OnNext(state);
         }
 
         #endregion

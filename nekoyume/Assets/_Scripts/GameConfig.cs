@@ -25,7 +25,7 @@ namespace Nekoyume
         public const string DefaultPlayerEyeOpenResource = "eye_red_open";
         public const string DefaultPlayerEyeHalfResource = "eye_red_half";
         public const string DefaultPlayerTailResource = "tail_0001";
-        public const int ActionPoint = 250;
+        public const int ActionPointMax = 250;
 
         public const int DailyRewardInterval = 1000;
         public const int DailyArenaInterval = 500; // 8000
@@ -46,6 +46,14 @@ namespace Nekoyume
         public const decimal CombinationValueL2 = 1m;
         public const decimal CombinationValueR1 = 1.5m; // 2f;
         public const int CombinationDefaultFoodId = 200000;
+
+        public const int RankingRewardFirst = 50;
+        public const int RankingRewardSecond = 30;
+        public const int RankingRewardThird = 10;
+
+        public const int ArenaActivationCostNCG = 100;
+        public const int ArenaScoreDefault = 1000;
+        public const int ArenaChallengeCountMax = 5;
 
 #if UNITY_EDITOR
         public const int QuestRequiredLevel = 1;

@@ -437,7 +437,7 @@ namespace Nekoyume.UI
             var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 
-            LocalStateModifier.ModifyGold(buyerAgentAddress, -shopItem.Price.Value);
+            LocalStateModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
             States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
             shopItems.SharedModel.RemoveOtherProduct(productId);
 

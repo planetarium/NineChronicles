@@ -44,7 +44,7 @@ namespace Nekoyume.Game.Character
                 _trackEntry.TimeScale = timeScale;
                 _normalizedTime = 0f;
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
                 Debug.LogError($"{nameof(_trackEntry)} is null!");
             }

@@ -24,19 +24,19 @@ namespace Nekoyume.State
         public static readonly ReactiveProperty<long> DailyRewardReceivedIndex = new ReactiveProperty<long>();
         public static readonly ReactiveProperty<QuestList> QuestList = new ReactiveProperty<QuestList>();
 
-        public static void Initialize(AvatarState avatarState)
+        public static void Initialize(AvatarState state)
         {
             // todo: 선택된 아바타가 없을 경우 null이 들어 오는데, 이 때 아래에서 별도로 처리해줘야 하겠음.. 구독하는 쪽에서도 null 검사를 잘 하도록.. 
-            if (avatarState is null)
+            if (state is null)
                 return;
 
-            Address.SetValueAndForceNotify(avatarState.address);
-            Inventory.SetValueAndForceNotify(avatarState.inventory);
-            MailBox.SetValueAndForceNotify(avatarState.mailBox);
-            WorldInformation.SetValueAndForceNotify(avatarState.worldInformation);
-            ActionPoint.SetValueAndForceNotify(avatarState.actionPoint);
-            DailyRewardReceivedIndex.SetValueAndForceNotify(avatarState.dailyRewardReceivedIndex);
-            QuestList.SetValueAndForceNotify(avatarState.questList);
+            Address.SetValueAndForceNotify(state.address);
+            Inventory.SetValueAndForceNotify(state.inventory);
+            MailBox.SetValueAndForceNotify(state.mailBox);
+            WorldInformation.SetValueAndForceNotify(state.worldInformation);
+            ActionPoint.SetValueAndForceNotify(state.actionPoint);
+            DailyRewardReceivedIndex.SetValueAndForceNotify(state.dailyRewardReceivedIndex);
+            QuestList.SetValueAndForceNotify(state.questList);
         }
     }
 }

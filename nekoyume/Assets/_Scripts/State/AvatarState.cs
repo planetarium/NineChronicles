@@ -83,7 +83,7 @@ namespace Nekoyume.State
             questList = new QuestList(questSheet);
             mailBox = new MailBox();
             this.blockIndex = blockIndex;
-            actionPoint = GameConfig.ActionPoint;
+            actionPoint = GameConfig.ActionPointMax;
             stageMap = new CollectionMap();
             monsterMap = new CollectionMap();
             itemMap = new CollectionMap();

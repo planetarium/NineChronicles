@@ -19,7 +19,7 @@ namespace Tests.PlayMode.Fixtures
         internal MinerFixture miner;
 
         [UnitySetUp]
-        protected IEnumerator SetUp()
+        protected IEnumerator CoSetUp()
         {
             var path = Path.Combine(Application.streamingAssetsPath, "clo_test_fixture.json");
             _path = Path.Combine(Application.streamingAssetsPath, "clo.json");
@@ -48,7 +48,7 @@ namespace Tests.PlayMode.Fixtures
         }
 
         [UnityTearDown]
-        protected IEnumerator TearDown()
+        protected IEnumerator CoTearDown()
         {
             miner?.TearDown();
             File.Delete(_path);

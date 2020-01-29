@@ -1,44 +1,44 @@
-﻿using System;
+using System;
 using Nekoyume.JsonConvertibles;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AgentGoldModifier : AgentStateModifier
+    public class WeeklyArenaGoldModifier : WeeklyArenaStateModifier
     {
         [SerializeField]
         private JsonConvertibleDecimal gold;
 
         public override bool IsEmpty => gold == 0m;
         
-        public AgentGoldModifier(decimal gold)
+        public WeeklyArenaGoldModifier(decimal gold)
         {
             this.gold = new JsonConvertibleDecimal(gold);
         }
 
-        public override void Add(IAccumulatableStateModifier<AgentState> modifier)
+        public override void Add(IAccumulatableStateModifier<WeeklyArenaState> modifier)
         {
-            if (!(modifier is AgentGoldModifier m))
+            if (!(modifier is WeeklyArenaGoldModifier m))
                 return;
             
             gold += m.gold;
         }
 
-        public override void Remove(IAccumulatableStateModifier<AgentState> modifier)
+        public override void Remove(IAccumulatableStateModifier<WeeklyArenaState> modifier)
         {
-            if (!(modifier is AgentGoldModifier m))
+            if (!(modifier is WeeklyArenaGoldModifier m))
                 return;
 
             gold -= m.gold;
         }
 
-        public override AgentState Modify(AgentState state)
+        public override WeeklyArenaState Modify(WeeklyArenaState state)
         {
             if (state is null)
                 return null;
             
-            state.gold += gold.Value;
+            state.Gold += gold.Value;
             return state;
         }
 

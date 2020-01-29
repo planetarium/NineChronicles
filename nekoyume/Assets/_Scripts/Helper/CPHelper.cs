@@ -5,12 +5,24 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Skill = Nekoyume.Game.Skill;
 
 namespace Nekoyume.Helper
 {
     public static class CPHelper
     {
+        /// <summary>
+        /// `AvatarState`의 CP를 리턴한다.
+        /// </summary>
+        /// <param name="avatarState"></param>
+        /// <returns></returns>
+        public static int GetCP(AvatarState avatarState)
+        {
+            // todo: 구현!
+            return 100;
+        }
+        
         /// <summary>
         /// `Player`의 CP를 리턴한다.
         /// </summary>

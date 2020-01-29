@@ -224,7 +224,7 @@ namespace Nekoyume.UI
             var attachment = (Buy.SellerResult) sellerMail.attachment;
 
             //TODO 관련 기획이 끝나면 별도 UI를 생성
-            LocalStateModifier.ModifyGold(agentAddress, attachment.gold);
+            LocalStateModifier.ModifyAgentGold(agentAddress, attachment.gold);
             LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, attachment.itemUsable.ItemId);
         }
 

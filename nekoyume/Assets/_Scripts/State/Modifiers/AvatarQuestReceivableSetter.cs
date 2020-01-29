@@ -23,7 +23,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override void Add(IStateModifier<AvatarState> modifier)
+        public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarQuestIsReceivableSetter m))
                 return;
@@ -35,7 +35,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override void Remove(IStateModifier<AvatarState> modifier)
+        public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarQuestIsReceivableSetter m))
                 return;
