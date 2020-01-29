@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using EnhancedUI.EnhancedScroller;
 using System.Collections.Generic;
+using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -9,7 +10,7 @@ namespace Nekoyume.UI.Scroller
         public EnhancedScroller scroller;
         public QuestCellView cellViewPrefab;
 
-        private List<Game.Quest.Quest> _data;
+        private List<QuestModel> _data;
         private float _cellViewHeight = 40f;
 
         #region Mono
@@ -46,7 +47,7 @@ namespace Nekoyume.UI.Scroller
             return _data.Count;
         }
 
-        public void SetData(List<Game.Quest.Quest> dataList)
+        public void SetData(List<QuestModel> dataList)
         {
             _data = dataList;
 

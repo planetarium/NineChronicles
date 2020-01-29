@@ -1,5 +1,4 @@
 using System;
-using Nekoyume.Game.Factory;
 using Nekoyume.Model.Item;
 using NUnit.Framework;
 using Tests.PlayMode.Fixtures;

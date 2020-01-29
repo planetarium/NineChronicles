@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Model.Quest;
 using Nekoyume.State;
 
 namespace Nekoyume.Action
@@ -15,7 +16,7 @@ namespace Nekoyume.Action
     {
         public int questId;
         public Address avatarAddress;
-        public Game.Quest.Quest Result;
+        public Quest Result;
 
         public override IAccountStateDelta Execute(IActionContext ctx)
         {

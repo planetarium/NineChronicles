@@ -1,6 +1,6 @@
 using System;
 using EnhancedUI.EnhancedScroller;
-using Nekoyume.Game.Mail;
+using Nekoyume.Model.Mail;
 using TMPro;
 using UniRx;
 using UnityEngine;

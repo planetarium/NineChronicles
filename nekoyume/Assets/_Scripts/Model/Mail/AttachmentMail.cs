@@ -4,7 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Action;
 
-namespace Nekoyume.Game.Mail
+namespace Nekoyume.Model.Mail
 {
     [Serializable]
     public abstract class AttachmentMail : Mail
@@ -17,18 +17,18 @@ namespace Nekoyume.Game.Mail
             attachment = attachmentActionResult;
         }
 
-        public AttachmentMail(Bencodex.Types.Dictionary serialized)
+        public AttachmentMail(Dictionary serialized)
             : base(serialized)
         {
             attachment = AttachmentActionResult.Deserialize(
-                (Bencodex.Types.Dictionary) serialized["attachment"]
+                (Dictionary)serialized["attachment"]
             );
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "attachment"] = attachment.Serialize(),
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"attachment"] = attachment.Serialize(),
+            }.Union((Dictionary)base.Serialize()));
     }
 }

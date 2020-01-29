@@ -7,8 +7,8 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Mail;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 
 namespace Nekoyume.Action

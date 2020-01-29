@@ -1,6 +1,7 @@
 using Nekoyume.Helper;
 using UnityEngine;
 using UnityEngine.UI;
+using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI
 {
@@ -8,9 +9,9 @@ namespace Nekoyume.UI
     {
         public Image icon;
         public Text label;
-        public Game.Quest.Quest data;
+        public QuestModel data;
 
-        public void Set(Game.Quest.Quest quest)
+        public void Set(QuestModel quest)
         {
             data = quest;
             Sprite sprite;

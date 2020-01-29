@@ -7,7 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class CombinationQuest : Quest
@@ -23,17 +23,17 @@ namespace Nekoyume.Game.Quest
             ItemSubType = data.ItemSubType;
         }
 
-        public CombinationQuest(Bencodex.Types.Dictionary serialized) : base(serialized)
+        public CombinationQuest(Dictionary serialized) : base(serialized)
         {
-            ItemType = (ItemType) (int) ((Integer) serialized["itemType"]).Value;
-            ItemSubType = (ItemSubType) (int) ((Integer) serialized["itemSubType"]).Value;
+            ItemType = (ItemType)(int)((Integer)serialized["itemType"]).Value;
+            ItemSubType = (ItemSubType)(int)((Integer)serialized["itemSubType"]).Value;
         }
 
         public override void Check()
         {
             if (Complete)
                 return;
-            
+
             Complete = _current >= Goal;
         }
 
@@ -54,17 +54,17 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             _current += items.Count(i => i.Data.ItemType == ItemType && i.Data.ItemSubType == ItemSubType);
             Check();
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "itemType"] = (Integer) (int) ItemType,
-                [(Text) "itemSubType"] = (Integer) (int) ItemSubType,
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"itemType"] = (Integer)(int)ItemType,
+                [(Text)"itemSubType"] = (Integer)(int)ItemSubType,
+            }.Union((Dictionary)base.Serialize()));
 
     }
 }

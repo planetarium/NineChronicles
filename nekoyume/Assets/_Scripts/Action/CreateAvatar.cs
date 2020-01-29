@@ -7,8 +7,6 @@ using System.Text.RegularExpressions;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain;
-using Nekoyume.Game.Factory;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;

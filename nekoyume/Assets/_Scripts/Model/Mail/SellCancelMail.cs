@@ -3,7 +3,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Mail
+namespace Nekoyume.Model.Mail
 {
     [Serializable]
     public class SellCancelMail : AttachmentMail
@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Mail
 
         public SellCancelMail(SellCancellation.Result attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
-            
+
         }
 
         public SellCancelMail(Bencodex.Types.Dictionary serialized)

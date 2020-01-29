@@ -4,10 +4,9 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.State;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class GoldQuest : Quest
@@ -21,7 +20,7 @@ namespace Nekoyume.Game.Quest
 
         public GoldQuest(Dictionary serialized) : base(serialized)
         {
-            Type = (TradeType) (int) ((Integer) serialized["type"]).Value;
+            Type = (TradeType)(int)((Integer)serialized["type"]).Value;
         }
 
         public override QuestType QuestType => QuestType.Exchange;
@@ -30,7 +29,7 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             Complete = _current >= Goal;
         }
 
@@ -50,16 +49,16 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
-            _current += (int) gold;
+
+            _current += (int)gold;
             Check();
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "type"] = (Integer) (int) Type,
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"type"] = (Integer)(int)Type,
+            }.Union((Dictionary)base.Serialize()));
 
     }
 }

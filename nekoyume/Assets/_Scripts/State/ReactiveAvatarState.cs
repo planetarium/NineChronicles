@@ -1,8 +1,8 @@
 using System;
 using Libplanet;
-using Nekoyume.Game.Mail;
-using Nekoyume.Game.Quest;
 using Nekoyume.Model;
+using Nekoyume.Model.Mail;
+using Nekoyume.Model.Quest;
 using UniRx;
 using Inventory = Nekoyume.Model.Item.Inventory;
 
