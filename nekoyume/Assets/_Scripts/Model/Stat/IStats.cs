@@ -1,7 +1,7 @@
 using Nekoyume.EnumType;
 using System.Collections.Generic;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     public interface IStats
     {
@@ -11,7 +11,7 @@ namespace Nekoyume.Game
         int CRI { get; }
         int DOG { get; }
         int SPD { get; }
-        
+
         bool HasHP { get; }
         bool HasATK { get; }
         bool HasDEF { get; }

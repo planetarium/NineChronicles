@@ -8,6 +8,7 @@ using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model

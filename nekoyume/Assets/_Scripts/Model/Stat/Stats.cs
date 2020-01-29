@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     [Serializable]
     public class Stats : IStats, ICloneable
@@ -157,7 +157,7 @@ namespace Nekoyume.Game
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
         }
-        
+
         public IEnumerable<(StatType statType, int value)> GetStats(bool ignoreZero = false)
         {
             if (ignoreZero)

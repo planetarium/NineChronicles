@@ -1,18 +1,18 @@
 using System;
 using Nekoyume.EnumType;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     [Serializable]
     public class IntStatWithCurrent : IntStat, ICloneable
     {
         public int Current { get; private set; }
-        
+
         public IntStatWithCurrent(StatType type, int value = 0, int current = 0) : base(type, value)
         {
             Current = current;
         }
-        
+
         protected IntStatWithCurrent(IntStatWithCurrent value) : base(value)
         {
             Current = value.Current;
@@ -44,10 +44,10 @@ namespace Nekoyume.Game
         {
             SetCurrent(Current + value);
         }
-        
+
         public void AddCurrent(float value)
         {
-            AddCurrent((int) value);
+            AddCurrent((int)value);
         }
 
         public void EqualizeCurrentWithValue()

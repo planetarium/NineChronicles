@@ -5,7 +5,7 @@ using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.State;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     // todo: 없어질 대상.
     [Serializable]
@@ -14,17 +14,17 @@ namespace Nekoyume.Game
         private decimal _additionalValue;
 
         public bool HasAdditionalValue => AdditionalValue > 0m;
-        
+
         public decimal AdditionalValue
         {
             get => _additionalValue;
             set
             {
                 _additionalValue = value;
-                AdditionalValueAsInt = (int) _additionalValue;
+                AdditionalValueAsInt = (int)_additionalValue;
             }
         }
-        
+
         public int AdditionalValueAsInt { get; private set; }
 
         public decimal TotalValue => Value + AdditionalValueAsInt;
@@ -39,7 +39,7 @@ namespace Nekoyume.Game
         {
         }
 
-        public StatMapEx(Bencodex.Types.Dictionary serialized) : base(serialized)
+        public StatMapEx(Dictionary serialized) : base(serialized)
         {
             AdditionalValue = serialized["additionalValue"].ToDecimal();
         }
@@ -53,15 +53,15 @@ namespace Nekoyume.Game
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((StatMapEx) obj);
+            if (obj.GetType() != GetType()) return false;
+            return Equals((StatMapEx)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return (base.GetHashCode() * 397) ^ _additionalValue.GetHashCode();
+                return base.GetHashCode() * 397 ^ _additionalValue.GetHashCode();
             }
         }
 
@@ -113,9 +113,9 @@ namespace Nekoyume.Game
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "additionalValue"] = (Text) AdditionalValue.Serialize(),
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"additionalValue"] = (Text)AdditionalValue.Serialize(),
+            }.Union((Dictionary)base.Serialize()));
     }
 }

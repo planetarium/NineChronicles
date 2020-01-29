@@ -1,13 +1,13 @@
 using System;
 using Nekoyume.EnumType;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     [Serializable]
     public class DecimalStat : ICloneable
     {
         private decimal _value;
-        
+
         public readonly StatType Type;
         public decimal Value
         {
@@ -15,17 +15,17 @@ namespace Nekoyume.Game
             private set
             {
                 _value = value;
-                ValueAsInt = (int) _value;
+                ValueAsInt = (int)_value;
             }
         }
         public int ValueAsInt { get; private set; }
-        
+
         public DecimalStat(StatType type, decimal value = 0m)
         {
             Type = type;
             Value = value;
         }
-        
+
         public virtual void Reset()
         {
             Value = 0m;
@@ -41,7 +41,7 @@ namespace Nekoyume.Game
         {
             Value = value;
         }
-        
+
         public void AddValue(decimal value)
         {
             SetValue(Value + value);

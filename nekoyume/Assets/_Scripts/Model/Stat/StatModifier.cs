@@ -1,7 +1,7 @@
 using System;
 using Nekoyume.EnumType;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     [Serializable]
     public class StatModifier
@@ -65,7 +65,7 @@ namespace Nekoyume.Game
                 case OperationType.Add:
                     return Value;
                 case OperationType.Percentage:
-                    return (int) (value * Value / 100f);
+                    return (int)(value * Value / 100f);
                 default:
                     throw new ArgumentOutOfRangeException();
             }

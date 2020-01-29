@@ -1,7 +1,7 @@
 using Nekoyume.EnumType;
 using System.Collections.Generic;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     public interface IBaseAndAdditionalStats
     {
@@ -11,21 +11,21 @@ namespace Nekoyume.Game
         int BaseCRI { get; }
         int BaseDOG { get; }
         int BaseSPD { get; }
-        
+
         bool HasBaseHP { get; }
         bool HasBaseATK { get; }
         bool HasBaseDEF { get; }
         bool HasBaseCRI { get; }
         bool HasBaseDOG { get; }
         bool HasBaseSPD { get; }
-        
+
         int AdditionalHP { get; }
         int AdditionalATK { get; }
         int AdditionalDEF { get; }
         int AdditionalCRI { get; }
         int AdditionalDOG { get; }
         int AdditionalSPD { get; }
-        
+
         bool HasAdditionalHP { get; }
         bool HasAdditionalATK { get; }
         bool HasAdditionalDEF { get; }

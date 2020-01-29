@@ -5,6 +5,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;

@@ -1,4 +1,4 @@
-using Nekoyume.Game;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using UnityEngine.UI;
 

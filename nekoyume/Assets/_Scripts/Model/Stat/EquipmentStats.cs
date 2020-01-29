@@ -1,6 +1,6 @@
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     /// <summary>
     /// 장비의 스탯을 관리한다.
@@ -11,10 +11,10 @@ namespace Nekoyume.Game
     public class EquipmentStats : Stats
     {
         private readonly EquipmentItemSheet.Row _row;
-        
+
         private readonly Stats _enhancementStats = new Stats();
         private readonly Stats _combinationStats = new Stats();
-        
+
         // ... 고민.
     }
 }

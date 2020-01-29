@@ -1,7 +1,7 @@
 using System;
 using Nekoyume.EnumType;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     [Serializable]
     public class DecimalStatWithCurrent : DecimalStat, ICloneable
@@ -14,11 +14,11 @@ namespace Nekoyume.Game
             set
             {
                 _current = value;
-                CurrentAsInt = (int) _current;
+                CurrentAsInt = (int)_current;
             }
         }
         public int CurrentAsInt { get; private set; }
-        
+
         public DecimalStatWithCurrent(StatType type, decimal value = 0m, decimal current = 0m) : base(type, value)
         {
             Current = current;
@@ -28,13 +28,13 @@ namespace Nekoyume.Game
         {
             Current = value.Current;
         }
-        
+
         public override void Reset()
         {
             base.Reset();
             Current = 0m;
         }
-        
+
         public void SetValueAndCurrent(decimal value)
         {
             SetValue(value);
@@ -45,17 +45,17 @@ namespace Nekoyume.Game
         {
             SetValueAndCurrent(Current + value);
         }
-        
+
         public void SetCurrent(decimal value)
         {
             Current = Math.Min(Math.Max(0, value), Value);
         }
-        
+
         public void AddCurrent(decimal value)
         {
             SetCurrent(Current + value);
         }
-        
+
         public void EqualizeCurrentWithValue()
         {
             SetCurrent(Value);

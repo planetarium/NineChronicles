@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.TableData
 {

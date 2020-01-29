@@ -1,7 +1,7 @@
 using System;
 using Nekoyume.EnumType;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     [Serializable]
     public class IntStat : ICloneable
@@ -24,7 +24,7 @@ namespace Nekoyume.Game
             Type = type;
             Value = value;
         }
-        
+
         public virtual void Reset()
         {
             Value = 0;
@@ -42,7 +42,7 @@ namespace Nekoyume.Game
 
         public void AddValue(float value)
         {
-            AddValue((int) value);
+            AddValue((int)value);
         }
 
         public virtual object Clone()

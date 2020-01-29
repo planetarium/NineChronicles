@@ -13,6 +13,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Material = Nekoyume.Model.Item.Material;

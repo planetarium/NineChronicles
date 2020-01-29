@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Stat
 {
     /// <summary>
     /// 캐릭터의 스탯을 관리한다.
@@ -78,10 +79,10 @@ namespace Nekoyume.Game
         {
             _row = value._row;
 
-            _levelStats = (Stats) value._levelStats.Clone();
-            _equipmentStats = (Stats) value._equipmentStats.Clone();
-            _consumableStats = (Stats) value._consumableStats.Clone();
-            _buffStats = (Stats) value._buffStats.Clone();
+            _levelStats = (Stats)value._levelStats.Clone();
+            _equipmentStats = (Stats)value._equipmentStats.Clone();
+            _consumableStats = (Stats)value._consumableStats.Clone();
+            _buffStats = (Stats)value._buffStats.Clone();
 
             _equipmentStatModifiers = value._equipmentStatModifiers;
             _consumableStatModifiers = value._consumableStatModifiers;
@@ -176,7 +177,7 @@ namespace Nekoyume.Game
                 }
 
                 // set effects.
-                var setEffectRows = Game.instance.TableSheets.EquipmentItemSetEffectSheet.GetSetEffectRows(value);
+                var setEffectRows = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet.GetSetEffectRows(value);
                 foreach (var statModifier in setEffectRows.SelectMany(row => row.StatModifiers.Values))
                 {
                     _equipmentStatModifiers.Add(statModifier);
@@ -396,7 +397,7 @@ namespace Nekoyume.Game
                 yield return (StatType.SPD, AdditionalSPD);
             }
         }
-        
+
         public IEnumerable<(StatType statType, int baseValue, int additionalValue)> GetBaseAndAdditionalStats(
             bool ignoreZero = false)
         {

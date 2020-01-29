@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Game;
+using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.TableData;
 
