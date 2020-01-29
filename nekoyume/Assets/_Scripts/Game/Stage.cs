@@ -87,6 +87,7 @@ namespace Nekoyume.Game
         private void OnStageStart(BattleLog log)
         {
             _rankingBattle = false;
+            waveTurn = 0;
             if (_battleLog?.id != log.id)
             {
                 _battleLog = log;
@@ -101,6 +102,7 @@ namespace Nekoyume.Game
         private void OnRankingBattleStart(BattleLog log)
         {
             _rankingBattle = true;
+            waveTurn = 0;
             if (_battleLog?.id != log.id)
             {
                 _battleLog = log;
@@ -522,6 +524,7 @@ namespace Nekoyume.Game
                 throw new ArgumentNullException(nameof(character));
 
             var infos = skillInfos.ToList();
+            Debug.Log($"CoSKill {waveTurn} {infos.First().WaveTurn}");
             yield return new WaitUntil(() => waveTurn == infos.First().WaveTurn);
             yield return StartCoroutine(CoBeforeSkill(character));
 
@@ -664,6 +667,7 @@ namespace Nekoyume.Game
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
+            Debug.Log($"CoWaveTurnEnd {waveTurn}, {turn}");
             waveTurn = turn;
         }
 
@@ -743,11 +747,6 @@ namespace Nekoyume.Game
                 if (defaultBGVFX)
                     defaultBGVFX.Play(true);
             }
-        }
-
-        public IEnumerator CoSkill(Tuple<Character.CharacterBase, IEnumerable<Model.Skill.SkillInfo>, IEnumerable<Model.Skill.SkillInfo>, Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator>> tuple)
-        {
-            yield return StartCoroutine(CoSkill(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4));
         }
     }
 }
