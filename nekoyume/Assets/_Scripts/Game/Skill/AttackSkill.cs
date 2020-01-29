@@ -20,8 +20,9 @@ namespace Nekoyume.Game
         /// todo: 타겟의 회피 여부와 상관없이 버프의 확률로 발동되고 있음. 고민이 필요함.
         /// </summary>
         /// <param name="caster"></param>
+        /// <param name="simulatorWaveTurn"></param>
         /// <returns></returns>
-        protected IEnumerable<Model.Skill.SkillInfo> ProcessDamage(CharacterBase caster)
+        protected IEnumerable<Model.Skill.SkillInfo> ProcessDamage(CharacterBase caster, int simulatorWaveTurn)
         {
             var targets = skillRow.SkillTargetType.GetTarget(caster);
             var infos = new List<Model.Skill.SkillInfo>();
@@ -63,7 +64,7 @@ namespace Nekoyume.Game
                         critical = true;
                     }
                     infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), damage, critical,
-                        skillRow.SkillCategory, skillRow.ElementalType, skillRow.SkillTargetType));
+                        skillRow.SkillCategory, simulatorWaveTurn, skillRow.ElementalType, skillRow.SkillTargetType));
                 }
             }
 

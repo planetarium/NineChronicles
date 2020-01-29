@@ -51,6 +51,7 @@ namespace Nekoyume.Game
         public bool repeatStage;
         public bool isExitReserved;
         public string zone;
+        public int waveTurn;
 
         private Camera _camera;
         private BattleLog _battleLog;
@@ -520,9 +521,11 @@ namespace Nekoyume.Game
             if (!character)
                 throw new ArgumentNullException(nameof(character));
 
+            var infos = skillInfos.ToList();
+            yield return new WaitUntil(() => waveTurn == infos.First().WaveTurn);
             yield return StartCoroutine(CoBeforeSkill(character));
 
-            yield return StartCoroutine(func(skillInfos.ToList()));
+            yield return StartCoroutine(func(infos));
 
             yield return StartCoroutine(CoAfterSkill(character, buffInfos));
         }
@@ -661,7 +664,7 @@ namespace Nekoyume.Game
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
-            Debug.Log($"New WaveTurn End: {turn}");
+            waveTurn = turn;
         }
 
         public IEnumerator CoGetExp(long exp)

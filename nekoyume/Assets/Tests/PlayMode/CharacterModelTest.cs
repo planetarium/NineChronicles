@@ -72,7 +72,7 @@ namespace Tests.PlayMode
             var skill = _player.Skills.First();
             skill.buffs = skill.skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
             Assert.AreEqual(0, _player.Buffs.Count);
-            var model = skill.Use(_player);
+            var model = skill.Use(_player, 0);
             if (model.BuffInfos is null)
                 return;
             

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
@@ -32,9 +31,7 @@ namespace Nekoyume.Battle
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
             var turn = 0;
-            var spdList = Characters.ToList();
-            var spdList2 = new List<CharacterBase>();
-            var waveTurn = 0;
+            WaveTurn = 0;
             while (true)
             {
                 turn++;
@@ -45,27 +42,13 @@ namespace Nekoyume.Battle
                     break;
                 }
 
-                if (!spdList.Any())
-                {
-                    spdList.AddRange(spdList2);
-                }
-
                 if (Characters.TryDequeue(out var character))
                 {
-                    spdList.Remove(character);
                     character.Tick();
-                    spdList2.Add(character);
                 }
                 else
                 {
                     break;
-                }
-
-                if (!spdList.Any())
-                {
-                    var e = new WaveTurnEnd(character, waveTurn);
-                    Log.Add(e);
-                    waveTurn++;
                 }
 
                 if (!Player.Targets.Any())

@@ -531,7 +531,7 @@ namespace Nekoyume.Game.Character
         {
             var info = infos.First();
             var copy = new Model.Skill.SkillInfo(info.Target, info.Effect, info.Critical, info.SkillCategory,
-                ElementalType.Normal, info.SkillTargetType, info.Buff);
+                info.WaveTurn, ElementalType.Normal, info.SkillTargetType, info.Buff);
             yield return StartCoroutine(CoAnimationCast(copy));
 
             var pos = transform.position;

@@ -18,11 +18,12 @@ namespace Nekoyume.Model
             public readonly SkillCategory SkillCategory;
             public readonly ElementalType ElementalType;
             public readonly SkillTargetType SkillTargetType;
+            public readonly int WaveTurn;
             [CanBeNull] public readonly Game.Buff Buff;
 
             public SkillInfo(CharacterBase character, int effect, bool critical, SkillCategory skillCategory,
-                ElementalType elementalType = ElementalType.Normal, SkillTargetType targetType = SkillTargetType.Enemy,
-                [CanBeNull] Game.Buff buff = null)
+                int turn, ElementalType elementalType = ElementalType.Normal,
+                SkillTargetType targetType = SkillTargetType.Enemy, [CanBeNull] Game.Buff buff = null)
             {
                 Target = character;
                 Effect = effect;
@@ -31,6 +32,7 @@ namespace Nekoyume.Model
                 ElementalType = elementalType;
                 SkillTargetType = targetType;
                 Buff = buff;
+                WaveTurn = turn;
             }
         }
 

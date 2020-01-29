@@ -294,6 +294,17 @@ namespace Nekoyume.Model
         {
             return new Player(this);
         }
+
+        protected override void EndTurn()
+        {
+            base.EndTurn();
+            if (this is EnemyPlayer)
+            {
+                return;
+            }
+            Simulator.WaveTurn++;
+            Simulator.Log.Add(new WaveTurnEnd(this, Simulator.WaveTurn));
+        }
     }
 
     public class InvalidEquipmentException : Exception
