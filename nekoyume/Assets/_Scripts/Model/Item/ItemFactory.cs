@@ -3,12 +3,11 @@ using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using UnityEngine;
 using Nekoyume.Model.Skill;
 
 namespace Nekoyume.Model.Item
 {
-    public class ItemFactory : MonoBehaviour
+    public static class ItemFactory
     {
         public static ItemBase CreateMaterial(int itemId, Guid guid = default)
         {
