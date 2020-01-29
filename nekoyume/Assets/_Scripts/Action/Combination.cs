@@ -11,11 +11,11 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Material = Nekoyume.Game.Item.Material;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.Action
 {

@@ -1,4 +1,4 @@
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using TMPro;
 

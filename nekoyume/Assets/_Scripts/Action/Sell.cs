@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 
 namespace Nekoyume.Action

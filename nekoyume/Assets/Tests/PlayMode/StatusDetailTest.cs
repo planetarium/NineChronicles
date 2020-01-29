@@ -6,7 +6,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;

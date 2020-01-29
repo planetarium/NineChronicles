@@ -4,7 +4,7 @@ using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 using UniRx;
-using Inventory = Nekoyume.Game.Item.Inventory;
+using Inventory = Nekoyume.Model.Item.Inventory;
 
 namespace Nekoyume.State
 {

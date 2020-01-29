@@ -13,6 +13,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
+using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -28,7 +29,7 @@ namespace Nekoyume.State
         public int characterId;
         public int level;
         public long exp;
-        public Inventory inventory;
+        public Model.Item.Inventory inventory;
         public WorldInformation worldInformation;
         public DateTimeOffset updatedAt;
         public Address agentAddress;
@@ -137,7 +138,7 @@ namespace Nekoyume.State
             characterId = (int) ((Integer) serialized["characterId"]).Value;
             level = (int) ((Integer) serialized["level"]).Value;
             exp = (long) ((Integer) serialized["exp"]).Value;
-            inventory = new Game.Item.Inventory((Bencodex.Types.List) serialized["inventory"]);
+            inventory = new Model.Item.Inventory((Bencodex.Types.List) serialized["inventory"]);
             worldInformation = new WorldInformation((Bencodex.Types.Dictionary) serialized["worldInformation"]);
             updatedAt = serialized["updatedAt"].ToDateTimeOffset();
             agentAddress = new Address(((Binary) serialized["agentAddress"]).Value);

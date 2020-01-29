@@ -4,7 +4,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;

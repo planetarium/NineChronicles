@@ -1,14 +1,14 @@
 using System;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.State.Modifiers;
 using Nekoyume.TableData;
 using NUnit.Framework;
 using UnityEngine;
-using Material = Nekoyume.Game.Item.Material;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Tests.EditMode
 {

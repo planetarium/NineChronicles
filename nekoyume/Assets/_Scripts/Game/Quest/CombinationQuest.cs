@@ -4,7 +4,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Game.Quest

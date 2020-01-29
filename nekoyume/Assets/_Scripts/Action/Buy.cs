@@ -7,8 +7,8 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 
 namespace Nekoyume.Action
@@ -28,7 +28,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class BuyerResult : AttachmentActionResult
         {
-            public Game.Item.ShopItem shopItem;
+            public ShopItem shopItem;
 
             protected override string TypeId => "buy.buyerResult";
 
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
         [Serializable]
         public class SellerResult : AttachmentActionResult
         {
-            public Game.Item.ShopItem shopItem;
+            public ShopItem shopItem;
             public decimal gold;
 
             protected override string TypeId => "buy.sellerResult";
