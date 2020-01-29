@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class WorldQuest : Quest
@@ -27,7 +24,7 @@ namespace Nekoyume.Game.Quest
 
         public override string GetName()
         {
-            if (Game.instance.TableSheets.WorldSheet.TryGetByStageId(Goal, out var worldRow))
+            if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(Goal, out var worldRow))
             {
                 var format = LocalizationManager.Localize("QUEST_WORLD_FORMAT");
                 return string.Format(format, worldRow.GetLocalizedName());
@@ -46,7 +43,7 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             Complete = stageMap.TryGetValue(Goal, out _);
         }
     }

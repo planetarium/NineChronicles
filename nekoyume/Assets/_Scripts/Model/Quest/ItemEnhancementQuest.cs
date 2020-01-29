@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class ItemEnhancementQuest : Quest
@@ -22,8 +22,8 @@ namespace Nekoyume.Game.Quest
 
         public ItemEnhancementQuest(Dictionary serialized) : base(serialized)
         {
-            Grade = (int) ((Integer) serialized["grade"]).Value;
-            _count = (int) ((Integer) serialized["count"]).Value;
+            Grade = (int)((Integer)serialized["grade"]).Value;
+            _count = (int)((Integer)serialized["count"]).Value;
         }
 
         public override QuestType QuestType => QuestType.Craft;
@@ -32,7 +32,7 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             Complete = _count == _current;
         }
 
@@ -56,18 +56,18 @@ namespace Nekoyume.Game.Quest
             {
                 _current++;
             }
-            
+
             Check();
         }
 
         protected override string TypeId => "itemEnhancementQuest";
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "grade"] = (Integer) Grade,
-                [(Text) "count"] = (Integer) _count,
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"grade"] = (Integer)Grade,
+                [(Text)"count"] = (Integer)_count,
+            }.Union((Dictionary)base.Serialize()));
 
     }
 }

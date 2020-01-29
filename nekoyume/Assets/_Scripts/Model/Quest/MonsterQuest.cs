@@ -3,14 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
-using Nekoyume.Model;
 using Nekoyume.TableData;
-using Org.BouncyCastle.Asn1.CryptoPro;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
-    public class MonsterQuest: Quest
+    public class MonsterQuest : Quest
     {
         private readonly int _monsterId;
 
@@ -19,9 +17,9 @@ namespace Nekoyume.Game.Quest
             _monsterId = data.MonsterId;
         }
 
-        public MonsterQuest(Bencodex.Types.Dictionary serialized) : base(serialized)
+        public MonsterQuest(Dictionary serialized) : base(serialized)
         {
-            _monsterId = (int) ((Integer) serialized["monsterId"]).Value;
+            _monsterId = (int)((Integer)serialized["monsterId"]).Value;
         }
 
         public override QuestType QuestType => QuestType.Adventure;
@@ -30,7 +28,7 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             Complete = _current >= Goal;
         }
 
@@ -51,15 +49,15 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             monsterMap.TryGetValue(_monsterId, out _current);
             Check();
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "monsterId"] = (Integer) _monsterId,
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"monsterId"] = (Integer)_monsterId,
+            }.Union((Dictionary)base.Serialize()));
     }
 }

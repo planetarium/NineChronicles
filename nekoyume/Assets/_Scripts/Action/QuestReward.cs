@@ -6,7 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Game.Quest;
+using Nekoyume.Model.Quest;
 using Nekoyume.State;
 
 namespace Nekoyume.Action

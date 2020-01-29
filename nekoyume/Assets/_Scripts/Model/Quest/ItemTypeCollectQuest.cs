@@ -8,7 +8,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class ItemTypeCollectQuest : Quest
@@ -24,21 +24,21 @@ namespace Nekoyume.Game.Quest
 
         public ItemTypeCollectQuest(Dictionary serialized) : base(serialized)
         {
-            _itemIds = serialized["itemIds"].ToList(i => (int) ((Integer) i).Value);
-            ItemType = (ItemType) (int) ((Integer) serialized["itemType"]).Value;
+            _itemIds = serialized["itemIds"].ToList(i => (int)((Integer)i).Value);
+            ItemType = (ItemType)(int)((Integer)serialized["itemType"]).Value;
         }
 
         public void Update(ItemBase item)
         {
             if (Complete)
                 return;
-            
+
             if (!_itemIds.Contains(item.Data.Id))
             {
                 _current++;
                 _itemIds.Add(item.Data.Id);
             }
-            
+
             Check();
         }
 
@@ -48,7 +48,7 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             Complete = _current >= Goal;
         }
 
@@ -66,11 +66,11 @@ namespace Nekoyume.Game.Quest
         protected override string TypeId => "itemTypeCollectQuest";
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "itemType"] = (Integer) (int) ItemType,
-                [(Text) "itemIds"] = (Bencodex.Types.List) _itemIds.Select(i => (Integer) i).Serialize(),
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"itemType"] = (Integer)(int)ItemType,
+                [(Text)"itemIds"] = (List)_itemIds.Select(i => (Integer)i).Serialize(),
+            }.Union((Dictionary)base.Serialize()));
 
     }
 }

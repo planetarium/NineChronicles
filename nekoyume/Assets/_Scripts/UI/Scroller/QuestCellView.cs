@@ -3,7 +3,6 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.Helper;
 using System;
 using System.Linq;
-using Nekoyume.BlockChain;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -14,6 +13,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using UniRx;
+using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Scroller
         public SimpleCountableItemView[] rewardViews;
         public SubmitButton receiveButton;
 
-        private Game.Quest.Quest _quest;
+        private QuestModel _quest;
         private int _currentDataIndex;
 
         public System.Action onClickSubmitButton;
@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
 
-        public void SetData(Game.Quest.Quest quest)
+        public void SetData(QuestModel quest)
         {
             _quest = quest;
             _currentDataIndex = dataIndex;

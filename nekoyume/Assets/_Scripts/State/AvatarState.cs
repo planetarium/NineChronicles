@@ -9,11 +9,11 @@ using Libplanet.Crypto;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
-using Nekoyume.Game.Quest;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Quest;
 using Nekoyume.TableData;
 using UnityEngine;
 

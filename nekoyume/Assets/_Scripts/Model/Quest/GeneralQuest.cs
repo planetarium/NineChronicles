@@ -7,7 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class GeneralQuest : Quest
@@ -21,7 +21,7 @@ namespace Nekoyume.Game.Quest
 
         public GeneralQuest(Dictionary serialized) : base(serialized)
         {
-            Event = (QuestEventType) (int) ((Integer) serialized["event"]).Value;
+            Event = (QuestEventType)(int)((Integer)serialized["event"]).Value;
         }
 
         public override QuestType QuestType
@@ -49,7 +49,7 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             Complete = _current >= Goal;
         }
 
@@ -69,17 +69,17 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
-            var key = (int) Event;
+
+            var key = (int)Event;
             eventMap.TryGetValue(key, out _current);
             Check();
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "event"] = (Integer) (int) Event,
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"event"] = (Integer)(int)Event,
+            }.Union((Dictionary)base.Serialize()));
 
     }
 }

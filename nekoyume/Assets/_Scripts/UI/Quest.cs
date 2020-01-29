@@ -1,7 +1,7 @@
 ﻿using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
-using Nekoyume.Game.Quest;
 using Nekoyume.Helper;
+using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using System;
@@ -11,6 +11,7 @@ using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI
 {
@@ -135,9 +136,9 @@ namespace Nekoyume.UI
         }
     }
 
-    public class QuestOrderComparer : IComparer<Game.Quest.Quest>
+    public class QuestOrderComparer : IComparer<QuestModel>
     {
-        public int Compare(Game.Quest.Quest x, Game.Quest.Quest y)
+        public int Compare(QuestModel x, QuestModel y)
         {
             // null
             if (x is null)

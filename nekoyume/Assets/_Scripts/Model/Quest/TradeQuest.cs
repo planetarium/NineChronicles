@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class TradeQuest : Quest
@@ -21,14 +21,14 @@ namespace Nekoyume.Game.Quest
 
         public TradeQuest(Dictionary serialized) : base(serialized)
         {
-            Type = (TradeType) (int) ((Integer) serialized["type"]).Value;
+            Type = (TradeType)(int)((Integer)serialized["type"]).Value;
         }
 
         public override void Check()
         {
             if (Complete)
                 return;
-            
+
             _current += 1;
             Complete = _current >= Goal;
         }
@@ -46,10 +46,10 @@ namespace Nekoyume.Game.Quest
 
         protected override string TypeId => "tradeQuest";
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "type"] = (Integer) (int) Type,
-            }.Union((Dictionary) base.Serialize()));
+                [(Text)"type"] = (Integer)(int)Type,
+            }.Union((Dictionary)base.Serialize()));
 
     }
 }

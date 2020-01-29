@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class CollectQuest : Quest
@@ -22,14 +22,14 @@ namespace Nekoyume.Game.Quest
 
         public CollectQuest(Dictionary serialized) : base(serialized)
         {
-            _itemId = (int) ((Integer) serialized["itemId"]).Value;
+            _itemId = (int)((Integer)serialized["itemId"]).Value;
         }
 
         public override void Check()
         {
             if (Complete)
                 return;
-            
+
             Complete = _current >= Goal;
         }
 
@@ -51,15 +51,15 @@ namespace Nekoyume.Game.Quest
         {
             if (Complete)
                 return;
-            
+
             itemMap.TryGetValue(_itemId, out _current);
             Check();
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "itemId"] = (Integer) _itemId,
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"itemId"] = (Integer)_itemId,
+            }.Union((Dictionary)base.Serialize()));
     }
 }

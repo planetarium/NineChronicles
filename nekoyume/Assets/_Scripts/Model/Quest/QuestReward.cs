@@ -4,7 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Nekoyume.State;
 
-namespace Nekoyume.Game.Quest
+namespace Nekoyume.Model.Quest
 {
     [Serializable]
     public class QuestReward : IState
@@ -16,7 +16,7 @@ namespace Nekoyume.Game.Quest
             ItemMap = map;
         }
 
-        public QuestReward(Bencodex.Types.Dictionary serialized)
+        public QuestReward(Dictionary serialized)
         {
             ItemMap = serialized.ToDictionary(
                 kv => kv.Key.ToInteger(),
@@ -26,7 +26,8 @@ namespace Nekoyume.Game.Quest
 
         public IValue Serialize()
         {
-            return new Bencodex.Types.Dictionary(ItemMap.Select(kv =>
-                new KeyValuePair<IKey, IValue>((Text) kv.Key.ToString(), (Text) kv.Value.ToString())));
-        } }
+            return new Dictionary(ItemMap.Select(kv =>
+                new KeyValuePair<IKey, IValue>((Text)kv.Key.ToString(), (Text)kv.Value.ToString())));
+        }
+    }
 }
