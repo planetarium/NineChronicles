@@ -34,6 +34,8 @@ namespace Nekoyume.UI
         public CategoryButton arenaButton;
         public CategoryButton filteredButton;
         public CategoryButton overallButton;
+        public GameObject arenaRankingHeader;
+        public GameObject expRankingHeader;
         public ArenaRankingInfo arenaRankingCellViewPrefab;
         public RankingInfo rankingCellViewPrefab;
         public ScrollRect board;
@@ -167,6 +169,8 @@ namespace Nekoyume.UI
                     arenaPendingNCG.Show(false);
                     arenaCellView.Show();
                     arenaRecordContainer.SetActive(true);
+                    arenaRankingHeader.SetActive(true);
+                    expRankingHeader.SetActive(false);
                     UpdateBoard(stateType);
                     break;
                 case StateType.Filtered:
@@ -177,6 +181,8 @@ namespace Nekoyume.UI
                     arenaPendingNCG.Hide();
                     arenaCellView.Hide();
                     arenaRecordContainer.SetActive(false);
+                    arenaRankingHeader.SetActive(false);
+                    expRankingHeader.SetActive(true);
                     UpdateBoard(stateType);
                     break;
                 case StateType.Overall:
@@ -187,6 +193,8 @@ namespace Nekoyume.UI
                     arenaPendingNCG.Hide();
                     arenaCellView.Hide();
                     arenaRecordContainer.SetActive(false);
+                    arenaRankingHeader.SetActive(false);
+                    expRankingHeader.SetActive(true);
                     UpdateBoard(stateType);
                     break;
                 default:
