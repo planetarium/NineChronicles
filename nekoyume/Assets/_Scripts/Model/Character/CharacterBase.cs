@@ -118,9 +118,11 @@ namespace Nekoyume.Model
                             BT.Call(ReduceDurationOfBuffs),
                             BT.Call(SelectSkill),
                             BT.Call(UseSkill),
-                            BT.Call(RemoveBuffs)
+                            BT.Call(RemoveBuffs),
+                            BT.Call(EndTurn)
                         )
                     ),
+                    BT.Call(EndTurn),
                     BT.Terminate()
                 )
             );
@@ -154,7 +156,7 @@ namespace Nekoyume.Model
         private void UseSkill()
         {
             // 스킬 사용.
-            _usedSkill = _selectedSkill.Use(this);
+            _usedSkill = _selectedSkill.Use(this, Simulator.WaveTurn);
             Simulator.Log.Add(_usedSkill);
 
             foreach (var info in _usedSkill.SkillInfos)
@@ -262,6 +264,10 @@ namespace Nekoyume.Model
         public bool GetChance(int chance)
         {
             return chance > Simulator.Random.Next(0, 100);
+        }
+
+        protected virtual void EndTurn()
+        {
         }
     }
 

@@ -11,9 +11,9 @@ namespace Nekoyume.Game
         {
         }
 
-        public override Model.Skill Use(CharacterBase caster)
+        public override Model.Skill Use(CharacterBase caster, int simulatorWaveTurn)
         {
-            return new Model.BlowAttack((CharacterBase) caster.Clone(), ProcessDamage(caster), ProcessBuff(caster));
+            return new Model.BlowAttack((CharacterBase) caster.Clone(), ProcessDamage(caster, simulatorWaveTurn), ProcessBuff(caster, simulatorWaveTurn));
         }
     }
 }

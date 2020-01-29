@@ -14,12 +14,12 @@ namespace Nekoyume.Game
         {
         }
 
-        public override Model.Skill Use(CharacterBase caster)
+        public override Model.Skill Use(CharacterBase caster, int simulatorWaveTurn)
         {
-            return new Model.HealSkill((CharacterBase) caster.Clone(), ProcessHeal(caster), ProcessBuff(caster));
+            return new Model.HealSkill((CharacterBase) caster.Clone(), ProcessHeal(caster, simulatorWaveTurn), ProcessBuff(caster, simulatorWaveTurn));
         }
 
-        protected IEnumerable<Model.Skill.SkillInfo> ProcessHeal(CharacterBase caster)
+        protected IEnumerable<Model.Skill.SkillInfo> ProcessHeal(CharacterBase caster, int simulatorWaveTurn)
         {
             var infos = new List<Model.Skill.SkillInfo>();
             var healPoint = caster.ATK + power;
@@ -27,7 +27,7 @@ namespace Nekoyume.Game
             {
                 target.Heal(healPoint);
                 infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), healPoint, caster.IsCritical(),
-                    skillRow.SkillCategory));
+                    skillRow.SkillCategory, simulatorWaveTurn));
             }
 
             return infos;

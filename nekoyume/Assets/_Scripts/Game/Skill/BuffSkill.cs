@@ -11,9 +11,9 @@ namespace Nekoyume.Game
         {
         }
 
-        public override Model.Skill Use(CharacterBase caster)
+        public override Model.Skill Use(CharacterBase caster, int simulatorWaveTurn)
         {
-            return new Model.Buff((CharacterBase) caster.Clone(), ProcessBuff(caster));
+            return new Model.Buff((CharacterBase) caster.Clone(), ProcessBuff(caster, simulatorWaveTurn));
         }
     }
 }
