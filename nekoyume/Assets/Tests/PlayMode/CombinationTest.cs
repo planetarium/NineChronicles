@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Linq;
 using Nekoyume.Game;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model.Item;
 using Nekoyume.State;

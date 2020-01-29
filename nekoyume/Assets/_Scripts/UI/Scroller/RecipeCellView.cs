@@ -1,5 +1,4 @@
 ﻿using EnhancedUI.EnhancedScroller;
-using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -12,6 +11,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI.Scroller
 {

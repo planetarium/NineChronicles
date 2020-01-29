@@ -4,7 +4,6 @@ using Nekoyume.Helper;
 using System;
 using System.Linq;
 using Nekoyume.BlockChain;
-using Nekoyume.Game.Factory;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -14,6 +13,7 @@ using UnityEngine.UI;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Mail;
 using UniRx;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.UI.Scroller
 {

@@ -7,7 +7,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;

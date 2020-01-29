@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume.Game.Factory;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using UnityEngine;

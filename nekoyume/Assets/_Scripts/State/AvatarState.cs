@@ -8,7 +8,6 @@ using Libplanet.Action;
 using Libplanet.Crypto;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;

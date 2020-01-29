@@ -9,7 +9,6 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Factory;
 using Nekoyume.Game.Mail;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
