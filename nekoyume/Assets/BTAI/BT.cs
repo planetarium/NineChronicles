@@ -1,6 +1,5 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace BTAI
 {
@@ -23,16 +22,9 @@ namespace BTAI
         public static While While(System.Func<bool> fn) { return new While(fn); }
         public static Condition Condition(System.Func<bool> fn) { return new Condition(fn); }
         public static Repeat Repeat(int count) { return new Repeat(count); }
-        public static Wait Wait(float seconds) { return new Wait(seconds); }
-        public static Trigger Trigger(Animator animator, string name, bool set = true) { return new Trigger(animator, name, set); }
-        public static WaitForAnimatorState WaitForAnimatorState(Animator animator, string name, int layer = 0) { return new WaitForAnimatorState(animator, name, layer); }
-        public static SetBool SetBool(Animator animator, string name, bool value) { return new SetBool(animator, name, value); }
-        public static SetActive SetActive(GameObject gameObject, bool active) { return new SetActive(gameObject, active); }
-        public static WaitForAnimatorSignal WaitForAnimatorSignal(Animator animator, string name, string state, int layer = 0) { return new WaitForAnimatorSignal(animator, name, state, layer); }
         public static Terminate Terminate() { return new Terminate(); }
         public static Log Log(string msg) { return new Log(msg); }
         public static RandomSequence RandomSequence(int[] weights = null) { return new BTAI.RandomSequence(weights); }
-
     }
 
     public abstract class BTNode
@@ -125,10 +117,11 @@ namespace BTAI
             if (shuffle)
             {
                 var n = children.Count;
+                var rand = new Random();
                 while (n > 1)
                 {
                     n--;
-                    var k = Mathf.FloorToInt(Random.value * (n + 1));
+                    var k = rand.Next(n + 1);
                     var value = children[k];
                     children[k] = children[n];
                     children[n] = value;
@@ -452,7 +445,7 @@ namespace BTAI
 
         void PickNewChild()
         {
-            int choice = Random.Range(0, m_AddedWeight[m_AddedWeight.Length - 1]);
+            int choice = new Random().Next(0, m_AddedWeight[m_AddedWeight.Length - 1]);
 
             for (int i = 0; i < m_AddedWeight.Length; ++i)
             {
@@ -467,208 +460,6 @@ namespace BTAI
         public override string ToString()
         {
             return "Random Sequence : " + activeChild + "/" + children.Count;
-        }
-    }
-
-
-    /// <summary>
-    /// Pause execution for a number of seconds.
-    /// </summary>
-    public class Wait : BTNode
-    {
-        public float seconds = 0;
-        float future = -1;
-        public Wait(float seconds)
-        {
-            this.seconds = seconds;
-        }
-
-        public override BTState Tick()
-        {
-            if (future < 0)
-                future = Time.time + seconds;
-
-            if (Time.time >= future)
-            {
-                future = -1;
-                return BTState.Success;
-            }
-            else
-                return BTState.Continue;
-        }
-
-        public override string ToString()
-        {
-            return "Wait : " + (future - Time.time) + " / " + seconds;
-        }
-    }
-
-    /// <summary>
-    /// Activate a trigger on an animator.
-    /// </summary>
-    public class Trigger : BTNode
-    {
-        Animator animator;
-        int id;
-        string triggerName;
-        bool set = true;
-
-        //if set == false, it reset the trigger istead of setting it.
-        public Trigger(Animator animator, string name, bool set = true)
-        {
-            this.id = Animator.StringToHash(name);
-            this.animator = animator;
-            this.triggerName = name;
-            this.set = set;
-        }
-
-        public override BTState Tick()
-        {
-            if (set)
-                animator.SetTrigger(id);
-            else
-                animator.ResetTrigger(id);
-
-            return BTState.Success;
-        }
-
-        public override string ToString()
-        {
-            return "Trigger : " + triggerName;
-        }
-    }
-
-    /// <summary>
-    /// Set a boolean on an animator.
-    /// </summary>
-    public class SetBool : BTNode
-    {
-        Animator animator;
-        int id;
-        bool value;
-        string triggerName;
-
-        public SetBool(Animator animator, string name, bool value)
-        {
-            this.id = Animator.StringToHash(name);
-            this.animator = animator;
-            this.value = value;
-            this.triggerName = name;
-        }
-
-        public override BTState Tick()
-        {
-            animator.SetBool(id, value);
-            return BTState.Success;
-        }
-
-        public override string ToString()
-        {
-            return "SetBool : " + triggerName + " = " + value.ToString();
-        }
-    }
-
-    /// <summary>
-    /// Wait for an animator to reach a state.
-    /// </summary>
-    public class WaitForAnimatorState : BTNode
-    {
-        Animator animator;
-        int id;
-        int layer;
-        string stateName;
-
-        public WaitForAnimatorState(Animator animator, string name, int layer = 0)
-        {
-            this.id = Animator.StringToHash(name);
-            if (!animator.HasState(layer, this.id))
-            {
-                Debug.LogError("The animator does not have state: " + name);
-            }
-            this.animator = animator;
-            this.layer = layer;
-            this.stateName = name;
-        }
-
-        public override BTState Tick()
-        {
-            var state = animator.GetCurrentAnimatorStateInfo(layer);
-            if (state.fullPathHash == this.id || state.shortNameHash == this.id)
-                return BTState.Success;
-            return BTState.Continue;
-        }
-
-        public override string ToString()
-        {
-            return "Wait For State : " + stateName;
-        }
-    }
-
-    /// <summary>
-    /// Set a gameobject active flag.
-    /// </summary>
-    public class SetActive : BTNode
-    {
-
-        GameObject gameObject;
-        bool active;
-
-        public SetActive(GameObject gameObject, bool active)
-        {
-            this.gameObject = gameObject;
-            this.active = active;
-        }
-
-        public override BTState Tick()
-        {
-            gameObject.SetActive(this.active);
-            return BTState.Success;
-        }
-
-        public override string ToString()
-        {
-            return "Set Active : " + gameObject.name + " = " + active;
-        }
-    }
-
-    /// <summary>
-    /// Wait for a signal to be received from a SendSignal state machine behaviour on an animator.
-    /// </summary>
-    public class WaitForAnimatorSignal : BTNode
-    {
-        internal bool isSet = false;
-        string name;
-        int id;
-
-        public WaitForAnimatorSignal(Animator animator, string name, string state, int layer = 0)
-        {
-            this.name = name;
-            this.id = Animator.StringToHash(name);
-            if (!animator.HasState(layer, this.id))
-            {
-                Debug.LogError("The animator does not have state: " + name);
-            }
-            else
-            {
-                SendSignal.Register(animator, name, this);
-            }
-        }
-
-        public override BTState Tick()
-        {
-            if (!isSet)
-                return BTState.Continue;
-            else
-            {
-                isSet = false;
-                return BTState.Success;
-            }
-
-        }
-
-        public override string ToString()
-        {
-            return "Wait For Animator Signal : " + name;
         }
     }
 
@@ -693,7 +484,6 @@ namespace BTAI
 
         public override BTState Tick()
         {
-            Debug.Log(msg);
             return BTState.Success;
         }
     }
