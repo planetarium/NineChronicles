@@ -15,7 +15,8 @@ namespace Nekoyume.Model.Quest
         public readonly int Grade;
         private readonly List<int> _itemIds = new List<int>();
 
-        public ItemGradeQuest(ItemGradeQuestSheet.Row data) : base(data)
+        public ItemGradeQuest(ItemGradeQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             Grade = data.Grade;
         }

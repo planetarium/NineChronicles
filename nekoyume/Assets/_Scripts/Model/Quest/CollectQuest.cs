@@ -15,7 +15,8 @@ namespace Nekoyume.Model.Quest
 
         private readonly int _itemId;
 
-        public CollectQuest(CollectQuestSheet.Row data) : base(data)
+        public CollectQuest(CollectQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             _itemId = data.ItemId;
         }

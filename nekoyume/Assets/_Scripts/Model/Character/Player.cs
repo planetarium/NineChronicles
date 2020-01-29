@@ -68,7 +68,12 @@ namespace Nekoyume.Model
 
         public IReadOnlyList<Equipment> Equipments => _equipments;
 
-        public Player(AvatarState avatarState, Simulator simulator) : base(simulator, avatarState.characterId, avatarState.level)
+        public Player(AvatarState avatarState, Simulator simulator) 
+            : base(
+                  simulator, 
+                  simulator.TableSheets,
+                  avatarState.characterId, 
+                  avatarState.level)
         {
             // FIXME 중복 코드 제거할 것
             Exp.Current = avatarState.exp;
@@ -83,7 +88,12 @@ namespace Nekoyume.Model
             PostConstruction(simulator?.TableSheets);
         }
 
-        public Player(AvatarState avatarState, TableSheets tableSheets) : base (null, avatarState.characterId, avatarState.level)
+        public Player(AvatarState avatarState, TableSheets tableSheets) 
+            : base (
+                  null, 
+                  tableSheets,
+                  avatarState.characterId, 
+                  avatarState.level)
         {
             // FIXME 중복 코드 제거할 것
             Exp.Current = avatarState.exp;
@@ -98,7 +108,12 @@ namespace Nekoyume.Model
             PostConstruction(tableSheets);
         }
 
-        public Player(int level, TableSheets tableSheets) : base(null, GameConfig.DefaultAvatarCharacterId, level)
+        public Player(int level, TableSheets tableSheets) : 
+            base(
+                null,
+                tableSheets,
+                GameConfig.DefaultAvatarCharacterId, 
+                level)
         {
             Exp.Current = 0;
             Inventory = new Inventory();
@@ -129,7 +144,7 @@ namespace Nekoyume.Model
         private void PostConstruction(TableSheets sheets)
         {
             UpdateExp(sheets);
-            Equip(Inventory.Items);
+            Equip(Inventory.Items, sheets.EquipmentItemSetEffectSheet);
         }
 
         private void UpdateExp(TableSheets sheets)
@@ -158,7 +173,7 @@ namespace Nekoyume.Model
             Simulator.Lose = true;
         }
         
-        private void Equip(IEnumerable<Inventory.Item> items)
+        private void Equip(IEnumerable<Inventory.Item> items, EquipmentItemSetEffectSheet sheet)
         {
             _equipments = items.Select(i => i.item)
                 .OfType<Equipment>()
@@ -198,7 +213,7 @@ namespace Nekoyume.Model
                 }
             }
             
-            Stats.SetEquipments(_equipments);
+            Stats.SetEquipments(_equipments, sheet);
 
             foreach (var skill in _equipments.SelectMany(equipment => equipment.Skills))
             {

@@ -17,7 +17,8 @@ namespace Nekoyume.Model.Quest
         private readonly List<int> _itemIds = new List<int>();
 
 
-        public ItemTypeCollectQuest(ItemTypeCollectQuestSheet.Row data) : base(data)
+        public ItemTypeCollectQuest(ItemTypeCollectQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             ItemType = data.ItemType;
         }

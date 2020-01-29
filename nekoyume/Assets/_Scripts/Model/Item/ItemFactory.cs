@@ -9,18 +9,11 @@ namespace Nekoyume.Model.Item
 {
     public static class ItemFactory
     {
-        public static ItemBase CreateMaterial(int itemId, Guid guid = default)
+        public static ItemBase CreateMaterial(MaterialItemSheet sheet, int itemId)
         {
-            return !Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData)
+            return !sheet.TryGetValue(itemId, out var itemData)
                 ? null
-                : Create(itemData, guid);
-        }
-
-        public static ItemBase CreateEquipment(int itemId, Guid guid)
-        {
-            return Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(itemId, out var itemData)
-                ? Create(itemData, guid)
-                : null;
+                : Create(itemData, default);
         }
 
         public static ItemBase Create(ItemSheet.Row itemRow, Guid id)

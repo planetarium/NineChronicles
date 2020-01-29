@@ -12,7 +12,8 @@ namespace Nekoyume.Model.Quest
     {
         private readonly int _monsterId;
 
-        public MonsterQuest(MonsterQuestSheet.Row data) : base(data)
+        public MonsterQuest(MonsterQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             _monsterId = data.MonsterId;
         }

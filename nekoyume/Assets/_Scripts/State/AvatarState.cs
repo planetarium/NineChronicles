@@ -62,8 +62,7 @@ namespace Nekoyume.State
             Address address,
             Address agentAddress,
             long blockIndex,
-            WorldSheet worldSheet,
-            QuestSheet questSheet,
+            TableSheets sheets,
             string name = null) : base(address)
         {
             if (address == null)
@@ -75,13 +74,17 @@ namespace Nekoyume.State
             exp = 0;
             inventory = new Inventory();
 #if UNITY_EDITOR
-            worldInformation = new WorldInformation(blockIndex, worldSheet, true);
+            worldInformation = new WorldInformation(blockIndex, sheets.WorldSheet, true);
 #else
-            worldInformation = new WorldInformation(blockIndex, worldSheet);
+            worldInformation = new WorldInformation(blockIndex, sheets.WorldSheet);
 #endif
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
-            questList = new QuestList(questSheet);
+            questList = new QuestList(
+                sheets.QuestSheet, 
+                sheets.QuestRewardSheet, 
+                sheets.QuestItemRewardSheet
+            );
             mailBox = new MailBox();
             this.blockIndex = blockIndex;
             actionPoint = GameConfig.ActionPointMax;

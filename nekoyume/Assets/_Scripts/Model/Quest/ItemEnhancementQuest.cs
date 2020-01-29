@@ -14,7 +14,8 @@ namespace Nekoyume.Model.Quest
         public readonly int Grade;
         private readonly int _count;
 
-        public ItemEnhancementQuest(ItemEnhancementQuestSheet.Row data) : base(data)
+        public ItemEnhancementQuest(ItemEnhancementQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             _count = data.Count;
             Grade = data.Grade;

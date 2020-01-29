@@ -10,7 +10,12 @@ namespace Nekoyume.Model
     {
         public int spawnIndex = -1;
 
-        public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel) : base(player.Simulator, rowData.Id, monsterLevel)
+        public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel) 
+            : base(
+                player.Simulator,
+                player.Simulator.TableSheets,
+                rowData.Id,
+                monsterLevel)
         {
             Targets.Add(player);
         }

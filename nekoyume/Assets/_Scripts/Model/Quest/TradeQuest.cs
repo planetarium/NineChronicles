@@ -14,7 +14,8 @@ namespace Nekoyume.Model.Quest
         public override QuestType QuestType => QuestType.Exchange;
         public readonly TradeType Type;
 
-        public TradeQuest(TradeQuestSheet.Row data) : base(data)
+        public TradeQuest(TradeQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             Type = data.Type;
         }

@@ -13,7 +13,8 @@ namespace Nekoyume.Model.Quest
     {
         public readonly TradeType Type;
 
-        public GoldQuest(GoldQuestSheet.Row data) : base(data)
+        public GoldQuest(GoldQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             Type = data.Type;
         }

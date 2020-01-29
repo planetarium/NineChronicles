@@ -25,10 +25,8 @@ namespace Tests.PlayMode
         {
             var state = new RankingState();
             var agentAddress = GetNewAddress();
-            var avatar1 = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet);
-            var avatar2 = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet);
+            var avatar1 = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets);
+            var avatar2 = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets);
             state.Update(avatar1);
             state.Update(avatar2);
             var result = state.GetAgentAddresses(2, null);
@@ -40,10 +38,8 @@ namespace Tests.PlayMode
         public void GetAgentAddresses()
         {
             var state = new RankingState();
-            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet);
-            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet);
+            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets);
+            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets);
             state.Update(avatar1);
             state.Update(avatar2);
             var result = state.GetAgentAddresses(3, null);
@@ -61,13 +57,11 @@ namespace Tests.PlayMode
         public void GetAvatars()
         {
             var state = new RankingState();
-            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet)
+            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets)
             {
                 exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
-            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet)
+            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets)
             {
                 exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
@@ -85,18 +79,15 @@ namespace Tests.PlayMode
         public void GetAvatarsWithTimeStamp()
         {
             var state = new RankingState();
-            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet)
+            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets)
             {
                 exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
-            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet)
+            var avatar2 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets)
             {
                 exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
-            var avatar3 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet)
+            var avatar3 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets)
             {
                 exp = 3, updatedAt = DateTimeOffset.UtcNow.AddDays(-2)
             };
@@ -116,8 +107,7 @@ namespace Tests.PlayMode
         public void Update()
         {
             var state = new RankingState();
-            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet)
+            var avatar1 = new AvatarState(GetNewAddress(), GetNewAddress(), 1, Game.instance.TableSheets)
             {
                 exp = 2, updatedAt = DateTimeOffset.UtcNow
             };
@@ -140,8 +130,7 @@ namespace Tests.PlayMode
             var widget = Widget.Find<RankingBoard>();
             var rankingInfo = widget.rankingBase;
             var agentAddress = GetNewAddress();
-            var avatar = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet);
+            var avatar = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets);
             rankingInfo.Set(1, new Nekoyume.State.RankingInfo(avatar));
             Assert.NotNull(rankingInfo.icon.sprite);
         }

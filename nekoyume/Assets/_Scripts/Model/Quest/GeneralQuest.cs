@@ -14,7 +14,8 @@ namespace Nekoyume.Model.Quest
     {
         public readonly QuestEventType Event;
 
-        public GeneralQuest(GeneralQuestSheet.Row data) : base(data)
+        public GeneralQuest(GeneralQuestSheet.Row data, QuestReward reward)
+            : base(data, reward)
         {
             Event = data.Event;
         }

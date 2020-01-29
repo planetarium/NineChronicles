@@ -372,7 +372,13 @@ namespace Nekoyume.UI
                 .Where(x => !(x is null))
                 .ToList();
 
-            var stats = _tempStats.SetAll(_tempStats.Level, equipments, consumables, null);
+            var stats = _tempStats.SetAll(
+                _tempStats.Level,
+                equipments,
+                consumables,
+                null,
+                Game.Game.instance.TableSheets
+            );
             using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())
             {
                 foreach (var statView in statusRows)

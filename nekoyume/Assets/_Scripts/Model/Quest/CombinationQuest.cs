@@ -17,7 +17,8 @@ namespace Nekoyume.Model.Quest
 
         public override QuestType QuestType => QuestType.Craft;
 
-        public CombinationQuest(CombinationQuestSheet.Row data) : base(data)
+        public CombinationQuest(CombinationQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             ItemType = data.ItemType;
             ItemSubType = data.ItemSubType;
