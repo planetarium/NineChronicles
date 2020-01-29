@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Nekoyume.Model
+namespace Nekoyume.Model.BattleStatus
 {
     public class SpawnEnemyPlayer : EventBase
     {
@@ -10,7 +10,7 @@ namespace Nekoyume.Model
 
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoSpawnEnemyPlayer((EnemyPlayer) Character);
+            yield return stage.CoSpawnEnemyPlayer((EnemyPlayer)Character);
         }
     }
 }

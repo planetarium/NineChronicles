@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -286,7 +287,7 @@ namespace Nekoyume.Model
             }
         }
 
-        public void OverrideSkill(Game.Skill skill)
+        public void OverrideSkill(Skill.Skill skill)
         {
             Skills.Clear();
             Skills.Add(skill);

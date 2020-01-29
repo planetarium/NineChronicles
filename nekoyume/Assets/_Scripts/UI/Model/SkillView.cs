@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Nekoyume.Game;
+using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;

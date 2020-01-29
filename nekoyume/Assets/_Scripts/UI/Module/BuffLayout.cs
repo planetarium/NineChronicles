@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
-using Nekoyume.Game;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Buff;
 
 namespace Nekoyume.UI.Module
 {
@@ -24,7 +24,7 @@ namespace Nekoyume.UI.Module
             CreateImage(10);
         }
 
-        public void SetBuff(IReadOnlyDictionary<int, Game.Buff> buffs)
+        public void SetBuff(IReadOnlyDictionary<int, Buff> buffs)
         {
             foreach (var icon in _pool)
             {

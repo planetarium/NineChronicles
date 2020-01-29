@@ -6,9 +6,9 @@ using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Game.Factory;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.State
 {

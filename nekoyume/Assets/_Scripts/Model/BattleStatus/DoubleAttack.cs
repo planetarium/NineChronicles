@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Nekoyume.Model
+namespace Nekoyume.Model.BattleStatus
 {
     [Serializable]
     public class DoubleAttack : Skill
@@ -11,7 +11,7 @@ namespace Nekoyume.Model
             : base(character, skillInfos, buffInfos)
         {
         }
-        
+
         public override IEnumerator CoExecute(IStage stage)
         {
             yield return stage.CoDoubleAttack(Character, SkillInfos, BuffInfos);

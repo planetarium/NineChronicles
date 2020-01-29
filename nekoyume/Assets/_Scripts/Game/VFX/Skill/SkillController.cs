@@ -22,7 +22,7 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(CharacterBase target, Model.Skill.SkillInfo skillInfo) where T : SkillVFX
+        public T Get<T>(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skillInfo) where T : SkillVFX
         {
             var position = target.transform.position;
             var size = target.SizeType == SizeType.XS ? SizeType.S : SizeType.M;
@@ -64,7 +64,7 @@ namespace Nekoyume.Game.VFX.Skill
             return effect;
         }
 
-        public SkillCastingVFX Get(Vector3 position, Model.Skill.SkillInfo skillInfo)
+        public SkillCastingVFX Get(Vector3 position, Model.BattleStatus.Skill.SkillInfo skillInfo)
         {
             var elemental = skillInfo.ElementalType;
             var skillName = $"casting_{elemental}".ToLower();
@@ -74,7 +74,7 @@ namespace Nekoyume.Game.VFX.Skill
             return effect;
         }
 
-        public SkillCastingVFX GetBlowCasting(Vector3 position, Model.Skill.SkillInfo skillInfo)
+        public SkillCastingVFX GetBlowCasting(Vector3 position, Model.BattleStatus.Skill.SkillInfo skillInfo)
         {
             var skillName = $"casting_{skillInfo.SkillCategory}_{skillInfo.ElementalType}".ToLower();
             var go = _pool.Get(skillName, false, position);

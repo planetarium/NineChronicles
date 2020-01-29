@@ -13,6 +13,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using UnityEngine;

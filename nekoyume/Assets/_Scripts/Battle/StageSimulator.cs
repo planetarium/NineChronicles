@@ -5,6 +5,7 @@ using Libplanet.Action;
 using Nekoyume.Game.Factory;
 using Nekoyume.Game.Util;
 using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -43,7 +44,7 @@ namespace Nekoyume.Battle
             List<Consumable> foods,
             int worldId,
             int stageId,
-            Game.Skill skill = null) : base(random, avatarState, foods)
+            Model.Skill.Skill skill = null) : base(random, avatarState, foods)
         {
             _worldId = worldId;
             StageId = stageId;

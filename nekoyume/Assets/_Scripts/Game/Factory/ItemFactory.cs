@@ -8,6 +8,7 @@ using Nekoyume.TableData;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 
 namespace Nekoyume.Game.Factory
 {

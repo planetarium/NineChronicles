@@ -8,7 +8,7 @@ using DecimalMath;
 using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Helper;
-using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 
 namespace Nekoyume.State

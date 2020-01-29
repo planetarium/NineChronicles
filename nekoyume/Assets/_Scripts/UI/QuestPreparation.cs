@@ -11,6 +11,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;

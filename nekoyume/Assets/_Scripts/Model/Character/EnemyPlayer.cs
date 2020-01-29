@@ -1,4 +1,5 @@
 using Nekoyume.Battle;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.State;
 using Nekoyume.TableData;
 

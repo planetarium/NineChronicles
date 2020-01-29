@@ -1,6 +1,6 @@
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
-using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine.Events;

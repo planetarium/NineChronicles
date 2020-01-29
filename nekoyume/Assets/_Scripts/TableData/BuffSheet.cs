@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Helper;
+using Nekoyume.Model.Stat;
 using UnityEngine;
 
 namespace Nekoyume.TableData

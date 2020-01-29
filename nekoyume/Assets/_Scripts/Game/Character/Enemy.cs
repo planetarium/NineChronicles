@@ -84,7 +84,7 @@ namespace Nekoyume.Game.Character
             battle.bossStatus.SetBuff(CharacterModel.Buffs);
         }
 
-        protected override IEnumerator CoProcessDamage(Model.Skill.SkillInfo info, bool isConsiderDie,
+        protected override IEnumerator CoProcessDamage(Model.BattleStatus.Skill.SkillInfo info, bool isConsiderDie,
             bool isConsiderElementalType)
         {
             yield return StartCoroutine(base.CoProcessDamage(info, isConsiderDie, isConsiderElementalType));
@@ -166,7 +166,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit,
+        protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
             ShowSpeech("ENEMY_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
@@ -174,7 +174,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("ENEMY_ATTACK");
         }
 
-        protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
+        protected override IEnumerator CoAnimationCast(Model.BattleStatus.Skill.SkillInfo info)
         {
             ShowSpeech("ENEMY_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));

@@ -6,7 +6,9 @@ using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
+using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Skill;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model
@@ -17,8 +19,8 @@ namespace Nekoyume.Model
         public const decimal CriticalMultiplier = 1.5m;
 
         [NonSerialized] private Root _root;
-        private Game.Skill _selectedSkill;
-        private Skill _usedSkill;
+        private Skill.Skill _selectedSkill;
+        private BattleStatus.Skill _usedSkill;
 
         public readonly Guid Id = Guid.NewGuid();
         [NonSerialized] public readonly Simulator Simulator;
@@ -29,7 +31,7 @@ namespace Nekoyume.Model
 
         public readonly Skills Skills = new Skills();
         public readonly Skills BuffSkills = new Skills();
-        public readonly Dictionary<int, Game.Buff> Buffs = new Dictionary<int, Game.Buff>();
+        public readonly Dictionary<int, Buff.Buff> Buffs = new Dictionary<int, Buff.Buff>();
         public readonly List<CharacterBase> Targets = new List<CharacterBase>();
 
         public CharacterSheet.Row RowData { get; }
@@ -87,11 +89,11 @@ namespace Nekoyume.Model
             // 스킬은 변하지 않는다는 가정 하에 얕은 복사.
             Skills = value.Skills;
             // 버프는 컨테이너도 옮기고,
-            Buffs = new Dictionary<int, Game.Buff>();
+            Buffs = new Dictionary<int, Buff.Buff>();
             foreach (var pair in value.Buffs)
             {
                 // 깊은 복사까지 꼭.
-                Buffs.Add(pair.Key, (Game.Buff) pair.Value.Clone());
+                Buffs.Add(pair.Key, (Buff.Buff) pair.Value.Clone());
             }
 
             // 타갯은 컨테이너만 옮기기.
@@ -198,13 +200,13 @@ namespace Nekoyume.Model
 
         #region Buff
 
-        public void AddBuff(Game.Buff buff, bool updateImmediate = true)
+        public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
         {
             if (Buffs.TryGetValue(buff.RowData.GroupId, out var outBuff) &&
                 outBuff.RowData.Id > buff.RowData.Id)
                 return;
 
-            var clone = (Game.Buff) buff.Clone();
+            var clone = (Buff.Buff) buff.Clone();
             Buffs[buff.RowData.GroupId] = clone;
             Stats.AddBuff(clone, updateImmediate);
         }
@@ -276,11 +278,11 @@ namespace Nekoyume.Model
     }
 
     [Serializable]
-    public class Skills : IEnumerable<Game.Skill>
+    public class Skills : IEnumerable<Skill.Skill>
     {
-        private readonly List<Game.Skill> _skills = new List<Game.Skill>();
+        private readonly List<Skill.Skill> _skills = new List<Skill.Skill>();
 
-        public void Add(Game.Skill s)
+        public void Add(Skill.Skill s)
         {
             if (s is null)
             {
@@ -295,7 +297,7 @@ namespace Nekoyume.Model
             _skills.Clear();
         }
 
-        public IEnumerator<Game.Skill> GetEnumerator()
+        public IEnumerator<Skill.Skill> GetEnumerator()
         {
             return _skills.GetEnumerator();
         }
@@ -305,7 +307,7 @@ namespace Nekoyume.Model
             return GetEnumerator();
         }
 
-        public Game.Skill Select(IRandom random)
+        public Skill.Skill Select(IRandom random)
         {
             var selected = _skills
                 .Select(skill => new {skill, chance = random.Next(0, 100)})

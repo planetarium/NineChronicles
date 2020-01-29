@@ -11,12 +11,12 @@ namespace Nekoyume.Model
 
         #region Skill
 
-        IEnumerator CoNormalAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos);
-        IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos);
-        IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos);
-        IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos);
-        IEnumerator CoHeal(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos);
-        IEnumerator CoBuff(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos, IEnumerable<Skill.SkillInfo> buffInfos);
+        IEnumerator CoNormalAttack(CharacterBase caster, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
+        IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
+        IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
+        IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
+        IEnumerator CoHeal(CharacterBase caster, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
+        IEnumerator CoBuff(CharacterBase caster, IEnumerable<BattleStatus.Skill.SkillInfo> skillInfos, IEnumerable<BattleStatus.Skill.SkillInfo> buffInfos);
         
         #endregion
         
