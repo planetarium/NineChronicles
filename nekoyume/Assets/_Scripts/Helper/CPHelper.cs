@@ -19,6 +19,7 @@ namespace Nekoyume.Helper
         /// <returns></returns>
         public static int GetCP(AvatarState avatarState)
         {
+            // todo: 구현!
             return 100;
         }
         

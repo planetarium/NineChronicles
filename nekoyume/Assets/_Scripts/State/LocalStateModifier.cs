@@ -208,7 +208,7 @@ namespace Nekoyume.State
 
         #endregion
 
-        #region Quest
+        #region Avatar / Quest
 
         /// <summary>
         /// `avatarAddress`에 해당하는 아바타 상태의 `QuestList` 안의 퀘스트 중, 매개변수의 `id`를 가진 퀘스트를 신규 처리한다.(비휘발성)
@@ -265,10 +265,11 @@ namespace Nekoyume.State
             modifier.Modify(state);
             WeeklyArenaStateSubject.Gold.OnNext(state.Gold);
         }
-        
+
         /// <summary>
         /// 현재 바라보고 있는 주간 아레나 상태가 포함하고 있는 `ArenaInfo` 중 현재 아바타 상태의 주소에 해당하는 것을 활성화 시킨다.(휘발)
         /// </summary>
+        /// <param name="addArenaInfoIfNotContained">주간 아레나 상태에 현재 아바타 정보가 없으면 넣어준다.</param>
         public static void AddWeeklyArenaInfoActivator(bool addArenaInfoIfNotContained = true)
         {
             var avatarState = States.Instance.CurrentAvatarState;
