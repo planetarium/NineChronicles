@@ -1,3 +1,4 @@
+using Assets.SimpleLocalization;
 using Nekoyume.Game;
 using Nekoyume.Model;
 using TMPro;
@@ -13,14 +14,22 @@ namespace Nekoyume.UI
         public GameObject defeatImageContainer;
         public Button submitButton;
         public TextMeshProUGUI submitButtonText;
+        public TextMeshProUGUI scoreText;
 
-        public void Show(BattleLog.Result result)
+        protected override void Awake()
+        {
+            base.Awake();
+            submitButtonText.text = LocalizationManager.Localize("UI_BACK_TO_ARENA");
+        }
+
+        public void Show(BattleLog.Result result, int score, int diffScore)
         {
             base.Show();
 
             var win = result == BattleLog.Result.Win;
             victoryImageContainer.SetActive(win);
             defeatImageContainer.SetActive(!win);
+            scoreText.text = $"{score} ({diffScore:+#;-#;+0})";
         }
 
         public void BackToRanking()

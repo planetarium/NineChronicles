@@ -393,7 +393,7 @@ namespace Nekoyume.Game
             playerCharacter.ShowSpeech("PLAYER_WIN");
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
-            Widget.Find<RankingBattleResult>().Show(log.result);
+            Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
 
             IsInStage = false;
             ActionRenderHandler.Instance.Pending = false;

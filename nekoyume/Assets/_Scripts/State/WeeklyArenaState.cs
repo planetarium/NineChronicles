@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using Bencodex.Types;
 using DecimalMath;
 using Libplanet;
@@ -351,7 +352,7 @@ namespace Nekoyume.State
             ArmorId = state.GetArmorId();
         }
 
-        public void Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
+        public int Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
         {
             int score;
             switch (result)
@@ -366,7 +367,7 @@ namespace Nekoyume.State
                     break;
                 case BattleLog.Result.TimeOver:
                     ArenaRecord.Draw++;
-                    return;
+                    return 0;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
@@ -383,16 +384,18 @@ namespace Nekoyume.State
                         break;
                     case BattleLog.Result.Lose:
                         score = (int) (DecimalEx.Pow((decimal) rating / enemyRating, 0.75m) *
-                                       GameConfig.BaseVictoryPoint);
+                                       GameConfig.BaseDefeatPoint);
                         break;
                 }
             }
 
             var calculated = Score + score;
+            var current = Score;
             Score = Math.Max(1000, calculated);
             DailyChallengeCount--;
             ArmorId = avatarState.GetArmorId();
             Level = avatarState.level;
+            return Score - current;
         }
 
         public void Activate()
