@@ -2,7 +2,7 @@ using System;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
 
-namespace Nekoyume.Game.Mail
+namespace Nekoyume.Model.Mail
 {
     // todo: `CombineConsumable`, `CombineEquipment`, `EnhanceEquipment`로 분리할 필요가 있어 보임(소모품을 n개 만들었을 때 재료가 n개 씩 노출됨)
     [Serializable]
@@ -14,7 +14,7 @@ namespace Nekoyume.Game.Mail
 
         public CombinationMail(Combination.ResultModel attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
-            
+
         }
 
         public CombinationMail(Bencodex.Types.Dictionary serialized)
@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Mail
         }
 
         public override string ToInfo()
-        {   
+        {
             return string.Format(_format, AttachmentName);
         }
 

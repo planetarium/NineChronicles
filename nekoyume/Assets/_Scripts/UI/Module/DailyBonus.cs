@@ -79,9 +79,9 @@ namespace Nekoyume.UI.Module
             ActionManager.instance.DailyReward().Subscribe(_ =>
             {
                 _updateEnable = true;
-                Notification.Push(Game.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
+                Notification.Push(Nekoyume.Model.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
             });
-            Notification.Push(Game.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
+            Notification.Push(Nekoyume.Model.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
             _animation.Stop();
             canvasGroup.alpha = 0;
             canvasGroup.interactable = false;

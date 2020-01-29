@@ -3,7 +3,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game.Mail
+namespace Nekoyume.Model.Mail
 {
     [Serializable]
     public class BuyerMail : AttachmentMail
@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Mail
 
         public BuyerMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
         {
-            
+
         }
 
         public BuyerMail(Bencodex.Types.Dictionary serialized)

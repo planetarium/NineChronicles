@@ -5,7 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Game.Mail;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 
 namespace Nekoyume.Action

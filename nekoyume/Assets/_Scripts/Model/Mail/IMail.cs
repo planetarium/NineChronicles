@@ -1,4 +1,4 @@
-namespace Nekoyume.Game.Mail
+namespace Nekoyume.Model.Mail
 {
     public interface IMail
     {

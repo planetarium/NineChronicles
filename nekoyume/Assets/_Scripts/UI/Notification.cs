@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Mail;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using UniRx;
 

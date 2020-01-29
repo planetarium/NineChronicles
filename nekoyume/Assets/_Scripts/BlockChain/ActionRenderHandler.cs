@@ -4,7 +4,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.Game.Mail;
+using Nekoyume.Model.Mail;
 using Nekoyume.Manager;
 using Nekoyume.State;
 using Nekoyume.TableData;

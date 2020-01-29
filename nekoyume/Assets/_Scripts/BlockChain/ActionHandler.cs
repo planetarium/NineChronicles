@@ -1,7 +1,7 @@
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
-using Nekoyume.Game.Mail;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using UnityEngine;
 

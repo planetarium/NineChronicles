@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Nekoyume.Game.Mail;
 using Nekoyume.JsonConvertibles;
+using Nekoyume.Model.Mail;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers

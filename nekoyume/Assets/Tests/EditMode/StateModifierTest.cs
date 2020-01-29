@@ -1,8 +1,8 @@
 using System;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.Game.Mail;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.State.Modifiers;
 using Nekoyume.TableData;

@@ -11,9 +11,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Mail;
-using UniRx;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
+using UniRx;
 
 namespace Nekoyume.UI.Scroller
 {

@@ -15,7 +15,7 @@ namespace Nekoyume.UI.Scroller
         private static readonly Vector2 _leftBottom = new Vector2(-14f, -10.5f);
         private static readonly Vector2 _minusRightTop = new Vector2(14f, 13f);
         private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
-        public Game.Mail.Mail data;
+        public Nekoyume.Model.Mail.Mail data;
         public Image icon;
         public Image buttonImage;
         public TextMeshProUGUI content;
@@ -39,7 +39,7 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
 
-        public void SetData(Game.Mail.Mail mail)
+        public void SetData(Nekoyume.Model.Mail.Mail mail)
         {   
             _mail = Widget.Find<Mail>();
             data = mail;

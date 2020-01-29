@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Nekoyume.State;
 using UnityEngine;
 
-namespace Nekoyume.Game.Mail
+namespace Nekoyume.Model.Mail
 {
     public enum MailType
     {
@@ -14,7 +14,6 @@ namespace Nekoyume.Game.Mail
         Auction,
         System
     }
-
     [Serializable]
     public abstract class Mail : IState
     {
@@ -38,10 +37,10 @@ namespace Nekoyume.Game.Mail
             this.blockIndex = blockIndex;
         }
 
-        protected Mail(Bencodex.Types.Dictionary serialized)
-            : this((long) ((Integer) serialized["blockIndex"]).Value)
+        protected Mail(Dictionary serialized)
+            : this((long)((Integer)serialized["blockIndex"]).Value)
         {
-            New = ((Bencodex.Types.Boolean) serialized["new"]).Value;
+            New = ((Bencodex.Types.Boolean)serialized["new"]).Value;
         }
 
         public abstract string ToInfo();
@@ -51,16 +50,16 @@ namespace Nekoyume.Game.Mail
         protected abstract string TypeId { get; }
 
         public virtual IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Bencodex.Types.Text) "typeId"] = (Bencodex.Types.Text) TypeId,
-                [(Bencodex.Types.Text) "new"] = new Bencodex.Types.Boolean(New),
-                [(Bencodex.Types.Text) "blockIndex"] = (Integer) blockIndex,
+                [(Text)"typeId"] = (Text)TypeId,
+                [(Text)"new"] = new Bencodex.Types.Boolean(New),
+                [(Text)"blockIndex"] = (Integer)blockIndex,
             });
 
-        public static Mail Deserialize(Bencodex.Types.Dictionary serialized)
+        public static Mail Deserialize(Dictionary serialized)
         {
-            string typeId = ((Text) serialized["typeId"]).Value;
+            string typeId = ((Text)serialized["typeId"]).Value;
             Func<Dictionary, Mail> deserializer;
             try
             {
@@ -102,10 +101,10 @@ namespace Nekoyume.Game.Mail
         {
         }
 
-        public MailBox(Bencodex.Types.List serialized) : this()
+        public MailBox(List serialized) : this()
         {
             _mails = serialized.Select(
-                d => Mail.Deserialize((Bencodex.Types.Dictionary) d)
+                d => Mail.Deserialize((Dictionary)d)
             ).ToList();
         }
 
@@ -125,6 +124,6 @@ namespace Nekoyume.Game.Mail
         }
 
         public IValue Serialize() =>
-            new Bencodex.Types.List(this.Select(m => m.Serialize()));
+            new List(this.Select(m => m.Serialize()));
     }
 }
