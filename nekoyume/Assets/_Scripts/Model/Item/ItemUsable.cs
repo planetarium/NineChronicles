@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume.Game;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -16,7 +16,7 @@ namespace Nekoyume.Model.Item
         public new ItemSheet.Row Data { get; }
         public Guid ItemId { get; }
         public StatsMap StatsMap { get; }
-        public List<Game.Skill> Skills { get; }
+        public List<Skill.Skill> Skills { get; }
         public List<BuffSkill> BuffSkills { get; }
 
         protected ItemUsable(ItemSheet.Row data, Guid id) : base(data)
@@ -41,7 +41,7 @@ namespace Nekoyume.Model.Item
                     break;
             }
 
-            Skills = new List<Game.Skill>();
+            Skills = new List<Model.Skill.Skill>();
             BuffSkills = new List<BuffSkill>();
         }
 

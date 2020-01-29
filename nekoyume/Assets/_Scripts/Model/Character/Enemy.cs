@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Nekoyume.Game;
+using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model

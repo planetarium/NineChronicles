@@ -6,8 +6,8 @@ using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
@@ -19,7 +19,7 @@ namespace Nekoyume.Model
         public const decimal CriticalMultiplier = 1.5m;
 
         [NonSerialized] private Root _root;
-        private Game.Skill _selectedSkill;
+        private Skill.Skill _selectedSkill;
         private BattleStatus.Skill _usedSkill;
 
         public readonly Guid Id = Guid.NewGuid();
@@ -278,11 +278,11 @@ namespace Nekoyume.Model
     }
 
     [Serializable]
-    public class Skills : IEnumerable<Game.Skill>
+    public class Skills : IEnumerable<Skill.Skill>
     {
-        private readonly List<Game.Skill> _skills = new List<Game.Skill>();
+        private readonly List<Skill.Skill> _skills = new List<Skill.Skill>();
 
-        public void Add(Game.Skill s)
+        public void Add(Skill.Skill s)
         {
             if (s is null)
             {
@@ -297,7 +297,7 @@ namespace Nekoyume.Model
             _skills.Clear();
         }
 
-        public IEnumerator<Game.Skill> GetEnumerator()
+        public IEnumerator<Skill.Skill> GetEnumerator()
         {
             return _skills.GetEnumerator();
         }
@@ -307,7 +307,7 @@ namespace Nekoyume.Model
             return GetEnumerator();
         }
 
-        public Game.Skill Select(IRandom random)
+        public Skill.Skill Select(IRandom random)
         {
             var selected = _skills
                 .Select(skill => new {skill, chance = random.Next(0, 100)})

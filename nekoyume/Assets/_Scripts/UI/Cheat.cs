@@ -8,9 +8,9 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
@@ -49,8 +49,8 @@ namespace Nekoyume
         private StringBuilder _logString = new StringBuilder();
         private BattleLog.Result _result;
         private int[,] _stageRange;
-        private Game.Skill[] _skills;
-        private Game.Skill _selectedSkill;
+        private Model.Skill.Skill[] _skills;
+        private Model.Skill.Skill _selectedSkill;
         public override WidgetType WidgetType => WidgetType.Development;
 
         public class DebugRandom : IRandom
@@ -246,7 +246,7 @@ namespace Nekoyume
                 newButton.gameObject.SetActive(true);
             }
 
-            var skills = new List<Game.Skill>();
+            var skills = new List<Model.Skill.Skill>();
             foreach (var skillRow in Game.Game.instance.TableSheets.SkillSheet)
             {
                 var skill = SkillFactory.Get(skillRow, 50, 100);
@@ -411,7 +411,7 @@ namespace Nekoyume
             }
         }
 
-        private void SelectSkill(Game.Skill skill)
+        private void SelectSkill(Model.Skill.Skill skill)
         {
             _selectedSkill = skill;
             DummyBattle(1);

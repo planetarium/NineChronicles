@@ -2,7 +2,7 @@ using System;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Skill
 {
     [Serializable]
     public class BuffSkill : Skill
@@ -11,9 +11,9 @@ namespace Nekoyume.Game
         {
         }
 
-        public override Model.BattleStatus.Skill Use(CharacterBase caster, int simulatorWaveTurn)
+        public override BattleStatus.Skill Use(CharacterBase caster, int simulatorWaveTurn)
         {
-            return new Model.BattleStatus.Buff((CharacterBase) caster.Clone(), ProcessBuff(caster, simulatorWaveTurn));
+            return new BattleStatus.Buff((CharacterBase)caster.Clone(), ProcessBuff(caster, simulatorWaveTurn));
         }
     }
 }

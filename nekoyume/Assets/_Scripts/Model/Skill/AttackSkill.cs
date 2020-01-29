@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 using Unity.Mathematics;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Skill
 {
     [Serializable]
     public abstract class AttackSkill : Skill
@@ -22,10 +21,10 @@ namespace Nekoyume.Game
         /// <param name="caster"></param>
         /// <param name="simulatorWaveTurn"></param>
         /// <returns></returns>
-        protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessDamage(CharacterBase caster, int simulatorWaveTurn)
+        protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessDamage(CharacterBase caster, int simulatorWaveTurn)
         {
             var targets = skillRow.SkillTargetType.GetTarget(caster);
-            var infos = new List<Model.BattleStatus.Skill.SkillInfo>();
+            var infos = new List<BattleStatus.Skill.SkillInfo>();
             var targetList = targets.ToArray();
             var elemental = skillRow.ElementalType;
             var multiplier = GetMultiplier(skillRow.HitCount, 1);
@@ -47,12 +46,12 @@ namespace Nekoyume.Game
                         }
                         damage = elemental.GetDamage(target.defElementType, skillDamage);
                         // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
-                        damage = (int) ((long) damage * damage / (damage + target.DEF));
-                        damage = (int) (damage * multiply);
+                        damage = (int)((long)damage * damage / (damage + target.DEF));
+                        damage = (int)(damage * multiply);
                         damage = math.max(damage, 1);
                         if (critical)
                         {
-                            damage = (int) (damage * CharacterBase.CriticalMultiplier);
+                            damage = (int)(damage * CharacterBase.CriticalMultiplier);
                         }
 
                         target.CurrentHP -= damage;
@@ -63,7 +62,7 @@ namespace Nekoyume.Game
                     {
                         critical = true;
                     }
-                    infos.Add(new Model.BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), damage, critical,
+                    infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase)target.Clone(), damage, critical,
                         skillRow.SkillCategory, simulatorWaveTurn, skillRow.ElementalType, skillRow.SkillTargetType));
                 }
             }
@@ -73,7 +72,7 @@ namespace Nekoyume.Game
 
         private static decimal[] GetMultiplier(int hitCount, decimal totalDamage)
         {
-            if (hitCount == 1) return new[] {totalDamage};
+            if (hitCount == 1) return new[] { totalDamage };
             var multiplier = new List<decimal>();
             var avg = totalDamage / hitCount;
             var lastDamage = avg * 1.3m;

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Bencodex.Types;
-using Nekoyume.Data;
 using Nekoyume.EnumType;
-using Nekoyume.State;
+using Nekoyume.Game;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Skill
 {
     public static class SkillFactory
     {
@@ -40,11 +37,11 @@ namespace Nekoyume.Game
                 $"{skillRow.Id}, {skillRow.SkillType}, {skillRow.SkillTargetType}, {skillRow.SkillCategory}");
         }
 
-        public static Skill Deserialize(Bencodex.Types.Dictionary serialized) =>
+        public static Skill Deserialize(Dictionary serialized) =>
             Get(
-                SkillSheet.Row.Deserialize((Bencodex.Types.Dictionary) serialized["skillRow"]),
-                (Integer) serialized["power"],
-                (Integer) serialized["chance"]
+                SkillSheet.Row.Deserialize((Dictionary)serialized["skillRow"]),
+                (Integer)serialized["power"],
+                (Integer)serialized["chance"]
             );
     }
 }

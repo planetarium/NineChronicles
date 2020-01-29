@@ -8,6 +8,7 @@ using Nekoyume.Game;
 using Nekoyume.Model;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using NUnit.Framework;

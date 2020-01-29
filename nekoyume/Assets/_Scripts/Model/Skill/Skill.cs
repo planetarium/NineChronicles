@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.Model;
 using Nekoyume.Model.Buff;
 using Nekoyume.State;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Skill
 {
     [Serializable]
     public abstract class Skill : IState
@@ -16,7 +15,7 @@ namespace Nekoyume.Game
         public readonly SkillSheet.Row skillRow;
         public readonly int power;
         public readonly int chance;
-        public List<Buff> buffs;
+        public List<Buff.Buff> buffs;
 
         protected Skill(SkillSheet.Row skillRow, int power, int chance)
         {

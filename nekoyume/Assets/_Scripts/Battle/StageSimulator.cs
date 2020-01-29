@@ -44,7 +44,7 @@ namespace Nekoyume.Battle
             List<Consumable> foods,
             int worldId,
             int stageId,
-            Game.Skill skill = null) : base(random, avatarState, foods)
+            Model.Skill.Skill skill = null) : base(random, avatarState, foods)
         {
             _worldId = worldId;
             StageId = stageId;

@@ -7,11 +7,12 @@ using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.State;
 using NUnit.Framework;
 using Tests.PlayMode.Fixtures;
-using BlowAttack = Nekoyume.Game.BlowAttack;
-using NormalAttack = Nekoyume.Game.NormalAttack;
+using BlowAttack = Nekoyume.Model.Skill.BlowAttack;
+using NormalAttack = Nekoyume.Model.Skill.NormalAttack;
 
 namespace Tests.PlayMode
 {
@@ -83,7 +84,7 @@ namespace Tests.PlayMode
         {
             var caster = _stageSimulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 100002);
-            var doubleAttack = new Nekoyume.Game.DoubleAttack(skillRow, caster.ATK, 100);
+            var doubleAttack = new DoubleAttack(skillRow, caster.ATK, 100);
             var result = doubleAttack.Use(caster, 0);
             var target = caster.Targets.First();
 
@@ -122,7 +123,7 @@ namespace Tests.PlayMode
         {
             var caster = _stageSimulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 200000);
-            var heal = new Nekoyume.Game.HealSkill(skillRow, caster.ATK, 100);
+            var heal = new HealSkill(skillRow, caster.ATK, 100);
             caster.CurrentHP -= caster.ATK;
             var result = heal.Use(caster, 0);
 
