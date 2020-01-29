@@ -1,4 +1,5 @@
 using Nekoyume.Helper;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 
@@ -9,7 +10,7 @@ namespace Nekoyume.UI
         public CharacterProfile profile;
         public CharacterProfile enemyProfile;
 
-        public void Show(Nekoyume.Model.State.RankingInfo enemyInfo)
+        public void Show(ArenaInfo enemyInfo)
         {
             var player = Game.Game.instance.Stage.GetPlayer();
             var sprite = SpriteHelper.GetItemIcon(player.Model.armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId);

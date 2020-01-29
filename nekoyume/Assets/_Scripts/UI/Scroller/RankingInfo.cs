@@ -5,7 +5,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.UI
+namespace Nekoyume.UI.Scroller
 {
     public class RankingInfo : MonoBehaviour
     {

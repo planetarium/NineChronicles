@@ -129,7 +129,7 @@ namespace Tests.PlayMode
         public void RankingInfo()
         {
             var widget = Widget.Find<RankingBoard>();
-            var rankingInfo = widget.rankingBase;
+            var rankingInfo = widget.arenaRankingCellViewPrefab;
             var agentAddress = GetNewAddress();
             var avatar = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets);
             rankingInfo.Set(1, new Nekoyume.Model.State.RankingInfo(avatar));
