@@ -54,7 +54,7 @@ namespace Nekoyume.Model.Quest
         public QuestReward Reward { get; }
 
         /// <summary>
-        /// ÀÌ¹Ì Äù½ºÆ® º¸»óÀÌ ¾×¼Ç¿¡¼­ Áö±ŞµÇ¾ú´Â°¡?
+        /// ì´ë¯¸ í€˜ìŠ¤íŠ¸ ë³´ìƒì´ ì•¡ì…˜ì—ì„œ ì§€ê¸‰ë˜ì—ˆëŠ”ê°€?
         /// </summary>
         public bool IsPaidInAction { get; set; }
 
