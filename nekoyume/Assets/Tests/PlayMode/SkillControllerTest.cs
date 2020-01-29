@@ -4,7 +4,6 @@ using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
-using Nekoyume.Model;
 using Nekoyume.State;
 using NUnit.Framework;
 using UnityEngine.TestTools;
@@ -52,7 +51,7 @@ namespace Tests.PlayMode
 
             foreach (var elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.AreaAttack, 0, elemental);
+                var info = new Nekoyume.Model.BattleStatus.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.AreaAttack, 0, elemental);
                 yield return _player.CoAreaAttack(new[] {info});
             }
         }
@@ -68,7 +67,7 @@ namespace Tests.PlayMode
 
             foreach (ElementalType elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.DoubleAttack, 0, elemental);
+                var info = new Nekoyume.Model.BattleStatus.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.DoubleAttack, 0, elemental);
                 yield return _player.CoDoubleAttack(new[] {info});
             }
         }
@@ -84,7 +83,7 @@ namespace Tests.PlayMode
 
             foreach (ElementalType elemental in _elementalTypes)
             {
-                var info = new Nekoyume.Model.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.BlowAttack, 0, elemental);
+                var info = new Nekoyume.Model.BattleStatus.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.BlowAttack, 0, elemental);
                 yield return _player.CoHeal(new[] {info});
             }
         }
@@ -106,7 +105,7 @@ namespace Tests.PlayMode
                 effect.SetActive(true);
             }
 
-            var info = new Nekoyume.Model.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.AreaAttack,
+            var info = new Nekoyume.Model.BattleStatus.Skill.SkillInfo(_player.CharacterModel, 0, false, SkillCategory.AreaAttack,
                 0, ElementalType.Water);
             yield return _player.CoAreaAttack(new[] {info});
             Assert.Greater(pool.objects["area_l_water"].Count, current);

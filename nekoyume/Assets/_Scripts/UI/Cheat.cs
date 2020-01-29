@@ -9,7 +9,7 @@ using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;

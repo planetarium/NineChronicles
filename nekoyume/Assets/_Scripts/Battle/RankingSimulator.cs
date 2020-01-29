@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
 using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;

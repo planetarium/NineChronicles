@@ -1,6 +1,6 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game;
-using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

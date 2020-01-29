@@ -315,7 +315,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        protected override void ProcessAttack(CharacterBase target, Model.Skill.SkillInfo skill, bool isLastHit,
+        protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
             ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);
@@ -323,7 +323,7 @@ namespace Nekoyume.Game.Character
             ShowSpeech("PLAYER_ATTACK");
         }
 
-        protected override IEnumerator CoAnimationCast(Model.Skill.SkillInfo info)
+        protected override IEnumerator CoAnimationCast(Model.BattleStatus.Skill.SkillInfo info)
         {
             ShowSpeech("PLAYER_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));

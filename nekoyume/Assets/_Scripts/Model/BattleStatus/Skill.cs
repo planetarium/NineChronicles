@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Nekoyume.Data.Table;
 using Nekoyume.EnumType;
 
-namespace Nekoyume.Model
+namespace Nekoyume.Model.BattleStatus
 {
     [Serializable]
     public abstract class Skill : EventBase

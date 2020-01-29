@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace Nekoyume.Model
+namespace Nekoyume.Model.BattleStatus
 {
     [Serializable]
     public class Dead : EventBase
@@ -9,7 +9,7 @@ namespace Nekoyume.Model
         public Dead(CharacterBase character) : base(character)
         {
         }
-        
+
         public override IEnumerator CoExecute(IStage stage)
         {
             yield break;

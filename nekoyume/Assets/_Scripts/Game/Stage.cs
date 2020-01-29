@@ -15,6 +15,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -450,8 +451,8 @@ namespace Nekoyume.Game
 
         #region Skill
 
-        public IEnumerator CoNormalAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
-            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+        public IEnumerator CoNormalAttack(CharacterBase caster, IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -461,8 +462,8 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
-            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+        public IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -472,8 +473,8 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
-            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+        public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -483,8 +484,8 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
-            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+        public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -494,8 +495,8 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
-            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+        public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -505,8 +506,8 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoBuff(CharacterBase caster, IEnumerable<Model.Skill.SkillInfo> skillInfos,
-            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+        public IEnumerator CoBuff(CharacterBase caster, IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -516,9 +517,9 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoSkill(Character.CharacterBase character, IEnumerable<Model.Skill.SkillInfo> skillInfos,
-            IEnumerable<Model.Skill.SkillInfo> buffInfos,
-            Func<IReadOnlyList<Model.Skill.SkillInfo>, IEnumerator> func)
+        private IEnumerator CoSkill(Character.CharacterBase character, IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos,
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos,
+            Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> func)
         {
             if (!character)
                 throw new ArgumentNullException(nameof(character));
@@ -566,7 +567,7 @@ namespace Nekoyume.Game
         }
 
         private IEnumerator CoAfterSkill(Character.CharacterBase character,
-            IEnumerable<Model.Skill.SkillInfo> buffInfos)
+            IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos)
         {
             if (!character)
                 throw new ArgumentNullException(nameof(character));

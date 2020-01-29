@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 
-namespace Nekoyume.Model
+namespace Nekoyume.Model.BattleStatus
 {
     [Serializable]
     public abstract class EventBase

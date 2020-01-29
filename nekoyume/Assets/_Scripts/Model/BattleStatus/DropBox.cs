@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.Model.Item;
 
-namespace Nekoyume.Model
+namespace Nekoyume.Model.BattleStatus
 {
     [Serializable]
     public class DropBox : EventBase
@@ -14,7 +14,7 @@ namespace Nekoyume.Model
         {
             Items = items;
         }
-        
+
         public override IEnumerator CoExecute(IStage stage)
         {
             yield return stage.CoDropBox(Items);

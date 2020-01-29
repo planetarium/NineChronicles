@@ -22,10 +22,10 @@ namespace Nekoyume.Game
         /// <param name="caster"></param>
         /// <param name="simulatorWaveTurn"></param>
         /// <returns></returns>
-        protected IEnumerable<Model.Skill.SkillInfo> ProcessDamage(CharacterBase caster, int simulatorWaveTurn)
+        protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessDamage(CharacterBase caster, int simulatorWaveTurn)
         {
             var targets = skillRow.SkillTargetType.GetTarget(caster);
-            var infos = new List<Model.Skill.SkillInfo>();
+            var infos = new List<Model.BattleStatus.Skill.SkillInfo>();
             var targetList = targets.ToArray();
             var elemental = skillRow.ElementalType;
             var multiplier = GetMultiplier(skillRow.HitCount, 1);
@@ -63,7 +63,7 @@ namespace Nekoyume.Game
                     {
                         critical = true;
                     }
-                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), damage, critical,
+                    infos.Add(new Model.BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), damage, critical,
                         skillRow.SkillCategory, simulatorWaveTurn, skillRow.ElementalType, skillRow.SkillTargetType));
                 }
             }

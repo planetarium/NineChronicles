@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Nekoyume.Model
+namespace Nekoyume.Model.BattleStatus
 {
     public class WaveTurnEnd : EventBase
     {

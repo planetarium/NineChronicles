@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model
@@ -18,7 +19,7 @@ namespace Nekoyume.Model
 
         [NonSerialized] private Root _root;
         private Game.Skill _selectedSkill;
-        private Skill _usedSkill;
+        private BattleStatus.Skill _usedSkill;
 
         public readonly Guid Id = Guid.NewGuid();
         [NonSerialized] public readonly Simulator Simulator;

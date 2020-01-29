@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 
 namespace Nekoyume.Model

@@ -25,7 +25,7 @@ namespace Nekoyume.Game
             buffs = skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
         }
 
-        public abstract Model.Skill Use(CharacterBase caster, int simulatorWaveTurn);
+        public abstract Model.BattleStatus.Skill Use(CharacterBase caster, int simulatorWaveTurn);
 
         protected bool Equals(Skill other)
         {
@@ -51,16 +51,16 @@ namespace Nekoyume.Game
             }
         }
 
-        protected IEnumerable<Model.Skill.SkillInfo> ProcessBuff(CharacterBase caster, int simulatorWaveTurn)
+        protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessBuff(CharacterBase caster, int simulatorWaveTurn)
         {
-            var infos = new List<Model.Skill.SkillInfo>();
+            var infos = new List<Model.BattleStatus.Skill.SkillInfo>();
             foreach (var buff in buffs)
             {
                 var targets = buff.GetTarget(caster);
                 foreach (var target in targets.Where(target => target.GetChance(buff.RowData.Chance)))
                 {
                     target.AddBuff(buff);
-                    infos.Add(new Model.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
+                    infos.Add(new Model.BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
                         skillRow.SkillCategory, simulatorWaveTurn, ElementalType.Normal, skillRow.SkillTargetType, buff));
                 }
             }
