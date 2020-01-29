@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.Model
 {

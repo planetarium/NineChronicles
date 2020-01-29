@@ -8,9 +8,9 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
 using Nekoyume.Game.Quest;
 using Nekoyume.Model;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
 

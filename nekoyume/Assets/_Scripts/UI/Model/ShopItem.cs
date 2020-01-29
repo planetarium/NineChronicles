@@ -1,6 +1,6 @@
 using System;
 using Libplanet;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
 
@@ -15,7 +15,7 @@ namespace Nekoyume.UI.Model
         
         public ShopItemView View;
         
-        public ShopItem(Address sellerAgentAddress, Game.Item.ShopItem item)
+        public ShopItem(Address sellerAgentAddress, Nekoyume.Model.Item.ShopItem item)
             : this(sellerAgentAddress, item.SellerAvatarAddress, item.Price, item.ProductId, item.ItemUsable)
         {
         }

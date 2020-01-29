@@ -8,8 +8,8 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
-using Nekoyume.Game.Item;
 using Nekoyume.Game.Mail;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
 

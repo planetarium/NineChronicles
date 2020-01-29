@@ -1,5 +1,5 @@
 using System;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
 

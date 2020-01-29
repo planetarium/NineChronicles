@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nekoyume.Data;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
+using Nekoyume.Model.Item;
 using UnityEngine;
 
 namespace Nekoyume.Game.Factory

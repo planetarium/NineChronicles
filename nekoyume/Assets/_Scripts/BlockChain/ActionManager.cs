@@ -5,6 +5,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Manager;
+using Nekoyume.Model.Item;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using UniRx;

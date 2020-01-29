@@ -7,9 +7,9 @@ using Bencodex.Types;
 using DecimalMath;
 using Libplanet;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.State
 {

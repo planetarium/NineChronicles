@@ -7,6 +7,7 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.Manager;
+using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
@@ -22,7 +23,7 @@ namespace Nekoyume.Game.Character
         public long EXP = 0;
         public long EXPMax { get; private set; }
 
-        public Item.Inventory Inventory;
+        public Model.Item.Inventory Inventory;
         public TouchHandler touchHandler;
 
         public List<Equipment> Equipments =>
@@ -48,7 +49,7 @@ namespace Nekoyume.Game.Character
             Animator.OnEvent.Subscribe(OnAnimatorEvent);
             Animator.TimeScale = AnimatorTimeScale;
 
-            Inventory = new Item.Inventory();
+            Inventory = new Model.Item.Inventory();
 
             touchHandler.OnClick.Subscribe(_ =>
                 {

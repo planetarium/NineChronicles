@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
-using Nekoyume.Game.Item;
 using Nekoyume.Model;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Priority_Queue;

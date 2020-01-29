@@ -5,11 +5,13 @@ using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
 {
@@ -62,7 +64,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
         
-        public void ResetProducts(IDictionary<Address, List<Game.Item.ShopItem>> products)
+        public void ResetProducts(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> products)
         {
             SharedModel?.ResetProducts(products);
         }

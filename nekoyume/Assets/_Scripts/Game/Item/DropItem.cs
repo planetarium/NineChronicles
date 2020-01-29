@@ -5,6 +5,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.UI;
 using UnityEngine;
 using Nekoyume.UI.Module;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.Game.Item
 {

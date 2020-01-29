@@ -1,5 +1,5 @@
 using Nekoyume.Game.Controller;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using UnityEngine;
 using UnityEngine.UI;
 

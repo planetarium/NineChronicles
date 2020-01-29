@@ -6,7 +6,8 @@ using Nekoyume.EnumType;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
-using Material = Nekoyume.Game.Item.Material;
+using Material = Nekoyume.Model.Item.Material;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.Game.Factory
 {

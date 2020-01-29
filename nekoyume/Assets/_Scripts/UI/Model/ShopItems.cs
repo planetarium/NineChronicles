@@ -22,9 +22,9 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<ShopItemView> OnDoubleClickItemView = new Subject<ShopItemView>();
 
-        private IDictionary<Address, List<Game.Item.ShopItem>> _shopItems;
+        private IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> _shopItems;
 
-        public ShopItems(IDictionary<Address, List<Game.Item.ShopItem>> shopItems = null)
+        public ShopItems(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems = null)
         {
             CurrentAgentsProducts.ObserveRemove().Subscribe(SubscribeProductRemove);
             OtherProducts.ObserveRemove().Subscribe(SubscribeProductRemove);
@@ -42,9 +42,9 @@ namespace Nekoyume.UI.Model
             OnDoubleClickItemView.Dispose();
         }
 
-        public void ResetProducts(IDictionary<Address, List<Game.Item.ShopItem>> shopItems)
+        public void ResetProducts(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems)
         {
-            _shopItems = shopItems ?? new Dictionary<Address, List<Game.Item.ShopItem>>();
+            _shopItems = shopItems ?? new Dictionary<Address, List<Nekoyume.Model.Item.ShopItem>>();
 
             ResetCurrentAgentsProducts();
             ResetOtherProducts();
@@ -90,11 +90,11 @@ namespace Nekoyume.UI.Model
 
         #region Shop Item
 
-        public void AddProduct(Address sellerAgentAddress, Game.Item.ShopItem shopItem)
+        public void AddProduct(Address sellerAgentAddress, Nekoyume.Model.Item.ShopItem shopItem)
         {
             if (!_shopItems.ContainsKey(sellerAgentAddress))
             {
-                _shopItems.Add(sellerAgentAddress, new List<Game.Item.ShopItem>());
+                _shopItems.Add(sellerAgentAddress, new List<Nekoyume.Model.Item.ShopItem>());
             }
 
             _shopItems[sellerAgentAddress].Add(shopItem);
@@ -119,7 +119,7 @@ namespace Nekoyume.UI.Model
             }
         }
 
-        public ShopItem AddCurrentAgentsProduct(Address sellerAgentAddress, Game.Item.ShopItem shopItem)
+        public ShopItem AddCurrentAgentsProduct(Address sellerAgentAddress, Nekoyume.Model.Item.ShopItem shopItem)
         {
             var result = CreateShopItem(sellerAgentAddress, shopItem);
             CurrentAgentsProducts.Add(result);
@@ -207,7 +207,7 @@ namespace Nekoyume.UI.Model
             }
         }
 
-        private ShopItem CreateShopItem(Address key, Game.Item.ShopItem shopItem)
+        private ShopItem CreateShopItem(Address key, Nekoyume.Model.Item.ShopItem shopItem)
         {
             var item = new ShopItem(key, shopItem);
             item.OnClick.Subscribe(model =>

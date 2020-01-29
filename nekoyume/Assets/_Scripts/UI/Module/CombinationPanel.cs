@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
-using Material = Nekoyume.Game.Item.Material;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {

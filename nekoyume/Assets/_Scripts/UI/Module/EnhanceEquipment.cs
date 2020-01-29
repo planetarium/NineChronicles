@@ -4,7 +4,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using TMPro;

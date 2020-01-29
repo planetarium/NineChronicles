@@ -1,6 +1,6 @@
 using System;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using UniRx;
 
 namespace Nekoyume.UI.Model

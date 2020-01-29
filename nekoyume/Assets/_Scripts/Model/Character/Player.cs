@@ -4,8 +4,10 @@ using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Inventory = Nekoyume.Model.Item.Inventory;
 
 namespace Nekoyume.Model
 {

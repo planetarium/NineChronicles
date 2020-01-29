@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using Libplanet;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
-using Material = Nekoyume.Game.Item.Material;
+using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Model
 {
@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Model
             OnDoubleClickItemView.Dispose();
         }
 
-        public void ResetItems(Game.Item.Inventory inventory)
+        public void ResetItems(Nekoyume.Model.Item.Inventory inventory)
         {
             RemoveItemsAll();
 

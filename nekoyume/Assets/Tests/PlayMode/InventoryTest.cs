@@ -1,6 +1,6 @@
 using System;
 using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 using NUnit.Framework;
 using Tests.PlayMode.Fixtures;
 using UnityEngine;
@@ -43,7 +43,7 @@ namespace Tests.PlayMode
             var inventory = new Inventory();
             var updatedInventory = new Inventory();
             var row = Nekoyume.Game.Game.instance.TableSheets.MaterialItemSheet.First;
-            var item = (Nekoyume.Game.Item.Material) ItemFactory.Create(row, new Guid());
+            var item = (Nekoyume.Model.Item.Material) ItemFactory.Create(row, new Guid());
             LogAssert.Expect(LogType.Error, "Item Material: 100000 is not ItemUsable.");
             updatedInventory.AddItem(item);
             Assert.IsFalse(updatedInventory.TryGetAddedItemFrom(inventory, out var result2));

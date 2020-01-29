@@ -8,7 +8,7 @@ using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.State
 {
