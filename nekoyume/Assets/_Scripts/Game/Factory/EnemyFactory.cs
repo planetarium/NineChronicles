@@ -32,7 +32,8 @@ namespace Nekoyume.Game.Factory
             if (!enemy)
                 throw new NotFoundComponentException<Character.EnemyPlayer>();
 
-            enemy.Set(spawnCharacter, true);
+            var player = Game.instance.Stage.GetPlayer();
+            enemy.Set(spawnCharacter, player,true);
 
             // y좌표값에 따른 정렬 처리
             var sortingGroup = enemy.GetComponent<SortingGroup>();

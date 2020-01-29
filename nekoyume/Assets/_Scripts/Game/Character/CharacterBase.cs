@@ -325,7 +325,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        private void ExecuteRun()
+        protected virtual void ExecuteRun()
         {
             Animator.Run();
 
@@ -783,7 +783,6 @@ namespace Nekoyume.Game.Character
                 actions.Remove(action);
                 yield return new WaitForSeconds(0.5f);
                 action = null;
-                Animator.Idle();
             }
         }
     }

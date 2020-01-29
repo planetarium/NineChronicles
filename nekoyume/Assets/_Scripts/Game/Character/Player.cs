@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
-using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
