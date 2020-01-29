@@ -1,5 +1,4 @@
 using System;
-using Assets.SimpleLocalization;
 using Nekoyume.Action;
 
 namespace Nekoyume.Model.Mail
@@ -8,7 +7,6 @@ namespace Nekoyume.Model.Mail
     [Serializable]
     public class CombinationMail : AttachmentMail
     {
-        private static readonly string _format = LocalizationManager.Localize("UI_COMBINATION_NOTIFY_FORMAT");
         protected override string TypeId => "combinationMail";
         public override MailType MailType => MailType.Workshop;
 
@@ -20,11 +18,6 @@ namespace Nekoyume.Model.Mail
         public CombinationMail(Bencodex.Types.Dictionary serialized)
             : base(serialized)
         {
-        }
-
-        public override string ToInfo()
-        {
-            return string.Format(_format, AttachmentName);
         }
 
         public override void Read(IMail mail)

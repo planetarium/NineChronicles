@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -266,21 +265,6 @@ namespace Nekoyume.Model
             InitAI();
             var spawn = new SpawnPlayer((CharacterBase) Clone());
             Simulator.Log.Add(spawn);
-        }
-
-        public IEnumerable<string> GetOptions()
-        {
-            var atkOptions = atkElementType.GetOptions(StatType.ATK);
-            foreach (var atkOption in atkOptions)
-            {
-                yield return atkOption;
-            }
-
-            var defOptions = defElementType.GetOptions(StatType.DEF);
-            foreach (var defOption in defOptions)
-            {
-                yield return defOption;
-            }
         }
 
         public void Use(List<Consumable> foods)

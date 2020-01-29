@@ -47,7 +47,7 @@ namespace Nekoyume.Model.Quest
 
         public bool Complete { get; protected set; }
 
-        protected int Goal { get; }
+        public int Goal { get; }
 
         public int Id { get; }
 
@@ -70,7 +70,6 @@ namespace Nekoyume.Model.Quest
         }
 
         public abstract void Check();
-        public abstract string GetName();
         protected abstract string TypeId { get; }
 
         protected Quest(Dictionary serialized)

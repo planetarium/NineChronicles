@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 
@@ -10,17 +9,17 @@ namespace Nekoyume.Model.Quest
     [Serializable]
     public class MonsterQuest : Quest
     {
-        private readonly int _monsterId;
+        public readonly int MonsterId;
 
         public MonsterQuest(MonsterQuestSheet.Row data, QuestReward reward) 
             : base(data, reward)
         {
-            _monsterId = data.MonsterId;
+            MonsterId = data.MonsterId;
         }
 
         public MonsterQuest(Dictionary serialized) : base(serialized)
         {
-            _monsterId = (int)((Integer)serialized["monsterId"]).Value;
+            MonsterId = (int)((Integer)serialized["monsterId"]).Value;
         }
 
         public override QuestType QuestType => QuestType.Adventure;
@@ -31,12 +30,6 @@ namespace Nekoyume.Model.Quest
                 return;
 
             Complete = _current >= Goal;
-        }
-
-        public override string GetName()
-        {
-            var format = LocalizationManager.Localize("QUEST_MONSTER_FORMAT");
-            return string.Format(format, LocalizationManager.LocalizeCharacterName(_monsterId));
         }
 
         public override string GetProgressText()
@@ -51,14 +44,14 @@ namespace Nekoyume.Model.Quest
             if (Complete)
                 return;
 
-            monsterMap.TryGetValue(_monsterId, out _current);
+            monsterMap.TryGetValue(MonsterId, out _current);
             Check();
         }
 
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text)"monsterId"] = (Integer)_monsterId,
+                [(Text)"monsterId"] = (Integer)MonsterId,
             }.Union((Dictionary)base.Serialize()));
     }
 }

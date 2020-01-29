@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Quest
@@ -52,11 +50,6 @@ namespace Nekoyume.Model.Quest
                 return;
 
             Complete = _current >= Goal;
-        }
-
-        public override string GetName()
-        {
-            return LocalizationManager.Localize($"QUEST_GENERAL_{Event}_FORMAT");
         }
 
         public override string GetProgressText()

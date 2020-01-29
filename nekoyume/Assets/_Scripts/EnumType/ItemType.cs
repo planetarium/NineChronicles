@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 
 namespace Nekoyume.EnumType
 {
@@ -64,19 +63,6 @@ namespace Nekoyume.EnumType
         public int GetHashCode(ItemSubType obj)
         {
             return (int) obj;
-        }
-    }
-
-    public static class ItemTypeExtension
-    {
-        public static string GetLocalizedString(this ItemType value)
-        {
-            return LocalizationManager.Localize($"ITEM_TYPE_{value}");
-        }
-        
-        public static string GetLocalizedString(this ItemSubType value)
-        {
-            return LocalizationManager.Localize($"ITEM_SUB_TYPE_{value}");
         }
     }
 }

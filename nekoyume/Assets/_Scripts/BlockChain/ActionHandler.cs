@@ -3,6 +3,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain

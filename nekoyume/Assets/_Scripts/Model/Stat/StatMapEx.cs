@@ -65,52 +65,6 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public string GetInformation()
-        {
-            if (StatType == StatType.SPD)
-            {
-                return "";
-            }
-
-            var translatedText = StatType.GetLocalizedString();
-
-            if (Value > 0m)
-            {
-                return AdditionalValueAsInt > 0m
-                    ? $"{translatedText} {Value} <color=#00FF00>(+{AdditionalValueAsInt})</color>"
-                    : $"{translatedText} {Value}";
-            }
-
-            return AdditionalValueAsInt > 0m
-                ? $"{translatedText} <color=#00FF00>(+{AdditionalValueAsInt})</color>"
-                : null;
-        }
-
-        public void GetInformation(out string key, out string value)
-        {
-            if (StatType == StatType.SPD)
-            {
-                key = "";
-                value = "";
-
-                return;
-            }
-
-            key = StatType.GetLocalizedString();
-
-            if (Value > 0m)
-            {
-                value = AdditionalValueAsInt > 0m
-                    ? $"{Value} <color=#00FF00>(+{AdditionalValueAsInt})</color>"
-                    : $"{Value}";
-
-                return;
-            }
-
-            value = AdditionalValueAsInt > 0m
-                ? $"<color=#00FF00>(+{AdditionalValueAsInt})</color>"
-                : "";
-        }
 
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
