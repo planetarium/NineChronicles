@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Model.Buff;
 using Nekoyume.UI.Module;
 using TMPro;
 using Unity.Mathematics;

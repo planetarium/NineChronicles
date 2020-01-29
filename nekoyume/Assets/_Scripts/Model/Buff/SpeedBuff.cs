@@ -1,8 +1,7 @@
 using System;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Buff
 {
     [Serializable]
     public class SpeedBuff : Buff

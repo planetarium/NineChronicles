@@ -18,11 +18,11 @@ namespace Nekoyume.Model.BattleStatus
             public readonly ElementalType ElementalType;
             public readonly SkillTargetType SkillTargetType;
             public readonly int WaveTurn;
-            [CanBeNull] public readonly Game.Buff Buff;
+            [CanBeNull] public readonly Model.Buff.Buff Buff;
 
             public SkillInfo(CharacterBase character, int effect, bool critical, SkillCategory skillCategory,
                 int turn, ElementalType elementalType = ElementalType.Normal,
-                SkillTargetType targetType = SkillTargetType.Enemy, [CanBeNull] Game.Buff buff = null)
+                SkillTargetType targetType = SkillTargetType.Enemy, [CanBeNull] Model.Buff.Buff buff = null)
             {
                 Target = character;
                 Effect = effect;

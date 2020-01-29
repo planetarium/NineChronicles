@@ -4,7 +4,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Buff
 {
     [Serializable]
     public class Buff : ICloneable
@@ -53,7 +53,7 @@ namespace Nekoyume.Game
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             return RowData.StatModifier.GetModifiedAll(value);
         }
 

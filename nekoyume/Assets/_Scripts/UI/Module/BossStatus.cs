@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Nekoyume.Game;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Nekoyume.Model.Buff;
 
 namespace Nekoyume.UI.Module
 {

@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using TMPro;
-using Nekoyume.Game;
 using Assets.SimpleLocalization;
 using Nekoyume.TableData;
+using Nekoyume.Model.Buff;
 
 namespace Nekoyume.UI.Module
 {

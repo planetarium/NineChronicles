@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 
@@ -69,7 +68,7 @@ namespace Nekoyume.Model.Stat
                                           HasAdditionalDOG || HasAdditionalSPD;
 
         public CharacterStats(CharacterSheet.Row row, int level = 1, IReadOnlyList<Equipment> equipments = null,
-            IReadOnlyList<Consumable> consumables = null, IReadOnlyList<Buff> buffs = null)
+            IReadOnlyList<Consumable> consumables = null, IReadOnlyList<Buff.Buff> buffs = null)
         {
             _row = row ?? throw new ArgumentNullException(nameof(row));
             SetAll(level, equipments, consumables, buffs);
@@ -92,7 +91,7 @@ namespace Nekoyume.Model.Stat
         }
 
         public CharacterStats SetAll(int level, IReadOnlyList<Equipment> equipments,
-            IReadOnlyList<Consumable> consumables, IReadOnlyList<Buff> buffs)
+            IReadOnlyList<Consumable> consumables, IReadOnlyList<Buff.Buff> buffs)
         {
             SetLevel(level, false);
             SetEquipments(equipments, false);
@@ -258,7 +257,7 @@ namespace Nekoyume.Model.Stat
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetBuffs(IEnumerable<Buff> value, bool updateImmediate = true)
+        public CharacterStats SetBuffs(IEnumerable<Buff.Buff> value, bool updateImmediate = true)
         {
             _buffStatModifiers.Clear();
             if (!(value is null))
@@ -277,7 +276,7 @@ namespace Nekoyume.Model.Stat
             return this;
         }
 
-        public void AddBuff(Buff buff, bool updateImmediate = true)
+        public void AddBuff(Buff.Buff buff, bool updateImmediate = true)
         {
             _buffStatModifiers[buff.RowData.GroupId] = buff.RowData.StatModifier;
 
@@ -287,7 +286,7 @@ namespace Nekoyume.Model.Stat
             }
         }
 
-        public void RemoveBuff(Buff buff, bool updateImmediate = true)
+        public void RemoveBuff(Buff.Buff buff, bool updateImmediate = true)
         {
             if (!_buffStatModifiers.ContainsKey(buff.RowData.GroupId))
                 return;

@@ -1,5 +1,6 @@
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
+using Nekoyume.Model.Buff;
 using UnityEngine;
 
 namespace Nekoyume.Game.VFX.Skill

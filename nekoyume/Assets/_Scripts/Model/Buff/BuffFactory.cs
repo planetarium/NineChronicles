@@ -2,7 +2,7 @@ using System;
 using Nekoyume.EnumType;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Buff
 {
     public static class BuffFactory
     {

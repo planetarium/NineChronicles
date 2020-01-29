@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Nekoyume.Manager;
 using Nekoyume.BlockChain;
-using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
@@ -11,6 +10,7 @@ using UnityEngine.UI;
 using TMPro;
 using UniRx;
 using Unity.Mathematics;
+using Nekoyume.Model.Buff;
 
 namespace Nekoyume.UI
 {

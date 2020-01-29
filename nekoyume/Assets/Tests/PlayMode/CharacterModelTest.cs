@@ -6,6 +6,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game;
 using Nekoyume.Model;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.TableData;
