@@ -1,3 +1,4 @@
+using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.State;
@@ -8,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class ArenaRankingInfo : MonoBehaviour
+    public class ArenaRankingCellView : MonoBehaviour
     {
         public Button avatarInfoButton;
         public Button challengeButton;
@@ -22,7 +23,8 @@ namespace Nekoyume.UI.Scroller
         public Tween.DOTweenRectTransformMoveBy tweenMove;
         public Tween.DOTweenGroupAlpha tweenAlpha;
 
-        public System.Action<ArenaRankingInfo> onClickChallenge;
+        public System.Action<ArenaRankingCellView> onClickChallenge;
+        public System.Action<Address> onClickInfo;
         
         public State.ArenaInfo AvatarInfo { get; private set; }
 
@@ -32,6 +34,12 @@ namespace Nekoyume.UI.Scroller
             {
                 AudioController.PlayClick();
                 onClickChallenge.Invoke(this);
+            }).AddTo(gameObject);
+
+            avatarInfoButton.OnClickAsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                onClickInfo.Invoke(AvatarInfo.AvatarAddress);
             }).AddTo(gameObject);
         }
 

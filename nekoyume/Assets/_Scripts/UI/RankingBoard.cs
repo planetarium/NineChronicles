@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
@@ -36,7 +37,7 @@ namespace Nekoyume.UI
         public CategoryButton overallButton;
         public GameObject arenaRankingHeader;
         public GameObject expRankingHeader;
-        public ArenaRankingInfo arenaRankingCellViewPrefab;
+        public ArenaRankingCellView arenaRankingCellViewPrefab;
         public RankingInfo rankingCellViewPrefab;
         public ScrollRect board;
         public ArenaPendingNCG arenaPendingNCG;
@@ -247,7 +248,7 @@ namespace Nekoyume.UI
                         continue;
                     }
 
-                    ArenaRankingInfo rankingInfo = Instantiate(arenaRankingCellViewPrefab, board.content);
+                    ArenaRankingCellView rankingInfo = Instantiate(arenaRankingCellViewPrefab, board.content);
                     var bg = rankingInfo.GetComponent<Image>();
                     if (index % 2 == 1)
                     {
@@ -256,6 +257,7 @@ namespace Nekoyume.UI
 
                     rankingInfo.Set(index + 1, avatarState);
                     rankingInfo.onClickChallenge = OnClickChallenge;
+                    rankingInfo.onClickInfo = OnClickAvatarInfo;
                     rankingInfo.gameObject.SetActive(true);
                 }
             }
@@ -292,12 +294,12 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickAvatarInfo(RankingInfo info)
+        private void OnClickAvatarInfo(Address avatarAddress)
         {
-            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, info.AvatarInfo.AvatarAddress));
+            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, avatarAddress));
         }
 
-        private void OnClickChallenge(ArenaRankingInfo info)
+        private void OnClickChallenge(ArenaRankingCellView info)
         {
             ActionManager.RankingBattle(info.AvatarInfo.AvatarAddress);
             Find<LoadingScreen>().Show();
