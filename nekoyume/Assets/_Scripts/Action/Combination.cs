@@ -7,7 +7,6 @@ using Bencodex.Types;
 using DecimalMath;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
