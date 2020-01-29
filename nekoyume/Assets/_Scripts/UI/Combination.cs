@@ -47,6 +47,7 @@ namespace Nekoyume.UI
         public SpeechBubble speechBubble;
         public Transform npcPosition01;
         public Transform npcPosition02;
+        public CanvasGroup canvasGroup;
 
         private NPC _npc01;
         private NPC _npc02;
@@ -105,6 +106,9 @@ namespace Nekoyume.UI
 
         private IEnumerator CoCombineNPCAnimation()
         {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+            Find<BottomMenu>().SetIntractable(false);
             _npc01.SpineController.Disappear();
             yield return new WaitForSeconds(.5f);
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
@@ -119,6 +123,9 @@ namespace Nekoyume.UI
             _npc02.gameObject.SetActive(false);
             _npc01.SpineController.Appear();
             yield return new WaitForSeconds(1f);
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+            Find<BottomMenu>().SetIntractable(true);
         }
 
         public override void Show()

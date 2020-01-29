@@ -60,6 +60,7 @@ namespace Nekoyume.UI.Module
         public NotifiableButton inventoryButton;
         public NotifiableButton worldMapButton;
         public NotifiableButton settingsButton;
+        public CanvasGroup canvasGroup;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -309,5 +310,10 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
+
+        public void SetIntractable(bool intractable)
+        {
+            canvasGroup.interactable = intractable;
+        }
     }
 }
