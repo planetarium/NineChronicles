@@ -1,3 +1,4 @@
+using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using TMPro;
@@ -19,7 +20,7 @@ namespace Nekoyume.UI.Scroller
         public Tween.DOTweenRectTransformMoveBy tweenMove;
         public Tween.DOTweenGroupAlpha tweenAlpha;
 
-        public System.Action<RankingInfo> onClick;
+        public System.Action<Address> onClick;
         
         public State.RankingInfo AvatarInfo { get; private set; }
 
@@ -28,7 +29,7 @@ namespace Nekoyume.UI.Scroller
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                onClick.Invoke(this);
+                onClick.Invoke(AvatarInfo.AvatarAddress);
             }).AddTo(gameObject);
         }
 
