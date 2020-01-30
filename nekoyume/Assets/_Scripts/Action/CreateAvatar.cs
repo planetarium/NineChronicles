@@ -114,8 +114,7 @@ namespace Nekoyume.Action
                 avatarAddress, 
                 ctx.Signer, 
                 ctx.BlockIndex, 
-                tableSheets.WorldSheet,
-                tableSheets.QuestSheet,
+                tableSheets,
                 name
             );
 #if UNITY_EDITOR

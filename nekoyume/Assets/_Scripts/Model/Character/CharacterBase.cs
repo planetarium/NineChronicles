@@ -60,15 +60,15 @@ namespace Nekoyume.Model
 
         public bool IsDead => CurrentHP <= 0;
 
-        protected CharacterBase(Simulator simulator, int characterId, int level)
+        protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level)
         {
             Simulator = simulator;
 
-            if (!Game.Game.instance.TableSheets.CharacterSheet.TryGetValue(characterId, out var row))
+            if (!sheets.CharacterSheet.TryGetValue(characterId, out var row))
                 throw new SheetRowNotFoundException("CharacterSheet", characterId.ToString());
 
             RowData = row;
-            Stats = new CharacterStats(RowData, level);
+            Stats = new CharacterStats(RowData, level, sheets);
             Skills.Clear();
 
             atkElementType = RowData.ElementalType;
@@ -256,7 +256,7 @@ namespace Nekoyume.Model
 
         protected virtual void SetSkill()
         {
-            if (!Game.Game.instance.TableSheets.SkillSheet.TryGetValue(100000, out var skillRow))
+            if (!Simulator.TableSheets.SkillSheet.TryGetValue(100000, out var skillRow))
                 throw new KeyNotFoundException("100000");
 
             var attack = SkillFactory.Get(skillRow, 0, 100);

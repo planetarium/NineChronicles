@@ -43,8 +43,6 @@ namespace Nekoyume.Model.Mail
             New = ((Bencodex.Types.Boolean)serialized["new"]).Value;
         }
 
-        public abstract string ToInfo();
-
         public abstract void Read(IMail mail);
 
         protected abstract string TypeId { get; }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
 
 namespace Nekoyume.EnumType
@@ -61,11 +60,6 @@ namespace Nekoyume.EnumType
 
     public static class StatTypeExtension
     {
-        public static string GetLocalizedString(this StatType value)
-        {
-            return LocalizationManager.Localize($"STAT_TYPE_{value}");
-        }
-
         public static IKey Serialize(this StatType statType) =>
             new Binary(BitConverter.GetBytes((int) statType));
 

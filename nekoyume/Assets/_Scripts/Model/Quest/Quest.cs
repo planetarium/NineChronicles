@@ -47,7 +47,7 @@ namespace Nekoyume.Model.Quest
 
         public bool Complete { get; protected set; }
 
-        protected int Goal { get; }
+        public int Goal { get; }
 
         public int Id { get; }
 
@@ -62,27 +62,14 @@ namespace Nekoyume.Model.Quest
 
         public const string GoalFormat = "({0}/{1})";
 
-        protected Quest(QuestSheet.Row data)
+        protected Quest(QuestSheet.Row data, QuestReward reward)
         {
             Id = data.Id;
             Goal = data.Goal;
-            var itemMap = new Dictionary<int, int>();
-            if (Game.Game.instance.TableSheets.QuestRewardSheet.TryGetValue(data.QuestRewardId, out var questRewardRow))
-            {
-                foreach (var rewardId in questRewardRow.RewardIds)
-                {
-                    if (Game.Game.instance.TableSheets.QuestItemRewardSheet.TryGetValue(rewardId, out var itemRewardRow))
-                    {
-                        itemMap[itemRewardRow.ItemId] = itemRewardRow.Count;
-                    }
-                }
-            }
-
-            Reward = new QuestReward(itemMap);
+            Reward = reward;
         }
 
         public abstract void Check();
-        public abstract string GetName();
         protected abstract string TypeId { get; }
 
         protected Quest(Dictionary serialized)
@@ -145,55 +132,60 @@ namespace Nekoyume.Model.Quest
     {
         private readonly List<Quest> quests;
 
-        public QuestList(QuestSheet sheet)
+        public QuestList(
+            QuestSheet questSheet,
+            QuestRewardSheet questRewardSheet,
+            QuestItemRewardSheet questItemRewardSheet)
         {
             quests = new List<Quest>();
-            if (sheet is null)
-                return;
-
-            foreach (var questData in sheet.OrderedList)
+            foreach (var questData in questSheet.OrderedList)
             {
                 Quest quest;
+                QuestReward reward = GetQuestReward(
+                    questData.QuestRewardId, 
+                    questRewardSheet, 
+                    questItemRewardSheet
+                );
                 switch (questData)
                 {
                     case CollectQuestSheet.Row row:
-                        quest = new CollectQuest(row);
+                        quest = new CollectQuest(row, reward);
                         quests.Add(quest);
                         break;
                     case CombinationQuestSheet.Row row1:
-                        quest = new CombinationQuest(row1);
+                        quest = new CombinationQuest(row1, reward);
                         quests.Add(quest);
                         break;
                     case GeneralQuestSheet.Row row2:
-                        quest = new GeneralQuest(row2);
+                        quest = new GeneralQuest(row2, reward);
                         quests.Add(quest);
                         break;
                     case ItemEnhancementQuestSheet.Row row3:
-                        quest = new ItemEnhancementQuest(row3);
+                        quest = new ItemEnhancementQuest(row3, reward);
                         quests.Add(quest);
                         break;
                     case ItemGradeQuestSheet.Row row4:
-                        quest = new ItemGradeQuest(row4);
+                        quest = new ItemGradeQuest(row4, reward);
                         quests.Add(quest);
                         break;
                     case MonsterQuestSheet.Row row5:
-                        quest = new MonsterQuest(row5);
+                        quest = new MonsterQuest(row5, reward);
                         quests.Add(quest);
                         break;
                     case TradeQuestSheet.Row row6:
-                        quest = new TradeQuest(row6);
+                        quest = new TradeQuest(row6, reward);
                         quests.Add(quest);
                         break;
                     case WorldQuestSheet.Row row7:
-                        quest = new WorldQuest(row7);
+                        quest = new WorldQuest(row7, reward);
                         quests.Add(quest);
                         break;
                     case ItemTypeCollectQuestSheet.Row row8:
-                        quest = new ItemTypeCollectQuest(row8);
+                        quest = new ItemTypeCollectQuest(row8, reward);
                         quests.Add(quest);
                         break;
                     case GoldQuestSheet.Row row9:
-                        quest = new GoldQuest(row9);
+                        quest = new GoldQuest(row9, reward);
                         quests.Add(quest);
                         break;
                 }
@@ -352,6 +344,27 @@ namespace Nekoyume.Model.Quest
             const QuestEventType type = QuestEventType.Complete;
             eventMap[(int)type] = quests.Count(i => i.Complete);
             return UpdateGeneralQuest(new[] { type }, eventMap);
+        }
+
+
+        private static QuestReward GetQuestReward(
+            int rewardId, 
+            QuestRewardSheet rewardSheet,
+            QuestItemRewardSheet itemRewardSheet)
+        {
+            var itemMap = new Dictionary<int, int>();
+            if (rewardSheet.TryGetValue(rewardId, out var questRewardRow))
+            {
+                foreach (var id in questRewardRow.RewardIds)
+                {
+                    if (itemRewardSheet.TryGetValue(id, out var itemRewardRow))
+                    {
+                        itemMap[itemRewardRow.ItemId] = itemRewardRow.Count;
+                    }
+                }
+            }
+
+            return new QuestReward(itemMap);
         }
     }
 }

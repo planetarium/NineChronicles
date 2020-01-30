@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.TableData;
@@ -13,7 +12,8 @@ namespace Nekoyume.Model.Quest
     {
         public readonly TradeType Type;
 
-        public GoldQuest(GoldQuestSheet.Row data) : base(data)
+        public GoldQuest(GoldQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             Type = data.Type;
         }
@@ -31,11 +31,6 @@ namespace Nekoyume.Model.Quest
                 return;
 
             Complete = _current >= Goal;
-        }
-
-        public override string GetName()
-        {
-            return string.Format(LocalizationManager.Localize($"QUEST_GOLD_{Type}_FORMAT"), Goal);
         }
 
         public override string GetProgressText()

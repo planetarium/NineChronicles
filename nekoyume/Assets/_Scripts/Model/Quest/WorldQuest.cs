@@ -1,5 +1,4 @@
 using System;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 
@@ -8,7 +7,8 @@ namespace Nekoyume.Model.Quest
     [Serializable]
     public class WorldQuest : Quest
     {
-        public WorldQuest(WorldQuestSheet.Row data) : base(data)
+        public WorldQuest(WorldQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
         }
 
@@ -20,16 +20,6 @@ namespace Nekoyume.Model.Quest
 
         public override void Check()
         {
-        }
-
-        public override string GetName()
-        {
-            if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(Goal, out var worldRow))
-            {
-                var format = LocalizationManager.Localize("QUEST_WORLD_FORMAT");
-                return string.Format(format, worldRow.GetLocalizedName());
-            }
-            throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", Goal.ToString());
         }
 
         public override string GetProgressText()

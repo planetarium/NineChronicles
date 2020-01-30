@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
@@ -17,7 +16,8 @@ namespace Nekoyume.Model.Quest
 
         public override QuestType QuestType => QuestType.Craft;
 
-        public CombinationQuest(CombinationQuestSheet.Row data) : base(data)
+        public CombinationQuest(CombinationQuestSheet.Row data, QuestReward reward) 
+            : base(data, reward)
         {
             ItemType = data.ItemType;
             ItemSubType = data.ItemSubType;
@@ -35,12 +35,6 @@ namespace Nekoyume.Model.Quest
                 return;
 
             Complete = _current >= Goal;
-        }
-
-        public override string GetName()
-        {
-            var format = LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT");
-            return string.Format(format, ItemSubType.GetLocalizedString());
         }
 
         public override string GetProgressText()

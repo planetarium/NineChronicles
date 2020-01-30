@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.State;
@@ -148,23 +147,6 @@ namespace Nekoyume.Model.Stat
                 return;
 
             _statMaps.Remove(key);
-        }
-
-        public string GetInformation()
-        {
-            var sb = new StringBuilder();
-            foreach (var pair in _statMaps)
-            {
-                var information = pair.Value.GetInformation();
-                if (string.IsNullOrEmpty(information))
-                {
-                    continue;
-                }
-
-                sb.AppendLine(information);
-            }
-
-            return sb.ToString().Trim();
         }
 
         public IValue Serialize() =>

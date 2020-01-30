@@ -26,8 +26,7 @@ namespace Tests.PlayMode
             var random = new Cheat.DebugRandom();
             var address = new Address();
             var agentAddress = new Address();
-            var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets.WorldSheet,
-                Game.instance.TableSheets.QuestSheet);
+            var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets);
 
             _stageSimulator = new StageSimulator(random, avatarState, new List<Consumable>(), 1, 1);
             var caster = _stageSimulator.Player;

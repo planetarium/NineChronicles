@@ -67,11 +67,14 @@ namespace Nekoyume.Model.Stat
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
                                           HasAdditionalDOG || HasAdditionalSPD;
 
-        public CharacterStats(CharacterSheet.Row row, int level = 1, IReadOnlyList<Equipment> equipments = null,
-            IReadOnlyList<Consumable> consumables = null, IReadOnlyList<Buff.Buff> buffs = null)
+        public CharacterStats(
+            CharacterSheet.Row row,
+            int level,
+            TableSheets sheets
+        )
         {
             _row = row ?? throw new ArgumentNullException(nameof(row));
-            SetAll(level, equipments, consumables, buffs);
+            SetAll(level, null, null, null, sheets);
         }
 
         protected CharacterStats(CharacterStats value) : base(value)
@@ -90,11 +93,16 @@ namespace Nekoyume.Model.Stat
             Level = value.Level;
         }
 
-        public CharacterStats SetAll(int level, IReadOnlyList<Equipment> equipments,
-            IReadOnlyList<Consumable> consumables, IReadOnlyList<Buff.Buff> buffs)
+        public CharacterStats SetAll(
+            int level,
+            IReadOnlyList<Equipment> equipments,
+            IReadOnlyList<Consumable> consumables, 
+            IReadOnlyList<Buff.Buff> buffs,
+            TableSheets sheets
+        )
         {
             SetLevel(level, false);
-            SetEquipments(equipments, false);
+            SetEquipments(equipments, sheets.EquipmentItemSetEffectSheet, false);
             SetConsumables(consumables, false);
             SetBuffs(buffs, false);
             UpdateLevelStats();
@@ -130,7 +138,11 @@ namespace Nekoyume.Model.Stat
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetEquipments(IReadOnlyList<Equipment> value, bool updateImmediate = true)
+        public CharacterStats SetEquipments(
+            IReadOnlyList<Equipment> value,
+            EquipmentItemSetEffectSheet sheet,
+            bool updateImmediate=true
+        )
         {
             _equipmentStatModifiers.Clear();
             if (!(value is null))
@@ -176,7 +188,7 @@ namespace Nekoyume.Model.Stat
                 }
 
                 // set effects.
-                var setEffectRows = Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet.GetSetEffectRows(value);
+                var setEffectRows = sheet.GetSetEffectRows(value);
                 foreach (var statModifier in setEffectRows.SelectMany(row => row.StatModifiers.Values))
                 {
                     _equipmentStatModifiers.Add(statModifier);
