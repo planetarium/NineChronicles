@@ -8,6 +8,7 @@ using Nekoyume.Model.Elememtal;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using MailModel = Nekoyume.Model.Mail.Mail;
 using QuestModel = Nekoyume.Model.Quest.Quest;

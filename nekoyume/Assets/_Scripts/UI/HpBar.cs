@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.Buff;
+using Nekoyume.Model.Stat;
 using Nekoyume.UI.Module;
 using TMPro;
 using Unity.Mathematics;
@@ -21,7 +22,7 @@ namespace Nekoyume.UI
         {
             buffLayout.SetBuff(buffs);
 
-            if (buffLayout.IsBuffAdded(EnumType.StatType.HP))
+            if (buffLayout.IsBuffAdded(StatType.HP))
             {
                 if (HpVFX)
                 {
@@ -32,7 +33,7 @@ namespace Nekoyume.UI
                 HpVFX = VFXController.instance.CreateAndChaseRectTransform<HpBarVFX>(rectTransform);
                 HpVFX.Play();
             }
-            else if (!buffLayout.HasBuff(EnumType.StatType.HP))
+            else if (!buffLayout.HasBuff(StatType.HP))
             {
                 if (HpVFX)
                 {

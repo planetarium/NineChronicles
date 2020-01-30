@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.TableData
 {

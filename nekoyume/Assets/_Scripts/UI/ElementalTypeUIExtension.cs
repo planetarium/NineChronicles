@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Stat;
 using UnityEngine;
 
 namespace Nekoyume.UI
