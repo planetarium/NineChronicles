@@ -793,7 +793,7 @@ namespace Nekoyume.BlockChain
                     var block = await blocks.MineBlock(Address);
                     if (_swarm.Running)
                     {
-                        _swarm.BroadcastBlocks(new[] {block});
+                        _swarm.BroadcastBlock(block);
                     }
 
                     return block;
@@ -840,7 +840,7 @@ namespace Nekoyume.BlockChain
                             else if (ex is UnexpectedlyTerminatedActionException actionException
                                      && actionException.TxId is TxId txId)
                             {
-                                Debug.Log($"Tx[{actionException.TxId}]'s action is invalid. mark to unstage. {ex}");
+                                Debug.Log($"Tx[{actionException.TxId}]'s action is invalid. mark to unstage. {actionException}");
                                 invalidTxs.Add(blocks.GetTransaction(txId));
                             }
 

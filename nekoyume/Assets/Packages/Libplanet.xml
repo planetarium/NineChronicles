@@ -2958,6 +2958,11 @@
             Contains the calculated recent states and state references.
             </summary>
         </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.BlockHeaderMessage">
+            <summary>
+            Message containing a single <see cref="T:Libplanet.Blocks.BlockHeader"/>.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.Messages.RecentStates.StateReferences">
             <summary>
             State references of all available accounts.  Each value has a list of
@@ -3297,7 +3302,7 @@
         <member name="M:Libplanet.Store.BaseStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.ListAddresses(System.Guid)">
+        <member name="M:Libplanet.Store.BaseStore.ListStateKeys(System.Guid)">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.BaseStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
@@ -3321,10 +3326,10 @@
         <member name="M:Libplanet.Store.BaseStore.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.LookupStateReference``1(System.Guid,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.BaseStore.LookupStateReference``1(System.Guid,System.String,Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
+        <member name="M:Libplanet.Store.BaseStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.BaseStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
@@ -3419,7 +3424,7 @@
         <member name="M:Libplanet.Store.DefaultStore.ForkBlockIndexes(System.Guid,System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.ListAddresses(System.Guid)">
+        <member name="M:Libplanet.Store.DefaultStore.ListStateKeys(System.Guid)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
@@ -3464,13 +3469,13 @@
         <member name="M:Libplanet.Store.DefaultStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Immutable.IImmutableDictionary{Libplanet.Address,Bencodex.Types.IValue})">
+        <member name="M:Libplanet.Store.DefaultStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
+        <member name="M:Libplanet.Store.DefaultStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.DefaultStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
+        <member name="M:Libplanet.Store.DefaultStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
@@ -3551,12 +3556,12 @@
             <seealso cref="M:Libplanet.Store.IStore.IterateIndexes(System.Guid,System.Int32,System.Nullable{System.Int32})"/>
             <seealso cref="M:Libplanet.Store.IStore.AppendIndex(System.Guid,Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.ListAddresses(System.Guid)">
+        <member name="M:Libplanet.Store.IStore.ListStateKeys(System.Guid)">
             <summary>
-            Lists all addresses that have ever had states.
+            Lists all keys that have ever had states.
             </summary>
-            <param name="chainId">The ID of the chain to list addresses.</param>
-            <returns>All addresses in an arbitrary order.  The order might
+            <param name="chainId">The ID of the chain to list state keys.</param>
+            <returns>All state keys in an arbitrary order.  The order might
             be vary for each call.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.ListAllStateReferences(System.Guid,System.Int64,System.Int64)">
@@ -3663,14 +3668,27 @@
             <c>a = 1; b = 2; c = 1</c> (all states) nor
             <c>b = 1; c = 1</c> (delta).</para>
             </remarks>
+            <seealso cref="M:Libplanet.Store.IStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.LookupStateReference``1(System.Guid,Libplanet.Address,Libplanet.Blocks.Block{``0})">
+        <member name="M:Libplanet.Store.IStore.SetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Collections.Immutable.IImmutableDictionary{System.String,Bencodex.Types.IValue})">
+            <summary>
+            Sets the states updated by actions in the specified block
+            (i.e., <paramref name="blockHash"/>).
+            </summary>
+            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to update states.
+            </param>
+            <param name="states">The states updated by actions in the specified block
+            (i.e., <paramref name="blockHash"/>).
+            </param>
+            <seealso cref="M:Libplanet.Store.IStore.GetBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})"/>
+        </member>
+        <member name="M:Libplanet.Store.IStore.LookupStateReference``1(System.Guid,System.String,Libplanet.Blocks.Block{``0})">
             <summary>
             Looks up a state reference, which is a block's <see cref="P:Libplanet.Blocks.Block`1.Hash"/> that contains
-            an action mutating the <paramref name="address"/>' state.
+            an action mutating the <paramref name="key"/>'s tate.
             </summary>
             <param name="chainId">The chain ID to look up a state reference.</param>
-            <param name="address">The <see cref="T:Libplanet.Address"/> to look up.</param>
+            <param name="key">The state key to look up.</param>
             <param name="lookupUntil">The upper bound (i.e., the latest block) of the search range.
             <see cref="T:Libplanet.Blocks.Block`1"/>s after <paramref name="lookupUntil"/> are ignored.</param>
             <returns>Returns a nullable tuple consisting of <see cref="P:Libplanet.Blocks.Block`1.Hash"/> and
@@ -3678,16 +3696,18 @@
             address.</returns>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
             <paramref name="lookupUntil"/>.</typeparam>
-            <seealso cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
+            <seealso
+            cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"
+            />
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
+        <member name="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})">
             <summary>
             Gets pairs of a state reference and a corresponding <see cref="P:Libplanet.Blocks.Block`1.Index"/> of
-            the requested <paramref name="address"/> in the specified <paramref name="chainId"/>.
+            the requested <paramref name="key"/> in the specified <paramref name="chainId"/>.
             </summary>
             <param name="chainId">The chain ID.</param>
-            <param name="address">The <see cref="T:Libplanet.Address"/> to get state references.</param>
+            <param name="key">The key to get state references.</param>
             <param name="highestIndex">The highest index of state references to get. If it is
             <c>null</c>, it will be the highest index possible.</param>
             <param name="lowestIndex">The lowest index of state references to get.  If it is
@@ -3700,23 +3720,19 @@
             <exception cref="T:System.ArgumentException">Thrown when the given
             <paramref name="highestIndex"/> is less than <paramref name="lowestIndex"/>.</exception>
             <seealso
-            cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
+            cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
         </member>
-        <member name="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
+        <member name="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)">
             <summary>
-            Stores a state reference, which is a <see cref="P:Libplanet.Blocks.Block`1.Hash"/>
-            that has the state of the <see cref="T:Libplanet.Address"/> for each updated
-            <see cref="T:Libplanet.Address"/>es by the <see cref="T:Libplanet.Tx.Transaction`1"/>s in the
-            <see cref="T:Libplanet.Blocks.Block`1" />.</summary>
+            Marks the specified <paramref name="keys"/> updated by any action in the specified block
+            (i.e., <paramref name="blockHash"/>).
+            </summary>
             <param name="chainId">The ID of the chain to store a state reference.</param>
-            <param name="addresses">The <see cref="T:Libplanet.Address"/>es to store state
-            reference.</param>
-            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> which has the state
-            of the <see cref="T:Libplanet.Address"/>.</param>
-            <param name="blockIndex">The <see cref="P:Libplanet.Blocks.Block`1.Index"/> which has the state
-            of the <see cref="T:Libplanet.Address"/>. This must refer to the same block
-            that <paramref name="blockHash"/> refers to.</param>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
+            <param name="keys">The keys updated by the block.</param>
+            <param name="blockHash">The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of the block which changes
+            the <paramref name="keys"/>' states.</param>
+            <param name="blockIndex">The block index.</param>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
         </member>
         <member name="M:Libplanet.Store.IStore.ForkStateReferences``1(System.Guid,System.Guid,Libplanet.Blocks.Block{``0})">
             <summary>
@@ -3735,9 +3751,9 @@
             <paramref name="branchPoint"/>.</typeparam>
             <exception cref="T:Libplanet.Store.ChainIdNotFoundException">Thrown when the given
             <paramref name="sourceChainId"/> does not exist.</exception>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
+            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,System.String,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
             <seealso
-            cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
+            cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{System.String},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
         </member>
         <member name="M:Libplanet.Store.IStore.ListTxNonces(System.Guid)">
             <summary>
@@ -3788,24 +3804,6 @@
             <c>true</c> if the <see cref="T:Libplanet.Store.IStore"/> contains <see cref="T:Libplanet.Tx.Transaction`1"/>
             with the specified <paramref name="txId"/>; otherwise, <c>false</c>.
             </returns>
-        </member>
-        <member name="M:Libplanet.Store.StoreExtension.LookupStateReference``1(Libplanet.Store.IStore,System.Guid,Libplanet.Address,Libplanet.Blocks.Block{``0})">
-            <summary>
-            Looks up a state reference, which is a block's <see cref="P:Libplanet.Blocks.Block`1.Hash"/> that contains
-            an action mutating the <paramref name="address"/>' state.
-            </summary>
-            <param name="store">The store object expected to contain the state reference.</param>
-            <param name="chainId">The chain ID to look up a state reference.</param>
-            <param name="address">The <see cref="T:Libplanet.Address"/> to look up.</param>
-            <param name="lookupUntil">The upper bound (i.e., the latest block) of the search range.
-            <see cref="T:Libplanet.Blocks.Block`1"/>s after <paramref name="lookupUntil"/> are ignored.</param>
-            <returns>Returns a nullable tuple consisting of <see cref="P:Libplanet.Blocks.Block`1.Hash"/> and
-            <see cref="P:Libplanet.Blocks.Block`1.Index"/> of the <see cref="T:Libplanet.Blocks.Block`1"/> with the state of the
-            address.</returns>
-            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> class used with
-            <paramref name="lookupUntil"/>.</typeparam>
-            <seealso cref="M:Libplanet.Store.IStore.StoreStateReference(System.Guid,System.Collections.Immutable.IImmutableSet{Libplanet.Address},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64)"/>
-            <seealso cref="M:Libplanet.Store.IStore.IterateStateReferences(System.Guid,Libplanet.Address,System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Int32})"/>
         </member>
         <member name="M:Libplanet.Store.StoreExtension.Copy(Libplanet.Store.IStore,Libplanet.Store.IStore)">
             <summary>
