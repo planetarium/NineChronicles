@@ -133,7 +133,7 @@ namespace Nekoyume
         {
             var anchoredPosition = new float2();
             var pivot = rectTransform.pivot;
-            var size = rectTransform.rect.size;
+            var size = rectTransform.rect.size * rectTransform.transform.localScale.x;
             
             switch (pivotPresetType)
             {
@@ -204,6 +204,16 @@ namespace Nekoyume
             
             rectTransform.position = target.position;
             float2 anchoredPosition = rectTransform.anchoredPosition;
+
+            if (Screen.width - anchoredPosition.x - target.rect.width / 2 > rectTransform.rect.width)
+                pivotPresetType = PivotPresetType.TopRight;
+            else
+            {
+                anchoredPosition.x -= rectTransform.rect.width;
+                pivotPresetType = PivotPresetType.TopLeft;
+                offset = new float2(-offset.x, offset.y);
+            }
+
             anchoredPosition += target.GetPivotPositionFromAnchor(pivotPresetType) + offset;
             rectTransform.anchoredPosition = anchoredPosition;
         }
