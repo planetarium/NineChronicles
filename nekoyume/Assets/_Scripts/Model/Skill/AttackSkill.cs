@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Elememtal;
 using Nekoyume.TableData;
 using Unity.Mathematics;
 

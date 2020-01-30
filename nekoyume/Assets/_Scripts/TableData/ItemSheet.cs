@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.State;
-using UnityEngine;
+using Nekoyume.Model.Elememtal;
 
 namespace Nekoyume.TableData
 {

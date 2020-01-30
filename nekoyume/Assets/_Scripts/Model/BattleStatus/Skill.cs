@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Nekoyume.EnumType;
+using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Skill;
 
 namespace Nekoyume.Model.BattleStatus
 {

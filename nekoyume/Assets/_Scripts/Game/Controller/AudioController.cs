@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Elememtal;
 using Nekoyume.Pattern;
 using UnityEngine;
 using Random = UnityEngine.Random;

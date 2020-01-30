@@ -10,6 +10,8 @@ using Nekoyume.Game.VFX.Skill;
 using Nekoyume.UI;
 using UnityEngine;
 using UniRx;
+using Nekoyume.Model.Skill;
+using Nekoyume.Model.Elememtal;
 
 namespace Nekoyume.Game.Character
 {

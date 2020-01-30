@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nekoyume.EnumType
+namespace Nekoyume.Model.Elememtal
 {
     public enum ElementalType
     {

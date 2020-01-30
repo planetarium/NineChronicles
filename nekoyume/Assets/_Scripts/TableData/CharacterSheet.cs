@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Elememtal;
 using Nekoyume.Model.Stat;
 
 namespace Nekoyume.TableData

@@ -1,4 +1,4 @@
-using Nekoyume.EnumType;
+using Nekoyume.Model.Elemental;
 using NUnit.Framework;
 
 namespace Tests.EditMode

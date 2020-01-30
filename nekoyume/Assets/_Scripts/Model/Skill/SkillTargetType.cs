@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Model;
 
-namespace Nekoyume.EnumType
+namespace Nekoyume.Model.Skill
 {
     public enum SkillTargetType
     {

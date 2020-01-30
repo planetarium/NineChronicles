@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
+using Nekoyume.Model.Elememtal;
 using UnityEngine;
 
 namespace Nekoyume.UI

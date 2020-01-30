@@ -1,4 +1,4 @@
-namespace Nekoyume.EnumType
+namespace Nekoyume.Model.Skill
 {
     public enum SkillCategory
     {

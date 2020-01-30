@@ -4,6 +4,7 @@ using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Skill = Nekoyume.Model.Skill.Skill;

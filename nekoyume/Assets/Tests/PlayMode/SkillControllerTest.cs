@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
 using Libplanet;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
+using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using NUnit.Framework;
 using UnityEngine.TestTools;
