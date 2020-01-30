@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.Skill;

@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Nekoyume.Data;
-using Nekoyume.Data.Table;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Factory;
-using Nekoyume.Game.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 

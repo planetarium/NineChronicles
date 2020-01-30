@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 
