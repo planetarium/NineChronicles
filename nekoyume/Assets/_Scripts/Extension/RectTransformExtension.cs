@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Nekoyume.EnumType;
 using Unity.Mathematics;
 using UnityEngine;
@@ -194,16 +195,20 @@ namespace Nekoyume
             topRight = new float2(size.x * (1f - pivot.x), size.y * (1f - pivot.y));
         }
         
-        public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
+        public static IEnumerator MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
             PivotPresetType pivotPresetType, float2 offset)
         {
             if (target is null)
             {
-                return;
+                yield break;
             }
-            
+
+            yield return new WaitUntil(() => rectTransform.gameObject.activeSelf);
+
             rectTransform.position = target.position;
             float2 anchoredPosition = rectTransform.anchoredPosition;
+
+            Debug.Log($"Screen Width: {Screen.width}, AnchoredPosition: {anchoredPosition}, Target.Rect.Width / 2: {target.rect.width / 2}, Width: {rectTransform.rect.width}");
 
             if (Screen.width - anchoredPosition.x - target.rect.width / 2 > rectTransform.rect.width)
                 pivotPresetType = PivotPresetType.TopRight;
