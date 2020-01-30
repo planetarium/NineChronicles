@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
-using UnityEngine;
 
 namespace Nekoyume.Battle
 {
