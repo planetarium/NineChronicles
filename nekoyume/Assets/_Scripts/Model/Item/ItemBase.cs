@@ -4,6 +4,7 @@ using Bencodex.Types;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Model.Item

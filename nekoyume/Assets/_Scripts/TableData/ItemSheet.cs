@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
@@ -61,19 +60,6 @@ namespace Nekoyume.TableData
         
         public ItemSheet() : base(nameof(ItemSheet))
         {
-        }
-    }
-    
-    public static class ItemSheetExtension
-    {
-        public static string GetLocalizedName(this ItemSheet.Row value)
-        {
-            return LocalizationManager.Localize($"ITEM_NAME_{value.Id}");
-        }
-
-        public static string GetLocalizedDescription(this ItemSheet.Row value)
-        {
-            return LocalizationManager.Localize($"ITEM_DESCRIPTION_{value.Id}");
         }
     }
 }
