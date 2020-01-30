@@ -48,6 +48,7 @@ namespace Nekoyume.UI
         public Transform npcPosition01;
         public Transform npcPosition02;
         public CanvasGroup canvasGroup;
+        public ModuleBlur blur;
 
         private NPC _npc01;
         private NPC _npc02;
@@ -102,6 +103,8 @@ namespace Nekoyume.UI
             recipe.RegisterListener(this);
             recipe.closeButton.OnClickAsObservable()
                 .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true)).AddTo(gameObject);
+
+            blur.gameObject.SetActive(false);
         }
 
         private IEnumerator CoCombineNPCAnimation()
@@ -109,6 +112,7 @@ namespace Nekoyume.UI
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
             Find<BottomMenu>().SetIntractable(false);
+            blur.gameObject.SetActive(true);
             _npc01.SpineController.Disappear();
             yield return new WaitForSeconds(.5f);
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
@@ -126,6 +130,7 @@ namespace Nekoyume.UI
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
             Find<BottomMenu>().SetIntractable(true);
+            blur.gameObject.SetActive(false);
         }
 
         public override void Show()
