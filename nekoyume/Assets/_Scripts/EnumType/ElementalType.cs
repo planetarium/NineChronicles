@@ -36,7 +36,8 @@ namespace Nekoyume.EnumType
 
     public static class ElementalTypeExtension
     {
-        public const decimal Multiplier = .5m;
+        public const decimal WinMultiplier = 1.2m;
+        
         public static bool TryGetWinCase(this ElementalType win, out ElementalType lose)
         {
             switch (win)
@@ -119,21 +120,19 @@ namespace Nekoyume.EnumType
             return Convert.ToInt32(damage * GetMultiplier(from, to));
         }
 
-        private static decimal GetMultiplier(this ElementalType from, ElementalType to)
+        public static decimal GetMultiplier(this ElementalType from, ElementalType to)
         {
             var battleResult = from.GetBattleResult(to);
-            var multiplier = 0;
             switch (battleResult)
             {
                 case ElementalResult.Win:
-                    multiplier = 1;
-                    break;
+                    return WinMultiplier;
+                case ElementalResult.Draw:
                 case ElementalResult.Lose:
-                    multiplier = -1;
-                    break;
+                    return 1;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            return 1 + multiplier * Multiplier;
         }
     }
 }

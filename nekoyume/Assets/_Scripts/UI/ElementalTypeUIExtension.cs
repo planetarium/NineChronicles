@@ -51,27 +51,15 @@ namespace Nekoyume.UI
                 if (from.TryGetWinCase(out var lose))
                 {
                     var format = LocalizationManager.Localize("ELEMENTAL_TYPE_OPTION_ATK_WIN_FORMAT");
-                    list.Add(string.Format(format, lose.GetLocalizedString(), ElementalTypeExtension.Multiplier));
-                }
-
-                if (from.TryGetLoseCase(out var win))
-                {
-                    var format = LocalizationManager.Localize("ELEMENTAL_TYPE_OPTION_ATK_LOSE_FORMAT");
-                    list.Add(string.Format(format, win.GetLocalizedString(), ElementalTypeExtension.Multiplier));
+                    list.Add(string.Format(format, lose.GetLocalizedString(), ElementalTypeExtension.WinMultiplier - 1));
                 }
             }
-            else
+            else if (statType == StatType.DEF)
             {
-                if (from.TryGetWinCase(out var lose))
-                {
-                    var format = LocalizationManager.Localize("ELEMENTAL_TYPE_OPTION_DEF_WIN_FORMAT");
-                    list.Add(string.Format(format, lose.GetLocalizedString(), ElementalTypeExtension.Multiplier));
-                }
-
                 if (from.TryGetLoseCase(out var win))
                 {
                     var format = LocalizationManager.Localize("ELEMENTAL_TYPE_OPTION_DEF_LOSE_FORMAT");
-                    list.Add(string.Format(format, win.GetLocalizedString(), ElementalTypeExtension.Multiplier));
+                    list.Add(string.Format(format, win.GetLocalizedString(), ElementalTypeExtension.WinMultiplier - 1));
                 }
             }
 
