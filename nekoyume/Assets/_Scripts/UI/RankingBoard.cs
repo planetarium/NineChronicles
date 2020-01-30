@@ -321,7 +321,8 @@ namespace Nekoyume.UI
 
         private void SetAvatars(DateTimeOffset? dt)
         {
-            _avatarRankingStates = States.Instance.RankingState?.GetAvatars(dt) ?? new State.RankingInfo[0];
+            _avatarRankingStates = States.Instance.RankingState?.GetAvatars(dt) ??
+                new Nekoyume.Model.State.RankingInfo[0];
         }
 
         private void SetArenaInfos()
