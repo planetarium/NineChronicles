@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI;
-using UnityEngine;
 
 namespace Nekoyume.Model.Item
 {
@@ -46,16 +44,6 @@ namespace Nekoyume.Model.Item
         public string GetLocalizedDescription()
         {
             return Data.GetLocalizedDescription();
-        }
-
-        public Sprite GetIconSprite()
-        {
-            return SpriteHelper.GetItemIcon(Data.Id);
-        }
-
-        public Sprite GetBackgroundSprite()
-        {
-            return SpriteHelper.GetItemBackground(Data.Grade);
         }
 
         public virtual IValue Serialize() =>
