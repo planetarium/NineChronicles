@@ -46,7 +46,7 @@ namespace Nekoyume.UI
         
         protected virtual void SubscribeTarget(RectTransform target)
         {
-            StartCoroutine(panel.MoveToRelatedPosition(target, PivotPresetType.TopRight, DefaultOffsetFromTarget));
+            StartCoroutine(panel.MoveToRelatedPosition(target, DefaultOffsetFromTarget));
             UpdateAnchoredPosition();
         }
 

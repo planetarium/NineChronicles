@@ -196,7 +196,7 @@ namespace Nekoyume
         }
         
         public static IEnumerator MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
-            PivotPresetType pivotPresetType, float2 offset)
+             float2 offset)
         {
             if (target is null)
             {

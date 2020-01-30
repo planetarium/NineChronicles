@@ -8,7 +8,6 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -139,7 +138,6 @@ namespace Nekoyume.UI
                     Close();
                     yield break;
                 }
-                
                 yield return null;
             }
         }
