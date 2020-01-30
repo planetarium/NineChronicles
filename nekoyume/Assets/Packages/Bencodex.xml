@@ -73,15 +73,20 @@
             <c cref="M:Bencodex.Misc.ByteChunkQueue.Pop(System.Int64)">Pop(5)</c> returns <c>rbaz</c>.</para>
             </summary>
         </member>
+        <member name="M:Bencodex.Misc.ByteChunkQueue.#ctor">
+            <summary>Creates a new empty queue.</summary>
+        </member>
         <member name="P:Bencodex.Misc.ByteChunkQueue.ByteLength">
             <summary>The total size of <c cref="T:System.Byte">Byte</c>s that
             the queue contains.</summary>
         </member>
-        <member name="M:Bencodex.Misc.ByteChunkQueue.#ctor">
-            <summary>Creates a new empty queue.</summary>
-        </member>
         <member name="P:Bencodex.Misc.ByteChunkQueue.Empty">
             <summary>Whether the queue is empty or not.</summary>
+        </member>
+        <member name="P:Bencodex.Misc.ByteChunkQueue.FirstByte">
+            <summary>A first <c cref="T:System.Byte">Byte</c> in the queue,
+            unless it's empty.  If the queue is empty, it is <c>null</c>.
+            </summary>
         </member>
         <member name="M:Bencodex.Misc.ByteChunkQueue.Append(System.Byte[])">
             <summary>Insert an array of <c cref="T:System.Byte">Byte</c>s chunk
@@ -111,11 +116,6 @@
             <returns>A <c>true</c> if the given <paramref name="prefix"/> is
             appeared in the queue at first, or <c>false</c>.</returns>
         </member>
-        <member name="P:Bencodex.Misc.ByteChunkQueue.FirstByte">
-            <summary>A first <c cref="T:System.Byte">Byte</c> in the queue,
-            unless it's empty.  If the queue is empty, it is <c>null</c>.
-            </summary>
-        </member>
         <member name="M:Bencodex.Misc.ByteChunkQueue.IndexOf(System.Byte)">
             <summary>Determines the position of the given
             <paramref name="element"/> is appeared first in the queue.</summary>
@@ -127,8 +127,8 @@
         </member>
         <member name="T:Bencodex.Misc.CompositeComparer`2">
             <summary>Compose given two comparers into one comparer.</summary>
-            <typeparam name="A">An element type of the first comparer.</typeparam>
-            <typeparam name="B">An element type of the second comparer.</typeparam>
+            <typeparam name="TA">An element type of the first comparer.</typeparam>
+            <typeparam name="TB">An element type of the second comparer.</typeparam>
         </member>
         <member name="T:Bencodex.Types.Boolean">
             <summary>Represents a Bencodex Boolean true (i.e., <c>t</c>)
@@ -144,6 +144,11 @@
             <seealso cref="T:Bencodex.Types.Text"/>
             <seealso cref="T:Bencodex.Types.List"/>
             <seealso cref="T:Bencodex.Types.Dictionary"/>
+        </member>
+        <member name="P:Bencodex.Types.IValue.Inspection">
+            <summary>A JSON-like human-readable representation for
+            debugging.</summary>
+            <returns>A JSON-like representation.</returns>
         </member>
         <member name="M:Bencodex.Types.IValue.EncodeIntoChunks">
             <summary>Encodes the value into <c cref="T:System.Byte">Byte</c>

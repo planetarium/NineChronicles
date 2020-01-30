@@ -24,11 +24,9 @@ namespace Planetarium.Nekoyume.Editor
         {
             var path = EditorUtility.SaveFilePanel("Choose path to export the new genesis block",
                 Application.streamingAssetsPath,
-                BlockHelper.GenesisBlockPathProd, "");
+                BlockHelper.GenesisBlockNameProd, "");
 
-            if (!EditorUtility.DisplayDialog($"Export the new genesis block?",
-                $"Do you want to export the new genesis block to\n{path}?",
-                "yes", "no"))
+            if (path == "")
             {
                 return;
             }

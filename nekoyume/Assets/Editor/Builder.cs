@@ -148,8 +148,6 @@ namespace Editor
                 targetDirName,
                 buildTarget.HasFlag(BuildTarget.StandaloneWindows64) ? $"{PlayerName}.exe" : PlayerName);
 
-            CopyToBuildDirectory(ScriptBasePath, targetDirName, scriptName);
-
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = scenes,
@@ -159,6 +157,8 @@ namespace Editor
             };
 
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+
+            CopyToBuildDirectory(ScriptBasePath, targetDirName, scriptName);
             DownloadSnapshotManager(buildTarget, targetDirName);
             File.Copy(
                 Path.Combine(Application.dataPath, "README.txt"),
