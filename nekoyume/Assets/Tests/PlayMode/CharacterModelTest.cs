@@ -12,6 +12,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI;
 using NUnit.Framework;
 using Tests.PlayMode.Fixtures;
 using UnityEngine.TestTools;

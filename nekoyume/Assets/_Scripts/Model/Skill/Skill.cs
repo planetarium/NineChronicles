@@ -6,6 +6,7 @@ using Nekoyume.Model.Buff;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Nekoyume.UI;
 
 namespace Nekoyume.Model.Skill
 {
