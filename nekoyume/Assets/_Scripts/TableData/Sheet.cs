@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
-using UnityEngine;
+using Serilog;
 
 namespace Nekoyume.TableData
 {
@@ -154,7 +154,7 @@ namespace Nekoyume.TableData
                 sb.AppendLine(GetType().Name);
                 sb.AppendLine(row.Key.ToString());
                 sb.AppendLine(e.Message);
-                Debug.LogError(sb.ToString());
+                Log.Error(e, sb.ToString());
 
                 return false;
             }

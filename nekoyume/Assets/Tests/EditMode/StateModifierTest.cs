@@ -22,7 +22,6 @@ namespace Tests.EditMode
         public void SetUp()
         {
             _tableSheets = new TableSheets();
-            _tableSheets.InitializeAsSync();
             _agentState = new AgentState(new Address());
             _avatarState = new AvatarState(new Address(), _agentState.address, 0, null, null);
         }

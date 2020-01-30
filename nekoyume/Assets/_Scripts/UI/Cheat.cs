@@ -280,7 +280,7 @@ namespace Nekoyume
 
         private static Dictionary<string, string> GetTableAssetsHavingDifference()
         {
-            var tableCsvAssets = TableSheets.GetTableCsvAssets();
+            var tableCsvAssets = Game.Game.GetTableCsvAssets();
             var tableSheetsState = TableSheetsState.Current;
             return tableCsvAssets.Where(pair =>
                 !tableSheetsState.TableSheets.TryGetValue(pair.Key, out string onChainCsv) ||
