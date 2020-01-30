@@ -1,4 +1,4 @@
-namespace Nekoyume.EnumType
+namespace Nekoyume.Model.Quest
 {
     public enum QuestEventType
     {
