@@ -1,6 +1,6 @@
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model

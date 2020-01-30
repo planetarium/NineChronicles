@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Libplanet.Action;
 using LruCacheNet;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using UniRx;
 using UnityEngine;
 

@@ -1,6 +1,6 @@
 using System;
 using Libplanet;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.UI;
 using Spine;
 using UnityEngine;

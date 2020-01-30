@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using UniRx;
 
 namespace Nekoyume.State

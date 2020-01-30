@@ -5,8 +5,7 @@ using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.Model.Item

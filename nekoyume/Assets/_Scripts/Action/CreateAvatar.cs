@@ -8,7 +8,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Action
@@ -80,9 +80,7 @@ namespace Nekoyume.Action
             UnityEngine.Debug.Log($"CreateAvatar Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}` " +
-                      $"node : `{States.Instance?.AgentState?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
+            UnityEngine.Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
             

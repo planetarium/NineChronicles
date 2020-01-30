@@ -9,7 +9,7 @@ using Libplanet.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
@@ -127,9 +127,7 @@ namespace Nekoyume.Action
             UnityEngine.Debug.Log($"Buy Get ShopState: {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`" +
-                      $"node : `{States.Instance?.AgentState?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
+            UnityEngine.Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`");
             // 상점에서 구매할 아이템을 찾는다.
             if (!shopState.TryGet(sellerAgentAddress, productId, out var outPair))
             {

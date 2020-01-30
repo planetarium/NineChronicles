@@ -6,7 +6,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using UnityEngine;
 

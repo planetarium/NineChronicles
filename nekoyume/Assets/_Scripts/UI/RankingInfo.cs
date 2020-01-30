@@ -21,7 +21,7 @@ namespace Nekoyume.UI
 
         public System.Action<RankingInfo> onClick;
         
-        public State.RankingInfo AvatarInfo { get; private set; }
+        public Nekoyume.Model.State.RankingInfo AvatarInfo { get; private set; }
 
         private void Awake()
         {
@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
         }
 
-        public void Set(int ranking, State.RankingInfo avatarState)
+        public void Set(int ranking, Nekoyume.Model.State.RankingInfo avatarState)
         {
             AvatarInfo = avatarState;
             

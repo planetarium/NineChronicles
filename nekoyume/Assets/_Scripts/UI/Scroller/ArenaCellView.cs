@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.Helper;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;

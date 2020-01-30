@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
@@ -73,9 +73,7 @@ namespace Nekoyume.Action
             UnityEngine.Debug.Log($"Sell Get ShopState: {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}` " +
-                      $"node : `{States.Instance?.AgentState?.address}` " +
-                      $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
+            UnityEngine.Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}`");
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (!avatarState.inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable nonFungibleItem))

@@ -4,7 +4,7 @@
     /// 기본적인 상태 변경자입니다.
     /// </summary>
     /// <typeparam name="T">변경할 상태의 타입을 설정합니다.</typeparam>
-    public interface IStateModifier<T> where T : State
+    public interface IStateModifier<T> where T : Model.State.State
     {
         /// <summary>
         /// 상태 변경자가 비어 있는지 확인합니다.
@@ -34,7 +34,7 @@
     /// 누적형 상태 변경자입니다.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface IAccumulatableStateModifier<T> : IStateModifier<T> where T : State
+    public interface IAccumulatableStateModifier<T> : IStateModifier<T> where T : Model.State.State
     {
         /// <summary>
         /// 상태 변경자를 더합니다.

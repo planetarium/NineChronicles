@@ -11,6 +11,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine.UI;
 using Nekoyume.TableData;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.UI
 {

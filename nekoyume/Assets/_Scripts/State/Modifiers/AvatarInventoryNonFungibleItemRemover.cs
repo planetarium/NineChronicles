@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Nekoyume.JsonConvertibles;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers

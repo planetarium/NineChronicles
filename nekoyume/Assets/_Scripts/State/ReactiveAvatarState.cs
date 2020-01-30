@@ -3,6 +3,7 @@ using Libplanet;
 using Nekoyume.Model;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
+using Nekoyume.Model.State;
 using UniRx;
 using Inventory = Nekoyume.Model.Item.Inventory;
 

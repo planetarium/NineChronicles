@@ -7,6 +7,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Factory;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;

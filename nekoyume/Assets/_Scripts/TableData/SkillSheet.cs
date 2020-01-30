@@ -6,6 +6,7 @@ using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.Helper;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using UnityEngine;
 

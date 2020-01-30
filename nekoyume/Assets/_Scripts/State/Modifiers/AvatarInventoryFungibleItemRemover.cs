@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using Libplanet;
 using Nekoyume.JsonConvertibles;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers

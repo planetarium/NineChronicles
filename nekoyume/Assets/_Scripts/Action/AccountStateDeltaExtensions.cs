@@ -2,7 +2,7 @@ using System;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.Action

@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Sockets;
 using Bencodex.Types;
 using DecimalMath;
 using Libplanet;
@@ -10,8 +9,9 @@ using Nekoyume.EnumType;
 using Nekoyume.Helper;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 
-namespace Nekoyume.State
+namespace Nekoyume.Model.State
 {
     public class WeeklyArenaState : State, IDictionary<Address, ArenaInfo>
     {
@@ -54,47 +54,47 @@ namespace Nekoyume.State
             _map = new Dictionary<Address, ArenaInfo>();
         }
 
-        public WeeklyArenaState(Bencodex.Types.Dictionary serialized) : base(serialized)
+        public WeeklyArenaState(Dictionary serialized) : base(serialized)
         {
-            _map = ((Bencodex.Types.Dictionary) serialized["map"]).ToDictionary(
+            _map = ((Dictionary)serialized["map"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
-                kv => new ArenaInfo((Bencodex.Types.Dictionary) kv.Value)
+                kv => new ArenaInfo((Dictionary)kv.Value)
             );
 
             ResetIndex = serialized.GetLong("resetIndex");
 
-            if (serialized.ContainsKey((Text) "rewardMap"))
+            if (serialized.ContainsKey((Text)"rewardMap"))
             {
-                _rewardMap = ((Bencodex.Types.Dictionary) serialized["rewardMap"]).ToDictionary(
-                    kv => (TierType) ((Binary) kv.Key).First(),
+                _rewardMap = ((Dictionary)serialized["rewardMap"]).ToDictionary(
+                    kv => (TierType)((Binary)kv.Key).First(),
                     kv => kv.Value.ToDecimal());
             }
 
             Gold = serialized.GetDecimal("gold");
         }
 
-        public WeeklyArenaState(IValue iValue) : this((Bencodex.Types.Dictionary) iValue)
+        public WeeklyArenaState(IValue iValue) : this((Dictionary)iValue)
         {
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "map"] = new Bencodex.Types.Dictionary(_map.Select(kv =>
-                    new KeyValuePair<IKey, IValue>(
-                        (Binary) kv.Key.Serialize(),
-                        kv.Value.Serialize()
-                    )
+                [(Text)"map"] = new Dictionary(_map.Select(kv =>
+                   new KeyValuePair<IKey, IValue>(
+                       (Binary)kv.Key.Serialize(),
+                       kv.Value.Serialize()
+                   )
                 )),
-                [(Text) "resetIndex"] = ResetIndex.Serialize(),
-                [(Text) "rewardMap"] = new Bencodex.Types.Dictionary(_rewardMap.Select(kv =>
-                    new KeyValuePair<IKey, IValue>(
-                        new Binary(new[] {(byte) kv.Key}),
-                        kv.Value.Serialize()
-                    )
+                [(Text)"resetIndex"] = ResetIndex.Serialize(),
+                [(Text)"rewardMap"] = new Dictionary(_rewardMap.Select(kv =>
+                   new KeyValuePair<IKey, IValue>(
+                       new Binary(new[] { (byte)kv.Key }),
+                       kv.Value.Serialize()
+                   )
                 )),
-                [(Text) "gold"] = Gold.Serialize(),
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"gold"] = Gold.Serialize(),
+            }.Union((Dictionary)base.Serialize()));
 
         /// <summary>
         /// 인자로 넘겨 받은 `avatarAddress`를 기준으로 상위와 하위 범위에 해당하는 랭킹 정보를 얻습니다.
@@ -243,7 +243,7 @@ namespace Nekoyume.State
 
         public void CopyTo(KeyValuePair<Address, ArenaInfo>[] array, int arrayIndex)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public bool Remove(KeyValuePair<Address, ArenaInfo> item)
@@ -298,7 +298,7 @@ namespace Nekoyume.State
             {
             }
 
-            public Record(Bencodex.Types.Dictionary serialized)
+            public Record(Dictionary serialized)
             {
                 Win = serialized.GetInteger("win");
                 Lose = serialized.GetInteger("lose");
@@ -306,7 +306,7 @@ namespace Nekoyume.State
             }
 
             public IValue Serialize() =>
-                Bencodex.Types.Dictionary.Empty
+                Dictionary.Empty
                     .Add("win", Win.Serialize())
                     .Add("lose", Lose.Serialize())
                     .Add("draw", Draw.Serialize());
@@ -338,13 +338,13 @@ namespace Nekoyume.State
             Score = GameConfig.ArenaScoreDefault;
         }
 
-        public ArenaInfo(Bencodex.Types.Dictionary serialized)
+        public ArenaInfo(Dictionary serialized)
         {
             AvatarAddress = serialized.GetAddress("avatarAddress");
             AgentAddress = serialized.GetAddress("agentAddress");
             AvatarName = serialized.GetString("avatarName");
-            ArenaRecord = serialized.ContainsKey((Text) "arenaRecord")
-                ? new Record((Bencodex.Types.Dictionary) serialized["arenaRecord"])
+            ArenaRecord = serialized.ContainsKey((Text)"arenaRecord")
+                ? new Record((Dictionary)serialized["arenaRecord"])
                 : new Record();
             Level = serialized.GetInteger("level");
             ArmorId = serialized.GetInteger("armorId");
@@ -369,18 +369,18 @@ namespace Nekoyume.State
         }
 
         public IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Bencodex.Types.Text) "avatarAddress"] = AvatarAddress.Serialize(),
-                [(Bencodex.Types.Text) "agentAddress"] = AgentAddress.Serialize(),
-                [(Bencodex.Types.Text) "avatarName"] = AvatarName.Serialize(),
-                [(Bencodex.Types.Text) "arenaRecord"] = ArenaRecord.Serialize(),
-                [(Bencodex.Types.Text) "level"] = Level.Serialize(),
-                [(Bencodex.Types.Text) "armorId"] = ArmorId.Serialize(),
-                [(Bencodex.Types.Text) "combatPoint"] = CombatPoint.Serialize(),
-                [(Bencodex.Types.Text) "active"] = Active.Serialize(),
-                [(Bencodex.Types.Text) "dailyChallengeCount"] = DailyChallengeCount.Serialize(),
-                [(Bencodex.Types.Text) "score"] = Score.Serialize(),
+                [(Text)"avatarAddress"] = AvatarAddress.Serialize(),
+                [(Text)"agentAddress"] = AgentAddress.Serialize(),
+                [(Text)"avatarName"] = AvatarName.Serialize(),
+                [(Text)"arenaRecord"] = ArenaRecord.Serialize(),
+                [(Text)"level"] = Level.Serialize(),
+                [(Text)"armorId"] = ArmorId.Serialize(),
+                [(Text)"combatPoint"] = CombatPoint.Serialize(),
+                [(Text)"active"] = Active.Serialize(),
+                [(Text)"dailyChallengeCount"] = DailyChallengeCount.Serialize(),
+                [(Text)"score"] = Score.Serialize(),
             });
 
         public void Update(int score)
@@ -423,11 +423,11 @@ namespace Nekoyume.State
                 switch (result)
                 {
                     case BattleLog.Result.Win:
-                        score = (int) (DecimalEx.Pow((decimal) enemyRating / rating, 0.75m) *
+                        score = (int)(DecimalEx.Pow((decimal)enemyRating / rating, 0.75m) *
                                        GameConfig.BaseVictoryPoint);
                         break;
                     case BattleLog.Result.Lose:
-                        score = (int) (DecimalEx.Pow((decimal) rating / enemyRating, 0.75m) *
+                        score = (int)(DecimalEx.Pow((decimal)rating / enemyRating, 0.75m) *
                                        GameConfig.BaseDefeatPoint);
                         break;
                 }

@@ -1,6 +1,6 @@
 using System;
 using Nekoyume.Model;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using UnityEngine;
 

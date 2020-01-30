@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {

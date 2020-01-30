@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
-using Libplanet.Action;
 
-namespace Nekoyume.State
+namespace Nekoyume.Model.State
 {
     [Serializable]
     public abstract class State : IState
@@ -21,19 +20,19 @@ namespace Nekoyume.State
             this.address = address;
         }
 
-        protected State(Bencodex.Types.Dictionary serialized)
+        protected State(Dictionary serialized)
             : this(serialized["address"].ToAddress())
         {
         }
-        
-        protected State(IValue iValue) : this((Bencodex.Types.Dictionary) iValue)
+
+        protected State(IValue iValue) : this((Dictionary)iValue)
         {
         }
 
         public virtual IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "address"] = address.Serialize(),
+                [(Text)"address"] = address.Serialize(),
             });
     }
 }

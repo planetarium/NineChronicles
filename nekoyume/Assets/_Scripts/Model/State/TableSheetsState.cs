@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 
-namespace Nekoyume.State
+namespace Nekoyume.Model.State
 {
     public class TableSheetsState : State, IEquatable<TableSheetsState>
     {
@@ -40,22 +40,22 @@ namespace Nekoyume.State
                     var result = 0;
                     foreach (byte b in bytes)
                     {
-                        result = (result*31) ^ b;
+                        result = result * 31 ^ b;
                     }
                     return result;
                 }
             }
-            
+
             _hashCode = _serialized
                 .EncodeIntoChunks()
                 .Aggregate(0, (prev, bytes) => prev ^ ComputeHash(bytes));
         }
 
-        public TableSheetsState(Bencodex.Types.Dictionary serialized) 
+        public TableSheetsState(Dictionary serialized)
             : this(
                 serialized
-                .GetValue<Bencodex.Types.Dictionary>("table_sheets")
-                .ToDictionary(pair => (string) (Text) pair.Key, pair => (string) (Text) pair.Value))
+                .GetValue<Dictionary>("table_sheets")
+                .ToDictionary(pair => (string)(Text)pair.Key, pair => (string)(Text)pair.Value))
         {
         }
 
@@ -66,11 +66,11 @@ namespace Nekoyume.State
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "table_sheets"] = new Bencodex.Types.Dictionary(TableSheets.Select(pair =>
-                    new KeyValuePair<IKey, IValue>((Text) pair.Key, (Text) pair.Value)))
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"table_sheets"] = new Dictionary(TableSheets.Select(pair =>
+                   new KeyValuePair<IKey, IValue>((Text)pair.Key, (Text)pair.Value)))
+            }.Union((Dictionary)base.Serialize()));
 
         public static TableSheetsState Current
         {
@@ -83,7 +83,7 @@ namespace Nekoyume.State
                 }
                 else
                 {
-                    return new TableSheetsState((Bencodex.Types.Dictionary)d);
+                    return new TableSheetsState((Dictionary)d);
                 }
             }
         }
@@ -97,13 +97,13 @@ namespace Nekoyume.State
             }
             else
             {
-                return new TableSheetsState((Bencodex.Types.Dictionary)serialized);
+                return new TableSheetsState((Dictionary)serialized);
             }
         }
 
         public override bool Equals(object other)
         {
-            if (other is TableSheetsState otherState) 
+            if (other is TableSheetsState otherState)
             {
                 return Equals(otherState);
             }

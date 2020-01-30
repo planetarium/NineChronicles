@@ -4,6 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 
 namespace Nekoyume.TableData

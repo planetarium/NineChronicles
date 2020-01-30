@@ -8,7 +8,7 @@ using Nekoyume.Game;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using NUnit.Framework;
 using Tests.PlayMode.Fixtures;
 using BlowAttack = Nekoyume.Model.Skill.BlowAttack;

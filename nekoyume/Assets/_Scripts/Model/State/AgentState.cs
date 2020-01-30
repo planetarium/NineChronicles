@@ -4,7 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 
-namespace Nekoyume.State
+namespace Nekoyume.Model.State
 {
     /// <summary>
     /// Agent의 상태 모델이다.
@@ -21,13 +21,13 @@ namespace Nekoyume.State
             avatarAddresses = new Dictionary<int, Address>();
         }
 
-        public AgentState(Bencodex.Types.Dictionary serialized)
+        public AgentState(Dictionary serialized)
             : base(serialized)
         {
-            avatarAddresses = ((Bencodex.Types.Dictionary) serialized["avatarAddresses"])
+            avatarAddresses = ((Dictionary)serialized["avatarAddresses"])
                 .Where(kv => kv.Key is Binary)
                 .ToDictionary(
-                    kv => BitConverter.ToInt32(((Binary) kv.Key).Value, 0),
+                    kv => BitConverter.ToInt32(((Binary)kv.Key).Value, 0),
                     kv => kv.Value.ToAddress()
                 );
             gold = serialized["gold"].ToDecimal();
@@ -39,9 +39,9 @@ namespace Nekoyume.State
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "avatarAddresses"] = new Bencodex.Types.Dictionary(
+                [(Text)"avatarAddresses"] = new Dictionary(
                     avatarAddresses.Select(kv =>
                         new KeyValuePair<IKey, IValue>(
                             new Binary(BitConverter.GetBytes(kv.Key)),
@@ -49,7 +49,7 @@ namespace Nekoyume.State
                         )
                     )
                 ),
-                [(Text) "gold"] = gold.Serialize(),
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"gold"] = gold.Serialize(),
+            }.Union((Dictionary)base.Serialize()));
     }
 }

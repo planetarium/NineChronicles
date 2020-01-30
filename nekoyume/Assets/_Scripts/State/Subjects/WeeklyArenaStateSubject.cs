@@ -1,3 +1,4 @@
+using Nekoyume.Model.State;
 using UniRx;
 using UnityEngine;
 

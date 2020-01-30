@@ -9,7 +9,7 @@ using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Action
@@ -138,9 +138,7 @@ namespace Nekoyume.Action
             UnityEngine.Debug.Log($"HAS Simulator.Simulate(): {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result} " +
-                                  $"player : `{avatarAddress}` node : `{States.Instance?.AgentState?.address}` " +
-                                  $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
+            UnityEngine.Debug.Log($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result}");
             if (simulator.Result == BattleLog.Result.Win)
             {
                 simulator.Player.worldInformation.ClearStage(

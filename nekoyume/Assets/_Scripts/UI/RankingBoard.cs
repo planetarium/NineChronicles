@@ -41,7 +41,7 @@ namespace Nekoyume.UI
         public RankingRewards rankingRewards;
         public SpeechBubble speechBubble;
 
-        private State.RankingInfo[] _avatarStates;
+        private Nekoyume.Model.State.RankingInfo[] _avatarStates;
         private NPC _npc;
 
         private readonly ReactiveProperty<StateType> _state = new ReactiveProperty<StateType>(StateType.Filtered);
@@ -238,7 +238,7 @@ namespace Nekoyume.UI
 
         private void GetAvatars(DateTimeOffset? dt)
         {
-            _avatarStates = States.Instance.RankingState?.GetAvatars(dt) ?? new State.RankingInfo[0];
+            _avatarStates = States.Instance.RankingState?.GetAvatars(dt) ?? new Nekoyume.Model.State.RankingInfo[0];
         }
 
         private void ClearBoard()
