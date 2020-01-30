@@ -130,6 +130,11 @@ namespace Nekoyume.State
                 .ToList();
         }
 
+        public ArenaInfo GetArenaInfo(Address avatarAddress)
+        {
+            return _map.Values.FirstOrDefault(info => info.AvatarAddress.Equals(avatarAddress));
+        }
+
         private void Update(AvatarState avatarState, bool active = false)
         {
             Add(avatarState.address, new ArenaInfo(avatarState, active));
