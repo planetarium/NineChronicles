@@ -6,6 +6,7 @@ using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
@@ -239,105 +240,7 @@ namespace Nekoyume.Model
 
         public virtual bool IsHit(CharacterBase caster)
         {
-            var correction = 0;
-            var diff = caster.Level - Level;
-
-            // 1단계.
-            if (diff <= -14)
-            {
-                correction = -5;
-            }
-            else if (diff >= 10)
-            {
-                correction = 50;
-            }
-            else
-            {
-                switch (diff)
-                {
-                    case -13:
-                        correction = -4;
-                        break;
-                    case -12:
-                        correction = -3;
-                        break;
-                    case -11:
-                        correction = -2;
-                        break;
-                    case -10:
-                        correction = -1;
-                        break;
-                    case -9:
-                        correction = 0;
-                        break;
-                    case -8:
-                        correction = 1;
-                        break;
-                    case -7:
-                        correction = 2;
-                        break;
-                    case -6:
-                        correction = 4;
-                        break;
-                    case -5:
-                        correction = 6;
-                        break;
-                    case -4:
-                        correction = 8;
-                        break;
-                    case -3:
-                        correction = 13;
-                        break;
-                    case -2:
-                        correction = 20;
-                        break;
-                    case -1:
-                        correction = 28;
-                        break;
-                    case 0:
-                        correction = 40;
-                        break;
-                    case 1:
-                        correction = 41;
-                        break;
-                    case 2:
-                        correction = 42;
-                        break;
-                    case 3:
-                        correction = 43;
-                        break;
-                    case 4:
-                        correction = 44;
-                        break;
-                    case 5:
-                        correction = 45;
-                        break;
-                    case 6:
-                        correction = 46;
-                        break;
-                    case 7:
-                        correction = 47;
-                        break;
-                    case 8:
-                        correction = 48;
-                        break;
-                    case 9:
-                        correction = 49;
-                        break;
-                }
-            }
-            
-            // 2단계.
-            var additionalCorrection = (caster.HIT - (float)HIT / 3) / HIT; 
-            correction += (int) Math.Min(Math.Max(additionalCorrection, 0f), 50f);
-            
-            // 3단계.
-            correction = Math.Min(Math.Max(correction, 10), 90);
-
-            var chance = Simulator.Random.Next(0, 100);
-            // Log for test.
-            // Debug.LogWarning($"AttackerId: {caster.RowData.Id} / DefenderId: {RowData.Id} / correction: {correction} / chance: {chance} / result: {correction >= chance}");
-            return chance <= correction;
+            return HitHelper.IsHit(caster.Level, caster.HIT, Level, HIT, Simulator.Random.Next(0, 100));
         }
 
         private bool IsAlive()
