@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.EnumType;
+using Nekoyume.Model.Character;
 using Nekoyume.Model.Elememtal;
 using Nekoyume.Model.Stat;
 

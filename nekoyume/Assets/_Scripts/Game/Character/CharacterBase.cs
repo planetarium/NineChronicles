@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BTAI;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
@@ -12,6 +11,7 @@ using UnityEngine;
 using UniRx;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Character;
 
 namespace Nekoyume.Game.Character
 {

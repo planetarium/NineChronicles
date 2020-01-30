@@ -1,6 +1,6 @@
-using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
+using Nekoyume.Model.Character;
 using Nekoyume.Model.Elememtal;
 using Nekoyume.Model.Skill;
 using UnityEngine;
