@@ -55,9 +55,11 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
+        
         public CollectionMap monsterMap;
         public CollectionMap eventMap;
 
+        // todo: `PlayerCostume` 정도의 객체로 분리.
         public int hairIndex;
         public int lensIndex;
         public int earIndex;
@@ -74,17 +76,27 @@ namespace Nekoyume.Model
                   avatarState.characterId, 
                   avatarState.level)
         {
+            if (simulator is null)
+                throw new ArgumentNullException(nameof(simulator));
+            
             // FIXME 중복 코드 제거할 것
             Exp.Current = avatarState.exp;
             Inventory = avatarState.inventory;
             worldInformation = avatarState.worldInformation;
+            weapon = null;
+            armor = null;
+            belt = null;
+            necklace = null;
+            ring = null;
+            helm = null;
+            set = null;
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
             hairIndex = avatarState.hair;
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
             tailIndex = avatarState.tail;
-            monsterMap = new CollectionMap();
-            eventMap = new CollectionMap();
-            PostConstruction(simulator?.TableSheets);
+            PostConstruction(simulator.TableSheets);
         }
 
         public Player(AvatarState avatarState, TableSheets tableSheets) 
@@ -98,12 +110,19 @@ namespace Nekoyume.Model
             Exp.Current = avatarState.exp;
             Inventory = avatarState.inventory;
             worldInformation = avatarState.worldInformation;
+            weapon = null;
+            armor = null;
+            belt = null;
+            necklace = null;
+            ring = null;
+            helm = null;
+            set = null;
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
             hairIndex = avatarState.hair;
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
             tailIndex = avatarState.tail;
-            monsterMap = new CollectionMap();
-            eventMap = new CollectionMap();
             PostConstruction(tableSheets);
         }
 
@@ -117,6 +136,19 @@ namespace Nekoyume.Model
             Exp.Current = 0;
             Inventory = new Inventory();
             worldInformation = null;
+            weapon = null;
+            armor = null;
+            belt = null;
+            necklace = null;
+            ring = null;
+            helm = null;
+            set = null;
+            monsterMap = new CollectionMap();
+            eventMap = new CollectionMap();
+            hairIndex = 0;
+            lensIndex = 0;
+            earIndex = 0;
+            tailIndex = 0;
             PostConstruction(tableSheets);
         }
 
@@ -125,10 +157,6 @@ namespace Nekoyume.Model
             Exp = (ExpData) value.Exp.Clone();
             Inventory = value.Inventory;
             worldInformation = value.worldInformation;
-            hairIndex = value.hairIndex;
-            lensIndex = value.lensIndex;
-            earIndex = value.earIndex;
-            tailIndex = value.tailIndex;
             weapon = value.weapon;
             armor = value.armor;
             belt = value.belt;
@@ -136,6 +164,12 @@ namespace Nekoyume.Model
             ring = value.ring;
             helm = value.helm;
             set = value.set;
+            monsterMap = value.monsterMap;
+            eventMap = value.eventMap;
+            hairIndex = value.hairIndex;
+            lensIndex = value.lensIndex;
+            earIndex = value.earIndex;
+            tailIndex = value.tailIndex;
 
             _equipments = value._equipments;
         }
