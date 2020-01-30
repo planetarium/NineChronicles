@@ -9,6 +9,7 @@ using Libplanet.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 
 namespace Nekoyume.Action

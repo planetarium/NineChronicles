@@ -11,6 +11,7 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using Combination = Nekoyume.Action.Combination;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.BlockChain
 {

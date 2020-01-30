@@ -4,8 +4,9 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 
-namespace Nekoyume.State
+namespace Nekoyume.Model.State
 {
     /// <summary>
     /// Shop의 상태 모델이다.
@@ -37,17 +38,17 @@ namespace Nekoyume.State
         {
         }
 
-        public ShopState(Bencodex.Types.Dictionary serialized)
+        public ShopState(Dictionary serialized)
             : base(serialized)
         {
-            AgentProducts = ((Bencodex.Types.Dictionary) serialized["agentProducts"]).ToDictionary(
+            AgentProducts = ((Dictionary)serialized["agentProducts"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
-                kv => ((Bencodex.Types.List) kv.Value)
-                    .Select(d => new ShopItem((Bencodex.Types.Dictionary) d))
+                kv => ((List)kv.Value)
+                    .Select(d => new ShopItem((Dictionary)d))
                     .ToList()
             );
         }
-        
+
         public ShopItem Register(Address sellerAgentAddress, ShopItem shopItem)
         {
             if (!AgentProducts.ContainsKey(sellerAgentAddress))
@@ -73,7 +74,7 @@ namespace Nekoyume.State
             var shopItem = shopItems.FirstOrDefault(item => item.ProductId.Equals(productId));
             if (shopItem is null)
                 return false;
-            
+
             shopItems.Remove(shopItem);
             if (shopItems.Count == 0)
             {
@@ -106,7 +107,7 @@ namespace Nekoyume.State
 
             return false;
         }
-        
+
         public bool TryUnregister(Address sellerAgentAddress,
             Guid productId, out ShopItem outUnregisteredItem)
         {
@@ -115,7 +116,7 @@ namespace Nekoyume.State
                 outUnregisteredItem = null;
                 return false;
             }
-            
+
             AgentProducts[outPair.Key].Remove(outPair.Value);
 
             outUnregisteredItem = outPair.Value;
@@ -123,16 +124,16 @@ namespace Nekoyume.State
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "agentProducts"] = new Bencodex.Types.Dictionary(
+                [(Text)"agentProducts"] = new Dictionary(
                     AgentProducts.Select(kv =>
                         new KeyValuePair<IKey, IValue>(
-                            (Binary) kv.Key.Serialize(),
-                            new Bencodex.Types.List(kv.Value.Select(i => i.Serialize()))
+                            (Binary)kv.Key.Serialize(),
+                            new List(kv.Value.Select(i => i.Serialize()))
                         )
                     )
                 )
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+            }.Union((Dictionary)base.Serialize()));
     }
 }

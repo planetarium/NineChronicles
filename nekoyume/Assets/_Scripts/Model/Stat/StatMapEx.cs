@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Stat
 {

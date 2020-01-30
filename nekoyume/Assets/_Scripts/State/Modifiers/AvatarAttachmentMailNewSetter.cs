@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Nekoyume.JsonConvertibles;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers

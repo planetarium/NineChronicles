@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Libplanet;
+using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using UnityEngine;
 
@@ -251,7 +252,7 @@ namespace Nekoyume.State
         /// <param name="isVolatile"></param>
         /// <typeparam name="T"></typeparam>
         private static void PostAdd<T>(Address address, IAccumulatableStateModifier<T> modifier, bool isVolatile)
-            where T : State
+            where T : Model.State.State
         {
             if (isVolatile)
                 return;
@@ -443,7 +444,7 @@ namespace Nekoyume.State
         /// <param name="isVolatile"></param>
         /// <typeparam name="T"></typeparam>
         private static void PostRemove<T>(Address address, IAccumulatableStateModifier<T> modifier, bool isVolatile)
-            where T : State
+            where T : Model.State.State
         {
             if (isVolatile)
                 return;
@@ -524,7 +525,7 @@ namespace Nekoyume.State
         }
 
         private static TState PostModify<TState, TModifier>(TState state, ModifierInfo<TModifier> modifierInfo)
-            where TState : State where TModifier : IStateModifier<TState>
+            where TState : Model.State.State where TModifier : IStateModifier<TState>
         {
             foreach (var modifier in modifierInfo.NonVolatileModifiers)
             {
@@ -549,7 +550,7 @@ namespace Nekoyume.State
         /// <param name="address"></param>
         /// <param name="modifier"></param>
         /// <typeparam name="T"></typeparam>
-        private static void SaveModifier<T>(Address address, IAccumulatableStateModifier<T> modifier) where T : State
+        private static void SaveModifier<T>(Address address, IAccumulatableStateModifier<T> modifier) where T : Model.State.State
         {
             var key = GetKey(address, modifier);
             if (modifier.IsEmpty)
@@ -614,7 +615,7 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static string GetKey<T>(Address address, IAccumulatableStateModifier<T> modifier) where T : State
+        private static string GetKey<T>(Address address, IAccumulatableStateModifier<T> modifier) where T : Model.State.State
         {
             return GetKey(address, modifier.GetType());
         }

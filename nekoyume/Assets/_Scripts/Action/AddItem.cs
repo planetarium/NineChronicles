@@ -6,7 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Mail;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {

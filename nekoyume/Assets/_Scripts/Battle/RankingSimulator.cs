@@ -4,7 +4,7 @@ using Libplanet.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
 

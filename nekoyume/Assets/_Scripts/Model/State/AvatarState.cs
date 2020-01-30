@@ -8,16 +8,15 @@ using Libplanet.Action;
 using Libplanet.Crypto;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
-using Nekoyume.Game.Item;
-using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using UnityEngine;
 
-namespace Nekoyume.State
+namespace Nekoyume.Model.State
 {
     /// <summary>
     /// Agent가 포함하는 각 Avatar의 상태 모델이다.
@@ -29,7 +28,7 @@ namespace Nekoyume.State
         public int characterId;
         public int level;
         public long exp;
-        public Model.Item.Inventory inventory;
+        public Inventory inventory;
         public WorldInformation worldInformation;
         public DateTimeOffset updatedAt;
         public Address agentAddress;
@@ -48,7 +47,7 @@ namespace Nekoyume.State
         public int tail;
 
         public string NameWithHash { get; private set; }
-        
+
         public static Address CreateAvatarAddress()
         {
             var key = new PrivateKey();
@@ -81,8 +80,8 @@ namespace Nekoyume.State
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
             questList = new QuestList(
-                sheets.QuestSheet, 
-                sheets.QuestRewardSheet, 
+                sheets.QuestSheet,
+                sheets.QuestRewardSheet,
                 sheets.QuestItemRewardSheet
             );
             mailBox = new MailBox();
@@ -98,7 +97,7 @@ namespace Nekoyume.State
                 new KeyValuePair<int, int>((int) createEvent, 1),
                 new KeyValuePair<int, int>((int) levelEvent, level),
             };
-            UpdateGeneralQuest(new[] {createEvent, levelEvent});
+            UpdateGeneralQuest(new[] { createEvent, levelEvent });
             UpdateCompletedQuest();
 
             PostConstructor();
@@ -134,31 +133,31 @@ namespace Nekoyume.State
             PostConstructor();
         }
 
-        public AvatarState(Bencodex.Types.Dictionary serialized)
+        public AvatarState(Dictionary serialized)
             : base(serialized)
         {
-            name = ((Text) serialized["name"]).Value;
-            characterId = (int) ((Integer) serialized["characterId"]).Value;
-            level = (int) ((Integer) serialized["level"]).Value;
-            exp = (long) ((Integer) serialized["exp"]).Value;
-            inventory = new Model.Item.Inventory((Bencodex.Types.List) serialized["inventory"]);
-            worldInformation = new WorldInformation((Bencodex.Types.Dictionary) serialized["worldInformation"]);
+            name = ((Text)serialized["name"]).Value;
+            characterId = (int)((Integer)serialized["characterId"]).Value;
+            level = (int)((Integer)serialized["level"]).Value;
+            exp = (long)((Integer)serialized["exp"]).Value;
+            inventory = new Inventory((List)serialized["inventory"]);
+            worldInformation = new WorldInformation((Dictionary)serialized["worldInformation"]);
             updatedAt = serialized["updatedAt"].ToDateTimeOffset();
-            agentAddress = new Address(((Binary) serialized["agentAddress"]).Value);
-            questList = new QuestList((Bencodex.Types.List) serialized["questList"]);
-            mailBox = new MailBox((Bencodex.Types.List) serialized["mailBox"]);
-            blockIndex = (long) ((Integer) serialized["blockIndex"]).Value;
-            dailyRewardReceivedIndex = (long) ((Integer) serialized["dailyRewardReceivedIndex"]).Value;
-            actionPoint = (int) ((Integer) serialized["actionPoint"]).Value;
-            stageMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["stageMap"]);
-            serialized.TryGetValue((Text) "monsterMap", out var value2);
-            monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Bencodex.Types.Dictionary) value2);
-            itemMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["itemMap"]);
-            eventMap = new CollectionMap((Bencodex.Types.Dictionary) serialized["eventMap"]);
-            hair = (int) ((Integer) serialized["hair"]).Value;
-            lens = (int) ((Integer) serialized["lens"]).Value;
-            ear = (int) ((Integer) serialized["ear"]).Value;
-            tail = (int) ((Integer) serialized["tail"]).Value;
+            agentAddress = new Address(((Binary)serialized["agentAddress"]).Value);
+            questList = new QuestList((List)serialized["questList"]);
+            mailBox = new MailBox((List)serialized["mailBox"]);
+            blockIndex = (long)((Integer)serialized["blockIndex"]).Value;
+            dailyRewardReceivedIndex = (long)((Integer)serialized["dailyRewardReceivedIndex"]).Value;
+            actionPoint = (int)((Integer)serialized["actionPoint"]).Value;
+            stageMap = new CollectionMap((Dictionary)serialized["stageMap"]);
+            serialized.TryGetValue((Text)"monsterMap", out var value2);
+            monsterMap = value2 is null ? new CollectionMap() : new CollectionMap((Dictionary)value2);
+            itemMap = new CollectionMap((Dictionary)serialized["itemMap"]);
+            eventMap = new CollectionMap((Dictionary)serialized["eventMap"]);
+            hair = (int)((Integer)serialized["hair"]).Value;
+            lens = (int)((Integer)serialized["lens"]).Value;
+            ear = (int)((Integer)serialized["ear"]).Value;
+            tail = (int)((Integer)serialized["tail"]).Value;
 
             PostConstructor();
         }
@@ -204,7 +203,7 @@ namespace Nekoyume.State
             return MemberwiseClone();
         }
 
-        public void Update(Mail mail)
+        public void Update(Mail.Mail mail)
         {
             mailBox.Add(mail);
         }
@@ -233,20 +232,20 @@ namespace Nekoyume.State
             questList.UpdateMonsterQuest(monsterMap);
             questList.UpdateCollectQuest(itemMap);
             questList.UpdateItemTypeCollectQuest(items);
-            UpdateGeneralQuest(new[] {QuestEventType.Level, QuestEventType.Die});
+            UpdateGeneralQuest(new[] { QuestEventType.Level, QuestEventType.Die });
             UpdateCompletedQuest();
         }
 
         // todo 1: 퀘스트 전용 함수임을 알 수 있는 네이밍이 필요함.
         // todo 2: 혹은 분리된 객체에게 위임하면 좋겠음.
         #region Quest From Action
-        
+
         public void UpdateFromCombination(ItemUsable itemUsable)
         {
             questList.UpdateCombinationQuest(itemUsable);
             var type = itemUsable.Data.ItemType == ItemType.Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
-            eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
-            UpdateGeneralQuest(new[] {type});
+            eventMap.Add(new KeyValuePair<int, int>((int)type, 1));
+            UpdateGeneralQuest(new[] { type });
             UpdateCompletedQuest();
             UpdateFromAddItem(itemUsable, false);
         }
@@ -255,8 +254,8 @@ namespace Nekoyume.State
         {
             questList.UpdateItemEnhancementQuest(equipment);
             var type = QuestEventType.Enhancement;
-            eventMap.Add(new KeyValuePair<int, int>((int) type, 1));
-            UpdateGeneralQuest(new[] {type});
+            eventMap.Add(new KeyValuePair<int, int>((int)type, 1));
+            UpdateGeneralQuest(new[] { type });
             UpdateCompletedQuest();
             UpdateFromAddItem(equipment, false);
         }
@@ -270,13 +269,13 @@ namespace Nekoyume.State
             {
                 questList.UpdateCollectQuest(itemMap);
                 questList.UpdateItemGradeQuest(itemUsable);
-                questList.UpdateItemTypeCollectQuest(new[] {itemUsable});
+                questList.UpdateItemTypeCollectQuest(new[] { itemUsable });
             }
 
             UpdateCompletedQuest();
         }
 
-        public void UpdateFromQuestReward(Quest quest, IActionContext context)
+        public void UpdateFromQuestReward(Quest.Quest quest, IActionContext context)
         {
             var random = context.Random;
             var items = new List<ItemBase>();
@@ -330,29 +329,29 @@ namespace Nekoyume.State
         }
 
         public override IValue Serialize() =>
-            new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "name"] = (Text) name,
-                [(Text) "characterId"] = (Integer) characterId,
-                [(Text) "level"] = (Integer) level,
-                [(Text) "exp"] = (Integer) exp,
-                [(Text) "inventory"] = inventory.Serialize(),
-                [(Text) "worldInformation"] = worldInformation.Serialize(),
-                [(Text) "updatedAt"] = updatedAt.Serialize(),
-                [(Text) "agentAddress"] = agentAddress.Serialize(),
-                [(Text) "questList"] = questList.Serialize(),
-                [(Text) "mailBox"] = mailBox.Serialize(),
-                [(Text) "blockIndex"] = (Integer) blockIndex,
-                [(Text) "dailyRewardReceivedIndex"] = (Integer) dailyRewardReceivedIndex,
-                [(Text) "actionPoint"] = (Integer) actionPoint,
-                [(Text) "stageMap"] = stageMap.Serialize(),
-                [(Text) "monsterMap"] = monsterMap.Serialize(),
-                [(Text) "itemMap"] = itemMap.Serialize(),
-                [(Text) "eventMap"] = eventMap.Serialize(),
-                [(Text) "hair"] = (Integer) hair,
-                [(Text) "lens"] = (Integer) lens,
-                [(Text) "ear"] = (Integer) ear,
-                [(Text) "tail"] = (Integer) tail,
-            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+                [(Text)"name"] = (Text)name,
+                [(Text)"characterId"] = (Integer)characterId,
+                [(Text)"level"] = (Integer)level,
+                [(Text)"exp"] = (Integer)exp,
+                [(Text)"inventory"] = inventory.Serialize(),
+                [(Text)"worldInformation"] = worldInformation.Serialize(),
+                [(Text)"updatedAt"] = updatedAt.Serialize(),
+                [(Text)"agentAddress"] = agentAddress.Serialize(),
+                [(Text)"questList"] = questList.Serialize(),
+                [(Text)"mailBox"] = mailBox.Serialize(),
+                [(Text)"blockIndex"] = (Integer)blockIndex,
+                [(Text)"dailyRewardReceivedIndex"] = (Integer)dailyRewardReceivedIndex,
+                [(Text)"actionPoint"] = (Integer)actionPoint,
+                [(Text)"stageMap"] = stageMap.Serialize(),
+                [(Text)"monsterMap"] = monsterMap.Serialize(),
+                [(Text)"itemMap"] = itemMap.Serialize(),
+                [(Text)"eventMap"] = eventMap.Serialize(),
+                [(Text)"hair"] = (Integer)hair,
+                [(Text)"lens"] = (Integer)lens,
+                [(Text)"ear"] = (Integer)ear,
+                [(Text)"tail"] = (Integer)tail,
+            }.Union((Dictionary)base.Serialize()));
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using Bencodex.Types;
 using Nekoyume.EnumType;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.Model.Skill;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Item
 {

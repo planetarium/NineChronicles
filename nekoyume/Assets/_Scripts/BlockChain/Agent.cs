@@ -26,6 +26,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using Nekoyume.Serilog;
 using Nekoyume.State;
 using Nekoyume.UI;

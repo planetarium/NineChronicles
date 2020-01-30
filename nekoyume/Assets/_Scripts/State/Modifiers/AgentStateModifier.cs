@@ -1,4 +1,5 @@
 ﻿using System;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.State.Modifiers
 {

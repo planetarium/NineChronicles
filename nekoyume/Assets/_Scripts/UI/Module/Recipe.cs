@@ -3,11 +3,11 @@ using Nekoyume.UI.Scroller;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Nekoyume.Game.Controller;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.UI.Module
 {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Libplanet;
+using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
 using UnityEngine;
 

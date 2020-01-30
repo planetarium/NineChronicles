@@ -3,7 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;

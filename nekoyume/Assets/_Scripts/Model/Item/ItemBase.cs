@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.Helper;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using UnityEngine;
 

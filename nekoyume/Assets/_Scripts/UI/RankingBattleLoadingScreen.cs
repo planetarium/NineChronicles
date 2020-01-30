@@ -9,7 +9,7 @@ namespace Nekoyume.UI
         public CharacterProfile profile;
         public CharacterProfile enemyProfile;
 
-        public void Show(State.RankingInfo enemyInfo)
+        public void Show(Nekoyume.Model.State.RankingInfo enemyInfo)
         {
             var player = Game.Game.instance.Stage.GetPlayer();
             var sprite = SpriteHelper.GetItemIcon(player.Model.armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId);

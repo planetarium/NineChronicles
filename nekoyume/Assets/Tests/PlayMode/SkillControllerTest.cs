@@ -4,7 +4,7 @@ using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using NUnit.Framework;
 using UnityEngine.TestTools;
 using CharacterBase = Nekoyume.Game.Character.CharacterBase;

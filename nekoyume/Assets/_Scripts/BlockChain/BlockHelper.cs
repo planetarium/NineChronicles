@@ -11,6 +11,7 @@ using Nekoyume.TableData;
 using UnityEngine;
 
 using Libplanet.Blockchain;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.BlockChain
 {

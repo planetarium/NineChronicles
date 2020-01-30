@@ -5,7 +5,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Skill = Nekoyume.Model.Skill.Skill;
 
 namespace Nekoyume.Helper

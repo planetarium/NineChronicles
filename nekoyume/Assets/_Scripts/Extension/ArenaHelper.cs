@@ -1,6 +1,6 @@
 using System;
 using Libplanet;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume

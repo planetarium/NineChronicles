@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {

@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.JsonConvertibles;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers

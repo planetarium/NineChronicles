@@ -3,6 +3,7 @@ using System.Linq;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Game;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using NUnit.Framework;
@@ -131,7 +132,7 @@ namespace Tests.PlayMode
             var rankingInfo = widget.rankingBase;
             var agentAddress = GetNewAddress();
             var avatar = new AvatarState(GetNewAddress(), agentAddress, 1, Game.instance.TableSheets);
-            rankingInfo.Set(1, new Nekoyume.State.RankingInfo(avatar));
+            rankingInfo.Set(1, new Nekoyume.Model.State.RankingInfo(avatar));
             Assert.NotNull(rankingInfo.icon.sprite);
         }
     }
