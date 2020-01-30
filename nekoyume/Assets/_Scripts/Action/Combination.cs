@@ -7,7 +7,6 @@ using Bencodex.Types;
 using DecimalMath;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Model.Buff;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -15,6 +14,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.Action
@@ -87,7 +87,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log("Combination exec started.");
+            Log.Debug("Combination exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
@@ -96,7 +96,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            UnityEngine.Debug.Log($"Combination Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug($"Combination Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
             if (avatarState.level < GameConfig.CombinationRequiredLevel)
@@ -106,10 +106,10 @@ namespace Nekoyume.Action
 
             _tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
-            UnityEngine.Debug.Log($"Combination Get TableSheetsState: {sw.Elapsed}");
+            Log.Debug($"Combination Get TableSheetsState: {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute Combination. player : `{AvatarAddress}`");
+            Log.Debug($"Execute Combination. player : `{AvatarAddress}`");
 
             // 사용한 재료를 인벤토리에서 제거.
             foreach (var pair in Materials)
@@ -122,7 +122,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            UnityEngine.Debug.Log($"Combination Remove Materials: {sw.Elapsed}");
+            Log.Debug($"Combination Remove Materials: {sw.Elapsed}");
             sw.Restart();
 
             Result = new ResultModel
@@ -136,7 +136,7 @@ namespace Nekoyume.Action
                 .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.EquipmentMaterial)
                 .ToList();
             sw.Stop();
-            UnityEngine.Debug.Log($"Combination Get EquipmentMaterial rows: {sw.Elapsed}");
+            Log.Debug($"Combination Get EquipmentMaterial rows: {sw.Elapsed}");
             sw.Restart();
             if (equipmentMaterials.Count > 0)
             {
@@ -167,7 +167,7 @@ namespace Nekoyume.Action
                     .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.MonsterPart)
                     .ToList();
                 sw.Stop();
-                UnityEngine.Debug.Log($"Combination Get MonsterPart rows: {sw.Elapsed}");
+                Log.Debug($"Combination Get MonsterPart rows: {sw.Elapsed}");
                 sw.Restart();
                 var monsterPartsCount = monsterParts.Count;
                 if (monsterPartsCount == 0)
@@ -222,7 +222,7 @@ namespace Nekoyume.Action
                 }
 
                 sw.Stop();
-                UnityEngine.Debug.Log($"Combination Create Equipment: {sw.Elapsed}");
+                Log.Debug($"Combination Create Equipment: {sw.Elapsed}");
                 sw.Restart();
 
                 foreach (var monsterPart in monsterParts)
@@ -230,13 +230,13 @@ namespace Nekoyume.Action
                     if (TryGetStat(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var statMap))
                         equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
                     sw.Stop();
-                    UnityEngine.Debug.Log($"Combination Add Additional Stats: {sw.Elapsed}");
+                    Log.Debug($"Combination Add Additional Stats: {sw.Elapsed}");
                     sw.Restart();
                     if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill,
                         _tableSheets))
                         equipment.Skills.Add(skill);
                     sw.Stop();
-                    UnityEngine.Debug.Log($"Combination Add Skill: {sw.Elapsed}");
+                    Log.Debug($"Combination Add Skill: {sw.Elapsed}");
                     sw.Restart();
                 }
 
@@ -249,7 +249,7 @@ namespace Nekoyume.Action
                     if (TryGetBuffSkill(ctx.Random, out var buffSkill))
                         equipment.BuffSkills.Add(buffSkill);
                     sw.Stop();
-                    UnityEngine.Debug.Log($"Combination Add Buff Skill: {sw.Elapsed}");
+                    Log.Debug($"Combination Add Buff Skill: {sw.Elapsed}");
                     sw.Restart();
                 }
 
@@ -259,7 +259,7 @@ namespace Nekoyume.Action
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(equipment);
                 sw.Stop();
-                UnityEngine.Debug.Log($"Combination Update AvatarState: {sw.Elapsed}");
+                Log.Debug($"Combination Update AvatarState: {sw.Elapsed}");
                 sw.Restart();
             }
             else
@@ -270,7 +270,7 @@ namespace Nekoyume.Action
                 var foodCount = materialRows.Min(pair => pair.Value);
                 var costAP = foodCount * GameConfig.CombineConsumableCostAP;
                 sw.Stop();
-                UnityEngine.Debug.Log($"Combination Get Food Material rows: {sw.Elapsed}");
+                Log.Debug($"Combination Get Food Material rows: {sw.Elapsed}");
                 sw.Restart();
 
                 if (avatarState.actionPoint < costAP)
@@ -288,7 +288,7 @@ namespace Nekoyume.Action
                     ? GameConfig.CombinationDefaultFoodId
                     : recipeRow.ResultConsumableItemId;
                 sw.Stop();
-                UnityEngine.Debug.Log($"Combination Get Food id: {sw.Elapsed}");
+                Log.Debug($"Combination Get Food id: {sw.Elapsed}");
                 sw.Restart();
 
                 if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
@@ -310,7 +310,7 @@ namespace Nekoyume.Action
                     avatarState.Update(mail);
                     avatarState.UpdateFromCombination(itemUsable);
                     sw.Stop();
-                    UnityEngine.Debug.Log($"Combination Update AvatarState: {sw.Elapsed}");
+                    Log.Debug($"Combination Update AvatarState: {sw.Elapsed}");
                     sw.Restart();
                 }
             }
@@ -321,9 +321,9 @@ namespace Nekoyume.Action
             avatarState.blockIndex = ctx.BlockIndex;
             states = states.SetState(AvatarAddress, avatarState.Serialize());
             sw.Stop();
-            UnityEngine.Debug.Log($"Combination Set AvatarState: {sw.Elapsed}");
+            Log.Debug($"Combination Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"Combination Total Executed Time: {ended - started}");
+            Log.Debug($"Combination Total Executed Time: {ended - started}");
             return states.SetState(ctx.Signer, agentState.Serialize());
         }
 
