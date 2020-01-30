@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Stat;
 using UnityEngine;
 

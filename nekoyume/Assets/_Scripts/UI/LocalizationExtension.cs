@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Model;
-using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;

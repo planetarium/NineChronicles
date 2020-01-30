@@ -10,7 +10,7 @@ using Nekoyume.UI;
 using UnityEngine;
 using UniRx;
 using Nekoyume.Model.Skill;
-using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Character;
 
 namespace Nekoyume.Game.Character

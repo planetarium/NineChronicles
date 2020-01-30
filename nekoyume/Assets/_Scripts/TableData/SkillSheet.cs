@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
 using Nekoyume.Helper;
-using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;

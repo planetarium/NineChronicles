@@ -3,7 +3,7 @@ using System.Collections;
 using Libplanet;
 using Nekoyume.Game;
 using Nekoyume.Game.Factory;
-using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using NUnit.Framework;
