@@ -27,13 +27,19 @@ namespace Nekoyume.TableData
             public IValue Serialize() =>
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
-                    [(Text) "key"] = (Integer) Key,
+                    [(Text) "Id"] = (Integer) Key,
+                    [(Text) "Goal"] = (Integer) Goal,
+                    [(Text) "QuestRewardId"] = (Integer) QuestRewardId,
                 });
 
             public static Row Deserialize(Bencodex.Types.Dictionary serialized)
             {
-                var key = (int) ((Integer) serialized["key"]).Value;
-                return Game.Game.instance.TableSheets.QuestSheet[key];
+                return new Row
+                {
+                    Id = (int) ((Integer)serialized["Id"]),
+                    Goal = (int) ((Integer)serialized["Goal"]),
+                    QuestRewardId = (int) ((Integer)serialized["QuestRewardId"]),
+                };
             }
         }
         
