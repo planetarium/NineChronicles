@@ -208,7 +208,7 @@ namespace Nekoyume
             rectTransform.position = target.position;
             float2 anchoredPosition = rectTransform.anchoredPosition;
 
-            Debug.Log($"Screen Width: {Screen.width}, AnchoredPosition: {anchoredPosition}, Target.Rect.Width / 2: {target.rect.width / 2}, Width: {rectTransform.rect.width}");
+            PivotPresetType pivotPresetType;
 
             if (Screen.width - anchoredPosition.x - target.rect.width / 2 > rectTransform.rect.width)
                 pivotPresetType = PivotPresetType.TopRight;
