@@ -29,7 +29,7 @@ namespace Nekoyume.UI
                 case CombinationMail combinationMail:
                     return string.Format(
                         LocalizationManager.Localize("UI_COMBINATION_NOTIFY_FORMAT"),
-                        combinationMail.AttachmentName
+                        combinationMail.attachment.itemUsable.GetLocalizedName()
                     );
                 case ItemEnhanceMail itemEnhanceMail:
                     return string.Format(
@@ -154,6 +154,44 @@ namespace Nekoyume.UI
             foreach (var defOption in defOptions)
             {
                 yield return defOption;
+            }
+        }
+
+        public static string GetLocalizedName(this ItemBase item)
+        {
+            string name = item.Data.GetLocalizedName();
+            switch (item)
+            {
+                case Equipment equipment:
+                    return equipment.level > 0
+                        ? $"<color=#{GetColorHexByGrade(item)}>+{equipment.level}</color> {name}"
+                        : name;
+                default:
+                    return $"<color=#{GetColorHexByGrade(item)}>{name}</color>";
+            }
+        }
+
+        public static string GetLocalizedDescription(this ItemBase item)
+        {
+            return item.Data.GetLocalizedDescription();
+        }
+
+        private static string GetColorHexByGrade(ItemBase item)
+        {
+            switch (item.Data.Grade)
+            {
+                case 1:
+                    return GameConfig.ColorHexForGrade1;
+                case 2:
+                    return GameConfig.ColorHexForGrade2;
+                case 3:
+                    return GameConfig.ColorHexForGrade3;
+                case 4:
+                    return GameConfig.ColorHexForGrade4;
+                case 5:
+                    return GameConfig.ColorHexForGrade5;
+                default:
+                    return GameConfig.ColorHexForGrade1;
             }
         }
     }

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume.EnumType;
-using Nekoyume.Game;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
@@ -40,15 +38,6 @@ namespace Nekoyume.Model.Item
         {
             level++;
             StatsMap.AddStatValue(Data.Stat.Type, levelStats);
-        }
-
-        public override string GetLocalizedName()
-        {
-            var name = base.GetLocalizedName();
-
-            return level > 0
-                ? $"<color=#{GetColorHexByGrade()}>+{level}</color> {name}"
-                : name;
         }
 
         public override IValue Serialize() =>
