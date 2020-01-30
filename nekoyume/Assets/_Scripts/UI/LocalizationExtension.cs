@@ -4,6 +4,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Model;
+using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.TableData;
