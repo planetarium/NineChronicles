@@ -1,5 +1,4 @@
 using System;
-using Nekoyume.EnumType;
 
 namespace Nekoyume.Model.Stat
 {

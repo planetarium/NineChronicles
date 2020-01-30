@@ -1,5 +1,4 @@
 using Bencodex.Types;
-using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.TableData;
 

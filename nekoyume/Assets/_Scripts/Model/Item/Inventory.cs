@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
-using Nekoyume.EnumType;
 using Nekoyume.Model.State;
 using UnityEngine;
 

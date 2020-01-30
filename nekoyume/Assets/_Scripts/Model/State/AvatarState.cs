@@ -7,7 +7,6 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Crypto;
 using Nekoyume.Battle;
-using Nekoyume.EnumType;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
