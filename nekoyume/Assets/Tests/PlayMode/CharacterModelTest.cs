@@ -31,7 +31,14 @@ namespace Tests.PlayMode
             var address = new Address();
             var agentAddress = new Address();
             var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets);
-            var simulator = new StageSimulator(_random, avatarState, new List<Consumable>(), 1, 1);
+            var simulator = new StageSimulator(
+                _random, 
+                avatarState, 
+                new List<Consumable>(), 
+                1, 
+                1,
+                Game.instance.TableSheets
+            );
             _player = simulator.Player;
             _player.InitAI();
             yield return null;

@@ -30,7 +30,14 @@ namespace Tests.PlayMode
             var agentAddress = new Address();
             var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets);
 
-            _stageSimulator = new StageSimulator(random, avatarState, new List<Consumable>(), 1, 1);
+            _stageSimulator = new StageSimulator(
+                random,
+                avatarState, 
+                new List<Consumable>(), 
+                1, 
+                1,
+                Game.instance.TableSheets
+            );
             var caster = _stageSimulator.Player;
             var target = (CharacterBase) caster.Clone();
             caster.InitAI();
