@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill
@@ -10,9 +11,16 @@ namespace Nekoyume.Model.Skill
         {
         }
 
-        public override Model.BattleStatus.Skill Use(CharacterBase caster, int simulatorWaveTurn)
+        public override Model.BattleStatus.Skill Use(
+            CharacterBase caster, 
+            int simulatorWaveTurn,
+            IEnumerable<Buff.Buff> buffs)
         {
-            return new Model.BattleStatus.NormalAttack((CharacterBase) caster.Clone(), ProcessDamage(caster, simulatorWaveTurn), ProcessBuff(caster, simulatorWaveTurn));
+            return new Model.BattleStatus.NormalAttack(
+                (CharacterBase) caster.Clone(), 
+                ProcessDamage(caster, simulatorWaveTurn), 
+                ProcessBuff(caster, simulatorWaveTurn, buffs)
+            );
         }
     }
 }

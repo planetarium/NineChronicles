@@ -73,9 +73,16 @@ namespace Tests.PlayMode
         {
             _player.Targets.Add(_player);
             var skill = _player.Skills.First();
-            skill.buffs = skill.skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
             Assert.AreEqual(0, _player.Buffs.Count);
-            var model = skill.Use(_player, 0);
+            var model = skill.Use(
+                _player, 
+                0, 
+                BuffFactory.GetBuffs(
+                    skill,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                )
+            );
             if (model.BuffInfos is null)
                 return;
             
@@ -84,7 +91,12 @@ namespace Tests.PlayMode
             foreach (var pair in _player.Buffs)
             {
                 var playerBuff = pair.Value;
-                var skillBuff = skill.buffs.First(i => i.RowData.GroupId == pair.Key);
+                var buffs = BuffFactory.GetBuffs(
+                    skill,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                );
+                var skillBuff = buffs.First(i => i.RowData.GroupId == pair.Key);
                 Assert.AreEqual(playerBuff.remainedDuration, skillBuff.remainedDuration);
                 playerBuff.remainedDuration--;
                 Assert.Greater(skillBuff.remainedDuration, playerBuff.remainedDuration);

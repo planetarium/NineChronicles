@@ -6,6 +6,7 @@ using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
@@ -163,7 +164,15 @@ namespace Nekoyume.Model
         private void UseSkill()
         {
             // 스킬 사용.
-            _usedSkill = _selectedSkill.Use(this, Simulator.WaveTurn);
+            _usedSkill = _selectedSkill.Use(
+                this, 
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    _selectedSkill,
+                    Simulator.TableSheets.SkillBuffSheet,
+                    Simulator.TableSheets.BuffSheet
+                )
+            );
             Simulator.Log.Add(_usedSkill);
 
             foreach (var info in _usedSkill.SkillInfos)
