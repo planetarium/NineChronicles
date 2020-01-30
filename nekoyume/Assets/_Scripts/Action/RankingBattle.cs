@@ -31,6 +31,11 @@ namespace Nekoyume.Action
                     .SetState(ctx.Signer, MarkChanged);
             }
 
+            if (AvatarAddress.Equals(EnemyAddress))
+            {
+                return states;
+            }
+
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))
             {
