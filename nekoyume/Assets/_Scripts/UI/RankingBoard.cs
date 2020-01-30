@@ -37,13 +37,13 @@ namespace Nekoyume.UI
         public CategoryButton overallButton;
         public GameObject arenaRankingHeader;
         public GameObject expRankingHeader;
-        public ArenaRankingCellView arenaRankingCellViewPrefab;
+        public ArenaCellView arenaCellViewPrefab;
         public RankingInfo rankingCellViewPrefab;
         public ScrollRect board;
         public ArenaPendingNCG arenaPendingNCG;
         public GameObject arenaRecordContainer;
         public TextMeshProUGUI arenaRecordText;
-        public ArenaCellView arenaCellView;
+        public ArenaCellView currentAvatarCellView;
         public SubmitButton arenaActivationButton;
         public RankingRewards rankingRewards;
         public SpeechBubble speechBubble;
@@ -165,7 +165,6 @@ namespace Nekoyume.UI
                     overallButton.SetToggledOff();
                     rankingRewards.Hide();
                     arenaPendingNCG.Show(false);
-                    arenaCellView.Show();
                     UpdateArena();
                     arenaRankingHeader.SetActive(true);
                     expRankingHeader.SetActive(false);
@@ -177,7 +176,7 @@ namespace Nekoyume.UI
                     overallButton.SetToggledOff();
                     rankingRewards.Show();
                     arenaPendingNCG.Hide();
-                    arenaCellView.Hide();
+                    currentAvatarCellView.Hide();
                     arenaRecordContainer.SetActive(false);
                     arenaRankingHeader.SetActive(false);
                     expRankingHeader.SetActive(true);
@@ -189,7 +188,7 @@ namespace Nekoyume.UI
                     overallButton.SetToggledOn();
                     rankingRewards.Show();
                     arenaPendingNCG.Hide();
-                    arenaCellView.Hide();
+                    currentAvatarCellView.Hide();
                     arenaRecordContainer.SetActive(false);
                     arenaRankingHeader.SetActive(false);
                     expRankingHeader.SetActive(true);
@@ -219,7 +218,8 @@ namespace Nekoyume.UI
                     arenaRecordContainer.SetActive(true);
                     arenaRecordText.text = string.Format(
                         LocalizationManager.Localize("UI_WIN_DRAW_LOSE_FORMAT"), record.Win, record.Draw, record.Lose);
-                    arenaCellView.Show(rank, arenaInfo);
+                    currentAvatarCellView.Show(rank, arenaInfo, false, true);
+                    currentAvatarCellView.onClickInfo = OnClickAvatarInfo;
                     arenaActivationButton.Hide();
                 }
                 else
@@ -228,7 +228,7 @@ namespace Nekoyume.UI
             catch
             {
                 arenaRecordContainer.SetActive(false);
-                arenaCellView.Hide();
+                currentAvatarCellView.Hide();
                 arenaActivationButton.Show();
             }
         }
@@ -259,14 +259,14 @@ namespace Nekoyume.UI
                         continue;
                     }
 
-                    ArenaRankingCellView rankingInfo = Instantiate(arenaRankingCellViewPrefab, board.content);
+                    var rankingInfo = Instantiate(arenaCellViewPrefab, board.content);
                     var bg = rankingInfo.GetComponent<Image>();
                     if (index % 2 == 1)
                     {
                         bg.enabled = false;
                     }
 
-                    rankingInfo.Set(index + 1, avatarState, canChallenge);
+                    rankingInfo.Show(index + 1, avatarState, canChallenge, false);
                     rankingInfo.onClickChallenge = OnClickChallenge;
                     rankingInfo.onClickInfo = OnClickAvatarInfo;
                     rankingInfo.gameObject.SetActive(true);
@@ -310,11 +310,11 @@ namespace Nekoyume.UI
             Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, avatarAddress));
         }
 
-        private void OnClickChallenge(ArenaRankingCellView info)
+        private void OnClickChallenge(ArenaCellView info)
         {
-            ActionManager.RankingBattle(info.AvatarInfo.AvatarAddress);
+            ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
             Find<LoadingScreen>().Show();
-            Find<RankingBattleLoadingScreen>().Show(info.AvatarInfo);
+            Find<RankingBattleLoadingScreen>().Show(info.ArenaInfo);
         }
 
         private void SetAvatars(DateTimeOffset? dt)
