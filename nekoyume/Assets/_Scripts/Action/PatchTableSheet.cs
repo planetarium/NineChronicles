@@ -34,8 +34,6 @@ namespace Nekoyume.Action
             );
 
             TableSheetsState nextState = tableSheetsState.UpdateTableSheet(TableName, TableCsv);
-            Game.Game.instance.TableSheets.SetToSheet(TableName, TableCsv);
-
             return states.SetState(TableSheetsState.Address, nextState.Serialize());
         }
 

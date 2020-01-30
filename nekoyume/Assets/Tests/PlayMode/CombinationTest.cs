@@ -31,7 +31,7 @@ namespace Tests.PlayMode
                 .ToList();
             foreach (var partRow in partRows)
             {
-                if (Nekoyume.Action.Combination.TryGetSkill(partRow, 0, out var skill))
+                if (Nekoyume.Action.Combination.TryGetSkill(partRow, 0, Game.instance.TableSheets, out var skill))
                     equipment.Skills.Add(skill);
             }
 

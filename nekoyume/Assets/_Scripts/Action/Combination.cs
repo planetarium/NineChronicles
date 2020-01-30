@@ -232,9 +232,10 @@ namespace Nekoyume.Action
                     sw.Stop();
                     Log.Debug($"Combination Add Additional Stats: {sw.Elapsed}");
                     sw.Restart();
-                    if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var skill,
-                        _tableSheets))
+                    if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), _tableSheets, out var skill))
+                    {
                         equipment.Skills.Add(skill);
+                    }
                     sw.Stop();
                     Log.Debug($"Combination Add Skill: {sw.Elapsed}");
                     sw.Restart();
@@ -501,10 +502,12 @@ namespace Nekoyume.Action
             return true;
         }
 
-        public static bool TryGetSkill(MaterialItemSheet.Row monsterParts, decimal roll, out Skill skill,
-            TableSheets tableSheets = null)
+        public static bool TryGetSkill(
+            MaterialItemSheet.Row monsterParts,
+            decimal roll,
+            TableSheets tableSheets,
+            out Skill skill)
         {
-            tableSheets = tableSheets ?? Game.Game.instance.TableSheets;
             try
             {
                 var skillRow =
