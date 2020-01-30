@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BTAI
 {
@@ -15,7 +14,7 @@ namespace BTAI
     {
         public static Root Root() { return new Root(); }
         public static Sequence Sequence() { return new Sequence(); }
-        public static Selector Selector(bool shuffle = false) { return new Selector(shuffle); }
+        public static Selector Selector() { return new Selector(); }
         public static Action RunCoroutine(System.Func<IEnumerator<BTState>> coroutine) { return new Action(coroutine); }
         public static Action Call(System.Action fn) { return new Action(fn); }
         public static ConditionalBranch If(System.Func<bool> fn) { return new ConditionalBranch(fn); }
@@ -24,7 +23,6 @@ namespace BTAI
         public static Repeat Repeat(int count) { return new Repeat(count); }
         public static Terminate Terminate() { return new Terminate(); }
         public static Log Log(string msg) { return new Log(msg); }
-        public static RandomSequence RandomSequence(int[] weights = null) { return new BTAI.RandomSequence(weights); }
     }
 
     public abstract class BTNode
@@ -112,23 +110,6 @@ namespace BTAI
     /// </summary>
     public class Selector : Branch
     {
-        public Selector(bool shuffle)
-        {
-            if (shuffle)
-            {
-                var n = children.Count;
-                var rand = new Random();
-                while (n > 1)
-                {
-                    n--;
-                    var k = rand.Next(n + 1);
-                    var value = children[k];
-                    children[k] = children[n];
-                    children[n] = value;
-                }
-            }
-        }
-
         public override BTState Tick()
         {
             var childState = children[activeChild].Tick();
@@ -381,85 +362,6 @@ namespace BTAI
         public override string ToString()
         {
             return "Repeat Until : " + currentCount + " / " + count;
-        }
-    }
-
-    public class RandomSequence : Block
-    {
-        int[] m_Weight = null;
-        int[] m_AddedWeight = null;
-
-        /// <summary>
-        /// Will select one random child everytime it get triggered again
-        /// </summary>
-        /// <param name="weight">Leave null so that all child node have the same weight. 
-        /// If there is less weight than children, all subsequent child will have weight = 1</param>
-        public RandomSequence(int[] weight = null)
-        {
-            activeChild = -1;
-
-            m_Weight = weight;
-        }
-
-        public override Branch OpenBranch(params BTNode[] children)
-        {
-            m_AddedWeight = new int[children.Length];
-
-            for (int i = 0; i < children.Length; ++i)
-            {
-                int weight = 0;
-                int previousWeight = 0;
-
-                if (m_Weight == null || m_Weight.Length <= i)
-                {//if we don't have weight for that one, we set the weight to one
-                    weight = 1;
-                }
-                else
-                    weight = m_Weight[i];
-
-                if (i > 0)
-                    previousWeight = m_AddedWeight[i - 1];
-
-                m_AddedWeight[i] = weight + previousWeight;
-            }
-
-            return base.OpenBranch(children);
-        }
-
-        public override BTState Tick()
-        {
-            if (activeChild == -1)
-                PickNewChild();
-
-            var result = children[activeChild].Tick();
-
-            switch (result)
-            {
-                case BTState.Continue:
-                    return BTState.Continue;
-                default:
-                    PickNewChild();
-                    return result;
-            }
-        }
-
-        void PickNewChild()
-        {
-            int choice = new Random().Next(0, m_AddedWeight[m_AddedWeight.Length - 1]);
-
-            for (int i = 0; i < m_AddedWeight.Length; ++i)
-            {
-                if (choice - m_AddedWeight[i] <= 0)
-                {
-                    activeChild = i;
-                    break;
-                }
-            }
-        }
-
-        public override string ToString()
-        {
-            return "Random Sequence : " + activeChild + "/" + children.Count;
         }
     }
 
