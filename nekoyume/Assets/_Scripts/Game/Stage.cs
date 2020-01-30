@@ -47,7 +47,7 @@ namespace Nekoyume.Game
         public int worldId;
         public int stageId;
         public Character.Player selectedPlayer;
-        public readonly Vector2 questPreparationPosition = new Vector2(2.1f, -0.2f);
+        public readonly Vector2 questPreparationPosition = new Vector2(2.45f, -0.35f);
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
         public bool repeatStage;
         public bool isExitReserved;
