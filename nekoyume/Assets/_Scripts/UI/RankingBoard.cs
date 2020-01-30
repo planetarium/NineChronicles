@@ -111,12 +111,9 @@ namespace Nekoyume.UI
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
-        // todo: `stateType` 기본값을 `StateType.Arena`로 바꾸기.
         public void Show(StateType stateType = StateType.Arena)
         {
             base.Show();
-
-            UpdateArena();
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
@@ -169,7 +166,7 @@ namespace Nekoyume.UI
                     rankingRewards.Hide();
                     arenaPendingNCG.Show(false);
                     arenaCellView.Show();
-                    arenaRecordContainer.SetActive(true);
+                    UpdateArena();
                     arenaRankingHeader.SetActive(true);
                     expRankingHeader.SetActive(false);
                     UpdateBoard(stateType);
@@ -205,6 +202,9 @@ namespace Nekoyume.UI
 
         private void UpdateArena()
         {
+            if (States.Instance.CurrentAvatarState is null)
+                return;
+
             var weeklyArenaState = States.Instance.WeeklyArenaState;
             arenaPendingNCG.Show(weeklyArenaState);
 
@@ -240,6 +240,17 @@ namespace Nekoyume.UI
             if (stateType == StateType.Arena)
             {
                 SetArenaInfos();
+
+                if (States.Instance.CurrentAvatarState is null)
+                    return;
+
+                var weeklyArenaState = States.Instance.WeeklyArenaState;
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var currentAvatarArenaInfo = weeklyArenaState.GetArenaInfo(avatarAddress);
+
+                var canChallenge = (currentAvatarArenaInfo is null) ?
+                                    true : currentAvatarArenaInfo.DailyChallengeCount > 0;
+
                 for (var index = 0; index < _arenaAvatarStates.Count; index++)
                 {
                     var avatarState = _arenaAvatarStates[index].arenaInfo;
@@ -255,7 +266,7 @@ namespace Nekoyume.UI
                         bg.enabled = false;
                     }
 
-                    rankingInfo.Set(index + 1, avatarState);
+                    rankingInfo.Set(index + 1, avatarState, canChallenge);
                     rankingInfo.onClickChallenge = OnClickChallenge;
                     rankingInfo.onClickInfo = OnClickAvatarInfo;
                     rankingInfo.gameObject.SetActive(true);

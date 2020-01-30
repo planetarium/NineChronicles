@@ -2,6 +2,7 @@ using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.State;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -12,7 +13,7 @@ namespace Nekoyume.UI.Scroller
     public class ArenaRankingCellView : MonoBehaviour
     {
         public Button avatarInfoButton;
-        public Button challengeButton;
+        public SubmitButton challengeButton;
         public TextMeshProUGUI rankText;
         public Image icon;
         public TextMeshProUGUI levelText;
@@ -30,7 +31,7 @@ namespace Nekoyume.UI.Scroller
 
         private void Awake()
         {
-            challengeButton.OnClickAsObservable().Subscribe(_ =>
+            challengeButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 onClickChallenge.Invoke(this);
@@ -43,7 +44,7 @@ namespace Nekoyume.UI.Scroller
             }).AddTo(gameObject);
         }
 
-        public void Set(int ranking, ArenaInfo arenaInfo)
+        public void Set(int ranking, ArenaInfo arenaInfo, bool canChallenge)
         {
             AvatarInfo = arenaInfo;
             
@@ -56,6 +57,8 @@ namespace Nekoyume.UI.Scroller
             cpText.text = arenaInfo.CombatPoint.ToString();
             tweenMove.StartDelay = ranking * 0.16f;
             tweenAlpha.StartDelay = ranking * 0.16f;
+
+            challengeButton.SetSubmittable(canChallenge);
         }
     }
 }
