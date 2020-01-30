@@ -265,7 +265,9 @@ namespace Nekoyume.UI
                         bg.enabled = false;
                     }
 
-                    rankingInfo.Show(index + 1, avatarState, canChallenge, false);
+                    bool isCurrentUser = avatarState.AvatarAddress.Equals(avatarAddress);
+
+                    rankingInfo.Show(index + 1, avatarState, canChallenge, isCurrentUser);
                     rankingInfo.onClickChallenge = OnClickChallenge;
                     rankingInfo.onClickInfo = OnClickAvatarInfo;
                     rankingInfo.gameObject.SetActive(true);
