@@ -79,6 +79,19 @@ namespace Nekoyume.UI
             SharedViewModel.IsWorldShown.Skip(1).Subscribe(UpdateWorld).AddTo(gameObject);
             SharedViewModel.SelectedStageId.Subscribe(UpdateStageInformation).AddTo(gameObject);
 
+            var tooltip = Widget.Find<ItemInformationTooltip>();
+
+            foreach(var view in stageInformation.rewardsAreaItemViews)
+            {
+                view.touchHandler.OnClick.Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    var model = new Model.CountableItem(new Game.Item.Material(view.Data as MaterialItemSheet.Row), 1);
+                    tooltip.Show(view.RectTransform, model);
+                    tooltip.itemInformation.iconArea.itemView.countText.enabled = false;
+                }).AddTo(view);
+            }
+
             var sheet = Game.Game.instance.TableSheets.WorldSheet;
             foreach (var world in worlds)
             {

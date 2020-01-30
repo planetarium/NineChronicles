@@ -17,18 +17,10 @@ namespace Nekoyume.UI.Module
         public ItemSheet.Row Data { get; private set; }
 
         public TouchHandler touchHandler;
-        private ItemInformationTooltip tooltip;
 
         protected void Awake()
         {
             RectTransform = GetComponent<RectTransform>();
-            tooltip = Widget.Find<ItemInformationTooltip>();
-
-            touchHandler.OnClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                ShowTooltip();
-            }).AddTo(gameObject);
         }
 
         protected void OnDestroy()
@@ -40,11 +32,6 @@ namespace Nekoyume.UI.Module
         {
             base.SetData(itemRow);
             Data = itemRow;
-        }
-
-        public void ShowTooltip()
-        {
-            tooltip.Show(RectTransform, new Model.CountableItem(new Game.Item.Material(Data as MaterialItemSheet.Row), 1));
         }
     }
 }
