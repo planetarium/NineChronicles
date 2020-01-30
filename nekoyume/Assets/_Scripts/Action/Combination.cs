@@ -13,7 +13,6 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using Material = Nekoyume.Model.Item.Material;
 
@@ -109,9 +108,7 @@ namespace Nekoyume.Action
             UnityEngine.Debug.Log($"Combination Get TableSheetsState: {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute Combination. player : `{AvatarAddress}` " +
-                                  $"node : `{States.Instance?.AgentState?.address}` " +
-                                  $"current avatar: `{States.Instance?.CurrentAvatarState?.address}`");
+            UnityEngine.Debug.Log($"Execute Combination. player : `{AvatarAddress}`");
 
             // 사용한 재료를 인벤토리에서 제거.
             foreach (var pair in Materials)
