@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Nekoyume.EnumType
+namespace Nekoyume.Model.Item
 {
     public enum ItemType
     {

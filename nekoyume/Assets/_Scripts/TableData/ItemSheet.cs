@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Elememtal;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.TableData
 {

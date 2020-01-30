@@ -1,6 +1,6 @@
 using System;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine.UI;

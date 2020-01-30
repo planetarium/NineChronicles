@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
-using Nekoyume.EnumType;
 using Nekoyume.Model;
 using Nekoyume.Model.Elememtal;
 using Nekoyume.Model.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.Stat;

@@ -1,18 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Assets.SimpleLocalization;
 using EnhancedUI.EnhancedScroller;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
-using Nekoyume.Model;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
-using UniRx.Async;
 using UnityEngine;
 using UnityEngine.UI;
 
