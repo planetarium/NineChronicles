@@ -19,13 +19,13 @@ namespace Nekoyume.TableData
             public int ATK { get; private set; }
             public int DEF { get; private set; }
             public decimal CRI { get; private set; }
-            public decimal DOG { get; private set; }
+            public decimal HIT { get; private set; }
             public decimal SPD { get; private set; }
             public int LvHP { get; private set; }
             public int LvATK { get; private set; }
             public int LvDEF { get; private set; }
             public decimal LvCRI { get; private set; }
-            public decimal LvDOG { get; private set; }
+            public decimal LvHIT { get; private set; }
             public decimal LvSPD { get; private set; }
             public float AttackRange { get; private set; }
             public float RunSpeed { get; private set; }
@@ -41,13 +41,13 @@ namespace Nekoyume.TableData
                 ATK = int.TryParse(fields[4], out var damage) ? damage : 0;
                 DEF = int.TryParse(fields[5], out var defense) ? defense : 0;
                 CRI = decimal.TryParse(fields[6], out var cri) ? cri : 0m;
-                DOG = decimal.TryParse(fields[7], out var dog) ? dog : 0m;
+                HIT = decimal.TryParse(fields[7], out var hit) ? hit : 0m;
                 SPD = decimal.TryParse(fields[8], out var spd) ? spd : 0m;
                 LvHP = int.TryParse(fields[9], out var lvHP) ? lvHP : 0;
                 LvATK = int.TryParse(fields[10], out var lvDamage) ? lvDamage : 0;
                 LvDEF = int.TryParse(fields[11], out var lvDefense) ? lvDefense : 0;
                 LvCRI = decimal.TryParse(fields[12], out var lvCri) ? lvCri : 0m;
-                LvDOG = decimal.TryParse(fields[13], out var lvDog) ? lvDog : 0m;
+                LvHIT = decimal.TryParse(fields[13], out var lvHit) ? lvHit : 0m;
                 LvSPD = decimal.TryParse(fields[14], out var lvSpd) ? lvSpd : 0m;
                 AttackRange = float.TryParse(fields[15], out var attackRange) ? attackRange : 1f;
                 RunSpeed = int.TryParse(fields[16], out var runSpeed) ? runSpeed : 1f;
@@ -67,7 +67,7 @@ namespace Nekoyume.TableData
             var atk = row.ATK;
             var def = row.DEF;
             var cri = row.CRI;
-            var dog = row.DOG;
+            var hit = row.HIT;
             var spd = row.SPD;
             if (level > 1)
             {
@@ -76,7 +76,7 @@ namespace Nekoyume.TableData
                 atk += row.LvATK * multiplier;
                 def += row.LvDEF * multiplier;
                 cri += row.LvCRI * multiplier;
-                dog += row.LvDOG * multiplier;
+                hit += row.LvHIT * multiplier;
                 spd += row.LvSPD * multiplier;
             }
 
@@ -85,7 +85,7 @@ namespace Nekoyume.TableData
             stats.AddStatValue(StatType.ATK, atk);
             stats.AddStatValue(StatType.DEF, def);
             stats.AddStatValue(StatType.CRI, cri);
-            stats.AddStatValue(StatType.DOG, dog);
+            stats.AddStatValue(StatType.HIT, hit);
             stats.AddStatValue(StatType.SPD, spd);
 
             return stats;

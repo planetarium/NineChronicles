@@ -34,7 +34,7 @@ namespace Tests.PlayMode
             caster.InitAI();
             caster.Targets.Add(target);
             target.Stats.SetStatForTest(StatType.DEF, 0);
-            target.Stats.SetStatForTest(StatType.DOG, 0);
+            target.Stats.SetStatForTest(StatType.HIT, 0);
         }
 
         [TearDown]

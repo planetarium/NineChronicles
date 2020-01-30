@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Module
                         : (value / 100f).ToString(CultureInfo.InvariantCulture);
                     break;
                 case StatType.CRI:
-                case StatType.DOG:
+                case StatType.HIT:
                     str = isSigned
                         ? value.ToString("+0.#\\%;-0.#\\%")
                         : $"{value:0.#\\%}";

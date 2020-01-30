@@ -173,6 +173,11 @@ namespace Nekoyume.Model
 
             _equipments = value._equipments;
         }
+        
+        public override bool IsHit(CharacterBase caster)
+        {
+            return true;
+        }
 
         private void PostConstruction(TableSheets sheets)
         {

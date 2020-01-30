@@ -44,8 +44,8 @@ namespace Nekoyume.Model.Buff
                 case StatType.CRI:
                     value = characterBase.CRI;
                     break;
-                case StatType.DOG:
-                    value = characterBase.DOG;
+                case StatType.HIT:
+                    value = characterBase.HIT;
                     break;
                 case StatType.SPD:
                     value = characterBase.SPD;

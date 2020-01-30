@@ -12,21 +12,21 @@ namespace Nekoyume.Model.Stat
         protected readonly IntStat atk = new IntStat(StatType.ATK);
         protected readonly IntStat def = new IntStat(StatType.DEF);
         protected readonly DecimalStat cri = new DecimalStat(StatType.CRI);
-        protected readonly DecimalStat dog = new DecimalStat(StatType.DOG);
+        protected readonly DecimalStat hit = new DecimalStat(StatType.HIT);
         protected readonly DecimalStat spd = new DecimalStat(StatType.SPD);
 
         public int HP => hp.Value;
         public int ATK => atk.Value;
         public int DEF => def.Value;
         public int CRI => cri.ValueAsInt;
-        public int DOG => dog.ValueAsInt;
+        public int HIT => hit.ValueAsInt;
         public int SPD => spd.ValueAsInt;
 
         public bool HasHP => HP > 0;
         public bool HasATK => ATK > 0;
         public bool HasDEF => DEF > 0;
         public bool HasCRI => CRI > 0;
-        public bool HasDOG => DOG > 0;
+        public bool HasHIT => HIT > 0;
         public bool HasSPD => SPD > 0;
 
         public int CurrentHP
@@ -45,7 +45,7 @@ namespace Nekoyume.Model.Stat
             atk = (IntStat)value.atk.Clone();
             def = (IntStat)value.def.Clone();
             cri = (DecimalStat)value.cri.Clone();
-            dog = (DecimalStat)value.dog.Clone();
+            hit = (DecimalStat)value.hit.Clone();
             spd = (DecimalStat)value.spd.Clone();
         }
 
@@ -55,7 +55,7 @@ namespace Nekoyume.Model.Stat
             atk.Reset();
             def.Reset();
             cri.Reset();
-            dog.Reset();
+            hit.Reset();
             spd.Reset();
         }
 
@@ -69,7 +69,7 @@ namespace Nekoyume.Model.Stat
             atk.SetValue(statsArray.Sum(stats => stats.atk.Value));
             def.SetValue(statsArray.Sum(stats => stats.def.Value));
             cri.SetValue(statsArray.Sum(stats => stats.cri.Value));
-            dog.SetValue(statsArray.Sum(stats => stats.dog.Value));
+            hit.SetValue(statsArray.Sum(stats => stats.hit.Value));
             spd.SetValue(statsArray.Sum(stats => stats.spd.Value));
         }
 
@@ -99,8 +99,8 @@ namespace Nekoyume.Model.Stat
                     case StatType.CRI:
                         cri.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.cri.Value)));
                         break;
-                    case StatType.DOG:
-                        dog.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.dog.Value)));
+                    case StatType.HIT:
+                        hit.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.hit.Value)));
                         break;
                     case StatType.SPD:
                         spd.AddValue(statModifier.GetModifiedPart(baseStatsArray.Sum(stats => stats.spd.Value)));
@@ -121,7 +121,7 @@ namespace Nekoyume.Model.Stat
             atk.SetValue(value.ATK);
             def.SetValue(value.DEF);
             cri.SetValue(value.CRI);
-            dog.SetValue(value.DOG);
+            hit.SetValue(value.HIT);
             spd.SetValue(value.SPD);
         }
 
@@ -147,8 +147,8 @@ namespace Nekoyume.Model.Stat
                 case StatType.CRI:
                     cri.SetValue(value);
                     break;
-                case StatType.DOG:
-                    dog.SetValue(value);
+                case StatType.HIT:
+                    hit.SetValue(value);
                     break;
                 case StatType.SPD:
                     spd.SetValue(value);
@@ -170,8 +170,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DEF, DEF);
                 if (HasCRI)
                     yield return (StatType.CRI, CRI);
-                if (HasDOG)
-                    yield return (StatType.DOG, DOG);
+                if (HasHIT)
+                    yield return (StatType.HIT, HIT);
                 if (HasSPD)
                     yield return (StatType.SPD, SPD);
             }
@@ -181,7 +181,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.ATK, ATK);
                 yield return (StatType.DEF, DEF);
                 yield return (StatType.CRI, CRI);
-                yield return (StatType.DOG, DOG);
+                yield return (StatType.HIT, HIT);
                 yield return (StatType.SPD, SPD);
             }
         }

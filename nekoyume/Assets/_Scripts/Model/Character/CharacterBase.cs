@@ -10,7 +10,6 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
-using UniRx;
 
 namespace Nekoyume.Model
 {
@@ -54,7 +53,7 @@ namespace Nekoyume.Model
         public int ATK => Stats.ATK;
         public int DEF => Stats.DEF;
         public int CRI => Stats.CRI;
-        public int DOG => Stats.DOG;
+        public int HIT => Stats.HIT;
         public int SPD => Stats.SPD;
 
         public int CurrentHP
@@ -235,10 +234,10 @@ namespace Nekoyume.Model
         {
             var correction = result == ElementalResult.Lose ? 50 : 0;
             var chance = Simulator.Random.Next(0, 100);
-            return chance >= Stats.DOG + correction;
+            return chance >= Stats.HIT + correction;
         }
 
-        public bool IsHit(CharacterBase caster)
+        public virtual bool IsHit(CharacterBase caster)
         {
             var correction = 0;
             var diff = caster.Level - Level;
@@ -329,13 +328,15 @@ namespace Nekoyume.Model
             }
             
             // 2단계.
-            var additionalCorrection = (caster.DOG - (float)DOG / 3) / DOG; 
+            var additionalCorrection = (caster.HIT - (float)HIT / 3) / HIT; 
             correction += (int) Math.Min(Math.Max(additionalCorrection, 0f), 50f);
             
             // 3단계.
             correction = Math.Min(Math.Max(correction, 10), 90);
 
             var chance = Simulator.Random.Next(0, 100);
+            // Log for test.
+            // Debug.LogWarning($"AttackerId: {caster.RowData.Id} / DefenderId: {RowData.Id} / correction: {correction} / chance: {chance} / result: {correction >= chance}");
             return chance <= correction;
         }
 
