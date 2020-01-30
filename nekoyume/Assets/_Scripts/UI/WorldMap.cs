@@ -25,7 +25,7 @@ namespace Nekoyume.UI
             public TextMeshProUGUI monstersAreaText;
             public List<VanillaCharacterView> monstersAreaCharacterViews;
             public TextMeshProUGUI rewardsAreaText;
-            public List<VanillaItemView> rewardsAreaItemViews;
+            public List<StageRewardItemView> rewardsAreaItemViews;
             public TextMeshProUGUI expText;
         }
 
