@@ -23,10 +23,12 @@ namespace Nekoyume.UI
         public ConfirmDelegate CloseCallback { get; set; }
         public Blur blur;
 
+        private float blurRadius;
+
         public override void Show()
         {
             base.Show();
-            blur?.Show();
+            blur?.Show(radius:blurRadius);
         }
 
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
@@ -44,7 +46,7 @@ namespace Nekoyume.UI
         }
 
         public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true)
+            bool localize = true, float blurRadius = 1)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
@@ -65,6 +67,7 @@ namespace Nekoyume.UI
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
+            this.blurRadius = blurRadius;
         }
 
         public void Yes()
