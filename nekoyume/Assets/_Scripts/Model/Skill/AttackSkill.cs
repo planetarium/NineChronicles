@@ -20,8 +20,10 @@ namespace Nekoyume.Model.Skill
         /// </summary>
         /// <param name="caster"></param>
         /// <param name="simulatorWaveTurn"></param>
+        /// <param name="isNormalAttack"></param>
         /// <returns></returns>
-        protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessDamage(CharacterBase caster, int simulatorWaveTurn)
+        protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessDamage(CharacterBase caster, int simulatorWaveTurn,
+            bool isNormalAttack = false)
         {
             var infos = new List<BattleStatus.Skill.SkillInfo>();
             var targets = skillRow.SkillTargetType.GetTarget(caster).ToList();
@@ -35,7 +37,8 @@ namespace Nekoyume.Model.Skill
                 foreach (var target in targets)
                 {
                     var isCritical = false;
-                    if (target.IsHit(caster))
+                    if (!isNormalAttack ||
+                        target.IsHit(caster))
                     {
                         damage -= target.DEF;
                         if (damage < 1)
@@ -44,10 +47,10 @@ namespace Nekoyume.Model.Skill
                         }
                         else
                         {
-                            damage = caster.GetDamage(damage);
+                            damage = caster.GetDamage(damage, isNormalAttack);
                             damage = elementalType.GetDamage(target.defElementType, damage);
                             damage = (int) (damage * multiplier);
-                            isCritical = caster.IsCritical();
+                            isCritical = caster.IsCritical(isNormalAttack);
                             if (isCritical)
                             {
                                 damage = (int) (damage * CharacterBase.CriticalMultiplier);

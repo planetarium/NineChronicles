@@ -256,23 +256,32 @@ namespace Nekoyume.Model
             return isHit;
         }
 
-        public int GetDamage(int skillPower)
+        public int GetDamage(int skillPower, bool considerAttackCount = true)
         {
+            var damage = ATK + skillPower;
+
+            if (!considerAttackCount)
+                return damage;
+            
             AttackCount++;
             if (AttackCount > AttackCountMax)
             {
                 AttackCount = 1;
             }
-
+            
+            var damageMultiplier = (int) AttackCountHelper.GetDamageMultiplier(AttackCount, AttackCountMax);
+            damage *= damageMultiplier;
+            
 #if TEST_LOG
             var sb = new StringBuilder(RowData.Id.ToString());
             sb.Append($" / {nameof(AttackCount)}: {AttackCount}");
             sb.Append($" / {nameof(AttackCountMax)}: {AttackCountMax}");
+            sb.Append($" / {nameof(damageMultiplier)}: {damageMultiplier}");
+            sb.Append($" / {nameof(damage)}: {damage}");
             Debug.LogWarning(sb.ToString());
 #endif
             
-            var damageMultiplier = (int) AttackCountHelper.GetDamageMultiplier(AttackCount, AttackCountMax);
-            return (ATK + skillPower) * damageMultiplier;
+            return damage;
         }
 
         private bool IsAlive()
