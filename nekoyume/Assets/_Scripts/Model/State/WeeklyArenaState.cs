@@ -5,7 +5,6 @@ using System.Linq;
 using Bencodex.Types;
 using DecimalMath;
 using Libplanet;
-using Nekoyume.Helper;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
