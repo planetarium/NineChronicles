@@ -1,5 +1,5 @@
 using System;
-using Nekoyume.EnumType;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Buff

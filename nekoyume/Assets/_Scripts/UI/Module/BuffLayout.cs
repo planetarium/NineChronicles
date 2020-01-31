@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Buff;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Module
 {

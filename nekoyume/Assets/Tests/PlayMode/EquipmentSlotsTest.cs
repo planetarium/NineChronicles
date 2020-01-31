@@ -1,5 +1,5 @@
 using System.Collections;
-using Nekoyume.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using NUnit.Framework;

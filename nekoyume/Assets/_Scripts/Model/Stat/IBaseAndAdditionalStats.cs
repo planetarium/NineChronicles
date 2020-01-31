@@ -1,4 +1,3 @@
-using Nekoyume.EnumType;
 using System.Collections.Generic;
 
 namespace Nekoyume.Model.Stat

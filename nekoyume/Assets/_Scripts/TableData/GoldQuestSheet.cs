@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.EnumType;
+using Nekoyume.Model.EnumType;
 
 namespace Nekoyume.TableData
 {

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 using Assets.SimpleLocalization;
 using Bencodex.Types;
-using Nekoyume.EnumType;
 using Nekoyume.Helper;
+using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using UnityEngine;

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.EnumType;
-using Nekoyume.Model;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill

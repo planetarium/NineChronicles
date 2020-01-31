@@ -1,5 +1,5 @@
 using System;
-using Nekoyume.Helper;
+using Nekoyume.Model.Character;
 using NUnit.Framework;
 
 namespace Tests.EditMode

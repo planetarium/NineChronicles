@@ -1,4 +1,4 @@
-namespace Nekoyume.EnumType
+namespace Nekoyume.Model.EnumType
 {
     public enum TradeType
     {

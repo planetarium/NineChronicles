@@ -1,4 +1,4 @@
-namespace Nekoyume.EnumType
+namespace Nekoyume.Model.Character
 {
     public enum SizeType
     {

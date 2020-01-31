@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 
-namespace Nekoyume.EnumType
+namespace Nekoyume.Model.Stat
 {
     public enum StatType
     {

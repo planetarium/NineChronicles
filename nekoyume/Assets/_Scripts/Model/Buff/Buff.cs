@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.EnumType;
-using Nekoyume.Model;
+using Nekoyume.Model.Skill;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Buff
