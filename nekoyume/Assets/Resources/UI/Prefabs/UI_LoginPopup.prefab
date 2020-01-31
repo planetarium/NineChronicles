@@ -444,6 +444,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7182289109797585587}
   - component: {fileID: 891819547867409659}
+  - component: {fileID: 3870033807019027171}
   m_Layer: 5
   m_Name: FindPassphraseGroup
   m_TagString: Untagged
@@ -497,6 +498,26 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &3870033807019027171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416671077510191240}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 397
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &1589768945653462265
 GameObject:
   m_ObjectHideFlags: 0
@@ -1175,6 +1196,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6920491678829591357}
   - component: {fileID: 825799395934297090}
+  - component: {fileID: 6315039271822012034}
   m_Layer: 5
   m_Name: LoginGroup
   m_TagString: Untagged
@@ -1228,6 +1250,26 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &6315039271822012034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3313429136516374688}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 397
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &3413807606543000862
 GameObject:
   m_ObjectHideFlags: 0
@@ -4601,6 +4643,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8982525101875038981}
   - component: {fileID: 8982525101875038980}
+  - component: {fileID: 3436630258178790986}
   m_Layer: 5
   m_Name: PassphraseGroup
   m_TagString: Untagged
@@ -4654,6 +4697,26 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &3436630258178790986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8982525101875038982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 397
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &8982525101922509726
 GameObject:
   m_ObjectHideFlags: 0
@@ -6124,6 +6187,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8982525103368611580}
   - component: {fileID: 8982525103368611571}
+  - component: {fileID: 2556275165092627479}
   m_Layer: 5
   m_Name: RetypeGroup
   m_TagString: Untagged
@@ -6177,6 +6241,26 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &2556275165092627479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8982525103368611581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: 397
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1001 &667241856819533038
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6188,11 +6272,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: SubmitButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 6171963424519086264, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
-        type: 3}
-      propertyPath: m_text
-      value: GAME START
       objectReference: {fileID: 0}
     - target: {fileID: 7016187563049540283, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
         type: 3}
@@ -6213,6 +6292,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.wordCount
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6171963424519086264, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
+        type: 3}
+      propertyPath: m_text
+      value: GAME START
       objectReference: {fileID: 0}
     - target: {fileID: 3295112531194159851, guid: f7054cc9c15e14f0fa1e5cbc714e3845,
         type: 3}
