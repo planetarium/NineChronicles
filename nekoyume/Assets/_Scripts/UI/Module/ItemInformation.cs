@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
-using Nekoyume.Helper;
+using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;

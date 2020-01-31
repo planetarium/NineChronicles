@@ -7,6 +7,7 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -48,7 +49,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"Sell exec started.");
+            Log.Debug($"Sell exec started.");
 
 
             if (price < 0)
@@ -61,7 +62,7 @@ namespace Nekoyume.Action
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug($"Sell Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
@@ -70,10 +71,10 @@ namespace Nekoyume.Action
             }
             var shopState = new ShopState(d);
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Get ShopState: {sw.Elapsed}");
+            Log.Debug($"Sell Get ShopState: {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute Sell. seller : `{sellerAvatarAddress}`");
+            Log.Debug($"Execute Sell. seller : `{sellerAvatarAddress}`");
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (!avatarState.inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable nonFungibleItem))
@@ -95,7 +96,7 @@ namespace Nekoyume.Action
                 price
             ));
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Get Register Item: {sw.Elapsed}");
+            Log.Debug($"Sell Get Register Item: {sw.Elapsed}");
             sw.Restart();
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
@@ -103,14 +104,14 @@ namespace Nekoyume.Action
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Set AvatarState: {sw.Elapsed}");
+            Log.Debug($"Sell Set AvatarState: {sw.Elapsed}");
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopState.Serialize());
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"Sell Set ShopState: {sw.Elapsed}");
-            UnityEngine.Debug.Log($"Sell Total Executed Time: {ended - started}");
+            Log.Debug($"Sell Set ShopState: {sw.Elapsed}");
+            Log.Debug($"Sell Total Executed Time: {ended - started}");
 
             return states;
         }

@@ -1,9 +1,8 @@
 using System;
-using Nekoyume.Model;
-using Nekoyume.Model.Skill;
+using System.Collections.Generic;
 using Nekoyume.TableData;
 
-namespace Nekoyume.Game
+namespace Nekoyume.Model.Skill
 {
     [Serializable]
     public class AreaAttack : AttackSkill
@@ -12,9 +11,16 @@ namespace Nekoyume.Game
         {
         }
 
-        public override Model.BattleStatus.Skill Use(CharacterBase caster, int simulatorWaveTurn)
+        public override Model.BattleStatus.Skill Use(
+            CharacterBase caster, 
+            int simulatorWaveTurn, 
+            IEnumerable<Buff.Buff> buffs)
         {
-            return new Model.BattleStatus.AreaAttack((CharacterBase) caster.Clone(), ProcessDamage(caster, simulatorWaveTurn), ProcessBuff(caster, simulatorWaveTurn));
+            return new Model.BattleStatus.AreaAttack(
+                (CharacterBase) caster.Clone(), 
+                ProcessDamage(caster, simulatorWaveTurn), 
+                ProcessBuff(caster, simulatorWaveTurn, buffs)
+            );
         }
     }
 }

@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.EnumType;
-using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
-using Skill = Nekoyume.Model.Skill.Skill;
 
-namespace Nekoyume.Helper
+namespace Nekoyume.Model
 {
     public static class CPHelper
     {
@@ -23,7 +20,7 @@ namespace Nekoyume.Helper
             // todo: 구현!
             return 100;
         }
-        
+
         /// <summary>
         /// `Player`의 CP를 리턴한다.
         /// </summary>
@@ -36,9 +33,9 @@ namespace Nekoyume.Helper
 
         public static int GetCP(Enemy enemy)
         {
-            var result = (float) GetCP(enemy.Stats.LevelStats, StatType.ATK);
+            var result = (float)GetCP(enemy.Stats.LevelStats, StatType.ATK);
             result = enemy.Skills.Aggregate(result, (current, skill) => current * GetCP(skill));
-            return (int) enemy.BuffSkills.Aggregate(result, (current, buffSkill) => current * GetCP(buffSkill));
+            return (int)enemy.BuffSkills.Aggregate(result, (current, buffSkill) => current * GetCP(buffSkill));
         }
 
         /// <summary>
@@ -51,9 +48,9 @@ namespace Nekoyume.Helper
         /// <returns></returns>
         public static int GetCP(Equipment equipment)
         {
-            var result = (float) GetCP(equipment.StatsMap, equipment.UniqueStatType, false);
+            var result = (float)GetCP(equipment.StatsMap, equipment.UniqueStatType, false);
             result = equipment.Skills.Aggregate(result, (current, skill) => current * GetCP(skill));
-            return (int) equipment.BuffSkills.Aggregate(result, (current, buffSkill) => current * GetCP(buffSkill));
+            return (int)equipment.BuffSkills.Aggregate(result, (current, buffSkill) => current * GetCP(buffSkill));
         }
 
         /// <summary>
@@ -79,7 +76,7 @@ namespace Nekoyume.Helper
             return GetCP(statsMap.GetBaseAndAdditionalStats(true), uniqueStatType, isCharacter);
         }
 
-        private static float GetCP(Skill skill)
+        private static float GetCP(Skill.Skill skill)
         {
             switch (skill.skillRow.SkillType)
             {
@@ -172,7 +169,7 @@ namespace Nekoyume.Helper
                 }
             }
 
-            return (int) (part1 * part2 * part3);
+            return (int)(part1 * part2 * part3);
         }
 
         private static int GetCP(
@@ -234,7 +231,7 @@ namespace Nekoyume.Helper
                 }
             }
 
-            return (int) (part1 * part2 * part3);
+            return (int)(part1 * part2 * part3);
         }
     }
 }

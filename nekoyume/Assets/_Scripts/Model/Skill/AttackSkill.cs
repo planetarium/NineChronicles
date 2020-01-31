@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Elemental;
 using Nekoyume.TableData;
-using Unity.Mathematics;
 
 namespace Nekoyume.Model.Skill
 {
@@ -48,7 +47,7 @@ namespace Nekoyume.Model.Skill
                         // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
                         damage = (int)((long)damage * damage / (damage + target.DEF));
                         damage = (int)(damage * multiply);
-                        damage = math.max(damage, 1);
+                        damage = Math.Max(damage, 1);
                         if (critical)
                         {
                             damage = (int)(damage * CharacterBase.CriticalMultiplier);

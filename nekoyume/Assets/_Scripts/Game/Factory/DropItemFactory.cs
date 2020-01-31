@@ -4,6 +4,7 @@ using Nekoyume.Data;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.Util;
 using Nekoyume.Model.Item;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Game.Factory
