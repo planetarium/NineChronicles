@@ -203,7 +203,7 @@ namespace Nekoyume
                 yield break;
             }
 
-            yield return new WaitUntil(() => rectTransform.gameObject.activeSelf);
+            yield return new WaitUntil(() => rectTransform.rect.width != 0);
 
             rectTransform.position = target.position;
             float2 anchoredPosition = rectTransform.anchoredPosition;
@@ -221,6 +221,8 @@ namespace Nekoyume
 
             anchoredPosition += target.GetPivotPositionFromAnchor(pivotPresetType) + offset;
             rectTransform.anchoredPosition = anchoredPosition;
+
+            rectTransform.MoveInsideOfParent(offset);
         }
 
         public static void MoveInsideOfParent(this RectTransform rectTransform)
@@ -234,7 +236,7 @@ namespace Nekoyume
             {
                 return;
             }
-            
+
             parent.GetPositions(rectTransform.pivot, out var bottomLeft, out var topRight);
             
             var anchoredPosition = rectTransform.anchoredPosition;
