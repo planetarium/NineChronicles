@@ -120,7 +120,7 @@ namespace Nekoyume.UI.Scroller
                     rankImage.overrideSprite = SpriteHelper.GetRankIcon(rank); 
                     break;
                 default:
-                    rankImageContainer.SetActive(true);
+                    rankImageContainer.SetActive(false);
                     rankTextContainer.SetActive(true);
                     rankText.text = rank.ToString();
                     break;
