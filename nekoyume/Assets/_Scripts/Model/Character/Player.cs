@@ -181,6 +181,7 @@ namespace Nekoyume.Model
 
         private void PostConstruction(TableSheets sheets)
         {
+            AttackCountMax = AttackCountHelper.GetCountMax(Level);
             UpdateExp(sheets);
             Equip(Inventory.Items, sheets.EquipmentItemSetEffectSheet);
         }

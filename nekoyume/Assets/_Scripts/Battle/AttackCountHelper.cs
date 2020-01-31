@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Nekoyume.Helper.Battle
+namespace Nekoyume.Battle
 {
     public static class AttackCountHelper
     {

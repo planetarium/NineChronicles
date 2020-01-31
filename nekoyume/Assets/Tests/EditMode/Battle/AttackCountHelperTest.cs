@@ -1,5 +1,5 @@
 using System;
-using Nekoyume.Helper.Battle;
+using Nekoyume.Battle;
 using NUnit.Framework;
 
 namespace Tests.EditMode.Battle

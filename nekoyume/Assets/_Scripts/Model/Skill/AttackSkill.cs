@@ -56,10 +56,6 @@ namespace Nekoyume.Model.Skill
 
                         target.CurrentHP -= damage;
                     }
-                    else
-                    {
-                        caster.attackCount = 0;
-                    }
 
                     // 연타공격은 항상 연출이 크리티컬로 보이도록 처리
                     if (skillRow.SkillCategory == SkillCategory.DoubleAttack)
