@@ -99,6 +99,8 @@ namespace Nekoyume.UI
 
         public Model SharedModel { get; private set; }
 
+        public Subject<bool> BattleEndedSubject = new Subject<bool>();
+
         protected override void Awake()
         {
             base.Awake();
@@ -149,6 +151,8 @@ namespace Nekoyume.UI
         public void Show(Model model)
         {
             base.Show();
+
+            BattleEndedSubject.OnNext(IsActive());
             canvasGroup.alpha = 1f;
             SharedModel = model;
             UpdateView();

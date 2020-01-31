@@ -306,12 +306,14 @@ namespace Nekoyume.BlockChain
         
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var battleResultWidget = Widget.Find<BattleResult>();
 
-            foreach (var questId in eval.Action.completedQuestIds)
+            battleResultWidget.BattleEndedSubject.Subscribe(_ =>
             {
-                LocalStateModifier.AddReceivableQuest(avatarAddress, questId);
-            }
+                foreach (var questId in eval.Action.completedQuestIds)
+                    LocalStateModifier.AddReceivableQuest(States.Instance.CurrentAvatarState.address, questId);
+            });
+
             UpdateCurrentAvatarState(eval);
             UpdateWeeklyArenaState(eval);
 
