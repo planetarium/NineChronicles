@@ -1,4 +1,8 @@
 using System;
+using System.Text;
+using UnityEngine;
+
+// #define LOG
 
 namespace Nekoyume.Helper
 {
@@ -12,13 +16,26 @@ namespace Nekoyume.Helper
         public const int GetHitStep2AdditionalCorrectionMax = 50;
         public const int GetHitStep3CorrectionMin = 10;
         public const int GetHitStep3CorrectionMax = 90;
-        
-        public static bool IsHit(int attackerLevel, int attackerHit, int defenderLevel, int defenderHit, int lowLimitChance)
+
+        public static bool IsHit(int attackerLevel, int attackerHit, int defenderLevel, int defenderHit,
+            int lowLimitChance)
         {
             var correction = GetHitStep1(attackerLevel, defenderLevel);
             correction += GetHitStep2(attackerHit, defenderHit);
             correction = GetHitStep3(correction);
-            return GetHitStep4(lowLimitChance, correction);
+            var isHit = GetHitStep4(lowLimitChance, correction);
+#if LOG
+            var sb = new StringBuilder();
+            sb.Append($"{nameof(attackerLevel)}: {attackerLevel}");
+            sb.Append($"/ {nameof(attackerHit)}: {attackerHit}");
+            sb.Append($"/ {nameof(defenderLevel)}: {defenderLevel}");
+            sb.Append($"/ {nameof(defenderHit)}: {defenderHit}");
+            sb.Append($"/ {nameof(lowLimitChance)}: {lowLimitChance}");
+            sb.Append($"/ {nameof(correction)}: {correction}");
+            sb.Append($"/ {nameof(isHit)}: {isHit}");
+            Debug.LogWarning(sb.ToString());
+#endif
+            return isHit;
         }
 
         public static int GetHitStep1(int attackerLevel, int defenderLevel)
@@ -117,8 +134,9 @@ namespace Nekoyume.Helper
         {
             attackerHit = Math.Max(1, attackerHit);
             defenderHit = Math.Max(1, defenderHit);
-            var additionalCorrection = (int) ((attackerHit - defenderHit / 3f) / defenderHit);
-            return Math.Min(Math.Max(additionalCorrection, GetHitStep2AdditionalCorrectionMin), GetHitStep2AdditionalCorrectionMax);
+            var additionalCorrection = (int) ((attackerHit - defenderHit / 3f) / defenderHit * 100);
+            return Math.Min(Math.Max(additionalCorrection, GetHitStep2AdditionalCorrectionMin),
+                GetHitStep2AdditionalCorrectionMax);
         }
 
         public static int GetHitStep3(int correction)
@@ -128,7 +146,7 @@ namespace Nekoyume.Helper
 
         public static bool GetHitStep4(int lowLimitChance, int correction)
         {
-            return lowLimitChance <= correction;
+            return correction >= lowLimitChance;
         }
     }
 }

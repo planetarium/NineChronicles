@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                additionalText.text = (additionalStatValue > 0)
+                additionalText.text = additionalStatValue > 0
                     ? $"({GetStatString(statType, additionalStatValue, true)})"
                     : $"<color=red>({GetStatString(statType, additionalStatValue, true)})</color>";
             }
@@ -55,33 +55,26 @@ namespace Nekoyume.UI.Module
 
         protected string GetStatString(StatType statType, int value, bool isSigned = false)
         {
-            string str = string.Empty;
-
             switch (statType)
             {
                 case StatType.HP:
                 case StatType.ATK:
                 case StatType.DEF:
-                    str = isSigned
+                case StatType.HIT:
+                    return isSigned
                         ? value.ToString("+0.#;-0.#")
                         : value.ToString();
-                    break;
-                case StatType.SPD:
-                    str = isSigned
-                        ? (value / 100f).ToString("+0.#;-0.#", CultureInfo.InvariantCulture)
-                        : (value / 100f).ToString(CultureInfo.InvariantCulture);
-                    break;
                 case StatType.CRI:
-                case StatType.HIT:
-                    str = isSigned
+                    return isSigned
                         ? value.ToString("+0.#\\%;-0.#\\%")
                         : $"{value:0.#\\%}";
-                    break;
+                case StatType.SPD:
+                    return isSigned
+                        ? (value / 100f).ToString("+0.#;-0.#", CultureInfo.InvariantCulture)
+                        : (value / 100f).ToString(CultureInfo.InvariantCulture);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
             }
-
-            return str;
         }
     }
 }

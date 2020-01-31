@@ -11,7 +11,7 @@ namespace Nekoyume.UI.Module
 
         public override void Show(StatType statType, int before)
         {
-            arrowImage.enabled = false; ;
+            arrowImage.enabled = false;
             afterText.enabled = false;
             base.Show(statType, before);
         }
