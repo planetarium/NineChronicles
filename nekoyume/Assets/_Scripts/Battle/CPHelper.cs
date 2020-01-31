@@ -9,10 +9,19 @@ using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Skill = Nekoyume.Model.Skill.Skill;
 
-namespace Nekoyume.Helper
+namespace Nekoyume.Battle
 {
     public static class CPHelper
     {
+        public const decimal CPNormalAttackMultiply = 1m;
+        public const decimal CPBlowAttackMultiply = 1.1m;
+        public const decimal CPBlowAllAttackMultiply = 1.15m;
+        public const decimal CPDoubleAttackMultiply = 1.15m;
+        public const decimal CPAreaAttackMultiply = 1.2m;
+        public const decimal CPHealMultiply = 1.1m;
+        public const decimal CPBuffMultiply = 1.1m;
+        public const decimal CPDebuffMultiply = 1.1m;
+        
         /// <summary>
         /// `AvatarState`의 CP를 리턴한다.
         /// </summary>
@@ -36,7 +45,7 @@ namespace Nekoyume.Helper
 
         public static int GetCP(Enemy enemy)
         {
-            var result = (float) GetCP(enemy.Stats.LevelStats, StatType.ATK);
+            var result = (decimal) GetCP(enemy.Stats.LevelStats, StatType.ATK);
             result = enemy.Skills.Aggregate(result, (current, skill) => current * GetCP(skill));
             return (int) enemy.BuffSkills.Aggregate(result, (current, buffSkill) => current * GetCP(buffSkill));
         }
@@ -51,7 +60,7 @@ namespace Nekoyume.Helper
         /// <returns></returns>
         public static int GetCP(Equipment equipment)
         {
-            var result = (float) GetCP(equipment.StatsMap, equipment.UniqueStatType, false);
+            var result = (decimal) GetCP(equipment.StatsMap, equipment.UniqueStatType, false);
             result = equipment.Skills.Aggregate(result, (current, skill) => current * GetCP(skill));
             return (int) equipment.BuffSkills.Aggregate(result, (current, buffSkill) => current * GetCP(buffSkill));
         }
@@ -79,7 +88,7 @@ namespace Nekoyume.Helper
             return GetCP(statsMap.GetBaseAndAdditionalStats(true), uniqueStatType, isCharacter);
         }
 
-        private static float GetCP(Skill skill)
+        private static decimal GetCP(Skill skill)
         {
             switch (skill.skillRow.SkillType)
             {
@@ -87,29 +96,29 @@ namespace Nekoyume.Helper
                     switch (skill.skillRow.SkillCategory)
                     {
                         case SkillCategory.NormalAttack:
-                            return GameConfig.CPNormalAttackMultiply;
+                            return CPNormalAttackMultiply;
                         case SkillCategory.BlowAttack:
                             switch (skill.skillRow.SkillTargetType)
                             {
                                 case SkillTargetType.Enemies:
-                                    return GameConfig.CPBlowAllAttackMultiply;
+                                    return CPBlowAllAttackMultiply;
                                 default:
-                                    return GameConfig.CPBlowAttackMultiply;
+                                    return CPBlowAttackMultiply;
                             }
                         case SkillCategory.DoubleAttack:
-                            return GameConfig.CPDoubleAttackMultiply;
+                            return CPDoubleAttackMultiply;
                         case SkillCategory.AreaAttack:
-                            return GameConfig.CPAreaAttackMultiply;
+                            return CPAreaAttackMultiply;
                         default:
                             throw new ArgumentOutOfRangeException(
                                 $"{nameof(skill.skillRow.SkillType)}, {nameof(skill.skillRow.SkillCategory)}");
                     }
                 case SkillType.Heal:
-                    return GameConfig.CPHealMultiply;
+                    return CPHealMultiply;
                 case SkillType.Buff:
-                    return GameConfig.CPBuffMultiply;
+                    return CPBuffMultiply;
                 case SkillType.Debuff:
-                    return GameConfig.CPDebuffMultiply;
+                    return CPDebuffMultiply;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -119,9 +128,9 @@ namespace Nekoyume.Helper
             IEnumerable<(StatType statType, int value)> baseAndAdditionalStats,
             StatType uniqueStatType, bool isCharacter = true)
         {
-            var part1 = 0f;
-            var part2 = 1f;
-            var part3 = 1f;
+            var part1 = 0m;
+            var part2 = 1m;
+            var part3 = 1m;
             foreach (var (statType, value) in baseAndAdditionalStats)
             {
                 if (statType == uniqueStatType)
@@ -131,11 +140,11 @@ namespace Nekoyume.Helper
                         case StatType.CRI:
                         case StatType.HIT:
                         case StatType.SPD:
-                            part1 += value / 100f;
+                            part1 += value / 100m;
                             if (isCharacter)
                                 break;
 
-                            part1 += 1f;
+                            part1 += 1m;
                             break;
                         default:
                             part1 += value;
@@ -159,11 +168,11 @@ namespace Nekoyume.Helper
                     case StatType.SPD:
                         if (isCharacter)
                         {
-                            part3 *= value / 100f;
+                            part3 *= value / 100m;
                         }
                         else
                         {
-                            part3 *= 1f + value / 100f;
+                            part3 *= 1m + value / 100m;
                         }
 
                         break;
@@ -179,9 +188,9 @@ namespace Nekoyume.Helper
             IEnumerable<(StatType statType, int baseValue, int additionalValue)> baseAndAdditionalStats,
             StatType uniqueStatType, bool isCharacter = true)
         {
-            var part1 = 0f;
-            var part2 = 1f;
-            var part3 = 1f;
+            var part1 = 0m;
+            var part2 = 1m;
+            var part3 = 1m;
             foreach (var (statType, baseValue, additionalValue) in baseAndAdditionalStats)
             {
                 if (statType == uniqueStatType)
@@ -191,12 +200,12 @@ namespace Nekoyume.Helper
                         case StatType.CRI:
                         case StatType.HIT:
                         case StatType.SPD:
-                            part1 += baseValue / 100f;
-                            part2 += additionalValue / 100f;
+                            part1 += baseValue / 100m;
+                            part2 += additionalValue / 100m;
                             if (isCharacter)
                                 break;
 
-                            part1 += 1f;
+                            part1 += 1m;
                             break;
                         default:
                             part1 += baseValue;
@@ -221,11 +230,11 @@ namespace Nekoyume.Helper
                     case StatType.SPD:
                         if (isCharacter)
                         {
-                            part3 *= (baseValue + additionalValue) / 100f;
+                            part3 *= (baseValue + additionalValue) / 100m;
                         }
                         else
                         {
-                            part3 *= 1 + (baseValue + additionalValue) / 100f;
+                            part3 *= 1 + (baseValue + additionalValue) / 100m;
                         }
 
                         break;
