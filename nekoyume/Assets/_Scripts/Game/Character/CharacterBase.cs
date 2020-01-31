@@ -76,7 +76,7 @@ namespace Nekoyume.Game.Character
 
         public CharacterAnimator Animator { get; protected set; }
         protected Vector3 HUDOffset => Animator.GetHUDPosition();
-        public bool AttackEndCalled { get; private set; }
+        protected bool AttackEndCalled { get; set; }
 
         private bool _forceQuit = false;
         protected virtual bool CanRun => !Mathf.Approximately(RunSpeed, 0f);
@@ -102,8 +102,6 @@ namespace Nekoyume.Game.Character
 #endif
         
             HitPointBoxCollider = GetComponent<BoxCollider>();
-
-            Event.OnAttackEnd.AddListener(AttackEnd);
         }
 
         protected virtual void OnDisable()
@@ -381,12 +379,6 @@ namespace Nekoyume.Game.Character
             var attackRangeStartPosition = gameObject.transform.position.x + HitPointLocalOffset.x;
             var targetHitPosition = target.transform.position.x + target.HitPointLocalOffset.x;
             return AttackRange > Mathf.Abs(targetHitPosition - attackRangeStartPosition);
-        }
-
-        private void AttackEnd(CharacterBase character)
-        {
-            if (ReferenceEquals(character, this))
-                AttackEndCalled = true;
         }
 
         public void DisableHUD()
@@ -785,6 +777,22 @@ namespace Nekoyume.Game.Character
                 actions.Remove(action);
                 yield return new WaitForSeconds(0.5f);
                 action = null;
+            }
+        }
+
+        protected void OnAnimatorEvent(string eventName)
+        {
+            switch (eventName)
+            {
+                case "attackStart":
+                    AudioController.PlaySwing();
+                    break;
+                case "attackPoint":
+                    AttackEndCalled = true;
+                    break;
+                case "footstep":
+                    AudioController.PlayFootStep();
+                    break;
             }
         }
     }
