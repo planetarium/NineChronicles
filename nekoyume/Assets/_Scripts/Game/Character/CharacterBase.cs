@@ -462,22 +462,9 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoAnimationAttack(bool isCritical)
         {
-            PreAnimationForTheKindOfAttack();
-            if (isCritical)
+            while (true)
             {
-                Animator.CriticalAttack();
-            }
-            else
-            {
-                Animator.Attack();
-            }
-
-            _forceQuit = false;
-            var coroutine = StartCoroutine(CoTimeOut());
-            yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
-            StopCoroutine(coroutine);
-            if (_forceQuit)
-            {
+                PreAnimationForTheKindOfAttack();
                 if (isCritical)
                 {
                     Animator.CriticalAttack();
@@ -486,27 +473,24 @@ namespace Nekoyume.Game.Character
                 {
                     Animator.Attack();
                 }
+                _forceQuit = false;
+                var coroutine = StartCoroutine(CoTimeOut());
+                yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
+                StopCoroutine(coroutine);
+                if (_forceQuit)
+                {
+                    continue;
+                }
+                PostAnimationForTheKindOfAttack();
+                break;
             }
-            PostAnimationForTheKindOfAttack();
         }
 
         private IEnumerator CoAnimationCastAttack(bool isCritical)
         {
-            PreAnimationForTheKindOfAttack();
-            if (isCritical)
+            while (true)
             {
-                Animator.CriticalAttack();
-            }
-            else
-            {
-                Animator.CastAttack();
-            }
-            _forceQuit = false;
-            var coroutine = StartCoroutine(CoTimeOut());
-            yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
-            StopCoroutine(coroutine);
-            if (_forceQuit)
-            {
+                PreAnimationForTheKindOfAttack();
                 if (isCritical)
                 {
                     Animator.CriticalAttack();
@@ -515,9 +499,18 @@ namespace Nekoyume.Game.Character
                 {
                     Animator.CastAttack();
                 }
-            }
+                _forceQuit = false;
+                var coroutine = StartCoroutine(CoTimeOut());
+                yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
+                StopCoroutine(coroutine);
+                if (_forceQuit)
+                {
+                    continue;;
+                }
 
-            PostAnimationForTheKindOfAttack();
+                PostAnimationForTheKindOfAttack();
+                break;
+            }
         }
 
 
