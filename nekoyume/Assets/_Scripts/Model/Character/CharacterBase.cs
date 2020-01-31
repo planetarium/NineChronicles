@@ -5,7 +5,6 @@ using System.Linq;
 using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.Helper;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
