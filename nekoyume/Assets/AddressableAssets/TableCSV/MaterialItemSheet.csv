@@ -56,12 +56,12 @@ id,_name,item_sub_type,grade,elemental_type,stat_type,stat_min,stat_max,skill_id
 306008,물의 나무줄기,MonsterPart,2,Water,ATK,15,30,120005,10,50,5,15
 306009,대지의 하찮은 자갈,MonsterPart,1,Land,ATK,5,20,130001,10,25,5,25
 306010,대지의 돌날,MonsterPart,1,Land,CRI,1,4,130002,5,20,5,25
-306011,대지의 두건,MonsterPart,1,Land,DOG,2,5,,15,50,5,25
+306011,대지의 두건,MonsterPart,1,Land,HIT,2,5,,15,50,5,25
 306012,대지의 여우 꼬리,MonsterPart,1,Land,HP,10,30,200000,20,50,5,25
 306013,대지의 칼자루,MonsterPart,1,Land,DEF,10,30,,15,100,5,25
 306014,대지의 큰 칼날,MonsterPart,1,Land,ATK,15,30,130003,15,100,5,25
 306015,대지의 부러진 지팡이,MonsterPart,1,Land,CRI,2,8,,15,25,5,25
-306016,대지의 부러진 지팡이,MonsterPart,1,Land,DOG,3,6,200000,15,25,5,25
+306016,대지의 부러진 지팡이,MonsterPart,1,Land,HIT,3,6,200000,15,25,5,25
 306017,대지의 망토 조각,MonsterPart,1,Land,SPD,13,25,,10,150,5,25
 306018,대지의 마력 구슬,MonsterPart,2,Land,DEF,25,50,130002,25,150,5,25
 306019,대지의 여우 가죽,MonsterPart,2,Land,HP,25,50,,25,175,5,25
@@ -69,14 +69,14 @@ id,_name,item_sub_type,grade,elemental_type,stat_type,stat_min,stat_max,skill_id
 306021,대지의 창 날,MonsterPart,2,Land,ATK,25,60,130003,25,200,5,25
 306022,대지의 견장,MonsterPart,2,Land,DEF,25,70,,25,200,5,25
 306023,화염의 나무둔기,MonsterPart,1,Fire,ATK,15,30,110002,15,20,5,25
-306024,화염의 작은 투구,MonsterPart,1,Fire,DOG,3,7,,10,20,5,25
+306024,화염의 작은 투구,MonsterPart,1,Fire,HIT,3,7,,10,20,5,25
 306025,화염의 멧돼지뿔,MonsterPart,2,Fire,DEF,25,60,110001,20,40,5,25
 306026,화염의 허리가방,MonsterPart,2,Fire,HP,30,65,,25,40,5,25
 306027,화염의 둔기 조각,MonsterPart,2,Fire,CRI,1,9,110001,25,50,5,25
 306028,화염의 하얀 털다발,MonsterPart,1,Fire,SPD,10,21,200000,15,50,5,25
 306029,화염의 큰 멧돼지뿔,MonsterPart,2,Fire,HP,35,65,110002,25,50,5,25
 306030,화염의 무거운 견장,MonsterPart,2,Fire,DEF,25,100,210000,25,100,5,25
-306031,화염의 달궈진 쇠사슬,MonsterPart,1,Fire,DOG,3,12,240000,10,20,5,25
+306031,화염의 달궈진 쇠사슬,MonsterPart,1,Fire,HIT,3,12,240000,10,20,5,25
 306032,화염의 부러진 지팡이,MonsterPart,2,Fire,SPD,17,31,110003,25,50,5,25
 306033,화염의 제림니르 도끼,MonsterPart,1,Fire,ATK,30,90,230000,15,40,5,25
 306034,화염의 제림니르 철퇴,MonsterPart,1,Fire,SPD,29,83,110005,15,40,5,25

@@ -18,7 +18,7 @@ namespace Nekoyume.Model.Buff
                     return new DefenseBuff(row);
                 case StatType.CRI:
                     return new CriticalBuff(row);
-                case StatType.DOG:
+                case StatType.HIT:
                     return new DodgeBuff(row);
                 case StatType.SPD:
                     return new SpeedBuff(row);

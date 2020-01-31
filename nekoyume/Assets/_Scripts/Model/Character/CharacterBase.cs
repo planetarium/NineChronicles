@@ -6,6 +6,7 @@ using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.EnumType;
+using Nekoyume.Helper;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
@@ -18,12 +19,16 @@ namespace Nekoyume.Model
     {
         public const decimal CriticalMultiplier = 1.5m;
 
-        [NonSerialized] private Root _root;
+        [NonSerialized]
+        private Root _root;
+
         private Skill.Skill _selectedSkill;
         private BattleStatus.Skill _usedSkill;
 
         public readonly Guid Id = Guid.NewGuid();
-        [NonSerialized] public readonly Simulator Simulator;
+
+        [NonSerialized]
+        public readonly Simulator Simulator;
 
         public ElementalType atkElementType;
         public float attackRange;
@@ -49,7 +54,7 @@ namespace Nekoyume.Model
         public int ATK => Stats.ATK;
         public int DEF => Stats.DEF;
         public int CRI => Stats.CRI;
-        public int DOG => Stats.DOG;
+        public int HIT => Stats.HIT;
         public int SPD => Stats.SPD;
 
         public int CurrentHP
@@ -230,7 +235,12 @@ namespace Nekoyume.Model
         {
             var correction = result == ElementalResult.Lose ? 50 : 0;
             var chance = Simulator.Random.Next(0, 100);
-            return chance >= Stats.DOG + correction;
+            return chance >= Stats.HIT + correction;
+        }
+
+        public virtual bool IsHit(CharacterBase caster)
+        {
+            return HitHelper.IsHit(caster.Level, caster.HIT, Level, HIT, Simulator.Random.Next(0, 100));
         }
 
         private bool IsAlive()

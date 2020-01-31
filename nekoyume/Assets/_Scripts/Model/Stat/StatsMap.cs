@@ -15,7 +15,7 @@ namespace Nekoyume.Model.Stat
         public int ATK => HasATK ? _statMaps[StatType.ATK].TotalValueAsInt : 0;
         public int DEF => HasDEF ? _statMaps[StatType.DEF].TotalValueAsInt : 0;
         public int CRI => HasCRI ? _statMaps[StatType.CRI].TotalValueAsInt : 0;
-        public int DOG => HasDOG ? _statMaps[StatType.DOG].TotalValueAsInt : 0;
+        public int HIT => HasHIT ? _statMaps[StatType.HIT].TotalValueAsInt : 0;
         public int SPD => HasSPD ? _statMaps[StatType.SPD].TotalValueAsInt : 0;
 
         public bool HasHP => _statMaps.ContainsKey(StatType.HP) &&
@@ -30,8 +30,8 @@ namespace Nekoyume.Model.Stat
         public bool HasCRI => _statMaps.ContainsKey(StatType.CRI) &&
                               (_statMaps[StatType.CRI].HasValue || _statMaps[StatType.CRI].HasAdditionalValue);
 
-        public bool HasDOG => _statMaps.ContainsKey(StatType.DOG) &&
-                              (_statMaps[StatType.DOG].HasValue || _statMaps[StatType.DOG].HasAdditionalValue);
+        public bool HasHIT => _statMaps.ContainsKey(StatType.HIT) &&
+                              (_statMaps[StatType.HIT].HasValue || _statMaps[StatType.HIT].HasAdditionalValue);
 
         public bool HasSPD => _statMaps.ContainsKey(StatType.SPD) &&
                               (_statMaps[StatType.SPD].HasValue || _statMaps[StatType.SPD].HasAdditionalValue);
@@ -40,21 +40,21 @@ namespace Nekoyume.Model.Stat
         public int BaseATK => HasBaseATK ? _statMaps[StatType.ATK].ValueAsInt : 0;
         public int BaseDEF => HasBaseDEF ? _statMaps[StatType.DEF].ValueAsInt : 0;
         public int BaseCRI => HasBaseCRI ? _statMaps[StatType.CRI].ValueAsInt : 0;
-        public int BaseDOG => HasBaseDOG ? _statMaps[StatType.DOG].ValueAsInt : 0;
+        public int BaseHIT => HasBaseHIT ? _statMaps[StatType.HIT].ValueAsInt : 0;
         public int BaseSPD => HasBaseSPD ? _statMaps[StatType.SPD].ValueAsInt : 0;
 
         public bool HasBaseHP => _statMaps.ContainsKey(StatType.HP) && _statMaps[StatType.HP].HasValue;
         public bool HasBaseATK => _statMaps.ContainsKey(StatType.ATK) && _statMaps[StatType.ATK].HasValue;
         public bool HasBaseDEF => _statMaps.ContainsKey(StatType.DEF) && _statMaps[StatType.DEF].HasValue;
         public bool HasBaseCRI => _statMaps.ContainsKey(StatType.CRI) && _statMaps[StatType.CRI].HasValue;
-        public bool HasBaseDOG => _statMaps.ContainsKey(StatType.DOG) && _statMaps[StatType.DOG].HasValue;
+        public bool HasBaseHIT => _statMaps.ContainsKey(StatType.HIT) && _statMaps[StatType.HIT].HasValue;
         public bool HasBaseSPD => _statMaps.ContainsKey(StatType.SPD) && _statMaps[StatType.SPD].HasValue;
 
         public int AdditionalHP => HasAdditionalHP ? _statMaps[StatType.HP].AdditionalValueAsInt : 0;
         public int AdditionalATK => HasAdditionalATK ? _statMaps[StatType.ATK].AdditionalValueAsInt : 0;
         public int AdditionalDEF => HasAdditionalDEF ? _statMaps[StatType.DEF].AdditionalValueAsInt : 0;
         public int AdditionalCRI => HasAdditionalCRI ? _statMaps[StatType.CRI].AdditionalValueAsInt : 0;
-        public int AdditionalDOG => HasAdditionalDOG ? _statMaps[StatType.DOG].AdditionalValueAsInt : 0;
+        public int AdditionalHIT => HasAdditionalHIT ? _statMaps[StatType.HIT].AdditionalValueAsInt : 0;
         public int AdditionalSPD => HasAdditionalSPD ? _statMaps[StatType.SPD].AdditionalValueAsInt : 0;
 
         public bool HasAdditionalHP => _statMaps.ContainsKey(StatType.HP) && _statMaps[StatType.HP].HasAdditionalValue;
@@ -68,14 +68,14 @@ namespace Nekoyume.Model.Stat
         public bool HasAdditionalCRI =>
             _statMaps.ContainsKey(StatType.CRI) && _statMaps[StatType.CRI].HasAdditionalValue;
 
-        public bool HasAdditionalDOG =>
-            _statMaps.ContainsKey(StatType.DOG) && _statMaps[StatType.DOG].HasAdditionalValue;
+        public bool HasAdditionalHIT =>
+            _statMaps.ContainsKey(StatType.HIT) && _statMaps[StatType.HIT].HasAdditionalValue;
 
         public bool HasAdditionalSPD =>
             _statMaps.ContainsKey(StatType.SPD) && _statMaps[StatType.SPD].HasAdditionalValue;
 
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
-                                          HasAdditionalDOG || HasAdditionalSPD;
+                                          HasAdditionalHIT || HasAdditionalSPD;
 
         private readonly Dictionary<StatType, StatMapEx> _statMaps =
             new Dictionary<StatType, StatMapEx>(StatTypeComparer.Instance);
@@ -180,8 +180,8 @@ namespace Nekoyume.Model.Stat
                     return ignoreAdditional ? BaseDEF : DEF;
                 case StatType.CRI:
                     return ignoreAdditional ? BaseCRI : CRI;
-                case StatType.DOG:
-                    return ignoreAdditional ? BaseDOG : DOG;
+                case StatType.HIT:
+                    return ignoreAdditional ? BaseHIT : HIT;
                 case StatType.SPD:
                     return ignoreAdditional ? BaseSPD : SPD;
                 default:
@@ -201,8 +201,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DEF, DEF);
                 if (HasCRI)
                     yield return (StatType.CRI, CRI);
-                if (HasDOG)
-                    yield return (StatType.DOG, DOG);
+                if (HasHIT)
+                    yield return (StatType.HIT, HIT);
                 if (HasSPD)
                     yield return (StatType.SPD, SPD);
             }
@@ -212,7 +212,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.ATK, ATK);
                 yield return (StatType.DEF, DEF);
                 yield return (StatType.CRI, CRI);
-                yield return (StatType.DOG, DOG);
+                yield return (StatType.HIT, HIT);
                 yield return (StatType.SPD, SPD);
             }
         }
@@ -229,8 +229,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DEF, BaseDEF);
                 if (HasBaseCRI)
                     yield return (StatType.CRI, BaseCRI);
-                if (HasBaseDOG)
-                    yield return (StatType.DOG, BaseDOG);
+                if (HasBaseHIT)
+                    yield return (StatType.HIT, BaseHIT);
                 if (HasBaseSPD)
                     yield return (StatType.SPD, BaseSPD);
             }
@@ -240,7 +240,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.ATK, BaseATK);
                 yield return (StatType.DEF, BaseDEF);
                 yield return (StatType.CRI, BaseCRI);
-                yield return (StatType.DOG, BaseDOG);
+                yield return (StatType.HIT, BaseHIT);
                 yield return (StatType.SPD, BaseSPD);
             }
         }
@@ -257,8 +257,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DEF, AdditionalDEF);
                 if (HasAdditionalCRI)
                     yield return (StatType.CRI, AdditionalCRI);
-                if (HasAdditionalDOG)
-                    yield return (StatType.DOG, AdditionalDOG);
+                if (HasAdditionalHIT)
+                    yield return (StatType.HIT, AdditionalHIT);
                 if (HasAdditionalSPD)
                     yield return (StatType.SPD, AdditionalSPD);
             }
@@ -268,7 +268,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.ATK, AdditionalATK);
                 yield return (StatType.DEF, AdditionalDEF);
                 yield return (StatType.CRI, AdditionalCRI);
-                yield return (StatType.DOG, AdditionalDOG);
+                yield return (StatType.HIT, AdditionalHIT);
                 yield return (StatType.SPD, AdditionalSPD);
             }
         }
@@ -286,8 +286,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DEF, BaseDEF, AdditionalDEF);
                 if (HasBaseCRI || HasAdditionalCRI)
                     yield return (StatType.CRI, BaseCRI, AdditionalCRI);
-                if (HasBaseDOG || HasAdditionalDOG)
-                    yield return (StatType.DOG, BaseDOG, AdditionalDOG);
+                if (HasBaseHIT || HasAdditionalHIT)
+                    yield return (StatType.HIT, BaseHIT, AdditionalHIT);
                 if (HasBaseSPD || HasAdditionalSPD)
                     yield return (StatType.SPD, BaseSPD, AdditionalSPD);
             }
@@ -297,7 +297,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.ATK, BaseATK, AdditionalATK);
                 yield return (StatType.DEF, BaseDEF, AdditionalDEF);
                 yield return (StatType.CRI, BaseCRI, AdditionalCRI);
-                yield return (StatType.DOG, BaseDOG, AdditionalDOG);
+                yield return (StatType.HIT, BaseHIT, AdditionalHIT);
                 yield return (StatType.SPD, BaseSPD, AdditionalSPD);
             }
         }
@@ -312,8 +312,8 @@ namespace Nekoyume.Model.Stat
                 yield return _statMaps[StatType.DEF];
             if (HasCRI)
                 yield return _statMaps[StatType.CRI];
-            if (HasDOG)
-                yield return _statMaps[StatType.DOG];
+            if (HasHIT)
+                yield return _statMaps[StatType.HIT];
             if (HasSPD)
                 yield return _statMaps[StatType.SPD];
         }
@@ -332,8 +332,8 @@ namespace Nekoyume.Model.Stat
                 yield return _statMaps[StatType.DEF];
             if (HasAdditionalCRI)
                 yield return _statMaps[StatType.CRI];
-            if (HasAdditionalDOG)
-                yield return _statMaps[StatType.DOG];
+            if (HasAdditionalHIT)
+                yield return _statMaps[StatType.HIT];
             if (HasAdditionalSPD)
                 yield return _statMaps[StatType.SPD];
         }
@@ -360,9 +360,9 @@ namespace Nekoyume.Model.Stat
                 SetStatAdditionalValue(StatType.DEF, 0);
             }
 
-            if (HasAdditionalDOG)
+            if (HasAdditionalHIT)
             {
-                SetStatAdditionalValue(StatType.DOG, 0);
+                SetStatAdditionalValue(StatType.HIT, 0);
             }
 
             if (HasAdditionalSPD)

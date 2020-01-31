@@ -9,28 +9,28 @@ namespace Nekoyume.Model.Stat
         int BaseATK { get; }
         int BaseDEF { get; }
         int BaseCRI { get; }
-        int BaseDOG { get; }
+        int BaseHIT { get; }
         int BaseSPD { get; }
 
         bool HasBaseHP { get; }
         bool HasBaseATK { get; }
         bool HasBaseDEF { get; }
         bool HasBaseCRI { get; }
-        bool HasBaseDOG { get; }
+        bool HasBaseHIT { get; }
         bool HasBaseSPD { get; }
 
         int AdditionalHP { get; }
         int AdditionalATK { get; }
         int AdditionalDEF { get; }
         int AdditionalCRI { get; }
-        int AdditionalDOG { get; }
+        int AdditionalHIT { get; }
         int AdditionalSPD { get; }
 
         bool HasAdditionalHP { get; }
         bool HasAdditionalATK { get; }
         bool HasAdditionalDEF { get; }
         bool HasAdditionalCRI { get; }
-        bool HasAdditionalDOG { get; }
+        bool HasAdditionalHIT { get; }
         bool HasAdditionalSPD { get; }
         bool HasAdditionalStats { get; }
 

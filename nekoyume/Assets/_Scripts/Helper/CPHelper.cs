@@ -128,7 +128,7 @@ namespace Nekoyume.Helper
                     switch (statType)
                     {
                         case StatType.CRI:
-                        case StatType.DOG:
+                        case StatType.HIT:
                         case StatType.SPD:
                             part1 += value / 100f;
                             if (isCharacter)
@@ -154,7 +154,7 @@ namespace Nekoyume.Helper
                         part2 += value;
                         break;
                     case StatType.CRI:
-                    case StatType.DOG:
+                    case StatType.HIT:
                     case StatType.SPD:
                         if (isCharacter)
                         {
@@ -188,7 +188,7 @@ namespace Nekoyume.Helper
                     switch (statType)
                     {
                         case StatType.CRI:
-                        case StatType.DOG:
+                        case StatType.HIT:
                         case StatType.SPD:
                             part1 += baseValue / 100f;
                             part2 += additionalValue / 100f;
@@ -216,7 +216,7 @@ namespace Nekoyume.Helper
                         part2 += baseValue + additionalValue;
                         break;
                     case StatType.CRI:
-                    case StatType.DOG:
+                    case StatType.HIT:
                     case StatType.SPD:
                         if (isCharacter)
                         {

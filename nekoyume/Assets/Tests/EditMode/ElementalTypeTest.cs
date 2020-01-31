@@ -10,10 +10,10 @@ namespace Tests.EditMode
         {
             var attackerElementalType = ElementalType.Fire;
             var defenderElementalType = ElementalType.Wind;
-            Assert.AreEqual(attackerElementalType.GetBattleResult(defenderElementalType), ElementalResult.Win);
+            Assert.AreEqual(ElementalResult.Win, attackerElementalType.GetBattleResult(defenderElementalType));
             var beforeDamage = 100;
             var afterDamage = attackerElementalType.GetDamage(defenderElementalType, beforeDamage);
-            Assert.AreEqual(afterDamage, beforeDamage * ElementalTypeExtension.WinMultiplier);
+            Assert.AreEqual(beforeDamage * ElementalTypeExtension.WinMultiplier, afterDamage);
         }
         
         [Test]
@@ -21,10 +21,10 @@ namespace Tests.EditMode
         {
             var attackerElementalType = ElementalType.Fire;
             var defenderElementalType = ElementalType.Fire;
-            Assert.AreEqual(attackerElementalType.GetBattleResult(defenderElementalType), ElementalResult.Draw);
+            Assert.AreEqual(ElementalResult.Draw, attackerElementalType.GetBattleResult(defenderElementalType));
             var beforeDamage = 100;
             var afterDamage = attackerElementalType.GetDamage(defenderElementalType, beforeDamage);
-            Assert.AreEqual(afterDamage, beforeDamage);
+            Assert.AreEqual(beforeDamage, afterDamage);
         }
         
         [Test]
@@ -32,10 +32,10 @@ namespace Tests.EditMode
         {
             var attackerElementalType = ElementalType.Fire;
             var defenderElementalType = ElementalType.Water;
-            Assert.AreEqual(attackerElementalType.GetBattleResult(defenderElementalType), ElementalResult.Lose);
+            Assert.AreEqual(ElementalResult.Lose, attackerElementalType.GetBattleResult(defenderElementalType));
             var beforeDamage = 100;
             var afterDamage = attackerElementalType.GetDamage(defenderElementalType, beforeDamage);
-            Assert.AreEqual(afterDamage, beforeDamage);
+            Assert.AreEqual(beforeDamage, afterDamage);
         }
     }
 }

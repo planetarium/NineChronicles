@@ -40,32 +40,32 @@ namespace Nekoyume.Model.Stat
         public int BaseATK => LevelStats.ATK;
         public int BaseDEF => LevelStats.DEF;
         public int BaseCRI => LevelStats.CRI;
-        public int BaseDOG => LevelStats.DOG;
+        public int BaseHIT => LevelStats.HIT;
         public int BaseSPD => LevelStats.SPD;
 
         public bool HasBaseHP => LevelStats.HasHP;
         public bool HasBaseATK => LevelStats.HasATK;
         public bool HasBaseDEF => LevelStats.HasDEF;
         public bool HasBaseCRI => LevelStats.HasCRI;
-        public bool HasBaseDOG => LevelStats.HasDOG;
+        public bool HasBaseHIT => LevelStats.HasHIT;
         public bool HasBaseSPD => LevelStats.HasSPD;
 
         public int AdditionalHP => HP - _levelStats.HP;
         public int AdditionalATK => ATK - _levelStats.ATK;
         public int AdditionalDEF => DEF - _levelStats.DEF;
         public int AdditionalCRI => CRI - _levelStats.CRI;
-        public int AdditionalDOG => DOG - _levelStats.DOG;
+        public int AdditionalHIT => HIT - _levelStats.HIT;
         public int AdditionalSPD => SPD - _levelStats.SPD;
 
         public bool HasAdditionalHP => AdditionalHP > 0;
         public bool HasAdditionalATK => AdditionalATK > 0;
         public bool HasAdditionalDEF => AdditionalDEF > 0;
         public bool HasAdditionalCRI => AdditionalCRI > 0;
-        public bool HasAdditionalDOG => AdditionalDOG > 0;
+        public bool HasAdditionalHIT => AdditionalHIT > 0;
         public bool HasAdditionalSPD => AdditionalSPD > 0;
 
         public bool HasAdditionalStats => HasAdditionalHP || HasAdditionalATK || HasAdditionalDEF || HasAdditionalCRI ||
-                                          HasAdditionalDOG || HasAdditionalSPD;
+                                          HasAdditionalHIT || HasAdditionalSPD;
 
         public CharacterStats(
             CharacterSheet.Row row,
@@ -174,10 +174,10 @@ namespace Nekoyume.Model.Stat
                             statMap.CRI));
                     }
 
-                    if (statMap.HasDOG)
+                    if (statMap.HasHIT)
                     {
-                        _equipmentStatModifiers.Add(new StatModifier(StatType.DOG, StatModifier.OperationType.Add,
-                            statMap.DOG));
+                        _equipmentStatModifiers.Add(new StatModifier(StatType.HIT, StatModifier.OperationType.Add,
+                            statMap.HIT));
                     }
 
                     if (statMap.HasSPD)
@@ -241,10 +241,10 @@ namespace Nekoyume.Model.Stat
                             statMap.CRI));
                     }
 
-                    if (statMap.HasDOG)
+                    if (statMap.HasHIT)
                     {
-                        _consumableStatModifiers.Add(new StatModifier(StatType.DOG, StatModifier.OperationType.Add,
-                            statMap.DOG));
+                        _consumableStatModifiers.Add(new StatModifier(StatType.HIT, StatModifier.OperationType.Add,
+                            statMap.HIT));
                     }
 
                     if (statMap.HasSPD)
@@ -344,7 +344,7 @@ namespace Nekoyume.Model.Stat
             atk.SetValue(Math.Max(0, atk.Value));
             def.SetValue(Math.Max(0, def.Value));
             cri.SetValue(Math.Max(0, cri.Value));
-            dog.SetValue(Math.Max(0, dog.Value));
+            hit.SetValue(Math.Max(0, hit.Value));
             spd.SetValue(Math.Max(0, spd.Value));
         }
 
@@ -365,8 +365,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DEF, BaseDEF);
                 if (HasBaseCRI)
                     yield return (StatType.CRI, BaseCRI);
-                if (HasBaseDOG)
-                    yield return (StatType.DOG, BaseDOG);
+                if (HasBaseHIT)
+                    yield return (StatType.HIT, BaseHIT);
                 if (HasBaseSPD)
                     yield return (StatType.SPD, BaseSPD);
             }
@@ -376,7 +376,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.ATK, BaseATK);
                 yield return (StatType.DEF, BaseDEF);
                 yield return (StatType.CRI, BaseCRI);
-                yield return (StatType.DOG, BaseDOG);
+                yield return (StatType.HIT, BaseHIT);
                 yield return (StatType.SPD, BaseSPD);
             }
         }
@@ -393,8 +393,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DEF, AdditionalDEF);
                 if (HasAdditionalCRI)
                     yield return (StatType.CRI, AdditionalCRI);
-                if (HasAdditionalDOG)
-                    yield return (StatType.DOG, AdditionalDOG);
+                if (HasAdditionalHIT)
+                    yield return (StatType.HIT, AdditionalHIT);
                 if (HasAdditionalSPD)
                     yield return (StatType.SPD, AdditionalSPD);
             }
@@ -404,7 +404,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.ATK, AdditionalATK);
                 yield return (StatType.DEF, AdditionalDEF);
                 yield return (StatType.CRI, AdditionalCRI);
-                yield return (StatType.DOG, AdditionalDOG);
+                yield return (StatType.HIT, AdditionalHIT);
                 yield return (StatType.SPD, AdditionalSPD);
             }
         }
@@ -422,8 +422,8 @@ namespace Nekoyume.Model.Stat
                     yield return (StatType.DEF, BaseDEF, AdditionalDEF);
                 if (HasBaseCRI || HasAdditionalCRI)
                     yield return (StatType.CRI, BaseCRI, AdditionalCRI);
-                if (HasBaseDOG || HasAdditionalDOG)
-                    yield return (StatType.DOG, BaseDOG, AdditionalDOG);
+                if (HasBaseHIT || HasAdditionalHIT)
+                    yield return (StatType.HIT, BaseHIT, AdditionalHIT);
                 if (HasBaseSPD || HasAdditionalSPD)
                     yield return (StatType.SPD, BaseSPD, AdditionalSPD);
             }
@@ -433,7 +433,7 @@ namespace Nekoyume.Model.Stat
                 yield return (StatType.ATK, BaseATK, AdditionalATK);
                 yield return (StatType.DEF, BaseDEF, AdditionalDEF);
                 yield return (StatType.CRI, BaseCRI, AdditionalCRI);
-                yield return (StatType.DOG, BaseDOG, AdditionalDOG);
+                yield return (StatType.HIT, BaseHIT, AdditionalHIT);
                 yield return (StatType.SPD, BaseSPD, AdditionalSPD);
             }
         }

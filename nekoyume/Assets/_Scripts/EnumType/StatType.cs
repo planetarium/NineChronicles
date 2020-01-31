@@ -32,9 +32,9 @@ namespace Nekoyume.EnumType
         CRI,
         
         /// <summary>
-        /// Dodge
+        /// Hit Chance
         /// </summary>
-        DOG,
+        HIT,
         
         /// <summary>
         /// Speed
