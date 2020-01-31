@@ -14,6 +14,8 @@ using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using UnityEngine;
 
+// #define TEST_LOG
+
 namespace Nekoyume.Model
 {
     [Serializable]
@@ -45,7 +47,7 @@ namespace Nekoyume.Model
         public SizeType SizeType => RowData?.SizeType ?? SizeType.S;
         public float RunSpeed => RowData?.RunSpeed ?? 1f;
         public CharacterStats Stats { get; }
-        
+
         public int Level
         {
             get => Stats.Level;
@@ -69,7 +71,7 @@ namespace Nekoyume.Model
 
         public int AttackCount { get; private set; }
         public int AttackCountMax { get; protected set; }
-        
+
         protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level)
         {
             Simulator = simulator;
@@ -224,22 +226,16 @@ namespace Nekoyume.Model
 
         #endregion
 
-        public bool IsCritical()
+        public bool IsCritical(bool considerAttackCount = true)
         {
             var chance = Simulator.Random.Next(0, 100);
+            if (!considerAttackCount)
+                return CRI >= chance;
+            
             var additionalCriticalChance =
                 (int) AttackCountHelper.GetAdditionalCriticalChance(AttackCount, AttackCountMax);
             return CRI + additionalCriticalChance >= chance;
-        }
 
-        public bool IsCritical(ElementalResult result)
-        {
-            var correction = result == ElementalResult.Win ? 50 : 0;
-            var additionalCriticalChance =
-                (int) AttackCountHelper.GetAdditionalCriticalChance(AttackCount, AttackCountMax); 
-            correction += additionalCriticalChance;
-            var chance = Simulator.Random.Next(0, 100);
-            return CRI + correction >= chance;
         }
 
         public bool IsHit(ElementalResult result)
@@ -256,7 +252,7 @@ namespace Nekoyume.Model
             {
                 caster.AttackCount = 0;
             }
-            
+
             return isHit;
         }
 
@@ -267,13 +263,15 @@ namespace Nekoyume.Model
             {
                 AttackCount = 1;
             }
-            
+
+#if TEST_LOG
             var sb = new StringBuilder(RowData.Id.ToString());
             sb.Append($" / {nameof(AttackCount)}: {AttackCount}");
             sb.Append($" / {nameof(AttackCountMax)}: {AttackCountMax}");
             Debug.LogWarning(sb.ToString());
+#endif
             
-            var damageMultiplier = (int) AttackCountHelper.GetDamageMultiplier(AttackCount, AttackCountMax); 
+            var damageMultiplier = (int) AttackCountHelper.GetDamageMultiplier(AttackCount, AttackCountMax);
             return (ATK + skillPower) * damageMultiplier;
         }
 

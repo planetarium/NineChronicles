@@ -23,47 +23,53 @@ namespace Nekoyume.Model.Skill
         /// <returns></returns>
         protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessDamage(CharacterBase caster, int simulatorWaveTurn)
         {
-            var targets = skillRow.SkillTargetType.GetTarget(caster);
             var infos = new List<BattleStatus.Skill.SkillInfo>();
-            var targetList = targets.ToArray();
-            var elemental = skillRow.ElementalType;
-            var multiplier = GetMultiplier(skillRow.HitCount, 1);
-            var skillDamage = caster.GetDamage(power);
+            var targets = skillRow.SkillTargetType.GetTarget(caster).ToList();
+            var elementalType = skillRow.ElementalType;
+            var multipliers = GetMultiplier(skillRow.HitCount, 1m);
             for (var i = 0; i < skillRow.HitCount; i++)
             {
-                foreach (var target in targetList)
+                var multiplier = multipliers[i];
+                var damage = caster.ATK;
+
+                foreach (var target in targets)
                 {
-                    // damage 0 = dodged.
-                    var damage = 0;
-                    var elementalResult = elemental.GetBattleResult(target.defElementType);
-                    var critical = elementalResult == ElementalResult.Win;
+                    var isCritical = false;
                     if (target.IsHit(caster))
                     {
-                        var multiply = multiplier[i];
-                        if (!critical)
+                        damage -= target.DEF;
+                        if (damage < 1)
                         {
-                            critical = caster.IsCritical(elementalResult);
+                            damage = 1;
                         }
-                        damage = elemental.GetDamage(target.defElementType, skillDamage);
-                        // https://gamedev.stackexchange.com/questions/129319/rpg-formula-attack-and-defense
-                        damage = (int)((long)damage * damage / (damage + target.DEF));
-                        damage = (int)(damage * multiply);
-                        damage = math.max(damage, 1);
-                        if (critical)
+                        else
                         {
-                            damage = (int)(damage * CharacterBase.CriticalMultiplier);
+                            damage = caster.GetDamage(damage);
+                            damage = elementalType.GetDamage(target.defElementType, damage);
+                            damage = (int) (damage * multiplier);
+                            isCritical = caster.IsCritical();
+                            if (isCritical)
+                            {
+                                damage = (int) (damage * CharacterBase.CriticalMultiplier);
+                            }
                         }
 
                         target.CurrentHP -= damage;
                     }
+                    else
+                    {
+                        damage = 0;
+                    }
 
-                    // 연타공격은 항상 연출이 크리티컬로 보이도록 처리
+                    // 연타공격은 항상 연출이 크리티컬로 보이도록 처리.
                     if (skillRow.SkillCategory == SkillCategory.DoubleAttack)
                     {
-                        critical = true;
+                        isCritical = true;
                     }
-                    infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase)target.Clone(), damage, critical,
-                        skillRow.SkillCategory, simulatorWaveTurn, skillRow.ElementalType, skillRow.SkillTargetType));
+
+                    infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), damage, isCritical,
+                        skillRow.SkillCategory, simulatorWaveTurn, skillRow.ElementalType,
+                        skillRow.SkillTargetType));
                 }
             }
 
@@ -72,7 +78,7 @@ namespace Nekoyume.Model.Skill
 
         private static decimal[] GetMultiplier(int hitCount, decimal totalDamage)
         {
-            if (hitCount == 1) return new[] { totalDamage };
+            if (hitCount == 1) return new[] {totalDamage};
             var multiplier = new List<decimal>();
             var avg = totalDamage / hitCount;
             var lastDamage = avg * 1.3m;

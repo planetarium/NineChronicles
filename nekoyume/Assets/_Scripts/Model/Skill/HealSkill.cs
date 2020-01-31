@@ -23,7 +23,7 @@ namespace Nekoyume.Model.Skill
             foreach (var target in skillRow.SkillTargetType.GetTarget(caster))
             {
                 target.Heal(healPoint);
-                infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase)target.Clone(), healPoint, caster.IsCritical(),
+                infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase)target.Clone(), healPoint, caster.IsCritical(false),
                     skillRow.SkillCategory, simulatorWaveTurn));
             }
 
