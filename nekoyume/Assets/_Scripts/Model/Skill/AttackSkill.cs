@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Elemental;
 using Nekoyume.TableData;
-using Unity.Mathematics;
 
 namespace Nekoyume.Model.Skill
 {

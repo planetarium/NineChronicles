@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 
 namespace Nekoyume.TableData
 {
     [Serializable]
     public class BackgroundSheet : Sheet<int, BackgroundSheet.Row>
     {
+        // FIXME AudioController.MusicCode.StageGreen과 중복
+        private const string DefaultBGM = "bgm_stage_green";
         [Serializable]
         public class Row : SheetRow<int>
         {
@@ -20,7 +21,7 @@ namespace Nekoyume.TableData
                 StageId = int.TryParse(fields[0], out var stageId) ? stageId : 0;
                 Background = fields[1];
                 BGM = string.IsNullOrEmpty(fields[2])
-                    ? AudioController.MusicCode.StageGreen
+                    ? DefaultBGM
                     : fields[2];
             }
         }

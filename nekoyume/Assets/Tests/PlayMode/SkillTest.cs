@@ -5,6 +5,7 @@ using Nekoyume;
 using Nekoyume.Battle;
 using Nekoyume.Game;
 using Nekoyume.Model;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
@@ -29,7 +30,14 @@ namespace Tests.PlayMode
             var agentAddress = new Address();
             var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets);
 
-            _stageSimulator = new StageSimulator(random, avatarState, new List<Consumable>(), 1, 1);
+            _stageSimulator = new StageSimulator(
+                random,
+                avatarState, 
+                new List<Consumable>(), 
+                1, 
+                1,
+                Game.instance.TableSheets
+            );
             var caster = _stageSimulator.Player;
             var target = (CharacterBase) caster.Clone();
             caster.InitAI();
@@ -49,7 +57,15 @@ namespace Tests.PlayMode
         {
             var caster = _stageSimulator.Player;
             var attack = caster.Skills.First(s => s is NormalAttack);
-            var result = attack.Use(caster, 0);
+            var result = attack.Use(
+                caster, 
+                0, 
+                BuffFactory.GetBuffs(
+                    attack,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                )
+            );
             var target = caster.Targets.First();
             var info = result.SkillInfos.First();
             Assert.AreEqual(target.CurrentHP, target.HP - info.Effect);
@@ -65,7 +81,15 @@ namespace Tests.PlayMode
             var caster = _stageSimulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.SkillCategory == SkillCategory.BlowAttack);
             var blow = new BlowAttack(skillRow, caster.ATK, 100);
-            var result = blow.Use(caster, 0);
+            var result = blow.Use(
+                caster, 
+                0,
+                BuffFactory.GetBuffs(
+                    blow,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                )
+            );
             var target = caster.Targets.First();
             var info = result.SkillInfos.First();
             var atk = caster.ATK + blow.power;
@@ -85,7 +109,15 @@ namespace Tests.PlayMode
             var caster = _stageSimulator.Player;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 100002);
             var doubleAttack = new DoubleAttack(skillRow, caster.ATK, 100);
-            var result = doubleAttack.Use(caster, 0);
+            var result = doubleAttack.Use(
+                caster,
+                0,
+                BuffFactory.GetBuffs(
+                    doubleAttack,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                )
+            );
             var target = caster.Targets.First();
 
             Assert.AreEqual(target.CurrentHP, target.HP - result.SkillInfos.Sum(i => i.Effect));
@@ -105,8 +137,16 @@ namespace Tests.PlayMode
             var target = caster.Targets.First();
             var lastHPOfTarget = target.HP;
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 100003);
-            var area = new Nekoyume.Game.AreaAttack(skillRow, caster.ATK, 100);
-            var result = area.Use(caster, 0);
+            var area = new AreaAttack(skillRow, caster.ATK, 100);
+            var result = area.Use(
+                caster,
+                0,
+                BuffFactory.GetBuffs(
+                    area,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                )
+            );
 
             Assert.AreEqual(target.CurrentHP, lastHPOfTarget - result.SkillInfos.Sum(i => i.Effect));
             Assert.AreEqual(area.skillRow.HitCount, result.SkillInfos.Count());
@@ -125,7 +165,15 @@ namespace Tests.PlayMode
             var skillRow = Game.instance.TableSheets.SkillSheet.OrderedList.First(r => r.Id == 200000);
             var heal = new HealSkill(skillRow, caster.ATK, 100);
             caster.CurrentHP -= caster.ATK;
-            var result = heal.Use(caster, 0);
+            var result = heal.Use(
+                caster,
+                0,
+                BuffFactory.GetBuffs(
+                    heal,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                )
+            );
 
             Assert.AreEqual(caster.CurrentHP, caster.HP);
             Assert.AreEqual(1, result.SkillInfos.Count());

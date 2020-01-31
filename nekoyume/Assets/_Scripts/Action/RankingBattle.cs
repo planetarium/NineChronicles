@@ -8,7 +8,7 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using UnityEngine;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -82,7 +82,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            Debug.Log(weeklyArenaState.address.ToHex());
+            Log.Debug(weeklyArenaState.address.ToHex());
 
             var tableSheetState = TableSheetsState.FromActionContext(ctx);
             var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);

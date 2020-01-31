@@ -10,6 +10,7 @@ using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -64,7 +65,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"CreateAvatar exec started.");
+            Log.Debug($"CreateAvatar exec started.");
             var agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);
             var avatarState = states.GetAvatarState(avatarAddress);
             if (!(avatarState is null))
@@ -77,10 +78,10 @@ namespace Nekoyume.Action
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"CreateAvatar Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug($"CreateAvatar Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute CreateAvatar. player : `{avatarAddress}`");
+            Log.Debug($"Execute CreateAvatar. player : `{avatarAddress}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
             
@@ -97,9 +98,9 @@ namespace Nekoyume.Action
             completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
-            UnityEngine.Debug.Log($"CreateAvatar CreateAvatarState: {sw.Elapsed}");
+            Log.Debug($"CreateAvatar CreateAvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"CreateAvatar Total Executed Time: {ended - started}");
+            Log.Debug($"CreateAvatar Total Executed Time: {ended - started}");
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize());

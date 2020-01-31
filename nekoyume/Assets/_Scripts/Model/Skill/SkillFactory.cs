@@ -1,5 +1,4 @@
 using Bencodex.Types;
-using Nekoyume.Game;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill

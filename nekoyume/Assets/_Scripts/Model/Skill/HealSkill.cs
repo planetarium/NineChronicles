@@ -11,9 +11,16 @@ namespace Nekoyume.Model.Skill
         {
         }
 
-        public override BattleStatus.Skill Use(CharacterBase caster, int simulatorWaveTurn)
+        public override BattleStatus.Skill Use(
+            CharacterBase caster, 
+            int simulatorWaveTurn,
+            IEnumerable<Buff.Buff> buffs)
         {
-            return new BattleStatus.HealSkill((CharacterBase)caster.Clone(), ProcessHeal(caster, simulatorWaveTurn), ProcessBuff(caster, simulatorWaveTurn));
+            return new BattleStatus.HealSkill(
+                (CharacterBase)caster.Clone(), 
+                ProcessHeal(caster, simulatorWaveTurn), 
+                ProcessBuff(caster, simulatorWaveTurn, buffs)
+            );
         }
 
         protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessHeal(CharacterBase caster, int simulatorWaveTurn)

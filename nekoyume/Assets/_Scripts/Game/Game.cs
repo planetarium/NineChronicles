@@ -1,4 +1,7 @@
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
@@ -35,6 +38,8 @@ namespace Nekoyume.Game
         
         public bool IsInitialized { get; private set; }
 
+        private static readonly string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
+
         #region Mono & Initialization
 
         protected override void Awake()
@@ -58,7 +63,7 @@ namespace Nekoyume.Game
             Tables.instance.Initialize();
             yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
-            yield return StartCoroutine(TableSheets.CoInitialize());
+            yield return StartCoroutine(CoInitializeTableSheets());
             AudioController.instance.Initialize();
             yield return null;
             // Agent 초기화.
@@ -87,6 +92,30 @@ namespace Nekoyume.Game
                 .AddTo(gameObject);
             
             ShowNext(agentInitializeSucceed);
+        }
+
+        private IEnumerator CoInitializeTableSheets()
+        {
+            //어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.
+            var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            yield return request;
+            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+
+            List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+            foreach (var asset in csvAssets)
+            {
+                TableSheets.SetToSheet(asset.name, asset.text);
+            }
+
+            TableSheets.ItemSheetInitialize();
+            TableSheets.QuestSheetInitialize();
+        }
+
+        public static IDictionary<string, string> GetTableCsvAssets()
+        {
+            var container = Resources.Load<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            return container.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
         }
 
         private void ShowNext(bool succeed)

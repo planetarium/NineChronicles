@@ -6,20 +6,14 @@ using Libplanet.Action;
 using LruCacheNet;
 using Nekoyume.Model.State;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.TableData
 {
     public class TableSheets
-    {
-        private static readonly string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
-        
+    {   
         private static readonly LruCache<TableSheetsState, TableSheets> _cache = 
         new LruCache<TableSheetsState, TableSheets>();
-        
-        public readonly ReactiveProperty<float> loadProgress = new ReactiveProperty<float>();
 
-        public Dictionary<string, string> TableCsvAssets;
         public BackgroundSheet BackgroundSheet { get; private set; }
         public WorldSheet WorldSheet { get; private set; }
         public StageSheet StageSheet { get; private set; }
@@ -52,45 +46,6 @@ namespace Nekoyume.TableData
         public QuestRewardSheet QuestRewardSheet { get; private set; }
         public QuestItemRewardSheet QuestItemRewardSheet { get; set; }
         public WorldUnlockSheet WorldUnlockSheet { get; set; }
-
-        public IEnumerator CoInitialize()
-        {
-            loadProgress.Value = 0f;
-            var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            yield return request;
-            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-
-            InitializeInternal(addressableAssetsContainer.tableCsvAssets);
-        }
-
-        public void InitializeAsSync()
-        {
-            var asset = Resources.Load<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            if (asset is null)
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            
-            InitializeInternal(asset.tableCsvAssets);
-        }
-
-        private void InitializeInternal(List<TextAsset> tableCsvAssets)
-        {
-            TableCsvAssets = tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
-            var loadTaskCount = TableCsvAssets.Count;
-            var loadedTaskCount = 0;
-            //어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.
-            foreach (var tableNameAndCsv in TableCsvAssets)
-            {
-                SetToSheet(tableNameAndCsv.Key, tableNameAndCsv.Value);
-                loadedTaskCount++;
-                loadProgress.Value = (float)loadedTaskCount / loadTaskCount;
-            }
-
-            loadProgress.Value = 1f;
-
-            ItemSheetInitialize();
-            QuestSheetInitialize();
-        }
 
         public void SetToSheet(string name, string csv)
         {
@@ -217,12 +172,6 @@ namespace Nekoyume.TableData
             }
         }
         
-        public static Dictionary<string, string> GetTableCsvAssets()
-        {
-            var addressableAssetsContainer = Resources.Load<AddressableAssetsContainer>("AddressableAssetsContainer");
-            return addressableAssetsContainer.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
-        }
-        
         /// <summary>
         /// TableSheetsState를 기준으로 초기화합니다.
         /// </summary>
@@ -242,7 +191,6 @@ namespace Nekoyume.TableData
         {
             if (_cache.TryGetValue(tableSheetsState, out var cached)) 
             {
-                Debug.Log("Using cached TableSheets...");
                 return cached;
             }
             var tableSheets = new TableSheets();
@@ -259,7 +207,7 @@ namespace Nekoyume.TableData
         }
 
 
-        private void ItemSheetInitialize()
+        public void ItemSheetInitialize()
         {
             ItemSheet = new ItemSheet();
             ItemSheet.Set(ConsumableItemSheet, false);
@@ -267,7 +215,7 @@ namespace Nekoyume.TableData
             ItemSheet.Set(MaterialItemSheet);
         }
 
-        private void QuestSheetInitialize()
+        public void QuestSheetInitialize()
         {
             QuestSheet = new QuestSheet();
             QuestSheet.Set(WorldQuestSheet, false);

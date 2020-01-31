@@ -280,7 +280,7 @@ namespace Nekoyume
 
         private static Dictionary<string, string> GetTableAssetsHavingDifference()
         {
-            var tableCsvAssets = TableSheets.GetTableCsvAssets();
+            var tableCsvAssets = Game.Game.GetTableCsvAssets();
             var tableSheetsState = TableSheetsState.Current;
             return tableCsvAssets.Where(pair =>
                 !tableSheetsState.TableSheets.TryGetValue(pair.Key, out string onChainCsv) ||
@@ -370,8 +370,15 @@ namespace Nekoyume
             if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
                 throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
-            var simulator = new StageSimulator(new DebugRandom(), States.Instance.CurrentAvatarState,
-                new List<Consumable>(), worldRow.Id, stageId, _selectedSkill);
+            var simulator = new StageSimulator(
+                new DebugRandom(),
+                States.Instance.CurrentAvatarState,
+                new List<Consumable>(),
+                worldRow.Id,
+                stageId,
+                Game.Game.instance.TableSheets,
+                _selectedSkill
+            );
             simulator.Simulate();
             simulator.Log.result = _result;
 
