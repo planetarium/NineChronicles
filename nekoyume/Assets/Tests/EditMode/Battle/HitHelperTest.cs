@@ -1,8 +1,8 @@
 using System;
-using Nekoyume.Model.Character;
+using Nekoyume.Battle;
 using NUnit.Framework;
 
-namespace Tests.EditMode
+namespace Tests.EditMode.Battle
 {
     public class HitHelperTest
     {
