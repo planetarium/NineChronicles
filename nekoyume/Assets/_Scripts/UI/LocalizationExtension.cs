@@ -181,17 +181,17 @@ namespace Nekoyume.UI
             switch (item.Data.Grade)
             {
                 case 1:
-                    return GameConfig.ColorHexForGrade1;
+                    return ColorConfig.ColorHexForGrade1;
                 case 2:
-                    return GameConfig.ColorHexForGrade2;
+                    return ColorConfig.ColorHexForGrade2;
                 case 3:
-                    return GameConfig.ColorHexForGrade3;
+                    return ColorConfig.ColorHexForGrade3;
                 case 4:
-                    return GameConfig.ColorHexForGrade4;
+                    return ColorConfig.ColorHexForGrade4;
                 case 5:
-                    return GameConfig.ColorHexForGrade5;
+                    return ColorConfig.ColorHexForGrade5;
                 default:
-                    return GameConfig.ColorHexForGrade1;
+                    return ColorConfig.ColorHexForGrade1;
             }
         }
     }
