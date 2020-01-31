@@ -74,6 +74,27 @@ Docker가 설치된 환경이라면 다음 명령어로 이미지를 빌드할 �
 
     $ docker push 319679068466.dkr.ecr.ap-northeast-2.amazonaws.com/nekoyume-unity:<빌드에 사용한 TAG>
 
+
+# 블록체인 초기화 방법
+
+- 기존에 있던 마이너, 시드를 내립니다.
+
+
+    $ kubectl.exe scale --replicas=0 sts/miner
+    $ kubectl.exe scale --replicas=0 sts/seed
+
+
+- pvc를 삭제합니다.
+
+
+    $ kubectl.exe get pvc -o yaml | kubectl.exe delete -f -
+
+
+- 유니티 에디터에서 `Tools/Libplanet/Mine Genesis Block` 을 실행해서 새로운 제네시스 블록을 생성합니다.
+- s3의 `9c-test/genesis-block` 파일을 새로 생성한 제네시스 블록 파일로 변경합니다.
+- 읽기권한은 퍼블릭으로 설정해야 모든 노드에서 제네시스 블록을 읽어올 수 있습니다.
+
+
 # k8s 클러스터 설정하기
 
 - [Amazon EKS](https://aws.amazon.com/ko/eks/)에서 돌아가는 [9c-internal 클러스터](https://ap-northeast-2.console.aws.amazon.com/eks/home?region=ap-northeast-2#/clusters/9c-internal)를 사용하고 있습니다. 이 클러스터를 사용하기 위해서 아래와 같은 단계로 인증합니다.
