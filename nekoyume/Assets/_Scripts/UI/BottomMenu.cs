@@ -136,12 +136,12 @@ namespace Nekoyume.UI.Module
                     return;
                 Application.OpenURL(GameConfig.DiscordLink);
             };
-            confirm?.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT");
+            confirm?.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
         }
 
         private void SubscribeOnClick(Unit unit)
         {
-            Find<Alert>().Set("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+            Find<Alert>().Set("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT", blurRadius: 2);
         }
 
         protected override void OnEnable()
