@@ -86,7 +86,7 @@ namespace Nekoyume.UI
                 view.touchHandler.OnClick.Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    var model = new Model.CountableItem(new Game.Item.Material(view.Data as MaterialItemSheet.Row), 1);
+                    var model = new Model.CountableItem(new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row), 1);
                     tooltip.Show(view.RectTransform, model);
                     tooltip.itemInformation.iconArea.itemView.countText.enabled = false;
                 }).AddTo(view);
