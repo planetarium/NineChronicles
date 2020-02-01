@@ -72,22 +72,6 @@ namespace Nekoyume.Model.State
                    new KeyValuePair<IKey, IValue>((Text)pair.Key, (Text)pair.Value)))
             }.Union((Dictionary)base.Serialize()));
 
-        public static TableSheetsState Current
-        {
-            get
-            {
-                var d = Game.Game.instance.Agent.GetState(Address);
-                if (d == null)
-                {
-                    return new TableSheetsState();
-                }
-                else
-                {
-                    return new TableSheetsState((Dictionary)d);
-                }
-            }
-        }
-
         public static TableSheetsState FromActionContext(IActionContext ctx)
         {
             var serialized = ctx.PreviousStates.GetState(Address);
