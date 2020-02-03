@@ -87,5 +87,13 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
             CloseCallback?.Invoke(ConfirmResult.No);
         }
+
+        public void NoWithoutCallback()
+        {
+            blur?.Close();
+            
+            base.Close();
+            AudioController.PlayClick();
+        }
     }
 }

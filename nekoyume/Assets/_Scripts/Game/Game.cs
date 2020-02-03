@@ -153,32 +153,22 @@ namespace Nekoyume.Game
             var confirm = Widget.Find<Confirm>();
             confirm.CloseCallback = result =>
             {
-                if (result == ConfirmResult.No)
-                    return;
-                
-                Observable.NextFrame().Subscribe(_ =>
+                if (result == ConfirmResult.Yes)
                 {
-                    confirm.CloseCallback = confirmResult =>
-                    {
-                        if (confirmResult == ConfirmResult.Yes)
-                        {
 #if UNITY_EDITOR
-                            UnityEditor.EditorApplication.isPlaying = false;
+                    UnityEditor.EditorApplication.isPlaying = false;
 #else
-                            Application.Quit();
+                    Application.Quit();
 #endif
-                            return;
-                        }
-                        confirm.CloseCallback = null;
+                    return;
+                }
+                confirm.CloseCallback = null;
 
-                        Event.OnNestEnter.Invoke();
-                        Widget.Find<Login>().Show();
-                        Widget.Find<Menu>().Close();
-                    };
-                    confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT", blurRadius: 2);
-                });
+                Event.OnNestEnter.Invoke();
+                Widget.Find<Login>().Show();
+                Widget.Find<Menu>().Close();
             };
-            confirm.Set("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", blurRadius: 2);
+            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT", blurRadius: 2);
         }
         
         private void PlayMouseOnClickVFX(Vector3 position)
