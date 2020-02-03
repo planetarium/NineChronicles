@@ -23,7 +23,7 @@ namespace Nekoyume.UI
             var itemRows = new List<MaterialItemSheet.Row>();
             foreach (var rewardId in stageRow.TotalRewardIds)
             {
-                if (!tableSheets.StageRewardSheet.TryGetValue(rewardId, out var rewardRow))
+                if (!tableSheets.StageSheet.TryGetValue(rewardId, out var rewardRow))
                     continue;
 
                 foreach (var itemId in rewardRow.Rewards.Select(rewardData => rewardData.ItemId))

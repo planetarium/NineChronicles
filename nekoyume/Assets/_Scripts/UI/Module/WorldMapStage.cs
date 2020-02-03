@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module
             public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>();
 
             public ViewModel(StageWaveSheet.Row stageRow, string stageNumber, State state) :
-                this(stageRow.Id, stageNumber, stageRow.HasBoss, state)
+                this(stageRow.StageId, stageNumber, stageRow.HasBoss, state)
             {
             }
 

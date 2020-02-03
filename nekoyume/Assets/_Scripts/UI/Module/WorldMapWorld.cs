@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module
             SharedViewModel = new ViewModel(worldRow);
 
             var stageRows = Game.Game.instance.TableSheets.StageWaveSheet.Values
-                .Where(stageRow => stageRow.Id >= worldRow.StageBegin && stageRow.Id <= worldRow.StageEnd)
+                .Where(stageRow => stageRow.StageId >= worldRow.StageBegin && stageRow.StageId <= worldRow.StageEnd)
                 .ToList();
             var stageRowsCount = stageRows.Count;
             if (worldRow.StagesCount != stageRowsCount)

@@ -168,7 +168,7 @@ namespace Nekoyume.Battle
 
         private void GetReward(int id)
         {
-            var rewardTable = TableSheets.StageRewardSheet;
+            var rewardTable = TableSheets.StageSheet;
             var itemSelector = new WeightedSelector<int>(Random);
             var items = new List<ItemBase>();
             if (rewardTable.TryGetValue(id, out var reward))

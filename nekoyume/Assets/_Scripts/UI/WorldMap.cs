@@ -72,7 +72,7 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            var firstStageId = Game.Game.instance.TableSheets.StageWaveSheet.First?.Id ?? 1;
+            var firstStageId = Game.Game.instance.TableSheets.StageWaveSheet.First?.StageId ?? 1;
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
             // �ʱ� �� ���� 1ȸ ����
@@ -287,7 +287,7 @@ namespace Nekoyume.UI
 
             var stageSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageSheet.TryGetValue(stageId, out var stageRow, true);
-            stageInformation.titleText.text = $"Stage #{stageRow.Id - SelectedWorldStageBegin + 1}";
+            stageInformation.titleText.text = $"Stage #{stageRow.StageId - SelectedWorldStageBegin + 1}";
 
             var monsterCount = stageRow.TotalMonsterIds.Count;
             for (var i = 0; i < stageInformation.monstersAreaCharacterViews.Count; i++)
