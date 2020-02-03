@@ -310,12 +310,14 @@ namespace Nekoyume.BlockChain
 
             battleResultWidget.BattleEndedSubject.Subscribe(_ =>
             {
+                UnityEngine.Debug.LogWarning("Reward Received");
+
+                UpdateCurrentAvatarState(eval);
+                UpdateWeeklyArenaState(eval);
+
                 foreach (var questId in eval.Action.completedQuestIds)
                     LocalStateModifier.AddReceivableQuest(States.Instance.CurrentAvatarState.address, questId);
             });
-
-            UpdateCurrentAvatarState(eval);
-            UpdateWeeklyArenaState(eval);
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
