@@ -13,7 +13,6 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -276,11 +275,6 @@ namespace Nekoyume.Model
             {
                 AttackCount = 1;
             }
-            
-            var sb = new StringBuilder(RowData.Id.ToString());
-            sb.Append($" / {nameof(AttackCount)}: {AttackCount}");
-            sb.Append($" / {nameof(AttackCountMax)}: {AttackCountMax}");
-            Debug.LogWarning(sb.ToString());
             
             var damageMultiplier = (int) AttackCountHelper.GetDamageMultiplier(AttackCount, AttackCountMax); 
             return (ATK + skillPower) * damageMultiplier;

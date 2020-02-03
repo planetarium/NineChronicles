@@ -111,9 +111,7 @@ namespace Nekoyume.UI
             _selectedIndex = index;
             Player player;
             _isCreateMode = !States.Instance.AvatarStates.ContainsKey(index);
-            
-            // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
-            TableSheets tableSheets = TableSheets.FromTableSheetsState(TableSheetsState.Current);
+            TableSheets tableSheets = Game.Game.instance.TableSheets;
 
             if (_isCreateMode)
             {

@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Libplanet.Action;
 using LruCacheNet;
 using Nekoyume.Model.State;
-using UniRx;
 
 namespace Nekoyume.TableData
 {
@@ -176,9 +172,8 @@ namespace Nekoyume.TableData
         /// TableSheetsState를 기준으로 초기화합니다.
         /// </summary>
         /// <param name="tableSheetsState">기준으로 삼을 상태입니다.</param>
-        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState = null)
+        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState)
         {
-            tableSheetsState = tableSheetsState ?? TableSheetsState.Current;
             foreach (var pair in tableSheetsState.TableSheets)
             {
                 SetToSheet(pair.Key, pair.Value);
