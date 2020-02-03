@@ -40,7 +40,7 @@ namespace Tests.PlayMode
         [UnityTest]
         public IEnumerator GetEnumeratorTest()
         {
-            var enumerator = _tableSheets.BackgroundSheet.GetEnumerator();
+            var enumerator = _tableSheets.StageSheet.GetEnumerator();
             int previousKey;
 
             if (enumerator.MoveNext())

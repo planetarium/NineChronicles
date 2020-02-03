@@ -10,12 +10,11 @@ namespace Nekoyume.TableData
         private static readonly LruCache<TableSheetsState, TableSheets> _cache = 
         new LruCache<TableSheetsState, TableSheets>();
 
-        public BackgroundSheet BackgroundSheet { get; private set; }
         public WorldSheet WorldSheet { get; private set; }
         public StageWaveSheet StageWaveSheet { get; private set; }
         public StageSheet StageSheet { get; private set; }
         public CharacterSheet CharacterSheet { get; private set; }
-        public LevelSheet LevelSheet { get; private set; }
+        public CharacterLevelSheet CharacterLevelSheet { get; private set; }
         public SkillSheet SkillSheet { get; private set; }
         public BuffSheet BuffSheet { get; private set; }
         public ItemSheet ItemSheet { get; private set; }
@@ -47,10 +46,6 @@ namespace Nekoyume.TableData
         {
             switch (name)
             {
-                case nameof(TableData.BackgroundSheet):
-                    BackgroundSheet = new BackgroundSheet();
-                    BackgroundSheet.Set(csv);
-                    break;
                 case nameof(TableData.WorldSheet):
                     WorldSheet = new WorldSheet();
                     WorldSheet.Set(csv);
@@ -67,9 +62,9 @@ namespace Nekoyume.TableData
                     CharacterSheet = new CharacterSheet();
                     CharacterSheet.Set(csv);
                     break;
-                case nameof(TableData.LevelSheet):
-                    LevelSheet = new LevelSheet();
-                    LevelSheet.Set(csv);
+                case nameof(TableData.CharacterLevelSheet):
+                    CharacterLevelSheet = new CharacterLevelSheet();
+                    CharacterLevelSheet.Set(csv);
                     break;
                 case nameof(TableData.SkillSheet):
                     SkillSheet = new SkillSheet();

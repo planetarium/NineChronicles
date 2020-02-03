@@ -44,8 +44,8 @@ namespace Nekoyume.TableData
         [Serializable]
         public class Row : SheetRow<int>
         {
-            public override int Key => Id;
-            public int Id { get; private set; }
+            public override int Key => StageId;
+            public int StageId { get; private set; }
             public List<WaveData> Waves { get; private set; }
             public bool HasBoss { get; private set; }
             public List<int> TotalMonsterIds { get; private set; }
@@ -54,7 +54,7 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.TryParse(fields[0], out var id) ? id : 0;
+                StageId = int.TryParse(fields[0], out var stageId) ? stageId : 0;
                 Waves = new List<WaveData>();
                 if (!int.TryParse(fields[1], out var wave))
                     return;
