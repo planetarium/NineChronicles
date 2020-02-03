@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true)
+            bool localize = true, float blurRadius = 1)
         {
             if (gameObject.activeSelf)
             {
@@ -72,20 +72,20 @@ namespace Nekoyume.UI
 
         public void Yes()
         {
-            CloseCallback?.Invoke(ConfirmResult.Yes);
             blur?.Close();
 
             base.Close();
             AudioController.PlayClick();
+            CloseCallback?.Invoke(ConfirmResult.Yes);
         }
 
         public void No()
         {
-            CloseCallback?.Invoke(ConfirmResult.No);
             blur?.Close();
 
             base.Close();
             AudioController.PlayClick();
+            CloseCallback?.Invoke(ConfirmResult.No);
         }
     }
 }

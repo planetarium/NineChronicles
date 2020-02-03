@@ -156,11 +156,27 @@ namespace Nekoyume.Game
                 if (result == ConfirmResult.No)
                     return;
                 
+                Observable.NextFrame().Subscribe(_ =>
+                {
+                    confirm.CloseCallback = confirmResult =>
+                    {
+                        if (confirmResult == ConfirmResult.Yes)
+                        {
 #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+                            UnityEditor.EditorApplication.isPlaying = false;
 #else
-                Application.Quit();
+                            Application.Quit();
 #endif
+                            return;
+                        }
+                        confirm.CloseCallback = null;
+
+                        Event.OnNestEnter.Invoke();
+                        Widget.Find<Login>().Show();
+                        Widget.Find<Menu>().Close();
+                    };
+                    confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT", blurRadius: 2);
+                });
             };
             confirm.Set("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", blurRadius: 2);
         }
