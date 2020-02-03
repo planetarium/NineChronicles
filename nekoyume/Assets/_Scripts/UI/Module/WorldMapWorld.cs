@@ -73,7 +73,7 @@ namespace Nekoyume.UI.Module
             _disposablesForModel.DisposeAllAndClear();
             SharedViewModel = new ViewModel(worldRow);
 
-            var stageRows = Game.Game.instance.TableSheets.StageSheet.Values
+            var stageRows = Game.Game.instance.TableSheets.StageWaveSheet.Values
                 .Where(stageRow => stageRow.Id >= worldRow.StageBegin && stageRow.Id <= worldRow.StageEnd)
                 .ToList();
             var stageRowsCount = stageRows.Count;

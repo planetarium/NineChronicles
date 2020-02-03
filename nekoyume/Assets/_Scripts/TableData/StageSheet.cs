@@ -5,7 +5,7 @@ using System.Linq;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StageSheet : Sheet<int, StageSheet.Row>
+    public class StageWaveSheet : Sheet<int, StageWaveSheet.Row>
     {
         [Serializable]
         public class WaveData
@@ -102,7 +102,7 @@ namespace Nekoyume.TableData
             }
         }
         
-        public StageSheet() : base(nameof(StageSheet))
+        public StageWaveSheet() : base(nameof(StageWaveSheet))
         {
         }
 

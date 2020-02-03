@@ -8,13 +8,13 @@ namespace Nekoyume.UI
     {
         private static readonly Dictionary<int, List<MaterialItemSheet.Row>> GetRewardItemRowsCache = new Dictionary<int, List<MaterialItemSheet.Row>>();
         
-        public static string GetLocalizedDescription(this StageSheet.Row stageRow)
+        public static string GetLocalizedDescription(this StageWaveSheet.Row stageRow)
         {
             // todo: return LocalizationManager.Localize($"{stageRow.Key}");
             return $"{stageRow.Key}: Description";
         }
 
-        public static List<MaterialItemSheet.Row> GetRewardItemRows(this StageSheet.Row stageRow)
+        public static List<MaterialItemSheet.Row> GetRewardItemRows(this StageWaveSheet.Row stageRow)
         {
             if (GetRewardItemRowsCache.ContainsKey(stageRow.Key))
                 return GetRewardItemRowsCache[stageRow.Key];

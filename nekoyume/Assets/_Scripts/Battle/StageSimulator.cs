@@ -131,7 +131,7 @@ namespace Nekoyume.Battle
 
         private void SetWave()
         {
-            var stageSheet = TableSheets.StageSheet;
+            var stageSheet = TableSheets.StageWaveSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
 
@@ -145,7 +145,7 @@ namespace Nekoyume.Battle
             }
         }
 
-        private Wave SpawnWave(StageSheet.WaveData waveData)
+        private Wave SpawnWave(StageWaveSheet.WaveData waveData)
         {
             var wave = new Wave();
             var monsterTable = TableSheets.CharacterSheet;

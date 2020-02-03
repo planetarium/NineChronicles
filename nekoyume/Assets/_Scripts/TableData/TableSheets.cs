@@ -12,7 +12,7 @@ namespace Nekoyume.TableData
 
         public BackgroundSheet BackgroundSheet { get; private set; }
         public WorldSheet WorldSheet { get; private set; }
-        public StageSheet StageSheet { get; private set; }
+        public StageWaveSheet StageWaveSheet { get; private set; }
         public StageRewardSheet StageRewardSheet { get; private set; }
         public CharacterSheet CharacterSheet { get; private set; }
         public LevelSheet LevelSheet { get; private set; }
@@ -55,9 +55,9 @@ namespace Nekoyume.TableData
                     WorldSheet = new WorldSheet();
                     WorldSheet.Set(csv);
                     break;
-                case nameof(TableData.StageSheet):
-                    StageSheet = new StageSheet();
-                    StageSheet.Set(csv);
+                case nameof(TableData.StageWaveSheet):
+                    StageWaveSheet = new StageWaveSheet();
+                    StageWaveSheet.Set(csv);
                     break;
                 case nameof(TableData.StageRewardSheet):
                     StageRewardSheet = new StageRewardSheet();

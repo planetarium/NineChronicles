@@ -72,7 +72,7 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            var firstStageId = Game.Game.instance.TableSheets.StageSheet.First?.Id ?? 1;
+            var firstStageId = Game.Game.instance.TableSheets.StageWaveSheet.First?.Id ?? 1;
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
             // �ʱ� �� ���� 1ȸ ����
@@ -285,7 +285,7 @@ namespace Nekoyume.UI
                 isSubmittable = world.IsPlayable(stageId);
             }
 
-            var stageSheet = Game.Game.instance.TableSheets.StageSheet;
+            var stageSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageSheet.TryGetValue(stageId, out var stageRow, true);
             stageInformation.titleText.text = $"Stage #{stageRow.Id - SelectedWorldStageBegin + 1}";
 
