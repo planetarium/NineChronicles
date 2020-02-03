@@ -210,7 +210,8 @@ namespace Nekoyume
 
             PivotPresetType pivotPresetType;
 
-            if (Screen.width - anchoredPosition.x - target.rect.width / 2 > rectTransform.rect.width)
+
+            if (UI.MainCanvas.instance.GetComponent<RectTransform>().rect.width - anchoredPosition.x - target.rect.width / 2 > rectTransform.rect.width)
                 pivotPresetType = PivotPresetType.TopRight;
             else
             {
