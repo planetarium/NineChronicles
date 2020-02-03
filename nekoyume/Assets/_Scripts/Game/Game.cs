@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +33,8 @@ namespace Nekoyume.Game
 
         public Stage Stage => stage;
 
+        // FIXME Action.PatchTableSheet.Execute()에 의해서만 갱신됩니다.
+        // 액션 실행 여부와 상관 없이 최신 상태를 반영하게끔 수정해야합니다.
         public TableSheets TableSheets { get; private set; }
         
         public bool IsInitialized { get; private set; }
@@ -77,7 +78,6 @@ namespace Nekoyume.Game
                 agentInitializeSucceed = succeed;
             });
             yield return new WaitUntil(() => agentInitialized);
-            TableSheets.InitializeWithTableSheetsState();
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             Stage.objectPool.Initialize();
@@ -153,16 +153,22 @@ namespace Nekoyume.Game
             var confirm = Widget.Find<Confirm>();
             confirm.CloseCallback = result =>
             {
-                if (result == ConfirmResult.No)
-                    return;
-                
+                if (result == ConfirmResult.Yes)
+                {
 #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+                    UnityEditor.EditorApplication.isPlaying = false;
 #else
-                Application.Quit();
+                    Application.Quit();
 #endif
+                    return;
+                }
+                confirm.CloseCallback = null;
+
+                Event.OnNestEnter.Invoke();
+                Widget.Find<Login>().Show();
+                Widget.Find<Menu>().Close();
             };
-            confirm.Set("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", blurRadius: 2);
+            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT", blurRadius: 2);
         }
         
         private void PlayMouseOnClickVFX(Vector3 position)

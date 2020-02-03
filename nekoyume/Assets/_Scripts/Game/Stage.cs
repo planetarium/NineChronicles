@@ -425,7 +425,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                battle.Show(stageId, repeatStage);
+                battle.Show(stageId, repeatStage, isExitReserved);
             }
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {

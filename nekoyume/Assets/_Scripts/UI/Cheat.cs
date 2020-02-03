@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -116,7 +117,8 @@ namespace Nekoyume
         public void RefreshTableSheets()
         {
             var tableName = TableSheetsDropdown.options.Count == 0 ? string.Empty : GetTableName();
-            if (TableSheetsState.Current.TableSheets.TryGetValue(tableName, out string onChainTableCsv))
+            IImmutableDictionary<string, string> tableSheets = GetCurrentTableSheetState().TableSheets;
+            if (tableSheets.TryGetValue(tableName, out string onChainTableCsv))
             {
                 Display(nameof(OnChainTableSheet), onChainTableCsv);
             }
@@ -281,10 +283,18 @@ namespace Nekoyume
         private static Dictionary<string, string> GetTableAssetsHavingDifference()
         {
             var tableCsvAssets = Game.Game.GetTableCsvAssets();
-            var tableSheetsState = TableSheetsState.Current;
+            var tableSheetsState = GetCurrentTableSheetState();
             return tableCsvAssets.Where(pair =>
                 !tableSheetsState.TableSheets.TryGetValue(pair.Key, out string onChainCsv) ||
                 onChainCsv != pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+
+        private static TableSheetsState GetCurrentTableSheetState()
+        {
+            return new TableSheetsState(
+                (Dictionary) Game.Game.instance.Agent.GetState(TableSheetsState.Address)
+            );
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -408,7 +418,7 @@ namespace Nekoyume
                 .Add("AvatarStates", avatarStates)
                 .Add("RankingState", States.Instance.RankingState.Serialize())
                 .Add("ShopState", States.Instance.ShopState.Serialize())
-                .Add("TableSheetsState", TableSheetsState.Current.Serialize());
+                .Add("TableSheetsState", GetCurrentTableSheetState().Serialize());
             var codec = new Bencodex.Codec();
             var path = Path.Combine(
                 Application.persistentDataPath,

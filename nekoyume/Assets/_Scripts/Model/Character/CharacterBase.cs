@@ -1,3 +1,5 @@
+// #define TEST_LOG
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,8 +16,6 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using UnityEngine;
-
-// #define TEST_LOG
 
 namespace Nekoyume.Model
 {
@@ -173,7 +173,7 @@ namespace Nekoyume.Model
         {
             // 스킬 사용.
             _usedSkill = _selectedSkill.Use(
-                this, 
+                this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
                     _selectedSkill,
@@ -240,11 +240,10 @@ namespace Nekoyume.Model
             var chance = Simulator.Random.Next(0, 100);
             if (!considerAttackCount)
                 return CRI >= chance;
-            
+
             var additionalCriticalChance =
                 (int) AttackCountHelper.GetAdditionalCriticalChance(AttackCount, AttackCountMax);
             return CRI + additionalCriticalChance >= chance;
-
         }
 
         public bool IsHit(ElementalResult result)
@@ -271,16 +270,16 @@ namespace Nekoyume.Model
 
             if (!considerAttackCount)
                 return damage;
-            
+
             AttackCount++;
             if (AttackCount > AttackCountMax)
             {
                 AttackCount = 1;
             }
-            
+
             var damageMultiplier = (int) AttackCountHelper.GetDamageMultiplier(AttackCount, AttackCountMax);
             damage *= damageMultiplier;
-            
+
 #if TEST_LOG
             var sb = new StringBuilder(RowData.Id.ToString());
             sb.Append($" / {nameof(AttackCount)}: {AttackCount}");
@@ -289,7 +288,7 @@ namespace Nekoyume.Model
             sb.Append($" / {nameof(damage)}: {damage}");
             Debug.LogWarning(sb.ToString());
 #endif
-            
+
             return damage;
         }
 

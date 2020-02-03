@@ -159,7 +159,7 @@ namespace Editor
             BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
 
             CopyToBuildDirectory(ScriptBasePath, targetDirName, scriptName);
-            DownloadSnapshotManager(buildTarget, targetDirName);
+            DownloadSnapshotManager(buildTarget, Path.Combine(BuildBasePath, targetDirName));
             File.Copy(
                 Path.Combine(Application.dataPath, "README.txt"),
                 Path.Combine(BuildBasePath, targetDirName, "README.txt"),
