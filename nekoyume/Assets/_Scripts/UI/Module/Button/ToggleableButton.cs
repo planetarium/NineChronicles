@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module
             _disposableForWidgetControllable?.Dispose();
             if (_widget is Confirm confirm)
             {
-                confirm.No();
+                confirm.NoWithoutCallback();
             }
             if (_widget is InputBox inputBox)
             {
