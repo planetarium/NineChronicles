@@ -2,7 +2,9 @@ using System;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+#if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
+#endif
 
 namespace Nekoyume.Action
 {
@@ -23,6 +25,8 @@ namespace Nekoyume.Action
             public IAccountStateDelta OutputStates { get; set; }
         }
 
+        // FIXME Unity / 라이브러리에서 모두 사용 가능하게 구조를 정리해야 합니다.
+        #if UNITY_EDITOR || UNITY_STANDALONE
         private static readonly Subject<ActionEvaluation<ActionBase>> RenderSubject =
             new Subject<ActionEvaluation<ActionBase>>();
 
@@ -98,5 +102,14 @@ namespace Nekoyume.Action
                 OutputStates = eval.OutputStates,
             });
         }
+        #else
+        public void Render(IActionContext context, IAccountStateDelta nextStates)
+        {
+        }
+
+        public void Unrender(IActionContext context, IAccountStateDelta nextStates)
+        {
+        }
+        #endif
     }
 }
