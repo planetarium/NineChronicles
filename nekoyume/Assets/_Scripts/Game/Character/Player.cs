@@ -299,22 +299,6 @@ namespace Nekoyume.Game.Character
             Inventory = character.Inventory;
         }
 
-        private void OnAnimatorEvent(string eventName)
-        {
-            switch (eventName)
-            {
-                case "attackStart":
-                    AudioController.PlaySwing();
-                    break;
-                case "attackPoint":
-                    Event.OnAttackEnd.Invoke(this);
-                    break;
-                case "footstep":
-                    AudioController.PlayFootStep();
-                    break;
-            }
-        }
-
         protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
