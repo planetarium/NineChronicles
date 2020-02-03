@@ -100,6 +100,7 @@ namespace Nekoyume.UI
         public Model SharedModel { get; private set; }
 
         public Subject<bool> BattleEndedSubject = new Subject<bool>();
+        public IDisposable battleEndedStream;
 
         protected override void Awake()
         {
@@ -156,6 +157,12 @@ namespace Nekoyume.UI
             canvasGroup.alpha = 1f;
             SharedModel = model;
             UpdateView();
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            battleEndedStream.Dispose();
+            base.Close(ignoreCloseAnimation);
         }
 
         private void UpdateView()

@@ -308,16 +308,16 @@ namespace Nekoyume.BlockChain
         {
             var battleResultWidget = Widget.Find<BattleResult>();
 
-            battleResultWidget.BattleEndedSubject.Subscribe(_ =>
+            var dispose = battleResultWidget.BattleEndedSubject.Subscribe(_ =>
             {
-                UnityEngine.Debug.LogWarning("Reward Received");
-
                 UpdateCurrentAvatarState(eval);
                 UpdateWeeklyArenaState(eval);
 
                 foreach (var questId in eval.Action.completedQuestIds)
                     LocalStateModifier.AddReceivableQuest(States.Instance.CurrentAvatarState.address, questId);
+
             });
+            battleResultWidget.battleEndedStream = dispose;
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
