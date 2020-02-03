@@ -456,7 +456,7 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoTimeOut()
         {
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             _forceQuit = true;
         }
 
