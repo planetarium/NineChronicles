@@ -37,11 +37,11 @@ namespace Nekoyume.UI
             if (gameObject.activeSelf)
             {
                 Close(true);
-                Show(title, content, labelYes, labelNo, localize);
+                Show(title, content, labelYes, labelNo, localize, blurRadius);
                 return;
             }
 
-            Set(title, content, labelYes, labelNo, localize);
+            Set(title, content, labelYes, labelNo, localize, blurRadius);
             Show();
         }
 
