@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
-using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.Skill;
-using UnityEngine;
 
 namespace Nekoyume.TableData
 {
@@ -55,24 +52,6 @@ namespace Nekoyume.TableData
 
         public BuffSheet() : base(nameof(BuffSheet))
         {
-        }
-    }
-
-    public static class BuffSheetRowExtension
-    {
-        public static string GetLocalizedName(this BuffSheet.Row row)
-        {
-            return LocalizationManager.Localize($"BUFF_NAME_{row.Id}");
-        }
-
-        public static string GetLocalizedDescription(this BuffSheet.Row row)
-        {
-            return LocalizationManager.Localize($"BUFF_DESCRIPTION_{row.Id}");
-        }
-
-        public static Sprite GetIcon(this BuffSheet.Row row)
-        {
-            return SpriteHelper.GetBuffIcon(row.IconResource);
         }
     }
 }

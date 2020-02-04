@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
-using Nekoyume.Game.Util;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -43,15 +42,12 @@ namespace Nekoyume.Battle
             List<Consumable> foods,
             int worldId,
             int stageId,
-            Model.Skill.Skill skill = null) : base(random, avatarState, foods)
+            TableSheets tableSheets,
+            Model.Skill.Skill skill) 
+            : this(random, avatarState, foods, worldId, stageId, tableSheets)
         {
-            _worldId = worldId;
-            StageId = stageId;
-            _waves = new List<Wave>();
             if (!ReferenceEquals(skill, null))
                 Player.OverrideSkill(skill);
-            _waveRewards = new List<List<ItemBase>>();
-            SetWave();
         }
 
         public override Player Simulate()

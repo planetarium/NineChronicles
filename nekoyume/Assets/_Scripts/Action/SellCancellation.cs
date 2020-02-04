@@ -9,6 +9,7 @@ using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -65,14 +66,14 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"Sell Cancel exec started.");
+            Log.Debug($"Sell Cancel exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out _, out var avatarState))
             {
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Cancel Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug($"Sell Cancel Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
 
@@ -82,7 +83,7 @@ namespace Nekoyume.Action
             }
             var shopState = new ShopState(d);
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Cancel Get ShopState: {sw.Elapsed}");
+            Log.Debug($"Sell Cancel Get ShopState: {sw.Elapsed}");
             sw.Restart();
 
             // 상점에서 아이템을 빼온다.
@@ -92,7 +93,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Cancel Get Unregister Item: {sw.Elapsed}");
+            Log.Debug($"Sell Cancel Get Unregister Item: {sw.Elapsed}");
             sw.Restart();
 
             // 메일에 아이템을 넣는다.
@@ -110,19 +111,19 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Cancel Update AvatarState: {sw.Elapsed}");
+            Log.Debug($"Sell Cancel Update AvatarState: {sw.Elapsed}");
             sw.Restart();
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();
-            UnityEngine.Debug.Log($"Sell Cancel Set AvatarState: {sw.Elapsed}");
+            Log.Debug($"Sell Cancel Set AvatarState: {sw.Elapsed}");
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopState.Serialize());
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"Sell Cancel Set ShopState: {sw.Elapsed}");
-            UnityEngine.Debug.Log($"Sell Cancel Total Executed Time: {ended - started}");
+            Log.Debug($"Sell Cancel Set ShopState: {sw.Elapsed}");
+            Log.Debug($"Sell Cancel Total Executed Time: {ended - started}");
             return states;
         }
     }

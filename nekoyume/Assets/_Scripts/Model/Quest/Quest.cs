@@ -7,7 +7,7 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using UnityEngine;
+using Serilog;
 
 namespace Nekoyume.Model.Quest
 {
@@ -120,7 +120,7 @@ namespace Nekoyume.Model.Quest
             }
             catch (Exception e)
             {
-                Debug.LogErrorFormat("{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
+                Log.Error(e, "{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
                 throw;
             }
         }

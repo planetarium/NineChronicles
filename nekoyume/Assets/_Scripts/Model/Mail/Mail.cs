@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.State;
-using UnityEngine;
+using Serilog;
 
 namespace Nekoyume.Model.Mail
 {
@@ -80,7 +80,7 @@ namespace Nekoyume.Model.Mail
             }
             catch (Exception e)
             {
-                Debug.LogErrorFormat("{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
+                Log.Error(e, "{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
                 throw;
             }
         }

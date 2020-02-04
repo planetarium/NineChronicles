@@ -11,6 +11,7 @@ namespace Nekoyume.UI
     {
         public TextMeshProUGUI addressTitle;
         public TMP_InputField addressContent;
+        public TextMeshProUGUI warningText;
         public TextMeshProUGUI volumeMasterText;
         public Slider volumeMasterSlider;
         public Toggle volumeMasterToggle;
@@ -33,6 +34,7 @@ namespace Nekoyume.UI
             {
                 SetVolumeMasterMute(value);
             });
+            warningText.text = LocalizationManager.Localize("UI_ACCOUNT_WARNING");
             confirmText.text = LocalizationManager.Localize("UI_CLOSE");
             resetStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
             resetKeyStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");

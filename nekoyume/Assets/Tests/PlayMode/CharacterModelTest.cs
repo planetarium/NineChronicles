@@ -12,6 +12,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI;
 using NUnit.Framework;
 using Tests.PlayMode.Fixtures;
 using UnityEngine.TestTools;
@@ -30,7 +31,14 @@ namespace Tests.PlayMode
             var address = new Address();
             var agentAddress = new Address();
             var avatarState = new AvatarState(address, agentAddress, 1, Game.instance.TableSheets);
-            var simulator = new StageSimulator(_random, avatarState, new List<Consumable>(), 1, 1);
+            var simulator = new StageSimulator(
+                _random, 
+                avatarState, 
+                new List<Consumable>(), 
+                1, 
+                1,
+                Game.instance.TableSheets
+            );
             _player = simulator.Player;
             _player.InitAI();
             yield return null;
@@ -72,9 +80,16 @@ namespace Tests.PlayMode
         {
             _player.Targets.Add(_player);
             var skill = _player.Skills.First();
-            skill.buffs = skill.skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
             Assert.AreEqual(0, _player.Buffs.Count);
-            var model = skill.Use(_player, 0);
+            var model = skill.Use(
+                _player, 
+                0, 
+                BuffFactory.GetBuffs(
+                    skill,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                )
+            );
             if (model.BuffInfos is null)
                 return;
             
@@ -83,7 +98,12 @@ namespace Tests.PlayMode
             foreach (var pair in _player.Buffs)
             {
                 var playerBuff = pair.Value;
-                var skillBuff = skill.buffs.First(i => i.RowData.GroupId == pair.Key);
+                var buffs = BuffFactory.GetBuffs(
+                    skill,
+                    Game.instance.TableSheets.SkillBuffSheet,
+                    Game.instance.TableSheets.BuffSheet
+                );
+                var skillBuff = buffs.First(i => i.RowData.GroupId == pair.Key);
                 Assert.AreEqual(playerBuff.remainedDuration, skillBuff.remainedDuration);
                 playerBuff.remainedDuration--;
                 Assert.Greater(skillBuff.remainedDuration, playerBuff.remainedDuration);

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Libplanet.Action;
 
-namespace Nekoyume.Game.Util
+namespace Nekoyume.Battle
 {
     public class WeightedSelector<T>
     {

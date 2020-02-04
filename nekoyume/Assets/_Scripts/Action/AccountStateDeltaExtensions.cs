@@ -3,7 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
-using UnityEngine;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -19,7 +19,7 @@ namespace Nekoyume.Action
                 return true;
             }
 
-            Debug.LogErrorFormat(
+            Log.Error(
                 "Expected a {0}, but got invalid state ({1}): ({2}) {3}",
                 typeof(T).Name,
                 address.ToHex(),
@@ -35,7 +35,7 @@ namespace Nekoyume.Action
             var serializedAgent = states.GetState(address);
             if (serializedAgent is null)
             {
-                Debug.LogWarningFormat("No agent state ({0})", address.ToHex());
+                Log.Warning("No agent state ({0})", address.ToHex());
                 return null;
             }
 
@@ -45,12 +45,13 @@ namespace Nekoyume.Action
             }
             catch (InvalidCastException e)
             {
-                Debug.LogErrorFormat(
+                Log.Error(
+                    e,
                     "Invalid agent state ({0}): {1}",
                     address.ToHex(),
                     serializedAgent
                 );
-                Debug.LogException(e);
+                
                 return null;
             }
         }
@@ -60,7 +61,7 @@ namespace Nekoyume.Action
             var serializedAvatar = states.GetState(address);
             if (serializedAvatar is null)
             {
-                Debug.LogWarningFormat("No avatar state ({0})", address.ToHex());
+                Log.Warning("No avatar state ({0})", address.ToHex());
                 return null;
             }
 
@@ -70,12 +71,13 @@ namespace Nekoyume.Action
             }
             catch (InvalidCastException e)
             {
-                Debug.LogErrorFormat(
+                Log.Error(
+                    e,
                     "Invalid avatar state ({0}): {1}",
                     address.ToHex(),
                     serializedAvatar
                 );
-                Debug.LogException(e);
+
                 return null;
             }
         }
@@ -96,11 +98,12 @@ namespace Nekoyume.Action
             }
             if (!agentState.avatarAddresses.ContainsValue(avatarAddress))
             {
-                Debug.LogErrorFormat(
+                Log.Error(
                     "The avatar {0} does not belong to the agent {1}.",
                     avatarAddress.ToHex(),
                     agentAddress.ToHex()
                 );
+                
                 return false;
             }
 
@@ -113,7 +116,7 @@ namespace Nekoyume.Action
             var iValue = states.GetState(address);
             if (iValue is null)
             {
-                Debug.LogWarningFormat("No weekly arena state ({0})", address.ToHex());
+                Log.Warning("No weekly arena state ({0})", address.ToHex());
                 return null;
             }
 
@@ -123,12 +126,13 @@ namespace Nekoyume.Action
             }
             catch (InvalidCastException e)
             {
-                Debug.LogErrorFormat(
+                Log.Error(
+                    e,
                     "Invalid weekly arena state ({0}): {1}",
                     address.ToHex(),
                     iValue
                 );
-                Debug.LogException(e);
+
                 return null;
             }
         }

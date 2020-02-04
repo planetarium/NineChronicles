@@ -129,7 +129,7 @@ namespace Nekoyume.Model.Elemental
                     return WinMultiplier;
                 case ElementalResult.Draw:
                 case ElementalResult.Lose:
-                    return 1;
+                    return 1m;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

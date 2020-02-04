@@ -10,6 +10,7 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -108,14 +109,14 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"Buy exec started.");
+            Log.Debug($"Buy exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, buyerAvatarAddress, out var buyerAgentState, out var buyerAvatarState))
             {
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"Buy Get Buyer AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug($"Buy Get Buyer AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
@@ -124,17 +125,17 @@ namespace Nekoyume.Action
             }
             var shopState = new ShopState(d);
             sw.Stop();
-            UnityEngine.Debug.Log($"Buy Get ShopState: {sw.Elapsed}");
+            Log.Debug($"Buy Get ShopState: {sw.Elapsed}");
             sw.Restart();
 
-            UnityEngine.Debug.Log($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`");
+            Log.Debug($"Execute Buy. buyer : `{buyerAvatarAddress}` seller: `{sellerAvatarAddress}`");
             // 상점에서 구매할 아이템을 찾는다.
             if (!shopState.TryGet(sellerAgentAddress, productId, out var outPair))
             {
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"Buy Get Item: {sw.Elapsed}");
+            Log.Debug($"Buy Get Item: {sw.Elapsed}");
             sw.Restart();
 
             if (!states.TryGetAgentAvatarStates(sellerAgentAddress, sellerAvatarAddress, out var sellerAgentState, out var sellerAvatarState))
@@ -142,7 +143,7 @@ namespace Nekoyume.Action
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"Buy Get Seller AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug($"Buy Get Seller AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
             // 돈은 있냐?
@@ -205,19 +206,19 @@ namespace Nekoyume.Action
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();
-            UnityEngine.Debug.Log($"Buy Set Seller AvatarState: {sw.Elapsed}");
+            Log.Debug($"Buy Set Seller AvatarState: {sw.Elapsed}");
             sw.Restart();
 
             states = states.SetState(buyerAvatarAddress, buyerAvatarState.Serialize());
             sw.Stop();
-            UnityEngine.Debug.Log($"Buy Set Buyer AvatarState: {sw.Elapsed}");
+            Log.Debug($"Buy Set Buyer AvatarState: {sw.Elapsed}");
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopState.Serialize());
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"Buy Set ShopState: {sw.Elapsed}");
-            UnityEngine.Debug.Log($"Buy Total Executed Time: {ended - started}");
+            Log.Debug($"Buy Set ShopState: {sw.Elapsed}");
+            Log.Debug($"Buy Total Executed Time: {ended - started}");
 
             return states
                 .SetState(ctx.Signer, buyerAgentState.Serialize())

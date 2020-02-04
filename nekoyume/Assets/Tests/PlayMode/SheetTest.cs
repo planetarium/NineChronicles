@@ -1,5 +1,6 @@
 using System.Collections;
 using Nekoyume;
+using Nekoyume.Game;
 using Nekoyume.TableData;
 using NUnit.Framework;
 using UnityEngine;
@@ -17,7 +18,15 @@ namespace Tests.PlayMode
         {
             _monoBehaviour = new GameObject().AddComponent<SimpleMonoBehaviour>();
             _tableSheets = new TableSheets();
-            yield return _monoBehaviour.StartCoroutine(_tableSheets.CoInitialize());
+            var sheets = Game.GetTableCsvAssets();
+            foreach (var sheet in sheets)
+            {
+                _tableSheets.SetToSheet(sheet.Key, sheet.Value);
+            }
+
+            _tableSheets.ItemSheetInitialize();
+            _tableSheets.QuestSheetInitialize();
+            yield break;
         }
 
         [UnityTearDown]
