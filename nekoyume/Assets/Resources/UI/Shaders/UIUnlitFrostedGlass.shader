@@ -3,6 +3,7 @@
     Properties
     {
         _Radius("Radius", Range(1, 255)) = 1
+        _ScreenWidth("Radius", float) = 1136
         _MainTex ("Base (RGB)", 2D) = "white" {}
     }
  
@@ -56,6 +57,7 @@
                 sampler2D _GrabTexture;
                 float4 _GrabTexture_TexelSize;
                 float _Radius;
+                float _ScreenWidth;
  
                 half4 frag(v2f i) : COLOR
                 {
@@ -65,6 +67,8 @@
  
                     sum += GRABXYPIXEL(0.0, 0.0);
                     int measurments = 1;
+                    
+                    _Radius *= _ScreenWidth / 1136.0;
  
                     for (float range = 0.1f; range <= _Radius; range += 0.1f)
                     {
@@ -123,12 +127,13 @@
                 sampler2D _GrabTexture;
                 float4 _GrabTexture_TexelSize;
                 float _Radius;
+                float _ScreenWidth;
  
                 half4 frag(v2f i) : COLOR
                 {
  
                     half4 sum = half4(0,0,0,0);
-                    float radius = 1.41421356237 * _Radius;
+                    float radius = 1.41421356237 * _ScreenWidth / 1136.0 * _Radius;
  
                     #define GRABXYPIXEL(kernelx, kernely) tex2Dproj( _GrabTexture, UNITY_PROJ_COORD(float4(i.uvgrab.x + _GrabTexture_TexelSize.x * kernelx, i.uvgrab.y + _GrabTexture_TexelSize.y * kernely, i.uvgrab.z, i.uvgrab.w)))
  
