@@ -5,7 +5,7 @@ using System.Linq;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class StageSheet : Sheet<int, StageSheet.Row>
+    public class StageWaveSheet : Sheet<int, StageWaveSheet.Row>
     {
         [Serializable]
         public class WaveData
@@ -13,16 +13,12 @@ namespace Nekoyume.TableData
             public int Number { get; }
             public List<MonsterData> Monsters { get; }
             public bool IsBoss { get; }
-            public int RewardId { get; }
-            public long Exp { get; }
 
-            public WaveData(int number, List<MonsterData> monsters, bool isBoss, int rewardId, long exp)
+            public WaveData(int number, List<MonsterData> monsters, bool isBoss)
             {
                 Number = number;
                 Monsters = monsters;
                 IsBoss = isBoss;
-                RewardId = rewardId;
-                Exp = exp;
             }
         }
 
@@ -44,17 +40,15 @@ namespace Nekoyume.TableData
         [Serializable]
         public class Row : SheetRow<int>
         {
-            public override int Key => Id;
-            public int Id { get; private set; }
+            public override int Key => StageId;
+            public int StageId { get; private set; }
             public List<WaveData> Waves { get; private set; }
             public bool HasBoss { get; private set; }
             public List<int> TotalMonsterIds { get; private set; }
-            public List<int> TotalRewardIds { get; private set; }
-            public long TotalExp { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.TryParse(fields[0], out var id) ? id : 0;
+                StageId = int.TryParse(fields[0], out var stageId) ? stageId : 0;
                 Waves = new List<WaveData>();
                 if (!int.TryParse(fields[1], out var wave))
                     return;
@@ -75,9 +69,7 @@ namespace Nekoyume.TableData
                 }
 
                 var isBoss = fields[14].Equals("1");
-                var rewardId = int.TryParse(fields[15], out var outRewardId) ? outRewardId : 0;
-                var exp = int.TryParse(fields[16], out var outExp) ? outExp : 0;
-                Waves.Add(new WaveData(wave, monsters, isBoss, rewardId, exp));
+                Waves.Add(new WaveData(wave, monsters, isBoss));
             }
 
             public override void EndOfSheetInitialize()
@@ -94,15 +86,10 @@ namespace Nekoyume.TableData
                 TotalMonsterIds.AddRange(Waves.SelectMany(wave => wave.Monsters)
                     .Select(monster => monster.CharacterId)
                     .Distinct());
-                TotalRewardIds = new List<int>();
-                TotalRewardIds.AddRange(Waves.Select(wave => wave.RewardId)
-                    .Where(rewardId => rewardId != 0)
-                    .Distinct());
-                TotalExp = Waves.Sum(wave => wave.Exp);
             }
         }
         
-        public StageSheet() : base(nameof(StageSheet))
+        public StageWaveSheet() : base(nameof(StageWaveSheet))
         {
         }
 

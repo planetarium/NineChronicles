@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class LevelSheet : Sheet<int, LevelSheet.Row>
+    public class CharacterLevelSheet : Sheet<int, CharacterLevelSheet.Row>
     {
         [Serializable]
         public class Row : SheetRow<int>
@@ -22,7 +22,7 @@ namespace Nekoyume.TableData
             }
         }
         
-        public LevelSheet() : base(nameof(LevelSheet))
+        public CharacterLevelSheet() : base(nameof(CharacterLevelSheet))
         {
         }
 
