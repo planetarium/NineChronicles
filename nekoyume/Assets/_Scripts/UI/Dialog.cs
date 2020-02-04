@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
-using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -67,11 +65,6 @@ namespace Nekoyume.UI
             _coroutine = StartCoroutine(CoShowText());
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-        }
-
         public void Skip()
         {
             if (_coroutine != null)
@@ -83,7 +76,8 @@ namespace Nekoyume.UI
             }
 
             _dialogIndex++;
-            if (_dialogIndex == _dialogNum)
+
+            if (_dialogIndex >= _dialogNum)
             {
                 PlayerPrefs.SetInt(_playerPrefsKey, 1);
                 Close();
@@ -95,7 +89,7 @@ namespace Nekoyume.UI
 
         public IEnumerator CoShowText()
         {
-            string text = LocalizationManager.Localize($"{_dialogKey}{_dialogIndex}");
+            var text = LocalizationManager.Localize($"{_dialogKey}{_dialogIndex}");
             if (string.IsNullOrEmpty(text))
                 yield break;
 
