@@ -14,14 +14,15 @@ namespace Nekoyume.Battle
 {
     public class StageSimulator : Simulator
     {
-        private readonly int _worldId;
-        public readonly int StageId;
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
         public CollectionMap ItemMap = new CollectionMap();
         
-        public IEnumerable<ItemBase> Rewards => _waveRewards;
+        private int WorldId { get; }
+        public int StageId { get; }
         public int Exp { get; }
+        public int TurnLimit { get; }
+        public IEnumerable<ItemBase> Rewards => _waveRewards;
 
         public StageSimulator(
             IRandom random,
@@ -31,12 +32,25 @@ namespace Nekoyume.Battle
             int stageId,
             TableSheets tableSheets) : base(random, avatarState, foods, tableSheets)
         {
-            _worldId = worldId;
-            StageId = stageId;
             _waves = new List<Wave>();
             _waveRewards = new List<ItemBase>();
-            SetWave();
+            
+            WorldId = worldId;
+            StageId = stageId;
+            
+            var stageSheet = TableSheets.StageSheet;
+            if (!stageSheet.TryGetValue(StageId, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
+            
+            var stageWaveSheet = TableSheets.StageWaveSheet;
+            if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
+                throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId.ToString());
+            
             Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
+            TurnLimit = stageRow.TurnLimit;
+            
+            SetWave(stageWaveRow);
+            SetReward(stageRow);
         }
 
         public StageSimulator(
@@ -49,15 +63,22 @@ namespace Nekoyume.Battle
             Model.Skill.Skill skill) 
             : this(random, avatarState, foods, worldId, stageId, tableSheets)
         {
-            if (!ReferenceEquals(skill, null))
-                Player.OverrideSkill(skill);
+            var stageSheet = TableSheets.StageSheet;
+            if (!stageSheet.TryGetValue(StageId, out var stageRow))
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
             
             Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
+            TurnLimit = stageRow.TurnLimit;
+
+            if (!ReferenceEquals(skill, null))
+            {
+                Player.OverrideSkill(skill);
+            }
         }
 
         public override Player Simulate()
         {
-            Log.worldId = _worldId;
+            Log.worldId = WorldId;
             Log.stageId = StageId;
             Player.Spawn();
             var turn = 0;
@@ -71,7 +92,7 @@ namespace Nekoyume.Battle
                 while (true)
                 {
                     turn++;
-                    if (turn > MaxTurn)
+                    if (turn > TurnLimit)
                     {
                         Lose = i == 0;
                         if (Lose)
@@ -145,19 +166,13 @@ namespace Nekoyume.Battle
             return Player;
         }
 
-        private void SetWave()
+        private void SetWave(StageWaveSheet.Row stageWaveRow)
         {
-            var stageWaveSheet = TableSheets.StageWaveSheet;
-            if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
-                throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId.ToString());
-
             var waves = stageWaveRow.Waves;
             foreach (var wave in waves.Select(SpawnWave))
             {
                 _waves.Add(wave);
             }
-            
-            GetReward(stageWaveRow.StageId);
         }
 
         private Wave SpawnWave(StageWaveSheet.WaveData waveData)
@@ -183,12 +198,9 @@ namespace Nekoyume.Battle
             return wave;
         }
 
-        private void GetReward(int id)
+        private void SetReward(StageSheet.Row stageRow)
         {
             var itemSelector = new WeightedSelector<int>(Random);
-            if (!TableSheets.StageSheet.TryGetValue(id, out var stageRow))
-                return;
-            
             var rewards = stageRow.Rewards.Where(r => r.Ratio > 0m);
             foreach (var r in rewards)
             {

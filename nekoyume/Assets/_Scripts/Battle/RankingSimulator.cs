@@ -36,7 +36,7 @@ namespace Nekoyume.Battle
             while (true)
             {
                 turn++;
-                if (turn >= MaxTurn)
+                if (turn > MaxTurn)
                 {
                     Result = BattleLog.Result.TimeOver;
                     Lose = true;
@@ -57,6 +57,7 @@ namespace Nekoyume.Battle
                     Result = BattleLog.Result.Win;
                     break;
                 }
+                
                 if (Lose)
                 {
                     Result = BattleLog.Result.Lose;
