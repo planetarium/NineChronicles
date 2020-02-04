@@ -195,35 +195,32 @@ namespace Nekoyume
             topRight = new float2(size.x * (1f - pivot.x), size.y * (1f - pivot.y));
         }
         
-        public static IEnumerator MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
-             float2 offset)
+        public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
+             float2 offset, Vector2 defaultWidgetSize = default)
         {
             if (target is null)
             {
-                yield break;
+                return;
             }
 
-            yield return new WaitUntil(() => rectTransform.rect.width != 0);
+            float widgetWidth = rectTransform.rect.width == 0 ? defaultWidgetSize.x : rectTransform.rect.width;
 
             rectTransform.position = target.position;
             float2 anchoredPosition = rectTransform.anchoredPosition;
 
             PivotPresetType pivotPresetType;
 
-
-            if (UI.MainCanvas.instance.GetComponent<RectTransform>().rect.width - anchoredPosition.x - target.rect.width / 2 > rectTransform.rect.width)
+            if (UI.MainCanvas.instance.GetComponent<RectTransform>().rect.width - anchoredPosition.x - target.rect.width / 2 > widgetWidth)
                 pivotPresetType = PivotPresetType.TopRight;
             else
             {
-                anchoredPosition.x -= rectTransform.rect.width;
+                anchoredPosition.x -= widgetWidth;
                 pivotPresetType = PivotPresetType.TopLeft;
                 offset = new float2(-offset.x, offset.y);
             }
 
             anchoredPosition += target.GetPivotPositionFromAnchor(pivotPresetType) + offset;
             rectTransform.anchoredPosition = anchoredPosition;
-
-            rectTransform.MoveInsideOfParent(offset);
         }
 
         public static void MoveInsideOfParent(this RectTransform rectTransform)

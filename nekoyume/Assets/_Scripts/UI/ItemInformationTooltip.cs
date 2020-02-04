@@ -29,10 +29,12 @@ namespace Nekoyume.UI
 
         public RectTransform Target => Model.target.Value;
 
+        private readonly Vector2 DefaultPanelSize = new Vector2(300, 750.53f);
+        
         protected override void Awake()
         {
             base.Awake();
-            
+
             Model = new Model.ItemInformationTooltip();
             submitButton.OnSubmitClick.Subscribe(_ =>
             {
@@ -103,7 +105,7 @@ namespace Nekoyume.UI
             }
             Model.FooterRootActive.Subscribe(footerRoot.SetActive).AddTo(_disposablesForModel);
             // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
-            Model.ItemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
+            Model.ItemInformation.item.Subscribe(value => SubscribeTarget(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
             StartCoroutine(CoUpdate());
@@ -120,6 +122,8 @@ namespace Nekoyume.UI
         protected override void SubscribeTarget(RectTransform target)
         {
             // 타겟이 바뀔 때, 아이템도 바뀌니 아이템을 구독하는 쪽 한 곳에 로직을 구현한다. 
+            panel.MoveToRelatedPosition(target, DefaultOffsetFromTarget, DefaultPanelSize);
+            UpdateAnchoredPosition();
         }
 
         private IEnumerator CoUpdate()
