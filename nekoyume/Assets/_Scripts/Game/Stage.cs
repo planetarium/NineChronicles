@@ -84,6 +84,7 @@ namespace Nekoyume.Game
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageStart.AddListener(OnStageStart);
             Event.OnRankingBattleStart.AddListener(OnRankingBattleStart);
+            Event.OnEnemyLastHit.AddListener(OnEnemyLastHit);
         }
 
         private void OnStageStart(BattleLog log)
@@ -170,6 +171,11 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RoomEntering>();
         }
 
+        private void OnEnemyLastHit(Character.Enemy enemy)
+        {
+            Widget.Find<UI.Battle>().stageProgressBar.IncreaseProgress(enemy.HP);
+        }
+
         // todo: 배경 캐싱.
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
@@ -247,7 +253,6 @@ namespace Nekoyume.Game
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
-
             yield return StartCoroutine(CoStageEnd(log));
         }
 
@@ -298,6 +303,10 @@ namespace Nekoyume.Game
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
+
+            var battle = Widget.Find<UI.Battle>();
+            Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
+            battle.stageProgressBar.Initialize(stageData.Waves.Count);
 
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
@@ -442,6 +451,7 @@ namespace Nekoyume.Game
         {
             var battle = Widget.Find<UI.Battle>();
             battle.bossStatus.Close();
+            battle.stageProgressBar.Close();
             battle.enemyPlayerStatus.Show();
             battle.enemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
 
@@ -624,6 +634,16 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss)
         {
+            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
+            foreach (var prev in prevEnemies)
+            {
+                objectPool.Remove<Character.Enemy>(prev.gameObject);
+            }
+
+            var battle = Widget.Find<UI.Battle>();
+            battle.stageProgressBar.SetNextWave(enemies.Sum(enemy => enemy.HP));
+
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(.3f);
@@ -631,7 +651,6 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().enemyPlayerStatus.Close();
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
-            var battle = Widget.Find<UI.Battle>();
 
             if (isBoss)
             {
@@ -655,11 +674,6 @@ namespace Nekoyume.Game
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 
-            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
-            foreach (var prev in prevEnemies)
-            {
-                objectPool.Remove<Character.Enemy>(prev.gameObject);
-            }
             yield return new WaitForEndOfFrame();
 
             yield return StartCoroutine(spawner.CoSetData(enemies));

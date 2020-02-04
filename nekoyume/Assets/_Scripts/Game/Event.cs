@@ -19,6 +19,7 @@ namespace Nekoyume.Game
         {
         }
         public static readonly EnemyDead OnEnemyDead = new EnemyDead();
+        public static readonly EnemyDead OnEnemyLastHit = new EnemyDead();
         public static readonly UnityEvent OnStageClear = new UnityEvent();
 
         public static readonly Subject<Player> OnUpdatePlayerStatus = new Subject<Player>();
