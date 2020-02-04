@@ -8,7 +8,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
-using UnityEngine;
 
 namespace Nekoyume.Battle
 {
