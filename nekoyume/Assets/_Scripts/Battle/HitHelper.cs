@@ -1,6 +1,8 @@
-using System;
-
 // #define TEST_LOG
+
+using System;
+using System.Text;
+using UnityEngine;
 
 namespace Nekoyume.Battle
 {

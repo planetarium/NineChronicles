@@ -613,7 +613,13 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
+                if (target is null)
+                    continue;
+                
                 var effect = Game.instance.Stage.skillController.Get<SkillBlowVFX>(target, info);
+                if (effect is null)
+                    continue;
+                
                 effect.Play();
                 ProcessAttack(target, info, info.Target.IsDead, true);
             }
@@ -631,8 +637,13 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
+                if (target is null)
+                    continue;
+                
                 var first = skillInfosFirst == info;
                 var effect = Game.instance.Stage.skillController.Get<SkillDoubleVFX>(target, info);
+                if (effect is null)
+                    continue;
 
                 yield return StartCoroutine(CoAnimationAttack(info.Critical));
                 if (first)
@@ -660,7 +671,13 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationCast(skillInfosFirst));
 
             var effectTarget = Game.instance.Stage.GetCharacter(skillInfosFirst.Target);
+            if (effectTarget is null)
+                yield break;
+            
             var effect = Game.instance.Stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfosFirst);
+            if (effect is null)
+                yield break;
+            
             Model.BattleStatus.Skill.SkillInfo trigger = null;
             if (effect.finisher)
             {
@@ -676,6 +693,9 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
+                if (target is null)
+                    continue;
+                
                 yield return new WaitForSeconds(0.14f);
                 if (trigger == info)
                 {

@@ -14,6 +14,10 @@ namespace Nekoyume.Battle
         public const int CountMaxLowerLimit = 2;
         public const int CountMaxUpperLimit = 5;
 
+        /// <summary>
+        /// key: attack count max
+        /// value: attack count, info
+        /// </summary>
         public static readonly IReadOnlyDictionary<int, IReadOnlyDictionary<int, Info>> CachedInfo =
             new Dictionary<int, IReadOnlyDictionary<int, Info>>
             {
