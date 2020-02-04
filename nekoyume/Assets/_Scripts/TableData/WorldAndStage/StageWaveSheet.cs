@@ -13,16 +13,12 @@ namespace Nekoyume.TableData
             public int Number { get; }
             public List<MonsterData> Monsters { get; }
             public bool IsBoss { get; }
-            public int RewardId { get; }
-            public long Exp { get; }
 
-            public WaveData(int number, List<MonsterData> monsters, bool isBoss, int rewardId, long exp)
+            public WaveData(int number, List<MonsterData> monsters, bool isBoss)
             {
                 Number = number;
                 Monsters = monsters;
                 IsBoss = isBoss;
-                RewardId = rewardId;
-                Exp = exp;
             }
         }
 
@@ -49,8 +45,6 @@ namespace Nekoyume.TableData
             public List<WaveData> Waves { get; private set; }
             public bool HasBoss { get; private set; }
             public List<int> TotalMonsterIds { get; private set; }
-            public List<int> TotalRewardIds { get; private set; }
-            public long TotalExp { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -75,9 +69,7 @@ namespace Nekoyume.TableData
                 }
 
                 var isBoss = fields[14].Equals("1");
-                var rewardId = int.TryParse(fields[15], out var outRewardId) ? outRewardId : 0;
-                var exp = int.TryParse(fields[16], out var outExp) ? outExp : 0;
-                Waves.Add(new WaveData(wave, monsters, isBoss, rewardId, exp));
+                Waves.Add(new WaveData(wave, monsters, isBoss));
             }
 
             public override void EndOfSheetInitialize()
@@ -94,11 +86,6 @@ namespace Nekoyume.TableData
                 TotalMonsterIds.AddRange(Waves.SelectMany(wave => wave.Monsters)
                     .Select(monster => monster.CharacterId)
                     .Distinct());
-                TotalRewardIds = new List<int>();
-                TotalRewardIds.AddRange(Waves.Select(wave => wave.RewardId)
-                    .Where(rewardId => rewardId != 0)
-                    .Distinct());
-                TotalExp = Waves.Sum(wave => wave.Exp);
             }
         }
         

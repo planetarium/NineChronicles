@@ -14,25 +14,19 @@ namespace Nekoyume.UI
             return $"{stageRow.Key}: Description";
         }
 
-        public static List<MaterialItemSheet.Row> GetRewardItemRows(this StageWaveSheet.Row stageRow)
+        public static List<MaterialItemSheet.Row> GetRewardItemRows(this StageSheet.Row stageRow)
         {
             if (GetRewardItemRowsCache.ContainsKey(stageRow.Key))
                 return GetRewardItemRowsCache[stageRow.Key];
             
             var tableSheets = Game.Game.instance.TableSheets;
             var itemRows = new List<MaterialItemSheet.Row>();
-            foreach (var rewardId in stageRow.TotalRewardIds)
+            foreach (var itemId in stageRow.Rewards.Select(rewardData => rewardData.ItemId))
             {
-                if (!tableSheets.StageSheet.TryGetValue(rewardId, out var rewardRow))
+                if (!tableSheets.MaterialItemSheet.TryGetValue(itemId, out var item))
                     continue;
 
-                foreach (var itemId in rewardRow.Rewards.Select(rewardData => rewardData.ItemId))
-                {
-                    if (!tableSheets.MaterialItemSheet.TryGetValue(itemId, out var item))
-                        continue;
-
-                    itemRows.Add(item);
-                }
+                itemRows.Add(item);
             }
 
             var result = itemRows.Distinct().ToList();

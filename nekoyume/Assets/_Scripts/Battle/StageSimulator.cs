@@ -8,6 +8,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
+using UnityEngine;
 
 namespace Nekoyume.Battle
 {
@@ -16,10 +17,11 @@ namespace Nekoyume.Battle
         private readonly int _worldId;
         public readonly int StageId;
         private readonly List<Wave> _waves;
-        private int _totalWave;
-        private readonly List<List<ItemBase>> _waveRewards;
-        public IEnumerable<ItemBase> Rewards => _waveRewards.SelectMany(i => i).ToList();
+        private readonly List<ItemBase> _waveRewards;
         public CollectionMap ItemMap = new CollectionMap();
+        
+        public IEnumerable<ItemBase> Rewards => _waveRewards;
+        public int Exp { get; }
 
         public StageSimulator(
             IRandom random,
@@ -32,8 +34,9 @@ namespace Nekoyume.Battle
             _worldId = worldId;
             StageId = stageId;
             _waves = new List<Wave>();
-            _waveRewards = new List<List<ItemBase>>();
+            _waveRewards = new List<ItemBase>();
             SetWave();
+            Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
         }
 
         public StageSimulator(
@@ -48,6 +51,8 @@ namespace Nekoyume.Battle
         {
             if (!ReferenceEquals(skill, null))
                 Player.OverrideSkill(skill);
+            
+            Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
         }
 
         public override Player Simulate()
@@ -56,20 +61,28 @@ namespace Nekoyume.Battle
             Log.stageId = StageId;
             Player.Spawn();
             var turn = 0;
-            foreach (var wave in _waves)
+            for (var i = 0; i < _waves.Count; i++)
             {
+                var wave = _waves[i];
                 WaveTurn = 0;
                 Characters = new SimplePriorityQueue<CharacterBase, decimal>();
                 Characters.Enqueue(Player, TurnPriority / Player.SPD);
-                var lastWave = _totalWave - 1;
                 wave.Spawn(this);
                 while (true)
                 {
                     turn++;
-                    if (turn >= MaxTurn)
+                    if (turn > MaxTurn)
                     {
+                        Lose = i == 0;
+                        if (Lose)
+                        {
+                            Player.GetExp((int) (Exp * 0.3m), true);
+                            Result = BattleLog.Result.Lose;
+                            break;
+                        }
+                        
+                        // todo: 타임오버 대신 부분 승리 처리 필요.
                         Result = BattleLog.Result.TimeOver;
-                        Lose = true;
                         break;
                     }
 
@@ -84,25 +97,28 @@ namespace Nekoyume.Battle
 
                     if (!Player.Targets.Any())
                     {
-                        var index = Math.Min(_waves.IndexOf(wave), lastWave);
-                        var items = _waveRewards[index];
-                        Player.GetExp(wave.Exp, true);
-
-                        var dropBox = new DropBox(null, items);
-                        Log.Add(dropBox);
-
-                        if (index == lastWave)
+                        Result = BattleLog.Result.Win;
+                        
+                        switch (i)
                         {
-                            Result = BattleLog.Result.Win;
-                            var rewards = _waveRewards.SelectMany(i => i).ToList();
-                            ItemMap = Player.GetRewards(rewards);
-                            var getReward = new GetReward(null, rewards);
-                            Log.Add(getReward);
+                            case 0:
+                                Player.GetExp(Exp, true);
+                                break;
+                            case 1:
+                                ItemMap = Player.GetRewards(_waveRewards);
+                                var dropBox = new DropBox(null, _waveRewards);
+                                Log.Add(dropBox);
+                                var getReward = new GetReward(null, _waveRewards);
+                                Log.Add(getReward);
+                                break;
+                            case 2:
+                                // todo: 첫 3별 클리어 보상 적용.
+                                break;
                         }
 
                         break;
                     }
-
+                    
                     if (Lose)
                     {
                         Result = BattleLog.Result.Lose;
@@ -131,18 +147,17 @@ namespace Nekoyume.Battle
 
         private void SetWave()
         {
-            var stageSheet = TableSheets.StageWaveSheet;
-            if (!stageSheet.TryGetValue(StageId, out var stageRow))
-                throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
+            var stageWaveSheet = TableSheets.StageWaveSheet;
+            if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
+                throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId.ToString());
 
-            var waves = stageRow.Waves;
-            _totalWave = waves.Count;
-            foreach (var waveData in waves)
+            var waves = stageWaveRow.Waves;
+            foreach (var wave in waves.Select(SpawnWave))
             {
-                var wave = SpawnWave(waveData);
                 _waves.Add(wave);
-                GetReward(waveData.RewardId);
             }
+            
+            GetReward(stageWaveRow.StageId);
         }
 
         private Wave SpawnWave(StageWaveSheet.WaveData waveData)
@@ -159,45 +174,43 @@ namespace Nekoyume.Battle
                     wave.Add(enemyModel);
                     wave.IsBoss = waveData.IsBoss;
                 }
-
-                wave.Exp = waveData.Exp;
             }
+
+            wave.Exp = waveData.Number == 2
+                ? Exp
+                : 0;
 
             return wave;
         }
 
         private void GetReward(int id)
         {
-            var rewardTable = TableSheets.StageSheet;
             var itemSelector = new WeightedSelector<int>(Random);
-            var items = new List<ItemBase>();
-            if (rewardTable.TryGetValue(id, out var reward))
+            if (!TableSheets.StageSheet.TryGetValue(id, out var stageRow))
+                return;
+            
+            var rewards = stageRow.Rewards.Where(r => r.Ratio > 0m);
+            foreach (var r in rewards)
             {
-                var rewards = reward.Rewards.Where(r => r.Ratio > 0m);
-                foreach (var r in rewards)
+                itemSelector.Add(r.ItemId, r.Ratio);
+                try
                 {
-                    itemSelector.Add(r.ItemId, r.Ratio);
-                    try
+                    var itemId = itemSelector.Pop();
+                    if (TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
                     {
-                        var itemId = itemSelector.Pop();
-                        if (TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
+                        var count = Random.Next(r.Min, r.Max + 1);
+                        for (var i = 0; i < count; i++)
                         {
-                            var count = Random.Next(r.Min, r.Max + 1);
-                            for (var i = 0; i < count; i++)
-                            {
-                                var guid = Random.GenerateRandomGuid();
-                                var item = ItemFactory.Create(itemData, guid);
-                                items.Add(item);
-                            }
+                            var guid = Random.GenerateRandomGuid();
+                            var item = ItemFactory.Create(itemData, guid);
+                            _waveRewards.Add(item);
                         }
                     }
-                    catch (ArgumentOutOfRangeException)
-                    {
-                    }
+                }
+                catch (ArgumentOutOfRangeException)
+                {
                 }
             }
-
-            _waveRewards.Add(items);
         }
     }
 }
