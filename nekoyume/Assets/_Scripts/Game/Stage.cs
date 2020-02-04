@@ -306,9 +306,8 @@ namespace Nekoyume.Game
 
             var battle = Widget.Find<UI.Battle>();
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
-            battle.stageProgressBar.Initialize(stageData.Waves.Count);
-
-            var title = Widget.Find<StageTitle>();
+            battle.stageProgressBar.Initialize();
+;           var title = Widget.Find<StageTitle>();
             title.Show(stageId);
 
             yield return new WaitForSeconds(2.0f);

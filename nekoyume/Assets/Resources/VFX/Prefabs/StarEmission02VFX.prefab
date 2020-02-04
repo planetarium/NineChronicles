@@ -9344,6 +9344,7 @@ GameObject:
   - component: {fileID: 6210030703729237918}
   - component: {fileID: 4123077589855706864}
   - component: {fileID: 3531627210404791725}
+  - component: {fileID: 4965496647501171505}
   m_Layer: 5
   m_Name: UI_Stage_Star_02
   m_TagString: Untagged
@@ -14090,6 +14091,18 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &4965496647501171505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7354510331960268870}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b4b3ca45ddb11de4cb500b0316077ab0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7563073374285195635
 GameObject:
   m_ObjectHideFlags: 0

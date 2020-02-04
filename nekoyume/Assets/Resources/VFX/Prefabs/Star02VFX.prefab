@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &469929775319107500
+--- !u!1 &5421720535952931083
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,37 +8,38 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4818480211983395905}
-  - component: {fileID: 1882219128360051611}
-  - component: {fileID: 1171057053535403650}
+  - component: {fileID: 2148442833429644488}
+  - component: {fileID: 7441762469446233099}
+  - component: {fileID: 3822631001391160393}
+  - component: {fileID: 170238810634616662}
   m_Layer: 5
-  m_Name: UI_Stage_Star_03_F
+  m_Name: UI_Stage_Star_02_F
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4818480211983395905
+--- !u!4 &2148442833429644488
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 469929775319107500}
+  m_GameObject: {fileID: 5421720535952931083}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.124, y: -1.8, z: 0}
+  m_LocalPosition: {x: 1.541, y: -1.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!198 &1882219128360051611
+--- !u!198 &7441762469446233099
 ParticleSystem:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 469929775319107500}
+  m_GameObject: {fileID: 5421720535952931083}
   serializedVersion: 6
   lengthInSec: 0.5
   simulationSpeed: 1
@@ -1040,16 +1041,16 @@ ParticleSystem:
         m_Curve:
         - serializedVersion: 3
           time: 0
-          value: 0.33695984
-          inSlope: -0.04992421
-          outSlope: -0.04992421
+          value: 0.2608719
+          inSlope: -0.050853737
+          outSlope: -0.050853737
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.51327306
-          value: 0.3113351
+          time: 0.5038391
+          value: 0.23524979
           inSlope: 0.00000035390815
           outSlope: 0.00000035390815
           tangentMode: 0
@@ -1057,10 +1058,10 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
-          time: 0.9929245
-          value: 0.3260886
-          inSlope: 0.030758837
-          outSlope: 0.030758837
+          time: 0.99765474
+          value: 0.25000066
+          inSlope: 0.029871203
+          outSlope: 0.029871203
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
@@ -4730,14 +4731,14 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!199 &1171057053535403650
+--- !u!199 &3822631001391160393
 ParticleSystemRenderer:
   serializedVersion: 6
   m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 469929775319107500}
+  m_GameObject: {fileID: 5421720535952931083}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -4748,7 +4749,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 73c22c2fe5f89f64e98508641f6c5cc9, type: 2}
+  - {fileID: 2100000, guid: 11a2700f5d5304043811623e0e172b9b, type: 2}
   - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -4792,3 +4793,15 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &170238810634616662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5421720535952931083}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8e7432aed4a9f94993ae443bfed8bb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
