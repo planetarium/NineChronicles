@@ -31,11 +31,10 @@ namespace Nekoyume.Battle
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
-            var turn = 0;
+            var turn = 1;
             WaveTurn = 0;
             while (true)
             {
-                turn++;
                 if (turn > MaxTurn)
                 {
                     Result = BattleLog.Result.TimeOver;
@@ -45,7 +44,11 @@ namespace Nekoyume.Battle
 
                 if (Characters.TryDequeue(out var character))
                 {
-                    character.Tick();
+                    character.Tick(out var useSkill);
+                    if (useSkill)
+                    {
+                        turn++;
+                    }
                 }
                 else
                 {

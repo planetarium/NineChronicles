@@ -1,3 +1,5 @@
+// #define TEST_LOG
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +10,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
+using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Battle
 {
@@ -16,7 +19,7 @@ namespace Nekoyume.Battle
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
         public CollectionMap ItemMap = new CollectionMap();
-        
+
         private int WorldId { get; }
         public int StageId { get; }
         public int Exp { get; }
@@ -33,21 +36,21 @@ namespace Nekoyume.Battle
         {
             _waves = new List<Wave>();
             _waveRewards = new List<ItemBase>();
-            
+
             WorldId = worldId;
             StageId = stageId;
-            
+
             var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
-            
+
             var stageWaveSheet = TableSheets.StageWaveSheet;
             if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
                 throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId.ToString());
-            
+
             Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
             TurnLimit = stageRow.TurnLimit;
-            
+
             SetWave(stageWaveRow);
             SetReward(stageRow);
         }
@@ -59,13 +62,13 @@ namespace Nekoyume.Battle
             int worldId,
             int stageId,
             TableSheets tableSheets,
-            Model.Skill.Skill skill) 
+            Model.Skill.Skill skill)
             : this(random, avatarState, foods, worldId, stageId, tableSheets)
         {
             var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
-            
+
             Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
             TurnLimit = stageRow.TurnLimit;
 
@@ -80,7 +83,10 @@ namespace Nekoyume.Battle
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Player.Spawn();
-            var turn = 0;
+            var turn = 1;
+#if TEST_LOG
+            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / turn start");
+#endif
             for (var i = 0; i < _waves.Count; i++)
             {
                 var wave = _waves[i];
@@ -90,35 +96,51 @@ namespace Nekoyume.Battle
                 wave.Spawn(this);
                 while (true)
                 {
-                    turn++;
+                    // 제한 턴을 넘어서는 경우 break.
                     if (turn > TurnLimit)
                     {
-                        Lose = i == 0;
-                        if (Lose)
+                        if (i == 0)
                         {
                             Player.GetExp((int) (Exp * 0.3m), true);
+                            Lose = true;
                             Result = BattleLog.Result.Lose;
-                            break;
                         }
-                        
-                        // todo: 타임오버 대신 부분 승리 처리 필요.
-                        Result = BattleLog.Result.TimeOver;
+                        else
+                        {
+                            Result = BattleLog.Result.TimeOver;
+                        }
+
+#if TEST_LOG
+                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(Result)}: {Result.ToString()}");
+#endif
                         break;
                     }
 
-                    if (Characters.TryDequeue(out var character))
+                    // 캐릭터 큐가 비어 있는 경우 break.
+                    if (!Characters.TryDequeue(out var character))
+                        break;
+
+                    character.Tick(out var isTurnEnd);
+                    if (isTurnEnd)
                     {
-                        character.Tick();
+                        turn++;
+#if TEST_LOG
+                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(isTurnEnd)}");
+#endif
                     }
-                    else
+
+                    // 플레이어가 죽은 경우 break;
+                    if (Player.IsDead)
                     {
+                        Result = i == 0
+                            ? BattleLog.Result.Lose
+                            : BattleLog.Result.Win;
                         break;
                     }
 
+                    // 플레이어의 타겟(적)이 없는 경우 break.
                     if (!Player.Targets.Any())
                     {
-                        Result = BattleLog.Result.Win;
-                        
                         switch (i)
                         {
                             case 0:
@@ -136,12 +158,7 @@ namespace Nekoyume.Battle
                                 break;
                         }
 
-                        break;
-                    }
-                    
-                    if (Lose)
-                    {
-                        Result = BattleLog.Result.Lose;
+                        Result = BattleLog.Result.Win;
                         break;
                     }
 
@@ -155,13 +172,17 @@ namespace Nekoyume.Battle
                     Characters.Enqueue(character, TurnPriority / character.SPD);
                 }
 
-                if (Lose)
-                {
+                // 플레이어가 죽은 경우 break;
+                if (Player.IsDead)
                     break;
-                }
             }
 
             Log.result = Result;
+#if TEST_LOG
+            var skillType = typeof(Skill);
+            var skillCount = Log.events.Count(e => e.GetType().IsInheritsFrom(skillType));
+            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {skillCount} / {nameof(Simulate)} end");
+#endif
             return Player;
         }
 
