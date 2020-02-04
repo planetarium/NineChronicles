@@ -2,7 +2,6 @@
 
 using System;
 using System.Text;
-using UnityEngine;
 
 namespace Nekoyume.Battle
 {
