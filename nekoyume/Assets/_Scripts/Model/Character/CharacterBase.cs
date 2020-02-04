@@ -15,7 +15,6 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {
