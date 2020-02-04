@@ -47,6 +47,8 @@ workflows:
     jobs:
       - build-lib9c
       - aws-ecr/build-and-push-image:
+          requires:
+            - build-lib9c
           name: build-and-push-image
           tag: "git-$CIRCLE_SHA1"
           repo: $CIRCLE_PROJECT_REPONAME
