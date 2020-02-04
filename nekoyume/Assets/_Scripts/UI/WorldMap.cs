@@ -69,6 +69,13 @@ namespace Nekoyume.UI
 
         #region Mono
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            CloseWidget = null;
+        }
+
         public override void Initialize()
         {
             base.Initialize();

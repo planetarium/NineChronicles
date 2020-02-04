@@ -18,6 +18,9 @@ namespace Nekoyume.UI
             {
                 texts[i].text = LocalizationManager.Localize($"UI_SYNOPSIS_{i}");
             }
+
+            CloseWidget = End;
+            SubmitWidget = End;
         }
 
         public override void Show()

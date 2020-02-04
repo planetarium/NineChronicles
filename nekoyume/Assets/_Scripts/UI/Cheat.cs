@@ -198,6 +198,8 @@ namespace Nekoyume
             Transform btn = transform.Find("Btn");
             btn.gameObject.SetActive(false);
 #endif
+
+            CloseWidget = null;
         }
 
         private void Update()

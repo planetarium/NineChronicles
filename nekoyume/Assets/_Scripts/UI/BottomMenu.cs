@@ -106,6 +106,9 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
             _toggleGroup.RegisterToggleable(chatButton);
+
+            SubmitWidget = null;
+            CloseWidget = null;
         }
 
         public override void Initialize()
@@ -223,6 +226,9 @@ namespace Nekoyume.UI.Module
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
+            CloseWidget = () => navigationAction?.Invoke(this);
+            CloseWidget += () => Find<Confirm>().Show();
         }
 
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.

@@ -19,6 +19,8 @@ namespace Nekoyume.UI
             base.Awake();
             repeatButton.SetToggleListener(this);
             Game.Event.OnGetItem.AddListener(OnGetItem);
+
+            CloseWidget = null;
         }
 
         public void Show(int stageId, bool isRepeat, bool isExitReserved)

@@ -32,6 +32,10 @@ namespace Nekoyume.UI
         private AnimationState _nextAnimationState;
         private int _animationTextAtlasIndex;
 
+        protected override void Awake()
+        {
+        }
+
         public override void Initialize()
         {
             base.Initialize();
