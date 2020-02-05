@@ -26,9 +26,9 @@ namespace Nekoyume.UI
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
         private bool _isCloseAnimationCompleted;
-        protected delegate void Action();
-        protected Action CloseWidget;
-        protected Action SubmitWidget;
+        
+        protected System.Action CloseWidget;
+        protected System.Action SubmitWidget;
 
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
