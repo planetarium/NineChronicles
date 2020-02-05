@@ -80,7 +80,6 @@ namespace Nekoyume.UI
         public void IncreaseProgress(int hp)
         {
             _progress -= hp;
-            Debug.LogWarning($"bef : {_progress + hp} / after : {_progress}");
             if(_progress == 0)
             {
                 CompleteWave();
