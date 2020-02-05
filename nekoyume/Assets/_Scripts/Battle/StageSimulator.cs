@@ -108,7 +108,6 @@ namespace Nekoyume.Battle
                         {
                             Result = BattleLog.Result.TimeOver;
                         }
-
 #if TEST_LOG
                         UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(Result)}: {Result.ToString()}");
 #endif
@@ -180,7 +179,7 @@ namespace Nekoyume.Battle
 #if TEST_LOG
             var skillType = typeof(Nekoyume.Model.BattleStatus.Skill);
             var skillCount = Log.events.Count(e => e.GetType().IsInheritsFrom(skillType));
-            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {skillCount} / {nameof(Simulate)} end");
+            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
 #endif
             return Player;
         }

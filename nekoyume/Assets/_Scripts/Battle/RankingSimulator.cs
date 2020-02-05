@@ -1,3 +1,5 @@
+// #define TEST_LOG
+
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
@@ -32,38 +34,46 @@ namespace Nekoyume.Battle
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
             var turn = 1;
+#if TEST_LOG
+            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / turn start");
+#endif
             WaveTurn = 0;
             while (true)
             {
                 if (turn > MaxTurn)
                 {
-                    Result = BattleLog.Result.TimeOver;
                     Lose = true;
-                    break;
-                }
-
-                if (Characters.TryDequeue(out var character))
-                {
-                    character.Tick(out var useSkill);
-                    if (useSkill)
-                    {
-                        turn++;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-
-                if (!Player.Targets.Any())
-                {
-                    Result = BattleLog.Result.Win;
+                    Result = BattleLog.Result.TimeOver;
+#if TEST_LOG
+                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(Result)}: {Result.ToString()}");
+#endif
                     break;
                 }
                 
-                if (Lose)
+                // 캐릭터 큐가 비어 있는 경우 break.
+                if (!Characters.TryDequeue(out var character))
+                    break;
+
+                character.Tick(out var isTurnEnd);
+                if (isTurnEnd)
+                {
+                    turn++;
+#if TEST_LOG
+                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(isTurnEnd)}");
+#endif
+                }
+                
+                // 플레이어가 죽은 경우 break;
+                if (Player.IsDead)
                 {
                     Result = BattleLog.Result.Lose;
+                    break;
+                }
+
+                // 플레이어의 타겟(적)이 없는 경우 break.
+                if (!Player.Targets.Any())
+                {
+                    Result = BattleLog.Result.Win;
                     break;
                 }
 
@@ -75,14 +85,14 @@ namespace Nekoyume.Battle
                 }
 
                 Characters.Enqueue(character, TurnPriority / character.SPD);
-
-                if (Lose)
-                {
-                    break;
-                }
             }
 
             Log.result = Result;
+#if TEST_LOG
+            var skillType = typeof(Nekoyume.Model.BattleStatus.Skill);
+            var skillCount = Log.events.Count(e => e.GetType().IsInheritsFrom(skillType));
+            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
+#endif
             return Player;
         }
 
