@@ -1,5 +1,4 @@
 using System;
-using Nekoyume.Game.Item;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Item

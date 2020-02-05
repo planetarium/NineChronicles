@@ -8,7 +8,7 @@ namespace Nekoyume.UI
     {
         private static readonly Dictionary<int, List<MaterialItemSheet.Row>> GetRewardItemRowsCache = new Dictionary<int, List<MaterialItemSheet.Row>>();
         
-        public static string GetLocalizedDescription(this StageSheet.Row stageRow)
+        public static string GetLocalizedDescription(this StageWaveSheet.Row stageRow)
         {
             // todo: return LocalizationManager.Localize($"{stageRow.Key}");
             return $"{stageRow.Key}: Description";
@@ -21,18 +21,12 @@ namespace Nekoyume.UI
             
             var tableSheets = Game.Game.instance.TableSheets;
             var itemRows = new List<MaterialItemSheet.Row>();
-            foreach (var rewardId in stageRow.TotalRewardIds)
+            foreach (var itemId in stageRow.Rewards.Select(rewardData => rewardData.ItemId))
             {
-                if (!tableSheets.StageRewardSheet.TryGetValue(rewardId, out var rewardRow))
+                if (!tableSheets.MaterialItemSheet.TryGetValue(itemId, out var item))
                     continue;
 
-                foreach (var itemId in rewardRow.Rewards.Select(rewardData => rewardData.ItemId))
-                {
-                    if (!tableSheets.MaterialItemSheet.TryGetValue(itemId, out var item))
-                        continue;
-
-                    itemRows.Add(item);
-                }
+                itemRows.Add(item);
             }
 
             var result = itemRows.Distinct().ToList();

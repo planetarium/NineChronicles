@@ -1,11 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Libplanet.Action;
 using LruCacheNet;
 using Nekoyume.Model.State;
-using UniRx;
 
 namespace Nekoyume.TableData
 {
@@ -14,12 +10,11 @@ namespace Nekoyume.TableData
         private static readonly LruCache<TableSheetsState, TableSheets> _cache = 
         new LruCache<TableSheetsState, TableSheets>();
 
-        public BackgroundSheet BackgroundSheet { get; private set; }
         public WorldSheet WorldSheet { get; private set; }
+        public StageWaveSheet StageWaveSheet { get; private set; }
         public StageSheet StageSheet { get; private set; }
-        public StageRewardSheet StageRewardSheet { get; private set; }
         public CharacterSheet CharacterSheet { get; private set; }
-        public LevelSheet LevelSheet { get; private set; }
+        public CharacterLevelSheet CharacterLevelSheet { get; private set; }
         public SkillSheet SkillSheet { get; private set; }
         public BuffSheet BuffSheet { get; private set; }
         public ItemSheet ItemSheet { get; private set; }
@@ -51,29 +46,25 @@ namespace Nekoyume.TableData
         {
             switch (name)
             {
-                case nameof(TableData.BackgroundSheet):
-                    BackgroundSheet = new BackgroundSheet();
-                    BackgroundSheet.Set(csv);
-                    break;
                 case nameof(TableData.WorldSheet):
                     WorldSheet = new WorldSheet();
                     WorldSheet.Set(csv);
+                    break;
+                case nameof(TableData.StageWaveSheet):
+                    StageWaveSheet = new StageWaveSheet();
+                    StageWaveSheet.Set(csv);
                     break;
                 case nameof(TableData.StageSheet):
                     StageSheet = new StageSheet();
                     StageSheet.Set(csv);
                     break;
-                case nameof(TableData.StageRewardSheet):
-                    StageRewardSheet = new StageRewardSheet();
-                    StageRewardSheet.Set(csv);
-                    break;
                 case nameof(TableData.CharacterSheet):
                     CharacterSheet = new CharacterSheet();
                     CharacterSheet.Set(csv);
                     break;
-                case nameof(TableData.LevelSheet):
-                    LevelSheet = new LevelSheet();
-                    LevelSheet.Set(csv);
+                case nameof(TableData.CharacterLevelSheet):
+                    CharacterLevelSheet = new CharacterLevelSheet();
+                    CharacterLevelSheet.Set(csv);
                     break;
                 case nameof(TableData.SkillSheet):
                     SkillSheet = new SkillSheet();
@@ -176,9 +167,8 @@ namespace Nekoyume.TableData
         /// TableSheetsState를 기준으로 초기화합니다.
         /// </summary>
         /// <param name="tableSheetsState">기준으로 삼을 상태입니다.</param>
-        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState = null)
+        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState)
         {
-            tableSheetsState = tableSheetsState ?? TableSheetsState.Current;
             foreach (var pair in tableSheetsState.TableSheets)
             {
                 SetToSheet(pair.Key, pair.Value);

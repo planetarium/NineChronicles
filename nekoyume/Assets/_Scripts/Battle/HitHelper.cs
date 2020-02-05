@@ -1,8 +1,7 @@
+// #define TEST_LOG
+
 using System;
 using System.Text;
-using UnityEngine;
-
-// #define LOG
 
 namespace Nekoyume.Battle
 {
@@ -24,7 +23,7 @@ namespace Nekoyume.Battle
             correction += GetHitStep2(attackerHit, defenderHit);
             correction = GetHitStep3(correction);
             var isHit = GetHitStep4(lowLimitChance, correction);
-#if LOG
+#if TEST_LOG
             var sb = new StringBuilder();
             sb.Append($"{nameof(attackerLevel)}: {attackerLevel}");
             sb.Append($" / {nameof(attackerHit)}: {attackerHit}");

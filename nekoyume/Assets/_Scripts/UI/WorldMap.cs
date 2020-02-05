@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -79,12 +81,17 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            var firstStageId = Game.Game.instance.TableSheets.StageSheet.First?.Id ?? 1;
+            var firstStageId = Game.Game.instance.TableSheets.StageWaveSheet.First?.StageId ?? 1;
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
             // �ʱ� �� ���� 1ȸ ����
             SharedViewModel.IsWorldShown.Skip(1).Subscribe(UpdateWorld).AddTo(gameObject);
-            SharedViewModel.SelectedStageId.Subscribe(UpdateStageInformation).AddTo(gameObject);
+            SharedViewModel.SelectedStageId.Subscribe(stageId =>
+            {
+                UpdateStageInformation(stageId, States.Instance.CurrentAvatarState is null
+                    ? 1
+                    : States.Instance.CurrentAvatarState.level);
+            }).AddTo(gameObject);
 
             var tooltip = Widget.Find<ItemInformationTooltip>();
 
@@ -281,7 +288,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void UpdateStageInformation(int stageId)
+        private void UpdateStageInformation(int stageId, int characterLevel)
         {
             var isSubmittable = false;
             if (!(SharedViewModel.WorldInformation is null))
@@ -292,18 +299,18 @@ namespace Nekoyume.UI
                 isSubmittable = world.IsPlayable(stageId);
             }
 
-            var stageSheet = Game.Game.instance.TableSheets.StageSheet;
-            stageSheet.TryGetValue(stageId, out var stageRow, true);
-            stageInformation.titleText.text = $"Stage #{stageRow.Id - SelectedWorldStageBegin + 1}";
+            var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
+            stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
+            stageInformation.titleText.text = $"Stage #{stageWaveRow.StageId - SelectedWorldStageBegin + 1}";
 
-            var monsterCount = stageRow.TotalMonsterIds.Count;
+            var monsterCount = stageWaveRow.TotalMonsterIds.Count;
             for (var i = 0; i < stageInformation.monstersAreaCharacterViews.Count; i++)
             {
                 var characterView = stageInformation.monstersAreaCharacterViews[i];
                 if (i < monsterCount)
                 {
                     characterView.Show();
-                    characterView.SetData(stageRow.TotalMonsterIds[i]);
+                    characterView.SetData(stageWaveRow.TotalMonsterIds[i]);
 
                     continue;
                 }
@@ -311,6 +318,8 @@ namespace Nekoyume.UI
                 characterView.Hide();
             }
 
+            var stageSheet = Game.Game.instance.TableSheets.StageSheet;
+            stageSheet.TryGetValue(stageId, out var stageRow, true);
             var rewardItemRows = stageRow.GetRewardItemRows();
             var rewardItemCount = rewardItemRows.Count;
             for (var i = 0; i < stageInformation.rewardsAreaItemViews.Count; i++)
@@ -327,7 +336,8 @@ namespace Nekoyume.UI
                 itemView.Hide();
             }
 
-            stageInformation.expText.text = $"EXP +{stageRow.TotalExp}";
+            var exp = StageRewardExpHelper.GetExp(characterLevel, stageId);
+            stageInformation.expText.text = $"EXP +{exp}";
 
             submitButton.SetSubmittable(isSubmittable);
         }
