@@ -6,7 +6,6 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
 using Nekoyume.Action;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -60,7 +59,7 @@ namespace Nekoyume.BlockChain
 
         public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock()
         {
-            var tableSheets = TableSheets.GetTableCsvAssets();
+            var tableSheets = Game.Game.GetTableCsvAssets();
             var initialStatesAction = new InitializeStates
             {
                 RankingState = new RankingState(),

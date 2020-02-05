@@ -13,15 +13,15 @@ namespace Nekoyume.Game.Factory
             if (avatarState is null)
                 throw new ArgumentNullException(nameof(avatarState));
 
-            // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
-            return Create(new Player(avatarState, TableSheets.FromTableSheetsState(TableSheetsState.Current)));
+            return Create(new Player(avatarState, Game.instance.TableSheets));
         }
 
         public static GameObject Create(Player model = null)
         {
             if (model is null)
-                // FIXME TableSheetsState.Current 써도 괜찮은지 체크해야 합니다.
-                model = new Player(1, TableSheets.FromTableSheetsState(TableSheetsState.Current));
+            {
+                model = new Player(1, Game.instance.TableSheets);
+            }
 
             var objectPool = Game.instance.Stage.objectPool;
             var player = objectPool.Get<Character.Player>();

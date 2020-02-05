@@ -1,5 +1,6 @@
 using System;
-using Nekoyume.EnumType;
+using System.Collections.Generic;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Buff
@@ -25,6 +26,26 @@ namespace Nekoyume.Model.Buff
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public static IList<Buff> GetBuffs(
+            Skill.Skill skill, 
+            SkillBuffSheet skillBuffSheet, 
+            BuffSheet buffSheet)
+        {
+            var buffs = new List<Buff>();
+            if (!skillBuffSheet.TryGetValue(skill.skillRow.Id, out var skillBuffRow))
+                return buffs;
+            
+            foreach (var buffId in skillBuffRow.BuffIds)
+            {
+                if (!buffSheet.TryGetValue(buffId, out var buffRow))
+                    continue;
+
+                buffs.Add(BuffFactory.Get(buffRow));
+            }
+
+            return buffs;
         }
     }
 }

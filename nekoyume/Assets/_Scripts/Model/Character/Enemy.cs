@@ -18,11 +18,18 @@ namespace Nekoyume.Model
                 monsterLevel)
         {
             Targets.Add(player);
+            PostConstruction();
         }
 
         protected Enemy(Enemy value) : base(value)
         {
             spawnIndex = value.spawnIndex;
+            PostConstruction();
+        }
+
+        private void PostConstruction()
+        {
+            AttackCountMax = 1;
         }
 
         protected override void OnDead()

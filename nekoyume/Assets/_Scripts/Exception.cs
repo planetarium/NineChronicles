@@ -2,15 +2,7 @@ using System;
 using Libplanet;
 using Nekoyume.Model.State;
 using Nekoyume.UI;
-using Spine;
 using UnityEngine;
-
-public class UnexpectedOperationException : Exception
-{
-    public UnexpectedOperationException(string message) : base(message)
-    {
-    }
-}
 
 public class InvalidActionException : Exception
 {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
 using Nekoyume.TableData;
 using UniRx;
@@ -41,11 +42,12 @@ namespace Nekoyume.UI.Model
         public SkillView(BuffSkill skill)
         {
             var powerValue = string.Empty;
-            var buffs = skill.skillRow.GetBuffs();
+            var sheets = Game.Game.instance.TableSheets;
+            var buffs = BuffFactory.GetBuffs(skill, sheets.SkillBuffSheet, sheets.BuffSheet);
             if (buffs.Count > 0)
             {
                 var buff = buffs[0];
-                powerValue = buff.StatModifier.ToString();
+                powerValue = buff.RowData.StatModifier.ToString();
             }
             
             iconSprite.Value = skill.skillRow.GetIcon();

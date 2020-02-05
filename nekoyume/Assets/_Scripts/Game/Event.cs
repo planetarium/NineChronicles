@@ -40,11 +40,6 @@ namespace Nekoyume.Game
         }
         public static readonly  SlotClick OnSlotClick = new SlotClick();
 
-        public class AttackEnd : UnityEvent<Character.CharacterBase>
-        {
-        }
-        public static readonly AttackEnd OnAttackEnd = new AttackEnd();
-
         public class StageStart : UnityEvent<BattleLog>
         {
         }

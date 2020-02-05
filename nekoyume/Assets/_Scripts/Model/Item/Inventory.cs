@@ -4,9 +4,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
-using Nekoyume.EnumType;
 using Nekoyume.Model.State;
-using UnityEngine;
+using Serilog;
 
 namespace Nekoyume.Model.Item
 {
@@ -269,7 +268,7 @@ namespace Nekoyume.Model.Item
             {
                 var item = newItem.item;
 
-                Debug.LogErrorFormat("Item {0}: {1} is not ItemUsable.", item.Data.ItemType, item.Data.Id);
+                Log.Error("Item {0}: {1} is not ItemUsable.", item.Data.ItemType, item.Data.Id);
             }
             return !(outAddedItem is null);
         }

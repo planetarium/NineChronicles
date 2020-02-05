@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -29,14 +30,14 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log("QuestReward exec started.");
+            Log.Debug("QuestReward exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out _, out var avatarState))
             {
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"QuestReward Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug($"QuestReward Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
             var quest = avatarState.questList.FirstOrDefault(i => i.Id == questId && i.Complete && !i.IsPaidInAction);
@@ -48,15 +49,15 @@ namespace Nekoyume.Action
             avatarState.UpdateFromQuestReward(quest, ctx);
 
             sw.Stop();
-            UnityEngine.Debug.Log($"QuestReward Update AvatarState: {sw.Elapsed}");
+            Log.Debug($"QuestReward Update AvatarState: {sw.Elapsed}");
             sw.Restart();
 
             Result = quest;
             states = states.SetState(avatarAddress, avatarState.Serialize());
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"QuestReward Set AvatarState: {sw.Elapsed}");
-            UnityEngine.Debug.Log($"QuestReward Total Executed Time: {ended - started}");
+            Log.Debug($"QuestReward Set AvatarState: {sw.Elapsed}");
+            Log.Debug($"QuestReward Total Executed Time: {ended - started}");
             return states;
         }
 

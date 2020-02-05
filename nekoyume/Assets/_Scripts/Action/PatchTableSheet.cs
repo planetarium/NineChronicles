@@ -3,7 +3,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
-using UnityEngine;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -25,7 +25,7 @@ namespace Nekoyume.Action
         {
             var states = ctx.PreviousStates;
             var tableSheetsState = TableSheetsState.FromActionContext(ctx);
-            Debug.Log($"[{ctx.BlockIndex}] {TableName} was patched by {ctx.Signer.ToHex()}\n" +
+            Log.Debug($"[{ctx.BlockIndex}] {TableName} was patched by {ctx.Signer.ToHex()}\n" +
                       "before:\n" +
                       (tableSheetsState.TableSheets.TryGetValue(TableName, out string value) ? value : string.Empty) +
                       "\n" +
@@ -34,8 +34,6 @@ namespace Nekoyume.Action
             );
 
             TableSheetsState nextState = tableSheetsState.UpdateTableSheet(TableName, TableCsv);
-            Game.Game.instance.TableSheets.SetToSheet(TableName, TableCsv);
-
             return states.SetState(TableSheetsState.Address, nextState.Serialize());
         }
 

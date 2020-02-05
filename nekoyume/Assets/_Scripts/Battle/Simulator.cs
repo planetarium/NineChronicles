@@ -36,16 +36,6 @@ namespace Nekoyume.Battle
             Player.Stats.EqualizeCurrentHPWithHP();
         }
 
-        protected Simulator(IRandom random, AvatarState avatarState, List<Consumable> foods)
-        {
-            Random = random;
-            TableSheets = Game.Game.instance.TableSheets;
-            Log = new BattleLog();
-            Player = new Player(avatarState, this);
-            Player.Use(foods);
-            Player.Stats.EqualizeCurrentHPWithHP();
-        }
-
         public abstract Player Simulate();
     }
 }

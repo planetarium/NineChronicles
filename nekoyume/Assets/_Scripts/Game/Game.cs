@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
@@ -31,9 +33,13 @@ namespace Nekoyume.Game
 
         public Stage Stage => stage;
 
+        // FIXME Action.PatchTableSheet.Execute()에 의해서만 갱신됩니다.
+        // 액션 실행 여부와 상관 없이 최신 상태를 반영하게끔 수정해야합니다.
         public TableSheets TableSheets { get; private set; }
         
         public bool IsInitialized { get; private set; }
+
+        private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
         #region Mono & Initialization
 
@@ -58,7 +64,7 @@ namespace Nekoyume.Game
             Tables.instance.Initialize();
             yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
-            yield return StartCoroutine(TableSheets.CoInitialize());
+            yield return StartCoroutine(CoInitializeTableSheets());
             AudioController.instance.Initialize();
             yield return null;
             // Agent 초기화.
@@ -72,7 +78,6 @@ namespace Nekoyume.Game
                 agentInitializeSucceed = succeed;
             });
             yield return new WaitUntil(() => agentInitialized);
-            TableSheets.InitializeWithTableSheetsState();
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             Stage.objectPool.Initialize();
@@ -87,6 +92,30 @@ namespace Nekoyume.Game
                 .AddTo(gameObject);
             
             ShowNext(agentInitializeSucceed);
+        }
+
+        private IEnumerator CoInitializeTableSheets()
+        {
+            //어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.
+            var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            yield return request;
+            if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+
+            List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+            foreach (var asset in csvAssets)
+            {
+                TableSheets.SetToSheet(asset.name, asset.text);
+            }
+
+            TableSheets.ItemSheetInitialize();
+            TableSheets.QuestSheetInitialize();
+        }
+
+        public static IDictionary<string, string> GetTableCsvAssets()
+        {
+            var container = Resources.Load<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            return container.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
         }
 
         private void ShowNext(bool succeed)
@@ -124,16 +153,22 @@ namespace Nekoyume.Game
             var confirm = Widget.Find<Confirm>();
             confirm.CloseCallback = result =>
             {
-                if (result == ConfirmResult.No)
-                    return;
-                
+                if (result == ConfirmResult.Yes)
+                {
 #if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
+                    UnityEditor.EditorApplication.isPlaying = false;
 #else
-                Application.Quit();
+                    Application.Quit();
 #endif
+                    return;
+                }
+                confirm.CloseCallback = null;
+
+                Event.OnNestEnter.Invoke();
+                Widget.Find<Login>().Show();
+                Widget.Find<Menu>().Close();
             };
-            confirm.Set("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT");
+            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT", blurRadius: 2);
         }
         
         private void PlayMouseOnClickVFX(Vector3 position)

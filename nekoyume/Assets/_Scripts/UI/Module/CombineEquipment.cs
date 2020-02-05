@@ -1,8 +1,7 @@
 using System;
 using System.Linq;
 using Assets.SimpleLocalization;
-using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 

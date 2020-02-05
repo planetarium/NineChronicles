@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Nekoyume.EnumType;
 using Unity.Mathematics;
 using UnityEngine;
@@ -133,7 +134,7 @@ namespace Nekoyume
         {
             var anchoredPosition = new float2();
             var pivot = rectTransform.pivot;
-            var size = rectTransform.rect.size;
+            var size = rectTransform.rect.size * rectTransform.transform.localScale.x;
             
             switch (pivotPresetType)
             {
@@ -194,18 +195,34 @@ namespace Nekoyume
             topRight = new float2(size.x * (1f - pivot.x), size.y * (1f - pivot.y));
         }
         
-        public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
-            PivotPresetType pivotPresetType, float2 offset)
+        public static IEnumerator MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
+             float2 offset)
         {
             if (target is null)
             {
-                return;
+                yield break;
             }
-            
+
+            yield return new WaitUntil(() => rectTransform.rect.width != 0);
+
             rectTransform.position = target.position;
             float2 anchoredPosition = rectTransform.anchoredPosition;
+
+            PivotPresetType pivotPresetType;
+
+            if (Screen.width - anchoredPosition.x - target.rect.width / 2 > rectTransform.rect.width)
+                pivotPresetType = PivotPresetType.TopRight;
+            else
+            {
+                anchoredPosition.x -= rectTransform.rect.width;
+                pivotPresetType = PivotPresetType.TopLeft;
+                offset = new float2(-offset.x, offset.y);
+            }
+
             anchoredPosition += target.GetPivotPositionFromAnchor(pivotPresetType) + offset;
             rectTransform.anchoredPosition = anchoredPosition;
+
+            rectTransform.MoveInsideOfParent(offset);
         }
 
         public static void MoveInsideOfParent(this RectTransform rectTransform)
@@ -219,7 +236,7 @@ namespace Nekoyume
             {
                 return;
             }
-            
+
             parent.GetPositions(rectTransform.pivot, out var bottomLeft, out var topRight);
             
             var anchoredPosition = rectTransform.anchoredPosition;

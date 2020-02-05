@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Bencodex.Types;
-using Nekoyume.EnumType;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Stat

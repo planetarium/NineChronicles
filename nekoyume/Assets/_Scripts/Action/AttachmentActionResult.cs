@@ -4,7 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
-using UnityEngine;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -74,7 +74,7 @@ namespace Nekoyume.Action
             }
             catch (Exception e)
             {
-                Debug.LogErrorFormat("{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
+                Log.Error("{0} was raised during deserialize: {1}", e.GetType().FullName, serialized);
                 throw;
             }
         }

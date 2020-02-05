@@ -1,13 +1,17 @@
+// #define TEST_LOG
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
-using Nekoyume.EnumType;
-using Nekoyume.Helper;
 using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.Buff;
+using Nekoyume.Model.Character;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -65,6 +69,9 @@ namespace Nekoyume.Model
 
         public bool IsDead => CurrentHP <= 0;
 
+        public int AttackCount { get; private set; }
+        public int AttackCountMax { get; protected set; }
+
         protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level)
         {
             Simulator = simulator;
@@ -80,6 +87,7 @@ namespace Nekoyume.Model
             attackRange = RowData.AttackRange;
             defElementType = RowData.ElementalType;
             CurrentHP = HP;
+            AttackCount = 0;
         }
 
         protected CharacterBase(CharacterBase value)
@@ -163,7 +171,15 @@ namespace Nekoyume.Model
         private void UseSkill()
         {
             // 스킬 사용.
-            _usedSkill = _selectedSkill.Use(this, Simulator.WaveTurn);
+            _usedSkill = _selectedSkill.Use(
+                this,
+                Simulator.WaveTurn,
+                BuffFactory.GetBuffs(
+                    _selectedSkill,
+                    Simulator.TableSheets.SkillBuffSheet,
+                    Simulator.TableSheets.BuffSheet
+                )
+            );
             Simulator.Log.Add(_usedSkill);
 
             foreach (var info in _usedSkill.SkillInfos)
@@ -218,17 +234,15 @@ namespace Nekoyume.Model
 
         #endregion
 
-        public bool IsCritical()
+        public bool IsCritical(bool considerAttackCount = true)
         {
             var chance = Simulator.Random.Next(0, 100);
-            return chance < CRI;
-        }
+            if (!considerAttackCount)
+                return CRI >= chance;
 
-        public bool IsCritical(ElementalResult result)
-        {
-            var correction = result == ElementalResult.Win ? 50 : 0;
-            var chance = Simulator.Random.Next(0, 100);
-            return CRI + correction > chance;
+            var additionalCriticalChance =
+                (int) AttackCountHelper.GetAdditionalCriticalChance(AttackCount, AttackCountMax);
+            return CRI + additionalCriticalChance >= chance;
         }
 
         public bool IsHit(ElementalResult result)
@@ -240,7 +254,41 @@ namespace Nekoyume.Model
 
         public virtual bool IsHit(CharacterBase caster)
         {
-            return HitHelper.IsHit(caster.Level, caster.HIT, Level, HIT, Simulator.Random.Next(0, 100));
+            var isHit = HitHelper.IsHit(caster.Level, caster.HIT, Level, HIT, Simulator.Random.Next(0, 100));
+            if (!isHit)
+            {
+                caster.AttackCount = 0;
+            }
+
+            return isHit;
+        }
+
+        public int GetDamage(int skillPower, bool considerAttackCount = true)
+        {
+            var damage = ATK + skillPower;
+
+            if (!considerAttackCount)
+                return damage;
+
+            AttackCount++;
+            if (AttackCount > AttackCountMax)
+            {
+                AttackCount = 1;
+            }
+
+            var damageMultiplier = (int) AttackCountHelper.GetDamageMultiplier(AttackCount, AttackCountMax);
+            damage *= damageMultiplier;
+
+#if TEST_LOG
+            var sb = new StringBuilder(RowData.Id.ToString());
+            sb.Append($" / {nameof(AttackCount)}: {AttackCount}");
+            sb.Append($" / {nameof(AttackCountMax)}: {AttackCountMax}");
+            sb.Append($" / {nameof(damageMultiplier)}: {damageMultiplier}");
+            sb.Append($" / {nameof(damage)}: {damage}");
+            Debug.LogWarning(sb.ToString());
+#endif
+
+            return damage;
         }
 
         private bool IsAlive()

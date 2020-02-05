@@ -151,21 +151,6 @@ namespace Nekoyume.Game.Character
         
         #endregion
 
-        private void OnAnimatorEvent(string eventName)
-        {
-            switch (eventName)
-            {
-                case "attackStart":
-                    AudioController.PlaySwing();
-                    break;
-                case "attackPoint":
-                    Event.OnAttackEnd.Invoke(this);
-                    break;
-                case "footstep":
-                    break;
-            }
-        }
-
         protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {

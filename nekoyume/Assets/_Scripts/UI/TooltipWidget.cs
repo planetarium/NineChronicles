@@ -32,7 +32,6 @@ namespace Nekoyume.UI
             
             _disposablesForModel.DisposeAllAndClear();
             Model = value;
-            Model.target.Subscribe(SubscribeTarget).AddTo(_disposablesForModel);
             
             Show();
         }
@@ -47,8 +46,7 @@ namespace Nekoyume.UI
         
         protected virtual void SubscribeTarget(RectTransform target)
         {
-            panel.MoveToRelatedPosition(target, PivotPresetType.TopRight, DefaultOffsetFromTarget);
-            UpdateAnchoredPosition();
+            StartCoroutine(panel.MoveToRelatedPosition(target, DefaultOffsetFromTarget));
         }
 
         protected virtual void UpdateAnchoredPosition()

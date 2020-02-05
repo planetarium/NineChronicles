@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
             
             var recipeInfoList = new List<RecipeInfo>();
-            foreach (var row in TableSheets.FromTableSheetsState(TableSheetsState.Current).ConsumableItemRecipeSheet)
+            foreach (var row in Game.Game.instance.TableSheets.ConsumableItemRecipeSheet)
             {
                 var info = new RecipeInfo(row);
                 recipeInfoList.Add(info);

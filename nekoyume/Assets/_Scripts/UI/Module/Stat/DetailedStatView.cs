@@ -1,6 +1,6 @@
 using System;
 using System.Globalization;
-using Nekoyume.EnumType;
+using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine;
 

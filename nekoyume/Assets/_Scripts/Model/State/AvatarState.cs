@@ -7,14 +7,12 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Crypto;
 using Nekoyume.Battle;
-using Nekoyume.EnumType;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Model.State
 {
@@ -52,7 +50,6 @@ namespace Nekoyume.Model.State
         {
             var key = new PrivateKey();
             var privateKeyHex = ByteUtil.Hex(key.ByteArray);
-            Debug.Log($"Avatar PrivateKey Created. {privateKeyHex}");
 
             return key.PublicKey.ToAddress();
         }

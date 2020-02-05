@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BTAI;
-using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.UI;
 using UnityEngine;
 using UniRx;
+using Nekoyume.Model.Skill;
+using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Character;
 
 namespace Nekoyume.Game.Character
 {
@@ -74,7 +76,7 @@ namespace Nekoyume.Game.Character
 
         public CharacterAnimator Animator { get; protected set; }
         protected Vector3 HUDOffset => Animator.GetHUDPosition();
-        public bool AttackEndCalled { get; private set; }
+        protected bool AttackEndCalled { get; set; }
 
         private bool _forceQuit = false;
         protected virtual bool CanRun => !Mathf.Approximately(RunSpeed, 0f);
@@ -100,8 +102,6 @@ namespace Nekoyume.Game.Character
 #endif
         
             HitPointBoxCollider = GetComponent<BoxCollider>();
-
-            Event.OnAttackEnd.AddListener(AttackEnd);
         }
 
         protected virtual void OnDisable()
@@ -381,12 +381,6 @@ namespace Nekoyume.Game.Character
             return AttackRange > Mathf.Abs(targetHitPosition - attackRangeStartPosition);
         }
 
-        private void AttackEnd(CharacterBase character)
-        {
-            if (ReferenceEquals(character, this))
-                AttackEndCalled = true;
-        }
-
         public void DisableHUD()
         {
             if (HPBar)
@@ -462,28 +456,15 @@ namespace Nekoyume.Game.Character
 
         private IEnumerator CoTimeOut()
         {
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
             _forceQuit = true;
         }
 
         private IEnumerator CoAnimationAttack(bool isCritical)
         {
-            PreAnimationForTheKindOfAttack();
-            if (isCritical)
+            while (true)
             {
-                Animator.CriticalAttack();
-            }
-            else
-            {
-                Animator.Attack();
-            }
-
-            _forceQuit = false;
-            var coroutine = StartCoroutine(CoTimeOut());
-            yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
-            StopCoroutine(coroutine);
-            if (_forceQuit)
-            {
+                PreAnimationForTheKindOfAttack();
                 if (isCritical)
                 {
                     Animator.CriticalAttack();
@@ -492,27 +473,24 @@ namespace Nekoyume.Game.Character
                 {
                     Animator.Attack();
                 }
+                _forceQuit = false;
+                var coroutine = StartCoroutine(CoTimeOut());
+                yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
+                StopCoroutine(coroutine);
+                if (_forceQuit)
+                {
+                    continue;
+                }
+                PostAnimationForTheKindOfAttack();
+                break;
             }
-            PostAnimationForTheKindOfAttack();
         }
 
         private IEnumerator CoAnimationCastAttack(bool isCritical)
         {
-            PreAnimationForTheKindOfAttack();
-            if (isCritical)
+            while (true)
             {
-                Animator.CriticalAttack();
-            }
-            else
-            {
-                Animator.CastAttack();
-            }
-            _forceQuit = false;
-            var coroutine = StartCoroutine(CoTimeOut());
-            yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
-            StopCoroutine(coroutine);
-            if (_forceQuit)
-            {
+                PreAnimationForTheKindOfAttack();
                 if (isCritical)
                 {
                     Animator.CriticalAttack();
@@ -521,9 +499,18 @@ namespace Nekoyume.Game.Character
                 {
                     Animator.CastAttack();
                 }
-            }
+                _forceQuit = false;
+                var coroutine = StartCoroutine(CoTimeOut());
+                yield return new WaitUntil(() => AttackEndCalled || _forceQuit);
+                StopCoroutine(coroutine);
+                if (_forceQuit)
+                {
+                    continue;;
+                }
 
-            PostAnimationForTheKindOfAttack();
+                PostAnimationForTheKindOfAttack();
+                break;
+            }
         }
 
 
@@ -626,7 +613,13 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
+                if (target is null)
+                    continue;
+                
                 var effect = Game.instance.Stage.skillController.Get<SkillBlowVFX>(target, info);
+                if (effect is null)
+                    continue;
+                
                 effect.Play();
                 ProcessAttack(target, info, info.Target.IsDead, true);
             }
@@ -644,8 +637,13 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
+                if (target is null)
+                    continue;
+                
                 var first = skillInfosFirst == info;
                 var effect = Game.instance.Stage.skillController.Get<SkillDoubleVFX>(target, info);
+                if (effect is null)
+                    continue;
 
                 yield return StartCoroutine(CoAnimationAttack(info.Critical));
                 if (first)
@@ -673,7 +671,13 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationCast(skillInfosFirst));
 
             var effectTarget = Game.instance.Stage.GetCharacter(skillInfosFirst.Target);
+            if (effectTarget is null)
+                yield break;
+            
             var effect = Game.instance.Stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfosFirst);
+            if (effect is null)
+                yield break;
+            
             Model.BattleStatus.Skill.SkillInfo trigger = null;
             if (effect.finisher)
             {
@@ -689,6 +693,9 @@ namespace Nekoyume.Game.Character
             {
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
+                if (target is null)
+                    continue;
+                
                 yield return new WaitForSeconds(0.14f);
                 if (trigger == info)
                 {
@@ -783,6 +790,22 @@ namespace Nekoyume.Game.Character
                 actions.Remove(action);
                 yield return new WaitForSeconds(0.5f);
                 action = null;
+            }
+        }
+
+        protected void OnAnimatorEvent(string eventName)
+        {
+            switch (eventName)
+            {
+                case "attackStart":
+                    AudioController.PlaySwing();
+                    break;
+                case "attackPoint":
+                    AttackEndCalled = true;
+                    break;
+                case "footstep":
+                    AudioController.PlayFootStep();
+                    break;
             }
         }
     }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using Bencodex.Types;
 using Libplanet;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;

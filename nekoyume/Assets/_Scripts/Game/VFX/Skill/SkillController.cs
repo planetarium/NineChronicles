@@ -1,6 +1,8 @@
-using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Util;
+using Nekoyume.Model.Character;
+using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Skill;
 using UnityEngine;
 
 namespace Nekoyume.Game.VFX.Skill
@@ -24,6 +26,9 @@ namespace Nekoyume.Game.VFX.Skill
 
         public T Get<T>(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skillInfo) where T : SkillVFX
         {
+            if (target is null)
+                return null;
+            
             var position = target.transform.position;
             var size = target.SizeType == SizeType.XS ? SizeType.S : SizeType.M;
             var elemental = skillInfo.ElementalType;

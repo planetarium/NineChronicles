@@ -6,13 +6,13 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -55,7 +55,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log("ItemEnhancement exec started.");
+            Log.Debug("ItemEnhancement exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
@@ -63,7 +63,7 @@ namespace Nekoyume.Action
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"ItemEnhancement Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug($"ItemEnhancement Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
             if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable enhancementItem))
@@ -76,7 +76,7 @@ namespace Nekoyume.Action
                 return states;
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"ItemEnhancement Get Equipment: {sw.Elapsed}");
+            Log.Debug($"ItemEnhancement Get Equipment: {sw.Elapsed}");
             sw.Restart();
 
             result = new ResultModel
@@ -104,7 +104,7 @@ namespace Nekoyume.Action
 
             _tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
-            UnityEngine.Debug.Log($"ItemEnhancement Get TableSheets: {sw.Elapsed}");
+            Log.Debug($"ItemEnhancement Get TableSheets: {sw.Elapsed}");
             sw.Restart();
             var materials = new List<Equipment>();
             var options = new List<object>();
@@ -125,7 +125,7 @@ namespace Nekoyume.Action
                 if (materials.Contains(materialEquipment))
                 {
                     // 같은 guid의 아이템이 중복해서 등록된 에러.
-                    UnityEngine.Debug.LogWarning($"Duplicate materials found. {materialEquipment}");
+                    Log.Warning($"Duplicate materials found. {materialEquipment}");
                     return states;
                 }
 
@@ -138,8 +138,8 @@ namespace Nekoyume.Action
                 if (materialEquipment.Data.ItemSubType != enhancementEquipment.Data.ItemSubType)
                 {
                     // 서브 타입이 다른 에러.
-                    UnityEngine.Debug.LogWarning($"Expected ItemSubType is {enhancementEquipment.Data.ItemSubType}. " +
-                                     "but Material SubType is {material.Data.ItemSubType}");
+                    Log.Warning($"Expected ItemSubType is {enhancementEquipment.Data.ItemSubType}. " +
+                                "but Material SubType is {material.Data.ItemSubType}");
                     return states;
                 }
 
@@ -155,7 +155,7 @@ namespace Nekoyume.Action
                     return states;
                 }
                 sw.Stop();
-                UnityEngine.Debug.Log($"ItemEnhancement Get Material: {sw.Elapsed}");
+                Log.Debug($"ItemEnhancement Get Material: {sw.Elapsed}");
                 sw.Restart();
                 materialEquipment.Unequip();
                 materials.Add(materialEquipment);
@@ -171,7 +171,7 @@ namespace Nekoyume.Action
 
             enhancementEquipment = UpgradeEquipment(enhancementEquipment, ctx.Random, options, equipmentOptionCount);
             sw.Stop();
-            UnityEngine.Debug.Log($"ItemEnhancement Upgrade Equipment: {sw.Elapsed}");
+            Log.Debug($"ItemEnhancement Upgrade Equipment: {sw.Elapsed}");
             sw.Restart();
 
             agentState.gold -= requiredNCG;
@@ -182,7 +182,7 @@ namespace Nekoyume.Action
                 avatarState.inventory.RemoveNonFungibleItem(material);
             }
             sw.Stop();
-            UnityEngine.Debug.Log($"ItemEnhancement Remove Materials: {sw.Elapsed}");
+            Log.Debug($"ItemEnhancement Remove Materials: {sw.Elapsed}");
             sw.Restart();
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex)
             {
@@ -195,13 +195,13 @@ namespace Nekoyume.Action
             completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
-            UnityEngine.Debug.Log($"ItemEnhancement Update AvatarState: {sw.Elapsed}");
+            Log.Debug($"ItemEnhancement Update AvatarState: {sw.Elapsed}");
             sw.Restart();
             states = states.SetState(avatarAddress, avatarState.Serialize());
             sw.Stop();
-            UnityEngine.Debug.Log($"ItemEnhancement Set AvatarState: {sw.Elapsed}");
+            Log.Debug($"ItemEnhancement Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;
-            UnityEngine.Debug.Log($"ItemEnhancement Total Executed Time: {ended - started}");
+            Log.Debug($"ItemEnhancement Total Executed Time: {ended - started}");
             return states
                 .SetState(ctx.Signer, agentState.Serialize());
         }

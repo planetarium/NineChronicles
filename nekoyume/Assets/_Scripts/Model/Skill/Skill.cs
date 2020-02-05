@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume.EnumType;
-using Nekoyume.Model.Buff;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
@@ -15,17 +14,19 @@ namespace Nekoyume.Model.Skill
         public readonly SkillSheet.Row skillRow;
         public readonly int power;
         public readonly int chance;
-        public List<Buff.Buff> buffs;
 
         protected Skill(SkillSheet.Row skillRow, int power, int chance)
         {
             this.skillRow = skillRow;
             this.power = power;
             this.chance = chance;
-            buffs = skillRow.GetBuffs().Select(BuffFactory.Get).ToList();
         }
 
-        public abstract Model.BattleStatus.Skill Use(CharacterBase caster, int simulatorWaveTurn);
+        public abstract BattleStatus.Skill Use(
+            CharacterBase caster, 
+            int simulatorWaveTurn,
+            IEnumerable<Buff.Buff> buffs
+        );
 
         protected bool Equals(Skill other)
         {
@@ -51,7 +52,11 @@ namespace Nekoyume.Model.Skill
             }
         }
 
-        protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessBuff(CharacterBase caster, int simulatorWaveTurn)
+        protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessBuff(
+            CharacterBase caster, 
+            int simulatorWaveTurn,
+            IEnumerable<Buff.Buff> buffs
+        )
         {
             var infos = new List<Model.BattleStatus.Skill.SkillInfo>();
             foreach (var buff in buffs)
@@ -73,7 +78,7 @@ namespace Nekoyume.Model.Skill
             {
                 [(Text) "skillRow"] = skillRow.Serialize(),
                 [(Text) "power"] = (Integer) power,
-                [(Text) "chance"] = (Integer) chance,
+                [(Text) "chance"] = (Integer) chance
             });
     }
 }

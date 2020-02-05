@@ -31,7 +31,7 @@ namespace Tests.PlayMode
                 .ToList();
             foreach (var partRow in partRows)
             {
-                if (Nekoyume.Action.Combination.TryGetSkill(partRow, 0, out var skill))
+                if (Nekoyume.Action.Combination.TryGetSkill(partRow, 0, Game.instance.TableSheets, out var skill))
                     equipment.Skills.Add(skill);
             }
 
@@ -76,7 +76,7 @@ namespace Tests.PlayMode
             w.Show();
             yield return new WaitUntil(() => w.isActiveAndEnabled);
             w.State.Value = Combination.StateType.CombineConsumable;
-            var row = TableSheets.FromTableSheetsState(TableSheetsState.Current).ConsumableItemRecipeSheet.Values.First();
+            var row = Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First();
             var rect = w.inventory.scrollerController.GetComponentInChildren<ScrollRect>();
             foreach (var material in row.MaterialItemIds)
             {
