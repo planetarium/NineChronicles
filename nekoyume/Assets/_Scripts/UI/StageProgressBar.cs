@@ -171,6 +171,7 @@ namespace Nekoyume.UI
             }
 
             slider.value = value;
+            vfxOffset.anchoredPosition = new Vector2(value * _xLength, vfxOffset.anchoredPosition.y);
             _onCurrentSmoothenTerminated?.Invoke();
             _onCurrentSmoothenTerminated = null;
             _smoothenCoroutine = null;
