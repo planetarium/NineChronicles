@@ -10,7 +10,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
-using Skill = Nekoyume.Model.BattleStatus.Skill;
 
 namespace Nekoyume.Battle
 {
@@ -179,7 +178,7 @@ namespace Nekoyume.Battle
 
             Log.result = Result;
 #if TEST_LOG
-            var skillType = typeof(Skill);
+            var skillType = typeof(Nekoyume.Model.BattleStatus.Skill);
             var skillCount = Log.events.Count(e => e.GetType().IsInheritsFrom(skillType));
             UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {skillCount} / {nameof(Simulate)} end");
 #endif
