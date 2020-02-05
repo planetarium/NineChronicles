@@ -84,7 +84,7 @@ namespace Nekoyume.Game
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageStart.AddListener(OnStageStart);
             Event.OnRankingBattleStart.AddListener(OnRankingBattleStart);
-            Event.OnEnemyLastHit.AddListener(OnEnemyLastHit);
+            Event.OnEnemyDead.AddListener(OnEnemyDead);
         }
 
         private void OnStageStart(BattleLog log)
@@ -171,7 +171,7 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RoomEntering>();
         }
 
-        private void OnEnemyLastHit(Character.Enemy enemy)
+        private void OnEnemyDead(Character.Enemy enemy)
         {
             Widget.Find<UI.Battle>().stageProgressBar.IncreaseProgress(enemy.HP);
         }

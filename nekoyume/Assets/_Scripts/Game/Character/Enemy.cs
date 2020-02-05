@@ -99,12 +99,6 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(base.Dying());
         }
 
-        protected override void OnLastHitted()
-        {
-            Event.OnEnemyLastHit.Invoke(this);
-            base.OnLastHitted();
-        }
-
         protected override void OnDead()
         {
             Event.OnEnemyDead.Invoke(this);
