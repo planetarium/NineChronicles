@@ -1,6 +1,7 @@
-using System;
-
 // #define TEST_LOG
+
+using System;
+using System.Text;
 
 namespace Nekoyume.Battle
 {

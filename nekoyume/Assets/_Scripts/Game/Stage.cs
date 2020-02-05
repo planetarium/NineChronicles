@@ -285,7 +285,7 @@ namespace Nekoyume.Game
         private IEnumerator CoStageEnter(int worldId, int stageId)
         {
             IsInStage = true;
-            if (!Game.instance.TableSheets.BackgroundSheet.TryGetValue(stageId, out var data))
+            if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
             {
                 yield break;
             }
@@ -312,7 +312,7 @@ namespace Nekoyume.Game
         private IEnumerator CoRankingBattleEnter()
         {
             IsInStage = true;
-            if (!Game.instance.TableSheets.BackgroundSheet.TryGetValue(1, out var data))
+            if (!Game.instance.TableSheets.StageSheet.TryGetValue(1, out var data))
             {
                 yield break;
             }

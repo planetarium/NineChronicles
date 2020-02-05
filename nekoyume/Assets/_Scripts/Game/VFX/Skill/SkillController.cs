@@ -26,6 +26,9 @@ namespace Nekoyume.Game.VFX.Skill
 
         public T Get<T>(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skillInfo) where T : SkillVFX
         {
+            if (target is null)
+                return null;
+            
             var position = target.transform.position;
             var size = target.SizeType == SizeType.XS ? SizeType.S : SizeType.M;
             var elemental = skillInfo.ElementalType;

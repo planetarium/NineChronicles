@@ -39,7 +39,7 @@ namespace Nekoyume.Game
         
         public bool IsInitialized { get; private set; }
 
-        private static readonly string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
+        private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
         #region Mono & Initialization
 

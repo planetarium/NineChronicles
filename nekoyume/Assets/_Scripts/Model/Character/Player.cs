@@ -32,7 +32,7 @@ namespace Nekoyume.Model
                 Current = value.Current;
             }
 
-            public void Set(LevelSheet.Row row)
+            public void Set(CharacterLevelSheet.Row row)
             {
                 Max = row.Exp + row.ExpNeed;
                 Need = row.ExpNeed;
@@ -188,7 +188,7 @@ namespace Nekoyume.Model
 
         private void UpdateExp(TableSheets sheets)
         {
-            sheets.LevelSheet.TryGetValue(Level, out var row, true);
+            sheets.CharacterLevelSheet.TryGetValue(Level, out var row, true);
             Exp.Set(row);
         }
 
@@ -279,7 +279,7 @@ namespace Nekoyume.Model
                 return;
 
             var level = Level;
-            Level = Simulator.TableSheets.LevelSheet.GetLevel(Exp.Current);
+            Level = Simulator.TableSheets.CharacterLevelSheet.GetLevel(Exp.Current);
             // UI에서 레벨업 처리시 NRE 회피
             if (level < Level)
             {
