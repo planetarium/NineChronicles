@@ -3,7 +3,7 @@
     Properties
     {
         _Radius("Radius", Range(1, 255)) = 1
-        _ScreenWidth("Radius", float) = 1136
+        _ScreenWidth("ScreenWidth", float) = 1136
         _MainTex ("Base (RGB)", 2D) = "white" {}
     }
  
