@@ -9,7 +9,7 @@ namespace Nekoyume.UI
 {
     public class StageProgressBar : MonoBehaviour
     {
-        public float smoothenSpeed = 2.0f;
+        private const int MaxWave = 3;
 
         [SerializeField]
         private Slider slider = null;
@@ -19,7 +19,10 @@ namespace Nekoyume.UI
         private Image[] activatedStarImages = null;
         [SerializeField]
         private RectTransform vfxOffset;
-        private const int MaxWave = 3;
+        [SerializeField]
+        private float smoothenSpeed = 2.0f;
+        private float _xLength = 0;
+
         private int _currentStar = 0;
         private int _currentWaveHpSum = 0;
         private int _progress = 0;
@@ -30,8 +33,6 @@ namespace Nekoyume.UI
         private Star03VFX _star03VFX = null;
 
         private Coroutine _smoothenCoroutine = null;
-
-        private float _xLength = 0;
 
         private void Awake()
         {
@@ -152,6 +153,8 @@ namespace Nekoyume.UI
                 t += Time.deltaTime;
                 yield return null;
             }
+
+            _smoothenCoroutine = null;
         }
 
         private float GetProgress(float progress)
