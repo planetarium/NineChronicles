@@ -321,7 +321,8 @@ namespace Nekoyume.UI.Module
 
         public void PlayGetItemAnimation()
         {
-            _inventoryAnimator.Play("GetItem");
+            if(_inventoryAnimator)
+                _inventoryAnimator.Play("GetItem");
         }
     }
 }
