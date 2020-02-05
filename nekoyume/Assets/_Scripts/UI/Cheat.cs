@@ -204,7 +204,7 @@ namespace Nekoyume
             CloseWidget = null;
         }
 
-        private void Update()
+        protected override void Update()
         {
             _updateTime += Time.deltaTime;
         }

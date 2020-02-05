@@ -74,7 +74,7 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        private void Update()
+        protected override void Update()
         {
             var now = DateTime.Now;
             for (var i = 0; i < Models.Count; i++)

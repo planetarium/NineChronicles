@@ -53,7 +53,7 @@ namespace Nekoyume.UI
                 : AnimationState.Off;
         }
 
-        private void Update()
+        protected override void Update()
         {
             if (_currentAnimationState == _nextAnimationState)
                 return;
