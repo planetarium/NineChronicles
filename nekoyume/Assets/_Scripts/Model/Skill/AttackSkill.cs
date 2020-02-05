@@ -27,18 +27,21 @@ namespace Nekoyume.Model.Skill
             var infos = new List<BattleStatus.Skill.SkillInfo>();
             var targets = skillRow.SkillTargetType.GetTarget(caster).ToList();
             var elementalType = skillRow.ElementalType;
+            var totalDamage = caster.ATK + power;
             var multipliers = GetMultiplier(skillRow.HitCount, 1m);
             for (var i = 0; i < skillRow.HitCount; i++)
             {
                 var multiplier = multipliers[i];
-                var damage = caster.ATK;
+                var damage = (int) (totalDamage * multiplier);
 
                 foreach (var target in targets)
                 {
                     var isCritical = false;
+                    // 일반 공격이 아니거나 일반 공격인데 명중한 경우.
                     if (!isNormalAttack ||
                         target.IsHit(caster))
                     {
+                        // 방깎 적용.
                         damage -= target.DEF;
                         if (damage < 1)
                         {
@@ -46,9 +49,11 @@ namespace Nekoyume.Model.Skill
                         }
                         else
                         {
+                            // 모션 배율 적용.
                             damage = caster.GetDamage(damage, isNormalAttack);
+                            // 속성 적용.
                             damage = elementalType.GetDamage(target.defElementType, damage);
-                            damage = (int) (damage * multiplier);
+                            // 치명 적용.
                             isCritical = caster.IsCritical(isNormalAttack);
                             if (isCritical)
                             {
@@ -58,6 +63,7 @@ namespace Nekoyume.Model.Skill
 
                         target.CurrentHP -= damage;
                     }
+                    // 명중 실패.
                     else
                     {
                         damage = 0;
