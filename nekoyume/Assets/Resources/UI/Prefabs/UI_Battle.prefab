@@ -297,7 +297,7 @@ MonoBehaviour:
   bossStatus: {fileID: 4411733955744365716}
   repeatButton: {fileID: 4934838923425773395}
   enemyPlayerStatus: {fileID: 428100489531015073}
-  stageProgressBar: {fileID: 3718218886922658576}
+  stageProgressBar: {fileID: 6189903682659525088}
 --- !u!95 &411954315895112361
 Animator:
   serializedVersion: 3
@@ -1306,9 +1306,9 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7773705784083221710}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3718218886922658576 stripped
+--- !u!114 &6189903682659525088 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6374850057010835422, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+  m_CorrespondingSourceObject: {fileID: 4469599033603894574, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
     type: 3}
   m_PrefabInstance: {fileID: 7773705784083221710}
   m_PrefabAsset: {fileID: 0}

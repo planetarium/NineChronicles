@@ -269,7 +269,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5227881270911501946}
-  - component: {fileID: 6374850057010835422}
+  - component: {fileID: 4469599033603894574}
   m_Layer: 5
   m_Name: UI_StageProgressBar
   m_TagString: Untagged
@@ -299,7 +299,7 @@ RectTransform:
   m_AnchoredPosition: {x: 197, y: -297.04}
   m_SizeDelta: {x: 360, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &6374850057010835422
+--- !u!114 &4469599033603894574
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
