@@ -129,12 +129,13 @@ namespace Nekoyume.Game.Character
         protected virtual IEnumerator Dying()
         {
             yield return new WaitWhile(() => actions.Any());
-            OnDead();
+            OnDeadStart();
             StopRun();
             Animator.Die();
             yield return new WaitForSeconds(.2f);
             DisableHUD();
             yield return new WaitForSeconds(.8f);
+            OnDeadEnd();
         }
 
         protected virtual void Update()
@@ -236,7 +237,12 @@ namespace Nekoyume.Game.Character
             PopUpDmg(position, force, info, isConsiderElementalType);
         }
 
-        protected virtual void OnDead()
+        protected virtual void OnDeadStart()
+        {
+
+        }
+
+        protected virtual void OnDeadEnd()
         {
             Animator.Idle();
             gameObject.SetActive(false);

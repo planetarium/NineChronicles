@@ -28,11 +28,11 @@ namespace Nekoyume.UI
 
         public void Close()
         {
-            _star01VFX.Stop();
+            _star01VFX?.Stop();
             _star01VFX = null;
-            _star02VFX.Stop();
+            _star02VFX?.Stop();
             _star02VFX = null;
-            _star03VFX.Stop();
+            _star03VFX?.Stop();
             _star03VFX = null;
             gameObject.SetActive(false);
         }
