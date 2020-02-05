@@ -1293,6 +1293,11 @@ PrefabInstance:
       propertyPath: smoothenSpeed
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 4469599033603894574, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+        type: 3}
+      propertyPath: smoothenFinishThreshold
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 5227881270800782870, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
       propertyPath: m_AnchorMax.x

@@ -18,9 +18,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private Image[] activatedStarImages = null;
         [SerializeField]
+        private RectTransform vfxClamper;
+        [SerializeField]
         private RectTransform vfxOffset;
         [SerializeField]
         private float smoothenSpeed = 2.0f;
+        [SerializeField]
+        private float smoothenFinishThreshold = 0.01f;
         private float _xLength = 0;
 
         private int _currentStar = 0;
@@ -33,10 +37,11 @@ namespace Nekoyume.UI
         private Star03VFX _star03VFX = null;
 
         private Coroutine _smoothenCoroutine = null;
+        private System.Action _onCurrentSmoothenTerminated = null;
 
         private void Awake()
         {
-            _xLength = slider.GetComponent<RectTransform>().rect.width;
+            _xLength = vfxClamper.rect.width;
         }
 
         public void Show()
@@ -78,22 +83,34 @@ namespace Nekoyume.UI
             VFX starVFX = null;
             VFX emissionVFX = null;
 
+            float lerpSpeed = 1.0f;
+
             switch(_currentStar)
             {
                 case 1:
-                    starVFX = _star01VFX = VFXController.instance.CreateAndChaseRectTransform<Star01VFX>(starImages[0]);
-                    emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission01VFX>(starImages[0]);
-                    activatedStarImages[0].enabled = true;
+                    _onCurrentSmoothenTerminated = () =>
+                    {
+                        starVFX = _star01VFX = VFXController.instance.CreateAndChaseRectTransform<Star01VFX>(starImages[0]);
+                        emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission01VFX>(starImages[0]);
+                        activatedStarImages[0].enabled = true;
+                    };
                     break;
                 case 2:
-                    starVFX = _star02VFX = VFXController.instance.CreateAndChaseRectTransform<Star02VFX>(starImages[1]);
-                    emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission02VFX>(starImages[1]);
-                    activatedStarImages[1].enabled = true;
+                    _onCurrentSmoothenTerminated = () =>
+                    {
+                        starVFX = _star02VFX = VFXController.instance.CreateAndChaseRectTransform<Star02VFX>(starImages[1]);
+                        emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission02VFX>(starImages[1]);
+                        activatedStarImages[1].enabled = true;
+                    };
                     break;
                 case 3:
-                    starVFX = _star03VFX = VFXController.instance.CreateAndChaseRectTransform<Star03VFX>(starImages[2]);
-                    emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission03VFX>(starImages[2]);
-                    activatedStarImages[2].enabled = true;
+                    _onCurrentSmoothenTerminated = () =>
+                    {
+                        starVFX = _star03VFX = VFXController.instance.CreateAndChaseRectTransform<Star03VFX>(starImages[2]);
+                        emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission03VFX>(starImages[2]);
+                        activatedStarImages[2].enabled = true;
+                        lerpSpeed = 0.5f;
+                    };
                     break;
                 default:
                     return;
@@ -104,9 +121,10 @@ namespace Nekoyume.UI
 
             if (!(_smoothenCoroutine is null))
             {
-                StopCoroutine(_smoothenCoroutine);
+                TerminateCurrentSmoothen(false);
             }
-            _smoothenCoroutine = StartCoroutine(LerpProgressBar((float)_currentStar / MaxWave));
+
+            _smoothenCoroutine = StartCoroutine(LerpProgressBar((float)_currentStar / MaxWave, lerpSpeed));
         }
 
         public void SetNextWave(int waveHpSum)
@@ -134,32 +152,43 @@ namespace Nekoyume.UI
             if (!(_smoothenCoroutine is null))
             {
                 slider.value = GetProgress(_progress + hp);
-                StopCoroutine(_smoothenCoroutine);
+                TerminateCurrentSmoothen();
             }
             _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue));
         }
 
-        private IEnumerator LerpProgressBar(float value)
+        private IEnumerator LerpProgressBar(float value, float additionalSpeed = 1.0f)
         {
             float current = slider.value;
-            float t = 0;
-            float duration = (value - current) / (Time.deltaTime * smoothenSpeed);
+            float speed = smoothenSpeed * additionalSpeed;
 
-            while (t < duration)
+            while (current < value - smoothenFinishThreshold)
             {
-                current = Mathf.Lerp(current, value, Time.deltaTime * smoothenSpeed);
+                current = Mathf.Lerp(current, value, Time.deltaTime * speed);
                 slider.value = current;
                 vfxOffset.anchoredPosition = new Vector2(current * _xLength, vfxOffset.anchoredPosition.y);
-                t += Time.deltaTime;
                 yield return null;
             }
 
-            _smoothenCoroutine = null;
+            slider.value = value;
+            _onCurrentSmoothenTerminated?.Invoke();
+            _onCurrentSmoothenTerminated = null;
         }
 
         private float GetProgress(float progress)
         {
             return ((_currentWaveHpSum - progress) / _currentWaveHpSum + _currentStar) / MaxWave;
+        }
+
+        private void TerminateCurrentSmoothen(bool callTerminated = true)
+        {
+            StopCoroutine(_smoothenCoroutine);
+            if (callTerminated)
+            {
+                _onCurrentSmoothenTerminated?.Invoke();
+                _onCurrentSmoothenTerminated = null;
+            }
+            _smoothenCoroutine = null;
         }
     }
 }
