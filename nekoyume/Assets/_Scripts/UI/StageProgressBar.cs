@@ -173,6 +173,7 @@ namespace Nekoyume.UI
             slider.value = value;
             _onCurrentSmoothenTerminated?.Invoke();
             _onCurrentSmoothenTerminated = null;
+            _smoothenCoroutine = null;
         }
 
         private float GetProgress(float progress)
