@@ -134,7 +134,7 @@ namespace Nekoyume
         {
             var anchoredPosition = new float2();
             var pivot = rectTransform.pivot;
-            var size = rectTransform.rect.size * rectTransform.transform.localScale.x;
+            var size = rectTransform.rect.size * rectTransform.transform.localScale;
             
             switch (pivotPresetType)
             {
@@ -195,34 +195,21 @@ namespace Nekoyume
             topRight = new float2(size.x * (1f - pivot.x), size.y * (1f - pivot.y));
         }
         
-        public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
-             float2 offset, Vector2 defaultWidgetSize = default)
+        public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target, PivotPresetType pivotPresetType,
+             float2 offset)
         {
             if (target is null)
             {
                 return;
             }
 
-            float widgetWidth = rectTransform.rect.width == 0 ? defaultWidgetSize.x : rectTransform.rect.width;
-
             rectTransform.position = target.position;
             float2 anchoredPosition = rectTransform.anchoredPosition;
-
-            PivotPresetType pivotPresetType;
-
-            if (UI.MainCanvas.instance.GetComponent<RectTransform>().rect.width - anchoredPosition.x - target.rect.width / 2 > widgetWidth)
-                pivotPresetType = PivotPresetType.TopRight;
-            else
-            {
-                anchoredPosition.x -= widgetWidth;
-                pivotPresetType = PivotPresetType.TopLeft;
-                offset = new float2(-offset.x, offset.y);
-            }
 
             anchoredPosition += target.GetPivotPositionFromAnchor(pivotPresetType) + offset;
             rectTransform.anchoredPosition = anchoredPosition;
         }
-
+        
         public static void MoveInsideOfParent(this RectTransform rectTransform)
         {
             MoveInsideOfParent(rectTransform, ZeroZeroFloat2);
@@ -270,6 +257,40 @@ namespace Nekoyume
             }
 
             rectTransform.anchoredPosition = anchoredPosition;
+        }
+
+        public static void ReverseBasedOnTarget(this RectTransform rectTransform, RectTransform target, bool flipX, bool flipY)
+        {
+            var firstAnchoredPosition = rectTransform.anchoredPosition;
+            rectTransform.position = target.position;
+            var offset = firstAnchoredPosition - rectTransform.anchoredPosition;
+
+            var resultAnchoredPosition = rectTransform.anchoredPosition;
+            if (flipX)
+            {
+                resultAnchoredPosition.x -= offset.x;
+
+                if (offset.x > 0)
+                    resultAnchoredPosition.x -= rectTransform.rect.width;
+                else
+                    resultAnchoredPosition.x += rectTransform.rect.width;
+            }
+            else
+                resultAnchoredPosition.x += offset.x;
+
+            if (flipY)
+            {
+                resultAnchoredPosition.y -= offset.y;
+
+                if (offset.y > 0)
+                    resultAnchoredPosition.y -= rectTransform.rect.height;
+                else
+                    resultAnchoredPosition.y += rectTransform.rect.height;
+            }
+            else
+                resultAnchoredPosition.y += offset.y;
+
+            rectTransform.anchoredPosition = resultAnchoredPosition;
         }
     }
 }

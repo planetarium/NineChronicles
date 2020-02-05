@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -29,8 +30,9 @@ namespace Nekoyume.UI
 
         public RectTransform Target => Model.target.Value;
 
-        private readonly Vector2 DefaultPanelSize = new Vector2(300, 750.53f);
-        
+        public override PivotPresetType PivotPresetType => PivotPresetType.TopRight;
+        protected override Vector2 DefaultPanelSize => new Vector2(300, 0);
+
         protected override void Awake()
         {
             base.Awake();
@@ -121,9 +123,16 @@ namespace Nekoyume.UI
         
         protected override void SubscribeTarget(RectTransform target)
         {
-            // 타겟이 바뀔 때, 아이템도 바뀌니 아이템을 구독하는 쪽 한 곳에 로직을 구현한다. 
-            panel.MoveToRelatedPosition(target, DefaultOffsetFromTarget, DefaultPanelSize);
-            UpdateAnchoredPosition();
+            base.SubscribeTarget(target);
+
+            //target과 panel이 겹칠 경우 target의 왼쪽에 다시 위치
+            if (!(target is null) && panel.position.x - target.position.x < 0)
+            {
+                LayoutRebuild();
+                panel.MoveToRelatedPosition(target, PivotPresetType.TopRight, DefaultOffsetFromParent);
+                panel.ReverseBasedOnTarget(target, true, false);
+                UpdateAnchoredPosition();
+            }
         }
 
         private IEnumerator CoUpdate()

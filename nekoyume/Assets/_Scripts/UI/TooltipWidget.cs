@@ -21,6 +21,8 @@ namespace Nekoyume.UI
         
         public T Model { get; private set; }
         
+        public abstract PivotPresetType PivotPresetType { get; }
+        protected abstract Vector2 DefaultPanelSize { get; }
         public void Show(T value)
         {
             if (value is null)
@@ -32,7 +34,8 @@ namespace Nekoyume.UI
             
             _disposablesForModel.DisposeAllAndClear();
             Model = value;
-            
+
+            Model.target.Subscribe(rect => SubscribeTarget(rect)).AddTo(_disposablesForModel);
             Show();
         }
         
@@ -46,7 +49,7 @@ namespace Nekoyume.UI
         
         protected virtual void SubscribeTarget(RectTransform target)
         {
-            panel.MoveToRelatedPosition(target, DefaultOffsetFromTarget);
+            panel.MoveToRelatedPosition(target, PivotPresetType, DefaultOffsetFromTarget);
             UpdateAnchoredPosition();
         }
 
