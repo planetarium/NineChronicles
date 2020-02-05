@@ -85,6 +85,7 @@ namespace Nekoyume.UI
         public GameObject defeatImageContainer;
         public TopArea topArea;
         public RewardsArea rewardsArea;
+        public SuggestionsArea suggestionsArea;
         public TextMeshProUGUI bottomText;
         public Button closeButton;
         public TextMeshProUGUI closeButtonText;
@@ -107,6 +108,29 @@ namespace Nekoyume.UI
 
             topArea.expText.text = LocalizationManager.Localize("UI_EXP");
             rewardsArea.text.text = LocalizationManager.Localize("UI_ADDITIONAL_REWARDS");
+            suggestionsArea.text1.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1");
+            suggestionsArea.text2.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2");
+            suggestionsArea.submitButtonText1.text =
+                LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1_BUTTON");
+            suggestionsArea.submitButtonText2.text =
+                LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2_BUTTON");
+
+            suggestionsArea.submitButton1.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    GoToWorldMap();
+                    AnalyticsManager.Instance.BattleLeave();
+                })
+                .AddTo(gameObject);
+            suggestionsArea.submitButton2.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    GoToCraftShop();
+                    AnalyticsManager.Instance.BattleLeave();
+                })
+                .AddTo(gameObject);
             closeButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
@@ -143,7 +167,6 @@ namespace Nekoyume.UI
 
         private void UpdateView()
         {
-            // todo: 이후 획득한 별 개수에 따른 분기도 처리해야 합니다.
             switch (SharedModel.State)
             {
                 case BattleLog.Result.Win:
@@ -171,6 +194,7 @@ namespace Nekoyume.UI
             topArea.topText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_VICTORY_MESSAGE");
             topArea.expValueText.text = SharedModel.Exp.ToString();
             topArea.expContainer.SetActive(true);
+            suggestionsArea.root.SetActive(false);
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
@@ -218,6 +242,9 @@ namespace Nekoyume.UI
             }
             topArea.topText.text = LocalizationManager.Localize(key);
             topArea.expContainer.SetActive(false);
+            suggestionsArea.root.SetActive(true);
+            suggestionsArea.submitButton1.interactable = true;
+            suggestionsArea.submitButton2.interactable = true;
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
@@ -320,6 +347,8 @@ namespace Nekoyume.UI
             
             closeButton.interactable = false;
             submitButton.interactable = false;
+            suggestionsArea.submitButton1.interactable = false;
+            suggestionsArea.submitButton2.interactable = false;
 
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
