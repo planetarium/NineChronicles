@@ -1,4 +1,3 @@
-using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.UI;
@@ -18,7 +17,7 @@ namespace Nekoyume.Game
         public class EnemyDead : UnityEvent<Enemy>
         {
         }
-        public static readonly EnemyDead OnEnemyDead = new EnemyDead();
+        public static readonly EnemyDead OnEnemyDeadStart = new EnemyDead();
         public static readonly UnityEvent OnStageClear = new UnityEvent();
 
         public static readonly Subject<Player> OnUpdatePlayerStatus = new Subject<Player>();
