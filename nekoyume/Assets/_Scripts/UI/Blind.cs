@@ -12,6 +12,10 @@ namespace Nekoyume.UI
         public Image image;
         public Text content;
 
+        protected override void Awake()
+        {
+        }
+
         public IEnumerator FadeIn(float time, string text = "", float fadeValue = 1.0f)
         {
             Show();

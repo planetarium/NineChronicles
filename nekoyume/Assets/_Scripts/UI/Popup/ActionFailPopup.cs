@@ -4,6 +4,13 @@ namespace Nekoyume.UI
 {
     public class ActionFailPopup : SystemPopup
     {
+        protected override void Awake()
+        {
+            base.Awake();
+
+            SubmitWidget = () => Close();
+        }
+
         public void Show(string msg)
         {
             var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),

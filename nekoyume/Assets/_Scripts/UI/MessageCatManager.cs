@@ -14,6 +14,13 @@ namespace Nekoyume.UI
         
         public override WidgetType WidgetType => WidgetType.Tooltip;
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            CloseWidget = null;
+        }
+
         public MessageCat Show(Vector3 position, string message, bool reverseDirection = false)
         {
             var cat = Pick();

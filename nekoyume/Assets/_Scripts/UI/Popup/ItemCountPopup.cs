@@ -51,6 +51,9 @@ namespace Nekoyume.UI
                     AudioController.PlayClick();
                 })
                 .AddTo(_disposablesForAwake);
+
+            CloseWidget = cancelButton.onClick.Invoke;
+            SubmitWidget = submitButton.onClick.Invoke;
         }
 
         protected override void OnDestroy()
