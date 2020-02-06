@@ -139,21 +139,27 @@ namespace Nekoyume.Battle
                     // 플레이어의 타겟(적)이 없는 경우 break.
                     if (!Player.Targets.Any())
                     {
+                        var waveEnd = new WaveEnd(null, i);
+                        Log.Add(waveEnd);
                         switch (i)
                         {
                             case 0:
                                 Player.GetExp(Exp, true);
                                 break;
                             case 1:
+                            {
                                 ItemMap = Player.GetRewards(_waveRewards);
                                 var dropBox = new DropBox(null, _waveRewards);
                                 Log.Add(dropBox);
                                 var getReward = new GetReward(null, _waveRewards);
                                 Log.Add(getReward);
                                 break;
+                            }
                             case 2:
-                                // todo: 첫 3별 클리어 보상 적용.
+                            {
+                                Result = BattleLog.Result.Win;
                                 break;
+                            }
                         }
 
                         Result = BattleLog.Result.Win;
@@ -219,7 +225,7 @@ namespace Nekoyume.Battle
         private void SetReward(StageSheet.Row stageRow)
         {
             var itemSelector = new WeightedSelector<int>(Random);
-            var rewards = stageRow.Rewards.Where(r => r.Ratio > 0m);
+            var rewards = stageRow.Rewards.Where(r => r.Ratio > 0m).OrderBy(r => r.Ratio);
             foreach (var r in rewards)
             {
                 itemSelector.Add(r.ItemId, r.Ratio);
@@ -233,7 +239,10 @@ namespace Nekoyume.Battle
                         {
                             var guid = Random.GenerateRandomGuid();
                             var item = ItemFactory.Create(itemData, guid);
-                            _waveRewards.Add(item);
+                            if (_waveRewards.Count < 4)
+                            {
+                                _waveRewards.Add(item);
+                            }
                         }
                     }
                 }
