@@ -382,7 +382,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0.7000122, y: -0.7000122}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &937548770
@@ -770,6 +770,32 @@ MonoBehaviour:
     InitCount: 1
     AddCount: 1
   - Prefab: {fileID: 1101687136648424, guid: 5e9710e907b6f5a4e8d8d5ad5b44b4dc, type: 3}
+    InitCount: 2
+    AddCount: 1
+  - Prefab: {fileID: 3406874316825406012, guid: a0171646d2d936d4bbde1a161081d770,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 7354510331960268870, guid: 53504a15b0e31ff4dba79f627c294f35,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 8057692645195218224, guid: 40e624365ee5cbb44aca8651c8ca8a6b,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 42180657713481609, guid: 7901811b127fea146a098b344b66c14f, type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 5421720535952931083, guid: 1365b3cd85b70f8449e109e72ec9f8b3,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 469929775319107500, guid: 79243bdb41843cb4c83bb8b4be500721, type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 7423218383239420094, guid: a4c32b853a22ea042b73b98d476b5a0f,
+      type: 3}
     InitCount: 1
     AddCount: 1
 --- !u!114 &1333831685

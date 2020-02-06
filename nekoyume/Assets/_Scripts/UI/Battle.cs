@@ -2,7 +2,6 @@
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -13,6 +12,7 @@ namespace Nekoyume.UI
         public BossStatus bossStatus;
         public ToggleableButton repeatButton;
         public BossStatus enemyPlayerStatus;
+        public StageProgressBar stageProgressBar;
         
         protected override void Awake()
         {
@@ -25,6 +25,7 @@ namespace Nekoyume.UI
         {
             base.Show();
             stageTitle.Show(stageId);
+            stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
 
@@ -87,6 +88,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>()?.Close(ignoreCloseAnimation);
+            stageProgressBar.Close();
             enemyPlayerStatus.Close();
             base.Close(ignoreCloseAnimation);
         }
