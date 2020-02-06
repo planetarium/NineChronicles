@@ -38,6 +38,12 @@ namespace Nekoyume.Helper
 
         public string storageType;
 
+        public bool client;
+
+        public string clientHost;
+
+        public int clientPort;
+
         public bool autoPlay;
 
         public bool consoleSink;
@@ -151,6 +157,39 @@ namespace Nekoyume.Helper
             set
             {
                 storageType = value;
+                Empty = false;
+            }
+        }
+
+        [Option("client", Required = false, HelpText = "Play in client mode.")]
+        public bool Client
+        {
+            get => client;
+            set 
+            {
+                client = value;
+                Empty = false;
+            }
+        }
+
+        [Option("client-host", Required = false, HelpText = "The host name for client mode.")]
+        public string ClientHost
+        {
+            get => clientHost;
+            set
+            {
+                clientHost = value;
+                Empty = false;
+            }
+        }
+
+        [Option("client-port", Required = false, HelpText = "The port number for client mode.")]
+        public int ClientPort
+        {
+            get => clientPort;
+            set
+            {
+                clientPort = value;
                 Empty = false;
             }
         }

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\nekoyume\Assets\_Scripts\Shared\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Libplanet" Version="0.8.0" />
+    <PackageReference Include="MagicOnion.Abstractions" Version="3.0.8" />
+    <PackageReference Include="MagicOnion.MSBuild.Tasks" Version="3.0.8" PrivateAssets="All" />
+    <PackageReference Include="MessagePack.MSBuild.Tasks" Version="2.1.80" PrivateAssets="All" />
+  </ItemGroup>
+
+  <Target Name="GenerateMagicOnion" AfterTargets="Compile">
+    <MagicOnionGenerator Input=".\shared.csproj" Output="..\nekoyume\Assets\_Scripts\Generated\MagicOnion.Generated.cs" />
+  </Target>
+</Project>
