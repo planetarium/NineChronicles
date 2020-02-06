@@ -133,7 +133,7 @@ namespace Nekoyume
         public static PivotPresetType GetPivotPresetType(this RectTransform rectTransform)
         {
             int pivotPresetTypeIndex = 0;
-            switch(rectTransform.pivot.x)
+            switch(rectTransform.pivot.y)
             {
                 case 0:
                     pivotPresetTypeIndex += 6;
@@ -227,12 +227,12 @@ namespace Nekoyume
             return anchoredPosition + rectTransform.GetPivotPositionFromAnchor(pivotPresetType);
         }
 
-        public static void GetPositions(this RectTransform rectTransform, out float2 bottomLeft, out float2 topRight)
+        public static void GetPositions(this RectTransform rectTransform, float2 pivot, out float2 bottomLeft, out float2 topRight)
         {
             var size = rectTransform.rect.size;
 
-            bottomLeft = new float2(0, -size.y);
-            topRight = new float2(size.x, 0);
+            bottomLeft = new float2(-size.x * pivot.x, -size.y * pivot.y);
+            topRight = new float2(size.x * (1 - pivot.x), size.y * (1 - pivot.y));
         }
         
         public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target, PivotPresetType pivotPresetType,
@@ -262,7 +262,7 @@ namespace Nekoyume
                 return;
             }
 
-            parent.GetPositions(out var bottomLeft, out var topRight);
+            parent.GetPositions(ZeroOneFloat2, out var bottomLeft, out var topRight);
 
             var anchoredPosition = rectTransform.anchoredPosition;
             var anchoredPositionBottomLeft = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.BottomLeft);
