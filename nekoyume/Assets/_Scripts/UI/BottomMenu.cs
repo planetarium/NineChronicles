@@ -167,6 +167,8 @@ namespace Nekoyume.UI.Module
         public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
             bool useShowButtons = false, params ToggleableType[] showButtons)
         {
+            CloseWidget = () => navigationAction?.Invoke(this);
+         
             base.Show();
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
             SharedModel.NavigationAction = navigationAction;
@@ -226,9 +228,6 @@ namespace Nekoyume.UI.Module
                         throw new ArgumentOutOfRangeException();
                 }
             }
-
-            CloseWidget = () => navigationAction?.Invoke(this);
-            //CloseWidget += () => Find<Confirm>().Show();
         }
 
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.

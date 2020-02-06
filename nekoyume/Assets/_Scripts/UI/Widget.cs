@@ -46,7 +46,7 @@ namespace Nekoyume.UI
 
         protected virtual void Update()
         {
-            if (WidgetStack.Count != 0 && WidgetStack.Peek() != gameObject)
+            if (WidgetStack.Count == 0 || WidgetStack.Peek() != gameObject)
                 return;
             
             if(Input.GetKeyUp(KeyCode.Escape))
