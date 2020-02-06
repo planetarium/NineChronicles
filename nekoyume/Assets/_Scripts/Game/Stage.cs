@@ -302,6 +302,7 @@ namespace Nekoyume.Game
             var battle = Widget.Find<UI.Battle>();
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
             battle.stageProgressBar.Initialize(true);
+            Widget.Find<BattleResult>().stageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
 
@@ -340,7 +341,8 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(2.0f);
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
-            if (log.result == BattleLog.Result.Win)
+            var failed = _battleResultModel.phase < 2;
+            if (log.result == BattleLog.Result.Win && !failed)
             {
                 yield return new WaitForSeconds(0.75f);
                 yield return StartCoroutine(CoDialog(log.stageId));
@@ -359,7 +361,7 @@ namespace Nekoyume.Game
             _battleResultModel.State = log.result;
             _battleResultModel.ActionPointNotEnough = avatarState.actionPoint < GameConfig.HackAndSlashCostAP;
             _battleResultModel.ShouldExit = isExitReserved;
-            _battleResultModel.ShouldRepeat = repeatStage;
+            _battleResultModel.ShouldRepeat = repeatStage || failed;
 
             if (!_battleResultModel.ShouldRepeat)
             {
@@ -543,9 +545,10 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
+            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
             if (items.Count > 0)
             {
-                var dropItemFactory = GetComponent<DropItemFactory>();
                 var player = GetPlayer();
                 var position = player.transform.position;
                 position.x += 1.0f;
@@ -679,6 +682,12 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             Debug.Log($"CoWaveTurnEnd {waveTurn}, {turn}");
             waveTurn = turn;
+        }
+
+        public IEnumerator CoWaveEnd(int wave)
+        {
+            _battleResultModel.phase = wave;
+            yield return null;
         }
 
         public IEnumerator CoGetExp(long exp)
