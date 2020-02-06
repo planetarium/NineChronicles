@@ -69,7 +69,6 @@ namespace Nekoyume.UI
             activatedStarImages[1].enabled = false;
             activatedStarImages[2].enabled = false;
             stageProgressBarVFX.Stop();
-            stageProgressBarVFX = null;
             star01VFX.Stop();
             star02VFX.Stop();
             star03VFX.Stop();
