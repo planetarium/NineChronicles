@@ -1,7 +1,7 @@
 ﻿using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
-using System;
 using System.Collections;
+using Nekoyume.Game.Character;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -42,6 +42,8 @@ namespace Nekoyume.UI
         private void Awake()
         {
             _xLength = vfxClamper.rect.width;
+            Game.Event.OnEnemyDeadStart.AddListener(OnEnemyDeadStart);
+            Game.Event.OnWaveStart.AddListener(SetNextWave);
         }
 
         public void Show()
@@ -76,7 +78,7 @@ namespace Nekoyume.UI
             slider.value = 0.0f;
         }
 
-        public void CompleteWave()
+        private void CompleteWave()
         {
             ++_currentStar;
 
@@ -124,15 +126,18 @@ namespace Nekoyume.UI
                 TerminateCurrentSmoothen(false);
             }
 
-            _smoothenCoroutine = StartCoroutine(LerpProgressBar((float)_currentStar / MaxWave, lerpSpeed));
+            if (isActiveAndEnabled)
+            {
+                _smoothenCoroutine = StartCoroutine(LerpProgressBar((float) _currentStar / MaxWave, lerpSpeed));
+            }
         }
 
-        public void SetNextWave(int waveHpSum)
+        private void SetNextWave(int waveHpSum)
         {
             _currentWaveHpSum = _progress = waveHpSum;
         }
 
-        public void IncreaseProgress(int hp)
+        private void IncreaseProgress(int hp)
         {
             if(_stageProgressBarVFX is null)
             {
@@ -154,7 +159,11 @@ namespace Nekoyume.UI
                 slider.value = GetProgress(_progress + hp);
                 TerminateCurrentSmoothen();
             }
-            _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue));
+
+            if (isActiveAndEnabled)
+            {
+                _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue));
+            }
         }
 
         private IEnumerator LerpProgressBar(float value, float additionalSpeed = 1.0f)
@@ -191,6 +200,11 @@ namespace Nekoyume.UI
                 _onCurrentSmoothenTerminated = null;
             }
             _smoothenCoroutine = null;
+        }
+
+        private void OnEnemyDeadStart(Enemy enemy)
+        {
+            IncreaseProgress(enemy.HP);
         }
     }
 }

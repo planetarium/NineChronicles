@@ -84,7 +84,6 @@ namespace Nekoyume.Game
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageStart.AddListener(OnStageStart);
             Event.OnRankingBattleStart.AddListener(OnRankingBattleStart);
-            Event.OnEnemyDeadStart.AddListener(OnEnemyDeadStart);
         }
 
         private void OnStageStart(BattleLog log)
@@ -171,10 +170,6 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RoomEntering>();
         }
 
-        private void OnEnemyDeadStart(Character.Enemy enemy)
-        {
-            Widget.Find<UI.Battle>().stageProgressBar.IncreaseProgress(enemy.HP);
-        }
 
         // todo: 배경 캐싱.
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
@@ -640,8 +635,7 @@ namespace Nekoyume.Game
                 objectPool.Remove<Character.Enemy>(prev.gameObject);
             }
 
-            var battle = Widget.Find<UI.Battle>();
-            battle.stageProgressBar.SetNextWave(enemies.Sum(enemy => enemy.HP));
+            Event.OnWaveStart.Invoke(enemies.Sum(enemy => enemy.HP));
 
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
@@ -666,6 +660,7 @@ namespace Nekoyume.Game
                 var boss = enemies.Last();
                 Boss = boss;
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
+                var battle = Widget.Find<UI.Battle>();
                 battle.bossStatus.Show();
                 battle.bossStatus.SetHp(boss.HP, boss.HP);
                 battle.bossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
