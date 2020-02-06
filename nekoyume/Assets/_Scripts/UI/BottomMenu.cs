@@ -228,7 +228,7 @@ namespace Nekoyume.UI.Module
             }
 
             CloseWidget = () => navigationAction?.Invoke(this);
-            CloseWidget += () => Find<Confirm>().Show();
+            //CloseWidget += () => Find<Confirm>().Show();
         }
 
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.

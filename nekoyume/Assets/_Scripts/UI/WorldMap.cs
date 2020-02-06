@@ -212,7 +212,9 @@ namespace Nekoyume.UI
             bottomMenu.worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
                 .AddTo(_disposablesAtShow);
-
+            CloseWidget = bottomMenu.worldMapButton.button.onClick.Invoke;
+            CloseWidget += Pop;
+            
             ShowWorld(worldId, stageId, showWorld);
             Show();
         }
