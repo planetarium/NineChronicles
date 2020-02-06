@@ -29,6 +29,8 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 Find<Status>()?.CloseInventory();
             }).AddTo(gameObject);
+
+            CloseWidget = closeButton.onClick.Invoke;
         }
 
         #region Widget

@@ -102,6 +102,8 @@ namespace Nekoyume.UI
             submitText.text = LocalizationManager.Localize("UI_GAME_START");
             submitButton.OnSubmitClick.Subscribe(_ => Submit());
             base.Awake();
+
+            SubmitWidget = Submit;
         }
         private void SubscribeState(States states)
         {
@@ -444,13 +446,10 @@ namespace Nekoyume.UI
             return _privateKey;
         }
 
-        private void Update()
+        protected override void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Return))
-            {
-                Submit();
-            }
-
+            base.Update();
+            
             if (Input.GetKeyUp(KeyCode.Tab))
             {
                 switch (State.Value)

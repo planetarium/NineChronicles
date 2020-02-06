@@ -147,6 +147,9 @@ namespace Nekoyume.UI
                     AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
                 })
                 .AddTo(gameObject);
+
+            CloseWidget = closeButton.onClick.Invoke;
+            SubmitWidget = submitButton.onClick.Invoke;
         }
 
         public void Show(Model model)
@@ -202,10 +205,12 @@ namespace Nekoyume.UI
             if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
             {
                 submitButton.gameObject.SetActive(false);
+                SubmitWidget = closeButton.onClick.Invoke;
             }
             else
             {
                 submitButton.interactable = true;
+                SubmitWidget = submitButton.onClick.Invoke;
 
                 submitButtonText.text = SharedModel.ShouldRepeat
                     ? LocalizationManager.Localize("UI_BATTLE_AGAIN")

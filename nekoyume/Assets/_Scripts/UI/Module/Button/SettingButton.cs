@@ -6,6 +6,10 @@ namespace Nekoyume.UI.Module
     {
         public override WidgetType WidgetType => WidgetType.Development;
 
+        protected override void Awake()
+        {
+        }
+
         public void ShowSettings()
         {
             Find<Settings>().Show();
