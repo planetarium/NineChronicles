@@ -49,6 +49,7 @@ namespace Nekoyume.UI.Module
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
+        private Animator _inventoryAnimator;
         public IToggleGroup ToggleGroup => _toggleGroup;
         public ToggleableButton quitButton;
         public GlowingButton exitButton;
@@ -106,6 +107,8 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
             _toggleGroup.RegisterToggleable(chatButton);
+
+            _inventoryAnimator = inventoryButton.GetComponent<Animator>();
         }
 
         public override void Initialize()
@@ -314,6 +317,12 @@ namespace Nekoyume.UI.Module
         public void SetIntractable(bool intractable)
         {
             canvasGroup.interactable = intractable;
+        }
+
+        public void PlayGetItemAnimation()
+        {
+            if(_inventoryAnimator)
+                _inventoryAnimator.Play("GetItem");
         }
     }
 }
