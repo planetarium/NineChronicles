@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
@@ -50,7 +51,7 @@ namespace Nekoyume.Battle
             Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
             TurnLimit = stageRow.TurnLimit;
 
-            SetWave(stageWaveRow);
+            SetWave(stageRow, stageWaveRow);
             SetReward(stageRow);
         }
 
@@ -173,16 +174,17 @@ namespace Nekoyume.Battle
             return Player;
         }
 
-        private void SetWave(StageWaveSheet.Row stageWaveRow)
+        private void SetWave(StageSheet.Row stageRow, StageWaveSheet.Row stageWaveRow)
         {
+            var enemyStatModifiers = stageRow.EnemyOptionalStatModifiers;
             var waves = stageWaveRow.Waves;
-            foreach (var wave in waves.Select(SpawnWave))
+            foreach (var wave in waves.Select(e => SpawnWave(e, enemyStatModifiers)))
             {
                 _waves.Add(wave);
             }
         }
 
-        private Wave SpawnWave(StageWaveSheet.WaveData waveData)
+        private Wave SpawnWave(StageWaveSheet.WaveData waveData, IReadOnlyList<StatModifier> optionalStatModifiers)
         {
             var wave = new Wave();
             var monsterTable = TableSheets.CharacterSheet;
@@ -191,10 +193,10 @@ namespace Nekoyume.Battle
                 for (var i = 0; i < monsterData.Count; i++)
                 {
                     monsterTable.TryGetValue(monsterData.CharacterId, out var row, true);
-                    var enemyModel = new Enemy(Player, row, monsterData.Level);
+                    var enemyModel = new Enemy(Player, row, monsterData.Level, optionalStatModifiers);
 
                     wave.Add(enemyModel);
-                    wave.IsBoss = waveData.IsBoss;
+                    wave.IsBoss = waveData.HasBoss;
                 }
             }
 
