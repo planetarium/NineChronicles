@@ -53,6 +53,9 @@ namespace Nekoyume.UI
                 AudioController.PlayClick();
                 Close();
             }).AddTo(gameObject);
+
+            CloseWidget = null;
+            SubmitWidget = submitButton.onClick.Invoke;
         }
 
         protected override void OnDestroy()

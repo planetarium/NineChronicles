@@ -46,7 +46,7 @@ namespace Nekoyume.UI
             _color.a = AlphaToBeginning;
         }
 
-        private void Update()
+        protected override void Update()
         {
             if (!string.IsNullOrEmpty(Message) && loadingText?.text != Message)
             {

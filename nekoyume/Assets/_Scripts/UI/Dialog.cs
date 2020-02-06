@@ -46,6 +46,9 @@ namespace Nekoyume.UI
             base.Awake();
 
             _itemTextColor = $"#{ColorHelper.ColorToHexRGBA(itemTextColor)}";
+
+            CloseWidget = null;
+            SubmitWidget = Skip;
         }
 
         #endregion

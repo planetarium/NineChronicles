@@ -100,6 +100,9 @@ namespace Nekoyume.UI
                     // LocalStateModifier.ModifyWeeklyArenaGold(GameConfig.ArenaActivationCostNCG);
                     LocalStateModifier.AddWeeklyArenaInfoActivator();
                 }).AddTo(gameObject);
+
+            CloseWidget = null;
+            SubmitWidget = null;
         }
 
         protected override void OnCompleteOfShowAnimation()

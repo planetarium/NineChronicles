@@ -20,6 +20,9 @@ namespace Nekoyume.UI
         {
             base.Awake();
             submitButtonText.text = LocalizationManager.Localize("UI_BACK_TO_ARENA");
+
+            CloseWidget = null;
+            SubmitWidget = BackToRanking;
         }
 
         public void Show(BattleLog.Result result, int score, int diffScore)

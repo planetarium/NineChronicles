@@ -107,7 +107,10 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
             _toggleGroup.RegisterToggleable(chatButton);
-
+            
+            SubmitWidget = null;
+            CloseWidget = null;
+            
             _inventoryAnimator = inventoryButton.GetComponent<Animator>();
         }
 
@@ -167,6 +170,8 @@ namespace Nekoyume.UI.Module
         public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
             bool useShowButtons = false, params ToggleableType[] showButtons)
         {
+            CloseWidget = () => navigationAction?.Invoke(this);
+         
             base.Show();
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
             SharedModel.NavigationAction = navigationAction;
