@@ -39,6 +39,8 @@ namespace Nekoyume.UI
 
             Game.Event.OnRoomEnter.AddListener(Show);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus).AddTo(gameObject);
+
+            CloseWidget = null;
         }
 
         #endregion

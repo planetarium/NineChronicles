@@ -25,6 +25,14 @@ namespace Nekoyume.UI
 
         public string text;
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            CloseWidget = No;
+            SubmitWidget = Yes;
+        }
+
         public void Show(string placeHolderText, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
             bool localize = true)
         {

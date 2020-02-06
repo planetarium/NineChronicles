@@ -11,6 +11,13 @@ namespace Nekoyume.UI
         private string _keyStorePath;
         private string _privateKey;
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            SubmitWidget = OnClick;
+        }
+
         public void Show(string keyStorePath, string privateKey)
         {
             base.Show();
