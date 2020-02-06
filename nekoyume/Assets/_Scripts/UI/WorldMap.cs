@@ -212,8 +212,6 @@ namespace Nekoyume.UI
             bottomMenu.worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
                 .AddTo(_disposablesAtShow);
-            CloseWidget = bottomMenu.worldMapButton.button.onClick.Invoke;
-            CloseWidget += Pop;
             
             ShowWorld(worldId, stageId, showWorld);
             Show();
@@ -243,6 +241,11 @@ namespace Nekoyume.UI
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
                 throw new ArgumentException(nameof(worldId));
 
+            CloseWidget = Find<BottomMenu>().worldMapButton.button.onClick.Invoke;
+            CloseWidget += Pop;
+            CloseWidget += () => CloseWidget = null;
+            Push();
+            
             ShowWorld(world.Id, world.GetNextStageId(), false);
         }
 
