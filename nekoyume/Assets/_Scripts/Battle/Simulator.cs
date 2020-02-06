@@ -19,7 +19,7 @@ namespace Nekoyume.Battle
         public SimplePriorityQueue<CharacterBase, decimal> Characters;
         public const decimal TurnPriority = 100m;
         public readonly TableSheets TableSheets;
-        protected const int MaxTurn = 3000;
+        protected const int MaxTurn = 200;
         public int WaveTurn;
 
         protected Simulator(

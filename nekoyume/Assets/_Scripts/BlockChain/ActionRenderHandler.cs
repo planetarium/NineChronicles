@@ -306,14 +306,18 @@ namespace Nekoyume.BlockChain
         
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var battleResultWidget = Widget.Find<BattleResult>();
 
-            foreach (var questId in eval.Action.completedQuestIds)
+            var dispose = battleResultWidget.BattleEndedSubject.Subscribe(_ =>
             {
-                LocalStateModifier.AddReceivableQuest(avatarAddress, questId);
-            }
-            UpdateCurrentAvatarState(eval);
-            UpdateWeeklyArenaState(eval);
+                UpdateCurrentAvatarState(eval);
+                UpdateWeeklyArenaState(eval);
+
+                foreach (var questId in eval.Action.completedQuestIds)
+                    LocalStateModifier.AddReceivableQuest(States.Instance.CurrentAvatarState.address, questId);
+
+            });
+            battleResultWidget.battleEndedStream = dispose;
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;

@@ -99,10 +99,15 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(base.Dying());
         }
 
-        protected override void OnDead()
+        protected override void OnDeadStart()
         {
-            Event.OnEnemyDead.Invoke(this);
-            base.OnDead();
+            Event.OnEnemyDeadStart.Invoke(this);
+            base.OnDeadStart();
+        }
+
+        protected override void OnDeadEnd()
+        {
+            base.OnDeadEnd();
         }
 
         protected override BoxCollider GetAnimatorHitPointBoxCollider()

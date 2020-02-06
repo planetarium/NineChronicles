@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using BTAI;
 using Libplanet.Action;
 using Nekoyume.Battle;
@@ -15,7 +14,6 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
-using UnityEngine;
 
 namespace Nekoyume.Model
 {
@@ -23,12 +21,6 @@ namespace Nekoyume.Model
     public abstract class CharacterBase : ICloneable
     {
         public const decimal CriticalMultiplier = 1.5m;
-
-        [NonSerialized]
-        private Root _root;
-
-        private Skill.Skill _selectedSkill;
-        private BattleStatus.Skill _usedSkill;
 
         public readonly Guid Id = Guid.NewGuid();
 
@@ -95,6 +87,8 @@ namespace Nekoyume.Model
         {
             _root = value._root;
             _selectedSkill = value._selectedSkill;
+            _usedSkill = value._usedSkill;
+            _executedTurnEnd = value._executedTurnEnd;
             Id = value.Id;
             Simulator = value.Simulator;
             atkElementType = value.atkElementType;
@@ -121,38 +115,60 @@ namespace Nekoyume.Model
 
         #region Behaviour Tree
 
+        [NonSerialized]
+        private Root _root;
+        [NonSerialized]
+        private Skill.Skill _selectedSkill;
+        [NonSerialized]
+        private BattleStatus.Skill _usedSkill;
+        [NonSerialized]
+        private bool _executedTurnEnd;
+
         public void InitAI()
         {
+            _executedTurnEnd = false;
             SetSkill();
 
             _root = new Root();
             _root.OpenBranch(
                 BT.Selector().OpenBranch(
-                    BT.If(IsAlive).OpenBranch(
-                        BT.Sequence().OpenBranch(
-                            BT.Call(BeginningOfTurn),
-                            BT.Call(ReduceDurationOfBuffs),
-                            BT.Call(SelectSkill),
-                            BT.Call(UseSkill),
-                            BT.Call(RemoveBuffs),
-                            BT.Call(EndTurn)
-                        )
+                    // process turn.
+                    BT.Sequence().OpenBranch(
+                        BT.Call(BeginningOfTurn),
+                        BT.If(IsAlive).OpenBranch(
+                            BT.Sequence().OpenBranch(
+                                BT.Call(ReduceDurationOfBuffs),
+                                BT.Call(SelectSkill),
+                                BT.Call(UseSkill),
+                                BT.Call(RemoveBuffs)
+                            )
+                        ),
+                        BT.Call(EndTurn)
                     ),
+                    // 캐릭터가 살아 있지 않을 경우 `EndTurn()`을 호출하지 않아서 한 번 호출한다.
                     BT.Call(EndTurn),
+                    // terminate bt.
                     BT.Terminate()
                 )
             );
         }
 
-        public void Tick()
+        public void Tick(out bool isTurnEnd)
         {
             _root.Tick();
+            isTurnEnd = _executedTurnEnd;
+        }
+
+        private bool IsAlive()
+        {
+            return !IsDead;
         }
 
         private void BeginningOfTurn()
         {
             _selectedSkill = null;
             _usedSkill = null;
+            _executedTurnEnd = false;
         }
 
         private void ReduceDurationOfBuffs()
@@ -217,6 +233,11 @@ namespace Nekoyume.Model
             Stats.SetBuffs(Buffs.Values);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
+        
+        protected virtual void EndTurn()
+        {
+            _executedTurnEnd = true;
+        }
 
         #endregion
 
@@ -264,10 +285,8 @@ namespace Nekoyume.Model
             return isHit;
         }
 
-        public int GetDamage(int skillPower, bool considerAttackCount = true)
+        public int GetDamage(int damage, bool considerAttackCount = true)
         {
-            var damage = ATK + skillPower;
-
             if (!considerAttackCount)
                 return damage;
 
@@ -290,11 +309,6 @@ namespace Nekoyume.Model
 #endif
 
             return damage;
-        }
-
-        private bool IsAlive()
-        {
-            return !IsDead;
         }
 
         public void Die()
@@ -325,10 +339,6 @@ namespace Nekoyume.Model
         public bool GetChance(int chance)
         {
             return chance > Simulator.Random.Next(0, 100);
-        }
-
-        protected virtual void EndTurn()
-        {
         }
     }
 

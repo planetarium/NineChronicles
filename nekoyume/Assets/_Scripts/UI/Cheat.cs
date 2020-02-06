@@ -241,7 +241,7 @@ namespace Nekoyume
             ScrollBarHandler(LocalTableSheet, 0);
 
             BtnOpen.gameObject.SetActive(false);
-            foreach (var i in Enumerable.Range(1, Game.Game.instance.TableSheets.StageSheet.Count))
+            foreach (var i in Enumerable.Range(1, Game.Game.instance.TableSheets.StageWaveSheet.Count))
             {
                 Button newButton = Instantiate(buttonBase, list.content);
                 newButton.GetComponentInChildren<Text>().text = i.ToString();
@@ -350,7 +350,7 @@ namespace Nekoyume
             }
 
             var enemy = enemyObj.GetComponent<Enemy>();
-            Game.Event.OnEnemyDead.Invoke(enemy);
+            Game.Event.OnEnemyDeadStart.Invoke(enemy);
         }
 
         private void SpeedUp()
