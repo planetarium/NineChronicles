@@ -350,7 +350,7 @@ namespace Nekoyume
             }
 
             var enemy = enemyObj.GetComponent<Enemy>();
-            Game.Event.OnEnemyDead.Invoke(enemy);
+            Game.Event.OnEnemyDeadStart.Invoke(enemy);
         }
 
         private void SpeedUp()
