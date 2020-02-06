@@ -22,7 +22,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private float smoothenSpeed = 2.0f;
         [SerializeField]
-        private float smoothenFinishThreshold = 0.01f;
+        private float smoothenFinishThreshold = 0.005f;
         private float _xLength = 0;
 
         private readonly ReactiveProperty<int> _currentStar = new ReactiveProperty<int>(0);
@@ -107,7 +107,7 @@ namespace Nekoyume.UI
             }
 
             _progress -= hp;
-            if (_progress == 0)
+            if (_progress <= 0)
             {
                 CompleteWave();
                 return;

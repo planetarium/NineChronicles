@@ -170,7 +170,6 @@ namespace Nekoyume.Game
             gameObject.AddComponent<RoomEntering>();
         }
 
-
         // todo: 배경 캐싱.
         public void LoadBackground(string prefabName, float fadeTime = 0.0f)
         {
