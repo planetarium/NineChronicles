@@ -159,7 +159,7 @@ namespace Nekoyume.UI
 
         private void OnEnemyDeadStart(Enemy enemy)
         {
-            IncreaseProgress(enemy.HP);
+            IncreaseProgress(enemy.HP - enemy.CharacterModel.Stats.BuffStats.HP);
         }
 
         public void OnValueChanged()
