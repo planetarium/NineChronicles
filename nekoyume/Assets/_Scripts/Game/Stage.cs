@@ -54,6 +54,7 @@ namespace Nekoyume.Game
         public bool isExitReserved;
         public string zone;
         public int waveTurn;
+        public int turn;
 
         private Camera _camera;
         private BattleLog _battleLog;
@@ -422,6 +423,10 @@ namespace Nekoyume.Game
             status.Show();
             status.ShowBattleStatus();
 
+            var stageSheet = Game.instance.TableSheets.StageSheet;
+            stageSheet.TryGetValue(stageId, out var row);
+            status.battleTimerView.Show(row.TurnLimit);
+
             var battle = Widget.Find<UI.Battle>();
             if (_rankingBattle)
             {
@@ -675,12 +680,14 @@ namespace Nekoyume.Game
             yield return StartCoroutine(spawner.CoSetData(enemies));
         }
 
-        public IEnumerator CoWaveTurnEnd(int turn)
+        public IEnumerator CoWaveTurnEnd(int waveTurn, int turn)
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             Debug.Log($"CoWaveTurnEnd {waveTurn}, {turn}");
-            waveTurn = turn;
+            this.waveTurn = waveTurn;
+            this.turn = turn;
+            Event.OnPlayerTurnEnd.Invoke(turn);
         }
 
         public IEnumerator CoWaveEnd(int wave)

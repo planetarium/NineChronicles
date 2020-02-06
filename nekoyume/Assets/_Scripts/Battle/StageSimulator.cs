@@ -82,7 +82,7 @@ namespace Nekoyume.Battle
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Player.Spawn();
-            var turn = 1;
+            Turn = 1;
 #if TEST_LOG
             UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / turn start");
 #endif
@@ -96,7 +96,7 @@ namespace Nekoyume.Battle
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
-                    if (turn > TurnLimit)
+                    if (Turn > TurnLimit)
                     {
                         if (i == 0)
                         {
@@ -121,7 +121,6 @@ namespace Nekoyume.Battle
                     character.Tick(out var isTurnEnd);
                     if (isTurnEnd)
                     {
-                        turn++;
 #if TEST_LOG
                         UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(isTurnEnd)}");
 #endif
