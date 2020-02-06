@@ -88,6 +88,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>()?.Close(ignoreCloseAnimation);
+            stageProgressBar.Close();
             enemyPlayerStatus.Close();
             base.Close(ignoreCloseAnimation);
         }

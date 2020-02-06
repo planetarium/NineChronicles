@@ -285,10 +285,8 @@ namespace Nekoyume.Model
             return isHit;
         }
 
-        public int GetDamage(int skillPower, bool considerAttackCount = true)
+        public int GetDamage(int damage, bool considerAttackCount = true)
         {
-            var damage = ATK + skillPower;
-
             if (!considerAttackCount)
                 return damage;
 

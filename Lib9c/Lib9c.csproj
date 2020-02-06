@@ -18,6 +18,7 @@
     <PackageReference Include="Libplanet" Version="0.8.0-nightly.20200130" />
     <PackageReference Include="OptimizedPriorityQueue" Version="4.2.0" />
     <PackageReference Include="Serilog" Version="2.9.0" />
+    <PackageReference Include="System.Reactive" Version="4.3.2" />
   </ItemGroup>
 
 </Project>

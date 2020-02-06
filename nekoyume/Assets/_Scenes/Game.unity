@@ -794,6 +794,10 @@ MonoBehaviour:
   - Prefab: {fileID: 469929775319107500, guid: 79243bdb41843cb4c83bb8b4be500721, type: 3}
     InitCount: 1
     AddCount: 1
+  - Prefab: {fileID: 7423218383239420094, guid: a4c32b853a22ea042b73b98d476b5a0f,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
 --- !u!114 &1333831685
 MonoBehaviour:
   m_ObjectHideFlags: 0
