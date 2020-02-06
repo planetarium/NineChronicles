@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
+using Nekoyume.Extension;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -31,7 +32,6 @@ namespace Nekoyume.UI
         public RectTransform Target => Model.target.Value;
 
         public override PivotPresetType PivotPresetType => PivotPresetType.TopRight;
-        protected override Vector2 DefaultPanelSize => new Vector2(300, 0);
 
         protected override void Awake()
         {
@@ -123,14 +123,14 @@ namespace Nekoyume.UI
         
         protected override void SubscribeTarget(RectTransform target)
         {
+            panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
             base.SubscribeTarget(target);
 
             //target과 panel이 겹칠 경우 target의 왼쪽에 다시 위치
             if (!(target is null) && panel.position.x - target.position.x < 0)
             {
-                LayoutRebuild();
-                panel.MoveToRelatedPosition(target, PivotPresetType.TopRight, DefaultOffsetFromParent);
-                panel.ReverseBasedOnTarget(target, true, false);
+                panel.SetPivot(PivotPresetType.TopRight);
+                panel.MoveToRelatedPosition(target, PivotPresetType.ReverseX(), DefaultOffsetFromTarget.ReverseX());
                 UpdateAnchoredPosition();
             }
         }

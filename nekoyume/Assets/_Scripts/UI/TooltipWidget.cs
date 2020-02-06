@@ -22,7 +22,9 @@ namespace Nekoyume.UI
         public T Model { get; private set; }
         
         public abstract PivotPresetType PivotPresetType { get; }
-        protected abstract Vector2 DefaultPanelSize { get; }
+        public virtual float2 OffsetFromTarget => DefaultOffsetFromTarget;
+        public virtual float2 OffsetFromParent => DefaultOffsetFromParent;
+
         public void Show(T value)
         {
             if (value is null)
@@ -49,13 +51,13 @@ namespace Nekoyume.UI
         
         protected virtual void SubscribeTarget(RectTransform target)
         {
-            panel.MoveToRelatedPosition(target, PivotPresetType, DefaultOffsetFromTarget);
+            panel.MoveToRelatedPosition(target, PivotPresetType, OffsetFromTarget);
             UpdateAnchoredPosition();
         }
 
         protected virtual void UpdateAnchoredPosition()
         {
-            panel.MoveInsideOfParent(DefaultOffsetFromParent);
+            panel.MoveInsideOfParent(OffsetFromParent);
         }
     }
 }

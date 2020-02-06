@@ -130,6 +130,46 @@ namespace Nekoyume
             }
         }
 
+        public static PivotPresetType GetPivotPresetType(this RectTransform rectTransform)
+        {
+            int pivotPresetTypeIndex = 0;
+            switch(rectTransform.pivot.x)
+            {
+                case 0:
+                    pivotPresetTypeIndex += 6;
+                    break;
+                case 0.5f:
+                    pivotPresetTypeIndex += 3;
+                    break;
+                case 1:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rectTransform), rectTransform, null);
+            }
+
+            switch(rectTransform.pivot.x)
+            {
+                case 0:
+                    break;
+                case 0.5f:
+                    pivotPresetTypeIndex += 1;
+                    break;
+                case 1:
+                    pivotPresetTypeIndex += 2;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rectTransform), rectTransform, null);
+            }
+
+            return (PivotPresetType)pivotPresetTypeIndex;
+        }
+
+        public static void SetAnchorAndPivot(this RectTransform rectTransform, AnchorPresetType anchorPresetType, PivotPresetType pivotPresetType)
+        {
+            rectTransform.SetAnchor(anchorPresetType);
+            rectTransform.SetPivot(pivotPresetType);
+        }
+
         public static float2 GetPivotPositionFromAnchor(this RectTransform rectTransform, PivotPresetType pivotPresetType)
         {
             var anchoredPosition = new float2();
@@ -187,12 +227,12 @@ namespace Nekoyume
             return anchoredPosition + rectTransform.GetPivotPositionFromAnchor(pivotPresetType);
         }
 
-        public static void GetPositions(this RectTransform rectTransform, float2 pivot,
-            out float2 bottomLeft, out float2 topRight)
+        public static void GetPositions(this RectTransform rectTransform, out float2 bottomLeft, out float2 topRight)
         {
             var size = rectTransform.rect.size;
-            bottomLeft = new float2(size.x * pivot.x, -(size.y * pivot.y));
-            topRight = new float2(size.x * (1f - pivot.x), size.y * (1f - pivot.y));
+
+            bottomLeft = new float2(0, -size.y);
+            topRight = new float2(size.x, 0);
         }
         
         public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target, PivotPresetType pivotPresetType,
@@ -222,8 +262,8 @@ namespace Nekoyume
                 return;
             }
 
-            parent.GetPositions(rectTransform.pivot, out var bottomLeft, out var topRight);
-            
+            parent.GetPositions(out var bottomLeft, out var topRight);
+
             var anchoredPosition = rectTransform.anchoredPosition;
             var anchoredPositionBottomLeft = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.BottomLeft);
             var anchoredPositionTopRight = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.TopRight);
@@ -257,40 +297,6 @@ namespace Nekoyume
             }
 
             rectTransform.anchoredPosition = anchoredPosition;
-        }
-
-        public static void ReverseBasedOnTarget(this RectTransform rectTransform, RectTransform target, bool flipX, bool flipY)
-        {
-            var firstAnchoredPosition = rectTransform.anchoredPosition;
-            rectTransform.position = target.position;
-            var offset = firstAnchoredPosition - rectTransform.anchoredPosition;
-
-            var resultAnchoredPosition = rectTransform.anchoredPosition;
-            if (flipX)
-            {
-                resultAnchoredPosition.x -= offset.x;
-
-                if (offset.x > 0)
-                    resultAnchoredPosition.x -= rectTransform.rect.width;
-                else
-                    resultAnchoredPosition.x += rectTransform.rect.width;
-            }
-            else
-                resultAnchoredPosition.x += offset.x;
-
-            if (flipY)
-            {
-                resultAnchoredPosition.y -= offset.y;
-
-                if (offset.y > 0)
-                    resultAnchoredPosition.y -= rectTransform.rect.height;
-                else
-                    resultAnchoredPosition.y += rectTransform.rect.height;
-            }
-            else
-                resultAnchoredPosition.y += offset.y;
-
-            rectTransform.anchoredPosition = resultAnchoredPosition;
         }
     }
 }
