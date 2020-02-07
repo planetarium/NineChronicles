@@ -1,4 +1,3 @@
-using Nekoyume.Action;
 using Nekoyume.Game.Item;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.UI;
@@ -18,8 +17,7 @@ namespace Nekoyume.Game
         public class EnemyDead : UnityEvent<Enemy>
         {
         }
-        public static readonly EnemyDead OnEnemyDead = new EnemyDead();
-        public static readonly UnityEvent OnStageClear = new UnityEvent();
+        public static readonly EnemyDead OnEnemyDeadStart = new EnemyDead();
 
         public static readonly Subject<Player> OnUpdatePlayerStatus = new Subject<Player>();
 
@@ -28,7 +26,6 @@ namespace Nekoyume.Game
         }
         public static readonly GetItem OnGetItem = new GetItem();
 
-        public static readonly UnityEvent OnUseSkill = new UnityEvent();
 
         public class LoginDetail : UnityEvent<int>
         {
@@ -46,10 +43,15 @@ namespace Nekoyume.Game
         public static readonly StageStart OnStageStart = new StageStart();
         public static readonly StageStart OnRankingBattleStart = new StageStart();
 
-        public class TipChanged : UnityEvent<long>
+        public class WaveStart : UnityEvent<int>
         {
         }
-        public static readonly TipChanged OnTipChanged = new TipChanged();
 
+        public static readonly WaveStart OnWaveStart = new WaveStart();
+
+        public class PlayerTurnEnd : UnityEvent<int>
+        {
+        }
+        public static readonly PlayerTurnEnd OnPlayerTurnEnd = new PlayerTurnEnd();
     }
 }

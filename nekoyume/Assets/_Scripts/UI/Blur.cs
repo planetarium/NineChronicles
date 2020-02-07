@@ -8,6 +8,7 @@ namespace Nekoyume.UI
     public class Blur : MonoBehaviour
     {
         private static readonly int RadiusPropertyID = Shader.PropertyToID("_Radius");
+        private static readonly int ScreenWidthPropertyID = Shader.PropertyToID("_ScreenWidth");
 
         public Image image;
         public Button button;
@@ -76,6 +77,7 @@ namespace Nekoyume.UI
             var to = radius;
 
             _glass.SetFloat(RadiusPropertyID, from);
+            _glass.SetFloat(ScreenWidthPropertyID, Screen.width);
             var elapsedTime = 0f;
             while (true)
             {

@@ -200,9 +200,11 @@ namespace Nekoyume
             Transform btn = transform.Find("Btn");
             btn.gameObject.SetActive(false);
 #endif
+
+            CloseWidget = null;
         }
 
-        private void Update()
+        protected override void Update()
         {
             _updateTime += Time.deltaTime;
         }
@@ -350,7 +352,7 @@ namespace Nekoyume
             }
 
             var enemy = enemyObj.GetComponent<Enemy>();
-            Game.Event.OnEnemyDead.Invoke(enemy);
+            Game.Event.OnEnemyDeadStart.Invoke(enemy);
         }
 
         private void SpeedUp()

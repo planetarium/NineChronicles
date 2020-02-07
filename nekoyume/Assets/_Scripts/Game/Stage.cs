@@ -54,6 +54,7 @@ namespace Nekoyume.Game
         public bool isExitReserved;
         public string zone;
         public int waveTurn;
+        public int turn;
 
         private Camera _camera;
         private BattleLog _battleLog;
@@ -247,7 +248,6 @@ namespace Nekoyume.Game
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
-
             yield return StartCoroutine(CoStageEnd(log));
         }
 
@@ -299,6 +299,10 @@ namespace Nekoyume.Game
             PlayBGVFX(false);
             RunPlayer();
 
+            var battle = Widget.Find<UI.Battle>();
+            Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
+            battle.stageProgressBar.Initialize(true);
+            Widget.Find<BattleResult>().stageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
 
@@ -337,7 +341,9 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(2.0f);
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
-            if (log.result == BattleLog.Result.Win)
+            Widget.Find<Status>().battleTimerView.Close();
+            var failed = _battleResultModel.phase < 2;
+            if (log.result == BattleLog.Result.Win && !failed)
             {
                 yield return new WaitForSeconds(0.75f);
                 yield return StartCoroutine(CoDialog(log.stageId));
@@ -356,7 +362,7 @@ namespace Nekoyume.Game
             _battleResultModel.State = log.result;
             _battleResultModel.ActionPointNotEnough = avatarState.actionPoint < GameConfig.HackAndSlashCostAP;
             _battleResultModel.ShouldExit = isExitReserved;
-            _battleResultModel.ShouldRepeat = repeatStage;
+            _battleResultModel.ShouldRepeat = repeatStage || failed;
 
             if (!_battleResultModel.ShouldRepeat)
             {
@@ -418,6 +424,10 @@ namespace Nekoyume.Game
             status.Show();
             status.ShowBattleStatus();
 
+            var stageSheet = Game.instance.TableSheets.StageSheet;
+            stageSheet.TryGetValue(stageId, out var row);
+            status.battleTimerView.Show(row.TurnLimit);
+
             var battle = Widget.Find<UI.Battle>();
             if (_rankingBattle)
             {
@@ -442,6 +452,7 @@ namespace Nekoyume.Game
         {
             var battle = Widget.Find<UI.Battle>();
             battle.bossStatus.Close();
+            battle.stageProgressBar.Close();
             battle.enemyPlayerStatus.Show();
             battle.enemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
 
@@ -539,9 +550,10 @@ namespace Nekoyume.Game
 
         public IEnumerator CoDropBox(List<ItemBase> items)
         {
+            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
             if (items.Count > 0)
             {
-                var dropItemFactory = GetComponent<DropItemFactory>();
                 var player = GetPlayer();
                 var position = player.transform.position;
                 position.x += 1.0f;
@@ -624,6 +636,15 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss)
         {
+            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
+            yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
+            foreach (var prev in prevEnemies)
+            {
+                objectPool.Remove<Character.Enemy>(prev.gameObject);
+            }
+
+            Event.OnWaveStart.Invoke(enemies.Sum(enemy => enemy.HP));
+
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(.3f);
@@ -631,7 +652,6 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().enemyPlayerStatus.Close();
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
-            var battle = Widget.Find<UI.Battle>();
 
             if (isBoss)
             {
@@ -648,6 +668,7 @@ namespace Nekoyume.Game
                 var boss = enemies.Last();
                 Boss = boss;
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
+                var battle = Widget.Find<UI.Battle>();
                 battle.bossStatus.Show();
                 battle.bossStatus.SetHp(boss.HP, boss.HP);
                 battle.bossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
@@ -655,22 +676,25 @@ namespace Nekoyume.Game
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
 
-            var prevEnemies = GetComponentsInChildren<Character.Enemy>();
-            foreach (var prev in prevEnemies)
-            {
-                objectPool.Remove<Character.Enemy>(prev.gameObject);
-            }
             yield return new WaitForEndOfFrame();
 
             yield return StartCoroutine(spawner.CoSetData(enemies));
         }
 
-        public IEnumerator CoWaveTurnEnd(int turn)
+        public IEnumerator CoWaveTurnEnd(int waveTurn, int turn)
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             Debug.Log($"CoWaveTurnEnd {waveTurn}, {turn}");
-            waveTurn = turn;
+            this.waveTurn = waveTurn;
+            this.turn = turn;
+            Event.OnPlayerTurnEnd.Invoke(turn);
+        }
+
+        public IEnumerator CoWaveEnd(int wave)
+        {
+            _battleResultModel.phase = wave;
+            yield return null;
         }
 
         public IEnumerator CoGetExp(long exp)

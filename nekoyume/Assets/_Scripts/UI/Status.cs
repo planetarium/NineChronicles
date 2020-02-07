@@ -1,15 +1,14 @@
 using System.Collections.Generic;
 using Nekoyume.Manager;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Module.Timer;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UniRx;
-using Unity.Mathematics;
 using Nekoyume.Model.Buff;
 
 namespace Nekoyume.UI
@@ -23,6 +22,7 @@ namespace Nekoyume.UI
         public Image expBar;
         public BuffLayout buffLayout;
         public BuffTooltip buffTooltip;
+        public BattleTimerView battleTimerView;
 
         private string _avatarName = "";
         private Player _player;
@@ -39,6 +39,8 @@ namespace Nekoyume.UI
 
             Game.Event.OnRoomEnter.AddListener(Show);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus).AddTo(gameObject);
+
+            CloseWidget = null;
         }
 
         #endregion
@@ -69,15 +71,21 @@ namespace Nekoyume.UI
             buffLayout.SetBuff(null);
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            battleTimerView.Close();
+            base.Close(ignoreCloseAnimation);
+        }
+
         private void SubscribeOnUpdatePlayerStatus(Player player)
         {
             if (player?.Model is null || player is EnemyPlayer)
                 return;
-            
+
             UpdateExp();
             SetBuffs(player.Model.Buffs);
         }
-        
+
         public void UpdatePlayer(Player player)
         {
             Show();
@@ -126,14 +134,14 @@ namespace Nekoyume.UI
             textHp.text = $"{displayHp} / {_player.HP}";
             textExp.text = $"{_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
 
-            float hpValue = _player.CurrentHP / (float)_player.HP;
+            float hpValue = _player.CurrentHP / (float) _player.HP;
             hpBar.gameObject.SetActive(hpValue > 0.0f);
             hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
             hpBar.fillAmount = hpValue;
 
             var expNeed = _player.Model.Exp.Need;
             var levelExp = _player.EXPMax - expNeed;
-            var expValue = (float)(_player.EXP - levelExp) / expNeed;
+            var expValue = (float) (_player.EXP - levelExp) / expNeed;
             expBar.gameObject.SetActive(expValue > 0.0f);
             expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
             expBar.fillAmount = expValue;

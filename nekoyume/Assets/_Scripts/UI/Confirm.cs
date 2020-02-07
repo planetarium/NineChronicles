@@ -25,6 +25,14 @@ namespace Nekoyume.UI
 
         private float blurRadius;
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            CloseWidget = NoWithoutCallback;
+            SubmitWidget = Yes;
+        }
+
         public override void Show()
         {
             base.Show();

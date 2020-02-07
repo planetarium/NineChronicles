@@ -8,6 +8,13 @@ namespace Nekoyume.UI
     {
         private long _index;
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            SubmitWidget = () => Close();
+        }
+
         public void Show(long idx)
         {
             var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),

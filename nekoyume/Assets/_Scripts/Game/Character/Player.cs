@@ -109,7 +109,7 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(base.Dying());
         }
 
-        protected override void OnDead()
+        protected override void OnDeadEnd()
         {
             gameObject.SetActive(false);
             Event.OnPlayerDead.Invoke();

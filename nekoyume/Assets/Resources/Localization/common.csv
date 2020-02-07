@@ -312,3 +312,7 @@ UI_WIN_DRAW_LOSE_FORMAT,Win {0} Draw {1} Lose {2},승 {0} 무 {1} 패 {2}
 UI_ACCOUNT_WARNING,<sprite name=UI_main_icon_quest_02>Never expose this ID to others.[newline]Anyone can steal your assets if this key is exposed.,<sprite name=UI_main_icon_quest_02>절대 이 ID를 노출하지 마십시오.[newline]ID가 노출되면 누구나 당신의 계정에서 자산을 빼갈 수 있습니다.
 UI_ID_CREATE_SUCCESS,ID Create Success!,ID가 생성되었습니다!
 UI_CHARACTER_SELECT,Select Character,캐릭터 선택
+UI_BATTLE_RESULT_FAILED_PHASE_0,추가 경험치를 획득하지 못했습니다.,추가 경험치를 획득하지 못했습니다.
+UI_BATTLE_RESULT_FAILED_PHASE_1,아이템을 획득하지 못했습니다.,아이템을 획득하지 못했습니다.
+UI_BATTLE_RESULT_FAILED_PHASE_2,다음 지역으로 넘어가지 못했습니다.,다음 지역으로 넘어가지 못했습니다.
+UI_BATTLE_RESULT_CLEAR,다음 지역으로 넘어갑니다.,다음 지역으로 넘어갑니다.

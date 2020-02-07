@@ -2,7 +2,6 @@
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
-using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -13,18 +12,22 @@ namespace Nekoyume.UI
         public BossStatus bossStatus;
         public ToggleableButton repeatButton;
         public BossStatus enemyPlayerStatus;
+        public StageProgressBar stageProgressBar;
         
         protected override void Awake()
         {
             base.Awake();
             repeatButton.SetToggleListener(this);
             Game.Event.OnGetItem.AddListener(OnGetItem);
+
+            CloseWidget = null;
         }
 
         public void Show(int stageId, bool isRepeat, bool isExitReserved)
         {
             base.Show();
             stageTitle.Show(stageId);
+            stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
 
@@ -70,7 +73,7 @@ namespace Nekoyume.UI
                 bottomMenu.exitButton.IsWidgetControllable = true;
 
                 var confirm = Find<Confirm>();
-                confirm.Set("UI_BATTLE_EXIT_RESERVATION_TITLE", "UI_BATTLE_EXIT_RESERVATION_CONTENT");
+                confirm.Show("UI_BATTLE_EXIT_RESERVATION_TITLE", "UI_BATTLE_EXIT_RESERVATION_CONTENT");
                 confirm.CloseCallback = result =>
                 {
                     if (result == ConfirmResult.Yes)
@@ -87,6 +90,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>()?.Close(ignoreCloseAnimation);
+            stageProgressBar.Close();
             enemyPlayerStatus.Close();
             base.Close(ignoreCloseAnimation);
         }
