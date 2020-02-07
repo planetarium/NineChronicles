@@ -30,20 +30,20 @@ namespace Nekoyume.UI.Module
         public struct Star
         {
             public Image emptyStar;
-            public Image enableStar;
+            public Image enabledStar;
 
             public void Set(bool enable)
             {
                 emptyStar.gameObject.SetActive(!enable);
-                enableStar.gameObject.SetActive(enable);
+                enabledStar.gameObject.SetActive(enable);
                 emptyStar.SetNativeSize();
-                enableStar.SetNativeSize();
+                enabledStar.SetNativeSize();
             }
 
             public void Disable()
             {
                 emptyStar.gameObject.SetActive(false);
-                enableStar.gameObject.SetActive(false);
+                enabledStar.gameObject.SetActive(false);
             }
         }
 

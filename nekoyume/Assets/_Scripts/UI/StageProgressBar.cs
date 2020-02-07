@@ -1,6 +1,7 @@
-﻿using Nekoyume.Game.VFX;
-using System.Collections;
+﻿using System.Collections;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.VFX;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,12 +22,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private float smoothenSpeed = 2.0f;
         [SerializeField]
-        private float smoothenFinishThreshold = 0.01f;
+        private float smoothenFinishThreshold = 0.005f;
         private float _xLength = 0;
 
-        private int _currentStar = 0;
+        private readonly ReactiveProperty<int> _currentStar = new ReactiveProperty<int>(0);
         private int _currentWaveHpSum = 0;
         private int _progress = 0;
+        private bool _vfxEnabled;
 
         [SerializeField] private StageProgressBarVFX stageProgressBarVFX;
         [SerializeField] private Star01VFX star01VFX;
@@ -37,20 +39,13 @@ namespace Nekoyume.UI
         [SerializeField] private StarEmission03VFX starEmission03VFX;
 
         private Coroutine _smoothenCoroutine = null;
-        private System.Action _onCurrentSmoothenTerminated = null;
 
         private void Awake()
         {
             _xLength = vfxClamper.rect.width;
             Game.Event.OnEnemyDeadStart.AddListener(OnEnemyDeadStart);
             Game.Event.OnWaveStart.AddListener(SetNextWave);
-            star01VFX.Stop();
-            star02VFX.Stop();
-            star03VFX.Stop();
-            starEmission01VFX.Stop();
-            starEmission02VFX.Stop();
-            starEmission03VFX.Stop();
-            stageProgressBarVFX.Stop();
+            Clear();
         }
 
         public void Show()
@@ -65,74 +60,37 @@ namespace Nekoyume.UI
                 StopCoroutine(_smoothenCoroutine);
                 _smoothenCoroutine = null;
             }
-            activatedStarImages[0].enabled = false;
-            activatedStarImages[1].enabled = false;
-            activatedStarImages[2].enabled = false;
-            stageProgressBarVFX.Stop();
-            star01VFX.Stop();
-            star02VFX.Stop();
-            star03VFX.Stop();
-            starEmission01VFX.Stop();
-            starEmission02VFX.Stop();
-            starEmission03VFX.Stop();
+
+            Clear();
             gameObject.SetActive(false);
         }
 
-        public void Initialize()
+        public void Initialize(bool vfxEnabled)
         {
-            _currentStar = 0;
-            slider.value = 0.0f;
+            _vfxEnabled = vfxEnabled;
+
+            _currentStar.Subscribe(PlayVFX).AddTo(gameObject);
         }
 
         private void CompleteWave()
         {
-            ++_currentStar;
+            _currentStar.Value += 1;
 
-            var lerpSpeed = 1.0f;
-
-            switch(_currentStar)
-            {
-                case 1:
-                    _onCurrentSmoothenTerminated = () =>
-                    {
-                        star01VFX.Play();
-                        starEmission01VFX.Play();
-                        activatedStarImages[0].enabled = true;
-                    };
-                    break;
-                case 2:
-                    _onCurrentSmoothenTerminated = () =>
-                    {
-                        star02VFX.Play();
-                        starEmission02VFX.Play();
-                        activatedStarImages[1].enabled = true;
-                    };
-                    break;
-                case 3:
-                    _onCurrentSmoothenTerminated = () =>
-                    {
-                        star03VFX.Play();
-                        starEmission03VFX.Play();
-                        activatedStarImages[2].enabled = true;
-                        lerpSpeed = 0.5f;
-                    };
-                    break;
-                default:
-                    return;
-            }
+            var lerpSpeed = _currentStar.Value == 3 ? 0.5f : 1.0f;
 
             if (!(_smoothenCoroutine is null))
             {
                 TerminateCurrentSmoothen(false);
             }
 
+            var sliderValue = (float) _currentStar.Value / MaxWave;
             if (isActiveAndEnabled)
             {
-                _smoothenCoroutine = StartCoroutine(LerpProgressBar((float) _currentStar / MaxWave, lerpSpeed));
+                _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue, lerpSpeed));
             }
             else
             {
-                TerminateCurrentSmoothen();
+                UpdateSliderValue(sliderValue);
             }
         }
 
@@ -143,10 +101,13 @@ namespace Nekoyume.UI
 
         private void IncreaseProgress(int hp)
         {
-            stageProgressBarVFX.Play();
+            if (_vfxEnabled)
+            {
+                stageProgressBarVFX.Play();
+            }
 
             _progress -= hp;
-            if (_progress == 0)
+            if (_progress <= 0)
             {
                 CompleteWave();
                 return;
@@ -154,19 +115,15 @@ namespace Nekoyume.UI
 
             var sliderValue = GetProgress(_progress);
 
-            if (!(_smoothenCoroutine is null))
-            {
-                slider.value = GetProgress(_progress + hp);
-                TerminateCurrentSmoothen();
-            }
-
+            slider.value = GetProgress(_progress + hp);
+            TerminateCurrentSmoothen();
             if (isActiveAndEnabled)
             {
                 _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue));
             }
             else
             {
-                TerminateCurrentSmoothen();
+                UpdateSliderValue(sliderValue);
             }
         }
 
@@ -183,16 +140,12 @@ namespace Nekoyume.UI
                 yield return null;
             }
 
-            slider.value = value;
-            vfxOffset.anchoredPosition = new Vector2(value * _xLength, vfxOffset.anchoredPosition.y);
-            _onCurrentSmoothenTerminated?.Invoke();
-            _onCurrentSmoothenTerminated = null;
-            _smoothenCoroutine = null;
+            UpdateSliderValue(value);
         }
 
         private float GetProgress(float progress)
         {
-            return ((_currentWaveHpSum - progress) / _currentWaveHpSum + _currentStar) / MaxWave;
+            return ((_currentWaveHpSum - progress) / _currentWaveHpSum + _currentStar.Value) / MaxWave;
         }
 
         private void TerminateCurrentSmoothen(bool callTerminated = true)
@@ -201,22 +154,73 @@ namespace Nekoyume.UI
             {
                 StopCoroutine(_smoothenCoroutine);
             }
-            if (callTerminated)
-            {
-                _onCurrentSmoothenTerminated?.Invoke();
-                _onCurrentSmoothenTerminated = null;
-            }
             _smoothenCoroutine = null;
         }
 
         private void OnEnemyDeadStart(Enemy enemy)
         {
-            IncreaseProgress(enemy.HP);
+            IncreaseProgress(enemy.HP - enemy.CharacterModel.Stats.BuffStats.HP);
         }
 
         public void OnValueChanged()
         {
             stageProgressBarVFX.transform.position = vfxOffset.transform.position;
+        }
+
+        private void UpdateSliderValue(float value)
+        {
+            slider.value = value;
+            vfxOffset.anchoredPosition = new Vector2(value * _xLength, vfxOffset.anchoredPosition.y);
+            _smoothenCoroutine = null;
+        }
+
+        private void PlayVFX(int star)
+        {
+            switch (star)
+            {
+                case 1:
+                    if (_vfxEnabled)
+                    {
+                        star01VFX.Play();
+                        starEmission01VFX.Play();
+                    }
+                    activatedStarImages[0].gameObject.SetActive(true);
+                    break;
+                case 2:
+                    if (_vfxEnabled)
+                    {
+                        star02VFX.Play();
+                        starEmission02VFX.Play();
+                    }
+                    activatedStarImages[1].gameObject.SetActive(true);
+                    break;
+                case 3:
+                    if (_vfxEnabled)
+                    {
+                        star03VFX.Play();
+                        starEmission03VFX.Play();
+                    }
+                    activatedStarImages[2].gameObject.SetActive(true);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        private void Clear()
+        {
+            _currentStar.Value = 0;
+            slider.value = 0.0f;
+            activatedStarImages[0].gameObject.SetActive(false);
+            activatedStarImages[1].gameObject.SetActive(false);
+            activatedStarImages[2].gameObject.SetActive(false);
+            star01VFX.Stop();
+            star02VFX.Stop();
+            star03VFX.Stop();
+            starEmission01VFX.Stop();
+            starEmission02VFX.Stop();
+            starEmission03VFX.Stop();
+            stageProgressBarVFX.Stop();
         }
     }
 }
