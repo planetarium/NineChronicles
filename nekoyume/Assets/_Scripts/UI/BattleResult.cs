@@ -31,7 +31,7 @@ namespace Nekoyume.UI
             public bool ActionPointNotEnough;
             public bool ShouldExit;
             public bool ShouldRepeat;
-            public int phase;
+            public int ClearedWave;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -211,19 +211,20 @@ namespace Nekoyume.UI
             {
                 var view = rewardsArea.rewards[i];
                 view.gameObject.SetActive(false);
+                var cleared = SharedModel.ClearedWave > i;
                 if (i == 0)
                 {
-                    view.Set(SharedModel.Exp, SharedModel.phase >= i);
+                    view.Set(SharedModel.Exp, cleared);
                 }
 
                 if (i == 1)
                 {
-                    view.Set(SharedModel.Rewards, SharedModel.phase >= i);
+                    view.Set(SharedModel.Rewards, cleared);
                 }
 
                 if (i == 2)
                 {
-                    view.Set(SharedModel.State == BattleLog.Result.Win && SharedModel.phase >= 2);
+                    view.Set(SharedModel.State == BattleLog.Result.Win && cleared);
                 }
 
                 yield return new WaitForSeconds(0.5f);

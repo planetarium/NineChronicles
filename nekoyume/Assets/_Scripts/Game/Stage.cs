@@ -244,7 +244,7 @@ namespace Nekoyume.Game
         private IEnumerator CoPlayStage(BattleLog log)
         {
             yield return StartCoroutine(CoStageEnter(log.worldId, log.stageId));
-            foreach (EventBase e in log)
+            foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
@@ -342,7 +342,8 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().battleTimerView.Close();
-            var failed = _battleResultModel.phase < 2;
+            _battleResultModel.ClearedWave = log.clearedWave;
+            var failed = _battleResultModel.ClearedWave < 3;
             if (log.result == BattleLog.Result.Win && !failed)
             {
                 yield return new WaitForSeconds(0.75f);
@@ -689,12 +690,6 @@ namespace Nekoyume.Game
             this.waveTurn = waveTurn;
             this.turn = turn;
             Event.OnPlayerTurnEnd.Invoke(turn);
-        }
-
-        public IEnumerator CoWaveEnd(int wave)
-        {
-            _battleResultModel.phase = wave;
-            yield return null;
         }
 
         public IEnumerator CoGetExp(long exp)
