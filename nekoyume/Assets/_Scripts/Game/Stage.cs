@@ -341,6 +341,7 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(2.0f);
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
+            Widget.Find<Status>().battleTimerView.Close();
             var failed = _battleResultModel.phase < 2;
             if (log.result == BattleLog.Result.Win && !failed)
             {

@@ -88,7 +88,6 @@ namespace Nekoyume.Model
             _root = value._root;
             _selectedSkill = value._selectedSkill;
             _usedSkill = value._usedSkill;
-            _executedTurnEnd = value._executedTurnEnd;
             Id = value.Id;
             Simulator = value.Simulator;
             atkElementType = value.atkElementType;
@@ -121,12 +120,9 @@ namespace Nekoyume.Model
         private Skill.Skill _selectedSkill;
         [NonSerialized]
         private BattleStatus.Skill _usedSkill;
-        [NonSerialized]
-        private bool _executedTurnEnd;
 
         public void InitAI()
         {
-            _executedTurnEnd = false;
             SetSkill();
 
             _root = new Root();
@@ -156,10 +152,6 @@ namespace Nekoyume.Model
         public void Tick()
         {
             _root.Tick();
-#if TEST_LOG
-            if (_executedTurnEnd)
-                UnityEngine.Debug.LogWarning($"{nameof(_executedTurnEnd)} : {_executedTurnEnd}");
-#endif
         }
 
         private bool IsAlive()
@@ -171,7 +163,6 @@ namespace Nekoyume.Model
         {
             _selectedSkill = null;
             _usedSkill = null;
-            _executedTurnEnd = false;
         }
 
         private void ReduceDurationOfBuffs()
@@ -239,7 +230,10 @@ namespace Nekoyume.Model
         
         protected virtual void EndTurn()
         {
-            _executedTurnEnd = true;
+            Simulator.Turn++;
+#if TEST_LOG
+            UnityEngine.Debug.LogWarning($"{nameof(RowData.Id)} : {RowData.Id} / Turn Ended.");
+#endif
         }
 
         #endregion
