@@ -8,7 +8,7 @@ namespace Nekoyume.Battle
     public class Wave
     {
         private readonly List<Enemy> _enemies = new List<Enemy>();
-        public bool IsBoss;
+        public bool HasBoss;
         public long Exp;
 
         public void Add(Enemy enemy)
@@ -21,12 +21,12 @@ namespace Nekoyume.Battle
             foreach (var enemy in _enemies)
             {
                 stageSimulator.Player.Targets.Add(enemy);
-                stageSimulator.Characters.Enqueue(enemy, StageSimulator.TurnPriority / enemy.SPD);
+                stageSimulator.Characters.Enqueue(enemy, Simulator.TurnPriority / enemy.SPD);
                 enemy.InitAI();
             }
 
-            var enemies = _enemies.Select(enemy => (Enemy) enemy.Clone()).ToList();
-            var spawnWave = new SpawnWave(null, enemies, IsBoss);
+            var enemies = _enemies.Select(enemy => new Enemy(enemy)).ToList();
+            var spawnWave = new SpawnWave(null, enemies, HasBoss);
             stageSimulator.Log.Add(spawnWave);
         }
     }

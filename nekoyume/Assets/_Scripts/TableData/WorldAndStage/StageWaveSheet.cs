@@ -12,13 +12,13 @@ namespace Nekoyume.TableData
         {
             public int Number { get; }
             public List<MonsterData> Monsters { get; }
-            public bool IsBoss { get; }
+            public bool HasBoss { get; }
 
-            public WaveData(int number, List<MonsterData> monsters, bool isBoss)
+            public WaveData(int number, List<MonsterData> monsters, bool hasBoss)
             {
                 Number = number;
                 Monsters = monsters;
-                IsBoss = isBoss;
+                HasBoss = hasBoss;
             }
         }
 
@@ -81,7 +81,7 @@ namespace Nekoyume.TableData
                     return 0;
                 });
 
-                HasBoss = Waves.Any(wave => wave.IsBoss);
+                HasBoss = Waves.Any(wave => wave.HasBoss);
                 TotalMonsterIds = new List<int>();
                 TotalMonsterIds.AddRange(Waves.SelectMany(wave => wave.Monsters)
                     .Select(monster => monster.CharacterId)

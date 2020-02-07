@@ -65,7 +65,7 @@ namespace Nekoyume.Battle
 
         public static int GetCountMax(int level)
         {
-            if (level < 20)
+            if (level < 11)
                 return CountMaxLowerLimit;
 
             if (level < 100)
