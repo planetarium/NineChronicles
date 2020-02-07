@@ -2,6 +2,12 @@
 {
     public static class GameConfig
     {
+#if UNITY_EDITOR
+        public const bool IsEditor = true;
+#else
+        public const bool IsEditor = false;
+#endif
+
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
@@ -12,6 +18,7 @@
 
         //TODO 온체인으로 옮겨야함.
         // re: 그렇네요. 가장 확인된 방법은 테이블로 빼는 방법이네요.
+
         #region action
 
         public const int DefaultAvatarCharacterId = 100010;
@@ -52,17 +59,17 @@
         public const int ArenaScoreDefault = 1000;
         public const int ArenaChallengeCountMax = 5;
 
-#if UNITY_EDITOR
-        public const int QuestRequiredLevel = 1;
-        public const int CombinationRequiredLevel = 1;
-        public const int ShopRequiredLevel = 1;
-        public const int RankingRequiredLevel = 1;
-#else
-        public const int QuestRequiredLevel = 1;
-        public const int CombinationRequiredLevel = 3;
-        public const int ShopRequiredLevel = 7;
-        public const int RankingRequiredLevel = 5;
-#endif
+        #endregion
+
+        #region required level
+
+        public static class RequireLevel
+        {
+            public const int Quest = 1;
+            public const int Combination = IsEditor ? 1 : 3;
+            public const int Shop = IsEditor ? 1 : 7;
+            public const int Ranking = IsEditor ? 1 : 5;
+        }
 
         #endregion
     }

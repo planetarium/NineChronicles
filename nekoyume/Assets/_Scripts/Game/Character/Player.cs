@@ -267,15 +267,15 @@ namespace Nekoyume.Game.Character
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 InitStats(Model);
                 var key = "";
-                if (Level == GameConfig.CombinationRequiredLevel)
+                if (Level == GameConfig.RequireLevel.Combination)
                 {
                     key = "UI_UNLOCK_COMBINATION";
                 }
-                else if (Level == GameConfig.ShopRequiredLevel)
+                else if (Level == GameConfig.RequireLevel.Shop)
                 {
                     key = "UI_UNLOCK_SHOP";
                 }
-                else if (Level == GameConfig.RankingRequiredLevel)
+                else if (Level == GameConfig.RequireLevel.Ranking)
                 {
                     key = "UI_UNLOCK_RANKING";
                 }

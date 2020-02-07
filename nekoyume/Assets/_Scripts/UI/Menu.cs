@@ -19,7 +19,7 @@ namespace Nekoyume.UI
         private const string FirstOpenShopKeyFormat = "Nekoyume.UI.Menu.FirstOpenShopKey_{0}";
         private const string FirstOpenCombinationKeyFormat = "Nekoyume.UI.Menu.FirstOpenCombinationKey_{0}";
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
-        
+
         public MainMenu btnQuest;
         public MainMenu btnCombination;
         public MainMenu btnShop;
@@ -56,9 +56,12 @@ namespace Nekoyume.UI
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
-            combinationExclamationMark.gameObject.SetActive(btnCombination.IsUnlocked && PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
-            shopExclamationMark.gameObject.SetActive(btnShop.IsUnlocked && PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
-            rankingExclamationMark.gameObject.SetActive(btnRanking.IsUnlocked && PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
+            combinationExclamationMark.gameObject.SetActive(
+                btnCombination.IsUnlocked && PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
+            shopExclamationMark.gameObject.SetActive(btnShop.IsUnlocked &&
+                                                     PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
+            rankingExclamationMark.gameObject.SetActive(btnRanking.IsUnlocked &&
+                                                        PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
         }
 
         private void HideButtons()
@@ -77,6 +80,12 @@ namespace Nekoyume.UI
 
         public void QuestClick()
         {
+            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Quest)
+            {
+                btnShop.JingleTheCat();
+                return;
+            }
+
             Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
@@ -86,73 +95,70 @@ namespace Nekoyume.UI
 
         public void ShopClick()
         {
-            if (States.Instance.CurrentAvatarState.level >= GameConfig.ShopRequiredLevel)
-            {
-                if (shopExclamationMark.gameObject.activeSelf)
-                {
-                    var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                    var key = string.Format(FirstOpenShopKeyFormat, addressHax);
-                    PlayerPrefs.SetInt(key, 1);
-                }
-
-                Close();
-                Find<Shop>().Show();
-                AudioController.PlayClick();
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
-            }
-            else
+            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Shop)
             {
                 btnShop.JingleTheCat();
+                return;
             }
+
+            if (shopExclamationMark.gameObject.activeSelf)
+            {
+                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
+                var key = string.Format(FirstOpenShopKeyFormat, addressHax);
+                PlayerPrefs.SetInt(key, 1);
+            }
+
+            Close();
+            Find<Shop>().Show();
+            AudioController.PlayClick();
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
 
         public void CombinationClick()
         {
-            if (States.Instance.CurrentAvatarState.level >= GameConfig.CombinationRequiredLevel)
+            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Combination)
             {
-                if (combinationExclamationMark.gameObject.activeSelf)
-                {
-                    var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                    var key = string.Format(FirstOpenCombinationKeyFormat, addressHax);
-                    PlayerPrefs.SetInt(key, 1);
-                }
-                
-                Close();
-                Find<Combination>().Show();
-                AudioController.PlayClick();
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
+                btnShop.JingleTheCat();
+                return;
             }
-            else
+
+            if (combinationExclamationMark.gameObject.activeSelf)
             {
-                btnCombination.JingleTheCat();
+                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
+                var key = string.Format(FirstOpenCombinationKeyFormat, addressHax);
+                PlayerPrefs.SetInt(key, 1);
             }
+
+            Close();
+            Find<Combination>().Show();
+            AudioController.PlayClick();
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
 
         public void RankingClick()
         {
-            if (States.Instance.CurrentAvatarState.level >= GameConfig.RankingRequiredLevel)
+            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Ranking)
             {
-                if (rankingExclamationMark.gameObject.activeSelf)
-                {
-                    var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                    var key = string.Format(FirstOpenRankingKeyFormat, addressHax);
-                    PlayerPrefs.SetInt(key, 1);
-                }
-                
-                Close();
-                Find<RankingBoard>().Show();
-                AudioController.PlayClick();
+                btnShop.JingleTheCat();
+                return;
             }
-            else
+
+            if (rankingExclamationMark.gameObject.activeSelf)
             {
-                btnRanking.JingleTheCat();
+                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
+                var key = string.Format(FirstOpenRankingKeyFormat, addressHax);
+                PlayerPrefs.SetInt(key, 1);
             }
+
+            Close();
+            Find<RankingBoard>().Show();
+            AudioController.PlayClick();
         }
 
         public override void Show()
         {
             base.Show();
-            
+
             StartCoroutine(ShowSpeeches());
             ShowButtons(Game.Game.instance.Stage.selectedPlayer);
             arenaPendingNCG.Show();
@@ -178,7 +184,7 @@ namespace Nekoyume.UI
         private IEnumerator ShowSpeeches()
         {
             ShowButtons(Game.Game.instance.Stage.selectedPlayer);
-            
+
             yield return new WaitForSeconds(2.0f);
 
             while (true)
@@ -214,6 +220,7 @@ namespace Nekoyume.UI
             {
                 npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
             }
+
             speechBubble.ResetKey();
             if (_coroutine is null)
             {

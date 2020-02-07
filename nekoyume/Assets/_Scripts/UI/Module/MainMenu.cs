@@ -53,16 +53,16 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case MenuType.Combination:
-                    _requiredLevel = GameConfig.CombinationRequiredLevel;
+                    _requiredLevel = GameConfig.RequireLevel.Combination;
                     break;
                 case MenuType.Ranking:
-                    _requiredLevel = GameConfig.RankingRequiredLevel;
+                    _requiredLevel = GameConfig.RequireLevel.Ranking;
                     break;
                 case MenuType.Shop:
-                    _requiredLevel = GameConfig.ShopRequiredLevel;
+                    _requiredLevel = GameConfig.RequireLevel.Shop;
                     break;
                 case MenuType.Quest:
-                    _requiredLevel = GameConfig.QuestRequiredLevel;
+                    _requiredLevel = GameConfig.RequireLevel.Quest;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
