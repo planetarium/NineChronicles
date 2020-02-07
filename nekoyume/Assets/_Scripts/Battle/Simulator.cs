@@ -13,7 +13,6 @@ namespace Nekoyume.Battle
     {
         public readonly IRandom Random;
         public readonly BattleLog Log;
-        public bool Lose = false;
         public readonly Player Player;
         public BattleLog.Result Result { get; protected set; }
         public SimplePriorityQueue<CharacterBase, decimal> Characters;
