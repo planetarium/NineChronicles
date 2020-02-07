@@ -1,5 +1,6 @@
 using System.Collections;
 using Nekoyume.BlockChain;
+using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -50,26 +51,54 @@ namespace Nekoyume.Game.Entrance
                 {
                     yield return null;
                 }
+
             player.RunSpeed = 0.0f;
             player.Animator.Idle();
 
             var dialog = Widget.Find<Dialog>();
             dialog.Show(1);
             Widget.Find<Status>().Show();
-            Widget.Find<BottomMenu>().Show(
-                UINavigator.NavigationType.Quit,
-                _ => Game.Quit(),
-                true,
-                false,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory,
-                BottomMenu.ToggleableType.Settings);
+            ShowBottomMenu();
 
             Destroy(this);
+        }
+
+        private void ShowBottomMenu()
+        {
+            var bottomMenuType = 1;
+            if (States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+            {
+                if (world.Id > 1 ||
+                    world.StageClearedId > GameConfig.RequireStage.UIBottomMenuCharacter)
+                {
+                    bottomMenuType = 2;
+                }
+            }
+
+            if (bottomMenuType == 1)
+            {
+                Widget.Find<BottomMenu>().Show(
+                    UINavigator.NavigationType.Quit,
+                    _ => Game.Quit(),
+                    true,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat);
+            }
+            else
+            {
+                Widget.Find<BottomMenu>().Show(
+                    UINavigator.NavigationType.Quit,
+                    _ => Game.Quit(),
+                    true,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat,
+                    BottomMenu.ToggleableType.Character,
+                    BottomMenu.ToggleableType.Inventory,
+                    BottomMenu.ToggleableType.Settings);
+            }
         }
     }
 }

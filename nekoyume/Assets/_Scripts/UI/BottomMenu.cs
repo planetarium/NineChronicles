@@ -25,21 +25,17 @@ namespace Nekoyume.UI.Module
             Settings
         }
 
-        public class Model
+        public class Model : IDisposable
         {
             public readonly ReactiveProperty<UINavigator.NavigationType> NavigationType =
                 new ReactiveProperty<UINavigator.NavigationType>(UINavigator.NavigationType.Back);
 
             public Action<BottomMenu> NavigationAction;
 
-            public readonly ReactiveProperty<bool> HasNotificationInMail = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotificationInQuest = new ReactiveProperty<bool>();
-            //public readonly ReactiveProperty<bool> HasNotificationInChat = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotificationInIllustratedBook = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotificationInCharacter = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotificationInInventory = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotificationInWorldMap = new ReactiveProperty<bool>();
-            public readonly ReactiveProperty<bool> HasNotificationInSettings = new ReactiveProperty<bool>();
+            public void Dispose()
+            {
+                NavigationType.Dispose();
+            }
         }
 
         // 네비게이션 버튼.
@@ -49,10 +45,11 @@ namespace Nekoyume.UI.Module
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
-        private Animator _inventoryAnimator;
         public IToggleGroup ToggleGroup => _toggleGroup;
+        // 네비게이션 버튼.
         public ToggleableButton quitButton;
         public GlowingButton exitButton;
+        // 일반 버튼.
         public NotifiableButton chatButton;
         public NotifiableButton mailButton;
         public NotifiableButton questButton;
@@ -61,15 +58,23 @@ namespace Nekoyume.UI.Module
         public NotifiableButton inventoryButton;
         public NotifiableButton worldMapButton;
         public NotifiableButton settingsButton;
+        
         public CanvasGroup canvasGroup;
+        private Animator _inventoryAnimator;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         public readonly Model SharedModel = new Model();
+        public readonly Subject<bool> HasNotificationInMail = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInQuest = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInChat = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInIllustratedBook = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInCharacter = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInInventory = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInWorldMap = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInSettings = new Subject<bool>();
 
         public override WidgetType WidgetType => WidgetType.Popup;
-
-        #region Mono
 
         protected override void Awake()
         {
@@ -119,17 +124,18 @@ namespace Nekoyume.UI.Module
             base.Initialize();
 
             SharedModel.NavigationType.Subscribe(SubscribeNavigationType).AddTo(gameObject);
-            SharedModel.HasNotificationInMail.SubscribeTo(mailButton.SharedModel.HasNotification).AddTo(gameObject);
-            SharedModel.HasNotificationInQuest.SubscribeTo(questButton.SharedModel.HasNotification).AddTo(gameObject);
-            SharedModel.HasNotificationInIllustratedBook.SubscribeTo(illustratedBookButton.SharedModel.HasNotification)
+            HasNotificationInMail.SubscribeTo(mailButton.SharedModel.HasNotification).AddTo(gameObject);
+            HasNotificationInQuest.SubscribeTo(questButton.SharedModel.HasNotification).AddTo(gameObject);
+            HasNotificationInChat.SubscribeTo(chatButton.SharedModel.HasNotification).AddTo(gameObject);
+            HasNotificationInIllustratedBook.SubscribeTo(illustratedBookButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
-            SharedModel.HasNotificationInCharacter.SubscribeTo(characterButton.SharedModel.HasNotification)
+            HasNotificationInCharacter.SubscribeTo(characterButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
-            SharedModel.HasNotificationInInventory.SubscribeTo(inventoryButton.SharedModel.HasNotification)
+            HasNotificationInInventory.SubscribeTo(inventoryButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
-            SharedModel.HasNotificationInWorldMap.SubscribeTo(worldMapButton.SharedModel.HasNotification)
+            HasNotificationInWorldMap.SubscribeTo(worldMapButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
-            SharedModel.HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification)
+            HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
         } 
 
@@ -142,7 +148,7 @@ namespace Nekoyume.UI.Module
                     return;
                 Application.OpenURL(GameConfig.DiscordLink);
             };
-            confirm?.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
+            confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
         }
 
         private void SubscribeOnClick(Unit unit)
@@ -165,7 +171,19 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
-        #endregion
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            SharedModel.Dispose();
+            HasNotificationInMail.Dispose();
+            HasNotificationInQuest.Dispose();
+            HasNotificationInChat.Dispose();
+            HasNotificationInIllustratedBook.Dispose();
+            HasNotificationInCharacter.Dispose();
+            HasNotificationInInventory.Dispose();
+            HasNotificationInWorldMap.Dispose();
+            HasNotificationInSettings.Dispose();
+        }
 
         public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
             bool useShowButtons = false, bool animateAlpha = true, params ToggleableType[] showButtons)
@@ -254,6 +272,17 @@ namespace Nekoyume.UI.Module
 
             base.Close(ignoreCloseAnimation);
         }
+        
+        public void SetIntractable(bool intractable)
+        {
+            canvasGroup.interactable = intractable;
+        }
+
+        public void PlayGetItemAnimation()
+        {
+            if(_inventoryAnimator)
+                _inventoryAnimator.Play("GetItem");
+        }
 
         #region Subscribe
 
@@ -308,8 +337,9 @@ namespace Nekoyume.UI.Module
                 Debug.LogWarning($"{nameof(mailBox)} is null.");
                 return;
             }
-
-            mailButton.SharedModel.HasNotification.Value = mailBox.Any(i => i.New);
+            
+            HasNotificationInMail.OnNext(mailBox.Any(i => i.New));
+            // todo: `Mail`과의 결합을 끊을 필요가 있어 보임.
             Find<Mail>().SetList(mailBox);
         }
 
@@ -321,21 +351,100 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            questButton.SharedModel.HasNotification.Value = questList.Any(quest => quest.IsPaidInAction && quest.isReceivable);
+            HasNotificationInQuest.OnNext(questList.Any(quest => quest.IsPaidInAction && quest.isReceivable));
+            // todo: `Quest`와의 결합을 끊을 필요가 있어 보임.
             Find<Quest>().SetList(questList);
         }
 
         #endregion
 
-        public void SetIntractable(bool intractable)
+        #region show button
+
+        private void ShowChatButton()
         {
-            canvasGroup.interactable = intractable;
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return;
+
+            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuChat)
+                return;
+            
+            chatButton.Show();
         }
 
-        public void PlayGetItemAnimation()
+        private void ShowMailButton()
         {
-            if(_inventoryAnimator)
-                _inventoryAnimator.Play("GetItem");
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return;
+
+            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuMail)
+                return;
+            
+            // todo: 제조 시도 후인지 추가 검사.
+            
+            mailButton.Show();
         }
+
+        private void ShowQuestButton()
+        {
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return;
+
+            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuQuest)
+                return;
+            
+            questButton.Show();
+        }
+
+        private void ShowIllustratedBookButton()
+        {
+            return;
+        }
+
+        private void ShowCharacterButton()
+        {
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return;
+
+            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuCharacter)
+                return;
+            
+            characterButton.Show();
+        }
+
+        private void ShowInventoryButton()
+        {
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return;
+
+            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuInventory)
+                return;
+            
+            inventoryButton.Show();
+        }
+
+        private void ShowWorldMapButton()
+        {
+            worldMapButton.Show();
+        }
+
+        private void ShowSettingsButton()
+        {
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return;
+
+            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuSettings)
+                return;
+            
+            settingsButton.Show();
+        }
+        
+        #endregion
+        
     }
 }

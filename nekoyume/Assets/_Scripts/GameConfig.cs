@@ -2,7 +2,7 @@
 {
     public static class GameConfig
     {
-#if UNITY_EDITOR
+#if !UNITY_EDITOR
         public const bool IsEditor = true;
 #else
         public const bool IsEditor = false;
@@ -61,14 +61,33 @@
 
         #endregion
 
-        #region required level
+        #region system or contents unlock
 
         public static class RequireLevel
         {
+            #region Action
+
             public const int Quest = 1;
-            public const int Combination = IsEditor ? 1 : 3;
-            public const int Shop = IsEditor ? 1 : 7;
-            public const int Ranking = IsEditor ? 1 : 5;
+            public const int Craft = IsEditor ? 1 : 4;
+            public const int Shop = IsEditor ? 1 : 18;
+            public const int Ranking = IsEditor ? 1 : 50;
+            
+            #endregion
+        }
+
+        public static class RequireStage
+        {
+            #region UI
+            
+            public const int UIBottomMenuInBattle = 1;
+            public const int UIBottomMenuCharacter = 1;
+            public const int UIBottomMenuInventory = 1;
+            public const int UIBottomMenuSettings = 1;
+            public const int UIBottomMenuMail = 3;
+            public const int UIBottomMenuChat = 7;
+            public const int UIBottomMenuQuest = 9;
+
+            #endregion
         }
 
         #endregion

@@ -116,7 +116,7 @@ namespace Nekoyume.UI
 
         public void CombinationClick()
         {
-            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Combination)
+            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Craft)
             {
                 btnShop.JingleTheCat();
                 return;

@@ -267,7 +267,7 @@ namespace Nekoyume.Game.Character
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 InitStats(Model);
                 var key = "";
-                if (Level == GameConfig.RequireLevel.Combination)
+                if (Level == GameConfig.RequireLevel.Craft)
                 {
                     key = "UI_UNLOCK_COMBINATION";
                 }

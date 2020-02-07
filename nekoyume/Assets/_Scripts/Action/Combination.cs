@@ -99,7 +99,7 @@ namespace Nekoyume.Action
             Log.Debug($"Combination Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
-            if (avatarState.level < GameConfig.RequireLevel.Combination)
+            if (avatarState.level < GameConfig.RequireLevel.Craft)
             {
                 return states;
             }

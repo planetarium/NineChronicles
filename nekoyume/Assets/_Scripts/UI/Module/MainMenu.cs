@@ -53,7 +53,7 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case MenuType.Combination:
-                    _requiredLevel = GameConfig.RequireLevel.Combination;
+                    _requiredLevel = GameConfig.RequireLevel.Craft;
                     break;
                 case MenuType.Ranking:
                     _requiredLevel = GameConfig.RequireLevel.Ranking;
