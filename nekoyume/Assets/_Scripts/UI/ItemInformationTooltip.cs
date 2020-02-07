@@ -46,6 +46,19 @@ namespace Nekoyume.UI
                 Model.OnSubmitClick.OnNext(this);
                 Close();
             }).AddTo(gameObject);
+
+            CloseWidget = () =>
+            {
+                Model.OnCloseClick.OnNext(this);
+                Close();
+            };
+
+            SubmitWidget = () =>
+            {
+                AudioController.PlayClick();
+                Model.OnSubmitClick.OnNext(this);
+                Close();
+            };
         }
 
         protected override void OnDestroy()

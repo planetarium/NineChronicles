@@ -31,6 +31,7 @@ namespace Nekoyume.UI
             public bool ActionPointNotEnough;
             public bool ShouldExit;
             public bool ShouldRepeat;
+            public int phase;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -48,32 +49,10 @@ namespace Nekoyume.UI
         }
 
         [Serializable]
-        public struct TopArea 
-        {
-            public TextMeshProUGUI topText;
-            public GameObject expContainer;
-            public TextMeshProUGUI expText;
-            public TextMeshProUGUI expValueText;
-        }
-
-        [Serializable]
         public struct RewardsArea
         {
             public GameObject root;
-            public TextMeshProUGUI text;
-            public SimpleCountableItemView[] rewards;
-        }
-
-        [Serializable]
-        public struct SuggestionsArea
-        {
-            public GameObject root;
-            public TextMeshProUGUI text1;
-            public TextMeshProUGUI text2;
-            public Button submitButton1;
-            public Button submitButton2;
-            public TextMeshProUGUI submitButtonText1;
-            public TextMeshProUGUI submitButtonText2;
+            public BattleReward[] rewards;
         }
 
         private const int Timer = 10;
@@ -83,14 +62,13 @@ namespace Nekoyume.UI
         public CanvasGroup canvasGroup;
         public GameObject victoryImageContainer;
         public GameObject defeatImageContainer;
-        public TopArea topArea;
         public RewardsArea rewardsArea;
-        public SuggestionsArea suggestionsArea;
         public TextMeshProUGUI bottomText;
         public Button closeButton;
         public TextMeshProUGUI closeButtonText;
         public Button submitButton;
         public TextMeshProUGUI submitButtonText;
+        public StageProgressBar stageProgressBar;
 
         private BattleWin01VFX _battleWin01VFX;
         private BattleWin02VFX _battleWin02VFX;
@@ -106,31 +84,6 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            topArea.expText.text = LocalizationManager.Localize("UI_EXP");
-            rewardsArea.text.text = LocalizationManager.Localize("UI_ADDITIONAL_REWARDS");
-            suggestionsArea.text1.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1");
-            suggestionsArea.text2.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2");
-            suggestionsArea.submitButtonText1.text =
-                LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_SUGGESTION_1_BUTTON");
-            suggestionsArea.submitButtonText2.text =
-                LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_SUGGESTION_2_BUTTON");
-
-            suggestionsArea.submitButton1.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    GoToWorldMap();
-                    AnalyticsManager.Instance.BattleLeave();
-                })
-                .AddTo(gameObject);
-            suggestionsArea.submitButton2.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    GoToCraftShop();
-                    AnalyticsManager.Instance.BattleLeave();
-                })
-                .AddTo(gameObject);
             closeButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
@@ -147,6 +100,9 @@ namespace Nekoyume.UI
                     AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickBattleResultNext);
                 })
                 .AddTo(gameObject);
+
+            CloseWidget = closeButton.onClick.Invoke;
+            SubmitWidget = submitButton.onClick.Invoke;
         }
 
         public void Show(Model model)
@@ -162,6 +118,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             battleEndedStream.Dispose();
+            stageProgressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
 
@@ -191,21 +148,20 @@ namespace Nekoyume.UI
 
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
-            topArea.topText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_VICTORY_MESSAGE");
-            topArea.expValueText.text = SharedModel.Exp.ToString();
-            topArea.expContainer.SetActive(true);
-            suggestionsArea.root.SetActive(false);
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
+            stageProgressBar.Show();
 
             if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
             {
                 submitButton.gameObject.SetActive(false);
+                SubmitWidget = closeButton.onClick.Invoke;
             }
             else
             {
                 submitButton.interactable = true;
+                SubmitWidget = submitButton.onClick.Invoke;
 
                 submitButtonText.text = SharedModel.ShouldRepeat
                     ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
@@ -240,11 +196,6 @@ namespace Nekoyume.UI
             {
                 key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
             }
-            topArea.topText.text = LocalizationManager.Localize(key);
-            topArea.expContainer.SetActive(false);
-            suggestionsArea.root.SetActive(true);
-            suggestionsArea.submitButton1.interactable = true;
-            suggestionsArea.submitButton2.interactable = true;
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
@@ -255,39 +206,34 @@ namespace Nekoyume.UI
 
         private IEnumerator CoUpdateRewards()
         {
-            if (SharedModel.Rewards.Count > 0)
+            rewardsArea.root.SetActive(true);
+            for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
-                rewardsArea.root.SetActive(true);
-
-                foreach (var view in rewardsArea.rewards)
+                var view = rewardsArea.rewards[i];
+                view.gameObject.SetActive(false);
+                if (i == 0)
                 {
-                    view.gameObject.SetActive(false);
+                    view.Set(SharedModel.Exp, SharedModel.phase >= i);
                 }
 
-                for (var i = 0; i < rewardsArea.rewards.Length; i++)
+                if (i == 1)
                 {
-                    var view = rewardsArea.rewards[i];
-                    if (SharedModel.Rewards.Count <= i)
-                    {
-                        break;
-                    }
+                    view.Set(SharedModel.Rewards, SharedModel.phase >= i);
+                }
 
-                    yield return new WaitForSeconds(0.5f);
-
-                    var model = SharedModel.Rewards[i];
-                    view.SetData(model);
-                    view.gameObject.SetActive(true);
-                    yield return null;
-                    VFXController.instance.Create<DropItemInventoryVFX>(view.transform, view.CenterOffsetAsPosition);
-                    AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
+                if (i == 2)
+                {
+                    view.Set(SharedModel.State == BattleLog.Result.Win && SharedModel.phase >= 2);
                 }
 
                 yield return new WaitForSeconds(0.5f);
+
+                view.gameObject.SetActive(true);
+                yield return null;
+                AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
-            else
-            {
-                rewardsArea.root.SetActive(false);
-            }
+
+            yield return new WaitForSeconds(0.5f);
         }
 
         private IEnumerator CoUpdateBottomText(int limitSeconds)
@@ -347,8 +293,6 @@ namespace Nekoyume.UI
             
             closeButton.interactable = false;
             submitButton.interactable = false;
-            suggestionsArea.submitButton1.interactable = false;
-            suggestionsArea.submitButton2.interactable = false;
 
             StopCoUpdateBottomText();
             StartCoroutine(CoFadeOut());
@@ -399,22 +343,6 @@ namespace Nekoyume.UI
             Find<Battle>().Close();
             Game.Event.OnRoomEnter.Invoke();
             Close();
-        }
-
-        private void GoToWorldMap()
-        {
-            SetShouldRepeatFalse();
-
-            _battleWin01VFX?.Stop();
-            _battleWin02VFX?.Stop();
-        }
-
-        private void GoToCraftShop()
-        {
-            SetShouldRepeatFalse();
-
-            _battleWin01VFX?.Stop();
-            _battleWin02VFX?.Stop();
         }
 
         private void SetShouldRepeatFalse()

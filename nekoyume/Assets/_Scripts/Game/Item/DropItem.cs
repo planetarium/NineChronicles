@@ -104,6 +104,7 @@ namespace Nekoyume.Game.Item
                 yield return null;
             }
 
+            Widget.Find<BottomMenu>().PlayGetItemAnimation();
             Event.OnGetItem.Invoke(this);
             gameObject.SetActive(false);
         }

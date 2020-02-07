@@ -1,6 +1,7 @@
-﻿using Nekoyume.Game.Controller;
+﻿using System.Collections;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.VFX;
-using System;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,18 +9,44 @@ namespace Nekoyume.UI
 {
     public class StageProgressBar : MonoBehaviour
     {
+        private const int MaxWave = 3;
+
         [SerializeField]
         private Slider slider = null;
         [SerializeField]
-        private RectTransform[] starImages = null;
-        private const int MaxWave = 3;
-        private int _currentStar = 0;
+        private Image[] activatedStarImages = null;
+        [SerializeField]
+        private RectTransform vfxClamper;
+        [SerializeField]
+        private RectTransform vfxOffset;
+        [SerializeField]
+        private float smoothenSpeed = 2.0f;
+        [SerializeField]
+        private float smoothenFinishThreshold = 0.005f;
+        private float _xLength = 0;
+
+        private readonly ReactiveProperty<int> _currentStar = new ReactiveProperty<int>(0);
         private int _currentWaveHpSum = 0;
         private int _progress = 0;
+        private bool _vfxEnabled;
 
-        private Star01VFX _star01VFX = null;
-        private Star02VFX _star02VFX = null;
-        private Star03VFX _star03VFX = null;
+        [SerializeField] private StageProgressBarVFX stageProgressBarVFX;
+        [SerializeField] private Star01VFX star01VFX;
+        [SerializeField] private Star02VFX star02VFX;
+        [SerializeField] private Star03VFX star03VFX;
+        [SerializeField] private StarEmission01VFX starEmission01VFX;
+        [SerializeField] private StarEmission02VFX starEmission02VFX;
+        [SerializeField] private StarEmission03VFX starEmission03VFX;
+
+        private Coroutine _smoothenCoroutine = null;
+
+        private void Awake()
+        {
+            _xLength = vfxClamper.rect.width;
+            Game.Event.OnEnemyDeadStart.AddListener(OnEnemyDeadStart);
+            Game.Event.OnWaveStart.AddListener(SetNextWave);
+            Clear();
+        }
 
         public void Show()
         {
@@ -28,64 +55,172 @@ namespace Nekoyume.UI
 
         public void Close()
         {
-            _star01VFX?.Stop();
-            _star01VFX = null;
-            _star02VFX?.Stop();
-            _star02VFX = null;
-            _star03VFX?.Stop();
-            _star03VFX = null;
+            if (!(_smoothenCoroutine is null))
+            {
+                StopCoroutine(_smoothenCoroutine);
+                _smoothenCoroutine = null;
+            }
+
+            Clear();
             gameObject.SetActive(false);
         }
 
-        public void Initialize()
+        public void Initialize(bool vfxEnabled)
         {
-            _currentStar = 0;
-            slider.value = 0.0f;
+            _vfxEnabled = vfxEnabled;
+
+            _currentStar.Subscribe(PlayVFX).AddTo(gameObject);
         }
 
-        public void CompleteWave()
+        private void CompleteWave()
         {
-            ++_currentStar;
+            _currentStar.Value += 1;
 
-            VFX starVFX = null;
-            VFX emissionVFX = null;
+            var lerpSpeed = _currentStar.Value == 3 ? 0.5f : 1.0f;
 
-            switch(_currentStar)
+            if (!(_smoothenCoroutine is null))
             {
-                case 1:
-                    starVFX = _star01VFX = VFXController.instance.CreateAndChaseRectTransform<Star01VFX>(starImages[0]);
-                    emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission01VFX>(starImages[0]);
-                    break;
-                case 2:
-                    starVFX = _star02VFX = VFXController.instance.CreateAndChaseRectTransform<Star02VFX>(starImages[1]);
-                    emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission02VFX>(starImages[1]);
-                    break;
-                case 3:
-                    starVFX = _star03VFX = VFXController.instance.CreateAndChaseRectTransform<Star03VFX>(starImages[2]);
-                    emissionVFX = VFXController.instance.CreateAndChaseRectTransform<StarEmission03VFX>(starImages[2]);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+                TerminateCurrentSmoothen(false);
             }
-            starVFX?.Play();
-            emissionVFX?.Play();
-            slider.value = (float) _currentStar / MaxWave;
+
+            var sliderValue = (float) _currentStar.Value / MaxWave;
+            if (isActiveAndEnabled)
+            {
+                _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue, lerpSpeed));
+            }
+            else
+            {
+                UpdateSliderValue(sliderValue);
+            }
         }
 
-        public void SetNextWave(int waveHpSum)
+        private void SetNextWave(int waveHpSum)
         {
             _currentWaveHpSum = _progress = waveHpSum;
         }
 
-        public void IncreaseProgress(int hp)
+        private void IncreaseProgress(int hp)
         {
+            if (_vfxEnabled)
+            {
+                stageProgressBarVFX.Play();
+            }
+
             _progress -= hp;
-            if(_progress == 0)
+            if (_progress <= 0)
             {
                 CompleteWave();
                 return;
             }
-            slider.value = ((float) (_currentWaveHpSum - _progress) / _currentWaveHpSum + _currentStar) / MaxWave;
+
+            var sliderValue = GetProgress(_progress);
+
+            slider.value = GetProgress(_progress + hp);
+            TerminateCurrentSmoothen();
+            if (isActiveAndEnabled)
+            {
+                _smoothenCoroutine = StartCoroutine(LerpProgressBar(sliderValue));
+            }
+            else
+            {
+                UpdateSliderValue(sliderValue);
+            }
+        }
+
+        private IEnumerator LerpProgressBar(float value, float additionalSpeed = 1.0f)
+        {
+            var current = slider.value;
+            var speed = smoothenSpeed * additionalSpeed;
+
+            while (current < value - smoothenFinishThreshold)
+            {
+                current = Mathf.Lerp(current, value, Time.deltaTime * speed);
+                slider.value = current;
+                vfxOffset.anchoredPosition = new Vector2(current * _xLength, vfxOffset.anchoredPosition.y);
+                yield return null;
+            }
+
+            UpdateSliderValue(value);
+        }
+
+        private float GetProgress(float progress)
+        {
+            return ((_currentWaveHpSum - progress) / _currentWaveHpSum + _currentStar.Value) / MaxWave;
+        }
+
+        private void TerminateCurrentSmoothen(bool callTerminated = true)
+        {
+            if (!(_smoothenCoroutine is null))
+            {
+                StopCoroutine(_smoothenCoroutine);
+            }
+            _smoothenCoroutine = null;
+        }
+
+        private void OnEnemyDeadStart(Enemy enemy)
+        {
+            IncreaseProgress(enemy.HP - enemy.CharacterModel.Stats.BuffStats.HP);
+        }
+
+        public void OnValueChanged()
+        {
+            stageProgressBarVFX.transform.position = vfxOffset.transform.position;
+        }
+
+        private void UpdateSliderValue(float value)
+        {
+            slider.value = value;
+            vfxOffset.anchoredPosition = new Vector2(value * _xLength, vfxOffset.anchoredPosition.y);
+            _smoothenCoroutine = null;
+        }
+
+        private void PlayVFX(int star)
+        {
+            switch (star)
+            {
+                case 1:
+                    if (_vfxEnabled)
+                    {
+                        star01VFX.Play();
+                        starEmission01VFX.Play();
+                    }
+                    activatedStarImages[0].gameObject.SetActive(true);
+                    break;
+                case 2:
+                    if (_vfxEnabled)
+                    {
+                        star02VFX.Play();
+                        starEmission02VFX.Play();
+                    }
+                    activatedStarImages[1].gameObject.SetActive(true);
+                    break;
+                case 3:
+                    if (_vfxEnabled)
+                    {
+                        star03VFX.Play();
+                        starEmission03VFX.Play();
+                    }
+                    activatedStarImages[2].gameObject.SetActive(true);
+                    break;
+                default:
+                    return;
+            }
+        }
+
+        private void Clear()
+        {
+            _currentStar.Value = 0;
+            slider.value = 0.0f;
+            activatedStarImages[0].gameObject.SetActive(false);
+            activatedStarImages[1].gameObject.SetActive(false);
+            activatedStarImages[2].gameObject.SetActive(false);
+            star01VFX.Stop();
+            star02VFX.Stop();
+            star03VFX.Stop();
+            starEmission01VFX.Stop();
+            starEmission02VFX.Stop();
+            starEmission03VFX.Stop();
+            stageProgressBarVFX.Stop();
         }
     }
 }

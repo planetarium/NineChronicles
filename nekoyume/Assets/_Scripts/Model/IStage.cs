@@ -27,5 +27,6 @@ namespace Nekoyume.Model
         IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss);
         IEnumerator CoGetExp(long exp);
         IEnumerator CoWaveTurnEnd(int turn);
+        IEnumerator CoWaveEnd(int wave);
     }
 }

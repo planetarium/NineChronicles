@@ -53,6 +53,9 @@ namespace Nekoyume.UI
             jobDescriptionText.text = LocalizationManager.Localize("UI_WARRIOR_DESCRIPTION");
 
             Game.Event.OnLoginDetail.AddListener(Init);
+
+            CloseWidget = BackClick;
+            SubmitWidget = CreateClick;
         }
 
         public void CreateClick()
@@ -142,6 +145,15 @@ namespace Nekoyume.UI
             btnLogin.SetActive(!_isCreateMode);
             
             SetInformation(player);
+
+            if (_isCreateMode)
+            {
+                SubmitWidget = CreateClick;
+            }
+            else
+            {
+                SubmitWidget = LoginClick;
+            }
 
             Show();
         }
