@@ -97,14 +97,6 @@ namespace Nekoyume.Standalone
             await service.StartAsync(cancellationToken);
         }
 
-        [Command(Description = "Make new private key.")]
-        public void MakePrivateKey()
-        {
-            var privateKey = new PrivateKey();
-            Console.WriteLine("private key: " + ByteUtil.Hex(privateKey.ByteArray));
-            Console.WriteLine("address: " + privateKey.PublicKey.ToAddress().ToHex());
-        }
-
         private static IceServer LoadIceServer(string iceServerInfo)
         {
             var uri = new Uri(iceServerInfo);
