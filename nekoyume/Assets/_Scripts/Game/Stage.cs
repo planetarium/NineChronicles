@@ -263,9 +263,9 @@ namespace Nekoyume.Game
 
         private static IEnumerator CoDialog(int worldStage)
         {
-            var stageDialogs = Tables.instance.StageDialogs.Values
-                .Where(i => i.stageId == worldStage)
-                .OrderBy(i => i.dialogId)
+            var stageDialogs = Game.instance.TableSheets.StageDialogSheet.Values
+                .Where(i => i.StageId == worldStage)
+                .OrderBy(i => i.DialogId)
                 .ToArray();
             if (stageDialogs.Any())
             {
@@ -273,7 +273,7 @@ namespace Nekoyume.Game
 
                 foreach (var stageDialog in stageDialogs)
                 {
-                    dialog.Show(stageDialog.dialogId);
+                    dialog.Show(stageDialog.DialogId);
                     yield return new WaitWhile(() => dialog.gameObject.activeSelf);
                 }
             }
