@@ -31,7 +31,7 @@ namespace Nekoyume.UI
             public bool ActionPointNotEnough;
             public bool ShouldExit;
             public bool ShouldRepeat;
-            public int phase;
+            public int ClearedWave;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -55,6 +55,14 @@ namespace Nekoyume.UI
             public BattleReward[] rewards;
         }
 
+        [Serializable]
+        public struct DefeatTextArea
+        {
+            public GameObject root;
+            public TextMeshProUGUI defeatText;
+            public TextMeshProUGUI expText;
+        }
+
         private const int Timer = 10;
         private static readonly Vector3 VfxBattleWin01Offset = new Vector3(-3.43f, -0.28f, 10f);
         private static readonly Vector3 VfxBattleWin02Offset = new Vector3(0.0f, 0.85f, 10f);
@@ -62,6 +70,8 @@ namespace Nekoyume.UI
         public CanvasGroup canvasGroup;
         public GameObject victoryImageContainer;
         public GameObject defeatImageContainer;
+        public GameObject topArea;
+        public DefeatTextArea defeatTextArea;
         public RewardsArea rewardsArea;
         public TextMeshProUGUI bottomText;
         public Button closeButton;
@@ -103,6 +113,8 @@ namespace Nekoyume.UI
 
             CloseWidget = closeButton.onClick.Invoke;
             SubmitWidget = submitButton.onClick.Invoke;
+            defeatTextArea.root.SetActive(false);
+            defeatTextArea.defeatText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
         }
 
         public void Show(Model model)
@@ -112,6 +124,10 @@ namespace Nekoyume.UI
             BattleEndedSubject.OnNext(IsActive());
             canvasGroup.alpha = 1f;
             SharedModel = model;
+            foreach (var reward in rewardsArea.rewards)
+            {
+                reward.gameObject.SetActive(false);
+            }
             UpdateView();
         }
 
@@ -148,6 +164,8 @@ namespace Nekoyume.UI
 
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
+            topArea.SetActive(true);
+            defeatTextArea.root.SetActive(false);
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
@@ -187,19 +205,23 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Lose);
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleLose);
 
-            SetShouldRepeatFalse();
-
             victoryImageContainer.SetActive(false);
             defeatImageContainer.SetActive(true);
+            topArea.SetActive(false);
+            defeatTextArea.root.SetActive(true);
             var key = "UI_BATTLE_RESULT_DEFEAT_MESSAGE";
             if (result == BattleLog.Result.TimeOver)
             {
                 key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
             }
+
+            defeatTextArea.defeatText.text = LocalizationManager.Localize(key);
+            defeatTextArea.expText.text = $"EXP + {SharedModel.Exp}";
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
-            submitButton.gameObject.SetActive(false);
+            submitButtonText.text = LocalizationManager.Localize("UI_BATTLE_AGAIN");
+            submitButton.interactable = true;
 
             StartCoroutine(CoUpdateRewards());
         }
@@ -210,20 +232,20 @@ namespace Nekoyume.UI
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
                 var view = rewardsArea.rewards[i];
-                view.gameObject.SetActive(false);
+                var cleared = SharedModel.ClearedWave > i;
                 if (i == 0)
                 {
-                    view.Set(SharedModel.Exp, SharedModel.phase >= i);
+                    view.Set(SharedModel.Exp, cleared);
                 }
 
                 if (i == 1)
                 {
-                    view.Set(SharedModel.Rewards, SharedModel.phase >= i);
+                    view.Set(SharedModel.Rewards, cleared);
                 }
 
                 if (i == 2)
                 {
-                    view.Set(SharedModel.State == BattleLog.Result.Win && SharedModel.phase >= 2);
+                    view.Set(SharedModel.State == BattleLog.Result.Win && cleared);
                 }
 
                 yield return new WaitForSeconds(0.5f);
@@ -334,22 +356,12 @@ namespace Nekoyume.UI
 
         public void GoToMain()
         {
-            SetShouldRepeatFalse();
-
             _battleWin01VFX?.Stop();
             _battleWin02VFX?.Stop();
-
 
             Find<Battle>().Close();
             Game.Event.OnRoomEnter.Invoke();
             Close();
-        }
-
-        private void SetShouldRepeatFalse()
-        {
-            var stage = Game.Game.instance.Stage;
-            stage.repeatStage = false;
-            SharedModel.ShouldRepeat = false;
         }
 
         private void StopCoUpdateBottomText()
@@ -369,7 +381,10 @@ namespace Nekoyume.UI
                 yield return null;
             }
 
-            _battleWin02VFX.Stop();
+            if (_battleWin02VFX)
+            {
+                _battleWin02VFX.Stop();
+            }
             canvasGroup.alpha = 0f;
         }
     }
