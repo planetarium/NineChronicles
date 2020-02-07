@@ -54,6 +54,7 @@ namespace Nekoyume.Game
         public bool isExitReserved;
         public string zone;
         public int waveTurn;
+        public int turn;
 
         private Camera _camera;
         private BattleLog _battleLog;
@@ -243,7 +244,7 @@ namespace Nekoyume.Game
         private IEnumerator CoPlayStage(BattleLog log)
         {
             yield return StartCoroutine(CoStageEnter(log.worldId, log.stageId));
-            foreach (EventBase e in log)
+            foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
             }
@@ -340,7 +341,9 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(2.0f);
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
-            var failed = _battleResultModel.phase < 2;
+            Widget.Find<Status>().battleTimerView.Close();
+            _battleResultModel.ClearedWave = log.clearedWave;
+            var failed = _battleResultModel.ClearedWave < 3;
             if (log.result == BattleLog.Result.Win && !failed)
             {
                 yield return new WaitForSeconds(0.75f);
@@ -421,6 +424,10 @@ namespace Nekoyume.Game
             status.UpdatePlayer(playerCharacter);
             status.Show();
             status.ShowBattleStatus();
+
+            var stageSheet = Game.instance.TableSheets.StageSheet;
+            stageSheet.TryGetValue(stageId, out var row);
+            status.battleTimerView.Show(row.TurnLimit);
 
             var battle = Widget.Find<UI.Battle>();
             if (_rankingBattle)
@@ -675,18 +682,14 @@ namespace Nekoyume.Game
             yield return StartCoroutine(spawner.CoSetData(enemies));
         }
 
-        public IEnumerator CoWaveTurnEnd(int turn)
+        public IEnumerator CoWaveTurnEnd(int waveTurn, int turn)
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             Debug.Log($"CoWaveTurnEnd {waveTurn}, {turn}");
-            waveTurn = turn;
-        }
-
-        public IEnumerator CoWaveEnd(int wave)
-        {
-            _battleResultModel.phase = wave;
-            yield return null;
+            this.waveTurn = waveTurn;
+            this.turn = turn;
+            Event.OnPlayerTurnEnd.Invoke(turn);
         }
 
         public IEnumerator CoGetExp(long exp)

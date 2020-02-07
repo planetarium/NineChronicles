@@ -46,6 +46,12 @@ namespace Nekoyume.Game
         public class WaveStart : UnityEvent<int>
         {
         }
+
         public static readonly WaveStart OnWaveStart = new WaveStart();
+
+        public class PlayerTurnEnd : UnityEvent<int>
+        {
+        }
+        public static readonly PlayerTurnEnd OnPlayerTurnEnd = new PlayerTurnEnd();
     }
 }

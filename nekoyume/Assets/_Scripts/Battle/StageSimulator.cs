@@ -82,9 +82,9 @@ namespace Nekoyume.Battle
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Player.Spawn();
-            var turn = 1;
+            Turn = 1;
 #if TEST_LOG
-            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / turn start");
+            UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / Turn start");
 #endif
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -96,12 +96,11 @@ namespace Nekoyume.Battle
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
-                    if (turn > TurnLimit)
+                    if (Turn > TurnLimit)
                     {
                         if (i == 0)
                         {
                             Player.GetExp((int) (Exp * 0.3m), true);
-                            Lose = true;
                             Result = BattleLog.Result.Lose;
                         }
                         else
@@ -109,7 +108,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.TimeOver;
                         }
 #if TEST_LOG
-                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(Result)}: {Result.ToString()}");
+                        UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {nameof(Result)}: {Result.ToString()}");
 #endif
                         break;
                     }
@@ -118,14 +117,7 @@ namespace Nekoyume.Battle
                     if (!Characters.TryDequeue(out var character))
                         break;
 
-                    character.Tick(out var isTurnEnd);
-                    if (isTurnEnd)
-                    {
-                        turn++;
-#if TEST_LOG
-                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(isTurnEnd)}");
-#endif
-                    }
+                    character.Tick();
 
                     // 플레이어가 죽은 경우 break;
                     if (Player.IsDead)
@@ -139,27 +131,18 @@ namespace Nekoyume.Battle
                     // 플레이어의 타겟(적)이 없는 경우 break.
                     if (!Player.Targets.Any())
                     {
-                        var waveEnd = new WaveEnd(null, i);
-                        Log.Add(waveEnd);
-                        switch (i)
+                        Log.clearedWave = i + 1;
+                        if (i == 0)
                         {
-                            case 0:
-                                Player.GetExp(Exp, true);
-                                break;
-                            case 1:
-                            {
-                                ItemMap = Player.GetRewards(_waveRewards);
-                                var dropBox = new DropBox(null, _waveRewards);
-                                Log.Add(dropBox);
-                                var getReward = new GetReward(null, _waveRewards);
-                                Log.Add(getReward);
-                                break;
-                            }
-                            case 2:
-                            {
-                                Result = BattleLog.Result.Win;
-                                break;
-                            }
+                            Player.GetExp(Exp, true);
+                        }
+                        else if (i == 1)
+                        {
+                            ItemMap = Player.GetRewards(_waveRewards);
+                            var dropBox = new DropBox(null, _waveRewards);
+                            Log.Add(dropBox);
+                            var getReward = new GetReward(null, _waveRewards);
+                            Log.Add(getReward);
                         }
 
                         Result = BattleLog.Result.Win;
@@ -185,7 +168,7 @@ namespace Nekoyume.Battle
 #if TEST_LOG
             var skillType = typeof(Nekoyume.Model.BattleStatus.Skill);
             var skillCount = Log.events.Count(e => e.GetType().IsInheritsFrom(skillType));
-            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
+            UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
 #endif
             return Player;
         }

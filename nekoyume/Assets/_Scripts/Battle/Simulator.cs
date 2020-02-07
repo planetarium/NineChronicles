@@ -13,7 +13,6 @@ namespace Nekoyume.Battle
     {
         public readonly IRandom Random;
         public readonly BattleLog Log;
-        public bool Lose = false;
         public readonly Player Player;
         public BattleLog.Result Result { get; protected set; }
         public SimplePriorityQueue<CharacterBase, decimal> Characters;
@@ -21,6 +20,7 @@ namespace Nekoyume.Battle
         public readonly TableSheets TableSheets;
         protected const int MaxTurn = 200;
         public int WaveTurn;
+        public int Turn;
 
         protected Simulator(
             IRandom random,
