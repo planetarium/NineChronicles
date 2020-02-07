@@ -92,8 +92,8 @@ namespace Nekoyume.UI.Module
         public void Set(long exp, bool enable)
         {
             rewardText.text = $"EXP + {exp}";
-            failedText.gameObject.SetActive(false);
-            rewardText.gameObject.SetActive(true);
+            failedText.gameObject.SetActive(!enable);
+            rewardText.gameObject.SetActive(enable);
             _star.Set(enable);
         }
 
@@ -111,13 +111,9 @@ namespace Nekoyume.UI.Module
             if (cleared)
             {
                 rewardText.text = _stageClearText;
-                failedText.gameObject.SetActive(false);
             }
-            else
-            {
-                rewardText.gameObject.SetActive(false);
-                failedText.gameObject.SetActive(true);
-            }
+            rewardText.gameObject.SetActive(cleared);
+            failedText.gameObject.SetActive(!cleared);
             _star.Set(cleared);
         }
 
