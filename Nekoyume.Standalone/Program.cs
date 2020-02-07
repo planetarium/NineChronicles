@@ -28,14 +28,21 @@ namespace Nekoyume.Standalone
 
         [Command(Description = "Run standalone application with options.")]
         public async Task Run(
+            [Option('V')]
             int appProtocolVersion,
+            [Option('G')]
             string genesisBlockPath, 
             bool noMiner,
+            [Option('H')]
             string host = null,
+            [Option('P')]
             ushort? port = null,
+            [Option("private-key")]
             string privateKeyString = null,
             string storePath = null,
+            [Option("ice-server", new [] { 'I', })]
             string[] iceServerStrings = null,
+            [Option("peer")]
             string[] peerStrings = null
         )
         {
