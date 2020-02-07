@@ -45,36 +45,52 @@ namespace Nekoyume.TableData
                 CostAP = int.TryParse(fields[1], out var costAP) ? costAP : 0;
                 TurnLimit = int.TryParse(fields[2], out var turnLimit) ? turnLimit : 0;
                 EnemyOptionalStatModifiers = new List<StatModifier>();
-                if (int.TryParse(fields[3], out var atkOption) &&
-                    atkOption != 0)
+                for (var i = 0; i < 6; i++)
                 {
-                    EnemyOptionalStatModifiers.Add(new StatModifier(StatType.ATK, StatModifier.OperationType.Percentage, atkOption));
-                    EnemyOptionalStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Percentage, atkOption));
-                }
-                if (int.TryParse(fields[4], out var defOption) &&
-                    defOption != 0)
-                {
-                    EnemyOptionalStatModifiers.Add(new StatModifier(StatType.HP, StatModifier.OperationType.Percentage, defOption));
-                    EnemyOptionalStatModifiers.Add(new StatModifier(StatType.DEF, StatModifier.OperationType.Percentage, defOption));
-                    EnemyOptionalStatModifiers.Add(new StatModifier(StatType.HIT, StatModifier.OperationType.Percentage, defOption));
+                    if (!int.TryParse(fields[3 + i], out var option) ||
+                        option == 0)
+                        continue;
+
+                    switch (i)
+                    {
+                        case 0:
+                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.HP, StatModifier.OperationType.Percentage, option));
+                            break;
+                        case 1:
+                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.ATK, StatModifier.OperationType.Percentage, option));
+                            break;
+                        case 2:
+                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.DEF, StatModifier.OperationType.Percentage, option));
+                            break;
+                        case 3:
+                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.CRI, StatModifier.OperationType.Percentage, option));
+                            break;
+                        case 4:
+                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.HIT, StatModifier.OperationType.Percentage, option));
+                            break;
+                        case 5:
+                            EnemyOptionalStatModifiers.Add(new StatModifier(StatType.SPD, StatModifier.OperationType.Percentage, option));
+                            break;
+                    }
+                    
                 }
                 
-                Background = fields[5];
-                BGM = string.IsNullOrEmpty(fields[6])
+                Background = fields[9];
+                BGM = string.IsNullOrEmpty(fields[10])
                     ? DefaultBGM
-                    : fields[6];
+                    : fields[10];
                 Rewards = new List<RewardData>();
                 for (var i = 0; i < 10; i++)
                 {
                     var offset = i * 4;
-                    if (!int.TryParse(fields[7 + offset], out var itemId))
+                    if (!int.TryParse(fields[11 + offset], out var itemId))
                         continue;
                     
                     Rewards.Add(new RewardData(
                         itemId,
-                        decimal.TryParse(fields[8 + offset], out var ratio) ? ratio : 0m,
-                        int.TryParse(fields[9 + offset], out var min) ? min : 0,
-                        int.TryParse(fields[10 + offset], out var max) ? max : 0
+                        decimal.TryParse(fields[12 + offset], out var ratio) ? ratio : 0m,
+                        int.TryParse(fields[13 + offset], out var min) ? min : 0,
+                        int.TryParse(fields[14 + offset], out var max) ? max : 0
                     ));
                 }
             }
