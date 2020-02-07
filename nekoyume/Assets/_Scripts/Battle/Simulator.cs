@@ -21,6 +21,7 @@ namespace Nekoyume.Battle
         public readonly TableSheets TableSheets;
         protected const int MaxTurn = 200;
         public int WaveTurn;
+        public int Turn;
 
         protected Simulator(
             IRandom random,
