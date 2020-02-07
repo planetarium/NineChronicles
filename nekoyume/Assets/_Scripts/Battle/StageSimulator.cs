@@ -101,7 +101,6 @@ namespace Nekoyume.Battle
                         if (i == 0)
                         {
                             Player.GetExp((int) (Exp * 0.3m), true);
-                            Lose = true;
                             Result = BattleLog.Result.Lose;
                         }
                         else
@@ -132,27 +131,18 @@ namespace Nekoyume.Battle
                     // 플레이어의 타겟(적)이 없는 경우 break.
                     if (!Player.Targets.Any())
                     {
-                        var waveEnd = new WaveEnd(null, i);
-                        Log.Add(waveEnd);
-                        switch (i)
+                        Log.clearedWave = i + 1;
+                        if (i == 0)
                         {
-                            case 0:
-                                Player.GetExp(Exp, true);
-                                break;
-                            case 1:
-                            {
-                                ItemMap = Player.GetRewards(_waveRewards);
-                                var dropBox = new DropBox(null, _waveRewards);
-                                Log.Add(dropBox);
-                                var getReward = new GetReward(null, _waveRewards);
-                                Log.Add(getReward);
-                                break;
-                            }
-                            case 2:
-                            {
-                                Result = BattleLog.Result.Win;
-                                break;
-                            }
+                            Player.GetExp(Exp, true);
+                        }
+                        else if (i == 1)
+                        {
+                            ItemMap = Player.GetRewards(_waveRewards);
+                            var dropBox = new DropBox(null, _waveRewards);
+                            Log.Add(dropBox);
+                            var getReward = new GetReward(null, _waveRewards);
+                            Log.Add(getReward);
                         }
 
                         Result = BattleLog.Result.Win;

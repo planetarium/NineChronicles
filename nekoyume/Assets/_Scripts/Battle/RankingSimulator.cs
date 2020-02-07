@@ -42,7 +42,6 @@ namespace Nekoyume.Battle
             {
                 if (Turn > MaxTurn)
                 {
-                    Lose = true;
                     Result = BattleLog.Result.TimeOver;
 #if TEST_LOG
                     UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {nameof(Result)}: {Result.ToString()}");
