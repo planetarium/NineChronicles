@@ -84,7 +84,7 @@ namespace Nekoyume.Battle
             Player.Spawn();
             Turn = 1;
 #if TEST_LOG
-            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / turn start");
+            UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / Turn start");
 #endif
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -109,7 +109,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.TimeOver;
                         }
 #if TEST_LOG
-                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(Result)}: {Result.ToString()}");
+                        UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {nameof(Result)}: {Result.ToString()}");
 #endif
                         break;
                     }
@@ -118,13 +118,7 @@ namespace Nekoyume.Battle
                     if (!Characters.TryDequeue(out var character))
                         break;
 
-                    character.Tick(out var isTurnEnd);
-                    if (isTurnEnd)
-                    {
-#if TEST_LOG
-                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(isTurnEnd)}");
-#endif
-                    }
+                    character.Tick();
 
                     // 플레이어가 죽은 경우 break;
                     if (Player.IsDead)
@@ -184,7 +178,7 @@ namespace Nekoyume.Battle
 #if TEST_LOG
             var skillType = typeof(Nekoyume.Model.BattleStatus.Skill);
             var skillCount = Log.events.Count(e => e.GetType().IsInheritsFrom(skillType));
-            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
+            UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
 #endif
             return Player;
         }

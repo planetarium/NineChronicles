@@ -153,10 +153,13 @@ namespace Nekoyume.Model
             );
         }
 
-        public void Tick(out bool isTurnEnd)
+        public void Tick()
         {
             _root.Tick();
-            isTurnEnd = _executedTurnEnd;
+#if TEST_LOG
+            if (_executedTurnEnd)
+                UnityEngine.Debug.LogWarning($"{nameof(_executedTurnEnd)} : {_executedTurnEnd}");
+#endif
         }
 
         private bool IsAlive()
