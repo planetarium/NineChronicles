@@ -1362,7 +1362,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 36, y: 490}
+  m_AnchoredPosition: {x: 36, y: 472}
   m_SizeDelta: {x: 650, y: 381}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &3106727626842032719
@@ -1559,8 +1559,8 @@ MonoBehaviour:
     type: 3}
   marginRect: {fileID: 2678577722091507653}
   margin:
-    top: 80
-    bottom: 80
+    top: 500
+    bottom: 500
     left: 10
     right: 10
 --- !u!1 &3497501404699234154
