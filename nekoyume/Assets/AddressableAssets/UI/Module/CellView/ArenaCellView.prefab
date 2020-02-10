@@ -486,6 +486,7 @@ GameObject:
   - component: {fileID: 6466007502928849909}
   - component: {fileID: 3993079662713737467}
   - component: {fileID: 6178069890957815624}
+  - component: {fileID: 6352535224322201035}
   m_Layer: 5
   m_Name: ArenaCellView
   m_TagString: Untagged
@@ -577,6 +578,18 @@ MonoBehaviour:
   challengeButton: {fileID: 5214001946875556982}
   tweenMove: {fileID: 5976739095498544803}
   tweenAlpha: {fileID: 6482676300517615270}
+--- !u!225 &6352535224322201035
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3018884119875456309}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3496021633471359621
 GameObject:
   m_ObjectHideFlags: 0
