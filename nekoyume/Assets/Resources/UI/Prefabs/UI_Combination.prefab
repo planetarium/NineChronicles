@@ -1105,7 +1105,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_textAlignment: 4097
+  m_textAlignment: 4098
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -6484,6 +6484,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: OtherMaterial (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 3061972431633461883}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -6599,16 +6609,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[0]
-      value: 
-      objectReference: {fileID: 3061972431633461883}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -6667,11 +6667,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RecipeCellView
-      objectReference: {fileID: 0}
-    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8649208348027029525, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -6777,6 +6772,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2867522003283454694, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -8251,6 +8251,21 @@ PrefabInstance:
       propertyPath: m_Name
       value: OtherMaterial (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 5443123175458382131}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[1]
+      value: 
+      objectReference: {fileID: 8215969531385432153}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8366,21 +8381,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[0]
-      value: 
-      objectReference: {fileID: 5443123175458382131}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[1]
-      value: 
-      objectReference: {fileID: 8215969531385432153}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -8445,6 +8445,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 1468948628497394645}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8560,16 +8570,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[0]
-      value: 
-      objectReference: {fileID: 1468948628497394645}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -12196,11 +12196,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RecipeCellView (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8649208348027029525, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12305,6 +12300,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2867522003283454694, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -12481,11 +12481,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RecipeCellView (5)
       objectReference: {fileID: 0}
-    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8649208348027029525, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12590,6 +12585,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2867522003283454694, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -12766,6 +12766,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: OtherMaterial (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 969639726143045335}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -12881,16 +12891,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[0]
-      value: 
-      objectReference: {fileID: 969639726143045335}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -13133,6 +13133,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 4518491884532908224}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13248,16 +13258,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[0]
-      value: 
-      objectReference: {fileID: 4518491884532908224}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -13316,11 +13316,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: RecipeCellView (6)
-      objectReference: {fileID: 0}
-    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 8649208348027029525, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -13426,6 +13421,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2867522003283454694, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -13602,11 +13602,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RecipeCellView (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8649208348027029525, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -13711,6 +13706,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2867522003283454694, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -14041,6 +14041,21 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 750541222158221713}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[1]
+      value: 
+      objectReference: {fileID: 709768806150898595}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14156,21 +14171,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.size
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[0]
-      value: 
-      objectReference: {fileID: 750541222158221713}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[1]
-      value: 
-      objectReference: {fileID: 709768806150898595}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -14442,26 +14442,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3945040049247962112, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
-        type: 3}
-      propertyPath: m_textInfo.characterCount
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 3945040049247962112, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
-        type: 3}
-      propertyPath: m_textInfo.wordCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3945040049247962112, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
-        type: 3}
-      propertyPath: m_textInfo.lineCount
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3945040049247962112, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
-        type: 3}
-      propertyPath: m_textInfo.pageCount
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8297116630359179582, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
         type: 3}
@@ -14808,6 +14788,26 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 18.01
       objectReference: {fileID: 0}
+    - target: {fileID: 3945040049247962112, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
+        type: 3}
+      propertyPath: m_textInfo.characterCount
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3945040049247962112, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
+        type: 3}
+      propertyPath: m_textInfo.wordCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3945040049247962112, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
+        type: 3}
+      propertyPath: m_textInfo.lineCount
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3945040049247962112, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
+        type: 3}
+      propertyPath: m_textInfo.pageCount
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6609235378103725721, guid: e1d5ad1faeb4e4f5ca1677ee14f44812,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -14985,11 +14985,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 5474794455989620805, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -15016,11 +15011,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
         type: 2}
-    - target: {fileID: 6316702317964431472, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3368304502993323764, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -15047,35 +15037,45 @@ PrefabInstance:
       value: 
       objectReference: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
         type: 2}
-    - target: {fileID: 4213308588351802640, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8159276728328059288, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_IsActive
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3399646028189705058, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3368612200790645784, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 5465576671934954894, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4678730716187694834, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5474794455989620805, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6316702317964431472, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4213308588351802640, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3399646028189705058, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5465576671934954894, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7450241444695405413, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
@@ -15511,11 +15511,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RecipeCellView (4)
       objectReference: {fileID: 0}
-    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8649208348027029525, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -15620,6 +15615,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2867522003283454694, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -15796,6 +15796,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: OtherMaterial (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 2254978607093912064}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -15911,16 +15921,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[0]
-      value: 
-      objectReference: {fileID: 2254978607093912064}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -16178,6 +16178,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
+        type: 3}
+      propertyPath: effectImages.Array.data[0]
+      value: 
+      objectReference: {fileID: 4785102115632084195}
     - target: {fileID: 6633413938061366867, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16293,16 +16303,6 @@ PrefabInstance:
       propertyPath: m_LocalScale.y
       value: 0.67
       objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6810825788932283673, guid: e6f257f43b229489591d9554d64bdd4d,
-        type: 3}
-      propertyPath: effectImages.Array.data[0]
-      value: 
-      objectReference: {fileID: 4785102115632084195}
     - target: {fileID: 6138841162135628205, guid: e6f257f43b229489591d9554d64bdd4d,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -16794,11 +16794,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RecipeCellView (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
-        type: 3}
-      propertyPath: m_sharedMaterial
-      value: 
-      objectReference: {fileID: 0}
     - target: {fileID: 8649208348027029525, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -16903,6 +16898,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411418488452092605, guid: 737bbf54c75148b4190858087ee8e6c3,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 2867522003283454694, guid: 737bbf54c75148b4190858087ee8e6c3,
         type: 3}
@@ -17434,6 +17434,12 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 18.14
       objectReference: {fileID: 0}
+    - target: {fileID: 944610866498188880, guid: d4d32797afbb34139908d57cfc36bcc8,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d309b675d7e184bee91db6933ab7f077,
+        type: 3}
     - target: {fileID: 5037150901857319145, guid: d4d32797afbb34139908d57cfc36bcc8,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -17464,12 +17470,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -2
       objectReference: {fileID: 0}
-    - target: {fileID: 944610866498188880, guid: d4d32797afbb34139908d57cfc36bcc8,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: d309b675d7e184bee91db6933ab7f077,
-        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4d32797afbb34139908d57cfc36bcc8, type: 3}
 --- !u!224 &5995627421955389037 stripped
