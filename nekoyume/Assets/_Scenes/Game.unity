@@ -382,7 +382,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.7000122, y: -0.7000122}
+  m_AnchoredPosition: {x: 0.6999512, y: -0.7000122}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &937548770
@@ -633,6 +633,7 @@ MonoBehaviour:
   isExitReserved: 0
   zone: 
   waveTurn: 0
+  turn: 0
 --- !u!4 &1333831683
 Transform:
   m_ObjectHideFlags: 0

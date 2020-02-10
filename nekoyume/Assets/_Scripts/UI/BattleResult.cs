@@ -251,6 +251,7 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(0.5f);
 
                 view.gameObject.SetActive(true);
+                view.EnableStar(cleared);
                 yield return null;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
@@ -384,6 +385,11 @@ namespace Nekoyume.UI
             if (_battleWin02VFX)
             {
                 _battleWin02VFX.Stop();
+            }
+
+            foreach (var reward in rewardsArea.rewards)
+            {
+                reward.StopVFX();
             }
             canvasGroup.alpha = 0f;
         }
