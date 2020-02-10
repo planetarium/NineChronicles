@@ -60,8 +60,6 @@ namespace Nekoyume.Game
 
         private IEnumerator Start()
         {
-            // Table 초기화.
-            Tables.instance.Initialize();
             yield return Addressables.InitializeAsync();
             TableSheets = new TableSheets();
             yield return StartCoroutine(CoInitializeTableSheets());
