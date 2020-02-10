@@ -16,9 +16,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private Image[] activatedStarImages = null;
         [SerializeField]
-        private RectTransform vfxClamper;
+        private RectTransform vfxClamper = null;
         [SerializeField]
-        private RectTransform vfxOffset;
+        private RectTransform vfxOffset = null;
         [SerializeField]
         private float smoothenSpeed = 2.0f;
         [SerializeField]

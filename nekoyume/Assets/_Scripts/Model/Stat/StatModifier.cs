@@ -64,7 +64,7 @@ namespace Nekoyume.Model.Stat
                 case OperationType.Add:
                     return Value;
                 case OperationType.Percentage:
-                    return (int)(value * Value / 100f);
+                    return (int) (value * Value / 100m);
                 default:
                     throw new ArgumentOutOfRangeException();
             }
