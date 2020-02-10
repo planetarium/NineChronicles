@@ -20,7 +20,6 @@ namespace Nekoyume.UI.Module
         {
             public SimpleCountableItemView itemView;
             public List<Image> elementalTypeImages;
-            public TextMeshProUGUI commonText;
         }
 
         [Serializable]
@@ -33,6 +32,7 @@ namespace Nekoyume.UI.Module
             public TextMeshProUGUI commonText;
             public GameObject levelLimitGameObject;
             public TextMeshProUGUI levelLimitText;
+            public TextMeshProUGUI combatPowerText;
         }
 
         [Serializable]
@@ -103,8 +103,6 @@ namespace Nekoyume.UI.Module
                     image.enabled = false;
                 }
 
-                iconArea.commonText.enabled = false;
-
                 return;
             }
 
@@ -131,21 +129,6 @@ namespace Nekoyume.UI.Module
                 image.enabled = true;
                 image.overrideSprite = sprite;
                 image.SetNativeSize();
-            }
-
-            // 전투력.
-            if (Model.item.Value.ItemBase.Value.Data.ItemType == ItemType.Material)
-            {
-                iconArea.commonText.enabled = false;
-            }
-            else if (Model.item.Value.ItemBase.Value is Equipment equipment)
-            {
-                iconArea.commonText.enabled = true;
-                iconArea.commonText.text = CPHelper.GetCP(equipment).ToString();
-            }
-            else
-            {
-                iconArea.commonText.enabled = false;
             }
         }
 
@@ -182,7 +165,9 @@ namespace Nekoyume.UI.Module
                 descriptionArea.commonGameObject.SetActive(false);
                 descriptionArea.dividerImageGameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);
-                
+                descriptionArea.combatPowerText.enabled = true;
+                descriptionArea.combatPowerText.text = CPHelper.GetCP(equipment).ToString();
+
                 var uniqueStatType = equipment.UniqueStatType;
                 foreach (var statMapEx in equipment.StatsMap.GetStats())
                 {
@@ -207,6 +192,7 @@ namespace Nekoyume.UI.Module
                 descriptionArea.commonGameObject.SetActive(false);
                 descriptionArea.dividerImageGameObject.SetActive(false);
                 descriptionArea.levelLimitGameObject.SetActive(false);
+                descriptionArea.combatPowerText.enabled = false;
 
                 foreach (var statMapEx in itemUsable.StatsMap.GetStats())
                 {
@@ -217,6 +203,7 @@ namespace Nekoyume.UI.Module
             else
             {
                 descriptionArea.levelLimitGameObject.SetActive(false);
+                descriptionArea.combatPowerText.enabled = false;
 
                 var data = Model.item.Value.ItemBase.Value.Data;
                 if (data.ItemType == ItemType.Material &&
