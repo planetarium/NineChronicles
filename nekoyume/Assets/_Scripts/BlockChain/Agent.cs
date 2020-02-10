@@ -41,7 +41,7 @@ namespace Nekoyume.BlockChain
     /// <summary>
     /// 블록체인 노드 관련 로직을 처리
     /// </summary>
-    public class Agent : MonoBehaviour, IDisposable
+    public class Agent : MonoBehaviour, IDisposable, IAgent
     {
         private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
 
@@ -61,7 +61,9 @@ namespace Nekoyume.BlockChain
 
         private static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
 
-        public ReactiveProperty<long> blockIndex = new ReactiveProperty<long>();
+        private ReactiveProperty<long> _blockIndex = new ReactiveProperty<long>();
+
+        public ReactiveProperty<long> blockIndex { get => _blockIndex; }
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
