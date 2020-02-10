@@ -186,7 +186,7 @@ namespace Nekoyume.UI.Module
         }
 
         public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
-            bool useShowButtons = false, bool animateAlpha = true, params ToggleableType[] showButtons)
+            bool animateAlpha = true, params ToggleableType[] showButtons)
         {
             CloseWidget = () => navigationAction?.Invoke(this);
          
@@ -201,20 +201,6 @@ namespace Nekoyume.UI.Module
             
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
             SharedModel.NavigationAction = navigationAction;
-
-            if (!useShowButtons)
-            {
-                mailButton.Show();
-                questButton.Show();
-                chatButton.Show();
-                illustratedBookButton.Show();
-                characterButton.Show();
-                inventoryButton.Show();
-                worldMapButton.Show();
-                settingsButton.Show();
-
-                return;
-            }
 
             mailButton.Hide();
             questButton.Hide();

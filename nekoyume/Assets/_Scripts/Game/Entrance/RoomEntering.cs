@@ -81,7 +81,6 @@ namespace Nekoyume.Game.Entrance
                 Widget.Find<BottomMenu>().Show(
                     UINavigator.NavigationType.Quit,
                     _ => Game.Quit(),
-                    true,
                     BottomMenu.ToggleableType.Mail,
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat);
@@ -91,7 +90,6 @@ namespace Nekoyume.Game.Entrance
                 Widget.Find<BottomMenu>().Show(
                     UINavigator.NavigationType.Quit,
                     _ => Game.Quit(),
-                    true,
                     BottomMenu.ToggleableType.Mail,
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat,
