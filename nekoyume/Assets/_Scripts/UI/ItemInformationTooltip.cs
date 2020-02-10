@@ -123,7 +123,7 @@ namespace Nekoyume.UI
         
         protected override void SubscribeTarget(RectTransform target)
         {
-            panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
+            panel.SetPivot(PivotPresetType.TopLeft);
             base.SubscribeTarget(target);
 
             //target과 panel이 겹칠 경우 target의 왼쪽에 다시 위치

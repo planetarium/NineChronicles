@@ -130,7 +130,7 @@ namespace Nekoyume
             }
         }
 
-        public static PivotPresetType GetPivotPresetType(this RectTransform rectTransform)
+        public static bool TryGetPivotPresetType(this RectTransform rectTransform, out PivotPresetType result)
         {
             int pivotPresetTypeIndex = 0;
             switch(rectTransform.pivot.y)
@@ -144,7 +144,8 @@ namespace Nekoyume
                 case 1:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(rectTransform), rectTransform, null);
+                    result = default;
+                    return false;
             }
 
             switch(rectTransform.pivot.x)
@@ -158,10 +159,12 @@ namespace Nekoyume
                     pivotPresetTypeIndex += 2;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(rectTransform), rectTransform, null);
+                    result = default;
+                    return false;
             }
 
-            return (PivotPresetType)pivotPresetTypeIndex;
+            result = (PivotPresetType)pivotPresetTypeIndex;
+            return true;
         }
 
         public static void SetAnchorAndPivot(this RectTransform rectTransform, AnchorPresetType anchorPresetType, PivotPresetType pivotPresetType)
