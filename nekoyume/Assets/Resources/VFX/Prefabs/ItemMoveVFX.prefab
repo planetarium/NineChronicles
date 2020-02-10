@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 2012160174648313563}
   - component: {fileID: 1811304233675189731}
   - component: {fileID: 1812256681298937789}
-  - component: {fileID: 6607735843554899241}
+  - component: {fileID: 6770795107924748610}
   m_Layer: 5
-  m_Name: UI_item_move
+  m_Name: ItemMoveVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4701,7 +4701,7 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &6607735843554899241
+--- !u!114 &6770795107924748610
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4710,7 +4710,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2010068977434347807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9803c606e6ea4fdd853b9c7488109517, type: 3}
+  m_Script: {fileID: 11500000, guid: 4b34ea1d8aabe45409b9a18057e4584b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &2010137085123093489

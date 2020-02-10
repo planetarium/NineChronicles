@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using Nekoyume.Model.Item;
-using Nekoyume.Game.VFX;
+﻿using Nekoyume.Game.VFX;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Module;
@@ -22,22 +19,23 @@ namespace Nekoyume.UI
         public static void Show(SimpleCountableItemView view, int index)
         {
             var result = Create<QuestRewardItem>(true);
+
             result.canvas.sortingLayerName = "UI";
             result.itemImage.sprite = SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id);
             var rect = result.RectTransform;
             rect.anchoredPosition = view.gameObject.transform.position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
 
-            result.CoPlay(index);
+            result.Play(index);
         }
 
-        private void CoPlay(int index)
+        private void Play(int index)
         {
             if (Equals(_inventoryTransform,null))
                 UpdateInventoryTransform();
 
             Sequence seq = DOTween.Sequence();
 
-            seq.AppendCallback(() => VFXController.instance.Create<ItemMoveVFX>(transform, Vector3.zero));
+            seq.AppendCallback(() => VFXController.instance.Create<ItemMoveVFX>(transform.position));
 
             var midPath = new Vector3(_inventoryTransform.position.x + 0.5f * (index + 1), (_inventoryTransform.position.y + transform.position.y) / 2, _inventoryTransform.position.z);
             Vector3[] path = new Vector3[] { transform.position, midPath, _inventoryTransform.position };
