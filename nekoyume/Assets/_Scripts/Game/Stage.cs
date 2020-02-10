@@ -635,7 +635,7 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnWave(List<Enemy> enemies, bool isBoss)
+        public IEnumerator CoSpawnWave(List<Enemy> enemies, bool hasBoss)
         {
             var prevEnemies = GetComponentsInChildren<Character.Enemy>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
@@ -654,7 +654,7 @@ namespace Nekoyume.Game
             var playerCharacter = GetPlayer();
             playerCharacter.StartRun();
 
-            if (isBoss)
+            if (hasBoss)
             {
                 yield return new WaitForSeconds(1.5f);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_STAGE");

@@ -45,59 +45,59 @@ id,_name,item_sub_type,grade,elemental_type,stat_type,stat_min,stat_max,skill_id
 305002,숲의 염료,NormalMaterial,1,Normal,,,,,,,,
 305003,요정의 염료,NormalMaterial,1,Normal,,,,,,,,
 305004,여신의 염료,NormalMaterial,1,Normal,,,,,,,,
-306000,물의 씨앗 껍질,MonsterPart,1,Water,HP,5,20,,5,20,5,25
-306001,물의 수상한 떡잎,MonsterPart,1,Water,CRI,1,4,,10,30,5,25
-306002,물의 잎사귀 다발,MonsterPart,1,Water,ATK,5,15,120002,5,20,5,25
-306003,물의 빛나는 꽃봉오리,MonsterPart,2,Water,DEF,10,20,210002,10,50,5,25
-306004,물의 뻣뻣한 줄기,MonsterPart,1,Water,ATK,10,20,,10,50,5,25
-306005,물의 물컹한 열매,MonsterPart,1,Water,HP,10,30,200000,10,50,5,25
-306006,물의 시든 꽃다발,MonsterPart,1,Water,DEF,15,30,250002,10,75,5,25
-306007,물의 열매알,MonsterPart,2,Water,SPD,10,21,120003,10,50,5,25
-306008,물의 나무줄기,MonsterPart,2,Water,ATK,15,30,120005,10,50,5,15
-306009,대지의 하찮은 자갈,MonsterPart,1,Land,ATK,5,20,130001,10,25,5,25
-306010,대지의 돌날,MonsterPart,1,Land,CRI,1,4,130002,5,20,5,25
-306011,대지의 두건,MonsterPart,1,Land,HIT,2,5,,15,50,5,25
-306012,대지의 여우 꼬리,MonsterPart,1,Land,HP,10,30,200000,20,50,5,25
-306013,대지의 칼자루,MonsterPart,1,Land,DEF,10,30,,15,100,5,25
-306014,대지의 큰 칼날,MonsterPart,1,Land,ATK,15,30,130003,15,100,5,25
-306015,대지의 부러진 지팡이,MonsterPart,1,Land,CRI,2,8,,15,25,5,25
-306016,대지의 부러진 지팡이,MonsterPart,1,Land,HIT,3,6,200000,15,25,5,25
-306017,대지의 망토 조각,MonsterPart,1,Land,SPD,13,25,,10,150,5,25
-306018,대지의 마력 구슬,MonsterPart,2,Land,DEF,25,50,130002,25,150,5,25
-306019,대지의 여우 가죽,MonsterPart,2,Land,HP,25,50,,25,175,5,25
-306020,대지의 여우 송곳니,MonsterPart,1,Land,CRI,2,10,,15,175,5,25
-306021,대지의 창 날,MonsterPart,2,Land,ATK,25,60,130003,25,200,5,25
-306022,대지의 견장,MonsterPart,2,Land,DEF,25,70,,25,200,5,25
-306023,화염의 나무둔기,MonsterPart,1,Fire,ATK,15,30,110002,15,20,5,25
-306024,화염의 작은 투구,MonsterPart,1,Fire,HIT,3,7,,10,20,5,25
-306025,화염의 멧돼지뿔,MonsterPart,2,Fire,DEF,25,60,110001,20,40,5,25
-306026,화염의 허리가방,MonsterPart,2,Fire,HP,30,65,,25,40,5,25
-306027,화염의 둔기 조각,MonsterPart,2,Fire,CRI,1,9,110001,25,50,5,25
-306028,화염의 하얀 털다발,MonsterPart,1,Fire,SPD,10,21,200000,15,50,5,25
-306029,화염의 큰 멧돼지뿔,MonsterPart,2,Fire,HP,35,65,110002,25,50,5,25
-306030,화염의 무거운 견장,MonsterPart,2,Fire,DEF,25,100,210000,25,100,5,25
-306031,화염의 달궈진 쇠사슬,MonsterPart,1,Fire,HIT,3,12,240000,10,20,5,25
-306032,화염의 부러진 지팡이,MonsterPart,2,Fire,SPD,17,31,110003,25,50,5,25
-306033,화염의 제림니르 도끼,MonsterPart,1,Fire,ATK,30,90,230000,15,40,5,25
-306034,화염의 제림니르 철퇴,MonsterPart,1,Fire,SPD,29,83,110005,15,40,5,25
-306035,수액 덩어리,MonsterPart,2,Normal,ATK,5,13,,3,10,5,25
-306036,화염의 수액 덩어리,MonsterPart,2,Fire,ATK,5,13,,3,10,5,25
-306037,바람의 수액 덩어리,MonsterPart,2,Wind,DEF,5,13,,3,10,5,25
-306038,대지의 수액 덩어리,MonsterPart,2,Land,ATK,5,13,,3,10,5,25
-306039,물의 수액 덩어리,MonsterPart,2,Water,DEF,5,13,,3,10,5,25
-306040,수액 덩어리(소),MonsterPart,1,Normal,DEF,3,10,,3,10,5,25
-306041,화염의 수액 덩어리(소),MonsterPart,1,Fire,DEF,3,10,,3,10,5,25
-306042,바람의 수액 덩어리(소),MonsterPart,1,Wind,ATK,3,10,,3,10,5,25
-306043,대지의 수액 덩어리(소),MonsterPart,1,Land,DEF,3,10,,3,10,5,25
-306044,물의 수액 덩어리(소),MonsterPart,1,Water,ATK,3,10,,3,10,5,25
-306045,수액 덩어리(대),MonsterPart,3,Normal,ATK,4,30,,3,10,5,25
-306046,화염의 수액 덩어리(대),MonsterPart,3,Fire,ATK,4,30,,3,10,5,25
-306047,바람의 수액 덩어리(대),MonsterPart,3,Wind,DEF,4,30,,3,10,5,25
-306048,대지의 수액 덩어리(대),MonsterPart,3,Land,ATK,4,30,,3,10,5,25
-306049,물의 수액 덩어리(대),MonsterPart,3,Water,DEF,4,30,,3,10,5,25
-306050,유령의 투구,MonsterPart,1,Wind,DEF,20,80,,3,10,5,25
-306051,유령의 검 조각,MonsterPart,2,Wind,ATK,20,80,,3,10,5,25
-306052,유령의 혼,MonsterPart,3,Wind,CRI,1,8,,3,10,5,25
-306053,펜리르의 발톱,MonsterPart,4,Wind,ATK,30,150,,3,10,5,25
-306054,펜리르의 황금 족쇄,MonsterPart,4,Wind,DEF,30,150,,3,10,5,25
-306055,펜리르의 갈기,MonsterPart,5,Wind,SPD,21,167,,3,10,5,25
+306000,물의 씨앗 껍질,MonsterPart,1,Water,ATK,5,23,,,,,
+306001,물의 수상한 떡잎,MonsterPart,1,Water,HP,22,88,,,,,
+306002,물의 잎사귀 다발,MonsterPart,1,Water,SPD,3,13,,,,,
+306003,물의 빛나는 꽃봉오리,MonsterPart,1,Water,HIT,6,26,,,,,
+306004,물의 뻣뻣한 줄기,MonsterPart,1,Water,ATK,11,44,,,,,
+306005,물의 물컹한 열매,MonsterPart,1,Water,HP,41,165,,,,,
+306006,물의 시든 꽃다발,MonsterPart,1,Water,SPD,6,24,,,,,
+306007,물의 열매알,MonsterPart,1,Water,HIT,12,49,,,,,
+306008,물의 나무줄기,MonsterPart,2,Water,HP,1,2,,,,,
+306009,대지의 하찮은 자갈,MonsterPart,1,Land,ATK,5,23,,,,,
+306010,대지의 돌날,MonsterPart,1,Land,HP,22,88,,,,,
+306011,대지의 두건,MonsterPart,1,Land,SPD,3,13,,,,,
+306012,대지의 여우 꼬리,MonsterPart,1,Land,HIT,6,26,,,,,
+306013,대지의 칼자루,MonsterPart,1,Land,ATK,11,44,,,,,
+306014,대지의 큰 칼날,MonsterPart,1,Land,HP,41,165,,,,,
+306015,대지의 부러진 지팡이,MonsterPart,1,Land,SPD,6,24,,,,,
+306016,대지의 부러진 지팡이,MonsterPart,1,Land,HIT,12,49,,,,,
+306017,대지의 망토 조각,MonsterPart,1,Land,HP,1,2,,,,,
+306018,대지의 마력 구슬,MonsterPart,2,Land,HP,1,2,,,,,
+306019,대지의 여우 가죽,MonsterPart,2,Land,HP,1,2,,,,,
+306020,대지의 여우 송곳니,MonsterPart,1,Land,HP,1,2,,,,,
+306021,대지의 창 날,MonsterPart,2,Land,HP,1,2,,,,,
+306022,대지의 견장,MonsterPart,2,Land,HP,1,2,,,,,
+306023,화염의 나무둔기,MonsterPart,1,Fire,ATK,5,23,,,,,
+306024,화염의 작은 투구,MonsterPart,1,Fire,HP,22,88,,,,,
+306025,화염의 멧돼지뿔,MonsterPart,2,Fire,SPD,3,13,,,,,
+306026,화염의 허리가방,MonsterPart,2,Fire,HIT,6,26,,,,,
+306027,화염의 둔기 조각,MonsterPart,2,Fire,ATK,11,44,,,,,
+306028,화염의 하얀 털다발,MonsterPart,1,Fire,HP,41,165,,,,,
+306029,화염의 큰 멧돼지뿔,MonsterPart,2,Fire,SPD,6,24,,,,,
+306030,화염의 무거운 견장,MonsterPart,2,Fire,HIT,12,49,,,,,
+306031,화염의 달궈진 쇠사슬,MonsterPart,1,Fire,HP,1,2,,,,,
+306032,화염의 부러진 지팡이,MonsterPart,2,Fire,HP,1,2,,,,,
+306033,화염의 제림니르 도끼,MonsterPart,1,Fire,HP,1,2,,,,,
+306034,화염의 제림니르 철퇴,MonsterPart,1,Fire,HP,1,2,,,,,
+306035,수액 덩어리,MonsterPart,2,Normal,HP,1,2,,,,,
+306036,화염의 수액 덩어리,MonsterPart,2,Fire,HP,1,2,,,,,
+306037,바람의 수액 덩어리,MonsterPart,2,Wind,HP,1,2,,,,,
+306038,대지의 수액 덩어리,MonsterPart,2,Land,HP,1,2,,,,,
+306039,물의 수액 덩어리,MonsterPart,2,Water,HP,1,2,,,,,
+306040,수액 덩어리(소),MonsterPart,1,Normal,HP,1,2,,,,,
+306041,화염의 수액 덩어리(소),MonsterPart,1,Fire,HP,1,2,,,,,
+306042,바람의 수액 덩어리(소),MonsterPart,1,Wind,HP,1,2,,,,,
+306043,대지의 수액 덩어리(소),MonsterPart,1,Land,HP,1,2,,,,,
+306044,물의 수액 덩어리(소),MonsterPart,1,Water,HP,1,2,,,,,
+306045,수액 덩어리(대),MonsterPart,3,Normal,HP,1,2,,,,,
+306046,화염의 수액 덩어리(대),MonsterPart,3,Fire,HP,1,2,,,,,
+306047,바람의 수액 덩어리(대),MonsterPart,3,Wind,HP,1,2,,,,,
+306048,대지의 수액 덩어리(대),MonsterPart,3,Land,HP,1,2,,,,,
+306049,물의 수액 덩어리(대),MonsterPart,3,Water,HP,1,2,,,,,
+306050,유령의 투구,MonsterPart,1,Wind,HP,1,2,,,,,
+306051,유령의 검 조각,MonsterPart,2,Wind,HP,1,2,,,,,
+306052,유령의 혼,MonsterPart,3,Wind,HP,1,2,,,,,
+306053,펜리르의 발톱,MonsterPart,4,Wind,HP,1,2,,,,,
+306054,펜리르의 황금 족쇄,MonsterPart,4,Wind,HP,1,2,,,,,
+306055,펜리르의 갈기,MonsterPart,5,Wind,HP,1,2,,,,,
