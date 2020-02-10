@@ -383,7 +383,6 @@ namespace Nekoyume.UI
                 _tempStats.Level,
                 equipments,
                 consumables,
-                null,
                 Game.Game.instance.TableSheets
             );
             using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())

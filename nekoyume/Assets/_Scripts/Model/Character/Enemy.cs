@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Skill;
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model
@@ -10,18 +12,20 @@ namespace Nekoyume.Model
     {
         public int spawnIndex = -1;
 
-        public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel) 
+        public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel,
+            IEnumerable<StatModifier> optionalStatModifiers = null)
             : base(
                 player.Simulator,
                 player.Simulator.TableSheets,
                 rowData.Id,
-                monsterLevel)
+                monsterLevel,
+                optionalStatModifiers)
         {
             Targets.Add(player);
             PostConstruction();
         }
 
-        protected Enemy(Enemy value) : base(value)
+        public Enemy(Enemy value) : base(value)
         {
             spawnIndex = value.spawnIndex;
             PostConstruction();
