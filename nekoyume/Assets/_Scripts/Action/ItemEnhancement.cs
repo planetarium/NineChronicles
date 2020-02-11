@@ -107,8 +107,6 @@ namespace Nekoyume.Action
             Log.Debug($"ItemEnhancement Get TableSheets: {sw.Elapsed}");
             sw.Restart();
             var materials = new List<Equipment>();
-            var options = new List<object>();
-            var materialOptionCount = 0;
             foreach (var materialId in materialIds)
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
@@ -159,17 +157,11 @@ namespace Nekoyume.Action
                 sw.Restart();
                 materialEquipment.Unequip();
                 materials.Add(materialEquipment);
-                var materialOptions = materialEquipment.GetOptions();
-                options.AddRange(materialOptions);
-                materialOptionCount = Math.Max(materialOptionCount, materialOptions.Count);
             }
 
             enhancementEquipment.Unequip();
-            var equipmentOptions = enhancementEquipment.GetOptions();
-            options.AddRange(equipmentOptions);
-            var equipmentOptionCount = Math.Max(materialOptionCount, equipmentOptions.Count);
 
-            enhancementEquipment = UpgradeEquipment(enhancementEquipment, ctx.Random, options, equipmentOptionCount);
+            enhancementEquipment = UpgradeEquipment(enhancementEquipment);
             sw.Stop();
             Log.Debug($"ItemEnhancement Upgrade Equipment: {sw.Elapsed}");
             sw.Restart();
@@ -230,36 +222,9 @@ namespace Nekoyume.Action
             return (BuffSkill) SkillFactory.Get(skillRow, 0, 100);
         }
 
-        private static Equipment UpgradeEquipment(Equipment equipment, IRandom random, IEnumerable<object> options,
-            int count)
+        private static Equipment UpgradeEquipment(Equipment equipment)
         {
-            equipment.BuffSkills.Clear();
-            equipment.Skills.Clear();
-            equipment.StatsMap.ClearAdditionalStats();
-
-            var sortedSkills = options.Select(option => new {option, guid = random.GenerateRandomGuid()})
-                .OrderBy(i => i.guid).ToList();
-            for (var i = 0; i < count; i++)
-            {
-                var selected = sortedSkills[random.Next(sortedSkills.Count)];
-                switch (selected.option)
-                {
-                    case BuffSkill buffSkill:
-                        equipment.BuffSkills.Add(buffSkill);
-                        break;
-                    case AttackSkill attackSkill:
-                        equipment.Skills.Add(attackSkill);
-                        break;
-                    case StatModifier statModifier:
-                        equipment.StatsMap.AddStatAdditionalValue(statModifier);
-                        break;
-                }
-
-                sortedSkills.Remove(selected);
-            }
-
             equipment.LevelUp();
-
             return equipment;
         }
 
