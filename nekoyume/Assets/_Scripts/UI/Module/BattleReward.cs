@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.VFX;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -31,9 +33,21 @@ namespace Nekoyume.UI.Module
         {
             public Image emptyStar;
             public Image enabledStar;
+            public VFX emissionVFX;
+            public Star01VFX starVFX;
 
-            public void Set(bool enable)
+            public IEnumerator Set(bool enable)
             {
+                if (enable)
+                {
+                    emissionVFX.Play();
+                    starVFX.Play();
+                    yield return new WaitForSeconds(0.1f);
+                }
+                else
+                {
+                    StopVFX();
+                }
                 emptyStar.gameObject.SetActive(!enable);
                 enabledStar.gameObject.SetActive(enable);
                 emptyStar.SetNativeSize();
@@ -44,6 +58,12 @@ namespace Nekoyume.UI.Module
             {
                 emptyStar.gameObject.SetActive(false);
                 enabledStar.gameObject.SetActive(false);
+            }
+
+            public void StopVFX()
+            {
+                emissionVFX.Stop();
+                starVFX.Stop();
             }
         }
 
@@ -73,7 +93,7 @@ namespace Nekoyume.UI.Module
             failedText.text = GetFailedText();
             _stageClearText = LocalizationManager.Localize("UI_BATTLE_RESULT_CLEAR");
             _star = starArea.stars[index];
-            _star.Set(false);
+            StartCoroutine(_star.Set(false));
             failedText.gameObject.SetActive(true);
             for (var i = 0; i < starArea.stars.Length; i++)
             {
@@ -84,7 +104,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    star.Set(false);
+                    StartCoroutine(star.Set(false));
                 }
             }
         }
@@ -94,7 +114,6 @@ namespace Nekoyume.UI.Module
             rewardText.text = $"EXP + {exp}";
             failedText.gameObject.SetActive(!enable);
             rewardText.gameObject.SetActive(enable);
-            _star.Set(enable);
         }
 
         public void Set(IReadOnlyList<CountableItem> items, bool enable)
@@ -103,7 +122,6 @@ namespace Nekoyume.UI.Module
             rewardItems.Set(items);
             rewardText.gameObject.SetActive(false);
             failedText.gameObject.SetActive(!items.Any());
-            _star.Set(enable);
         }
 
         public void Set(bool cleared)
@@ -114,7 +132,6 @@ namespace Nekoyume.UI.Module
             }
             rewardText.gameObject.SetActive(cleared);
             failedText.gameObject.SetActive(!cleared);
-            _star.Set(cleared);
         }
 
         private string GetFailedText()
@@ -130,6 +147,16 @@ namespace Nekoyume.UI.Module
                 default:
                     return string.Empty;
             }
+        }
+
+        public void EnableStar(bool enable)
+        {
+            StartCoroutine(_star.Set(enable));
+        }
+
+        public void StopVFX()
+        {
+            _star.StopVFX();
         }
     }
 }
