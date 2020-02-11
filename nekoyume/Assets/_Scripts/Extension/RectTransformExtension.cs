@@ -230,12 +230,12 @@ namespace Nekoyume
             return anchoredPosition + rectTransform.GetPivotPositionFromAnchor(pivotPresetType);
         }
 
-        public static void GetPositions(this RectTransform rectTransform, float2 pivot, out float2 bottomLeft, out float2 topRight)
+        public static void GetOffsetsFromPivot(this RectTransform rectTransform, float2 pivot, out float2 bottomLeftOffset, out float2 topRightOffset)
         {
             var size = rectTransform.rect.size;
 
-            bottomLeft = new float2(-size.x * pivot.x, -size.y * pivot.y);
-            topRight = new float2(size.x * (1 - pivot.x), size.y * (1 - pivot.y));
+            bottomLeftOffset = new float2(-size.x * pivot.x, -size.y * pivot.y);
+            topRightOffset = new float2(size.x * (1 - pivot.x), size.y * (1 - pivot.y));
         }
         
         public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target, PivotPresetType pivotPresetType,
@@ -265,35 +265,35 @@ namespace Nekoyume
                 return;
             }
 
-            parent.GetPositions(ZeroOneFloat2, out var bottomLeft, out var topRight);
+            parent.GetOffsetsFromPivot(parent.pivot, out var bottomLeftOffset, out var topRightOffset);
 
             var anchoredPosition = rectTransform.anchoredPosition;
             var anchoredPositionBottomLeft = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.BottomLeft);
             var anchoredPositionTopRight = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.TopRight);
 
             // Bottom.
-            var value = bottomLeft.y + margin.y - anchoredPositionBottomLeft.y;
+            var value = bottomLeftOffset.y + margin.y - anchoredPositionBottomLeft.y;
             if (value > 0f)
             {
                 anchoredPosition.y += value;
             }
             
             // Top.
-            value = topRight.y - margin.y - anchoredPositionTopRight.y;
+            value = topRightOffset.y - margin.y - anchoredPositionTopRight.y;
             if (value < 0f)
             {
                 anchoredPosition.y += value;
             }
             
             // Right.
-            value = topRight.x - margin.x - anchoredPositionTopRight.x;
+            value = topRightOffset.x - margin.x - anchoredPositionTopRight.x;
             if (value < 0f)
             {
                 anchoredPosition.x += value;
             }
             
             // Left.
-            value = bottomLeft.x + margin.x - anchoredPositionBottomLeft.x;
+            value = bottomLeftOffset.x + margin.x - anchoredPositionBottomLeft.x;
             if (value > 0f)
             {
                 anchoredPosition.x += value;

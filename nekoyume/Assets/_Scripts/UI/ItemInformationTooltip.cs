@@ -31,7 +31,7 @@ namespace Nekoyume.UI
 
         public RectTransform Target => Model.target.Value;
 
-        public override PivotPresetType PivotPresetType => PivotPresetType.TopRight;
+        public override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
 
         protected override void Awake()
         {
@@ -107,7 +107,7 @@ namespace Nekoyume.UI
             }
             Model.FooterRootActive.Subscribe(footerRoot.SetActive).AddTo(_disposablesForModel);
             // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
-            Model.ItemInformation.item.Subscribe(value => SubscribeTarget(Model.target.Value))
+            Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
             StartCoroutine(CoUpdate());
@@ -123,6 +123,11 @@ namespace Nekoyume.UI
         
         protected override void SubscribeTarget(RectTransform target)
         {
+            // 아무 것도 하지 않도록 한다.
+        }
+
+        protected void SubscribeTargetItem(RectTransform target)
+        {
             panel.SetPivot(PivotPresetType.TopLeft);
             base.SubscribeTarget(target);
 
@@ -130,7 +135,7 @@ namespace Nekoyume.UI
             if (!(target is null) && panel.position.x - target.position.x < 0)
             {
                 panel.SetPivot(PivotPresetType.TopRight);
-                panel.MoveToRelatedPosition(target, PivotPresetType.ReverseX(), DefaultOffsetFromTarget.ReverseX());
+                panel.MoveToRelatedPosition(target, TargetPivotPresetType.ReverseX(), DefaultOffsetFromTarget.ReverseX());
                 UpdateAnchoredPosition();
             }
         }
