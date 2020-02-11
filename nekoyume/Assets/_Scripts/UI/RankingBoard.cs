@@ -100,6 +100,9 @@ namespace Nekoyume.UI
                     // LocalStateModifier.ModifyWeeklyArenaGold(GameConfig.ArenaActivationCostNCG);
                     LocalStateModifier.AddWeeklyArenaInfoActivator();
                 }).AddTo(gameObject);
+
+            CloseWidget = null;
+            SubmitWidget = null;
         }
 
         protected override void OnCompleteOfShowAnimation()
@@ -249,7 +252,7 @@ namespace Nekoyume.UI
                 var currentAvatarArenaInfo = weeklyArenaState.GetArenaInfo(avatarAddress);
 
                 var canChallenge = (currentAvatarArenaInfo is null) ?
-                                    true : currentAvatarArenaInfo.DailyChallengeCount > 0;
+                                    false : currentAvatarArenaInfo.Active && currentAvatarArenaInfo.DailyChallengeCount > 0;
 
                 for (var index = 0; index < _arenaAvatarStates.Count; index++)
                 {

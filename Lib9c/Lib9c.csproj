@@ -9,6 +9,7 @@
     <Compile Include="..\nekoyume\Assets\_Scripts\Battle\**\*.cs" />
     <Compile Include="..\nekoyume\Assets\_Scripts\Model\**\*.cs" />
     <Compile Include="..\nekoyume\Assets\_Scripts\TableData\**\*.cs" />
+    <Compile Include="..\nekoyume\Assets\_Scripts\BlockChain\Miner.cs" />
     <Compile Include="..\nekoyume\Assets\_Scripts\GameConfig.cs" />
     <Compile Include="..\nekoyume\Assets\BTAI\**\*.cs" />
   </ItemGroup>

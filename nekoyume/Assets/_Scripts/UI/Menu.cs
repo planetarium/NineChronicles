@@ -41,6 +41,8 @@ namespace Nekoyume.UI
 
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
             Game.Event.OnRoomEnter.AddListener(Show);
+
+            CloseWidget = null;
         }
 
         private void ShowButtons(Player player)

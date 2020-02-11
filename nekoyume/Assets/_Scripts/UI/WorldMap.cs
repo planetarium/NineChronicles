@@ -71,6 +71,13 @@ namespace Nekoyume.UI
 
         #region Mono
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            CloseWidget = null;
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -205,7 +212,7 @@ namespace Nekoyume.UI
             bottomMenu.worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
                 .AddTo(_disposablesAtShow);
-
+            
             ShowWorld(worldId, stageId, showWorld);
             Show();
         }
@@ -234,6 +241,11 @@ namespace Nekoyume.UI
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
                 throw new ArgumentException(nameof(worldId));
 
+            CloseWidget = Find<BottomMenu>().worldMapButton.button.onClick.Invoke;
+            CloseWidget += Pop;
+            CloseWidget += () => CloseWidget = null;
+            Push();
+            
             ShowWorld(world.Id, world.GetNextStageId(), false);
         }
 

@@ -56,6 +56,13 @@ namespace Nekoyume.UI
 
         #region Override
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            CloseWidget = () => {};
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -114,6 +121,7 @@ namespace Nekoyume.UI
             Find<BottomMenu>().SetIntractable(false);
             blur.gameObject.SetActive(true);
             _npc01.SpineController.Disappear();
+            Push();
             yield return new WaitForSeconds(.5f);
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
             _npc02 = go.GetComponent<NPC>();
@@ -131,6 +139,7 @@ namespace Nekoyume.UI
             canvasGroup.blocksRaycasts = true;
             Find<BottomMenu>().SetIntractable(true);
             blur.gameObject.SetActive(false);
+            Pop();
         }
 
         public override void Show()

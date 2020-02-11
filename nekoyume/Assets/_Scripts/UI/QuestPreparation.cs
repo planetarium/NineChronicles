@@ -53,6 +53,13 @@ namespace Nekoyume.UI
 
         #region override
 
+        protected override void Awake()
+        {
+            base.Awake();
+
+            CloseWidget = null;
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -377,7 +384,6 @@ namespace Nekoyume.UI
                 _tempStats.Level,
                 equipments,
                 consumables,
-                null,
                 Game.Game.instance.TableSheets
             );
             using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())

@@ -72,6 +72,8 @@ namespace Nekoyume.UI
 
             SharedModel = new Model.Shop();
             noticeText.text = LocalizationManager.Localize("UI_SHOP_NOTICE");
+
+            CloseWidget = null;
         }
 
         #endregion

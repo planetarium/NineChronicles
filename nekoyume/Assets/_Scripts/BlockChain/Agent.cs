@@ -775,87 +775,11 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoMiner()
         {
+            var miner = new Miner(blocks, _swarm, PrivateKey);
             while (true)
             {
-                var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
-
-                var timeStamp = DateTimeOffset.UtcNow;
-                var prevTimeStamp = blocks?.Tip?.Timestamp;
-                //FIXME 년도가 바뀌면 깨지는 계산 방식. 테스트 끝나면 변경해야함
-                // 하루 한번 보상을 제공
-                if (prevTimeStamp is DateTimeOffset t && timeStamp.DayOfYear - t.DayOfYear == 1)
-                {
-                    var rankingRewardTx = RankingReward();
-                    txs.Add(rankingRewardTx);
-                }
-
-                var task = Task.Run(async () =>
-                {
-                    var block = await blocks.MineBlock(Address);
-                    if (_swarm.Running)
-                    {
-                        _swarm.BroadcastBlock(block);
-                    }
-
-                    return block;
-                });
+                var task = Task.Run(() => miner.MineBlock());
                 yield return new WaitUntil(() => task.IsCompleted);
-
-                if (!task.IsCanceled && !task.IsFaulted)
-                {
-                    var block = task.Result;
-                    Debug.Log($"created block index: {block.Index}, difficulty: {block.Difficulty}");
-#if BLOCK_LOG_USE
-                    FileHelper.AppendAllText("Block.log", task.Result.ToVerboseString());
-#endif
-                }
-                else if (task.Exception?.InnerExceptions.OfType<OperationCanceledException>().Count() != 0)
-                {
-                    Debug.Log("Mining was canceled due to change of tip.");
-                }
-                else
-                {
-                    var invalidTxs = txs;
-                    var retryActions = new HashSet<IImmutableList<PolymorphicAction<ActionBase>>>();
-
-                    if (task.IsFaulted)
-                    {
-                        foreach (var ex in task.Exception.InnerExceptions)
-                        {
-                            if (ex is InvalidTxNonceException invalidTxNonceException)
-                            {
-                                var invalidNonceTx = blocks.GetTransaction(invalidTxNonceException.TxId);
-
-                                if (invalidNonceTx.Signer == Address)
-                                {
-                                    Debug.Log($"Tx[{invalidTxNonceException.TxId}] nonce is invalid. Retry it.");
-                                    retryActions.Add(invalidNonceTx.Actions);
-                                }
-                            }
-
-                            if (ex is InvalidTxException invalidTxException)
-                            {
-                                Debug.Log($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
-                                invalidTxs.Add(blocks.GetTransaction(invalidTxException.TxId));
-                            }
-                            else if (ex is UnexpectedlyTerminatedActionException actionException
-                                     && actionException.TxId is TxId txId)
-                            {
-                                Debug.Log($"Tx[{actionException.TxId}]'s action is invalid. mark to unstage. {actionException}");
-                                invalidTxs.Add(blocks.GetTransaction(txId));
-                            }
-
-                            Debug.LogException(ex);
-                        }
-                    }
-
-                    blocks.UnstageTransactions(invalidTxs);
-
-                    foreach (var retryAction in retryActions)
-                    {
-                        MakeTransaction(retryAction);
-                    }
-                }
             }
         }
 
@@ -883,21 +807,6 @@ namespace Nekoyume.BlockChain
                 2048
             );
 #endif
-        }
-
-        private Transaction<PolymorphicAction<ActionBase>> RankingReward()
-        {
-            var actions = new List<PolymorphicAction<ActionBase>>
-            {
-                new RankingReward
-                {
-                    gold1 = 50,
-                    gold2 = 30,
-                    gold3 = 10,
-                    agentAddresses = States.Instance.RankingState.GetAgentAddresses(3, null),
-                }
-            };
-            return MakeTransaction(actions);
         }
 
         public void AppendBlock(Block<PolymorphicAction<ActionBase>> block)
