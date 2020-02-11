@@ -37,6 +37,7 @@ namespace Nekoyume.Game.Entrance
 
             var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
+            status.Close(true);
 
             ActionCamera.instance.SetPoint(0f, 0f);
             ActionCamera.instance.Idle();
