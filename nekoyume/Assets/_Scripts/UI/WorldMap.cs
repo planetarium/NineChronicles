@@ -208,6 +208,7 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
                 true,
+                true,
                 BottomMenu.ToggleableType.WorldMap);
             bottomMenu.worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
@@ -280,7 +281,7 @@ namespace Nekoyume.UI
                 bottomMenu.worldMapButton.Hide();
                 bottomMenu.backButton.Show();
                 worldMapRoot.SetActive(true);
-                status.Close();
+                status.Close(true);
             }
             else
             {
@@ -289,7 +290,7 @@ namespace Nekoyume.UI
                 bottomMenu.worldMapButton.Show();
                 bottomMenu.backButton.Hide();
                 bottomMenu.ToggleGroup?.SetToggledOffAll();
-                status.Show();
+                status.Show(true);
             }
         }
 
@@ -357,7 +358,7 @@ namespace Nekoyume.UI
         private void GoToQuestPreparation()
         {
             Close();
-            Find<Status>().Close();
+            Find<Status>().Close(true);
             Find<QuestPreparation>().ToggleWorldMap();
         }
     }

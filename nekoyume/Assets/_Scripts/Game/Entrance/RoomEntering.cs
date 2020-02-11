@@ -60,6 +60,7 @@ namespace Nekoyume.Game.Entrance
                 UINavigator.NavigationType.Quit,
                 _ => Game.Quit(),
                 true,
+                false,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,

@@ -21,7 +21,7 @@ namespace Nekoyume.UI
         public readonly Subject<Widget> OnEnableSubject = new Subject<Widget>();
         public readonly Subject<Widget> OnDisableSubject = new Subject<Widget>();
 
-        private Animator _animator;
+        protected Animator _animator;
 
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();

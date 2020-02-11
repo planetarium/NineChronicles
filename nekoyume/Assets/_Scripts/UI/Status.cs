@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using Nekoyume.Manager;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -23,6 +24,7 @@ namespace Nekoyume.UI
         public BuffLayout buffLayout;
         public BuffTooltip buffTooltip;
         public BattleTimerView battleTimerView;
+        public CanvasGroup canvasGroup;
 
         private string _avatarName = "";
         private Player _player;
@@ -45,9 +47,18 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public override void Show()
+        public void Show(bool animateAlpha = false)
         {
             base.Show();
+
+            if (animateAlpha)
+            {
+                _animator.enabled = false;
+
+                canvasGroup.alpha = 0;
+                canvasGroup.DOFade(1, 1.0f);
+                canvasGroup.transform.position = Vector3.zero;
+            }
 
             _statusDetail = Find<StatusDetail>();
             if (_statusDetail is null)
