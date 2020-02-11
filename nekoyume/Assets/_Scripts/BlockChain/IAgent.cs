@@ -8,7 +8,7 @@ namespace Nekoyume.BlockChain
 {
     public interface IAgent
     {
-        ReactiveProperty<long> blockIndex { get; }
+        Subject<long> BlockIndexSubject { get; }
         
         long BlockIndex { get; }
 
