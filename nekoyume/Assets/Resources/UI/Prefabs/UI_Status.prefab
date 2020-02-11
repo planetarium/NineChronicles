@@ -630,6 +630,7 @@ GameObject:
   - component: {fileID: 222276856074506704}
   - component: {fileID: 114468290408022672}
   - component: {fileID: 114755808044558412}
+  - component: {fileID: 2854316944057211352}
   m_Layer: 5
   m_Name: UI_Status
   m_TagString: Untagged
@@ -714,6 +715,25 @@ MonoBehaviour:
   buffLayout: {fileID: 8661425528217430742}
   buffTooltip: {fileID: 7770691895032619309}
   battleTimerView: {fileID: 3175928119945289375}
+--- !u!95 &2854316944057211352
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1934299104157984}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: e8f8def72a0ff5c4da7e7092243ccfbf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1182308729686998295
 GameObject:
   m_ObjectHideFlags: 0
