@@ -302,7 +302,7 @@ namespace Nekoyume.UI.Module
             }
 
             mailButton.SharedModel.HasNotification.Value = mailBox.Any(i => i.New);
-            Find<Mail>().UpdateList();
+            Find<Mail>().SetList(mailBox);
         }
 
         private void SubscribeAvatarQuestList(QuestList questList)
