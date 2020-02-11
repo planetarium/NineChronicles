@@ -123,9 +123,15 @@ namespace Nekoyume.Battle
                     // 플레이어가 죽은 경우 break;
                     if (Player.IsDead)
                     {
-                        Result = i == 0
-                            ? BattleLog.Result.Lose
-                            : BattleLog.Result.Win;
+                        if (i == 0)
+                        {
+                            Result = BattleLog.Result.Lose;
+                            Player.GetExp((int) (Exp * 0.3m), true);
+                        }
+                        else
+                        {
+                            Result = BattleLog.Result.Win;
+                        }
                         break;
                     }
 
