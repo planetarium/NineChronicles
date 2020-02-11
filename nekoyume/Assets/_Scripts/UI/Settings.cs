@@ -131,12 +131,13 @@ namespace Nekoyume.UI
 
         public void ResetStore()
         {
+            // FIXME 타입 쿼리 하지 말고 구조 개선해서 고칩시다.
             (Game.Game.instance.Agent as Agent)?.ResetStore();
         }
 
         public void ResetKeyStore()
         {
-            (Game.Game.instance.Agent as Agent)?.ResetKeyStore();
+            Game.Game.instance.Agent.ResetKeyStore();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

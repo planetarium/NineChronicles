@@ -19,5 +19,7 @@ namespace Nekoyume.BlockChain
         void EnqueueAction(GameAction gameAction);
 
         IValue GetState(Address address);
+
+        void ResetKeyStore();
     }
 }
