@@ -213,6 +213,7 @@ namespace Nekoyume.BlockChain
             _trustedPeers = _seedPeers.Select(peer => peer.Address).ToImmutableHashSet();
             _cancellationTokenSource = new CancellationTokenSource();
         }
+        
         public void ResetStore()
         {
             var confirm = Widget.Find<Confirm>();
