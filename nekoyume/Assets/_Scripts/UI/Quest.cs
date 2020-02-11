@@ -100,7 +100,7 @@ namespace Nekoyume.UI
 
         public void ChangeState(int state)
         {
-            tabState = (QuestTabState)state;
+            tabState = (QuestTabState) state;
 
             for (int i = 0; i < tabButtons.Length; ++i)
             {
@@ -119,7 +119,7 @@ namespace Nekoyume.UI
         {
             for (int i = 0; i < tabButtons.Length; ++i)
             {
-                int cnt = _questList.Where(quest => quest.QuestType == (QuestType) i && quest.Complete && !quest.IsPaidInAction).Count();
+                int cnt = _questList.Where(quest => quest.QuestType == (QuestType) i && quest.Complete && quest.isReceivable).Count();
                 tabButtons[i].hasNotificationImage.enabled = cnt > 0;
             }
         }
