@@ -243,7 +243,7 @@ namespace Nekoyume.UI.Module
                 widgetControllable.HideWidget();
             }
 
-            base.Close(true);
+            base.Close(ignoreCloseAnimation);
         }
 
         #region Subscribe

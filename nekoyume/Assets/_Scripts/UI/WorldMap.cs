@@ -220,7 +220,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
+            Find<BottomMenu>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
 
