@@ -79,6 +79,8 @@ namespace Nekoyume.UI.Scroller
         private void OnClickButton()
         {
             Read();
+            var mail = Widget.Find<Mail>();
+            mail.UpdateTabs();
             onClickSubmitButton?.Invoke(this);
         }
     }
