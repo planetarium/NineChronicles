@@ -64,8 +64,7 @@ namespace Nekoyume.UI
         }
 
         private const int Timer = 10;
-        private static readonly Vector3 VfxBattleWin01Offset = new Vector3(-3.43f, -0.28f, 10f);
-        private static readonly Vector3 VfxBattleWin02Offset = new Vector3(0.0f, 0.85f, 10f);
+        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.04f, 1.28f, 10f);
 
         public CanvasGroup canvasGroup;
         public GameObject victoryImageContainer;
@@ -82,9 +81,9 @@ namespace Nekoyume.UI
 
         private BattleWin01VFX _battleWin01VFX;
         private BattleWin02VFX _battleWin02VFX;
+        private BattleWin03VFX _battleWin03VFX;
         private Coroutine _coUpdateBottomText;
-        private readonly WaitForSeconds _battleWin02VFXYield = new WaitForSeconds(0.55f);
-
+        private readonly WaitForSeconds _battleWinVFXYield = new WaitForSeconds(0.2f);
         public Model SharedModel { get; private set; }
 
         public Subject<bool> BattleEndedSubject = new Subject<bool>();
@@ -133,7 +132,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            battleEndedStream.Dispose();
             stageProgressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
@@ -157,9 +155,7 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdateViewAsVictory()
         {
             AudioController.instance.PlayMusic(AudioController.MusicCode.Win, 0.3f);
-            _battleWin01VFX =
-                VFXController.instance.Create<BattleWin01VFX>(ActionCamera.instance.transform, VfxBattleWin01Offset);
-            StartCoroutine(EmitBattleWin02VFX());
+            StartCoroutine(EmitBattleWinVFX());
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
 
             victoryImageContainer.SetActive(true);
@@ -192,12 +188,28 @@ namespace Nekoyume.UI
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
         }
 
-        private IEnumerator EmitBattleWin02VFX()
+        private IEnumerator EmitBattleWinVFX()
         {
-            yield return _battleWin02VFXYield;
+            yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
-            _battleWin02VFX =
-                VFXController.instance.Create<BattleWin02VFX>(ActionCamera.instance.transform, VfxBattleWin02Offset);
+            switch (SharedModel.ClearedWave)
+            {
+                case 1:
+                    _battleWin01VFX =
+                        VFXController.instance.Create<BattleWin01VFX>(ActionCamera.instance.transform,
+                            VfxBattleWinOffset);
+                    break;
+                case 2:
+                    _battleWin02VFX =
+                        VFXController.instance.Create<BattleWin02VFX>(ActionCamera.instance.transform,
+                            VfxBattleWinOffset);
+                    break;
+                case 3:
+                    _battleWin03VFX =
+                        VFXController.instance.Create<BattleWin03VFX>(ActionCamera.instance.transform,
+                            VfxBattleWinOffset);
+                    break;
+            }
         }
 
         private void UpdateViewAsDefeat(BattleLog.Result result)
@@ -251,6 +263,7 @@ namespace Nekoyume.UI
                 yield return new WaitForSeconds(0.5f);
 
                 view.gameObject.SetActive(true);
+                view.EnableStar(cleared);
                 yield return null;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
@@ -323,10 +336,7 @@ namespace Nekoyume.UI
             stageLoadingScreen.Show(stage.zone);
             Find<Status>().Close();
 
-            if (_battleWin01VFX)
-            {
-                _battleWin01VFX.Stop();
-            }
+            StopVFX();
 
             var player = stage.RunPlayer();
             player.DisableHUD();
@@ -356,8 +366,7 @@ namespace Nekoyume.UI
 
         public void GoToMain()
         {
-            _battleWin01VFX?.Stop();
-            _battleWin02VFX?.Stop();
+            StopVFX();
 
             Find<Battle>().Close();
             Game.Event.OnRoomEnter.Invoke();
@@ -381,11 +390,31 @@ namespace Nekoyume.UI
                 yield return null;
             }
 
+            StopVFX();
+
+            foreach (var reward in rewardsArea.rewards)
+            {
+                reward.StopVFX();
+            }
+            canvasGroup.alpha = 0f;
+        }
+
+        private void StopVFX()
+        {
+            if (_battleWin01VFX)
+            {
+                _battleWin01VFX.Stop();
+            }
+
             if (_battleWin02VFX)
             {
                 _battleWin02VFX.Stop();
             }
-            canvasGroup.alpha = 0f;
+
+            if (_battleWin03VFX)
+            {
+                _battleWin03VFX.Stop();
+            }
         }
     }
 }
