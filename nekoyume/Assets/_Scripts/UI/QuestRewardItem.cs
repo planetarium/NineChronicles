@@ -40,18 +40,13 @@ namespace Nekoyume.UI
 
             Vector3[] path = new Vector3[] { transform.position, midPath, _inventoryTransform.position };
 
+            transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             Tweener tweenMove;
-            tweenMove = transform.DOPath(path, 0.8f + 0.2f * index, PathType.CatmullRom).SetEase(Ease.OutCubic);
-
-            yield return new WaitForSeconds(0.2f + 0.2f * index);
-
-            if(index == 0)
-                _inventoryTransform.DOScale(1.2f, 0.1f);
+            tweenMove = transform.DOPath(path, 0.8f + 0.2f * index, PathType.CatmullRom).SetEase(Ease.OutSine);
 
             yield return new WaitWhile(tweenMove.IsPlaying);
             VFXController.instance.Create<ItemMoveVFX>(_inventoryTransform.position);
             Destroy(gameObject);
-            _inventoryTransform.DOScale(1.0f, 0.5f).SetEase(Ease.OutElastic);
         }
 
         private void UpdateInventoryTransform()
