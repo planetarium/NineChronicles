@@ -209,7 +209,6 @@ namespace Nekoyume.Model
         {
             base.OnDead();
             eventMap.Add(new KeyValuePair<int, int>((int) QuestEventType.Die, 1));
-            Simulator.Lose = true;
         }
         
         private void Equip(IEnumerable<Inventory.Item> items, EquipmentItemSetEffectSheet sheet)
@@ -345,7 +344,7 @@ namespace Nekoyume.Model
                 return;
             }
             Simulator.WaveTurn++;
-            Simulator.Log.Add(new WaveTurnEnd(this, Simulator.WaveTurn));
+            Simulator.Log.Add(new WaveTurnEnd(this, Simulator.WaveTurn, Simulator.Turn));
         }
     }
 

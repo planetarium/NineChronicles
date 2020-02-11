@@ -38,7 +38,7 @@ namespace Nekoyume.Model.Stat
         {
         }
 
-        protected Stats(Stats value)
+        public Stats(Stats value)
         {
             hp = (IntStatWithCurrent)value.hp.Clone();
             atk = (IntStat)value.atk.Clone();

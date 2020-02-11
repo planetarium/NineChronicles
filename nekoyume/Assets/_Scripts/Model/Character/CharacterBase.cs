@@ -57,7 +57,7 @@ namespace Nekoyume.Model
         public int CurrentHP
         {
             get => Stats.CurrentHP;
-            set => Stats.CurrentHP = Math.Min(Math.Max(value, 0), HP);
+            set => Stats.CurrentHP = value;
         }
 
         public bool IsDead => CurrentHP <= 0;
@@ -65,7 +65,8 @@ namespace Nekoyume.Model
         public int AttackCount { get; private set; }
         public int AttackCountMax { get; protected set; }
 
-        protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level)
+        protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level,
+            IEnumerable<StatModifier> optionalStatModifiers = null)
         {
             Simulator = simulator;
 
@@ -73,7 +74,12 @@ namespace Nekoyume.Model
                 throw new SheetRowNotFoundException("CharacterSheet", characterId.ToString());
 
             RowData = row;
-            Stats = new CharacterStats(RowData, level, sheets);
+            Stats = new CharacterStats(RowData, level);
+            if (!(optionalStatModifiers is null))
+            {
+                Stats.AddOption(optionalStatModifiers);
+            }
+
             Skills.Clear();
 
             atkElementType = RowData.ElementalType;
@@ -88,7 +94,6 @@ namespace Nekoyume.Model
             _root = value._root;
             _selectedSkill = value._selectedSkill;
             _usedSkill = value._usedSkill;
-            _executedTurnEnd = value._executedTurnEnd;
             Id = value.Id;
             Simulator = value.Simulator;
             atkElementType = value.atkElementType;
@@ -108,7 +113,7 @@ namespace Nekoyume.Model
             Targets = new List<CharacterBase>(value.Targets);
             // 캐릭터 테이블 데이타는 변하지 않는다는 가정 하에 얕은 복사.
             RowData = value.RowData;
-            Stats = (CharacterStats) value.Stats.Clone();
+            Stats = new CharacterStats(value.Stats);
         }
 
         public abstract object Clone();
@@ -117,16 +122,15 @@ namespace Nekoyume.Model
 
         [NonSerialized]
         private Root _root;
+
         [NonSerialized]
         private Skill.Skill _selectedSkill;
+
         [NonSerialized]
         private BattleStatus.Skill _usedSkill;
-        [NonSerialized]
-        private bool _executedTurnEnd;
 
         public void InitAI()
         {
-            _executedTurnEnd = false;
             SetSkill();
 
             _root = new Root();
@@ -153,10 +157,9 @@ namespace Nekoyume.Model
             );
         }
 
-        public void Tick(out bool isTurnEnd)
+        public void Tick()
         {
             _root.Tick();
-            isTurnEnd = _executedTurnEnd;
         }
 
         private bool IsAlive()
@@ -168,7 +171,6 @@ namespace Nekoyume.Model
         {
             _selectedSkill = null;
             _usedSkill = null;
-            _executedTurnEnd = false;
         }
 
         private void ReduceDurationOfBuffs()
@@ -201,12 +203,11 @@ namespace Nekoyume.Model
 
             foreach (var info in _usedSkill.SkillInfos)
             {
-                if (info.Target.IsDead)
-                {
-                    var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                    if (target != null)
-                        target.Die();
-                }
+                if (!info.Target.IsDead)
+                    continue;
+
+                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
+                target?.Die();
             }
         }
 
@@ -233,10 +234,13 @@ namespace Nekoyume.Model
             Stats.SetBuffs(Buffs.Values);
             Simulator.Log.Add(new RemoveBuffs((CharacterBase) Clone()));
         }
-        
+
         protected virtual void EndTurn()
         {
-            _executedTurnEnd = true;
+            Simulator.Turn++;
+#if TEST_LOG
+            UnityEngine.Debug.LogWarning($"{nameof(RowData.Id)} : {RowData.Id} / Turn Ended.");
+#endif
         }
 
         #endregion

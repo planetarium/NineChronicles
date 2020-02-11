@@ -7,6 +7,7 @@ using Libplanet.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Priority_Queue;
@@ -50,7 +51,7 @@ namespace Nekoyume.Battle
             Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
             TurnLimit = stageRow.TurnLimit;
 
-            SetWave(stageWaveRow);
+            SetWave(stageRow, stageWaveRow);
             SetReward(stageRow);
         }
 
@@ -82,9 +83,9 @@ namespace Nekoyume.Battle
             Log.worldId = WorldId;
             Log.stageId = StageId;
             Player.Spawn();
-            var turn = 1;
+            Turn = 1;
 #if TEST_LOG
-            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / turn start");
+            UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / Turn start");
 #endif
             for (var i = 0; i < _waves.Count; i++)
             {
@@ -96,12 +97,11 @@ namespace Nekoyume.Battle
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
-                    if (turn > TurnLimit)
+                    if (Turn > TurnLimit)
                     {
                         if (i == 0)
                         {
                             Player.GetExp((int) (Exp * 0.3m), true);
-                            Lose = true;
                             Result = BattleLog.Result.Lose;
                         }
                         else
@@ -109,7 +109,7 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.TimeOver;
                         }
 #if TEST_LOG
-                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(Result)}: {Result.ToString()}");
+                        UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {nameof(Result)}: {Result.ToString()}");
 #endif
                         break;
                     }
@@ -118,14 +118,7 @@ namespace Nekoyume.Battle
                     if (!Characters.TryDequeue(out var character))
                         break;
 
-                    character.Tick(out var isTurnEnd);
-                    if (isTurnEnd)
-                    {
-                        turn++;
-#if TEST_LOG
-                        UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {nameof(isTurnEnd)}");
-#endif
-                    }
+                    character.Tick();
 
                     // 플레이어가 죽은 경우 break;
                     if (Player.IsDead)
@@ -139,21 +132,18 @@ namespace Nekoyume.Battle
                     // 플레이어의 타겟(적)이 없는 경우 break.
                     if (!Player.Targets.Any())
                     {
-                        switch (i)
+                        Log.clearedWave = i + 1;
+                        if (i == 0)
                         {
-                            case 0:
-                                Player.GetExp(Exp, true);
-                                break;
-                            case 1:
-                                ItemMap = Player.GetRewards(_waveRewards);
-                                var dropBox = new DropBox(null, _waveRewards);
-                                Log.Add(dropBox);
-                                var getReward = new GetReward(null, _waveRewards);
-                                Log.Add(getReward);
-                                break;
-                            case 2:
-                                // todo: 첫 3별 클리어 보상 적용.
-                                break;
+                            Player.GetExp(Exp, true);
+                        }
+                        else if (i == 1)
+                        {
+                            ItemMap = Player.GetRewards(_waveRewards);
+                            var dropBox = new DropBox(null, _waveRewards);
+                            Log.Add(dropBox);
+                            var getReward = new GetReward(null, _waveRewards);
+                            Log.Add(getReward);
                         }
 
                         Result = BattleLog.Result.Win;
@@ -179,21 +169,22 @@ namespace Nekoyume.Battle
 #if TEST_LOG
             var skillType = typeof(Nekoyume.Model.BattleStatus.Skill);
             var skillCount = Log.events.Count(e => e.GetType().IsInheritsFrom(skillType));
-            UnityEngine.Debug.LogWarning($"{nameof(turn)}: {turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
+            UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
 #endif
             return Player;
         }
 
-        private void SetWave(StageWaveSheet.Row stageWaveRow)
+        private void SetWave(StageSheet.Row stageRow, StageWaveSheet.Row stageWaveRow)
         {
+            var enemyStatModifiers = stageRow.EnemyOptionalStatModifiers;
             var waves = stageWaveRow.Waves;
-            foreach (var wave in waves.Select(SpawnWave))
+            foreach (var wave in waves.Select(e => SpawnWave(e, enemyStatModifiers)))
             {
                 _waves.Add(wave);
             }
         }
 
-        private Wave SpawnWave(StageWaveSheet.WaveData waveData)
+        private Wave SpawnWave(StageWaveSheet.WaveData waveData, IReadOnlyList<StatModifier> optionalStatModifiers)
         {
             var wave = new Wave();
             var monsterTable = TableSheets.CharacterSheet;
@@ -202,10 +193,10 @@ namespace Nekoyume.Battle
                 for (var i = 0; i < monsterData.Count; i++)
                 {
                     monsterTable.TryGetValue(monsterData.CharacterId, out var row, true);
-                    var enemyModel = new Enemy(Player, row, monsterData.Level);
+                    var enemyModel = new Enemy(Player, row, monsterData.Level, optionalStatModifiers);
 
                     wave.Add(enemyModel);
-                    wave.IsBoss = waveData.IsBoss;
+                    wave.HasBoss = waveData.HasBoss;
                 }
             }
 
@@ -219,7 +210,7 @@ namespace Nekoyume.Battle
         private void SetReward(StageSheet.Row stageRow)
         {
             var itemSelector = new WeightedSelector<int>(Random);
-            var rewards = stageRow.Rewards.Where(r => r.Ratio > 0m);
+            var rewards = stageRow.Rewards.Where(r => r.Ratio > 0m).OrderBy(r => r.Ratio);
             foreach (var r in rewards)
             {
                 itemSelector.Add(r.ItemId, r.Ratio);
@@ -233,7 +224,10 @@ namespace Nekoyume.Battle
                         {
                             var guid = Random.GenerateRandomGuid();
                             var item = ItemFactory.Create(itemData, guid);
-                            _waveRewards.Add(item);
+                            if (_waveRewards.Count < 4)
+                            {
+                                _waveRewards.Add(item);
+                            }
                         }
                     }
                 }

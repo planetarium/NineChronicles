@@ -8,10 +8,11 @@ namespace Nekoyume.Model.Stat
 {
     /// <summary>
     /// 캐릭터의 스탯을 관리한다.
-    /// 스탯은에 레벨에 의한 _levelStats를 기본으로 하고
+    /// 스탯은 레벨에 의한 _levelStats를 기본으로 하고
     /// > 장비에 의한 _equipmentStats
     /// > 소모품에 의한 _consumableStats
     /// > 버프에 의한 _buffStats
+    /// > 옵션에 의한 _optionalStats
     /// 마지막으로 모든 스탯을 합한 CharacterStats 순서로 계산한다.
     /// </summary>
     [Serializable]
@@ -23,10 +24,12 @@ namespace Nekoyume.Model.Stat
         private readonly Stats _equipmentStats = new Stats();
         private readonly Stats _consumableStats = new Stats();
         private readonly Stats _buffStats = new Stats();
+        private readonly Stats _optionalStats = new Stats();
 
         private readonly List<StatModifier> _equipmentStatModifiers = new List<StatModifier>();
         private readonly List<StatModifier> _consumableStatModifiers = new List<StatModifier>();
         private readonly Dictionary<int, StatModifier> _buffStatModifiers = new Dictionary<int, StatModifier>();
+        private readonly List<StatModifier> _optionalStatModifiers = new List<StatModifier>();
 
         public int Level { get; private set; }
 
@@ -34,6 +37,8 @@ namespace Nekoyume.Model.Stat
         public IStats EquipmentStats => _equipmentStats;
         public IStats ConsumableStats => _consumableStats;
         public IStats BuffStats => _buffStats;
+        public IStats OptionalStats => _optionalStats;
+
 
         public int BaseHP => LevelStats.HP;
         public int BaseATK => LevelStats.ATK;
@@ -68,42 +73,42 @@ namespace Nekoyume.Model.Stat
 
         public CharacterStats(
             CharacterSheet.Row row,
-            int level,
-            TableSheets sheets
+            int level
         )
         {
             _row = row ?? throw new ArgumentNullException(nameof(row));
-            SetAll(level, null, null, null, sheets);
+            SetLevel(level);
+            EqualizeCurrentHPWithHP();
         }
 
-        protected CharacterStats(CharacterStats value) : base(value)
+        public CharacterStats(CharacterStats value) : base(value)
         {
             _row = value._row;
 
-            _levelStats = (Stats)value._levelStats.Clone();
-            _equipmentStats = (Stats)value._equipmentStats.Clone();
-            _consumableStats = (Stats)value._consumableStats.Clone();
-            _buffStats = (Stats)value._buffStats.Clone();
+            _levelStats = new Stats(value._levelStats);
+            _equipmentStats = new Stats(value._equipmentStats);
+            _consumableStats = new Stats(value._consumableStats);
+            _buffStats = new Stats(value._buffStats);
+            _optionalStats = new Stats(value._optionalStats);
 
             _equipmentStatModifiers = value._equipmentStatModifiers;
             _consumableStatModifiers = value._consumableStatModifiers;
             _buffStatModifiers = value._buffStatModifiers;
+            _optionalStatModifiers = value._optionalStatModifiers;
 
             Level = value.Level;
         }
 
         public CharacterStats SetAll(
             int level,
-            IReadOnlyList<Equipment> equipments,
-            IReadOnlyList<Consumable> consumables, 
-            IReadOnlyList<Buff.Buff> buffs,
+            IEnumerable<Equipment> equipments,
+            IEnumerable<Consumable> consumables,
             TableSheets sheets
         )
         {
             SetLevel(level, false);
             SetEquipments(equipments, sheets.EquipmentItemSetEffectSheet, false);
             SetConsumables(consumables, false);
-            SetBuffs(buffs, false);
             UpdateLevelStats();
             EqualizeCurrentHPWithHP();
 
@@ -138,9 +143,9 @@ namespace Nekoyume.Model.Stat
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
         public CharacterStats SetEquipments(
-            IReadOnlyList<Equipment> value,
+            IEnumerable<Equipment> value,
             EquipmentItemSetEffectSheet sheet,
-            bool updateImmediate=true
+            bool updateImmediate = true
         )
         {
             _equipmentStatModifiers.Clear();
@@ -208,7 +213,7 @@ namespace Nekoyume.Model.Stat
         /// <param name="value"></param>
         /// <param name="updateImmediate"></param>
         /// <returns></returns>
-        public CharacterStats SetConsumables(IReadOnlyList<Consumable> value, bool updateImmediate = true)
+        public CharacterStats SetConsumables(IEnumerable<Consumable> value, bool updateImmediate = true)
         {
             _consumableStatModifiers.Clear();
             if (!(value is null))
@@ -310,6 +315,12 @@ namespace Nekoyume.Model.Stat
             }
         }
 
+        public void AddOption(IEnumerable<StatModifier> statModifiers)
+        {
+            _optionalStatModifiers.AddRange(statModifiers);
+            UpdateOptionalStats();
+        }
+
         private void UpdateLevelStats()
         {
             var statsData = _row.ToStats(Level);
@@ -332,12 +343,18 @@ namespace Nekoyume.Model.Stat
         private void UpdateBuffStats()
         {
             _buffStats.Set(_buffStatModifiers.Values, _levelStats, _equipmentStats, _consumableStats);
+            UpdateOptionalStats();
+        }
+
+        private void UpdateOptionalStats()
+        {
+            _optionalStats.Set(_optionalStatModifiers, _levelStats, _equipmentStats, _consumableStats, _buffStats);
             UpdateTotalStats();
         }
 
         private void UpdateTotalStats()
         {
-            Set(_levelStats, _equipmentStats, _consumableStats, _buffStats);
+            Set(_levelStats, _equipmentStats, _consumableStats, _buffStats, _optionalStats);
             // 최소값 보정
             hp.SetValue(Math.Max(0, hp.Value));
             atk.SetValue(Math.Max(0, atk.Value));
