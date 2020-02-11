@@ -98,9 +98,14 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"Combination Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
+            
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return states;
 
-            if (avatarState.level < GameConfig.RequireLevel.Craft)
+            if (world.StageClearedId < GameConfig.RequireStage.ActionsInCombination)
             {
+                // 스테이지 클리어 부족 에러.
                 return states;
             }
 

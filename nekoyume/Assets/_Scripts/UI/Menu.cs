@@ -80,12 +80,12 @@ namespace Nekoyume.UI
 
         public void QuestClick()
         {
-            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Quest)
+            if (!btnQuest.IsUnlocked)
             {
-                btnShop.JingleTheCat();
-                return;
+                btnQuest.JingleTheCat();
+                return;    
             }
-
+            
             Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
@@ -95,7 +95,7 @@ namespace Nekoyume.UI
 
         public void ShopClick()
         {
-            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Shop)
+            if (!btnShop.IsUnlocked)
             {
                 btnShop.JingleTheCat();
                 return;
@@ -116,12 +116,12 @@ namespace Nekoyume.UI
 
         public void CombinationClick()
         {
-            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Craft)
+            if (!btnCombination.IsUnlocked)
             {
-                btnShop.JingleTheCat();
+                btnCombination.JingleTheCat();
                 return;
             }
-
+            
             if (combinationExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
@@ -137,9 +137,9 @@ namespace Nekoyume.UI
 
         public void RankingClick()
         {
-            if (States.Instance.CurrentAvatarState.level < GameConfig.RequireLevel.Ranking)
+            if (!btnRanking.IsUnlocked)
             {
-                btnShop.JingleTheCat();
+                btnRanking.JingleTheCat();
                 return;
             }
 

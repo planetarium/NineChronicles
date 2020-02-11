@@ -20,7 +20,7 @@ namespace Nekoyume.Game.Entrance
             Widget.Find<BottomMenu>().Close();
             Widget.Find<UI.Inventory>().Close();
             Widget.Find<StatusDetail>().Close();
-            Widget.Find<UI.Quest>().Close();
+            Widget.Find<Quest>().Close();
 
             var stage = Game.instance.Stage;
             stage.stageId = 0;
@@ -44,7 +44,7 @@ namespace Nekoyume.Game.Entrance
             ActionCamera.instance.Idle();
 
             yield return new WaitForSeconds(1.0f);
-            Widget.Find<LoadingScreen>()?.Close();
+            Widget.Find<LoadingScreen>().Close();
 
             if (player)
                 while (player.transform.position.x < stage.roomPosition.x)
@@ -55,48 +55,19 @@ namespace Nekoyume.Game.Entrance
             player.RunSpeed = 0.0f;
             player.Animator.Idle();
 
-            var dialog = Widget.Find<Dialog>();
-            dialog.Show(1);
+            Widget.Find<Dialog>().Show(1);
             Widget.Find<Status>().Show();
-            ShowBottomMenu();
+            Widget.Find<BottomMenu>().Show(
+                UINavigator.NavigationType.Quit,
+                _ => Game.Quit(),
+                BottomMenu.ToggleableType.Mail,
+                BottomMenu.ToggleableType.Quest,
+                BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.Character,
+                BottomMenu.ToggleableType.Inventory,
+                BottomMenu.ToggleableType.Settings);
 
             Destroy(this);
-        }
-
-        private void ShowBottomMenu()
-        {
-            var bottomMenuType = 1;
-            if (States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
-                out var world))
-            {
-                if (world.Id > 1 ||
-                    world.StageClearedId > GameConfig.RequireStage.UIBottomMenuCharacter)
-                {
-                    bottomMenuType = 2;
-                }
-            }
-
-            if (bottomMenuType == 1)
-            {
-                Widget.Find<BottomMenu>().Show(
-                    UINavigator.NavigationType.Quit,
-                    _ => Game.Quit(),
-                    BottomMenu.ToggleableType.Mail,
-                    BottomMenu.ToggleableType.Quest,
-                    BottomMenu.ToggleableType.Chat);
-            }
-            else
-            {
-                Widget.Find<BottomMenu>().Show(
-                    UINavigator.NavigationType.Quit,
-                    _ => Game.Quit(),
-                    BottomMenu.ToggleableType.Mail,
-                    BottomMenu.ToggleableType.Quest,
-                    BottomMenu.ToggleableType.Chat,
-                    BottomMenu.ToggleableType.Character,
-                    BottomMenu.ToggleableType.Inventory,
-                    BottomMenu.ToggleableType.Settings);
-            }
         }
     }
 }

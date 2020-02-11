@@ -69,7 +69,7 @@ namespace Nekoyume.Model.State
             level = 1;
             exp = 0;
             inventory = new Inventory();
-#if !UNITY_EDITOR
+#if UNITY_EDITOR
             worldInformation = new WorldInformation(blockIndex, sheets.WorldSheet, true);
 #else
             worldInformation = new WorldInformation(blockIndex, sheets.WorldSheet);

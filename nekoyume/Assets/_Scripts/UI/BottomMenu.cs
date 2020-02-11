@@ -13,6 +13,7 @@ namespace Nekoyume.UI.Module
 {
     public class BottomMenu : Widget
     {
+        // todo: 네비게이션 버튼들도 토글 그룹에 들어갔으니 여기서도 다뤄야 하겠음..
         public enum ToggleableType
         {
             Mail,
@@ -38,6 +39,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        private static readonly List<ToggleableType> ToggleableTypes =
+            Enum.GetValues(typeof(ToggleableType)).Cast<ToggleableType>().ToList();
+
         // 네비게이션 버튼.
         // todo: 이놈들도 ToggleableButton으로 바꿔야 함..
         public NormalButton mainButton;
@@ -45,10 +49,14 @@ namespace Nekoyume.UI.Module
 
         // 토글 그룹과 버튼.
         private ToggleGroup _toggleGroup;
+
         public IToggleGroup ToggleGroup => _toggleGroup;
+
         // 네비게이션 버튼.
         public ToggleableButton quitButton;
+
         public GlowingButton exitButton;
+
         // 일반 버튼.
         public NotifiableButton chatButton;
         public NotifiableButton mailButton;
@@ -58,7 +66,7 @@ namespace Nekoyume.UI.Module
         public NotifiableButton inventoryButton;
         public NotifiableButton worldMapButton;
         public NotifiableButton settingsButton;
-        
+
         public CanvasGroup canvasGroup;
         private Animator _inventoryAnimator;
 
@@ -112,10 +120,10 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
             _toggleGroup.RegisterToggleable(chatButton);
-            
+
             SubmitWidget = null;
             CloseWidget = null;
-            
+
             _inventoryAnimator = inventoryButton.GetComponent<Animator>();
         }
 
@@ -137,7 +145,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
             HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification)
                 .AddTo(gameObject);
-        } 
+        }
 
         private void SubScribeOnClickChat(Unit unit)
         {
@@ -189,7 +197,7 @@ namespace Nekoyume.UI.Module
             bool animateAlpha = true, params ToggleableType[] showButtons)
         {
             CloseWidget = () => navigationAction?.Invoke(this);
-         
+
             base.Show();
             if(animateAlpha)
             {
@@ -202,46 +210,13 @@ namespace Nekoyume.UI.Module
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
             SharedModel.NavigationAction = navigationAction;
 
-            mailButton.Hide();
-            questButton.Hide();
-            chatButton.Hide();
-            illustratedBookButton.Hide();
-            characterButton.Hide();
-            inventoryButton.Hide();
-            worldMapButton.Hide();
-            settingsButton.Hide();
-
-            foreach (var toggleableType in showButtons)
+            foreach (var toggleableType in ToggleableTypes)
             {
-                switch (toggleableType)
-                {
-                    case ToggleableType.Mail:
-                        mailButton.Show();
-                        break;
-                    case ToggleableType.Quest:
-                        questButton.Show();
-                        break;
-                    case ToggleableType.Chat:
-                        chatButton.Show();
-                        break;
-                    case ToggleableType.IllustratedBook:
-                        illustratedBookButton.Show();
-                        break;
-                    case ToggleableType.Character:
-                        characterButton.Show();
-                        break;
-                    case ToggleableType.Inventory:
-                        inventoryButton.Show();
-                        break;
-                    case ToggleableType.WorldMap:
-                        worldMapButton.Show();
-                        break;
-                    case ToggleableType.Settings:
-                        settingsButton.Show();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                if (showButtons.Contains(toggleableType) && ShowButton(toggleableType))
+                    continue;
+                
+                var button = GetButton(toggleableType);
+                button.Hide();
             }
         }
 
@@ -258,7 +233,7 @@ namespace Nekoyume.UI.Module
 
             base.Close(ignoreCloseAnimation);
         }
-        
+
         public void SetIntractable(bool intractable)
         {
             canvasGroup.interactable = intractable;
@@ -266,8 +241,10 @@ namespace Nekoyume.UI.Module
 
         public void PlayGetItemAnimation()
         {
-            if(_inventoryAnimator)
+            if (_inventoryAnimator)
+            {
                 _inventoryAnimator.Play("GetItem");
+            }
         }
 
         #region Subscribe
@@ -323,7 +300,7 @@ namespace Nekoyume.UI.Module
                 Debug.LogWarning($"{nameof(mailBox)} is null.");
                 return;
             }
-            
+
             HasNotificationInMail.OnNext(mailBox.Any(i => i.New));
             // todo: `Mail`과의 결합을 끊을 필요가 있어 보임.
             Find<Mail>().SetList(mailBox);
@@ -346,91 +323,147 @@ namespace Nekoyume.UI.Module
 
         #region show button
 
-        private void ShowChatButton()
+        private bool ShowButton(ToggleableType toggleableType)
+        {
+            switch (toggleableType)
+            {
+                case ToggleableType.Mail:
+                    return ShowMailButton();
+                case ToggleableType.Quest:
+                    return ShowQuestButton();
+                case ToggleableType.Chat:
+                    return ShowChatButton();
+                case ToggleableType.IllustratedBook:
+                    return ShowIllustratedBookButton();
+                case ToggleableType.Character:
+                    return ShowCharacterButton();
+                case ToggleableType.Inventory:
+                    return ShowInventoryButton();
+                case ToggleableType.WorldMap:
+                    return ShowWorldMapButton();
+                case ToggleableType.Settings:
+                    return ShowSettingsButton();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType, null);
+            }
+        }
+
+        private bool ShowChatButton()
         {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
                 out var world))
-                return;
+                return false;
 
             if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuChat)
-                return;
-            
+                return false;
+
             chatButton.Show();
+            return true;
         }
 
-        private void ShowMailButton()
+        private bool ShowMailButton()
         {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
                 out var world))
-                return;
+                return false;
 
             if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuMail)
-                return;
-            
+                return false;
+
             // todo: 제조 시도 후인지 추가 검사.
-            
+
             mailButton.Show();
+            return true;
         }
 
-        private void ShowQuestButton()
+        private bool ShowQuestButton()
         {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
                 out var world))
-                return;
+                return false;
 
             if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuQuest)
-                return;
-            
+                return false;
+
             questButton.Show();
+            return true;
         }
 
-        private void ShowIllustratedBookButton()
+        private bool ShowIllustratedBookButton()
         {
-            return;
+            return false;
         }
 
-        private void ShowCharacterButton()
+        private bool ShowCharacterButton()
         {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
                 out var world))
-                return;
+                return false;
 
             if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuCharacter)
-                return;
-            
+                return false;
+
             characterButton.Show();
+            return true;
         }
 
-        private void ShowInventoryButton()
+        private bool ShowInventoryButton()
         {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
                 out var world))
-                return;
+                return false;
 
             if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuInventory)
-                return;
-            
+                return false;
+
             inventoryButton.Show();
+            return true;
         }
 
-        private void ShowWorldMapButton()
+        private bool ShowWorldMapButton()
         {
             worldMapButton.Show();
+            return true;
         }
 
-        private void ShowSettingsButton()
+        private bool ShowSettingsButton()
         {
             if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
                 out var world))
-                return;
+                return false;
 
             if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuSettings)
-                return;
-            
+                return false;
+
             settingsButton.Show();
+            return true;
         }
-        
+
         #endregion
-        
+
+        private ToggleableButton GetButton(ToggleableType toggleableType)
+        {
+            switch (toggleableType)
+            {
+                case ToggleableType.Mail:
+                    return mailButton;
+                case ToggleableType.Quest:
+                    return questButton;
+                case ToggleableType.Chat:
+                    return chatButton;
+                case ToggleableType.IllustratedBook:
+                    return illustratedBookButton;
+                case ToggleableType.Character:
+                    return characterButton;
+                case ToggleableType.Inventory:
+                    return inventoryButton;
+                case ToggleableType.WorldMap:
+                    return worldMapButton;
+                case ToggleableType.Settings:
+                    return settingsButton;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType, null);
+            }
+        }
     }
 }
