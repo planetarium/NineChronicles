@@ -439,6 +439,8 @@ namespace Nekoyume.Game
                 stageSheet.TryGetValue(stageId, out var row);
                 status.battleTimerView.Show(row.TurnLimit);
             }
+            battle.repeatButton.gameObject.SetActive(!_rankingBattle);
+
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
