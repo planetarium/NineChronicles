@@ -265,7 +265,7 @@ namespace Nekoyume
                 return;
             }
 
-            parent.GetOffsetsFromPivot(parent.pivot, out var bottomLeftOffset, out var topRightOffset);
+            parent.GetOffsetsFromPivot(rectTransform.pivot, out var bottomLeftOffset, out var topRightOffset);
 
             var anchoredPosition = rectTransform.anchoredPosition;
             var anchoredPositionBottomLeft = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.BottomLeft);

@@ -128,13 +128,13 @@ namespace Nekoyume.UI
 
         protected void SubscribeTargetItem(RectTransform target)
         {
-            panel.SetPivot(PivotPresetType.TopLeft);
+            panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
             base.SubscribeTarget(target);
 
             //target과 panel이 겹칠 경우 target의 왼쪽에 다시 위치
             if (!(target is null) && panel.position.x - target.position.x < 0)
             {
-                panel.SetPivot(PivotPresetType.TopRight);
+                panel.SetAnchorAndPivot(AnchorPresetType.TopRight, PivotPresetType.TopRight);
                 panel.MoveToRelatedPosition(target, TargetPivotPresetType.ReverseX(), DefaultOffsetFromTarget.ReverseX());
                 UpdateAnchoredPosition();
             }
