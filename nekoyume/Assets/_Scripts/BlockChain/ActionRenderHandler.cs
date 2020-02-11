@@ -315,7 +315,7 @@ namespace Nekoyume.BlockChain
 
                 foreach (var questId in eval.Action.completedQuestIds)
                     LocalStateModifier.AddReceivableQuest(States.Instance.CurrentAvatarState.address, questId);
-
+                battleResultWidget.battleEndedStream.Dispose();
             });
             battleResultWidget.battleEndedStream = dispose;
 

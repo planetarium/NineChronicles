@@ -132,7 +132,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            battleEndedStream.Dispose();
             stageProgressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
