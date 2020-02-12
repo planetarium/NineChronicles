@@ -21,7 +21,7 @@ namespace Nekoyume.Game
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
 
-        private Agent _agent;
+        private IAgent _agent;
         
         [SerializeField] private Stage stage = null;
         
@@ -29,7 +29,7 @@ namespace Nekoyume.Game
 
         public LocalStateSettings LocalStateSettings { get; private set; }
 
-        public Agent Agent => _agent;
+        public IAgent Agent => _agent;
 
         public Stage Stage => stage;
 
@@ -125,7 +125,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                if (_agent.BlockDownloadFailed)
+                if (_agent is Agent agent && agent.BlockDownloadFailed)
                 {
                     var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
                         LocalizationManager.Localize("BLOCK_DOWNLOAD_FAIL"));
