@@ -1,0 +1,23 @@
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build-env
+WORKDIR /app
+
+# Copy csproj and restore as distinct layers
+COPY ./Libplanet.Standalone/Libplanet.Standalone.csproj ./Libplanet.Standalone/
+COPY ./Lib9c/Lib9c.csproj ./Lib9c/
+COPY ./NineChronicles.Standalone/NineChronicles.Standalone.csproj ./NineChronicles.Standalone/
+RUN dotnet restore Libplanet.Standalone
+RUN dotnet restore Lib9c
+RUN dotnet restore NineChronicles.Standalone
+
+# Copy everything else and build
+COPY . ./
+RUN dotnet publish NineChronicles.Standalone -c Release -r linux-x64 -o out --self-contained
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.0
+WORKDIR /app
+COPY --from=build-env /app/out .
+
+VOLUME /data
+
+ENTRYPOINT ["dotnet", "NineChronicles.Standalone.dll", "--host", "0.0.0.0", "--port", "31234"]
