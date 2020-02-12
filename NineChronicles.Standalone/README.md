@@ -41,7 +41,7 @@ $ docker build . -f Dockerfile.standalone -t <IMAGE_TAG>
 - `-I`, `--ice-server`: NAT 우회에 사용할 TURN 서버 정보를 지정합니다. 지정하는 서버가 여럿일 경우 `--ice-server serverA --ice-serverserverB`와 같이 추가할 수 있습니다.
 - `--peer`: Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 `--peer peerA --peer peerB ...` 와 같이 추가할 수 있습니다.
 - `-G`, `--genesis-block-path`: 제네시스 블록의 경로를 지정합니다.
-- `-V`, `--app-protocol-version`: `Swarm<T>.AppProtocolVersion`의 값을 지정합니다.
+- `-V`, `--app-protocol-version`: `Swarm<T>.AppProtocolVersion`의 값을 지정합니다.
 
 ### 형식
 
