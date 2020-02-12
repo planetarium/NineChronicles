@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Nekoyume.EnumType;
-using Nekoyume.Model;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -168,11 +168,19 @@ namespace Nekoyume.UI.Module
         #endregion
 
         public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
-            bool useShowButtons = false, params ToggleableType[] showButtons)
+            bool useShowButtons = false, bool animateAlpha = true, params ToggleableType[] showButtons)
         {
             CloseWidget = () => navigationAction?.Invoke(this);
          
             base.Show();
+            if(animateAlpha)
+            {
+                Animator.enabled = false;
+                
+                canvasGroup.alpha = 0;
+                canvasGroup.DOFade(1,  1.0f);
+            }
+            
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
             SharedModel.NavigationAction = navigationAction;
 
@@ -244,7 +252,7 @@ namespace Nekoyume.UI.Module
                 widgetControllable.HideWidget();
             }
 
-            base.Close(true);
+            base.Close(ignoreCloseAnimation);
         }
 
         #region Subscribe

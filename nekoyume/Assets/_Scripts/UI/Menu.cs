@@ -170,8 +170,8 @@ namespace Nekoyume.UI
             Find<StatusDetail>().Close(ignoreCloseAnimation);
             Find<Quest>().Close(ignoreCloseAnimation);
 
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-            Find<Status>().Close(ignoreCloseAnimation);
+            Find<BottomMenu>().Close(true);
+            Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
 
