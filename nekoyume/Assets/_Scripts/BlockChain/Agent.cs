@@ -168,7 +168,7 @@ namespace Nekoyume.BlockChain
             Debug.Log($"Store Path: {path}");
             Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
 
-            var policy = GetPolicy();
+            var policy = BlockPolicy.GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
             store = LoadStore(path, storageType);
