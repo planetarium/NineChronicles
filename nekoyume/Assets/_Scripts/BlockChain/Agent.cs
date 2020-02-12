@@ -45,16 +45,6 @@ namespace Nekoyume.BlockChain
     {
         private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
 
-#if UNITY_EDITOR
-        private static readonly string WebCommandLineOptionsPathInit = string.Empty;
-        private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
-#else
-        private const string WebCommandLineOptionsPathInit = "https://planetarium.dev/9c-alpha-clo.json";
-        private const string WebCommandLineOptionsPathLogin = "https://planetarium.dev/9c-alpha-clo.json";
-#endif
-
-        private static readonly string CommandLineOptionsJsonPath =
-            Path.Combine(Application.streamingAssetsPath, "clo.json");
         private const int MaxSeed = 3;
 
         private static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
@@ -133,15 +123,17 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void Initialize(Action<bool> callback)
+        public void Initialize(CommandLineOptions options, Action<bool> callback)
         {
             if (disposed)
             {
                 Debug.Log("Agent Exist");
                 return;
             }
-
+            
+            _options = options;
             disposed = false;
+            
             StartCoroutine(CoLogin(callback));
         }
 
@@ -260,45 +252,6 @@ namespace Nekoyume.BlockChain
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
 
-        public static CommandLineOptions GetOptions(string localPath, string onlinePath)
-        {
-            var options = CommnadLineParser.GetCommandLineOptions();
-            if (!options.Empty)
-            {
-                Debug.Log($"Get options from commandline.");
-                return options;
-            }
-
-            try
-            {
-                var webResponse = WebRequest.Create(onlinePath).GetResponse();
-                using (var stream = webResponse.GetResponseStream())
-                {
-                    if (!(stream is null))
-                    {
-                        byte[] data = new byte[stream.Length];
-                        stream.Read(data, 0, data.Length);
-                        string jsonData = Encoding.UTF8.GetString(data);
-                        Debug.Log($"Get options from web: {onlinePath}");
-                        return JsonUtility.FromJson<CommandLineOptions>(jsonData);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(e);
-            }
-
-            if (File.Exists(localPath))
-            {
-                Debug.Log($"Get options from local: {localPath}");
-                return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
-            }
-
-            Debug.Log("Failed to find options. Creating...");
-            return new CommandLineOptions();
-        }
-
         public void Dispose()
         {
             _cancellationTokenSource?.Cancel();
@@ -338,7 +291,6 @@ namespace Nekoyume.BlockChain
         private void Awake()
         {
             ForceDotNet.Force();
-            _options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
             if (!Directory.Exists(PrevStorageDirectoryPath))
             {
                 Directory.CreateDirectory(PrevStorageDirectoryPath);

@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -41,6 +43,17 @@ namespace Nekoyume.Game
 
         private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
+#if UNITY_EDITOR
+        private static readonly string WebCommandLineOptionsPathInit = string.Empty;
+        private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
+#else
+        private const string WebCommandLineOptionsPathInit = "https://planetarium.dev/9c-alpha-clo.json";
+        private const string WebCommandLineOptionsPathLogin = "https://planetarium.dev/9c-alpha-clo.json";
+#endif
+
+        private static readonly string CommandLineOptionsJsonPath =
+            Path.Combine(Application.streamingAssetsPath, "clo.json");
+
         #region Mono & Initialization
 
         protected override void Awake()
@@ -70,11 +83,17 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            _agent.Initialize(succeed =>
-            {
-                agentInitialized = true;
-                agentInitializeSucceed = succeed;
-            });
+            _agent.Initialize(
+                CommandLineOptions.Load(
+                    CommandLineOptionsJsonPath,
+                    WebCommandLineOptionsPathInit
+                ),
+                succeed =>
+                {
+                    agentInitialized = true;
+                    agentInitializeSucceed = succeed;
+                }
+            );
             yield return new WaitUntil(() => agentInitialized);
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
@@ -175,20 +194,5 @@ namespace Nekoyume.Game
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
             vfx.Play();
         }
-
-        #region PlaymodeTest
-
-        public void Init()
-        {
-            _agent.Initialize(ShowNext);
-        }
-
-        public IEnumerator TearDown()
-        {
-            Destroy(GetComponent<Agent>());
-            yield return new WaitForEndOfFrame();
-        }
-
-        #endregion
     }
 }
