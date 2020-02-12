@@ -347,6 +347,7 @@ namespace Nekoyume.Model
                 return;
             }
             Simulator.WaveTurn++;
+            Simulator.Turn++;
             Simulator.Log.Add(new WaveTurnEnd(this, Simulator.WaveTurn, Simulator.Turn));
         }
     }
