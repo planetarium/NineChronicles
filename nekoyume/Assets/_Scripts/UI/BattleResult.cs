@@ -89,6 +89,8 @@ namespace Nekoyume.UI
         public Subject<bool> BattleEndedSubject = new Subject<bool>();
         public IDisposable battleEndedStream;
 
+        private Animator _victoryImageAnimator;
+
         protected override void Awake()
         {
             base.Awake();
@@ -114,6 +116,8 @@ namespace Nekoyume.UI
             SubmitWidget = submitButton.onClick.Invoke;
             defeatTextArea.root.SetActive(false);
             defeatTextArea.defeatText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
+
+            _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
         }
 
         public void Show(Model model)
@@ -158,6 +162,7 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
 
+            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWave);
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
