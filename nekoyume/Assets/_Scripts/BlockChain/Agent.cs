@@ -19,6 +19,7 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
+using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Microsoft.ApplicationInsights;
@@ -73,7 +74,7 @@ namespace Nekoyume.BlockChain
 
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
-        protected DefaultStore store;
+        protected BaseStore store;
         private ImmutableList<Peer> _seedPeers;
         private IImmutableSet<Address> _trustedPeers;
         private ImmutableList<Peer> _peerList;
@@ -148,7 +149,8 @@ namespace Nekoyume.BlockChain
             string host,
             int? port,
             bool consoleSink,
-            bool development)
+            bool development,
+            string storageType = null)
         {
             InitializeLogger(consoleSink, development);
 
@@ -169,7 +171,7 @@ namespace Nekoyume.BlockChain
             var policy = GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
-            store = new DefaultStore(path, flush: false);
+            store = LoadStore(path, storageType);
 
             try
             {
@@ -208,7 +210,7 @@ namespace Nekoyume.BlockChain
             _trustedPeers = _seedPeers.Select(peer => peer.Address).ToImmutableHashSet();
             _cancellationTokenSource = new CancellationTokenSource();
         }
-        
+
         public void ResetStore()
         {
             var confirm = Widget.Find<Confirm>();
@@ -325,6 +327,7 @@ namespace Nekoyume.BlockChain
             var port = _options.Port;
             var consoleSink = _options.ConsoleSink;
             var storagePath = _options.StoragePath ?? DefaultStoragePath;
+            var storageType = _options.storageType;
             var development = _options.Development;
             Init(
                 privateKey,
@@ -334,7 +337,8 @@ namespace Nekoyume.BlockChain
                 host,
                 port,
                 consoleSink,
-                development
+                development,
+                storageType
             );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
@@ -467,6 +471,34 @@ namespace Nekoyume.BlockChain
             return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
         }
 
+        private static BaseStore LoadStore(string path, string storageType)
+        {
+            BaseStore store = null;
+
+            if (storageType is null)
+            {
+                Debug.Log("Storage Type is not specified. DefaultStore will be used.");
+            }
+            else if (storageType == "rocksdb")
+            {
+                try
+                {
+                    store = new RocksDBStore(path, flush: false);
+                    Debug.Log("RocksDB is initialized.");
+                }
+                catch (TypeInitializationException e)
+                {
+                    Debug.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
+                }
+            }
+            else
+            {
+                Debug.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
+            }
+
+            return store ?? new DefaultStore(path, flush: false, compress: true);
+        }
+
         private void StartSystemCoroutines()
         {
             _txProcessor = CoTxProcessor();
@@ -579,7 +611,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 Cheat.Display("StagedTxs", log.ToString());
-                
+
                 log = new StringBuilder($"Last 10 tips :\n");
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
