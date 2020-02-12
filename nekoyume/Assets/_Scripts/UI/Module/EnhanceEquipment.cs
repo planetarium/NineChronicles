@@ -122,7 +122,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var otherMaterial in otherMaterials)
             {
-                otherMaterial.Unlock();
+                otherMaterial.Unlock(false);
             }
 
             UpdateMessageText();

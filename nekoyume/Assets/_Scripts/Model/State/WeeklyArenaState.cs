@@ -387,16 +387,10 @@ namespace Nekoyume.Model.State
                 [(Text)"score"] = Score.Serialize(),
             });
 
-        public void Update(int score)
-        {
-            var calculated = Score + score;
-            Score = Math.Max(GameConfig.ArenaScoreDefault, calculated);
-            DailyChallengeCount--;
-        }
-
         public void Update(AvatarState state)
         {
             ArmorId = state.GetArmorId();
+            Level = state.level;
             CombatPoint = CPHelper.GetCP(state);
         }
 

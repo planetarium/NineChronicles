@@ -21,6 +21,10 @@ namespace Nekoyume.UI
         
         public T Model { get; private set; }
         
+        public abstract PivotPresetType TargetPivotPresetType { get; }
+        public virtual float2 OffsetFromTarget => DefaultOffsetFromTarget;
+        public virtual float2 OffsetFromParent => DefaultOffsetFromParent;
+
         public void Show(T value)
         {
             if (value is null)
@@ -32,7 +36,8 @@ namespace Nekoyume.UI
             
             _disposablesForModel.DisposeAllAndClear();
             Model = value;
-            
+            Model.target.Subscribe(rect => SubscribeTarget(rect)).AddTo(_disposablesForModel);
+
             Show();
         }
         
@@ -46,12 +51,13 @@ namespace Nekoyume.UI
         
         protected virtual void SubscribeTarget(RectTransform target)
         {
-            StartCoroutine(panel.MoveToRelatedPosition(target, DefaultOffsetFromTarget));
+            panel.MoveToRelatedPosition(target, TargetPivotPresetType, OffsetFromTarget);
+            UpdateAnchoredPosition();
         }
 
         protected virtual void UpdateAnchoredPosition()
         {
-            panel.MoveInsideOfParent(DefaultOffsetFromParent);
+            panel.MoveInsideOfParent(OffsetFromParent);
         }
     }
 }
