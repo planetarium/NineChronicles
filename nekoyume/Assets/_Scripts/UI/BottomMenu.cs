@@ -175,7 +175,7 @@ namespace Nekoyume.UI.Module
             base.Show();
             if(animateAlpha)
             {
-                _animator.enabled = false;
+                Animator.enabled = false;
                 
                 canvasGroup.alpha = 0;
                 canvasGroup.DOFade(1,  1.0f);
