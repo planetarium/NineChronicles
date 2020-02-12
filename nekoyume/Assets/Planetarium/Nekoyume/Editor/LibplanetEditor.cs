@@ -7,25 +7,20 @@ namespace Planetarium.Nekoyume.Editor
 {
     public static class LibplanetEditor
     {
-        [MenuItem("Tools/Libplanet/Delete All(Editor)")]
-        public static void DeleteAllEditor()
-        {
-            DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
-        }
-        
-        [MenuItem("Tools/Libplanet/Delete All(Editor) - Mine Genesis Block For Dev")]
+        [MenuItem("Tools/Libplanet/Delete All(Editor) - Mine Genesis Block For Dev To StreamingAssets Folder")]
         public static void DeleteAllEditorAndMinGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
-            var block = BlockHelper.MineGenesisBlock();
             var path = Path.Combine(Application.streamingAssetsPath, BlockHelper.GenesisBlockNameDev);
-            BlockHelper.ExportBlock(block, path);
+            MakeGenesisBlock(path);
         }
 
-        [MenuItem("Tools/Libplanet/Delete All(Player)")]
+        [MenuItem("Tools/Libplanet/Delete All(Player) - Mine Genesis Block For Prod To StreamingAssets Folder")]
         public static void DeleteAllPlayer()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Production));
+            var path = Path.Combine(Application.streamingAssetsPath, BlockHelper.GenesisBlockNameProd);
+            MakeGenesisBlock(path);
         }
 
         [MenuItem("Tools/Libplanet/Mine Genesis Block")]
@@ -40,8 +35,7 @@ namespace Planetarium.Nekoyume.Editor
                 return;
             }
 
-            var block = BlockHelper.MineGenesisBlock();
-            BlockHelper.ExportBlock(block, path);
+            MakeGenesisBlock(path);
         }
 
         private static void DeleteAll(string path)
@@ -50,6 +44,12 @@ namespace Planetarium.Nekoyume.Editor
             {
                 Directory.Delete(path, recursive: true);
             }
+        }
+
+        private static void MakeGenesisBlock(string path)
+        {
+            var block = BlockHelper.MineGenesisBlock();
+            BlockHelper.ExportBlock(block, path);
         }
     }
 }
