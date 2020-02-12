@@ -171,7 +171,7 @@ namespace Nekoyume.UI.Module
             bool useShowButtons = false, bool animateAlpha = true, params ToggleableType[] showButtons)
         {
             CloseWidget = () => navigationAction?.Invoke(this);
-            
+         
             base.Show();
             if(animateAlpha)
             {
