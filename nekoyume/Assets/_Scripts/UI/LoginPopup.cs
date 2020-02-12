@@ -84,6 +84,7 @@ namespace Nekoyume.UI
             correctText.gameObject.SetActive(false);
             incorrectText.gameObject.SetActive(false);
             contentText.text = LocalizationManager.Localize("UI_LOGIN_CONTENT");
+            accountAddressHolder.text = LocalizationManager.Localize("UI_ACCOUNT_PLACEHOLDERS");
             findPassphraseText.text = LocalizationManager.Localize("UI_LOGIN_FIND_PASSPHRASE");
             backToLoginText.text = LocalizationManager.Localize("UI_LOGIN_BACK_TO_LOGIN");
             passPhraseText.text = LocalizationManager.Localize("UI_LOGIN_PASSWORD_INFO");
