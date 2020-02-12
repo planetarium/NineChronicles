@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Libplanet.Action;
 using Libplanet.Blocks;
@@ -180,30 +181,46 @@ namespace Editor
         }
 
         [PostProcessBuild(0)]
-        public static void CopySecp256k1(BuildTarget target, string pathToBuiltProject)
+        public static void CopyNativeLibraries(BuildTarget target, string pathToBuiltProject)
         {
-            var libname = "";
-            var destLibPath = pathToBuiltProject;
             var binaryName = Path.GetFileNameWithoutExtension(pathToBuiltProject);
+            var destLibPath = pathToBuiltProject;
+            var libDir = "runtimes";
             switch (target)
             {
                 case BuildTarget.StandaloneOSX:
-                    libname = "libsecp256k1.dylib";
-                    destLibPath = Path.Combine(destLibPath + ".app", "Contents/Resources/Data/Managed/", libname);
+                    libDir = Path.Combine(libDir, "osx-x64", "native");
+                    destLibPath = Path.Combine(
+                        destLibPath + ".app", "Contents/Resources/Data/Managed/", libDir);
                     break;
                 case BuildTarget.StandaloneWindows64:
-                    libname = "secp256k1.dll";
-                    destLibPath = Path.Combine(Path.GetDirectoryName(destLibPath), $"{binaryName}_Data/Managed", libname);
+                    libDir = Path.Combine(libDir, "win-x64", "native");
+                    destLibPath = Path.Combine(
+                        Path.GetDirectoryName(destLibPath), $"{binaryName}_Data/Managed", libDir);
                     break;
                 default:
-                    libname = "libsecp256k1.so";
-                    destLibPath = Path.Combine(Path.GetDirectoryName(destLibPath), $"{binaryName}_Data/Managed", libname);
+                    libDir = Path.Combine(libDir, "linux-x64", "native");
+                    destLibPath = Path.Combine(
+                        Path.GetDirectoryName(destLibPath), $"{binaryName}_Data/Managed", libDir);
                     break;
             }
 
-            var srcLibPath = Path.Combine(Application.dataPath, "Packages", libname);
-            Debug.Log($"Secp256k1 src path = {srcLibPath}, dst path = {destLibPath}");
-            File.Copy(srcLibPath, destLibPath, true);
+            var srcLibPath = Path.Combine(Application.dataPath, "Packages", libDir);
+
+            var src = new DirectoryInfo(srcLibPath);
+            var dest = new DirectoryInfo(destLibPath);
+
+            Directory.CreateDirectory(dest.FullName);
+
+            foreach (FileInfo fileInfo in src.GetFiles())
+            {
+                if (fileInfo.Extension == ".meta")
+                {
+                    continue;
+                }
+
+                fileInfo.CopyTo(Path.Combine(dest.FullName, fileInfo.Name), true);
+            }
         }
 
         private static void CopyToBuildDirectory(string basePath, string targetDirName, string filename)
