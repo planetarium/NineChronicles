@@ -1745,11 +1745,109 @@
             to update the states of <see cref="T:Libplanet.Address"/>es not included
             in <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/>.</exception>
         </member>
+        <member name="M:Libplanet.Blocks.Block`1.ToBlockDigest">
+            <summary>
+            Gets <see cref="T:Libplanet.Blocks.BlockDigest"/> representation of the <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </summary>
+            <returns><see cref="T:Libplanet.Blocks.BlockDigest"/> representation of the <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </returns>
+        </member>
         <member name="T:Libplanet.Blocks.BlockDigest">
             <summary>
             Class that store uses to save blocks. This contains:
             <see cref="T:Libplanet.Blocks.BlockHeader"/>, and list of <see cref="T:Libplanet.Tx.TxId"/>s.
             </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockDigest.#ctor(Libplanet.Blocks.BlockHeader,System.Collections.Immutable.ImmutableArray{System.Collections.Immutable.ImmutableArray{System.Byte}})">
+            <summary>
+            Creates <see cref="T:Libplanet.Blocks.BlockDigest"/> instance from <see cref="T:Libplanet.Blocks.BlockHeader"/> and
+            <see cref="T:Libplanet.Tx.Transaction`1"/> ids the <see cref="T:Libplanet.Blocks.Block`1"/> has.
+            </summary>
+            <param name="header"><see cref="T:Libplanet.Blocks.BlockHeader"/> of the <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
+            <param name="txIds"><see cref="T:Libplanet.Tx.Transaction`1"/> ids the <see cref="T:Libplanet.Blocks.Block`1"/> has.
+            </param>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockDigest.#ctor(Bencodex.Types.Dictionary)">
+            <summary>
+            Creates <see cref="T:Libplanet.Blocks.BlockDigest"/> instance from
+            <see cref="T:Bencodex.Types.Dictionary"/> representation of the <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </summary>
+            <param name="dict">
+            <see cref="T:Bencodex.Types.Dictionary"/> representation of the <see cref="T:Libplanet.Blocks.Block`1"/>.
+            </param>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockDigest.Deserialize(System.Byte[])">
+            <summary>
+            Gets <see cref="T:Libplanet.Blocks.BlockDigest"/> instance from serialized <paramref name="bytes"/>.
+            </summary>
+            <param name="bytes">Serialized <see cref="T:Libplanet.Blocks.BlockDigest"/>.</param>
+            <returns>Deserialized <see cref="T:Libplanet.Blocks.BlockDigest"/>.</returns>
+            <exception cref="T:Bencodex.DecodingException">Thrown when decoded value is not
+            <see cref="T:Bencodex.Types.Dictionary"/> type.</exception>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockDigest.Serialize">
+            <summary>
+            Gets serialized byte array of the <see cref="T:Libplanet.Blocks.BlockDigest"/>.
+            </summary>
+            <returns>Serialized byte array of <see cref="T:Libplanet.Blocks.BlockDigest"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockDigest.ToBencodex">
+            <summary>
+            Gets <see cref="T:Bencodex.Types.Dictionary"/> representation of
+            <see cref="T:Libplanet.Blocks.BlockDigest"/>.
+            </summary>
+            <returns><see cref="T:Bencodex.Types.Dictionary"/> representation of
+            <see cref="T:Libplanet.Blocks.BlockDigest"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Blocks.BlockHeader">
+            <summary>
+            Block header containing information about <see cref="T:Libplanet.Blocks.Block`1"/>s except transactions.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(System.Int64,System.String,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Int64,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance.
+            </summary>
+            <param name="index">The height of the block.  Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Index"/>.
+            </param>
+            <param name="timestamp">The time this block is created.
+            Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Timestamp"/>.</param>
+            <param name="nonce">The nonce which satisfy the given <paramref name="difficulty"/>
+            with any other field values.  Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Nonce"/>.</param>
+            <param name="miner">An optional address refers to who mines this block.
+            Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Miner"/>.</param>
+            <param name="difficulty">The mining difficulty that <paramref name="nonce"/>
+            has to satisfy.  Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Difficulty"/>.</param>
+            <param name="previousHash">The previous block's <see cref="P:Libplanet.Blocks.BlockHeader.Hash"/>.  If it's a genesis
+            block (i.e., <paramref name="index"/> is 0) this should be <c>null</c>.
+            Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.PreviousHash"/>.</param>
+            <param name="txHash">The result of hashing the transactions the block has.
+            Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.TxHash"/>.</param>
+            <param name="hash">The hash of the <see cref="T:Libplanet.Blocks.Block`1"/>.
+            Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Hash"/>.</param>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockHeader.Deserialize(System.Byte[])">
+            <summary>
+            Gets <see cref="T:Libplanet.Blocks.BlockHeader"/> instance from serialized <paramref name="bytes"/>.
+            </summary>
+            <param name="bytes">Serialized <see cref="T:Libplanet.Blocks.BlockHeader"/>.</param>
+            <returns>Deserialized <see cref="T:Libplanet.Blocks.BlockHeader"/>.</returns>
+            <exception cref="T:Bencodex.DecodingException">Thrown when decoded value is not
+            <see cref="T:Bencodex.Types.Dictionary"/> type.</exception>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockHeader.Serialize">
+            <summary>
+            Gets serialized byte array of the <see cref="T:Libplanet.Blocks.BlockHeader"/>.
+            </summary>
+            <returns>Serialized byte array of <see cref="T:Libplanet.Blocks.BlockHeader"/>.</returns>
+        </member>
+        <member name="M:Libplanet.Blocks.BlockHeader.ToBencodex">
+            <summary>
+            Gets <see cref="T:Bencodex.Types.Dictionary"/> representation of
+            <see cref="T:Libplanet.Blocks.BlockHeader"/>.
+            </summary>
+            <returns><see cref="T:Bencodex.Types.Dictionary"/> representation of
+            <see cref="T:Libplanet.Blocks.BlockHeader"/>.</returns>
         </member>
         <member name="T:Libplanet.Blocks.InvalidGenesisBlockException">
             <summary>
@@ -2188,6 +2286,37 @@
             object.</returns>
             <seealso cref="P:Libplanet.Crypto.SymmetricKey.ByteArray"/>
             <seealso cref="M:Libplanet.Crypto.SymmetricKey.#ctor(System.Byte[])"/>
+        </member>
+        <member name="T:Libplanet.FixedSizedQueue`1">
+            <summary>
+            Equivalent to <see cref="T:System.Collections.Concurrent.ConcurrentQueue`1"/>, except this does not accept more than
+            the specified maximum size.
+            </summary>
+            <typeparam name="T">Specifies the type of elements in the queue.</typeparam>
+        </member>
+        <member name="F:Libplanet.FixedSizedQueue`1._syncObject">
+            <summary>
+            Simple object for thread synchronization.
+            </summary>
+        </member>
+        <member name="M:Libplanet.FixedSizedQueue`1.#ctor(System.Int32)">
+            <summary>
+            Creates a new instance of the <see cref="T:Libplanet.FixedSizedQueue`1"/>
+            with the specified <paramref name="size"/>.
+            </summary>
+            <param name="size">The maximum size of the <see cref="T:Libplanet.FixedSizedQueue`1"/>.</param>
+        </member>
+        <member name="P:Libplanet.FixedSizedQueue`1.Size">
+            <summary>
+            Gets the fixed size of the <see cref="T:Libplanet.FixedSizedQueue`1"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.FixedSizedQueue`1.Enqueue(`0)">
+            <summary>
+            Adds an object at the end of the <see cref="T:Libplanet.FixedSizedQueue`1"/>.
+            </summary>
+            <param name="obj">The object to add at the
+            end of the <see cref="T:Libplanet.FixedSizedQueue`1"/>.</param>
         </member>
         <member name="T:Libplanet.Hashcash">
             <summary>
@@ -3017,6 +3146,31 @@
         <member name="M:Libplanet.Net.Peer.ToString">
             <inheritdoc/>
         </member>
+        <member name="T:Libplanet.Net.PeerState">
+            <summary>
+            Represents a <see cref="P:Libplanet.Net.PeerState.Peer"/>'s state in the routing table.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerState.Address">
+            <summary>
+            <see cref="P:Libplanet.Net.PeerState.Address"/> of peer.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerState.LastUpdated">
+            <summary>
+            Last time messages were exchanged.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerState.LastChecked">
+            <summary>
+            Last time the peer was verified.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerState.Latency">
+            <summary>
+            Delay of verification in milliseconds.
+            </summary>
+        </member>
         <member name="T:Libplanet.Net.PreloadBlockDownloadFailEventArgs">
             <summary>
             The event data that provides value to the event handler which is triggered when the block
@@ -3245,6 +3399,16 @@
             <exception cref="T:System.AggregateException">Thrown when the given the block downloading is
             failed and if <paramref name="blockDownloadFailed "/> is <c>null</c>.</exception>
         </member>
+        <member name="M:Libplanet.Net.Swarm`1.CheckAllPeersAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Validates all <see cref="T:Libplanet.Net.Peer"/>s in the routing table by sending a simple message.
+            </summary>
+            <param name="timeout">Timeout for this operation. If it is set to <c>null</c>,
+            wait infinitely until the requested operation is finished.</param>
+            <param name="cancellationToken">A cancellation token used to propagate notification
+            that this operation should be canceled.</param>
+            <returns>An awaitable task without value.</returns>
+        </member>
         <member name="T:Libplanet.Nonce">
             <summary>
             An arbitrary <see cref="T:System.Byte"/>s that determines a
@@ -3320,6 +3484,9 @@
         <member name="M:Libplanet.Store.BaseStore.GetBlockIndex(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.BaseStore.GetBlockDigest(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.BaseStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <inheritdoc />
         </member>
@@ -3348,6 +3515,9 @@
             <inheritdoc />
         </member>
         <member name="M:Libplanet.Store.BaseStore.DeleteChainId(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.BaseStore.Dispose">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Store.ChainIdNotFoundException">
@@ -3455,6 +3625,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.IterateBlockHashes">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.DefaultStore.GetBlockDigest(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.DefaultStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
@@ -3623,6 +3796,15 @@
             </remarks>
             <returns>A found block's <see cref="P:Libplanet.Blocks.Block`1.Index"/>, or <c>null</c> if no block having
             such <paramref name="blockHash"/> is stored.</returns>
+        </member>
+        <member name="M:Libplanet.Store.IStore.GetBlockDigest(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Gets the corresponding stored <see cref="T:Libplanet.Blocks.BlockDigest"/> to the given
+            <paramref name="blockHash"/>.
+            </summary>
+            <param name="blockHash"><see cref="P:Libplanet.Blocks.Block`1.Hash"/> to find.</param>
+            <returns>A found <see cref="T:Libplanet.Blocks.BlockDigest"/>, or <c>null</c> if no block having such
+            <paramref name="blockHash"/> is stored.</returns>
         </member>
         <member name="M:Libplanet.Store.IStore.PutBlock``1(Libplanet.Blocks.Block{``0})">
             <summary>

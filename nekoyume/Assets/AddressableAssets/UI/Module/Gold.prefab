@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5143054505114445293}
   - component: {fileID: 6082725816313648470}
   - component: {fileID: 2489991786261120242}
+  - component: {fileID: 6288766286076392999}
   m_Layer: 5
   m_Name: Gold
   m_TagString: Untagged
@@ -53,6 +54,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   text: {fileID: 457178462942036223}
+  canvasGroup: {fileID: 6288766286076392999}
+  animateAlpha: 0
 --- !u!222 &6082725816313648470
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -90,6 +93,18 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
+--- !u!225 &6288766286076392999
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307372968871572777}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5471916307204987202
 GameObject:
   m_ObjectHideFlags: 0

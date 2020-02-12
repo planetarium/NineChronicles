@@ -762,6 +762,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7742241639680412028}
   - component: {fileID: 8786014724240155521}
+  - component: {fileID: 5236601976625468249}
   m_Layer: 5
   m_Name: UI_BossStatus
   m_TagString: Untagged
@@ -806,6 +807,26 @@ MonoBehaviour:
   infoText: {fileID: 2734466093903074112}
   portrait: {fileID: 1261103676683282457}
   buffLayout: {fileID: 7763345537322646308}
+  animator: {fileID: 5236601976625468249}
+--- !u!95 &5236601976625468249
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7742241639680412019}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 130ab737db2e46e4babb7f7e956b9b52, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &7742241639723032493
 GameObject:
   m_ObjectHideFlags: 0
