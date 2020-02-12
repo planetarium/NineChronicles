@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: 7434278619177023938}
   - component: {fileID: 5411197907206907077}
   - component: {fileID: 1840000510220927721}
+  - component: {fileID: -9137729193417607844}
   m_Layer: 5
   m_Name: DailyBonus
   m_TagString: Untagged
@@ -187,6 +188,8 @@ MonoBehaviour:
   slider: {fileID: 3053886975560591760}
   button: {fileID: 3365668517307483660}
   canvasGroup: {fileID: 5124867261552837371}
+  dailyBonusCanvasGroup: {fileID: -9137729193417607844}
+  animateAlpha: 0
   tooltipArea: {fileID: 2493448372099798015}
 --- !u!111 &5411197907206907077
 Animation:
@@ -251,6 +254,18 @@ MonoBehaviour:
           m_CallState: 2
       m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
         Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+--- !u!225 &-9137729193417607844
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3053886975560591762}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3053886975728798314
 GameObject:
   m_ObjectHideFlags: 0
