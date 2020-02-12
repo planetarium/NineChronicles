@@ -36,6 +36,8 @@ namespace Nekoyume.Helper
 
         public string storagePath;
 
+        public string storageType;
+
         public bool autoPlay;
 
         public bool consoleSink;
@@ -118,7 +120,7 @@ namespace Nekoyume.Helper
         }
 
         [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
-        public IEnumerable<string> Peers    
+        public IEnumerable<string> Peers
         {
             get => peers;
             set
@@ -138,6 +140,17 @@ namespace Nekoyume.Helper
             set
             {
                 storagePath = value;
+                Empty = false;
+            }
+        }
+
+        [Option("storage-type", Required = false, HelpText = "The storage type to use.")]
+        public string StorageType
+        {
+            get => storageType;
+            set
+            {
+                storageType = value;
                 Empty = false;
             }
         }
