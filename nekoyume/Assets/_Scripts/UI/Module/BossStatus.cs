@@ -13,14 +13,26 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI infoText;
         public Image portrait;
         public BuffLayout buffLayout;
+        public Animator animator;
 
         public void Show()
         {
             gameObject.SetActive(true);
             buffLayout.SetBuff(null);
+
+            animator.enabled = true;
         }
 
-        public void Close() => gameObject.SetActive(false);
+        public void Close(bool ignoreAnimation = true)
+        {
+            if (ignoreAnimation)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+            animator.enabled = true;
+            animator.Play("Close");
+        }
 
         public void SetHp(int current, int max)
         {
@@ -38,6 +50,18 @@ namespace Nekoyume.UI.Module
         public void SetBuff(Dictionary<int, Buff> modelBuffs)
         {
             buffLayout.SetBuff(modelBuffs);
+        }
+
+        public void OnShowComplete()
+        {
+            animator.enabled = false;
+        }
+
+        public void OnCloseComplete()
+        {
+            animator.enabled = false;
+            
+            gameObject.SetActive(false);
         }
     }
 }

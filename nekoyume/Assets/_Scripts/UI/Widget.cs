@@ -21,7 +21,7 @@ namespace Nekoyume.UI
         public readonly Subject<Widget> OnEnableSubject = new Subject<Widget>();
         public readonly Subject<Widget> OnDisableSubject = new Subject<Widget>();
 
-        private Animator _animator;
+        protected Animator Animator { get; private set; }
 
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
@@ -37,7 +37,7 @@ namespace Nekoyume.UI
 
         protected virtual void Awake()
         {
-            _animator = GetComponent<Animator>();
+            Animator = GetComponent<Animator>();
             RectTransform = GetComponent<RectTransform>();
 
             CloseWidget = () => Close();
@@ -169,10 +169,10 @@ namespace Nekoyume.UI
             }
 
             gameObject.SetActive(true);
-            if (_animator)
+            if (Animator)
             {
-                _animator.enabled = true;
-                _animator.Play("Show");
+                Animator.enabled = true;
+                Animator.Play("Show");
             }
         }
         
@@ -212,11 +212,11 @@ namespace Nekoyume.UI
         
         public virtual IEnumerator CoClose()
         {
-            if (_animator)
+            if (Animator)
             {
                 _isCloseAnimationCompleted = false;
-                _animator.enabled = true;
-                _animator.Play("Close");
+                Animator.enabled = true;
+                Animator.Play("Close");
                 yield return new WaitUntil(() => _isCloseAnimationCompleted);
             }
 
@@ -227,17 +227,17 @@ namespace Nekoyume.UI
 
         protected virtual void OnCompleteOfShowAnimation()
         {
-            if (_animator)
+            if (Animator)
             {
-                _animator.enabled = false;
+                Animator.enabled = false;
             }
         }
 
         protected virtual void OnCompleteOfCloseAnimation()
         {
-            if (_animator)
+            if (Animator)
             {
-                _animator.enabled = false;
+                Animator.enabled = false;
             }
 
             _isCloseAnimationCompleted = true;
