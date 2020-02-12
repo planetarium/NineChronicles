@@ -8,8 +8,10 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.Model
 {
+    [Serializable]
     public class WorldInformation : IState
     {
+        [Serializable]
         public struct World : IState
         {
             public readonly int Id;
