@@ -7,10 +7,15 @@ namespace Nekoyume.UI
     {
         public VerticalLayoutGroup verticalLayoutGroup;
 
-        protected override void UpdateAnchoredPosition()
+        protected override void SubscribeTarget(RectTransform target)
         {
-            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) verticalLayoutGroup.transform);
-            base.UpdateAnchoredPosition();
+            LayoutRebuild();
+            base.SubscribeTarget(target);
+        }
+
+        protected void LayoutRebuild()
+        {
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)verticalLayoutGroup.transform);
         }
     }
 }
