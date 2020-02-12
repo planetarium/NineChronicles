@@ -69,7 +69,7 @@ namespace Libplanet.Standalone.Hosting
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            var peers = _properties.Peers;
+            var peers = _properties.Peers.ToImmutableArray();
             if (peers.Any())
             {
                 var trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();

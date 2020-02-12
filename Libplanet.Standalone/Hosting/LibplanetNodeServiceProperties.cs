@@ -17,7 +17,7 @@ namespace Libplanet.Standalone.Hosting
 
         public string GenesisBlockPath { get; set; }
 
-        public Peer[] Peers { get; set; }
+        public IEnumerable<Peer> Peers { get; set; }
 
         public bool NoMiner { get; set; }
 

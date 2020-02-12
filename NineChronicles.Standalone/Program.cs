@@ -67,7 +67,7 @@ namespace NineChronicles.Standalone
                 NoMiner = noMiner,
                 PrivateKey = privateKey,
                 IceServers = iceServerStrings.Select(LoadIceServer),
-                Peers = peerStrings.Select(LoadPeer).ToArray(),
+                Peers = peerStrings.Select(LoadPeer),
                 StorePath = storePath,
             };
 
