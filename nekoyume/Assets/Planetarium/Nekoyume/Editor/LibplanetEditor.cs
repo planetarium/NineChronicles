@@ -12,6 +12,15 @@ namespace Planetarium.Nekoyume.Editor
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
         }
+        
+        [MenuItem("Tools/Libplanet/Delete All(Editor) - Mine Genesis Block For Dev")]
+        public static void DeleteAllEditorAndMinGenesisBlock()
+        {
+            DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
+            var block = BlockHelper.MineGenesisBlock();
+            var path = Path.Combine(Application.streamingAssetsPath, BlockHelper.GenesisBlockNameDev);
+            BlockHelper.ExportBlock(block, path);
+        }
 
         [MenuItem("Tools/Libplanet/Delete All(Player)")]
         public static void DeleteAllPlayer()
