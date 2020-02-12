@@ -425,19 +425,22 @@ namespace Nekoyume.Game
             status.Show();
             status.ShowBattleStatus();
 
-            var stageSheet = Game.instance.TableSheets.StageSheet;
-            stageSheet.TryGetValue(stageId, out var row);
-            status.battleTimerView.Show(row.TurnLimit);
-
             var battle = Widget.Find<UI.Battle>();
             if (_rankingBattle)
             {
                 battle.Show();
+                battle.stageProgressBar.Close();
             }
             else
             {
                 battle.Show(stageId, repeatStage, isExitReserved);
+
+                var stageSheet = Game.instance.TableSheets.StageSheet;
+                stageSheet.TryGetValue(stageId, out var row);
+                status.battleTimerView.Show(row.TurnLimit);
             }
+            battle.repeatButton.gameObject.SetActive(!_rankingBattle);
+
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
@@ -453,7 +456,6 @@ namespace Nekoyume.Game
         {
             var battle = Widget.Find<UI.Battle>();
             battle.bossStatus.Close();
-            battle.stageProgressBar.Close();
             battle.enemyPlayerStatus.Show();
             battle.enemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
 
@@ -703,8 +705,10 @@ namespace Nekoyume.Game
 
         public Character.Player GetPlayer()
         {
-            if (!(selectedPlayer is null))
+            if (!(selectedPlayer is null) && selectedPlayer.gameObject.activeSelf)
+            {
                 return selectedPlayer;
+            }
 
             var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
             selectedPlayer = go.GetComponent<Character.Player>();
@@ -722,13 +726,20 @@ namespace Nekoyume.Game
             return player;
         }
 
-        public Character.Player RunPlayer()
+        private Character.Player RunPlayer()
         {
             var player = GetPlayer();
             var playerTransform = player.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
+            player.StartRun();
+            return player;
+        }
+
+        public Character.Player RunPlayer(Vector2 position)
+        {
+            var player = GetPlayer(position);
             player.StartRun();
             return player;
         }

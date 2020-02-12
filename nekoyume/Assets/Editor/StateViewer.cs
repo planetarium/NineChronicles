@@ -137,10 +137,10 @@ namespace Editor
 
     class StateProxy
     {
-        private Agent Agent { get; }
+        private IAgent Agent { get; }
         private Dictionary<string, Address> Aliases { get; }
 
-        public StateProxy(Agent agent)
+        public StateProxy(IAgent agent)
         {
             Agent = agent;
             Aliases = new Dictionary<string, Address>();
