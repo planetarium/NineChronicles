@@ -1,7 +1,7 @@
 using NUnit.Framework;
-using Nekoyume.BlockChain;
 using UnityEngine;
 using System.IO;
+using Nekoyume.Helper;
 
 namespace Tests.EditMode
 {
@@ -11,7 +11,7 @@ namespace Tests.EditMode
         [Test]
         public void EmptyJson()
         {
-            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_empty.json"), string.Empty);
+            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_empty.json"), string.Empty);
             Assert.Null(opt.Port);
             Assert.Null(opt.Host);
             Assert.IsFalse(opt.NoMiner);
@@ -23,7 +23,7 @@ namespace Tests.EditMode
         [Test]
         public void P2PSeed() 
         {
-            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_seed.json"), string.Empty);
+            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_seed.json"), string.Empty);
             Assert.AreEqual(5555, opt.Port);
             Assert.AreEqual("test.planetariumhq.com", opt.Host);
             Assert.IsFalse(opt.NoMiner);
@@ -35,7 +35,7 @@ namespace Tests.EditMode
         [Test]
         public void P2PNoMiner()
         {
-            var opt = Agent.GetOptions(Path.Combine(jsonFixturePath, "clo_nominer.json"), string.Empty);
+            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_nominer.json"), string.Empty);
             Assert.Null(opt.Port);
             Assert.Null(opt.Host);
             Assert.IsTrue(opt.NoMiner);
