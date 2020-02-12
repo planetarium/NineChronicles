@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Helper;
+using Nekoyume.TableData;
 using TMPro;
 using UniRx;
+using UnityEngine.U2D;
 
 namespace Nekoyume.UI.Module
 {
@@ -68,6 +71,14 @@ namespace Nekoyume.UI.Module
             }
 
             SetCount(Model.Count.Value);
+        }
+
+        public override void SetData(ItemSheet.Row itemRow)
+        {
+            base.SetData(itemRow);
+
+            var gradeSprite = SpriteHelper.GetSmallItemBackground(itemRow.Grade);
+            gradeImage.overrideSprite = gradeSprite;
         }
     }
 }
