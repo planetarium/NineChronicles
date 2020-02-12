@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -41,6 +44,17 @@ namespace Nekoyume.Game
 
         private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
+#if UNITY_EDITOR
+        private static readonly string WebCommandLineOptionsPathInit = string.Empty;
+        private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
+#else
+        private const string WebCommandLineOptionsPathInit = "https://planetarium.dev/9c-alpha-clo.json";
+        private const string WebCommandLineOptionsPathLogin = "https://planetarium.dev/9c-alpha-clo.json";
+#endif
+
+        private static readonly string CommandLineOptionsJsonPath =
+            Path.Combine(Application.streamingAssetsPath, "clo.json");
+
         #region Mono & Initialization
 
         protected override void Awake()
@@ -70,11 +84,19 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            _agent.Initialize(succeed =>
-            {
-                agentInitialized = true;
-                agentInitializeSucceed = succeed;
-            });
+            yield return StartCoroutine(
+                CoLogin(
+                    CommandLineOptions.Load(
+                        CommandLineOptionsJsonPath,
+                        WebCommandLineOptionsPathInit
+                    ),
+                    succeed =>
+                    {
+                        agentInitialized = true;
+                        agentInitializeSucceed = succeed;
+                    }
+                )
+            );
             yield return new WaitUntil(() => agentInitialized);
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
@@ -176,19 +198,68 @@ namespace Nekoyume.Game
             vfx.Play();
         }
 
-        #region PlaymodeTest
-
-        public void Init()
+        private IEnumerator CoLogin(CommandLineOptions options, Action<bool> callback)
         {
-            _agent.Initialize(ShowNext);
-        }
+            if (options.maintenance)
+            {
+                var w = Widget.Create<Alert>();
+                w.CloseCallback = () =>
+                {
+                    Application.OpenURL(GameConfig.DiscordLink);
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                w.Show(
+                    LocalizationManager.Localize("UI_MAINTENANCE"),
+                    LocalizationManager.Localize("UI_MAINTENANCE_CONTENT"),
+                    LocalizationManager.Localize("UI_OK"),
+                    false
+                );
+                yield break;
+            }
+            if (options.testEnd)
+            {
+                var w = Widget.Find<Confirm>();
+                w.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
+                        Application.OpenURL(GameConfig.DiscordLink);
+                    }
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
 
-        public IEnumerator TearDown()
-        {
-            Destroy(GetComponent<Agent>());
-            yield return new WaitForEndOfFrame();
-        }
+                yield break;
+            }
 
-        #endregion
+            var loginPopup = Widget.Find<LoginPopup>();
+
+            if (Application.isBatchMode)
+            {
+                loginPopup.Show(options.KeyStorePath, options.PrivateKey);
+            }
+            else
+            {
+                Widget.Find<UI.Settings>().UpdateSoundSettings();
+                var title = Widget.Find<Title>();
+                title.Show(options.keyStorePath, options.privateKey);
+                yield return new WaitUntil(() => loginPopup.Login);
+                title.Close();
+            }
+
+            _agent.Initialize(
+                options, 
+                loginPopup.GetPrivateKey(),
+                callback
+            );
+        }
     }
 }
