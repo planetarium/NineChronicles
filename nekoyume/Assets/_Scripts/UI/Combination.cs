@@ -34,7 +34,6 @@ namespace Nekoyume.UI
 
         private const int NPCId = 300001;
 
-        private ToggleGroup _toggleGroup;
         public GameObject tabArea;
         public CategoryButton combineEquipmentCategoryButton;
         public CategoryButton combineConsumableCategoryButton;
@@ -68,12 +67,6 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            
-            _toggleGroup = new ToggleGroup();
-            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
-            _toggleGroup.RegisterToggleable(combineEquipmentCategoryButton);
-            _toggleGroup.RegisterToggleable(combineConsumableCategoryButton);
-            _toggleGroup.RegisterToggleable(enhanceEquipmentCategoryButton);
 
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
@@ -244,8 +237,6 @@ namespace Nekoyume.UI
             switch (value)
             {
                 case StateType.None:
-                    _toggleGroup.SetToggledOffAll();
-
                     combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
@@ -253,8 +244,6 @@ namespace Nekoyume.UI
                     tabArea.gameObject.SetActive(true);
                     break;
                 case StateType.CombineConsumable:
-                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
-
                     combineEquipment.Hide();
                     combineConsumable.Show(true);
                     enhanceEquipment.Hide();
@@ -263,8 +252,6 @@ namespace Nekoyume.UI
                     tabArea.gameObject.SetActive(false);
                     break;
                 case StateType.CombineEquipment:
-                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
-
                     combineEquipment.Show(true);
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
@@ -273,8 +260,6 @@ namespace Nekoyume.UI
                     tabArea.gameObject.SetActive(false);
                     break;
                 case StateType.EnhanceEquipment:
-                    _toggleGroup.SetToggledOn(enhanceEquipmentCategoryButton);
-
                     inventory.SharedModel.DeselectItemView();
                     inventory.SharedModel.State.Value = ItemType.Equipment;
                     inventory.SharedModel.DimmedFunc.Value = enhanceEquipment.DimFunc;
@@ -341,20 +326,9 @@ namespace Nekoyume.UI
             inventory.SharedModel.UpdateEffectAll();
         }
 
-        private void SubscribeOnToggledOn(IToggleable toggleable)
+        public void ChangeState(int index)
         {
-            if (toggleable.Name.Equals(combineConsumableCategoryButton.Name))
-            {
-                State.Value = StateType.CombineConsumable;
-            }
-            else if (toggleable.Name.Equals(combineEquipmentCategoryButton.Name))
-            {
-                State.Value = StateType.CombineEquipment;
-            }
-            else if (toggleable.Name.Equals(enhanceEquipmentCategoryButton.Name))
-            {
-                State.Value = StateType.EnhanceEquipment;
-            }
+            State.SetValueAndForceNotify((StateType) index);
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
