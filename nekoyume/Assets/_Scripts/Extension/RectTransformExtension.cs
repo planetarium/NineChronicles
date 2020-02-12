@@ -130,11 +130,54 @@ namespace Nekoyume
             }
         }
 
+        public static bool TryGetPivotPresetType(this RectTransform rectTransform, out PivotPresetType result)
+        {
+            int pivotPresetTypeIndex = 0;
+            switch(rectTransform.pivot.y)
+            {
+                case 0:
+                    pivotPresetTypeIndex += 6;
+                    break;
+                case 0.5f:
+                    pivotPresetTypeIndex += 3;
+                    break;
+                case 1:
+                    break;
+                default:
+                    result = default;
+                    return false;
+            }
+
+            switch(rectTransform.pivot.x)
+            {
+                case 0:
+                    break;
+                case 0.5f:
+                    pivotPresetTypeIndex += 1;
+                    break;
+                case 1:
+                    pivotPresetTypeIndex += 2;
+                    break;
+                default:
+                    result = default;
+                    return false;
+            }
+
+            result = (PivotPresetType)pivotPresetTypeIndex;
+            return true;
+        }
+
+        public static void SetAnchorAndPivot(this RectTransform rectTransform, AnchorPresetType anchorPresetType, PivotPresetType pivotPresetType)
+        {
+            rectTransform.SetAnchor(anchorPresetType);
+            rectTransform.SetPivot(pivotPresetType);
+        }
+
         public static float2 GetPivotPositionFromAnchor(this RectTransform rectTransform, PivotPresetType pivotPresetType)
         {
             var anchoredPosition = new float2();
             var pivot = rectTransform.pivot;
-            var size = rectTransform.rect.size * rectTransform.transform.localScale.x;
+            var size = rectTransform.rect.size * rectTransform.transform.localScale;
             
             switch (pivotPresetType)
             {
@@ -187,44 +230,29 @@ namespace Nekoyume
             return anchoredPosition + rectTransform.GetPivotPositionFromAnchor(pivotPresetType);
         }
 
-        public static void GetPositions(this RectTransform rectTransform, float2 pivot,
-            out float2 bottomLeft, out float2 topRight)
+        public static void GetOffsetsFromPivot(this RectTransform rectTransform, float2 pivot, out float2 bottomLeftOffset, out float2 topRightOffset)
         {
             var size = rectTransform.rect.size;
-            bottomLeft = new float2(size.x * pivot.x, -(size.y * pivot.y));
-            topRight = new float2(size.x * (1f - pivot.x), size.y * (1f - pivot.y));
+
+            bottomLeftOffset = new float2(-size.x * pivot.x, -size.y * pivot.y);
+            topRightOffset = new float2(size.x * (1 - pivot.x), size.y * (1 - pivot.y));
         }
         
-        public static IEnumerator MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target,
+        public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target, PivotPresetType pivotPresetType,
              float2 offset)
         {
             if (target is null)
             {
-                yield break;
+                return;
             }
-
-            yield return new WaitUntil(() => rectTransform.rect.width != 0);
 
             rectTransform.position = target.position;
             float2 anchoredPosition = rectTransform.anchoredPosition;
 
-            PivotPresetType pivotPresetType;
-
-            if (Screen.width - anchoredPosition.x - target.rect.width / 2 > rectTransform.rect.width)
-                pivotPresetType = PivotPresetType.TopRight;
-            else
-            {
-                anchoredPosition.x -= rectTransform.rect.width;
-                pivotPresetType = PivotPresetType.TopLeft;
-                offset = new float2(-offset.x, offset.y);
-            }
-
             anchoredPosition += target.GetPivotPositionFromAnchor(pivotPresetType) + offset;
             rectTransform.anchoredPosition = anchoredPosition;
-
-            rectTransform.MoveInsideOfParent(offset);
         }
-
+        
         public static void MoveInsideOfParent(this RectTransform rectTransform)
         {
             MoveInsideOfParent(rectTransform, ZeroZeroFloat2);
@@ -237,35 +265,35 @@ namespace Nekoyume
                 return;
             }
 
-            parent.GetPositions(rectTransform.pivot, out var bottomLeft, out var topRight);
-            
+            parent.GetOffsetsFromPivot(rectTransform.pivot, out var bottomLeftOffset, out var topRightOffset);
+
             var anchoredPosition = rectTransform.anchoredPosition;
             var anchoredPositionBottomLeft = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.BottomLeft);
             var anchoredPositionTopRight = rectTransform.GetAnchoredPositionOfPivot(PivotPresetType.TopRight);
 
             // Bottom.
-            var value = bottomLeft.y + margin.y - anchoredPositionBottomLeft.y;
+            var value = bottomLeftOffset.y + margin.y - anchoredPositionBottomLeft.y;
             if (value > 0f)
             {
                 anchoredPosition.y += value;
             }
             
             // Top.
-            value = topRight.y - margin.y - anchoredPositionTopRight.y;
+            value = topRightOffset.y - margin.y - anchoredPositionTopRight.y;
             if (value < 0f)
             {
                 anchoredPosition.y += value;
             }
             
             // Right.
-            value = topRight.x - margin.x - anchoredPositionTopRight.x;
+            value = topRightOffset.x - margin.x - anchoredPositionTopRight.x;
             if (value < 0f)
             {
                 anchoredPosition.x += value;
             }
             
             // Left.
-            value = bottomLeft.x + margin.x - anchoredPositionBottomLeft.x;
+            value = bottomLeftOffset.x + margin.x - anchoredPositionBottomLeft.x;
             if (value > 0f)
             {
                 anchoredPosition.x += value;

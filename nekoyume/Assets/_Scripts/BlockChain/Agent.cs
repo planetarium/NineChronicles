@@ -41,7 +41,7 @@ namespace Nekoyume.BlockChain
     /// <summary>
     /// 블록체인 노드 관련 로직을 처리
     /// </summary>
-    public class Agent : MonoBehaviour, IDisposable
+    public class Agent : MonoBehaviour, IDisposable, IAgent
     {
         private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
 
@@ -61,7 +61,9 @@ namespace Nekoyume.BlockChain
 
         private static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
 
-        public ReactiveProperty<long> blockIndex = new ReactiveProperty<long>();
+        private Subject<long> _blockIndexSubject = new Subject<long>();
+
+        public Subject<long> BlockIndexSubject { get => _blockIndexSubject; }
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -129,17 +131,6 @@ namespace Nekoyume.BlockChain
                 Debug.Log("Secp256K1CryptoBackend initialize failed. Use default backend.");
                 Debug.LogException(e);
             }
-        }
-
-        private void Awake()
-        {
-            ForceDotNet.Force();
-            _options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
-            if (!Directory.Exists(PrevStorageDirectoryPath))
-            {
-                Directory.CreateDirectory(PrevStorageDirectoryPath);
-            }
-            DeletePreviousStore();
         }
 
         public void Initialize(Action<bool> callback)
@@ -222,6 +213,146 @@ namespace Nekoyume.BlockChain
             _trustedPeers = _seedPeers.Select(peer => peer.Address).ToImmutableHashSet();
             _cancellationTokenSource = new CancellationTokenSource();
         }
+        
+        public void ResetStore()
+        {
+            var confirm = Widget.Find<Confirm>();
+            var storagePath = _options.StoragePath ?? DefaultStoragePath;
+            var prevStoragePath = Path.Combine(PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                Dispose();
+                if (Directory.Exists(storagePath))
+                {
+                    Directory.Move(storagePath, prevStoragePath);
+                }
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+            };
+            confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
+        }
+
+        public void ResetKeyStore()
+        {
+            var confirm = Widget.Find<Confirm>();
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                Dispose();
+                var keyPath = _options.keyStorePath;
+                if (Directory.Exists(keyPath))
+                {
+                    Directory.Delete(keyPath, true);
+                }
+
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+            };
+            confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
+        }
+
+        public static CommandLineOptions GetOptions(string localPath, string onlinePath)
+        {
+            var options = CommnadLineParser.GetCommandLineOptions();
+            if (!options.Empty)
+            {
+                Debug.Log($"Get options from commandline.");
+                return options;
+            }
+
+            try
+            {
+                var webResponse = WebRequest.Create(onlinePath).GetResponse();
+                using (var stream = webResponse.GetResponseStream())
+                {
+                    if (!(stream is null))
+                    {
+                        byte[] data = new byte[stream.Length];
+                        stream.Read(data, 0, data.Length);
+                        string jsonData = Encoding.UTF8.GetString(data);
+                        Debug.Log($"Get options from web: {onlinePath}");
+                        return JsonUtility.FromJson<CommandLineOptions>(jsonData);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning(e);
+            }
+
+            if (File.Exists(localPath))
+            {
+                Debug.Log($"Get options from local: {localPath}");
+                return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
+            }
+
+            Debug.Log("Failed to find options. Creating...");
+            return new CommandLineOptions();
+        }
+
+        public void Dispose()
+        {
+            _cancellationTokenSource?.Cancel();
+            // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
+            Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
+                .ContinueWith(_ =>
+                {
+                    try
+                    {
+                        store?.Dispose();
+                        _swarm?.Dispose();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                    }
+                })
+                .Wait(SwarmLinger + 1 * 1000);
+
+            SaveQueuedActions();
+            disposed = true;
+        }
+
+        public void EnqueueAction(GameAction gameAction)
+        {
+            Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
+            _queuedActions.Enqueue(gameAction);
+            OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
+        }
+
+        public IValue GetState(Address address)
+        {
+            return blocks.GetState(address);
+        }
+
+        #region Mono
+
+        private void Awake()
+        {
+            ForceDotNet.Force();
+            _options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
+            if (!Directory.Exists(PrevStorageDirectoryPath))
+            {
+                Directory.CreateDirectory(PrevStorageDirectoryPath);
+            }
+            DeletePreviousStore();
+        }
+
+        protected void OnDestroy()
+        {
+            ActionRenderHandler.Instance.Stop();
+            Dispose();
+        }
+
+        #endregion
 
         private void InitAgent(Action<bool> callback, PrivateKey privateKey)
         {
@@ -330,7 +461,7 @@ namespace Nekoyume.BlockChain
                 StartNullableCoroutine(_autoPlayer);
                 callback(SyncSucceed);
                 LoadQueuedActions();
-                TipChanged += (___, index) => { blockIndex.Value = index; };
+                TipChanged += (___, index) => { BlockIndexSubject.Publish(index); };
             };
             _miner = _options.NoMiner ? null : CoMiner();
             _autoPlayer = _options.AutoPlay ? CoAutoPlayer() : null;
@@ -358,45 +489,6 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public static CommandLineOptions GetOptions(string localPath, string onlinePath)
-        {
-            var options = CommnadLineParser.GetCommandLineOptions();
-            if (!options.Empty)
-            {
-                Debug.Log($"Get options from commandline.");
-                return options;
-            }
-
-            try
-            {
-                var webResponse = WebRequest.Create(onlinePath).GetResponse();
-                using (var stream = webResponse.GetResponseStream())
-                {
-                    if (!(stream is null))
-                    {
-                        byte[] data = new byte[stream.Length];
-                        stream.Read(data, 0, data.Length);
-                        string jsonData = Encoding.UTF8.GetString(data);
-                        Debug.Log($"Get options from web: {onlinePath}");
-                        return JsonUtility.FromJson<CommandLineOptions>(jsonData);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(e);
-            }
-
-            if (File.Exists(localPath))
-            {
-                Debug.Log($"Get options from local: {localPath}");
-                return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
-            }
-
-            Debug.Log("Failed to find options. Creating...");
-            return new CommandLineOptions();
-        }
-
         private static string GetHost(CommandLineOptions options)
         {
             return string.IsNullOrEmpty(options.host) ? null : options.Host;
@@ -419,16 +511,6 @@ namespace Nekoyume.BlockChain
 
             return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
         }
-
-        #region Mono
-
-        protected void OnDestroy()
-        {
-            ActionRenderHandler.Instance.Stop();
-            Dispose();
-        }
-
-        #endregion
 
         private void StartSystemCoroutines()
         {
@@ -519,28 +601,6 @@ namespace Nekoyume.BlockChain
             Debug.LogWarningFormat("Different Version Encountered Expected: {0} Actual : {1}",
                 e.ExpectedVersion, e.ActualVersion);
             SyncSucceed = false;
-        }
-
-        public void Dispose()
-        {
-            _cancellationTokenSource?.Cancel();
-            // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
-                .ContinueWith(_ =>
-                {
-                    try
-                    {
-                        store?.Dispose();
-                        _swarm?.Dispose();
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                    }
-                })
-                .Wait(SwarmLinger + 1 * 1000);
-
-            SaveQueuedActions();
-            disposed = true;
         }
 
         private IEnumerator CoLogger()
@@ -778,21 +838,9 @@ namespace Nekoyume.BlockChain
             var miner = new Miner(blocks, _swarm, PrivateKey);
             while (true)
             {
-                var task = Task.Run(() => miner.MineBlock());
+                var task = Task.Run(async() => await miner.MineBlock());
                 yield return new WaitUntil(() => task.IsCompleted);
             }
-        }
-
-        public void EnqueueAction(GameAction gameAction)
-        {
-            Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
-            _queuedActions.Enqueue(gameAction);
-            OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
-        }
-
-        public IValue GetState(Address address)
-        {
-            return blocks.GetState(address);
         }
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
@@ -979,52 +1027,6 @@ namespace Nekoyume.BlockChain
         {
             SyncSucceed = false;
             BlockDownloadFailed = true;
-        }
-
-        public void ResetStore()
-        {
-            var confirm = Widget.Find<Confirm>();
-            var storagePath = _options.StoragePath ?? DefaultStoragePath;
-            var prevStoragePath = Path.Combine(PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                    return;
-                Dispose();
-                if (Directory.Exists(storagePath))
-                {
-                    Directory.Move(storagePath, prevStoragePath);
-                }
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
-            };
-            confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
-        }
-
-        public void ResetKeyStore()
-        {
-            var confirm = Widget.Find<Confirm>();
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                    return;
-                Dispose();
-                var keyPath = _options.keyStorePath;
-                if (Directory.Exists(keyPath))
-                {
-                    Directory.Delete(keyPath, true);
-                }
-
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
-            };
-            confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
     }
 }

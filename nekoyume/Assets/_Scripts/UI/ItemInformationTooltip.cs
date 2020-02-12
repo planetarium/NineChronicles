@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Nekoyume.EnumType;
+using Nekoyume.Extension;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -29,10 +31,12 @@ namespace Nekoyume.UI
 
         public RectTransform Target => Model.target.Value;
 
+        public override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
+
         protected override void Awake()
         {
             base.Awake();
-            
+
             Model = new Model.ItemInformationTooltip();
             submitButton.OnSubmitClick.Subscribe(_ =>
             {
@@ -116,7 +120,7 @@ namespace Nekoyume.UI
             }
             Model.FooterRootActive.Subscribe(footerRoot.SetActive).AddTo(_disposablesForModel);
             // Model.itemInformation.item을 마지막으로 구독해야 위에서의 구독으로 인해 바뀌는 레이아웃 상태를 모두 반영할 수 있음.
-            Model.ItemInformation.item.Subscribe(value => base.SubscribeTarget(Model.target.Value))
+            Model.ItemInformation.item.Subscribe(value => SubscribeTargetItem(Model.target.Value))
                 .AddTo(_disposablesForModel);
 
             StartCoroutine(CoUpdate());
@@ -132,7 +136,21 @@ namespace Nekoyume.UI
         
         protected override void SubscribeTarget(RectTransform target)
         {
-            // 타겟이 바뀔 때, 아이템도 바뀌니 아이템을 구독하는 쪽 한 곳에 로직을 구현한다. 
+            // 아무 것도 하지 않도록 한다.
+        }
+
+        protected void SubscribeTargetItem(RectTransform target)
+        {
+            panel.SetAnchorAndPivot(AnchorPresetType.TopLeft, PivotPresetType.TopLeft);
+            base.SubscribeTarget(target);
+
+            //target과 panel이 겹칠 경우 target의 왼쪽에 다시 위치
+            if (!(target is null) && panel.position.x - target.position.x < 0)
+            {
+                panel.SetAnchorAndPivot(AnchorPresetType.TopRight, PivotPresetType.TopRight);
+                panel.MoveToRelatedPosition(target, TargetPivotPresetType.ReverseX(), DefaultOffsetFromTarget.ReverseX());
+                UpdateAnchoredPosition();
+            }
         }
 
         private IEnumerator CoUpdate()
