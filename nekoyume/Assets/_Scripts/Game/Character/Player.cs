@@ -266,27 +266,6 @@ namespace Nekoyume.Game.Character
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 InitStats(Model);
-                // todo: 아래 로직을 스테이지 클리어 부분으로 옮겨야 함.
-                // var key = "";
-                // if (Level == GameConfig.RequireLevel.ActionCombination)
-                // {
-                //     key = "UI_UNLOCK_COMBINATION";
-                // }
-                // else if (Level == GameConfig.RequireLevel.UIMainMenuShop)
-                // {
-                //     key = "UI_UNLOCK_SHOP";
-                // }
-                // else if (Level == GameConfig.RequireLevel.UIMainMenuRanking)
-                // {
-                //     key = "UI_UNLOCK_RANKING";
-                // }
-                //
-                // if (!string.IsNullOrEmpty(key))
-                // {
-                //     var w = Widget.Find<Alert>();
-                //     w.Show("UI_UNLOCK_TITLE", key);
-                //     yield return new WaitWhile(() => w.isActiveAndEnabled);
-                // }
             }
 
             UpdateHpBar();
