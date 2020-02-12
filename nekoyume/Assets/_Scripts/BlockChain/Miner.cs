@@ -102,8 +102,9 @@ namespace Nekoyume.BlockChain
 
         private Transaction<PolymorphicAction<ActionBase>> RankingReward()
         {
-            var rankingState = new RankingState((Bencodex.Types.Dictionary) _chain.GetState(RankingState.Address));
-            // NOTE: 마이너가 돈과, Agent를 잡는 것이 옳을까요?
+            // private 테스트용 임시 로직 변경
+            var weeklyArenaAddress = WeeklyArenaState.Addresses[0];
+            var weeklyArenaState = new WeeklyArenaState(_chain.GetState(weeklyArenaAddress));
             var actions = new List<PolymorphicAction<ActionBase>>
             {
                 new RankingReward
@@ -111,7 +112,7 @@ namespace Nekoyume.BlockChain
                     gold1 = 50,
                     gold2 = 30,
                     gold3 = 10,
-                    agentAddresses = rankingState.GetAgentAddresses(3, null),
+                    agentAddresses = weeklyArenaState.GetAgentAddresses(3),
                 }
             };
             return _chain.MakeTransaction(_privateKey, actions.ToImmutableHashSet());

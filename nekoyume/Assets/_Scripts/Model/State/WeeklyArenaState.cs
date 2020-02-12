@@ -218,6 +218,24 @@ namespace Nekoyume.Model.State
             return _rewardMap[tier];
         }
 
+        public Address[] GetAgentAddresses(int count)
+        {
+            var sorted = _map.Values
+                .Where(i => i.Active)
+                .OrderByDescending(i => i.Score)
+                .ThenBy(i => i.CombatPoint)
+                .ToList();
+            var result = new HashSet<Address>();
+            foreach (var info in sorted)
+            {
+                result.Add(info.AgentAddress);
+                if (result.Count == count)
+                    break;
+            }
+
+            return result.ToArray();
+        }
+
         #region IDictionary
 
         public IEnumerator<KeyValuePair<Address, ArenaInfo>> GetEnumerator()
