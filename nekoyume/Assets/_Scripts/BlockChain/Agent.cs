@@ -825,7 +825,7 @@ namespace Nekoyume.BlockChain
             var miner = new Miner(blocks, _swarm, PrivateKey);
             while (true)
             {
-                var task = Task.Run(async() => await miner.MineBlock());
+                var task = Task.Run(async() => await miner.MineBlockAsync());
                 yield return new WaitUntil(() => task.IsCompleted);
             }
         }

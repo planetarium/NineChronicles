@@ -82,7 +82,7 @@ namespace NineChronicles.Standalone
                         Log.Debug("Miner called.");
                         try
                         {
-                            miner.MineBlock().Wait();
+                            miner.MineBlockAsync().Wait();
                         }
                         catch (Exception ex)
                         {
