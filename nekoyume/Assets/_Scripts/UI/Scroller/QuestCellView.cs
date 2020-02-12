@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             receiveButton.SetSubmitText(
-                LocalizationManager.Localize("UI_COMPLETED"),
+                LocalizationManager.Localize("UI_PROGRESS"),
                 LocalizationManager.Localize("UI_RECEIVE"));
             receiveButton.SetSubmittable(true); 
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
@@ -100,7 +100,7 @@ namespace Nekoyume.UI.Scroller
         private void UpdateView()
         {
             var isReceived = false;
-            contentText.text = _quest.GetName();
+            titleText.text = _quest.GetName();
 
             string text = _quest.GetProgressText();
             bool showProgressBar = !string.IsNullOrEmpty(text); 
