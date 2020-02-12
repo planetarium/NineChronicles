@@ -63,6 +63,7 @@ namespace Nekoyume.Game.Entrance
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
+                BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character,
                 BottomMenu.ToggleableType.Inventory,
                 BottomMenu.ToggleableType.Settings);

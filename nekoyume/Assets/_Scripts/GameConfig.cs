@@ -66,20 +66,20 @@
         public static class RequireStage
         {
             #region Action
-            
+
             public const int ActionsInCombination = IsEditor ? 1 : 3;
             public const int ActionsInShop = IsEditor ? 1 : 17;
             public const int ActionsInRankingBoard = IsEditor ? 1 : 25;
 
             #endregion
-            
+
             #region UI
 
             public const int UIMainMenuStage = 0;
             public const int UIMainMenuCombination = ActionsInCombination;
             public const int UIMainMenuShop = ActionsInShop;
             public const int UIMainMenuRankingBoard = ActionsInRankingBoard;
-            
+
             public const int UIBottomMenuInBattle = 1;
             public const int UIBottomMenuCharacter = 1;
             public const int UIBottomMenuInventory = 1;
