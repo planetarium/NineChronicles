@@ -171,7 +171,6 @@ namespace Nekoyume.UI
                     UpdateArena();
                     arenaRankingHeader.SetActive(true);
                     expRankingHeader.SetActive(false);
-                    UpdateBoard(stateType);
                     break;
                 case StateType.Filtered:
                     arenaButton.SetToggledOff();
@@ -234,6 +233,8 @@ namespace Nekoyume.UI
                 currentAvatarCellView.Hide();
                 arenaActivationButton.Show();
             }
+
+            UpdateBoard(StateType.Arena);
         }
 
         private void UpdateBoard(StateType stateType)

@@ -12,7 +12,7 @@ using Inventory = Nekoyume.Model.Item.Inventory;
 namespace Nekoyume.Model
 {
     [Serializable]
-    public class Player : CharacterBase, ICloneable
+    public class Player : CharacterBase
     {
         [Serializable]
         public class ExpData : ICloneable
@@ -64,6 +64,7 @@ namespace Nekoyume.Model
         public int lensIndex;
         public int earIndex;
         public int tailIndex;
+        public CharacterLevelSheet characterLevelSheet;
 
         private List<Equipment> _equipments;
 
@@ -170,6 +171,7 @@ namespace Nekoyume.Model
             lensIndex = value.lensIndex;
             earIndex = value.earIndex;
             tailIndex = value.tailIndex;
+            characterLevelSheet = value.characterLevelSheet;
 
             _equipments = value._equipments;
         }
@@ -182,13 +184,14 @@ namespace Nekoyume.Model
         private void PostConstruction(TableSheets sheets)
         {
             AttackCountMax = AttackCountHelper.GetCountMax(Level);
-            UpdateExp(sheets);
+            characterLevelSheet = sheets.CharacterLevelSheet;
+            UpdateExp();
             Equip(Inventory.Items, sheets.EquipmentItemSetEffectSheet);
         }
 
-        private void UpdateExp(TableSheets sheets)
+        private void UpdateExp()
         {
-            sheets.CharacterLevelSheet.TryGetValue(Level, out var row, true);
+            characterLevelSheet.TryGetValue(Level, out var row, true);
             Exp.Set(row);
         }
 
@@ -278,13 +281,13 @@ namespace Nekoyume.Model
                 return;
 
             var level = Level;
-            Level = Simulator.TableSheets.CharacterLevelSheet.GetLevel(Exp.Current);
+            Level = characterLevelSheet.GetLevel(Exp.Current);
             // UI에서 레벨업 처리시 NRE 회피
             if (level < Level)
             {
                 eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, Level - level));
             }
-            UpdateExp(Simulator.TableSheets);
+            UpdateExp();
         }
 
         // ToDo. 지금은 스테이지에서 재료 아이템만 주고 있음. 추후 대체 불가능 아이템도 줄 경우 수정 대상.
