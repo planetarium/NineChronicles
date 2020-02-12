@@ -45,7 +45,7 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Exit,
                 SubscribeOnExitButtonClick,
                 true,
-                true,
+                false,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
