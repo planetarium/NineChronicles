@@ -425,19 +425,22 @@ namespace Nekoyume.Game
             status.Show();
             status.ShowBattleStatus();
 
-            var stageSheet = Game.instance.TableSheets.StageSheet;
-            stageSheet.TryGetValue(stageId, out var row);
-            status.battleTimerView.Show(row.TurnLimit);
-
             var battle = Widget.Find<UI.Battle>();
             if (_rankingBattle)
             {
                 battle.Show();
+                battle.stageProgressBar.Close();
             }
             else
             {
                 battle.Show(stageId, repeatStage, isExitReserved);
+
+                var stageSheet = Game.instance.TableSheets.StageSheet;
+                stageSheet.TryGetValue(stageId, out var row);
+                status.battleTimerView.Show(row.TurnLimit);
             }
+            battle.repeatButton.gameObject.SetActive(!_rankingBattle);
+
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
@@ -453,7 +456,6 @@ namespace Nekoyume.Game
         {
             var battle = Widget.Find<UI.Battle>();
             battle.bossStatus.Close();
-            battle.stageProgressBar.Close();
             battle.enemyPlayerStatus.Show();
             battle.enemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
 
