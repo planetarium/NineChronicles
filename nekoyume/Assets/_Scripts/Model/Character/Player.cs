@@ -47,7 +47,7 @@ namespace Nekoyume.Model
         public readonly ExpData Exp = new ExpData();
         public readonly Inventory Inventory;
         public WorldInformation worldInformation;
-        
+
         public Weapon weapon;
         public Armor armor;
         public Belt belt;
@@ -55,7 +55,7 @@ namespace Nekoyume.Model
         public Ring ring;
         public Helm helm;
         public SetItem set;
-        
+
         public CollectionMap monsterMap;
         public CollectionMap eventMap;
 
@@ -70,16 +70,16 @@ namespace Nekoyume.Model
 
         public IReadOnlyList<Equipment> Equipments => _equipments;
 
-        public Player(AvatarState avatarState, Simulator simulator) 
+        public Player(AvatarState avatarState, Simulator simulator)
             : base(
-                  simulator, 
-                  simulator.TableSheets,
-                  avatarState.characterId, 
-                  avatarState.level)
+                simulator,
+                simulator.TableSheets,
+                avatarState.characterId,
+                avatarState.level)
         {
             if (simulator is null)
                 throw new ArgumentNullException(nameof(simulator));
-            
+
             // FIXME 중복 코드 제거할 것
             Exp.Current = avatarState.exp;
             Inventory = avatarState.inventory;
@@ -100,12 +100,12 @@ namespace Nekoyume.Model
             PostConstruction(simulator.TableSheets);
         }
 
-        public Player(AvatarState avatarState, TableSheets tableSheets) 
-            : base (
-                  null, 
-                  tableSheets,
-                  avatarState.characterId, 
-                  avatarState.level)
+        public Player(AvatarState avatarState, TableSheets tableSheets)
+            : base(
+                null,
+                tableSheets,
+                avatarState.characterId,
+                avatarState.level)
         {
             // FIXME 중복 코드 제거할 것
             Exp.Current = avatarState.exp;
@@ -127,11 +127,11 @@ namespace Nekoyume.Model
             PostConstruction(tableSheets);
         }
 
-        public Player(int level, TableSheets tableSheets) : 
+        public Player(int level, TableSheets tableSheets) :
             base(
                 null,
                 tableSheets,
-                GameConfig.DefaultAvatarCharacterId, 
+                GameConfig.DefaultAvatarCharacterId,
                 level)
         {
             Exp.Current = 0;
@@ -175,7 +175,7 @@ namespace Nekoyume.Model
 
             _equipments = value._equipments;
         }
-        
+
         public override bool IsHit(CharacterBase caster)
         {
             return true;
@@ -213,7 +213,7 @@ namespace Nekoyume.Model
             base.OnDead();
             eventMap.Add(new KeyValuePair<int, int>((int) QuestEventType.Die, 1));
         }
-        
+
         private void Equip(IEnumerable<Inventory.Item> items, EquipmentItemSetEffectSheet sheet)
         {
             _equipments = items.Select(i => i.item)
@@ -253,14 +253,14 @@ namespace Nekoyume.Model
                         throw new InvalidEquipmentException();
                 }
             }
-            
+
             Stats.SetEquipments(_equipments, sheet);
 
             foreach (var skill in _equipments.SelectMany(equipment => equipment.Skills))
             {
                 Skills.Add(skill);
             }
-            
+
             foreach (var buffSkill in _equipments.SelectMany(equipment => equipment.BuffSkills))
             {
                 Skills.Add(buffSkill);
@@ -287,6 +287,7 @@ namespace Nekoyume.Model
             {
                 eventMap?.Add(new KeyValuePair<int, int>((int) QuestEventType.Level, Level - level));
             }
+
             UpdateExp();
         }
 
@@ -323,7 +324,7 @@ namespace Nekoyume.Model
                 {
                     BuffSkills.Add(buffSkill);
                 }
-                
+
                 Inventory.RemoveNonFungibleItem(food);
             }
         }
@@ -344,8 +345,10 @@ namespace Nekoyume.Model
             base.EndTurn();
             if (this is EnemyPlayer)
                 return;
-            
-            Simulator.Turn++;
+
+            Simulator.TurnNumber++;
+            Simulator.WaveTurn++;
+            Simulator.Log.Add(new WaveTurnEnd(this, Simulator.TurnNumber, Simulator.WaveTurn));
         }
     }
 

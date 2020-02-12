@@ -140,7 +140,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             Log.Debug($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log.result}");
-            if (simulator.Result == BattleLog.Result.Win && simulator.Log.clearedWaveTurn == simulator.Log.waveCount)
+            if (simulator.Result == BattleLog.Result.Win && simulator.Log.clearedWaveNumber == simulator.Log.waveCount)
             {
                 simulator.Player.worldInformation.ClearStage(
                     worldId,

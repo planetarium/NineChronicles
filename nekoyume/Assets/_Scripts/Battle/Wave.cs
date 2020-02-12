@@ -25,7 +25,7 @@ namespace Nekoyume.Battle
             }
 
             var enemies = _enemies.Select(enemy => new Enemy(enemy)).ToList();
-            var spawnWave = new SpawnWave(null, stageSimulator.WaveTurn, enemies, HasBoss);
+            var spawnWave = new SpawnWave(null, stageSimulator.WaveNumber, stageSimulator.WaveTurn, enemies, HasBoss);
             stageSimulator.Log.Add(spawnWave);
         }
     }

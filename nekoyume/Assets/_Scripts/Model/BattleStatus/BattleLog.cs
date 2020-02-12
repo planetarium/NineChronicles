@@ -23,7 +23,7 @@ namespace Nekoyume.Model.BattleStatus
         public Result result;
         public int score;
         public int diffScore;
-        public int clearedWaveTurn;
+        public int clearedWaveNumber;
         public bool newlyCleared;
 
         public void Add(EventBase e)
