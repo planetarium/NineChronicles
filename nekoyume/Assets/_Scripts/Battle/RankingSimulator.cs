@@ -33,11 +33,11 @@ namespace Nekoyume.Battle
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
             Characters.Enqueue(_enemyPlayer, TurnPriority / _enemyPlayer.SPD);
+            WaveTurn = 1;
             Turn = 1;
 #if TEST_LOG
             UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / Turn start");
 #endif
-            WaveTurn = 0;
             while (true)
             {
                 if (Turn > MaxTurn)
@@ -59,6 +59,8 @@ namespace Nekoyume.Battle
                 if (Player.IsDead)
                 {
                     Result = BattleLog.Result.Lose;
+                    Log.Add(new WaveTurnEnd(Player, Turn));
+                    
                     break;
                 }
 
@@ -66,6 +68,9 @@ namespace Nekoyume.Battle
                 if (!Player.Targets.Any())
                 {
                     Result = BattleLog.Result.Win;
+                    Log.Add(new WaveTurnEnd(Player, Turn));
+                    Log.clearedWaveTurn = WaveTurn;
+                    
                     break;
                 }
 

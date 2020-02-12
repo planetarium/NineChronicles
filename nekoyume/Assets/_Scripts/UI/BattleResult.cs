@@ -31,7 +31,7 @@ namespace Nekoyume.UI
             public bool ActionPointNotEnough;
             public bool ShouldExit;
             public bool ShouldRepeat;
-            public int ClearedWave;
+            public int ClearedWaveTurn;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -192,7 +192,7 @@ namespace Nekoyume.UI
         {
             yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
-            switch (SharedModel.ClearedWave)
+            switch (SharedModel.ClearedWaveTurn)
             {
                 case 1:
                     _battleWin01VFX =
@@ -244,7 +244,7 @@ namespace Nekoyume.UI
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
                 var view = rewardsArea.rewards[i];
-                var cleared = SharedModel.ClearedWave > i;
+                var cleared = SharedModel.ClearedWaveTurn > i;
                 if (i == 0)
                 {
                     view.Set(SharedModel.Exp, cleared);

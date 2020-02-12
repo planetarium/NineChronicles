@@ -69,7 +69,7 @@
             
             public const int ActionsInCombination = IsEditor ? 1 : 3;
             public const int ActionsInShop = IsEditor ? 1 : 17;
-            public const int ActionsInRankingBoard = IsEditor ? 1 : 49;
+            public const int ActionsInRankingBoard = IsEditor ? 1 : 25;
 
             #endregion
             

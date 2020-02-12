@@ -47,14 +47,15 @@ namespace Nekoyume.Game
 
         public int worldId;
         public int stageId;
+        public int waveCount;
+        public bool newlyClearedStage;
+        public int waveTurn;
         public Character.Player selectedPlayer;
         public readonly Vector2 questPreparationPosition = new Vector2(2.45f, -0.35f);
         public readonly Vector2 roomPosition = new Vector2(-2.808f, -1.519f);
         public bool repeatStage;
         public bool isExitReserved;
         public string zone;
-        public int waveTurn;
-        public int turn;
 
         private Camera _camera;
         private BattleLog _battleLog;
@@ -90,7 +91,6 @@ namespace Nekoyume.Game
         private void OnStageStart(BattleLog log)
         {
             _rankingBattle = false;
-            waveTurn = 0;
             if (_battleLog?.id != log.id)
             {
                 _battleLog = log;
@@ -105,7 +105,6 @@ namespace Nekoyume.Game
         private void OnRankingBattleStart(BattleLog log)
         {
             _rankingBattle = true;
-            waveTurn = 0;
             if (_battleLog?.id != log.id)
             {
                 _battleLog = log;
@@ -243,7 +242,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayStage(BattleLog log)
         {
-            yield return StartCoroutine(CoStageEnter(log.worldId, log.stageId));
+            yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -253,7 +252,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayRankingBattle(BattleLog log)
         {
-            yield return StartCoroutine(CoRankingBattleEnter());
+            yield return StartCoroutine(CoRankingBattleEnter(log));
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -282,18 +281,18 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        private IEnumerator CoStageEnter(int worldId, int stageId)
+        private IEnumerator CoStageEnter(BattleLog log)
         {
             IsInStage = true;
+            worldId = log.worldId;
+            stageId = log.stageId;
+            waveCount = log.waveCount;
+            newlyClearedStage = log.newlyCleared;
             if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
-            {
                 yield break;
-            }
 
             _battleResultModel = new BattleResult.Model();
 
-            this.worldId = worldId;
-            this.stageId = stageId;
             zone = data.Background;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
@@ -313,13 +312,12 @@ namespace Nekoyume.Game
             AudioController.instance.PlayMusic(data.BGM);
         }
 
-        private IEnumerator CoRankingBattleEnter()
+        private IEnumerator CoRankingBattleEnter(BattleLog log)
         {
             IsInStage = true;
+            waveCount = log.waveCount;
             if (!Game.instance.TableSheets.StageSheet.TryGetValue(1, out var data))
-            {
                 yield break;
-            }
 
             _battleResultModel = new BattleResult.Model();
 
@@ -342,8 +340,8 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().battleTimerView.Close();
-            _battleResultModel.ClearedWave = log.clearedWave;
-            var failed = _battleResultModel.ClearedWave < 3;
+            _battleResultModel.ClearedWaveTurn = log.clearedWaveTurn;
+            var failed = _battleResultModel.ClearedWaveTurn < log.waveCount;
             yield return new WaitForSeconds(0.75f);
             if (log.result == BattleLog.Result.Win && !failed)
             {
@@ -637,8 +635,11 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnWave(List<Enemy> enemies, bool hasBoss)
+        #region wave
+
+        public IEnumerator CoSpawnWave(int waveTurn, List<Enemy> enemies, bool hasBoss)
         {
+            this.waveTurn = waveTurn;
             var prevEnemies = GetComponentsInChildren<Character.Enemy>();
             yield return new WaitWhile(() => prevEnemies.Any(enemy => enemy.isActiveAndEnabled));
             foreach (var prev in prevEnemies)
@@ -684,15 +685,40 @@ namespace Nekoyume.Game
             yield return StartCoroutine(spawner.CoSetData(enemies));
         }
 
-        public IEnumerator CoWaveTurnEnd(int waveTurn, int turn)
+        public IEnumerator CoWaveTurnEnd(int turn)
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
-            Debug.Log($"CoWaveTurnEnd {waveTurn}, {turn}");
-            this.waveTurn = waveTurn;
-            this.turn = turn;
+
+            if (waveTurn == waveCount &&
+                newlyClearedStage)
+            {
+                var key = string.Empty;
+                if (stageId == GameConfig.RequireStage.UIMainMenuCombination)
+                {
+                    key = "UI_UNLOCK_COMBINATION";
+                }
+                else if (stageId == GameConfig.RequireStage.UIMainMenuShop)
+                {
+                    key = "UI_UNLOCK_SHOP";
+                }
+                else if (stageId == GameConfig.RequireStage.UIMainMenuRankingBoard)
+                {
+                    key = "UI_UNLOCK_RANKING";
+                }
+                
+                if (!string.IsNullOrEmpty(key))
+                {
+                    var w = Widget.Find<Alert>();
+                    w.Show("UI_UNLOCK_TITLE", key);
+                    yield return new WaitWhile(() => w.isActiveAndEnabled);
+                }
+            }
+            
             Event.OnPlayerTurnEnd.Invoke(turn);
         }
+        
+        #endregion
 
         public IEnumerator CoGetExp(long exp)
         {
