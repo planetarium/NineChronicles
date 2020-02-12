@@ -10,18 +10,16 @@ using System.Collections;
 
 namespace Nekoyume.UI
 {
-    class QuestRewardItem: HudWidget
+    class QuestRewardItem: AnimationWidget
     {
         private static Transform _inventoryTransform;
 
-        public Canvas canvas;
         public Image itemImage;
         
         public static void Show(SimpleCountableItemView view, int index)
         {
             var result = Create<QuestRewardItem>(true);
 
-            result.canvas.sortingLayerName = "UI";
             result.itemImage.sprite = SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id);
             var rect = result.RectTransform;
             rect.anchoredPosition = view.gameObject.transform.position.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);

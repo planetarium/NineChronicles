@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2892578596885429834}
-  - component: {fileID: 7744418555453761646}
   - component: {fileID: 2540273645456425560}
   m_Layer: 5
   m_Name: UI_QuestRewardItem
@@ -38,27 +37,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 44.8, y: 44.8}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!223 &7744418555453761646
-Canvas:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1974293732692372025}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_RenderMode: 2
-  m_Camera: {fileID: 0}
-  m_PlaneDistance: 100
-  m_PixelPerfect: 1
-  m_ReceivesEvents: 1
-  m_OverrideSorting: 1
-  m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
-  m_AdditionalShaderChannelsFlag: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 1
-  m_TargetDisplay: 0
 --- !u!114 &2540273645456425560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6921a7a81fdecea49a147d09f3bcf6a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 7744418555453761646}
+  canvas: {fileID: 0}
   itemImage: {fileID: 7800353834629510449}
 --- !u!1 &6996479214960864257
 GameObject:
