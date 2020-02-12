@@ -7,6 +7,7 @@ namespace Nekoyume.EnumType
         Screen,
         Tooltip,
         Widget,
+        Animation,
         SystemInfo,
         Development,
     }
