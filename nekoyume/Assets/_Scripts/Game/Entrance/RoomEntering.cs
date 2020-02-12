@@ -37,6 +37,7 @@ namespace Nekoyume.Game.Entrance
 
             var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
+            status.Close(true);
 
             ActionCamera.instance.SetPoint(0f, 0f);
             ActionCamera.instance.Idle();
@@ -59,6 +60,7 @@ namespace Nekoyume.Game.Entrance
                 UINavigator.NavigationType.Quit,
                 _ => Game.Quit(),
                 true,
+                false,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,

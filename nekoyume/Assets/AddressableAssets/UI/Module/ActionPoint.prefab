@@ -269,6 +269,7 @@ GameObject:
   - component: {fileID: 2724828359984488557}
   - component: {fileID: 2724828359984488558}
   - component: {fileID: 5754555543490644276}
+  - component: {fileID: 4135201330097319415}
   - component: {fileID: 4964743994697273151}
   m_Layer: 5
   m_Name: ActionPoint
@@ -368,6 +369,20 @@ MonoBehaviour:
   text: {fileID: 2724828360276689814}
   slider: {fileID: 2724828359984488558}
   tooltipArea: {fileID: 8298632334966963583}
+  canvasGroup: {fileID: 4135201330097319415}
+  animateAlpha: 0
+--- !u!225 &4135201330097319415
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2724828359984488556}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!114 &4964743994697273151
 MonoBehaviour:
   m_ObjectHideFlags: 0
