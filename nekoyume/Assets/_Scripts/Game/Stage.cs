@@ -705,8 +705,10 @@ namespace Nekoyume.Game
 
         public Character.Player GetPlayer()
         {
-            if (!(selectedPlayer is null))
+            if (!(selectedPlayer is null) && selectedPlayer.gameObject.activeSelf)
+            {
                 return selectedPlayer;
+            }
 
             var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
             selectedPlayer = go.GetComponent<Character.Player>();
@@ -724,13 +726,20 @@ namespace Nekoyume.Game
             return player;
         }
 
-        public Character.Player RunPlayer()
+        private Character.Player RunPlayer()
         {
             var player = GetPlayer();
             var playerTransform = player.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
+            player.StartRun();
+            return player;
+        }
+
+        public Character.Player RunPlayer(Vector2 position)
+        {
+            var player = GetPlayer(position);
             player.StartRun();
             return player;
         }
