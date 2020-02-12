@@ -71,9 +71,8 @@ namespace NineChronicles.Standalone
                 StorePath = storePath,
             };
 
-            var blockAction = new RewardGold { Gold = 1 };
-            var blockPolicy =
-                new BlockPolicy<PolymorphicAction<ActionBase>>(blockAction, TimeSpan.FromSeconds(10), 100000, 2048);
+            // BlockPolicy shared through Lib9c.
+            IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(); 
             Action<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey> minerLoopAction =
                 (chain, swarm, privateKey) =>
                 {
