@@ -340,15 +340,14 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
-            yield return StartCoroutine(CoUnlockAlert());
-
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
+            yield return new WaitForSeconds(1f);
             Boss = null;
-            yield return new WaitForSeconds(2.0f);
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().battleTimerView.Close();
+            yield return StartCoroutine(CoUnlockAlert());
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var failed = _battleResultModel.ClearedWaveNumber < log.waveCount;
             yield return new WaitForSeconds(0.75f);
