@@ -344,9 +344,9 @@ namespace Nekoyume.Game
             Widget.Find<Status>().battleTimerView.Close();
             _battleResultModel.ClearedWave = log.clearedWave;
             var failed = _battleResultModel.ClearedWave < 3;
+            yield return new WaitForSeconds(0.75f);
             if (log.result == BattleLog.Result.Win && !failed)
             {
-                yield return new WaitForSeconds(0.75f);
                 yield return StartCoroutine(CoDialog(log.stageId));
                 var playerCharacter = GetPlayer();
                 playerCharacter.Animator.Win();
