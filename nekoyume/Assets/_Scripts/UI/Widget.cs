@@ -24,7 +24,11 @@ namespace Nekoyume.UI
         private Animator _animator;
 
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
+        private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
         private bool _isCloseAnimationCompleted;
+        
+        protected System.Action CloseWidget;
+        protected System.Action SubmitWidget;
 
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
@@ -35,6 +39,20 @@ namespace Nekoyume.UI
         {
             _animator = GetComponent<Animator>();
             RectTransform = GetComponent<RectTransform>();
+
+            CloseWidget = () => Close();
+            SubmitWidget = null;
+        }
+
+        protected virtual void Update()
+        {
+            if (WidgetStack.Count == 0 || WidgetStack.Peek() != gameObject)
+                return;
+            
+            if(Input.GetKeyUp(KeyCode.Escape))
+                CloseWidget?.Invoke();
+            if (Input.GetKeyUp(KeyCode.Return))
+                SubmitWidget?.Invoke();
         }
 
         protected virtual void OnEnable()
@@ -137,6 +155,9 @@ namespace Nekoyume.UI
 
         public virtual void Show()
         {
+            if(CloseWidget != null || SubmitWidget != null || WidgetType == WidgetType.Screen)
+                WidgetStack.Push(gameObject);
+            
             if (WidgetType == WidgetType.Screen)
             {
                 MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Popup);
@@ -156,6 +177,9 @@ namespace Nekoyume.UI
         
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
+            if(WidgetStack.Count != 0 && WidgetStack.Peek() == gameObject) 
+                WidgetStack.Pop();
+            
             StopAllCoroutines();
             if (!gameObject.activeSelf)
             {
@@ -171,6 +195,18 @@ namespace Nekoyume.UI
 
             // TODO : wait close animation
             StartCoroutine(CoClose());
+        }
+
+        protected void Push()
+        {
+            if(CloseWidget != null || SubmitWidget != null || WidgetType == WidgetType.Screen)
+                WidgetStack.Push(gameObject);
+        }
+
+        protected void Pop()
+        {
+            if(WidgetStack.Count != 0 && WidgetStack.Peek() == gameObject) 
+                WidgetStack.Pop();
         }
         
         public virtual IEnumerator CoClose()

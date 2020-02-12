@@ -42,6 +42,7 @@ namespace Nekoyume.UI
 
             public Sprite highlightedSprite;
             public Button button;
+            public Image hasNotificationImage;
             public Image image;
             public Image icon;
             public TextMeshProUGUI text;
@@ -71,10 +72,7 @@ namespace Nekoyume.UI
 
         public MailTabState tabState;
         public MailScrollerController scroller;
-        public TabButton allButton;
-        public TabButton workshopButton;
-        public TabButton auctionButton;
-        public TabButton systemButton;
+        public TabButton[] tabButtons;
         public Blur blur;
 
         private static Sprite _selectedButtonSprite;
@@ -94,10 +92,10 @@ namespace Nekoyume.UI
             path = "UI/Textures/icon_mail_System";
             mailIcons.Add(MailType.System, Resources.Load<Sprite>(path));
 
-            allButton.Init("ALL");
-            workshopButton.Init("UI_COMBINATION");
-            auctionButton.Init("UI_SHOP");
-            systemButton.Init("SYSTEM");
+            tabButtons[0].Init("ALL");
+            tabButtons[1].Init("UI_COMBINATION");
+            tabButtons[2].Init("UI_SHOP");
+            tabButtons[3].Init("SYSTEM");
         }
 
         public override void Show()
@@ -105,6 +103,7 @@ namespace Nekoyume.UI
             tabState = MailTabState.All;
             _mailBox = States.Instance.CurrentAvatarState.mailBox;
             ChangeState(0);
+            UpdateTabs();
             base.Show();
             blur?.Show();
         }
@@ -128,13 +127,26 @@ namespace Nekoyume.UI
             scroller.scroller.ScrollPosition = pos;
         }
 
+        public void UpdateTabs()
+        {
+            // 전체 탭
+            tabButtons[0].hasNotificationImage.enabled = _mailBox.Where(mail => mail.New).Count() > 0;
+
+            for (int i = 1; i < tabButtons.Length; ++i)
+            {
+                int cnt = _mailBox.Where(mail => mail.MailType == (MailType) i && mail.New).Count();
+                tabButtons[i].hasNotificationImage.enabled = cnt > 0;
+            }
+        }
+
         public void ChangeState(int state)
         {
             tabState = (MailTabState) state;
-            allButton.ChangeColor(tabState == MailTabState.All);
-            workshopButton.ChangeColor(tabState == MailTabState.Workshop);
-            auctionButton.ChangeColor(tabState == MailTabState.Auction);
-            systemButton.ChangeColor(tabState == MailTabState.System);
+
+            for (int i = 0; i < tabButtons.Length; ++i)
+            {
+                tabButtons[i].ChangeColor(i == state);
+            }
 
             var list = _mailBox.ToList();
             if (state > 0)
@@ -145,10 +157,21 @@ namespace Nekoyume.UI
             scroller.SetData(list);
         }
 
+        public void SetList(MailBox mailBox)
+        {
+            if (mailBox is null)
+                return;
+            _mailBox = mailBox;
+
+            float pos = scroller.scroller.ScrollPosition;
+            ChangeState((int) tabState);
+            scroller.scroller.ScrollPosition = pos;
+        }
+
         public void Read(CombinationMail mail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (Action.Combination.ResultModel) mail.attachment;
+            var attachment = (Nekoyume.Action.Combination.ResultModel) mail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials

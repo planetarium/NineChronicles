@@ -70,9 +70,11 @@ namespace Nekoyume.UI
             OnDisableStaticSubject.Subscribe(SubscribeOnDisable).AddTo(gameObject);
             scroller.onRequestToRemoveModelByIndex.Subscribe(SubscribeToRemoveModel).AddTo(gameObject);
             scroller.SetModel(Models);
+
+            CloseWidget = null;
         }
 
-        private void Update()
+        protected override void Update()
         {
             var now = DateTime.Now;
             for (var i = 0; i < Models.Count; i++)

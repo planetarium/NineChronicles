@@ -19,6 +19,8 @@ namespace Nekoyume.UI
             base.Awake();
             repeatButton.SetToggleListener(this);
             Game.Event.OnGetItem.AddListener(OnGetItem);
+
+            CloseWidget = null;
         }
 
         public void Show(int stageId, bool isRepeat, bool isExitReserved)
@@ -71,7 +73,7 @@ namespace Nekoyume.UI
                 bottomMenu.exitButton.IsWidgetControllable = true;
 
                 var confirm = Find<Confirm>();
-                confirm.Set("UI_BATTLE_EXIT_RESERVATION_TITLE", "UI_BATTLE_EXIT_RESERVATION_CONTENT");
+                confirm.Show("UI_BATTLE_EXIT_RESERVATION_TITLE", "UI_BATTLE_EXIT_RESERVATION_CONTENT");
                 confirm.CloseCallback = result =>
                 {
                     if (result == ConfirmResult.Yes)

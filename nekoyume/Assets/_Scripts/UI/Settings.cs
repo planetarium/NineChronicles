@@ -25,6 +25,8 @@ namespace Nekoyume.UI
 
         protected override void Awake()
         {
+            base.Awake();
+            
             volumeMasterSlider.onValueChanged.AddListener(value =>
             {
                 SetVolumeMaster(value);
