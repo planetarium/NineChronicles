@@ -115,6 +115,7 @@ namespace Nekoyume.UI
                     });
                     break;
                 case WidgetType.Hud:
+                case WidgetType.Animation:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
