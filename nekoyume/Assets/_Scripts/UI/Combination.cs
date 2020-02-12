@@ -23,6 +23,7 @@ namespace Nekoyume.UI
     {
         public enum StateType
         {
+            None,
             CombineConsumable,
             CombineEquipment,
             EnhanceEquipment
@@ -34,6 +35,7 @@ namespace Nekoyume.UI
         private const int NPCId = 300001;
 
         private ToggleGroup _toggleGroup;
+        public GameObject tabArea;
         public CategoryButton combineEquipmentCategoryButton;
         public CategoryButton combineConsumableCategoryButton;
         public CategoryButton enhanceEquipmentCategoryButton;
@@ -151,7 +153,7 @@ namespace Nekoyume.UI
             var player = stage.GetPlayer();
             player.gameObject.SetActive(false);
 
-            State.SetValueAndForceNotify(StateType.CombineEquipment);
+            State.SetValueAndForceNotify(StateType.None);
 
             Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Back,
@@ -237,38 +239,43 @@ namespace Nekoyume.UI
         private void SubscribeState(StateType value)
         {
             inventory.Tooltip.Close();
-            inventory.SharedModel.DeselectItemView();
             recipe.Hide();
 
             switch (value)
             {
+                case StateType.None:
+                    _toggleGroup.SetToggledOffAll();
+
+                    combineEquipment.Hide();
+                    combineConsumable.Hide();
+                    enhanceEquipment.Hide();
+
+                    tabArea.gameObject.SetActive(true);
+                    break;
                 case StateType.CombineConsumable:
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
-
-                    inventory.SharedModel.State.Value = ItemType.Material;
-                    inventory.SharedModel.DimmedFunc.Value = combineConsumable.DimFunc;
-                    inventory.SharedModel.EffectEnabledFunc.Value = combineConsumable.Contains;
 
                     combineEquipment.Hide();
                     combineConsumable.Show(true);
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
+
+                    tabArea.gameObject.SetActive(false);
                     break;
                 case StateType.CombineEquipment:
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
-
-                    inventory.SharedModel.State.Value = ItemType.Material;
-                    inventory.SharedModel.DimmedFunc.Value = combineEquipment.DimFunc;
-                    inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
 
                     combineEquipment.Show(true);
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
+
+                    tabArea.gameObject.SetActive(false);
                     break;
                 case StateType.EnhanceEquipment:
                     _toggleGroup.SetToggledOn(enhanceEquipmentCategoryButton);
 
+                    inventory.SharedModel.DeselectItemView();
                     inventory.SharedModel.State.Value = ItemType.Equipment;
                     inventory.SharedModel.DimmedFunc.Value = enhanceEquipment.DimFunc;
                     inventory.SharedModel.EffectEnabledFunc.Value = enhanceEquipment.Contains;
@@ -277,6 +284,8 @@ namespace Nekoyume.UI
                     combineConsumable.Hide();
                     enhanceEquipment.Show(true);
                     ShowSpeech("SPEECH_COMBINE_ENHANCE_EQUIPMENT_");
+
+                    tabArea.gameObject.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -350,8 +359,15 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            Close();
-            Game.Event.OnRoomEnter.Invoke();
+            if (State.Value == StateType.None)
+            {
+                Close();
+                Game.Event.OnRoomEnter.Invoke();
+            }
+            else
+            {
+                State.SetValueAndForceNotify(StateType.None);
+            }
         }
 
         #region Action
