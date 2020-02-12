@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>NineChronicles.Standalone</RootNamespace>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <AssemblyName>NineChronicles.Standalone</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Libplanet.Standalone\Libplanet.Standalone.csproj" />
+    <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cocona.Lite" Version="1.2.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+  </ItemGroup>
+
+</Project>
