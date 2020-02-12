@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,12 +10,13 @@ using Serilog;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public abstract class Sheet<TKey, TValue> : Dictionary<TKey, TValue>
+    public abstract class Sheet<TKey, TValue> : IDictionary<TKey, TValue>
         where TValue : SheetRow<TKey>, new()
     {
+        private Dictionary<TKey, TValue> _impl;
+
         private readonly List<int> _invalidColumnIndexes = new List<int>();
 
-        private IOrderedEnumerable<TValue> _enumerable;
         private List<TValue> _orderedList;
 
         public string Name { get; }
@@ -24,9 +26,20 @@ namespace Nekoyume.TableData
         [CanBeNull]
         public TValue Last { get; private set; }
 
+        public ICollection<TKey> Keys => ((IDictionary<TKey, TValue>)_impl).Keys;
+
+        public ICollection<TValue> Values => ((IDictionary<TKey, TValue>)_impl).Values;
+
+        public int Count => ((IDictionary<TKey, TValue>)_impl).Count;
+
+        public bool IsReadOnly => ((IDictionary<TKey, TValue>)_impl).IsReadOnly;
+
+        public TValue this[TKey key] { get => ((IDictionary<TKey, TValue>)_impl)[key]; set => ((IDictionary<TKey, TValue>)_impl)[key] = value; }
+
         protected Sheet(string name)
         {
             Name = name;
+            _impl = new Dictionary<TKey, TValue>();
         }
 
         /// <summary>
@@ -101,14 +114,14 @@ namespace Nekoyume.TableData
             }
         }
 
-        public new IEnumerator<TValue> GetEnumerator()
+        public IEnumerator<TValue> GetEnumerator()
         {
-            return _enumerable.GetEnumerator();
+            return _orderedList.GetEnumerator();
         }
 
         public bool TryGetValue(TKey key, out TValue value, bool throwException = false)
         {
-            if (base.TryGetValue(key, out value))
+            if (_impl.TryGetValue(key, out value))
                 return true;
 
             if (throwException)
@@ -129,8 +142,7 @@ namespace Nekoyume.TableData
                 value.EndOfSheetInitialize();
             }
 
-            _enumerable = Values.OrderBy(value => value.Key);
-            _orderedList = _enumerable.ToList();
+            _orderedList = Values.OrderBy(value => value.Key).ToList();
             First = _orderedList.FirstOrDefault();
             Last = _orderedList.LastOrDefault();
         }
@@ -161,6 +173,61 @@ namespace Nekoyume.TableData
 #endif
 
             return true;
+        }
+
+        public void Add(TKey key, TValue value)
+        {
+            ((IDictionary<TKey, TValue>)_impl).Add(key, value);
+        }
+
+        public bool ContainsKey(TKey key)
+        {
+            return ((IDictionary<TKey, TValue>)_impl).ContainsKey(key);
+        }
+
+        public bool Remove(TKey key)
+        {
+            return ((IDictionary<TKey, TValue>)_impl).Remove(key);
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            return ((IDictionary<TKey, TValue>)_impl).TryGetValue(key, out value);
+        }
+
+        public void Add(KeyValuePair<TKey, TValue> item)
+        {
+            ((IDictionary<TKey, TValue>)_impl).Add(item);
+        }
+
+        public void Clear()
+        {
+            ((IDictionary<TKey, TValue>)_impl).Clear();
+        }
+
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            return ((IDictionary<TKey, TValue>)_impl).Contains(item);
+        }
+
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            ((IDictionary<TKey, TValue>)_impl).CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(KeyValuePair<TKey, TValue> item)
+        {
+            return ((IDictionary<TKey, TValue>)_impl).Remove(item);
+        }
+
+        IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
+        {
+            return ((IDictionary<TKey, TValue>)_impl).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _orderedList.GetEnumerator();
         }
     }
 }
