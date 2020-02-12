@@ -25,8 +25,8 @@
         public const int ActionPointMax = 250;
 
         public const int DailyRewardInterval = 1000;
-        public const int DailyArenaInterval = 500; // 8000
-        public const int WeeklyArenaInterval = DailyArenaInterval * 3; // 7
+        public const int DailyArenaInterval = 500;
+        public const int WeeklyArenaInterval = 8000 * 7;
         public const int BaseVictoryPoint = 20;
         public const int BaseDefeatPoint = -15;
 
