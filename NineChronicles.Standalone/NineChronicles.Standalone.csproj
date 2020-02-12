@@ -2,10 +2,10 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <RootNamespace>NineChronicles.Standalone</RootNamespace>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <RootNamespace>Nekoyume.Standalone</RootNamespace>
     <LangVersion>8.0</LangVersion>
-    <AssemblyName>Nekoyume.Standalone</AssemblyName>
+    <AssemblyName>NineChronicles.Standalone</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

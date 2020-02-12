@@ -15,9 +15,9 @@ using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Serilog;
 
-using NekoyumeActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>; 
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>; 
 
-namespace Nekoyume.Standalone
+namespace NineChronicles.Standalone
 {
     public class Program
     {
@@ -74,7 +74,7 @@ namespace Nekoyume.Standalone
             var blockAction = new RewardGold { Gold = 1 };
             var blockPolicy =
                 new BlockPolicy<PolymorphicAction<ActionBase>>(blockAction, TimeSpan.FromSeconds(10), 100000, 2048);
-            Action<BlockChain<NekoyumeActionType>, Swarm<NekoyumeActionType>, PrivateKey> minerLoopAction =
+            Action<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey> minerLoopAction =
                 (chain, swarm, privateKey) =>
                 {
                     var miner = new Miner(chain, swarm, privateKey);
@@ -92,7 +92,7 @@ namespace Nekoyume.Standalone
                     }
                 };
 
-            var service = new LibplanetNodeService<NekoyumeActionType>(properties, blockPolicy, minerLoopAction);
+            var service = new LibplanetNodeService<NineChroniclesActionType>(properties, blockPolicy, minerLoopAction);
             var cancellationToken = new CancellationToken();
             await service.StartAsync(cancellationToken);
         }

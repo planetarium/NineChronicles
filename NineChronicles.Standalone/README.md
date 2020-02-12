@@ -1,11 +1,11 @@
-# Nekoyume Standalone
+# NineChronicles Standalone
 
 ## Run
 
 ```
 $ dotnet run -- --help
 
-Usage: Nekoyume.Standalone [--app-protocol-version <Int32>] [--genesis-block-path <String>] [--no-miner] [--host <String>] [--port <Nullable`1>] [--private-key <String>] [--store-path <String>] [--ice-server <String>...] [--peer <String>...] [--help] [--version]
+Usage: NineChronicles.Standalone [--app-protocol-version <Int32>] [--genesis-block-path <String>] [--no-miner] [--host <String>] [--port <Nullable`1>] [--private-key <String>] [--store-path <String>] [--ice-server <String>...] [--peer <String>...] [--help] [--version]
 
 Run standalone application with options.
 
