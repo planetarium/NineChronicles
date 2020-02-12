@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
 using Nekoyume.Helper;
+using Nekoyume.BlockChain;
 
 namespace Nekoyume.UI
 {
@@ -130,7 +131,8 @@ namespace Nekoyume.UI
 
         public void ResetStore()
         {
-            Game.Game.instance.Agent.ResetStore();
+            // FIXME 타입 쿼리 하지 말고 구조 개선해서 고칩시다.
+            (Game.Game.instance.Agent as Agent)?.ResetStore();
         }
 
         public void ResetKeyStore()
