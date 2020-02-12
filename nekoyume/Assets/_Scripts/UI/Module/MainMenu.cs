@@ -36,7 +36,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
 
-        private int _requiredClearedStage;
+        private int _requireStage;
         private string _messageForCat;
         private MessageCat _cat;
 
@@ -54,23 +54,23 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case MenuType.Combination:
-                    _requiredClearedStage = GameConfig.RequireStage.UIMainMenuCombination;
+                    _requireStage = GameConfig.RequireStage.UIMainMenuCombination;
                     break;
                 case MenuType.Ranking:
-                    _requiredClearedStage = GameConfig.RequireStage.UIMainMenuRankingBoard;
+                    _requireStage = GameConfig.RequireStage.UIMainMenuRankingBoard;
                     break;
                 case MenuType.Shop:
-                    _requiredClearedStage = GameConfig.RequireStage.UIMainMenuShop;
+                    _requireStage = GameConfig.RequireStage.UIMainMenuShop;
                     break;
                 case MenuType.Quest:
-                    _requiredClearedStage = GameConfig.RequireStage.UIMainMenuStage;
+                    _requireStage = GameConfig.RequireStage.UIMainMenuStage;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
             _messageForCat =
-                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_requiredClearedStage} First!";
+                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_requireStage} First!";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()
@@ -144,12 +144,12 @@ namespace Nekoyume.UI.Module
 
         public void Set(Player player)
         {
-            if (_requiredClearedStage > 0)
+            if (_requireStage > 0)
             {
                 if (States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
                     out var world))
                 {
-                    IsUnlocked = _requiredClearedStage <= world.StageClearedId;
+                    IsUnlocked = _requireStage <= world.StageClearedId;
                 }
                 else
                 {
