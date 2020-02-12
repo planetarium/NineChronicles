@@ -166,7 +166,7 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOn();
                     filteredButton.SetToggledOff();
                     overallButton.SetToggledOff();
-                    rankingRewards.Hide();
+                    rankingRewards.Show();
                     arenaPendingNCG.Show(false);
                     UpdateArena();
                     arenaRankingHeader.SetActive(true);
