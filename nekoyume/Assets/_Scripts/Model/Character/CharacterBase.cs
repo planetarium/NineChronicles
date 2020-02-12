@@ -237,7 +237,6 @@ namespace Nekoyume.Model
 
         protected virtual void EndTurn()
         {
-            Simulator.Turn++;
 #if TEST_LOG
             UnityEngine.Debug.LogWarning($"{nameof(RowData.Id)} : {RowData.Id} / Turn Ended.");
 #endif

@@ -338,7 +338,7 @@ namespace Nekoyume.UI
 
             StopVFX();
 
-            var player = stage.RunPlayer();
+            var player = stage.RunPlayer(stage.selectedPlayer.transform.position);
             player.DisableHUD();
 
             var worldId = stage.worldId;
