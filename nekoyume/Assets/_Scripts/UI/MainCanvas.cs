@@ -16,6 +16,7 @@ namespace Nekoyume.UI
         public GameObject screen;
         public GameObject tooltip;
         public GameObject widget;
+        public GameObject animation;
         public GameObject systemInfo;
         public GameObject development;
 
@@ -39,6 +40,8 @@ namespace Nekoyume.UI
                     return tooltip.transform;
                 case WidgetType.Widget:
                     return widget.transform;
+                case WidgetType.Animation:
+                    return animation.transform;
                 case WidgetType.SystemInfo:
                     return systemInfo.transform;
                 case WidgetType.Development:
