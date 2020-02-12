@@ -1,6 +1,7 @@
 using System;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using UniRx;
@@ -15,7 +16,11 @@ namespace Nekoyume.BlockChain
 
         Address Address { get; }
 
-        void Initialize(CommandLineOptions options, Action<bool> callback);
+        void Initialize(
+            CommandLineOptions options,
+            PrivateKey privateKey,
+            Action<bool> callback
+        );
 
         void EnqueueAction(GameAction gameAction);
 

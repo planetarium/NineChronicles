@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -83,16 +84,18 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            _agent.Initialize(
-                CommandLineOptions.Load(
-                    CommandLineOptionsJsonPath,
-                    WebCommandLineOptionsPathInit
-                ),
-                succeed =>
-                {
-                    agentInitialized = true;
-                    agentInitializeSucceed = succeed;
-                }
+            yield return StartCoroutine(
+                CoLogin(
+                    CommandLineOptions.Load(
+                        CommandLineOptionsJsonPath,
+                        WebCommandLineOptionsPathInit
+                    ),
+                    succeed =>
+                    {
+                        agentInitialized = true;
+                        agentInitializeSucceed = succeed;
+                    }
+                )
             );
             yield return new WaitUntil(() => agentInitialized);
             // UI 초기화 2차.
@@ -193,6 +196,70 @@ namespace Nekoyume.Game
             position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
             vfx.Play();
+        }
+
+        private IEnumerator CoLogin(CommandLineOptions options, Action<bool> callback)
+        {
+            if (options.maintenance)
+            {
+                var w = Widget.Create<Alert>();
+                w.CloseCallback = () =>
+                {
+                    Application.OpenURL(GameConfig.DiscordLink);
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                w.Show(
+                    LocalizationManager.Localize("UI_MAINTENANCE"),
+                    LocalizationManager.Localize("UI_MAINTENANCE_CONTENT"),
+                    LocalizationManager.Localize("UI_OK"),
+                    false
+                );
+                yield break;
+            }
+            if (options.testEnd)
+            {
+                var w = Widget.Find<Confirm>();
+                w.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
+                        Application.OpenURL(GameConfig.DiscordLink);
+                    }
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
+
+                yield break;
+            }
+
+            var loginPopup = Widget.Find<LoginPopup>();
+
+            if (Application.isBatchMode)
+            {
+                loginPopup.Show(options.KeyStorePath, options.PrivateKey);
+            }
+            else
+            {
+                Widget.Find<UI.Settings>().UpdateSoundSettings();
+                var title = Widget.Find<Title>();
+                title.Show(options.keyStorePath, options.privateKey);
+                yield return new WaitUntil(() => loginPopup.Login);
+                title.Close();
+            }
+
+            _agent.Initialize(
+                options, 
+                loginPopup.GetPrivateKey(),
+                callback
+            );
         }
     }
 }

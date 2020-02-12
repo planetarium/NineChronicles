@@ -123,7 +123,10 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void Initialize(CommandLineOptions options, Action<bool> callback)
+        public void Initialize(
+            CommandLineOptions options,
+            PrivateKey privateKey,
+            Action<bool> callback)
         {
             if (disposed)
             {
@@ -133,8 +136,8 @@ namespace Nekoyume.BlockChain
             
             _options = options;
             disposed = false;
-            
-            StartCoroutine(CoLogin(callback));
+
+            InitAgent(callback, privateKey);
         }
 
         public void Init(
@@ -874,65 +877,6 @@ namespace Nekoyume.BlockChain
 
                 File.WriteAllBytes(path, ByteSerializer.Serialize(actionsList));
             }
-        }
-
-        private IEnumerator CoLogin(Action<bool> callback)
-        {
-            if (_options.maintenance)
-            {
-                var w = Widget.Create<Alert>();
-                w.CloseCallback = () =>
-                {
-                    Application.OpenURL(GameConfig.DiscordLink);
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                    Application.Quit();
-#endif
-                };
-                w.Show(
-                    LocalizationManager.Localize("UI_MAINTENANCE"),
-                    LocalizationManager.Localize("UI_MAINTENANCE_CONTENT"),
-                    LocalizationManager.Localize("UI_OK"),
-                    false
-                );
-                yield break;
-            }
-            if (_options.testEnd)
-            {
-                var w = Widget.Find<Confirm>();
-                w.CloseCallback = result =>
-                {
-                    if (result == ConfirmResult.Yes)
-                    {
-                        Application.OpenURL(GameConfig.DiscordLink);
-                    }
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                    Application.Quit();
-#endif
-                };
-                w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
-
-                yield break;
-            }
-
-            var loginPopup = Widget.Find<LoginPopup>();
-
-            if (Application.isBatchMode)
-            {
-                loginPopup.Show(_options.KeyStorePath, _options.PrivateKey);
-            }
-            else
-            {
-                Widget.Find<UI.Settings>().UpdateSoundSettings();
-                var title = Widget.Find<Title>();
-                title.Show(_options.keyStorePath, _options.privateKey);
-                yield return new WaitUntil(() => loginPopup.Login);
-                title.Close();
-            }
-            InitAgent(callback, loginPopup.GetPrivateKey());
         }
 
         private static void DeletePreviousStore()
