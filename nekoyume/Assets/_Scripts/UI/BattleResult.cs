@@ -89,6 +89,7 @@ namespace Nekoyume.UI
         public Subject<bool> BattleEndedSubject = new Subject<bool>();
         public IDisposable battleEndedStream;
 
+        public GameObject[] victoryResultTexts;
         private Animator _victoryImageAnimator;
 
         protected override void Awake()
@@ -136,6 +137,8 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            foreach (var obj in victoryResultTexts)
+                obj.SetActive(false);
             stageProgressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
