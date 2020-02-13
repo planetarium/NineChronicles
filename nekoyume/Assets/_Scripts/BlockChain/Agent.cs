@@ -52,9 +52,7 @@ namespace Nekoyume.BlockChain
 
         public static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
 
-        private Subject<long> _blockIndexSubject = new Subject<long>();
-
-        public Subject<long> BlockIndexSubject { get => _blockIndexSubject; }
+        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -374,7 +372,7 @@ namespace Nekoyume.BlockChain
                 StartNullableCoroutine(_autoPlayer);
                 callback(SyncSucceed);
                 LoadQueuedActions();
-                TipChanged += (___, index) => { BlockIndexSubject.Publish(index); };
+                TipChanged += (___, index) => { BlockIndexSubject.OnNext(index); };
             };
             _miner = options.NoMiner ? null : CoMiner();
             _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
