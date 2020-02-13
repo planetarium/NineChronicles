@@ -73,8 +73,8 @@ namespace NineChronicles.Standalone
 
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(); 
-            Action<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey> minerLoopAction =
-                (chain, swarm, privateKey) =>
+            Func<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey, Task> minerLoopAction =
+                async (chain, swarm, privateKey) =>
                 {
                     var miner = new Miner(chain, swarm, privateKey);
                     while (true)
@@ -82,7 +82,7 @@ namespace NineChronicles.Standalone
                         Log.Debug("Miner called.");
                         try
                         {
-                            miner.MineBlockAsync().Wait();
+                            await miner.MineBlockAsync();
                         }
                         catch (Exception ex)
                         {
