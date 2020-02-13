@@ -334,6 +334,35 @@ namespace Nekoyume.UI
                 SetState(state);
                 Login = false;
             }
+            
+            switch (State.Value)
+            {
+                case States.CreateAccount:
+                case States.ResetPassphrase:
+                case States.CreatePassword:
+                {
+                    {
+                        if (passPhraseField.isFocused)
+                        {
+                            retypeField.Select();
+                        }
+                        else
+                        {
+                            passPhraseField.Select();
+                        }
+                    }
+                    break;
+                }
+                case States.Login:
+                    loginField.Select();
+                    break;
+                case States.FindPassphrase:
+                    findPassphraseField.Select();
+                    break;
+                case States.Show:
+                case States.Failed:
+                    break;
+            }
         }
 
         private void CreatePrivateKey()
