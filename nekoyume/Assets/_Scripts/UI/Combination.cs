@@ -34,11 +34,16 @@ namespace Nekoyume.UI
 
         private const int NPCId = 300001;
 
+        private ToggleGroup _toggleGroup;
+        public CategoryButton combineEquipmentCategoryButton;
+        public CategoryButton combineConsumableCategoryButton;
+        public CategoryButton enhanceEquipmentCategoryButton;
+
+        public GameObject categoryTabArea;
         public GameObject selectionArea;
+        public GameObject recipeArea;
 
         public Module.Inventory inventory;
-
-        public GameObject recipeArea;
 
         public CombineEquipment combineEquipment;
         public CombineConsumable combineConsumable;
@@ -66,6 +71,12 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
+
+            _toggleGroup = new ToggleGroup();
+            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn);
+            _toggleGroup.RegisterToggleable(combineEquipmentCategoryButton);
+            _toggleGroup.RegisterToggleable(combineConsumableCategoryButton);
+            _toggleGroup.RegisterToggleable(enhanceEquipmentCategoryButton);
 
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
@@ -236,25 +247,18 @@ namespace Nekoyume.UI
             switch (value)
             {
                 case StateType.None:
+                    _toggleGroup.SetToggledOffAll();
                     recipeArea.gameObject.SetActive(false);
 
                     combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
 
-                    selectionArea.gameObject.SetActive(true);
-                    break;
-                case StateType.CombineConsumable:
-                    recipeArea.gameObject.SetActive(false);
-
-                    combineEquipment.Hide();
-                    combineConsumable.Show(true);
-                    enhanceEquipment.Hide();
-                    ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
-
-                    selectionArea.gameObject.SetActive(false);
+                    categoryTabArea.SetActive(false);
+                    selectionArea.SetActive(true);
                     break;
                 case StateType.CombineEquipment:
+                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
                     recipeArea.gameObject.SetActive(true);
 
                     combineEquipment.Hide();
@@ -262,9 +266,23 @@ namespace Nekoyume.UI
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
-                    selectionArea.gameObject.SetActive(false);
+                    categoryTabArea.SetActive(true);
+                    selectionArea.SetActive(false);
                     break;
+                case StateType.CombineConsumable:
+                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
+                    recipeArea.gameObject.SetActive(false);
+
+                    combineEquipment.Hide();
+                    combineConsumable.Show(true);
+                    enhanceEquipment.Hide();
+                    ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
+
+                    categoryTabArea.SetActive(true);
+                    selectionArea.SetActive(false);
+                    break;  
                 case StateType.EnhanceEquipment:
+                    _toggleGroup.SetToggledOn(enhanceEquipmentCategoryButton);
                     recipeArea.gameObject.SetActive(false);
 
                     inventory.SharedModel.DeselectItemView();
@@ -277,7 +295,8 @@ namespace Nekoyume.UI
                     enhanceEquipment.Show(true);
                     ShowSpeech("SPEECH_COMBINE_ENHANCE_EQUIPMENT_");
 
-                    selectionArea.gameObject.SetActive(false);
+                    categoryTabArea.SetActive(true);
+                    selectionArea.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -333,9 +352,25 @@ namespace Nekoyume.UI
             inventory.SharedModel.UpdateEffectAll();
         }
 
+        private void SubscribeOnToggledOn(IToggleable toggleable)
+        {
+            if (toggleable.Name.Equals(combineConsumableCategoryButton.Name))
+            {
+                State.Value = StateType.CombineConsumable;
+            }
+            else if (toggleable.Name.Equals(combineEquipmentCategoryButton.Name))
+            {
+                State.Value = StateType.CombineEquipment;
+            }
+            else if (toggleable.Name.Equals(enhanceEquipmentCategoryButton.Name))
+            {
+                State.Value = StateType.EnhanceEquipment;
+            }
+        }
+
         public void ChangeState(int index)
         {
-            State.SetValueAndForceNotify((StateType) index);
+            State.SetValueAndForceNotify((StateType)index);
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
