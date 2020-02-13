@@ -97,6 +97,7 @@ MonoBehaviour:
   worldMapButton: {fileID: 6993642126804961445}
   settingsButton: {fileID: 3978016994015874981}
   canvasGroup: {fileID: 3141839987563596919}
+  _buttons: {fileID: 8857942759920452112}
 --- !u!1 &6394329268439697686
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,7 +145,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: -160}
+  m_AnchoredPosition: {x: 0, y: -80}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!225 &866306027985971153
