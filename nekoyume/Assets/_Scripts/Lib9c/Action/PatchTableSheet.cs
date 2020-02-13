@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet;
@@ -7,6 +8,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("patch_table_sheet")]
     public class PatchTableSheet : GameAction
     {
