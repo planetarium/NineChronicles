@@ -48,13 +48,11 @@ namespace Nekoyume.BlockChain
 
         private const int MaxSeed = 3;
 
-        private static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
+        public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
-        private static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
+        public static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
 
-        private Subject<long> _blockIndexSubject = new Subject<long>();
-
-        public Subject<long> BlockIndexSubject { get => _blockIndexSubject; }
+        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -82,7 +80,6 @@ namespace Nekoyume.BlockChain
         private static CancellationTokenSource _cancellationTokenSource;
 
         private string _tipInfo = string.Empty;
-        private CommandLineOptions _options;
 
         private ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)> lastTenBlocks;
 
@@ -135,13 +132,12 @@ namespace Nekoyume.BlockChain
                 return;
             }
             
-            _options = options;
             disposed = false;
 
-            InitAgent(callback, privateKey);
+            InitAgent(callback, privateKey, options);
         }
 
-        public void Init(
+        private void Init(
             PrivateKey privateKey,
             string path,
             IEnumerable<Peer> peers,
@@ -211,51 +207,7 @@ namespace Nekoyume.BlockChain
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        public void ResetStore()
-        {
-            var confirm = Widget.Find<Confirm>();
-            var storagePath = _options.StoragePath ?? DefaultStoragePath;
-            var prevStoragePath = Path.Combine(PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                    return;
-                Dispose();
-                if (Directory.Exists(storagePath))
-                {
-                    Directory.Move(storagePath, prevStoragePath);
-                }
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
-            };
-            confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
-        }
 
-        public void ResetKeyStore()
-        {
-            var confirm = Widget.Find<Confirm>();
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                    return;
-                Dispose();
-                var keyPath = _options.keyStorePath;
-                if (Directory.Exists(keyPath))
-                {
-                    Directory.Delete(keyPath, true);
-                }
-
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
-            };
-            confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
-        }
 
         public void Dispose()
         {
@@ -311,10 +263,10 @@ namespace Nekoyume.BlockChain
 
         #endregion
 
-        private void InitAgent(Action<bool> callback, PrivateKey privateKey)
+        private void InitAgent(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
         {
-            var peers = _options.Peers.Select(LoadPeer);
-            var iceServerList = _options.IceServers.Select(LoadIceServer).ToImmutableList();
+            var peers = options.Peers.Select(LoadPeer);
+            var iceServerList = options.IceServers.Select(LoadIceServer).ToImmutableList();
 
             if (!iceServerList.Any())
             {
@@ -323,12 +275,12 @@ namespace Nekoyume.BlockChain
 
             var iceServers = iceServerList.Sample(1).ToImmutableList();
 
-            var host = GetHost(_options);
-            var port = _options.Port;
-            var consoleSink = _options.ConsoleSink;
-            var storagePath = _options.StoragePath ?? DefaultStoragePath;
-            var storageType = _options.storageType;
-            var development = _options.Development;
+            var host = GetHost(options);
+            var port = options.Port;
+            var consoleSink = options.ConsoleSink;
+            var storagePath = options.StoragePath ?? DefaultStoragePath;
+            var storageType = options.storageType;
+            var development = options.Development;
             Init(
                 privateKey,
                 storagePath,
@@ -420,10 +372,10 @@ namespace Nekoyume.BlockChain
                 StartNullableCoroutine(_autoPlayer);
                 callback(SyncSucceed);
                 LoadQueuedActions();
-                TipChanged += (___, index) => { BlockIndexSubject.Publish(index); };
+                TipChanged += (___, index) => { BlockIndexSubject.OnNext(index); };
             };
-            _miner = _options.NoMiner ? null : CoMiner();
-            _autoPlayer = _options.AutoPlay ? CoAutoPlayer() : null;
+            _miner = options.NoMiner ? null : CoMiner();
+            _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
             if (development)
             {
