@@ -115,7 +115,7 @@ namespace Nekoyume.BlockChain
                 {
                     var quest = questList.First();
                     var format = LocalizationManager.Localize("NOTIFICATION_QUEST_COMPLETE");
-                    var msg = string.Format(format, quest.GetName());
+                    var msg = string.Format(format, quest.GetContent());
                     UI.Notification.Push(MailType.System, msg);
                 }
                 else

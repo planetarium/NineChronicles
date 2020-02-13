@@ -339,7 +339,7 @@ namespace Nekoyume.BlockChain
         {
             UpdateCurrentAvatarState(eval);
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REWARD");
-            var msg = string.Format(format, eval.Action.Result.GetName());
+            var msg = string.Format(format, eval.Action.Result.GetContent());
             UI.Notification.Push(MailType.System, msg);
         }
 

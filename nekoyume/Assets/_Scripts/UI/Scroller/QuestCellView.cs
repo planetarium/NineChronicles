@@ -75,7 +75,7 @@ namespace Nekoyume.UI.Scroller
             UpdateView();
 
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
-            var msg = string.Format(format, _quest.GetName());
+            var msg = string.Format(format, _quest.GetContent());
             Notification.Push(MailType.System, msg);
 
             // 로컬 아바타의 퀘스트 상태 업데이트.
@@ -100,7 +100,8 @@ namespace Nekoyume.UI.Scroller
         private void UpdateView()
         {
             var isReceived = false;
-            titleText.text = _quest.GetName();
+            titleText.text = _quest.GetTitle();
+            contentText.text = _quest.GetContent();
 
             string text = _quest.GetProgressText();
             bool showProgressBar = !string.IsNullOrEmpty(text); 
