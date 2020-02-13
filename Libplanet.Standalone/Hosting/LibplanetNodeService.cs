@@ -30,7 +30,7 @@ namespace Libplanet.Standalone.Hosting
 
         private readonly IBlockPolicy<T> _blockPolicy;
 
-        private Action<BlockChain<T>, Swarm<T>, PrivateKey> _minerLoopAction;
+        private Func<BlockChain<T>, Swarm<T>, PrivateKey, Task> _minerLoopAction;
 
         private PrivateKey _privateKey;
 
@@ -41,7 +41,7 @@ namespace Libplanet.Standalone.Hosting
         public LibplanetNodeService(
             LibplanetNodeServiceProperties properties,
             IBlockPolicy<T> blockPolicy,
-            Action<BlockChain<T>, Swarm<T>, PrivateKey> minerLoopAction)
+            Func<BlockChain<T>, Swarm<T>, PrivateKey, Task> minerLoopAction)
         {
             _properties = properties;
 
