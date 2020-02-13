@@ -23,7 +23,7 @@ namespace Nekoyume.BlockChain
 
         public Address Address { get; }
 
-        public async Task MineBlock()
+        public async Task MineBlockAsync()
         {
             var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
 
