@@ -24,8 +24,8 @@ namespace Nekoyume.UI
         public enum StateType
         {
             None,
-            CombineConsumable,
             CombineEquipment,
+            CombineConsumable,
             EnhanceEquipment
         }
 
@@ -35,11 +35,10 @@ namespace Nekoyume.UI
         private const int NPCId = 300001;
 
         public GameObject tabArea;
-        public CategoryButton combineEquipmentCategoryButton;
-        public CategoryButton combineConsumableCategoryButton;
-        public CategoryButton enhanceEquipmentCategoryButton;
 
         public Module.Inventory inventory;
+
+        public GameObject recipeArea;
 
         public CombineEquipment combineEquipment;
         public CombineConsumable combineConsumable;
@@ -237,6 +236,8 @@ namespace Nekoyume.UI
             switch (value)
             {
                 case StateType.None:
+                    recipeArea.gameObject.SetActive(false);
+
                     combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
@@ -244,6 +245,8 @@ namespace Nekoyume.UI
                     tabArea.gameObject.SetActive(true);
                     break;
                 case StateType.CombineConsumable:
+                    recipeArea.gameObject.SetActive(false);
+
                     combineEquipment.Hide();
                     combineConsumable.Show(true);
                     enhanceEquipment.Hide();
@@ -252,7 +255,9 @@ namespace Nekoyume.UI
                     tabArea.gameObject.SetActive(false);
                     break;
                 case StateType.CombineEquipment:
-                    combineEquipment.Show(true);
+                    recipeArea.gameObject.SetActive(true);
+
+                    combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
@@ -260,6 +265,8 @@ namespace Nekoyume.UI
                     tabArea.gameObject.SetActive(false);
                     break;
                 case StateType.EnhanceEquipment:
+                    recipeArea.gameObject.SetActive(false);
+
                     inventory.SharedModel.DeselectItemView();
                     inventory.SharedModel.State.Value = ItemType.Equipment;
                     inventory.SharedModel.DimmedFunc.Value = enhanceEquipment.DimFunc;
