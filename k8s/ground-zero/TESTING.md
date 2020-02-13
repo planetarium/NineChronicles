@@ -87,7 +87,7 @@ Docker가 설치된 환경이라면 다음 명령어로 이미지를 빌드할 �
 - pvc를 삭제합니다.
 
 
-    $ kubectl.exe get pvc -o yaml | kubectl.exe delete -f -
+    $ kubectl.exe delete pvc --all
 
 
 - 유니티 에디터에서 `Tools/Libplanet/Mine Genesis Block` 을 실행해서 새로운 제네시스 블록을 생성합니다.
