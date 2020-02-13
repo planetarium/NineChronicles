@@ -60,8 +60,8 @@
 #else
         public const int QuestRequiredLevel = 1;
         public const int CombinationRequiredLevel = 3;
-        public const int ShopRequiredLevel = 7;
-        public const int RankingRequiredLevel = 5;
+        public const int ShopRequiredLevel = 17;
+        public const int RankingRequiredLevel = 25;
 #endif
 
         #endregion

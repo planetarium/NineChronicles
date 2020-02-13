@@ -1,4 +1,4 @@
-﻿Key,English,Korean
+Key,English,Korean
 TITLE,Nine Chronicles,나인 크로니클
 ALL,All,전체
 ADVENTURE,Adventure,모험
@@ -247,6 +247,7 @@ SPEECH_RANK_MOUSE_ENTER_0,Do you want to know how strong you are?[newline]Check 
 SPEECH_RANK_CLICK_0,Stand back![newline]You can’t enter until you reach level {0}.,{0} 레벨을 먼저 달성해야 해.
 SPEECH_DUNGEON_MOUSE_ENTER_0,Press the portal below.[newline]Let’s visit other worlds and[newline]join the battle!,아래 마법진을 누르면[newline]탐험을 시작할 수 있다옹
 UI_LOGIN_CONTENT,This is a community-powered[newline]fantasy world that fully runs on blockchain.,It is a fantasy world on the blockchain.[newline]To start the game[comma] you need to create your account.
+UI_ACCOUNT_PLACEHOLDERS,Click the button below to create your ID,아래 버튼을 눌러 ID를 생성하세요
 UI_LOGIN_FIND_PASSPHRASE,For<voffset=1>g</voffset>ot passphrase?,For<voffset=1>g</voffset>ot passphrase?
 UI_LOGIN_BACK_TO_LOGIN,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e,Back to lo<voffset=1>g</voffset>in pa<voffset=1>g</voffset>e
 UI_LOGIN_LOGIN_FAIL,Login Failed,로그인 실패
@@ -292,10 +293,10 @@ UI_MAIN_MENU_QUEST,Stage!,스테이지!
 UI_MAIN_MENU_RANKING,Ranking!,랭킹!
 UI_MAIN_MENU_SHOP,Shop!,상점!
 UI_GAME_CREATE_PASSWORD,Create Password,비밀번호 생성
-UI_LOGIN_PASSWORD_INFO,* 문자[comma]숫자[comma]기호를 조합하여 8자 이상을 사용하세요.,* 문자[comma]숫자[comma]기호를 조합하여 8자 이상을 사용하세요.
-UI_LOGIN_RETYPE_INFO,* 암호를 확인해 주세요.,* 암호를 확인해 주세요.
-UI_LOGIN_INFO,암호를 다시 확인하세요.,암호를 다시 확인하세요.
-UI_LOGIN_PRIVATE_KEY_INFO,비밀키를 다시 확인하세요.,비밀키를 다시 확인하세요.
+UI_LOGIN_PASSWORD_INFO,* Use at least 8 characters with letters[comma] numbers and symbols.,* 문자[comma]숫자[comma]기호를 조합하여 8자 이상을 사용하세요.
+UI_LOGIN_RETYPE_INFO,* Please check your password.,* 암호를 확인해 주세요.
+UI_LOGIN_INFO,Please check your password again.,암호를 다시 확인하세요.
+UI_LOGIN_PRIVATE_KEY_INFO,Please check the key again.,비밀키를 다시 확인하세요.
 UI_RECEIVING_DAILY_REWARD,Receiving Daily reward...,일일 보상 수령 중...
 UI_RECEIVED_DAILY_REWARD,Received Daily reward!,일일 보상 수령 완료!
 UI_COMPLETED,Completed,완료
@@ -312,8 +313,8 @@ UI_WIN_DRAW_LOSE_FORMAT,Win {0} Draw {1} Lose {2},승 {0} 무 {1} 패 {2}
 UI_ACCOUNT_WARNING,<sprite name=UI_main_icon_quest_02>Never expose this ID to others.[newline]Anyone can steal your assets if this key is exposed.,<sprite name=UI_main_icon_quest_02>절대 이 ID를 노출하지 마십시오.[newline]ID가 노출되면 누구나 당신의 계정에서 자산을 빼갈 수 있습니다.
 UI_ID_CREATE_SUCCESS,ID Create Success!,ID가 생성되었습니다!
 UI_CHARACTER_SELECT,Select Character,캐릭터 선택
-UI_BATTLE_RESULT_FAILED_PHASE_0,추가 경험치를 획득하지 못했습니다.,추가 경험치를 획득하지 못했습니다.
-UI_BATTLE_RESULT_FAILED_PHASE_1,아이템을 획득하지 못했습니다.,아이템을 획득하지 못했습니다.
-UI_BATTLE_RESULT_FAILED_PHASE_2,다음 지역으로 넘어가지 못했습니다.,다음 지역으로 넘어가지 못했습니다.
-UI_BATTLE_RESULT_CLEAR,다음 지역으로 넘어갑니다.,다음 지역으로 넘어갑니다.
+UI_BATTLE_RESULT_FAILED_PHASE_0,Failed to acquire additional EXP.,추가 경험치를 획득하지 못했습니다.
+UI_BATTLE_RESULT_FAILED_PHASE_1,Failed to acquire items.,아이템을 획득하지 못했습니다.
+UI_BATTLE_RESULT_FAILED_PHASE_2,Failed to move to the next stage.,다음 지역으로 넘어가지 못했습니다.
+UI_BATTLE_RESULT_CLEAR,Move on to the next stage.,다음 지역으로 넘어갑니다.
 UI_PROGRESS,In Progress,진행 중
