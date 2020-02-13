@@ -34,7 +34,7 @@ namespace Nekoyume.UI
 
         private const int NPCId = 300001;
 
-        public GameObject tabArea;
+        public GameObject selectionArea;
 
         public Module.Inventory inventory;
 
@@ -242,7 +242,7 @@ namespace Nekoyume.UI
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
 
-                    tabArea.gameObject.SetActive(true);
+                    selectionArea.gameObject.SetActive(true);
                     break;
                 case StateType.CombineConsumable:
                     recipeArea.gameObject.SetActive(false);
@@ -252,7 +252,7 @@ namespace Nekoyume.UI
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
 
-                    tabArea.gameObject.SetActive(false);
+                    selectionArea.gameObject.SetActive(false);
                     break;
                 case StateType.CombineEquipment:
                     recipeArea.gameObject.SetActive(true);
@@ -262,7 +262,7 @@ namespace Nekoyume.UI
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
-                    tabArea.gameObject.SetActive(false);
+                    selectionArea.gameObject.SetActive(false);
                     break;
                 case StateType.EnhanceEquipment:
                     recipeArea.gameObject.SetActive(false);
@@ -277,7 +277,7 @@ namespace Nekoyume.UI
                     enhanceEquipment.Show(true);
                     ShowSpeech("SPEECH_COMBINE_ENHANCE_EQUIPMENT_");
 
-                    tabArea.gameObject.SetActive(false);
+                    selectionArea.gameObject.SetActive(false);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
