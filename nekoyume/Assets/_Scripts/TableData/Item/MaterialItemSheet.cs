@@ -47,6 +47,7 @@ namespace Nekoyume.TableData
                 : this((Dictionary) new Codec().Decode((byte[])info.GetValue("encoded", typeof(byte[]))))
             {
             }
+
             public void GetObjectData(SerializationInfo info, StreamingContext context)
             {
                 info.AddValue("encoded", new Codec().Encode(Serialize()));
