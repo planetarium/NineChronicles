@@ -44,6 +44,8 @@ namespace Nekoyume.Game
 
         private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
+        private CommandLineOptions _options;
+
 #if UNITY_EDITOR
         private static readonly string WebCommandLineOptionsPathInit = string.Empty;
         private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
@@ -84,12 +86,12 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
+            _options = CommandLineOptions.Load(
+                CommandLineOptionsJsonPath,
+                WebCommandLineOptionsPathInit
+            );
             yield return StartCoroutine(
                 CoLogin(
-                    CommandLineOptions.Load(
-                        CommandLineOptionsJsonPath,
-                        WebCommandLineOptionsPathInit
-                    ),
                     succeed =>
                     {
                         agentInitialized = true;
@@ -198,9 +200,9 @@ namespace Nekoyume.Game
             vfx.Play();
         }
 
-        private IEnumerator CoLogin(CommandLineOptions options, Action<bool> callback)
+        private IEnumerator CoLogin(Action<bool> callback)
         {
-            if (options.maintenance)
+            if (_options.maintenance)
             {
                 var w = Widget.Create<Alert>();
                 w.CloseCallback = () =>
@@ -220,7 +222,7 @@ namespace Nekoyume.Game
                 );
                 yield break;
             }
-            if (options.testEnd)
+            if (_options.testEnd)
             {
                 var w = Widget.Find<Confirm>();
                 w.CloseCallback = result =>
@@ -244,22 +246,66 @@ namespace Nekoyume.Game
 
             if (Application.isBatchMode)
             {
-                loginPopup.Show(options.KeyStorePath, options.PrivateKey);
+                loginPopup.Show(_options.KeyStorePath, _options.PrivateKey);
             }
             else
             {
                 Widget.Find<UI.Settings>().UpdateSoundSettings();
                 var title = Widget.Find<Title>();
-                title.Show(options.keyStorePath, options.privateKey);
+                title.Show(_options.keyStorePath, _options.privateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
                 title.Close();
             }
 
             _agent.Initialize(
-                options, 
+                _options,
                 loginPopup.GetPrivateKey(),
                 callback
             );
+        }
+
+        public void ResetStore()
+        {
+            var confirm = Widget.Find<Confirm>();
+            var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
+            var prevStoragePath = Path.Combine(BlockChain.Agent.PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                if (Directory.Exists(storagePath))
+                {
+                    Directory.Move(storagePath, prevStoragePath);
+                }
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+            };
+            confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
+        }
+
+        public void ResetKeyStore()
+        {
+            var confirm = Widget.Find<Confirm>();
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                var keyPath = _options.keyStorePath;
+                if (Directory.Exists(keyPath))
+                {
+                    Directory.Delete(keyPath, true);
+                }
+
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+            };
+            confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
     }
 }

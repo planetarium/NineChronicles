@@ -26,6 +26,5 @@ namespace Nekoyume.BlockChain
 
         IValue GetState(Address address);
 
-        void ResetKeyStore();
     }
 }
