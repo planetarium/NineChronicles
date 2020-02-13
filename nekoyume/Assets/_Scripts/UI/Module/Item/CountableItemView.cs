@@ -4,7 +4,6 @@ using Nekoyume.Helper;
 using Nekoyume.TableData;
 using TMPro;
 using UniRx;
-using UnityEngine.U2D;
 
 namespace Nekoyume.UI.Module
 {
