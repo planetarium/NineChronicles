@@ -48,6 +48,7 @@ namespace Nekoyume.UI
         public Button asgardButton;
         public Button challengeModeButton;
 
+        public GameObject stage;
         public StageInformation stageInformation;
         public SubmitButton submitButton;
 
@@ -208,6 +209,7 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
                 true,
+                true,
                 BottomMenu.ToggleableType.WorldMap);
             bottomMenu.worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
@@ -220,7 +222,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _disposablesAtShow.DisposeAllAndClear();
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
+            Find<BottomMenu>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -276,16 +278,20 @@ namespace Nekoyume.UI
 
             if (active)
             {
+                stage.SetActive(false);
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.worldMapButton.Hide();
                 bottomMenu.backButton.Show();
                 worldMapRoot.SetActive(true);
-                status.Close();
+                status.Close(true);
             }
             else
             {
+                
                 worldMapRoot.SetActive(false);
+                stage.SetActive(true);
                 var bottomMenu = Find<BottomMenu>();
+                bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true, true, BottomMenu.ToggleableType.WorldMap);
                 bottomMenu.worldMapButton.Show();
                 bottomMenu.backButton.Hide();
                 bottomMenu.ToggleGroup?.SetToggledOffAll();
@@ -357,7 +363,7 @@ namespace Nekoyume.UI
         private void GoToQuestPreparation()
         {
             Close();
-            Find<Status>().Close();
+            Find<Status>().Close(true);
             Find<QuestPreparation>().ToggleWorldMap();
         }
     }

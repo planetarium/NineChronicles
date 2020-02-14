@@ -157,11 +157,13 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
                 true,
+                true,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character);
+                BottomMenu.ToggleableType.Character,
+                BottomMenu.ToggleableType.Inventory);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
             _npc01 = go.GetComponent<NPC>();

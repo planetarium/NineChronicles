@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -33,6 +35,8 @@ namespace Nekoyume.Helper
         public string[] iceServers = new string[]{ };
 
         public string storagePath;
+
+        public string storageType;
 
         public bool autoPlay;
 
@@ -116,7 +120,7 @@ namespace Nekoyume.Helper
         }
 
         [Option("peer", Required = false, HelpText = "Peers to add. (Usage: --peer peerA peerB ...)")]
-        public IEnumerable<string> Peers    
+        public IEnumerable<string> Peers
         {
             get => peers;
             set
@@ -136,6 +140,17 @@ namespace Nekoyume.Helper
             set
             {
                 storagePath = value;
+                Empty = false;
+            }
+        }
+
+        [Option("storage-type", Required = false, HelpText = "The storage type to use.")]
+        public string StorageType
+        {
+            get => storageType;
+            set
+            {
+                storageType = value;
                 Empty = false;
             }
         }
@@ -193,6 +208,45 @@ namespace Nekoyume.Helper
                 testEnd = value;
                 Empty = false;
             }
+        }
+
+        public static CommandLineOptions Load(string localPath, string onlinePath)
+        {
+            var options = CommnadLineParser.GetCommandLineOptions();
+            if (!options.Empty)
+            {
+                Debug.Log($"Get options from commandline.");
+                return options;
+            }
+
+            try
+            {
+                var webResponse = WebRequest.Create(onlinePath).GetResponse();
+                using (var stream = webResponse.GetResponseStream())
+                {
+                    if (!(stream is null))
+                    {
+                        byte[] data = new byte[stream.Length];
+                        stream.Read(data, 0, data.Length);
+                        string jsonData = Encoding.UTF8.GetString(data);
+                        Debug.Log($"Get options from web: {onlinePath}");
+                        return JsonUtility.FromJson<CommandLineOptions>(jsonData);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning(e);
+            }
+
+            if (File.Exists(localPath))
+            {
+                Debug.Log($"Get options from local: {localPath}");
+                return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
+            }
+
+            Debug.Log("Failed to find options. Creating...");
+            return new CommandLineOptions();
         }
     }
 

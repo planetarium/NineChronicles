@@ -135,6 +135,7 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
                 true,
+                true,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
@@ -146,7 +147,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<BottomMenu>().Close();
+            Find<BottomMenu>().Close(true);
 
             foreach (var slot in consumableSlots)
             {
@@ -227,6 +228,7 @@ namespace Nekoyume.UI
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             Find<WorldMap>().Show(_worldId, _stageId, false);
+            gameObject.SetActive(false);
         }
 
         private void SubscribeReadyToQuest(bool ready)
@@ -260,10 +262,12 @@ namespace Nekoyume.UI
                     UINavigator.NavigationType.Back,
                     SubscribeBackButtonClick,
                     true,
+                    true,
                     BottomMenu.ToggleableType.Mail,
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat,
-                    BottomMenu.ToggleableType.IllustratedBook);
+                    BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Inventory);
             }
             else
             {

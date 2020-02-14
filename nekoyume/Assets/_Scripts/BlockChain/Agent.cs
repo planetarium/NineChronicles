@@ -19,6 +19,7 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
+using Libplanet.RocksDBStore;
 using Libplanet.Store;
 using Libplanet.Tx;
 using Microsoft.ApplicationInsights;
@@ -41,27 +42,17 @@ namespace Nekoyume.BlockChain
     /// <summary>
     /// 블록체인 노드 관련 로직을 처리
     /// </summary>
-    public class Agent : MonoBehaviour, IDisposable
+    public class Agent : MonoBehaviour, IDisposable, IAgent
     {
         private const string DefaultIceServer = "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/";
 
-#if UNITY_EDITOR
-        private static readonly string WebCommandLineOptionsPathInit = string.Empty;
-        private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
-#else
-        private const string WebCommandLineOptionsPathInit = "https://planetarium.dev/9c-alpha-clo.json";
-        private const string WebCommandLineOptionsPathLogin = "https://planetarium.dev/9c-alpha-clo.json";
-#endif
-
-        private static readonly string CommandLineOptionsJsonPath =
-            Path.Combine(Application.streamingAssetsPath, "clo.json");
         private const int MaxSeed = 3;
 
-        private static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
+        public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
-        private static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
+        public static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
 
-        public ReactiveProperty<long> blockIndex = new ReactiveProperty<long>();
+        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -81,7 +72,7 @@ namespace Nekoyume.BlockChain
 
         protected BlockChain<PolymorphicAction<ActionBase>> blocks;
         private Swarm<PolymorphicAction<ActionBase>> _swarm;
-        protected DefaultStore store;
+        protected BaseStore store;
         private ImmutableList<Peer> _seedPeers;
         private IImmutableSet<Address> _trustedPeers;
         private ImmutableList<Peer> _peerList;
@@ -89,7 +80,6 @@ namespace Nekoyume.BlockChain
         private static CancellationTokenSource _cancellationTokenSource;
 
         private string _tipInfo = string.Empty;
-        private CommandLineOptions _options;
 
         private ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)> lastTenBlocks;
 
@@ -131,30 +121,23 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void Awake()
-        {
-            ForceDotNet.Force();
-            _options = GetOptions(CommandLineOptionsJsonPath, WebCommandLineOptionsPathInit);
-            if (!Directory.Exists(PrevStorageDirectoryPath))
-            {
-                Directory.CreateDirectory(PrevStorageDirectoryPath);
-            }
-            DeletePreviousStore();
-        }
-
-        public void Initialize(Action<bool> callback)
+        public void Initialize(
+            CommandLineOptions options,
+            PrivateKey privateKey,
+            Action<bool> callback)
         {
             if (disposed)
             {
                 Debug.Log("Agent Exist");
                 return;
             }
-
+            
             disposed = false;
-            StartCoroutine(CoLogin(callback));
+
+            InitAgent(callback, privateKey, options);
         }
 
-        public void Init(
+        private void Init(
             PrivateKey privateKey,
             string path,
             IEnumerable<Peer> peers,
@@ -162,7 +145,8 @@ namespace Nekoyume.BlockChain
             string host,
             int? port,
             bool consoleSink,
-            bool development)
+            bool development,
+            string storageType = null)
         {
             InitializeLogger(consoleSink, development);
 
@@ -180,10 +164,10 @@ namespace Nekoyume.BlockChain
             Debug.Log($"Store Path: {path}");
             Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
 
-            var policy = GetPolicy();
+            var policy = BlockPolicy.GetPolicy();
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
-            store = new DefaultStore(path, flush: false);
+            store = LoadStore(path, storageType);
 
             try
             {
@@ -223,10 +207,66 @@ namespace Nekoyume.BlockChain
             _cancellationTokenSource = new CancellationTokenSource();
         }
 
-        private void InitAgent(Action<bool> callback, PrivateKey privateKey)
+
+
+        public void Dispose()
         {
-            var peers = _options.Peers.Select(LoadPeer);
-            var iceServerList = _options.IceServers.Select(LoadIceServer).ToImmutableList();
+            _cancellationTokenSource?.Cancel();
+            // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
+            Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
+                .ContinueWith(_ =>
+                {
+                    try
+                    {
+                        store?.Dispose();
+                        _swarm?.Dispose();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                    }
+                })
+                .Wait(SwarmLinger + 1 * 1000);
+
+            SaveQueuedActions();
+            disposed = true;
+        }
+
+        public void EnqueueAction(GameAction gameAction)
+        {
+            Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
+            _queuedActions.Enqueue(gameAction);
+            OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
+        }
+
+        public IValue GetState(Address address)
+        {
+            return blocks.GetState(address);
+        }
+
+        #region Mono
+
+        private void Awake()
+        {
+            ForceDotNet.Force();
+            if (!Directory.Exists(PrevStorageDirectoryPath))
+            {
+                Directory.CreateDirectory(PrevStorageDirectoryPath);
+            }
+            DeletePreviousStore();
+        }
+
+        protected void OnDestroy()
+        {
+            ActionRenderHandler.Instance.Stop();
+            Dispose();
+        }
+
+        #endregion
+
+        private void InitAgent(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
+        {
+            var peers = options.Peers.Select(LoadPeer);
+            var iceServerList = options.IceServers.Select(LoadIceServer).ToImmutableList();
 
             if (!iceServerList.Any())
             {
@@ -235,11 +275,12 @@ namespace Nekoyume.BlockChain
 
             var iceServers = iceServerList.Sample(1).ToImmutableList();
 
-            var host = GetHost(_options);
-            var port = _options.Port;
-            var consoleSink = _options.ConsoleSink;
-            var storagePath = _options.StoragePath ?? DefaultStoragePath;
-            var development = _options.Development;
+            var host = GetHost(options);
+            var port = options.Port;
+            var consoleSink = options.ConsoleSink;
+            var storagePath = options.StoragePath ?? DefaultStoragePath;
+            var storageType = options.storageType;
+            var development = options.Development;
             Init(
                 privateKey,
                 storagePath,
@@ -248,7 +289,8 @@ namespace Nekoyume.BlockChain
                 host,
                 port,
                 consoleSink,
-                development
+                development,
+                storageType
             );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
@@ -330,10 +372,10 @@ namespace Nekoyume.BlockChain
                 StartNullableCoroutine(_autoPlayer);
                 callback(SyncSucceed);
                 LoadQueuedActions();
-                TipChanged += (___, index) => { blockIndex.Value = index; };
+                TipChanged += (___, index) => { BlockIndexSubject.OnNext(index); };
             };
-            _miner = _options.NoMiner ? null : CoMiner();
-            _autoPlayer = _options.AutoPlay ? CoAutoPlayer() : null;
+            _miner = options.NoMiner ? null : CoMiner();
+            _autoPlayer = options.AutoPlay ? CoAutoPlayer() : null;
 
             if (development)
             {
@@ -356,45 +398,6 @@ namespace Nekoyume.BlockChain
                     break;
                 }
             }
-        }
-
-        public static CommandLineOptions GetOptions(string localPath, string onlinePath)
-        {
-            var options = CommnadLineParser.GetCommandLineOptions();
-            if (!options.Empty)
-            {
-                Debug.Log($"Get options from commandline.");
-                return options;
-            }
-
-            try
-            {
-                var webResponse = WebRequest.Create(onlinePath).GetResponse();
-                using (var stream = webResponse.GetResponseStream())
-                {
-                    if (!(stream is null))
-                    {
-                        byte[] data = new byte[stream.Length];
-                        stream.Read(data, 0, data.Length);
-                        string jsonData = Encoding.UTF8.GetString(data);
-                        Debug.Log($"Get options from web: {onlinePath}");
-                        return JsonUtility.FromJson<CommandLineOptions>(jsonData);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(e);
-            }
-
-            if (File.Exists(localPath))
-            {
-                Debug.Log($"Get options from local: {localPath}");
-                return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
-            }
-
-            Debug.Log("Failed to find options. Creating...");
-            return new CommandLineOptions();
         }
 
         private static string GetHost(CommandLineOptions options)
@@ -420,15 +423,33 @@ namespace Nekoyume.BlockChain
             return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
         }
 
-        #region Mono
-
-        protected void OnDestroy()
+        private static BaseStore LoadStore(string path, string storageType)
         {
-            ActionRenderHandler.Instance.Stop();
-            Dispose();
-        }
+            BaseStore store = null;
 
-        #endregion
+            if (storageType is null)
+            {
+                Debug.Log("Storage Type is not specified. DefaultStore will be used.");
+            }
+            else if (storageType == "rocksdb")
+            {
+                try
+                {
+                    store = new RocksDBStore(path, flush: false);
+                    Debug.Log("RocksDB is initialized.");
+                }
+                catch (TypeInitializationException e)
+                {
+                    Debug.LogErrorFormat("RocksDB is not available. DefaultStore will be used. {0}", e);
+                }
+            }
+            else
+            {
+                Debug.Log($"Storage Type {storageType} is not supported. DefaultStore will be used.");
+            }
+
+            return store ?? new DefaultStore(path, flush: false, compress: true);
+        }
 
         private void StartSystemCoroutines()
         {
@@ -521,28 +542,6 @@ namespace Nekoyume.BlockChain
             SyncSucceed = false;
         }
 
-        public void Dispose()
-        {
-            _cancellationTokenSource?.Cancel();
-            // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
-                .ContinueWith(_ =>
-                {
-                    try
-                    {
-                        store?.Dispose();
-                        _swarm?.Dispose();
-                    }
-                    catch (ObjectDisposedException)
-                    {
-                    }
-                })
-                .Wait(SwarmLinger + 1 * 1000);
-
-            SaveQueuedActions();
-            disposed = true;
-        }
-
         private IEnumerator CoLogger()
         {
             Widget.Create<Cheat>(true);
@@ -564,7 +563,7 @@ namespace Nekoyume.BlockChain
                 }
 
                 Cheat.Display("StagedTxs", log.ToString());
-                
+
                 log = new StringBuilder($"Last 10 tips :\n");
                 foreach(var (block, appendedTime) in lastTenBlocks.ToArray().Reverse())
                 {
@@ -778,21 +777,9 @@ namespace Nekoyume.BlockChain
             var miner = new Miner(blocks, _swarm, PrivateKey);
             while (true)
             {
-                var task = Task.Run(() => miner.MineBlock());
+                var task = Task.Run(async() => await miner.MineBlockAsync());
                 yield return new WaitUntil(() => task.IsCompleted);
             }
-        }
-
-        public void EnqueueAction(GameAction gameAction)
-        {
-            Debug.LogFormat("Enqueue GameAction: {0} Id: {1}", gameAction, gameAction.Id);
-            _queuedActions.Enqueue(gameAction);
-            OnEnqueueOwnGameAction?.Invoke(gameAction.Id);
-        }
-
-        public IValue GetState(Address address)
-        {
-            return blocks.GetState(address);
         }
 
         private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
@@ -876,65 +863,6 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private IEnumerator CoLogin(Action<bool> callback)
-        {
-            if (_options.maintenance)
-            {
-                var w = Widget.Create<Alert>();
-                w.CloseCallback = () =>
-                {
-                    Application.OpenURL(GameConfig.DiscordLink);
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                    Application.Quit();
-#endif
-                };
-                w.Show(
-                    LocalizationManager.Localize("UI_MAINTENANCE"),
-                    LocalizationManager.Localize("UI_MAINTENANCE_CONTENT"),
-                    LocalizationManager.Localize("UI_OK"),
-                    false
-                );
-                yield break;
-            }
-            if (_options.testEnd)
-            {
-                var w = Widget.Find<Confirm>();
-                w.CloseCallback = result =>
-                {
-                    if (result == ConfirmResult.Yes)
-                    {
-                        Application.OpenURL(GameConfig.DiscordLink);
-                    }
-#if UNITY_EDITOR
-                    UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                    Application.Quit();
-#endif
-                };
-                w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
-
-                yield break;
-            }
-
-            var loginPopup = Widget.Find<LoginPopup>();
-
-            if (Application.isBatchMode)
-            {
-                loginPopup.Show(_options.KeyStorePath, _options.PrivateKey);
-            }
-            else
-            {
-                Widget.Find<UI.Settings>().UpdateSoundSettings();
-                var title = Widget.Find<Title>();
-                title.Show(_options.keyStorePath, _options.privateKey);
-                yield return new WaitUntil(() => loginPopup.Login);
-                title.Close();
-            }
-            InitAgent(callback, loginPopup.GetPrivateKey());
-        }
-
         private static void DeletePreviousStore()
         {
             var dirs = Directory.GetDirectories(PrevStorageDirectoryPath).ToList();
@@ -979,52 +907,6 @@ namespace Nekoyume.BlockChain
         {
             SyncSucceed = false;
             BlockDownloadFailed = true;
-        }
-
-        public void ResetStore()
-        {
-            var confirm = Widget.Find<Confirm>();
-            var storagePath = _options.StoragePath ?? DefaultStoragePath;
-            var prevStoragePath = Path.Combine(PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                    return;
-                Dispose();
-                if (Directory.Exists(storagePath))
-                {
-                    Directory.Move(storagePath, prevStoragePath);
-                }
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
-            };
-            confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
-        }
-
-        public void ResetKeyStore()
-        {
-            var confirm = Widget.Find<Confirm>();
-            confirm.CloseCallback = result =>
-            {
-                if (result == ConfirmResult.No)
-                    return;
-                Dispose();
-                var keyPath = _options.keyStorePath;
-                if (Directory.Exists(keyPath))
-                {
-                    Directory.Delete(keyPath, true);
-                }
-
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.ExitPlaymode();
-#else
-                Application.Quit();
-#endif
-            };
-            confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
     }
 }

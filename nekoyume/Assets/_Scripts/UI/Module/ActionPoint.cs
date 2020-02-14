@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using Nekoyume.Model;
 using Nekoyume.State;
 using TMPro;
@@ -13,6 +14,8 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI text;
         public Slider slider;
         public RectTransform tooltipArea;
+        public CanvasGroup canvasGroup;
+        public bool animateAlpha;
 
         private IDisposable _disposable;
         private VanilaTooltip _tooltip;
@@ -29,6 +32,12 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             _disposable = ReactiveAvatarState.ActionPoint.Subscribe(SetPoint);
+
+            if (animateAlpha)
+            {
+                canvasGroup.alpha = 0;
+                canvasGroup.DOFade(1, 1.0f);
+            }
         }
 
         private void OnDisable()

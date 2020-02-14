@@ -45,6 +45,7 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Exit,
                 SubscribeOnExitButtonClick,
                 true,
+                false,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
@@ -90,8 +91,8 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>()?.Close(ignoreCloseAnimation);
-            stageProgressBar.Close();
-            enemyPlayerStatus.Close();
+            Find<Status>()?.Close(ignoreCloseAnimation);
+            enemyPlayerStatus.Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -115,6 +116,7 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfCloseAnimation();
             stageTitle.Close();
+            stageProgressBar.Close();
         }
 
         #region IToggleListener for repeatButton.

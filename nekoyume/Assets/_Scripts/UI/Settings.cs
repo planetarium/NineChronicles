@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
 using Nekoyume.Helper;
+using Nekoyume.BlockChain;
 
 namespace Nekoyume.UI
 {
@@ -130,12 +131,12 @@ namespace Nekoyume.UI
 
         public void ResetStore()
         {
-            Game.Game.instance.Agent.ResetStore();
+            Game.Game.instance.ResetStore();
         }
 
         public void ResetKeyStore()
         {
-            Game.Game.instance.Agent.ResetKeyStore();
+            Game.Game.instance.ResetKeyStore();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

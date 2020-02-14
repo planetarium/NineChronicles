@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -21,7 +24,7 @@ namespace Nekoyume.Game
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
 
-        private Agent _agent;
+        private IAgent _agent;
         
         [SerializeField] private Stage stage = null;
         
@@ -29,7 +32,7 @@ namespace Nekoyume.Game
 
         public LocalStateSettings LocalStateSettings { get; private set; }
 
-        public Agent Agent => _agent;
+        public IAgent Agent => _agent;
 
         public Stage Stage => stage;
 
@@ -40,6 +43,19 @@ namespace Nekoyume.Game
         public bool IsInitialized { get; private set; }
 
         private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
+
+        private CommandLineOptions _options;
+
+#if UNITY_EDITOR
+        private static readonly string WebCommandLineOptionsPathInit = string.Empty;
+        private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
+#else
+        private const string WebCommandLineOptionsPathInit = "https://planetarium.dev/9c-alpha-clo.json";
+        private const string WebCommandLineOptionsPathLogin = "https://planetarium.dev/9c-alpha-clo.json";
+#endif
+
+        private static readonly string CommandLineOptionsJsonPath =
+            Path.Combine(Application.streamingAssetsPath, "clo.json");
 
         #region Mono & Initialization
 
@@ -70,11 +86,19 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            _agent.Initialize(succeed =>
-            {
-                agentInitialized = true;
-                agentInitializeSucceed = succeed;
-            });
+            _options = CommandLineOptions.Load(
+                CommandLineOptionsJsonPath,
+                WebCommandLineOptionsPathInit
+            );
+            yield return StartCoroutine(
+                CoLogin(
+                    succeed =>
+                    {
+                        agentInitialized = true;
+                        agentInitializeSucceed = succeed;
+                    }
+                )
+            );
             yield return new WaitUntil(() => agentInitialized);
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
@@ -125,7 +149,7 @@ namespace Nekoyume.Game
             }
             else
             {
-                if (_agent.BlockDownloadFailed)
+                if (_agent is Agent agent && agent.BlockDownloadFailed)
                 {
                     var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
                         LocalizationManager.Localize("BLOCK_DOWNLOAD_FAIL"));
@@ -176,19 +200,112 @@ namespace Nekoyume.Game
             vfx.Play();
         }
 
-        #region PlaymodeTest
-
-        public void Init()
+        private IEnumerator CoLogin(Action<bool> callback)
         {
-            _agent.Initialize(ShowNext);
+            if (_options.maintenance)
+            {
+                var w = Widget.Create<Alert>();
+                w.CloseCallback = () =>
+                {
+                    Application.OpenURL(GameConfig.DiscordLink);
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                w.Show(
+                    LocalizationManager.Localize("UI_MAINTENANCE"),
+                    LocalizationManager.Localize("UI_MAINTENANCE_CONTENT"),
+                    LocalizationManager.Localize("UI_OK"),
+                    false
+                );
+                yield break;
+            }
+            if (_options.testEnd)
+            {
+                var w = Widget.Find<Confirm>();
+                w.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.Yes)
+                    {
+                        Application.OpenURL(GameConfig.DiscordLink);
+                    }
+#if UNITY_EDITOR
+                    UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                    Application.Quit();
+#endif
+                };
+                w.Show("UI_TEST_END", "UI_TEST_END_CONTENT", "UI_GO_DISCORD", "UI_QUIT");
+
+                yield break;
+            }
+
+            var loginPopup = Widget.Find<LoginPopup>();
+
+            if (Application.isBatchMode)
+            {
+                loginPopup.Show(_options.KeyStorePath, _options.PrivateKey);
+            }
+            else
+            {
+                Widget.Find<UI.Settings>().UpdateSoundSettings();
+                var title = Widget.Find<Title>();
+                title.Show(_options.keyStorePath, _options.privateKey);
+                yield return new WaitUntil(() => loginPopup.Login);
+                title.Close();
+            }
+
+            _agent.Initialize(
+                _options,
+                loginPopup.GetPrivateKey(),
+                callback
+            );
         }
 
-        public IEnumerator TearDown()
+        public void ResetStore()
         {
-            Destroy(GetComponent<Agent>());
-            yield return new WaitForEndOfFrame();
+            var confirm = Widget.Find<Confirm>();
+            var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
+            var prevStoragePath = Path.Combine(BlockChain.Agent.PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                if (Directory.Exists(storagePath))
+                {
+                    Directory.Move(storagePath, prevStoragePath);
+                }
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+            };
+            confirm.Show("UI_CONFIRM_RESET_STORE_TITLE", "UI_CONFIRM_RESET_STORE_CONTENT");
         }
 
-        #endregion
+        public void ResetKeyStore()
+        {
+            var confirm = Widget.Find<Confirm>();
+            confirm.CloseCallback = result =>
+            {
+                if (result == ConfirmResult.No)
+                    return;
+                var keyPath = _options.keyStorePath;
+                if (Directory.Exists(keyPath))
+                {
+                    Directory.Delete(keyPath, true);
+                }
+
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.ExitPlaymode();
+#else
+                Application.Quit();
+#endif
+            };
+            confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
+        }
     }
 }

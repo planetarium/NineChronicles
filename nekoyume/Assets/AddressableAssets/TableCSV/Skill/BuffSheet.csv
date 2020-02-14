@@ -6,7 +6,7 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 103000,103000,방어 강화,20,8,Self,DEF,Percentage,50,icon_buff_plus_defense
 103001,103000,방어 강화,100,8,Self,DEF,Percentage,50,icon_buff_plus_defense
 104000,104000,치명 증가,20,10,Self,CRI,Percentage,50,icon_buff_plus_critical
-104001,104000,치명 증가,100,10,Self,CRI,Percentage,50,icon_buff_plus_critical˙
+104001,104000,치명 증가,100,10,Self,CRI,Percentage,50,icon_buff_plus_critical
 105000,105000,회피 증가,20,10,Self,HIT,Percentage,50,icon_buff_plus_dodge
 105001,105000,회피 증가,100,10,Self,HIT,Percentage,50,icon_buff_plus_dodge
 106000,106000,속도 증가,20,10,Self,SPD,Percentage,50,icon_buff_plus_speed

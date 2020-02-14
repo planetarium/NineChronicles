@@ -55,3 +55,10 @@ workflows:
           extra-build-args: >-
             --build-arg ulf="$ULF"
             --build-arg prior_dlls="git-$CIRCLE_SHA1"
+      - aws-ecr/build-and-push-image:
+          requires:
+            - build-lib9c
+          name: build-and-push-standalone-image
+          tag: "standalone-git-$CIRCLE_SHA1"
+          repo: $CIRCLE_PROJECT_REPONAME
+          dockerfile: Dockerfile.standalone

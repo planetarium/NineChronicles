@@ -58,6 +58,11 @@ namespace Nekoyume.UI.Scroller
         {
             AudioController.PlayClick();
             AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
+            for(int i=0; i < rewardViews.Length; i++)
+            {
+                if (rewardViews[i].gameObject.activeSelf)
+                    QuestRewardItem.Show(rewardViews[i], i);
+            }
             var quest = Widget.Find<Quest>();   
             RequestReward();
             quest.UpdateTabs();

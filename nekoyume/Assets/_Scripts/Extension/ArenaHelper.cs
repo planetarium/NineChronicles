@@ -9,7 +9,7 @@ namespace Nekoyume
     {
         public static bool TryGetThisWeekAddress(out Address weeklyArenaAddress)
         {
-            return TryGetThisWeekAddress(Game.Game.instance.Agent.blockIndex.Value, out weeklyArenaAddress);
+            return TryGetThisWeekAddress(Game.Game.instance.Agent.BlockIndex, out weeklyArenaAddress);
         }
 
         public static bool TryGetThisWeekAddress(long blockIndex, out Address weeklyArenaAddress)
@@ -47,7 +47,7 @@ namespace Nekoyume
 
         public static Address GetPrevWeekAddress()
         {
-            return GetPrevWeekAddress(Game.Game.instance.Agent.blockIndex.Value);
+            return GetPrevWeekAddress(Game.Game.instance.Agent.BlockIndex);
         }
         
         public static Address GetPrevWeekAddress(long thisWeekBlockIndex)

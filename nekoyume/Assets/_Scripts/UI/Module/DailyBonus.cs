@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
+using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.Model;
 using Nekoyume.State;
@@ -17,6 +18,8 @@ namespace Nekoyume.UI.Module
         public Slider slider;
         public Button button;
         public CanvasGroup canvasGroup;
+        public CanvasGroup dailyBonusCanvasGroup;
+        public bool animateAlpha;
         public RectTransform tooltipArea;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
@@ -36,16 +39,22 @@ namespace Nekoyume.UI.Module
             button.interactable = false;
             _animation = GetComponent<Animation>();
             _updateEnable = true;
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
+            ReactiveAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
         }
 
         private void OnEnable()
         {
-            Game.Game.instance.Agent.blockIndex.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
-            ReactiveAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
             canvasGroup.alpha = 0;
+            
+            if (animateAlpha)
+            {
+                dailyBonusCanvasGroup.alpha = 0;
+                dailyBonusCanvasGroup.DOFade(1, 1.0f);
+            }
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
             _disposables.DisposeAllAndClear();
         }

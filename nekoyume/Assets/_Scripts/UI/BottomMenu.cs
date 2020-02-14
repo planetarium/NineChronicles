@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Nekoyume.EnumType;
-using Nekoyume.Model;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -63,6 +63,8 @@ namespace Nekoyume.UI.Module
         public NotifiableButton settingsButton;
         public CanvasGroup canvasGroup;
 
+        [SerializeField] private RectTransform _buttons;
+        private float _buttonsPositionY;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         public readonly Model SharedModel = new Model();
@@ -112,6 +114,7 @@ namespace Nekoyume.UI.Module
             CloseWidget = null;
             
             _inventoryAnimator = inventoryButton.GetComponent<Animator>();
+            _buttonsPositionY = _buttons.position.y;
         }
 
         public override void Initialize()
@@ -168,11 +171,23 @@ namespace Nekoyume.UI.Module
         #endregion
 
         public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
-            bool useShowButtons = false, params ToggleableType[] showButtons)
+            bool useShowButtons = false, bool animateAlpha = true, params ToggleableType[] showButtons)
         {
             CloseWidget = () => navigationAction?.Invoke(this);
          
             base.Show();
+            if(animateAlpha)
+            {
+                var pos = _buttons.position;
+                pos.y = _buttonsPositionY;
+                _buttons.position = pos;
+                Animator.enabled = false;
+
+                canvasGroup.DOKill();
+                canvasGroup.alpha = 0;
+                canvasGroup.DOFade(1,  1.0f);
+            }
+            
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
             SharedModel.NavigationAction = navigationAction;
 
@@ -244,7 +259,7 @@ namespace Nekoyume.UI.Module
                 widgetControllable.HideWidget();
             }
 
-            base.Close(true);
+            base.Close(ignoreCloseAnimation);
         }
 
         #region Subscribe
