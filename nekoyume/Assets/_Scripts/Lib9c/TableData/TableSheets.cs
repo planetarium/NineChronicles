@@ -41,6 +41,7 @@ namespace Nekoyume.TableData
         public QuestItemRewardSheet QuestItemRewardSheet { get; set; }
         public WorldUnlockSheet WorldUnlockSheet { get; set; }
         public StageDialogSheet StageDialogSheet { get; private set; }
+        public EquipmentItemRecipeSheet EquipmentItemRecipeSheet { get; private set; }
 
         public void SetToSheet(string name, string csv)
         {
@@ -161,6 +162,10 @@ namespace Nekoyume.TableData
                 case nameof(TableData.StageDialogSheet):
                     StageDialogSheet = new StageDialogSheet();
                     StageDialogSheet.Set(csv);
+                    break;
+                case nameof(TableData.EquipmentItemRecipeSheet):
+                    EquipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
+                    EquipmentItemRecipeSheet.Set(csv);
                     break;
                 default:
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");
