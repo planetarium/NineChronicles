@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Helper;
-using Nekoyume.TableData;
 using TMPro;
 using UniRx;
 
@@ -13,6 +11,8 @@ namespace Nekoyume.UI.Module
 
         public bool ignoreOne;
         public TextMeshProUGUI countText;
+
+        protected override ImageSizeType imageSizeType => ImageSizeType.Small;
 
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
@@ -70,14 +70,6 @@ namespace Nekoyume.UI.Module
             }
 
             SetCount(Model.Count.Value);
-        }
-
-        public override void SetData(ItemSheet.Row itemRow)
-        {
-            base.SetData(itemRow);
-
-            var gradeSprite = SpriteHelper.GetSmallItemBackground(itemRow.Grade);
-            gradeImage.overrideSprite = gradeSprite;
         }
     }
 }
