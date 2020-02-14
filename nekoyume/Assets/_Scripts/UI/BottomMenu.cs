@@ -208,7 +208,8 @@ namespace Nekoyume.UI.Module
                 pos.y = _buttonsPositionY;
                 _buttons.position = pos;
                 Animator.enabled = false;
-                
+
+                canvasGroup.DOKill();
                 canvasGroup.alpha = 0;
                 canvasGroup.DOFade(1,  1.0f);
             }

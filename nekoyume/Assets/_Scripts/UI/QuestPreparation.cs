@@ -227,6 +227,7 @@ namespace Nekoyume.UI
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             Find<WorldMap>().Show(_worldId, _stageId, false);
+            gameObject.SetActive(false);
         }
 
         private void SubscribeReadyToQuest(bool ready)
