@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet.Action;
@@ -5,6 +6,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("reward_gold")]
     public class RewardGold : ActionBase
     {
