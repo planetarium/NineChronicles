@@ -3969,6 +3969,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_StageProgressBar
       objectReference: {fileID: 0}
+    - target: {fileID: 5227881270911501949, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5227881270911501946, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
       propertyPath: m_LocalPosition.x
