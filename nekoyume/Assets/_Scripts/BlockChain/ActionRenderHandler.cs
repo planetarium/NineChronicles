@@ -219,7 +219,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> eval)
         {
-            var agentAddress = eval.InputContext.Signer;
+            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var result = eval.Action.Result;
             var itemUsable = result.itemUsable;
@@ -345,7 +345,7 @@ namespace Nekoyume.BlockChain
 
         private void ResponseItemEnhancement(ActionBase.ActionEvaluation<ItemEnhancement> eval)
         {
-            var agentAddress = eval.InputContext.Signer;
+            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
             var result = eval.Action.result;
             var itemUsable = result.itemUsable;
