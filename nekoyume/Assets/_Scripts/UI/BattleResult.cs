@@ -89,6 +89,9 @@ namespace Nekoyume.UI
         public Subject<bool> BattleEndedSubject = new Subject<bool>();
         public IDisposable battleEndedStream;
 
+        public GameObject[] victoryResultTexts;
+        private Animator _victoryImageAnimator;
+
         protected override void Awake()
         {
             base.Awake();
@@ -114,6 +117,8 @@ namespace Nekoyume.UI
             SubmitWidget = submitButton.onClick.Invoke;
             defeatTextArea.root.SetActive(false);
             defeatTextArea.defeatText.text = LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
+
+            _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
         }
 
         public void Show(Model model)
@@ -132,6 +137,8 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            foreach (var obj in victoryResultTexts)
+                obj.SetActive(false);
             stageProgressBar.Close();
             base.Close(ignoreCloseAnimation);
         }
@@ -158,6 +165,7 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
 
+            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWave);
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
@@ -167,20 +175,17 @@ namespace Nekoyume.UI
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
             stageProgressBar.Show();
 
-            if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
-            {
-                submitButton.gameObject.SetActive(false);
-                SubmitWidget = closeButton.onClick.Invoke;
-            }
-            else
+            if (SharedModel.ShouldRepeat)
             {
                 submitButton.interactable = true;
                 SubmitWidget = submitButton.onClick.Invoke;
-
-                submitButtonText.text = SharedModel.ShouldRepeat
-                    ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
-                    : LocalizationManager.Localize("UI_NEXT_STAGE");
+                submitButtonText.text = LocalizationManager.Localize("UI_BATTLE_AGAIN");
                 submitButton.gameObject.SetActive(true);
+            }
+            else
+            {
+                submitButton.gameObject.SetActive(false);
+                SubmitWidget = closeButton.onClick.Invoke;
             }
 
             yield return StartCoroutine(CoUpdateRewards());
@@ -234,8 +239,7 @@ namespace Nekoyume.UI
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
-            submitButtonText.text = LocalizationManager.Localize("UI_BATTLE_AGAIN");
-            submitButton.interactable = true;
+            submitButton.gameObject.SetActive(false);
 
             StartCoroutine(CoUpdateRewards());
         }
@@ -281,15 +285,13 @@ namespace Nekoyume.UI
             {
                 fullFormat = LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
             }
-            else if (SharedModel.ShouldExit)
+            else if (SharedModel.ShouldRepeat)
             {
-                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                fullFormat = LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT");
             }
             else
             {
-                fullFormat = SharedModel.ShouldRepeat
-                    ? LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
-                    : LocalizationManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
+                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
             }
 
 
@@ -313,7 +315,7 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
+            if (!SharedModel.ShouldRepeat)
             {
                 GoToMain();
             }

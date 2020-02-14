@@ -70,6 +70,8 @@ namespace Nekoyume.UI.Module
         public CanvasGroup canvasGroup;
         private Animator _inventoryAnimator;
 
+        [SerializeField] private RectTransform _buttons;
+        private float _buttonsPositionY;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         public readonly Model SharedModel = new Model();
@@ -125,6 +127,7 @@ namespace Nekoyume.UI.Module
             CloseWidget = null;
 
             _inventoryAnimator = inventoryButton.GetComponent<Animator>();
+            _buttonsPositionY = _buttons.position.y;
         }
 
         public override void Initialize()
@@ -201,6 +204,9 @@ namespace Nekoyume.UI.Module
             base.Show();
             if(animateAlpha)
             {
+                var pos = _buttons.position;
+                pos.y = _buttonsPositionY;
+                _buttons.position = pos;
                 Animator.enabled = false;
                 
                 canvasGroup.alpha = 0;

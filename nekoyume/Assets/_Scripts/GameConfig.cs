@@ -31,7 +31,7 @@
         public const string DefaultPlayerTailResource = "tail_0001";
         public const int ActionPointMax = 250;
 
-        public const int DailyRewardInterval = 1000;
+        public const int DailyRewardInterval = 2300;
         public const int DailyArenaInterval = 500;
         public const int WeeklyArenaInterval = 8000 * 7;
         public const int BaseVictoryPoint = 20;
