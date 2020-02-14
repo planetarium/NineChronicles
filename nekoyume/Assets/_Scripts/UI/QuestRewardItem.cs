@@ -14,7 +14,7 @@ namespace Nekoyume.UI
     {
         private static Transform _inventoryTransform;
 
-        public Image itemImage;
+        public Image itemImage = null;
         
         public static void Show(SimpleCountableItemView view, int index)
         {
