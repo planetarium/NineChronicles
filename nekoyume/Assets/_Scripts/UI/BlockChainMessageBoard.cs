@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 using System.Threading.Tasks;
 using Assets.SimpleLocalization;
-using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using TMPro;
 using UnityEngine;
@@ -31,9 +28,12 @@ namespace Nekoyume.UI
         private AnimationState _currentAnimationState;
         private AnimationState _nextAnimationState;
         private int _animationTextAtlasIndex;
+        private Animator _panelAnimator;
 
         protected override void Awake()
         {
+            base.Awake();
+            _panelAnimator = panel.GetComponent<Animator>();
         }
 
         public override void Initialize()
@@ -62,12 +62,13 @@ namespace Nekoyume.UI
 
             if (_currentAnimationState == AnimationState.On)
             {
-                panel.SetActive(true);
+                if (!panel.activeSelf) panel.SetActive(true);
+                _panelAnimator.Play("Show");
                 UpdateAnimation();
             }
             else
             {
-                panel.SetActive(false);
+                _panelAnimator.Play("Close");
             }
         }
 
