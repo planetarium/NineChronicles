@@ -517,6 +517,7 @@ GameObject:
   - component: {fileID: 5150926840730230897}
   - component: {fileID: 1481777689759399775}
   - component: {fileID: 6836784520103154358}
+  - component: {fileID: 5430777539078128290}
   m_Layer: 5
   m_Name: SubmitButton
   m_TagString: Untagged
@@ -564,6 +565,7 @@ MonoBehaviour:
   backgroundImageForSubmittable: {fileID: 7522171745577822625}
   submitText: {fileID: 6171963424519086264}
   submitTextForSubmittable: {fileID: 7016187563049540283}
+  animator: {fileID: 5430777539078128290}
 --- !u!114 &5150926840730230897
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -639,7 +641,7 @@ MonoBehaviour:
     m_NormalTrigger: Normal
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
-    m_SelectedTrigger: Highlighted
+    m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
   m_TargetGraphic: {fileID: 7012890677779711651}
@@ -648,3 +650,22 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &5430777539078128290
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8829394730994905627}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fbce3ccad7f62f24a88caff364eb295e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
