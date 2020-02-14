@@ -1,6 +1,5 @@
 using System.Collections;
 using Nekoyume.BlockChain;
-using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using UnityEngine;
