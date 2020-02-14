@@ -62,10 +62,24 @@
         #endregion
 
         #region system or contents unlock
+
+        public static class RequireCharacterLevel
+        {
+            #region character equipment slot
+
+            public const int CharacterEquipmentSlotWeapon = IsEditor ? 1 : 5;
+            public const int CharacterEquipmentSlotArmor = IsEditor ? 1 : 10;
+            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 15;
+            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 20;
+            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 30;
+            public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 50;
+
+            #endregion
+        }
         
         public static class RequireClearedStageLevel
         {
-            #region Action
+            #region action
 
             public const int ActionsInCombination = IsEditor ? 1 : 3;
             public const int ActionsInShop = IsEditor ? 1 : 17;
@@ -73,7 +87,7 @@
 
             #endregion
 
-            #region UI
+            #region ui
 
             public const int UIMainMenuStage = 0;
             public const int UIMainMenuCombination = ActionsInCombination;
