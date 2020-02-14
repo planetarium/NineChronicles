@@ -691,21 +691,6 @@ PrefabInstance:
       propertyPath: m_fontColor.b
       value: 0.63999647
       objectReference: {fileID: 0}
-    - target: {fileID: 6658072964451777913, guid: ec91522f1096c47e0ac615f0792c176a,
-        type: 3}
-      propertyPath: m_AnimationTriggers.m_SelectedTrigger
-      value: SubmitSelected
-      objectReference: {fileID: 0}
-    - target: {fileID: 6658072964451777913, guid: ec91522f1096c47e0ac615f0792c176a,
-        type: 3}
-      propertyPath: m_AnimationTriggers.m_HighlightedTrigger
-      value: Normal
-      objectReference: {fileID: 0}
-    - target: {fileID: 6658072964451777913, guid: ec91522f1096c47e0ac615f0792c176a,
-        type: 3}
-      propertyPath: m_Transition
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4762450328774488394, guid: ec91522f1096c47e0ac615f0792c176a,
         type: 3}
       propertyPath: m_Sprite
