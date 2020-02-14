@@ -5,13 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\nekoyume\Assets\_Scripts\Action\**\*.cs" />
-    <Compile Include="..\nekoyume\Assets\_Scripts\Battle\**\*.cs" />
-    <Compile Include="..\nekoyume\Assets\_Scripts\Model\**\*.cs" />
-    <Compile Include="..\nekoyume\Assets\_Scripts\TableData\**\*.cs" />
-    <Compile Include="..\nekoyume\Assets\_Scripts\BlockChain\Miner.cs" />
-    <Compile Include="..\nekoyume\Assets\_Scripts\BlockChain\BlockPolicy.cs" />
-    <Compile Include="..\nekoyume\Assets\_Scripts\GameConfig.cs" />
+    <Compile Include="..\nekoyume\Assets\_Scripts\Lib9c\**\*.cs" />
     <Compile Include="..\nekoyume\Assets\BTAI\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
