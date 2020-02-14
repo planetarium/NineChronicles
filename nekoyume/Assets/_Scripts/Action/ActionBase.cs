@@ -24,7 +24,11 @@ namespace Nekoyume.Action
             where T : ActionBase
         {
             public T Action { get; set; }
-            public IActionContext InputContext { get; set; }
+
+            public Address Signer { get; set; }
+
+            public long BlockIndex { get; set; }
+
             public IAccountStateDelta OutputStates { get; set; }
         }
         
@@ -39,7 +43,8 @@ namespace Nekoyume.Action
             RenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = this,
-                InputContext = context,
+                Signer = context.Signer,
+                BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
             });
         }
@@ -49,7 +54,8 @@ namespace Nekoyume.Action
             UnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = this,
-                InputContext = context,
+                Signer = context.Signer,
+                BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
             });
         }
@@ -62,7 +68,8 @@ namespace Nekoyume.Action
             ).Select(eval => new ActionEvaluation<T>
             {
                 Action = (T) eval.Action,
-                InputContext = eval.InputContext,
+                Signer = eval.Signer,
+                BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
             });
         }
@@ -75,7 +82,8 @@ namespace Nekoyume.Action
             ).Select(eval => new ActionEvaluation<T>
             {
                 Action = (T) eval.Action,
-                InputContext = eval.InputContext,
+                Signer = eval.Signer,
+                BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
             });
         }
@@ -87,7 +95,8 @@ namespace Nekoyume.Action
             ).Select(eval => new ActionEvaluation<ActionBase>
             {
                 Action = eval.Action,
-                InputContext = eval.InputContext,
+                Signer = eval.Signer,
+                BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
             });
         }
@@ -99,7 +108,8 @@ namespace Nekoyume.Action
             ).Select(eval => new ActionEvaluation<ActionBase>
             {
                 Action = eval.Action,
-                InputContext = eval.InputContext,
+                Signer = eval.Signer,
+                BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
             });
         }
