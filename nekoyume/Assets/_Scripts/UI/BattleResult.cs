@@ -347,7 +347,7 @@ namespace Nekoyume.UI
             var stageId = SharedModel.ShouldRepeat
                 ? stage.stageId
                 : stage.stageId + 1;
-            yield return ActionManager.instance
+            yield return Game.Game.instance.ActionManager
                 .HackAndSlash(player.Equipments, new List<Consumable>(), worldId, stageId)
                 .Subscribe(_ => { }, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
