@@ -16,6 +16,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] protected TextMeshProUGUI toggledOnText = null;
         [SerializeField] protected Image toggledOnImage = null;
         [SerializeField] protected string localizationKey = null;
+        [SerializeField] public Animator animator;
 
         private IToggleListener _toggleListener;
 
@@ -30,6 +31,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
+                    animator?.Play("SubmitSelected");
                     _toggleListener?.OnToggle(this);
                 })
                 .AddTo(gameObject);

@@ -646,6 +646,11 @@ PrefabInstance:
       propertyPath: localizationKey
       value: UI_INVENTORY
       objectReference: {fileID: 0}
+    - target: {fileID: 5065275215712944306, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 7147112051511903611}
     - target: {fileID: 1571147999940200585, guid: ec91522f1096c47e0ac615f0792c176a,
         type: 3}
       propertyPath: m_text

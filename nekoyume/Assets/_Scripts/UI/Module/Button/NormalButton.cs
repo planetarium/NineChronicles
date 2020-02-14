@@ -13,13 +13,18 @@ namespace Nekoyume.UI.Module
         public Image image;
         public TextMeshProUGUI text;
         public string localizationKey;
+        public Animator animator;
         
         #region Mono
 
         protected virtual void Awake()
         {
             text.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
-            button.OnClickAsObservable().Subscribe(_ => AudioController.PlayClick()).AddTo(gameObject);
+            button.OnClickAsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                animator?.Play("SubmitSelected");
+            }).AddTo(gameObject);
         }
 
         #endregion

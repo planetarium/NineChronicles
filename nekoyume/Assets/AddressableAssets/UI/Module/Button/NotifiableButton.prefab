@@ -400,6 +400,7 @@ GameObject:
   - component: {fileID: 8064747724388162961}
   - component: {fileID: 6658072964451777913}
   - component: {fileID: 5065275215712944306}
+  - component: {fileID: 8058831464286817584}
   m_Layer: 5
   m_Name: NotifiableButton
   m_TagString: Untagged
@@ -500,7 +501,27 @@ MonoBehaviour:
   toggledOnText: {fileID: 1571147999940200585}
   toggledOnImage: {fileID: 4920672120595063965}
   localizationKey: 
+  animator: {fileID: 8058831464286817584}
   hasNotificationImage: {fileID: 1180201202315359299}
+--- !u!95 &8058831464286817584
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6109728379212585920}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fbce3ccad7f62f24a88caff364eb295e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &7660063735809131133
 GameObject:
   m_ObjectHideFlags: 0

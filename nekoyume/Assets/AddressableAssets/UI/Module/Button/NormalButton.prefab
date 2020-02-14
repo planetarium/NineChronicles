@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4250705253145999284}
   - component: {fileID: 680059685548267356}
   - component: {fileID: 5897111543424348245}
+  - component: {fileID: 8333057293508754080}
   m_Layer: 5
   m_Name: NormalButton
   m_TagString: Untagged
@@ -104,10 +105,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ac4a96b57dc41fcb17626936cf5d5e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 1701704652269669235}
-  image: {fileID: 2312043304162746749}
   button: {fileID: 680059685548267356}
+  image: {fileID: 2312043304162746749}
+  text: {fileID: 1701704652269669235}
   localizationKey: 
+  animator: {fileID: 8333057293508754080}
+--- !u!95 &8333057293508754080
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134027360369013221}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fbce3ccad7f62f24a88caff364eb295e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &4585602318324760801
 GameObject:
   m_ObjectHideFlags: 0

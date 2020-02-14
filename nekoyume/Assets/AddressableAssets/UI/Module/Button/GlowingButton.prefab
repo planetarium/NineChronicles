@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4250705253145999284}
   - component: {fileID: 680059685548267356}
   - component: {fileID: 2029377069817069961}
+  - component: {fileID: 6417430801137352182}
   m_Layer: 5
   m_Name: GlowingButton
   m_TagString: Untagged
@@ -112,8 +113,28 @@ MonoBehaviour:
   toggledOnText: {fileID: 2583198327438354970}
   toggledOnImage: {fileID: 2217026018396690228}
   localizationKey: 
+  animator: {fileID: 6417430801137352182}
   glowImage: {fileID: 4637160522734074087}
   glowText: {fileID: 2227277998111087941}
+--- !u!95 &6417430801137352182
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 134027360369013221}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fbce3ccad7f62f24a88caff364eb295e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &4585602318324760801
 GameObject:
   m_ObjectHideFlags: 0

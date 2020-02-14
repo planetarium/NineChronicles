@@ -24,8 +24,8 @@ namespace Nekoyume.UI.Module
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                animator?.Play("SubmitSelected");
                 OnSubmitClick.OnNext(this);
+                animator?.Play("SubmitSelected");
             }).AddTo(gameObject);
         }
 
