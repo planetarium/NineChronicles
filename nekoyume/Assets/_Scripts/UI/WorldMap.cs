@@ -48,6 +48,7 @@ namespace Nekoyume.UI
         public Button asgardButton;
         public Button challengeModeButton;
 
+        public GameObject stage;
         public StageInformation stageInformation;
         public SubmitButton submitButton;
 
@@ -277,6 +278,7 @@ namespace Nekoyume.UI
 
             if (active)
             {
+                stage.SetActive(false);
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.worldMapButton.Hide();
                 bottomMenu.backButton.Show();
@@ -285,12 +287,15 @@ namespace Nekoyume.UI
             }
             else
             {
+                
                 worldMapRoot.SetActive(false);
+                stage.SetActive(true);
                 var bottomMenu = Find<BottomMenu>();
+                bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true, true, BottomMenu.ToggleableType.WorldMap);
                 bottomMenu.worldMapButton.Show();
                 bottomMenu.backButton.Hide();
                 bottomMenu.ToggleGroup?.SetToggledOffAll();
-                status.Show(true);
+                status.Show();
             }
         }
 
