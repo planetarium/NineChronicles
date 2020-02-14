@@ -66,7 +66,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -109,7 +109,6 @@ MonoBehaviour:
   image: {fileID: 2312043304162746749}
   text: {fileID: 1701704652269669235}
   localizationKey: 
-  animator: {fileID: 8333057293508754080}
 --- !u!95 &8333057293508754080
 Animator:
   serializedVersion: 3
@@ -120,7 +119,7 @@ Animator:
   m_GameObject: {fileID: 134027360369013221}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: fbce3ccad7f62f24a88caff364eb295e, type: 2}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

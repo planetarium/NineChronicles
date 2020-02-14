@@ -209,7 +209,7 @@ Animator:
   m_GameObject: {fileID: 6721224639001731274}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a269a3ae58bbfd84f80fc7a52db19509, type: 2}
+  m_Controller: {fileID: 22100000, guid: 73d0bbf011ae0e74995f224b5fc0ab7c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -690,6 +690,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontColor.b
       value: 0.63999647
+      objectReference: {fileID: 0}
+    - target: {fileID: 6658072964451777913, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_AnimationTriggers.m_SelectedTrigger
+      value: SubmitSelected
+      objectReference: {fileID: 0}
+    - target: {fileID: 6658072964451777913, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_AnimationTriggers.m_HighlightedTrigger
+      value: Normal
+      objectReference: {fileID: 0}
+    - target: {fileID: 6658072964451777913, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_Transition
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4762450328774488394, guid: ec91522f1096c47e0ac615f0792c176a,
         type: 3}

@@ -13,7 +13,6 @@ namespace Nekoyume.UI.Module
         public Image backgroundImageForSubmittable;
         public TextMeshProUGUI submitText;
         public TextMeshProUGUI submitTextForSubmittable;
-        public Animator animator;
         
         public readonly Subject<SubmitButton> OnSubmitClick = new Subject<SubmitButton>();
         
@@ -25,7 +24,6 @@ namespace Nekoyume.UI.Module
             {
                 AudioController.PlayClick();
                 OnSubmitClick.OnNext(this);
-                animator?.Play("SubmitSelected");
             }).AddTo(gameObject);
         }
 

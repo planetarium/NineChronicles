@@ -9,7 +9,6 @@ namespace Nekoyume.UI.Module
     {
         public Button button;
         public Image effectImage;
-        public Animator animator;
         
         private IToggleListener _toggleListener;
 
@@ -20,7 +19,6 @@ namespace Nekoyume.UI.Module
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                animator?.Play("SubmitSelected");
                 _toggleListener?.OnToggle(this);
             }).AddTo(gameObject);
         }

@@ -13,7 +13,6 @@ namespace Nekoyume.UI.Module
         public Image image;
         public TextMeshProUGUI text;
         public string localizationKey;
-        public Animator animator;
         
         #region Mono
 
@@ -23,7 +22,6 @@ namespace Nekoyume.UI.Module
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                animator?.Play("SubmitSelected");
             }).AddTo(gameObject);
         }
 
