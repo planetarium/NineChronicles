@@ -1,11 +1,10 @@
-using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Nekoyume.UI
+namespace Nekoyume.UI.Module
 {
     [RequireComponent(typeof(RectTransform))]
     public class EquipmentSlot : MonoBehaviour

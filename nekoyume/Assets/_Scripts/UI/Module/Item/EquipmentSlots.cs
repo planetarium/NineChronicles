@@ -4,7 +4,7 @@ using System.Linq;
 using Nekoyume.Model.Item;
 using UnityEngine;
 
-namespace Nekoyume.UI.Model
+namespace Nekoyume.UI.Module
 {
     public class EquipmentSlots : MonoBehaviour, IEnumerable<EquipmentSlot>
     {
