@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
@@ -57,17 +59,9 @@ namespace Nekoyume.UI
             _player = Game.Game.instance.Stage.selectedPlayer;
             var player = _player.Model;
 
-            // equip slot
-            if (equipmentSlots is null)
-                throw new NotFoundComponentException<EquipmentSlots>();
-
             foreach (var equipment in _player.Equipments)
             {
-                if (!equipmentSlots.TryGetToEquip(equipment, out var slot))
-                    continue;
-                
-                slot.Set(equipment);
-                slot.SetOnClickAction(ShowTooltip, null);
+                equipmentSlots.TryToEquip(equipment, ShowTooltip, null);
             }
 
             // status info

@@ -24,6 +24,7 @@ namespace Nekoyume.UI
         public Module.Inventory inventory;
 
         public TextMeshProUGUI consumableTitleText;
+        // todo: `EquipmentSlot`을 사용하지 않든가, 이름을 바꿔야 하겠다. 또한 `EquipmentSlots`와 같이 `ConsumableSlots`를 만들어도 좋겠다.
         public EquipmentSlot[] consumableSlots;
         public DetailedStatView[] statusRows;
         public TextMeshProUGUI equipmentTitleText;
@@ -31,8 +32,6 @@ namespace Nekoyume.UI
 
         public Button questButton;
         public GameObject equipSlotGlow;
-        public GameObject statusRowPrefab;
-        public Transform statusRowParent;
         public TextMeshProUGUI requiredPointText;
 
         private Stage _stage;
@@ -42,7 +41,6 @@ namespace Nekoyume.UI
         private int _worldId;
         private int _stageId;
 
-        private readonly Dictionary<StatType, int> _additionalStats = new Dictionary<StatType, int>();
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
@@ -122,11 +120,7 @@ namespace Nekoyume.UI
 
             foreach (var equipment in _player.Equipments)
             {
-                if (!equipmentSlots.TryGetToEquip(equipment, out var es))
-                    continue;
-
-                es.Set(equipment);
-                es.SetOnClickAction(ShowTooltip, Unequip);
+                equipmentSlots.TryToEquip(equipment, ShowTooltip, Unequip);
             }
 
             var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
@@ -136,7 +130,6 @@ namespace Nekoyume.UI
             {
                 var info = statusRows[idx];
                 info.Show(statType, value, additionalValue);
-                _additionalStats[statType] = additionalValue;
                 ++idx;
             }
 
