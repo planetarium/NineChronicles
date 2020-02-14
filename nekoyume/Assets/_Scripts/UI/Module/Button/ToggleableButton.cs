@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Module
         [SerializeField] protected TextMeshProUGUI toggledOnText = null;
         [SerializeField] protected Image toggledOnImage = null;
         [SerializeField] protected string localizationKey = null;
-        
+
         private IToggleListener _toggleListener;
 
         #region Mono

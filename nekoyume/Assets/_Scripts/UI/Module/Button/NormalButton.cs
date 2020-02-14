@@ -19,10 +19,7 @@ namespace Nekoyume.UI.Module
         protected virtual void Awake()
         {
             text.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
-            button.OnClickAsObservable().Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-            }).AddTo(gameObject);
+            button.OnClickAsObservable().Subscribe(_ => AudioController.PlayClick()).AddTo(gameObject);
         }
 
         #endregion
