@@ -165,7 +165,7 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
 
-            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWave);
+            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWaveNumber);
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
