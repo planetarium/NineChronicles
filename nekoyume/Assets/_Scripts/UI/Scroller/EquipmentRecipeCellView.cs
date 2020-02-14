@@ -5,17 +5,29 @@ using UnityEngine;
 using TMPro;
 using Nekoyume.Model.Stat;
 using UnityEngine.UI;
+using UniRx;
 
 namespace Nekoyume.UI.Scroller
 {
     public class EquipmentRecipeCellView : MonoBehaviour
     {
+        public Button button;
         public Image[] elementalTypeImages;
         public TextMeshProUGUI titleText;
         public TextMeshProUGUI optionText;
         public SimpleCountableItemView itemView;
 
         public Equipment model;
+
+        public readonly Subject<EquipmentRecipeCellView> OnClick = new Subject<EquipmentRecipeCellView>();
+
+        private void Awake()
+        {
+            button.onClick.AddListener(() =>
+            {
+                OnClick.OnNext(this);
+            });
+        }
 
         public void Show()
         {

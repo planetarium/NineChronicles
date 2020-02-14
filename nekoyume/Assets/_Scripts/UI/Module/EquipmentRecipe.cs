@@ -1,10 +1,9 @@
 ﻿using Nekoyume.UI.Scroller;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UniRx;
 using Nekoyume.Model.Item;
+using UniRx;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -19,8 +18,12 @@ namespace Nekoyume.UI.Module
         public TabButton ringTabButton;
         public Transform cellViewParent;
 
+        public ScrollRect scrollRect;
+
         public readonly ReactiveProperty<ItemSubType> FilterType =
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
+
+        public Equipment selectedRecipe;
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
@@ -50,12 +53,15 @@ namespace Nekoyume.UI.Module
             {
                 cellViews[idx] = Instantiate(cellViewPrefab, cellViewParent);
                 cellViews[idx].Set(new Equipment(row, new System.Guid()));
+                cellViews[idx].OnClick.Subscribe(SubscribeOnClickCellView).AddTo(gameObject);
                 ++idx;
             }
         }
 
         private void SubScribeFilterType(ItemSubType itemSubType)
         {
+            scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
+
             foreach (var data in cellViews)
             {
                 data.Hide();
@@ -118,6 +124,13 @@ namespace Nekoyume.UI.Module
             {
                 FilterType.SetValueAndForceNotify(ItemSubType.Ring);
             }
+        }
+
+        private void SubscribeOnClickCellView(EquipmentRecipeCellView cellView)
+        {
+            selectedRecipe = cellView.model;
+
+            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }
 }

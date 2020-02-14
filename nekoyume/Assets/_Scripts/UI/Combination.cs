@@ -7,6 +7,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -26,7 +27,8 @@ namespace Nekoyume.UI
             None,
             CombineEquipment,
             CombineConsumable,
-            EnhanceEquipment
+            EnhanceEquipment,
+            CombinationConfirm,
         }
 
         public readonly ReactiveProperty<StateType> State =
@@ -39,15 +41,18 @@ namespace Nekoyume.UI
         public CategoryButton combineConsumableCategoryButton;
         public CategoryButton enhanceEquipmentCategoryButton;
 
+        public GameObject leftArea;
         public GameObject categoryTabArea;
         public GameObject selectionArea;
-        public GameObject recipeArea;
+        public EquipmentRecipe equipmentRecipe;
 
         public Module.Inventory inventory;
 
         public CombineEquipment combineEquipment;
         public CombineConsumable combineConsumable;
         public EnhanceEquipment enhanceEquipment;
+        public EquipmentCombinationPanel equipmentCombinationPanel;
+        public EquipmentCombinationPanel elementalCombinationPanel;
         public Recipe recipe;
         public SpeechBubble speechBubble;
         public Transform npcPosition01;
@@ -245,7 +250,7 @@ namespace Nekoyume.UI
             recipe.Hide();
 
             selectionArea.SetActive(value == StateType.None);
-            categoryTabArea.SetActive(value != StateType.None);
+            leftArea.SetActive(value != StateType.None);
 
             switch (value)
             {
@@ -255,9 +260,12 @@ namespace Nekoyume.UI
                     combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
+                    equipmentCombinationPanel.Hide();
+                    elementalCombinationPanel.Hide();
 
+                    categoryTabArea.SetActive(false);
                     inventory.gameObject.SetActive(false);
-                    recipeArea.SetActive(false);
+                    equipmentRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombineEquipment:
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
@@ -265,10 +273,13 @@ namespace Nekoyume.UI
                     combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
+                    equipmentCombinationPanel.Hide();
+                    elementalCombinationPanel.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
+                    categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(false);
-                    recipeArea.SetActive(true);
+                    equipmentRecipe.gameObject.SetActive(true);
                     break;
                 case StateType.CombineConsumable:
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
@@ -281,10 +292,13 @@ namespace Nekoyume.UI
                     combineEquipment.Hide();
                     combineConsumable.Show(true);
                     enhanceEquipment.Hide();
+                    equipmentCombinationPanel.Hide();
+                    elementalCombinationPanel.Hide();
                     ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
 
+                    categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(true);
-                    recipeArea.SetActive(false);
+                    equipmentRecipe.gameObject.SetActive(false);
                     break;  
                 case StateType.EnhanceEquipment:
                     _toggleGroup.SetToggledOn(enhanceEquipmentCategoryButton);
@@ -297,10 +311,39 @@ namespace Nekoyume.UI
                     combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Show(true);
+                    equipmentCombinationPanel.Hide();
+                    elementalCombinationPanel.Hide();
                     ShowSpeech("SPEECH_COMBINE_ENHANCE_EQUIPMENT_");
 
+                    categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(true);
-                    recipeArea.SetActive(false);
+                    equipmentRecipe.gameObject.SetActive(false);
+                    break;
+                case StateType.CombinationConfirm:
+                    _toggleGroup.SetToggledOffAll();
+
+                    combineEquipment.Hide();
+                    combineConsumable.Hide();
+                    enhanceEquipment.Hide();
+                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
+
+                    categoryTabArea.SetActive(false);
+                    inventory.gameObject.SetActive(false);
+                    equipmentRecipe.gameObject.SetActive(false);
+
+                    var selectedRecipe = equipmentRecipe.selectedRecipe;
+                    bool isElemental = selectedRecipe.Data.ElementalType != ElementalType.Normal;
+
+                    if (isElemental)
+                    {
+                        elementalCombinationPanel.SetData(selectedRecipe);
+                        equipmentCombinationPanel.Hide();
+                    }
+                    else
+                    {
+                        equipmentCombinationPanel.SetData(selectedRecipe);
+                        elementalCombinationPanel.Hide();
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
