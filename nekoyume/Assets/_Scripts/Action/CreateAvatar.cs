@@ -14,6 +14,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("create_avatar")]
     public class CreateAvatar : GameAction
     {
@@ -24,7 +25,7 @@ namespace Nekoyume.Action
         public int ear;
         public int tail;
         public string name;
-        public IImmutableList<int> completedQuestIds;
+        public List<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {
@@ -95,7 +96,7 @@ namespace Nekoyume.Action
 
             avatarState.Customize(hair, lens, ear, tail);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToList();
 
             sw.Stop();
             Log.Debug($"CreateAvatar CreateAvatarState: {sw.Elapsed}");

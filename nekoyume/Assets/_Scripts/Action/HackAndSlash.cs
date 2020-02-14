@@ -15,6 +15,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("hack_and_slash")]
     public class HackAndSlash : GameAction
     {
@@ -25,7 +26,7 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public Address WeeklyArenaAddress;
         public BattleLog Result { get; private set; }
-        public IImmutableList<int> completedQuestIds;
+        public List<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -156,7 +157,7 @@ namespace Nekoyume.Action
 
             avatarState.Update(simulator);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToList();
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());
