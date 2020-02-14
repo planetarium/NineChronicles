@@ -59,9 +59,9 @@
         public const int RankingRequiredLevel = 1;
 #else
         public const int QuestRequiredLevel = 1;
-        public const int CombinationRequiredLevel = 3;
-        public const int ShopRequiredLevel = 17;
-        public const int RankingRequiredLevel = 25;
+        public const int CombinationRequiredLevel = 2;
+        public const int ShopRequiredLevel = 12;
+        public const int RankingRequiredLevel = 21;
 #endif
 
         #endregion
