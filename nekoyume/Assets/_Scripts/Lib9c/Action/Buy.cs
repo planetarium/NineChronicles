@@ -124,7 +124,7 @@ namespace Nekoyume.Action
                 out var world))
                 return states;
 
-            if (world.StageClearedId < GameConfig.RequireStage.ActionsInShop)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInShop)
             {
                 // 스테이지 클리어 부족 에러.
                 return states;

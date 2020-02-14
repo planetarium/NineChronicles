@@ -62,8 +62,8 @@
         #endregion
 
         #region system or contents unlock
-
-        public static class RequireStage
+        
+        public static class RequireClearedStageLevel
         {
             #region Action
 
