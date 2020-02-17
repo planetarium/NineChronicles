@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Nekoyume.Action;
 
 namespace Nekoyume.BlockChain
 {
@@ -18,7 +19,7 @@ namespace Nekoyume.BlockChain
         {
         }
 
-        public void Start()
+        public void Start(ActionRenderer renderer)
         {
         }
 
