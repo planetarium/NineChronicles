@@ -228,6 +228,7 @@ namespace Nekoyume.UI
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             Find<WorldMap>().Show(_worldId, _stageId, false);
+            gameObject.SetActive(false);
         }
 
         private void SubscribeReadyToQuest(bool ready)
@@ -430,7 +431,7 @@ namespace Nekoyume.UI
             _stage.isExitReserved = false;
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
-            ActionManager.instance.HackAndSlash(equipments, consumables, _worldId, _stageId)
+            Game.Game.instance.ActionManager.HackAndSlash(equipments, consumables, _worldId, _stageId)
                 .Subscribe(_ => { }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
                 .AddTo(this);
         }

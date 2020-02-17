@@ -105,24 +105,28 @@ namespace Nekoyume.UI.Module
                     }
 
                     var stageRowsIndex = stageOffset + i;
-                    if (stageRowsIndex >= stageRowsCount)
+                    if (stageRowsIndex < stageRowsCount)
+                    {
+                        var stageModel = new WorldMapStage.ViewModel(
+                            stageRows[stageRowsIndex],
+                            $"{stageRowsIndex + 1}",
+                            WorldMapStage.State.Normal);
+
+                        stageModels.Add(stageModel);
+                    }
+                    else
                     {
                         nextPageShouldHide = true;
                         stageModels.Add(new WorldMapStage.ViewModel(WorldMapStage.State.Hidden));
-
-                        continue;
                     }
-
-                    var stageModel = new WorldMapStage.ViewModel(
-                        stageRows[stageRowsIndex],
-                        $"{stageRowsIndex + 1}",
-                        WorldMapStage.State.Normal);
-
-                    stageModels.Add(stageModel);
                 }
 
                 page.Show(stageModels);
                 stageOffset += stageModels.Count;
+                if (stageOffset >= stageRowsCount)
+                {
+                    nextPageShouldHide = true;
+                }
             }
 
             foreach (var shouldDestroyPage in shouldDestroyPages)
