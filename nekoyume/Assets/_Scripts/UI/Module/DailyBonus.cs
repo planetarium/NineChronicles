@@ -85,7 +85,7 @@ namespace Nekoyume.UI.Module
 
         public void GetReward()
         {
-            ActionManager.instance.DailyReward().Subscribe(_ =>
+            Game.Game.instance.ActionManager.DailyReward().Subscribe(_ =>
             {
                 _updateEnable = true;
                 Notification.Push(Nekoyume.Model.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
