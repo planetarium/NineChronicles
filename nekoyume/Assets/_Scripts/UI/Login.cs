@@ -59,7 +59,7 @@ namespace Nekoyume.UI
                 
                 Find<GrayLoadingScreen>().Show();
 
-                ActionManager.instance.DeleteAvatar(index)
+                Game.Game.instance.ActionManager.DeleteAvatar(index)
                     .Subscribe(eval =>
                     {
                         Game.Event.OnNestEnter.Invoke();

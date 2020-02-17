@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.Game.Item;
 using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.Pattern;
@@ -15,13 +14,23 @@ namespace Nekoyume.BlockChain
     /// <summary>
     /// 게임의 Action을 생성하고 Agent에 넣어주는 역할을 한다.
     /// </summary>
-    public class ActionManager : MonoSingleton<ActionManager>
+    public class ActionManager
     {
         private static readonly TimeSpan ActionTimeout = TimeSpan.FromSeconds(GameConfig.WaitSeconds);
+
+        private readonly IAgent _agent;
+
+        private readonly ActionRenderer _renderer;
         
-        private static void ProcessAction(GameAction gameAction)
+        private void ProcessAction(GameAction gameAction)
         {
-            Game.Game.instance.Agent.EnqueueAction(gameAction);
+            _agent.EnqueueAction(gameAction);
+        }
+
+        public ActionManager(IAgent agent)
+        {
+            _agent = agent;
+            _renderer = agent.ActionRenderer;
         }
 
         #region Actions
@@ -41,7 +50,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<CreateAvatar>()
+            return _renderer.EveryRender<CreateAvatar>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -59,7 +68,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<DeleteAvatar>()
+            return _renderer.EveryRender<DeleteAvatar>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -89,7 +98,7 @@ namespace Nekoyume.BlockChain
 
             var itemIDs = equipments.Select(e => e.Data.Id).Concat(foods.Select(f => f.Data.Id)).ToArray();
             AnalyticsManager.Instance.Battle(itemIDs);
-            return ActionBase.EveryRender<HackAndSlash>()
+            return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -118,7 +127,7 @@ namespace Nekoyume.BlockChain
             action.AvatarAddress = States.Instance.CurrentAvatarState.address;
             ProcessAction(action);
 
-            return ActionBase.EveryRender<Combination>()
+            return _renderer.EveryRender<Combination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -137,7 +146,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<Sell>()
+            return _renderer.EveryRender<Sell>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -155,7 +164,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<SellCancellation>()
+            return _renderer.EveryRender<SellCancellation>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -175,7 +184,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<Buy>()
+            return _renderer.EveryRender<Buy>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -193,7 +202,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<AddItem>()
+            return _renderer.EveryRender<AddItem>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -210,7 +219,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<AddGold>()
+            return _renderer.EveryRender<AddGold>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -228,7 +237,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<DailyReward>()
+            return _renderer.EveryRender<DailyReward>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -246,7 +255,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<ItemEnhancement>()
+            return _renderer.EveryRender<ItemEnhancement>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -263,7 +272,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<QuestReward>()
+            return _renderer.EveryRender<QuestReward>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -271,7 +280,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public static IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(Address enemyAddress)
+        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(Address enemyAddress)
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
@@ -284,7 +293,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<RankingBattle>()
+            return _renderer.EveryRender<RankingBattle>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -292,7 +301,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public static IObservable<ActionBase.ActionEvaluation<WeeklyArenaReward>> WeeklyArenaReward()
+        public IObservable<ActionBase.ActionEvaluation<WeeklyArenaReward>> WeeklyArenaReward()
         {
             var action = new WeeklyArenaReward
             {
@@ -301,7 +310,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            return ActionBase.EveryRender<WeeklyArenaReward>()
+            return _renderer.EveryRender<WeeklyArenaReward>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -309,7 +318,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public static void PatchTableSheet(string tableName, string tableCsv)
+        public void PatchTableSheet(string tableName, string tableCsv)
         {
             var action = new PatchTableSheet
             {
