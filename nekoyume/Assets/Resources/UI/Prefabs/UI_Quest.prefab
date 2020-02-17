@@ -1385,11 +1385,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bacfffa52c78040a2ae4c658801044b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  to: -400
+  begin: 0
+  end: -400
   duration: 0.5
   snapping: 0
-  ease: 27
-  from: 1
+  showEase: 27
+  closeEase: 26
+  isFrom: 1
 --- !u!114 &968766962304562956
 MonoBehaviour:
   m_ObjectHideFlags: 0

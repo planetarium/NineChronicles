@@ -1417,6 +1417,7 @@ MonoBehaviour:
     text: {fileID: 7852889818000821697}
     textSelected: {fileID: 6226822699652873400}
   blur: {fileID: 7872133382900380743}
+  modalTweener: {fileID: 1537710529618283008}
 --- !u!1 &2886678452255110699
 GameObject:
   m_ObjectHideFlags: 0
@@ -1481,11 +1482,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bacfffa52c78040a2ae4c658801044b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  to: -400
+  begin: 0
+  end: -400
   duration: 0.5
   snapping: 0
-  ease: 27
-  from: 1
+  showEase: 27
+  closeEase: 26
+  isFrom: 1
 --- !u!114 &964634165146872937
 MonoBehaviour:
   m_ObjectHideFlags: 0
