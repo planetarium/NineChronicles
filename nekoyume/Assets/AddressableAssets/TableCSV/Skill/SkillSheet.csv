@@ -1,7 +1,7 @@
 id,_name,elemental_type,skill_type,skill_category,skill_target_type,hit_count
 100000,기본 공격,Normal,Attack,NormalAttack,Enemy,1
 100001,일격,Normal,Attack,BlowAttack,Enemy,1
-100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1
+_100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1 // 노멀 속성의 전체 일격은 추가하면 안 됩니다.
 100003,연사,Normal,Attack,DoubleAttack,Enemy,2
 100004,연사(전체),Normal,Attack,DoubleAttack,Enemy,2
 100005,광역 난사,Normal,Attack,AreaAttack,Enemies,5
