@@ -30,13 +30,13 @@ namespace Nekoyume.UI
         private int _progress = 0;
         private bool _vfxEnabled;
 
-        [SerializeField] private StageProgressBarVFX stageProgressBarVFX;
-        [SerializeField] private Star01VFX star01VFX;
-        [SerializeField] private Star02VFX star02VFX;
-        [SerializeField] private Star03VFX star03VFX;
-        [SerializeField] private StarEmission01VFX starEmission01VFX;
-        [SerializeField] private StarEmission02VFX starEmission02VFX;
-        [SerializeField] private StarEmission03VFX starEmission03VFX;
+        [SerializeField] private StageProgressBarVFX stageProgressBarVFX = null;
+        [SerializeField] private Star01VFX star01VFX = null;
+        [SerializeField] private Star02VFX star02VFX = null;
+        [SerializeField] private Star03VFX star03VFX = null;
+        [SerializeField] private StarEmission01VFX starEmission01VFX = null;
+        [SerializeField] private StarEmission02VFX starEmission02VFX = null;
+        [SerializeField] private StarEmission03VFX starEmission03VFX = null;
 
         private Coroutine _smoothenCoroutine = null;
 

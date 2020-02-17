@@ -40,6 +40,7 @@ namespace Nekoyume.UI
         public GameObject passPhraseGroup;
         public GameObject retypeGroup;
         public GameObject loginGroup;
+        public TextMeshProUGUI findPassphraseTitle;
         public GameObject findPassphraseGroup;
         public GameObject accountGroup;
         public GameObject header;
@@ -85,6 +86,7 @@ namespace Nekoyume.UI
             incorrectText.gameObject.SetActive(false);
             contentText.text = LocalizationManager.Localize("UI_LOGIN_CONTENT");
             accountAddressHolder.text = LocalizationManager.Localize("UI_ACCOUNT_PLACEHOLDERS");
+            findPassphraseTitle.text = LocalizationManager.Localize("UI_LOGIN_FIND_PASSPHRASE_TITLE");
             findPassphraseText.text = LocalizationManager.Localize("UI_LOGIN_FIND_PASSPHRASE");
             backToLoginText.text = LocalizationManager.Localize("UI_LOGIN_BACK_TO_LOGIN");
             passPhraseText.text = LocalizationManager.Localize("UI_LOGIN_PASSWORD_INFO");
@@ -113,6 +115,7 @@ namespace Nekoyume.UI
             passPhraseGroup.SetActive(false);
             retypeGroup.SetActive(false);
             loginGroup.SetActive(false);
+            findPassphraseTitle.gameObject.SetActive(false);
             findPassphraseGroup.SetActive(false);
             accountGroup.SetActive(false);
             submitButton.SetSubmittable(false);
@@ -141,7 +144,6 @@ namespace Nekoyume.UI
                     retypeField.text = "";
                     loginField.text = "";
                     findPassphraseField.text = "";
-                    submitButton.SetSubmittable(true);
                     submitButton.SetSubmitText(LocalizationManager.Localize("UI_GAME_SIGN_UP"));
                     bg.SetActive(false);
                     break;
@@ -156,7 +158,6 @@ namespace Nekoyume.UI
                     break;
                 case States.CreateAccount:
                     titleText.gameObject.SetActive(false);
-                    submitButton.SetSubmittable(true);
                     submitButton.SetSubmitText(LocalizationManager.Localize("UI_GAME_CREATE_PASSWORD"));
                     createSuccessGroup.SetActive(true);
                     passPhraseField.Select();
@@ -171,7 +172,6 @@ namespace Nekoyume.UI
                     break;
                 case States.Login:
                     header.SetActive(false);
-                    submitButton.SetSubmittable(true);
                     titleText.gameObject.SetActive(false);
                     submitButton.SetSubmitText(LocalizationManager.Localize("UI_GAME_START"));
                     loginGroup.SetActive(true);
@@ -183,6 +183,7 @@ namespace Nekoyume.UI
                     break;
                 case States.FindPassphrase:
                     titleText.gameObject.SetActive(false);
+                    findPassphraseTitle.gameObject.SetActive(true);
                     findPassphraseGroup.SetActive(true);
                     backToLoginButton.gameObject.SetActive(true);
                     submitButton.SetSubmitText(LocalizationManager.Localize("UI_OK"));
@@ -196,11 +197,11 @@ namespace Nekoyume.UI
                     var contentFormat = LocalizationManager.Localize($"UI_LOGIN_{upper}_CONTENT");
                     contentText.text = string.Format(contentFormat);
                     submitButton.SetSubmitText(LocalizationManager.Localize("UI_OK"));
-                    submitButton.SetSubmittable(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(states), states, null);
             }
+            UpdateSubmitButton();
         }
 
         public void CheckPassphrase()
@@ -221,7 +222,6 @@ namespace Nekoyume.UI
 
         public void CheckRetypePassphrase()
         {
-
             var text = passPhraseField.text;
             var same = text == retypeField.text && CheckPassWord(text);
             submitButton.SetSubmittable(same);
@@ -249,6 +249,7 @@ namespace Nekoyume.UI
             else
             {
                 loginWarning.SetActive(true);
+                loginField.text = string.Empty;
             }
 
         }
@@ -288,6 +289,7 @@ namespace Nekoyume.UI
                     else
                     {
                         findPrivateKeyWarning.SetActive(true);
+                        findPassphraseField.text = null;
                     }
                     break;
                 }
@@ -333,6 +335,35 @@ namespace Nekoyume.UI
                 var state = GetProtectedPrivateKeys().Any() ? States.Login : States.Show;
                 SetState(state);
                 Login = false;
+            }
+            
+            switch (State.Value)
+            {
+                case States.CreateAccount:
+                case States.ResetPassphrase:
+                case States.CreatePassword:
+                {
+                    {
+                        if (passPhraseField.isFocused)
+                        {
+                            retypeField.Select();
+                        }
+                        else
+                        {
+                            passPhraseField.Select();
+                        }
+                    }
+                    break;
+                }
+                case States.Login:
+                    loginField.Select();
+                    break;
+                case States.FindPassphrase:
+                    findPassphraseField.Select();
+                    break;
+                case States.Show:
+                case States.Failed:
+                    break;
             }
         }
 
@@ -447,6 +478,32 @@ namespace Nekoyume.UI
             return _privateKey;
         }
 
+        private void UpdateSubmitButton()
+        {
+            switch (State.Value)
+            {
+                case States.ResetPassphrase:
+                case States.CreatePassword:
+                    submitButton.SetSubmittable(!(string.IsNullOrEmpty(passPhraseField.text) ||
+                                                  string.IsNullOrEmpty(retypeField.text)));
+                    break;
+                
+                case States.Login:
+                    submitButton.SetSubmittable(!string.IsNullOrEmpty(loginField.text));
+                    break;
+                
+                case States.FindPassphrase:
+                    submitButton.SetSubmittable(!string.IsNullOrEmpty(findPassphraseField.text));
+                    break;
+                case States.CreateAccount:
+                case States.Show:
+                    submitButton.SetSubmittable(true);
+                    break;
+                case States.Failed:
+                    break;
+            }
+        }
+
         protected override void Update()
         {
             base.Update();
@@ -455,7 +512,6 @@ namespace Nekoyume.UI
             {
                 switch (State.Value)
                 {
-                    case States.CreateAccount:
                     case States.ResetPassphrase:
                     case States.CreatePassword:
                     {
@@ -477,11 +533,14 @@ namespace Nekoyume.UI
                     case States.FindPassphrase:
                         findPassphraseField.Select();
                         break;
+                    case States.CreateAccount:
                     case States.Show:
                     case States.Failed:
                         break;
                 }
             }
+
+            UpdateSubmitButton();
         }
 
         private bool CheckPrivateKeyHex()
