@@ -191,7 +191,7 @@ GameObject:
   m_Component:
   - component: {fileID: 98550336}
   m_Layer: 5
-  m_Name: Tooltip
+  m_Name: TooltipLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -312,7 +312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 384134973}
   m_Layer: 5
-  m_Name: SystemInfo
+  m_Name: SystemInfoLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -347,7 +347,7 @@ GameObject:
   m_Component:
   - component: {fileID: 721921032}
   m_Layer: 5
-  m_Name: Development
+  m_Name: DevelopmentLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -491,14 +491,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 577bdd3040bef426d8707b31f66e96f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hud: {fileID: 946775608}
-  popup: {fileID: 1346351531}
-  screen: {fileID: 1772531777}
-  tooltip: {fileID: 98550335}
-  widget: {fileID: 1162800116}
-  animation: {fileID: 1962509239}
-  systemInfo: {fileID: 384134972}
-  development: {fileID: 721921031}
+  hudLayer: {fileID: 946775608}
+  popupLayer: {fileID: 1346351531}
+  screenLayer: {fileID: 1772531777}
+  tooltipLayer: {fileID: 98550335}
+  widgetLayer: {fileID: 1162800116}
+  animationLayer: {fileID: 1962509239}
+  systemInfoLayer: {fileID: 384134972}
+  developmentLayer: {fileID: 721921031}
 --- !u!1 &946775608
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,7 +509,7 @@ GameObject:
   m_Component:
   - component: {fileID: 946775609}
   m_Layer: 5
-  m_Name: Hud
+  m_Name: HudLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -544,7 +544,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1162800117}
   m_Layer: 5
-  m_Name: Widget
+  m_Name: WidgetLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -881,7 +881,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1346351532}
   m_Layer: 5
-  m_Name: Popup
+  m_Name: PopupLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -916,7 +916,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1772531778}
   m_Layer: 5
-  m_Name: Screen
+  m_Name: ScreenLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1071,7 +1071,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1962509240}
   m_Layer: 5
-  m_Name: Animation
+  m_Name: AnimationLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
