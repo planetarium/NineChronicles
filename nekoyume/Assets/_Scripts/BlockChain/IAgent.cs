@@ -16,6 +16,8 @@ namespace Nekoyume.BlockChain
 
         Address Address { get; }
 
+        ActionRenderer ActionRenderer { get; }
+
         void Initialize(
             CommandLineOptions options,
             PrivateKey privateKey,
