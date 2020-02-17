@@ -25,7 +25,7 @@ namespace Nekoyume.UI
 
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
-        private bool _isCloseAnimationCompleted;
+        public bool IsCloseAnimationCompleted { get; private set; }
         
         protected System.Action CloseWidget;
         protected System.Action SubmitWidget;
@@ -214,10 +214,10 @@ namespace Nekoyume.UI
         {
             if (Animator)
             {
-                _isCloseAnimationCompleted = false;
+                IsCloseAnimationCompleted = false;
                 Animator.enabled = true;
                 Animator.Play("Close");
-                yield return new WaitUntil(() => _isCloseAnimationCompleted);
+                yield return new WaitUntil(() => IsCloseAnimationCompleted);
             }
 
             gameObject.SetActive(false);
@@ -240,7 +240,7 @@ namespace Nekoyume.UI
                 Animator.enabled = false;
             }
 
-            _isCloseAnimationCompleted = true;
+            IsCloseAnimationCompleted = true;
         }
         
         #endregion
