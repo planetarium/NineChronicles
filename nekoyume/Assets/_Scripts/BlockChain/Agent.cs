@@ -92,6 +92,13 @@ namespace Nekoyume.BlockChain
         protected PrivateKey PrivateKey { get; private set; }
         public Address Address { get; set; }
 
+        private ActionRenderer _actionRenderer = new ActionRenderer(
+            ActionBase.RenderSubject,
+            ActionBase.UnrenderSubject
+        );
+
+        public ActionRenderer ActionRenderer { get => _actionRenderer; }
+
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
         public event EventHandler PreloadEnded;
@@ -362,8 +369,8 @@ namespace Nekoyume.BlockChain
                         : new AgentState(Address));
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
-                ActionRenderHandler.Instance.Start();
-                ActionUnrenderHandler.Instance.Start();
+                ActionRenderHandler.Instance.Start(_actionRenderer);
+                ActionUnrenderHandler.Instance.Start(_actionRenderer);
 
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
@@ -754,7 +761,7 @@ namespace Nekoyume.BlockChain
             var avatarAddress = AvatarState.CreateAvatarAddress();
             var dummyName = Address.ToHex().Substring(0, 8);
 
-            yield return ActionManager.instance
+            yield return Game.Game.instance.ActionManager
                 .CreateAvatar(avatarAddress, avatarIndex, dummyName)
                 .ToYieldInstruction();
             Debug.LogFormat("Autoplay[{0}, {1}]: CreateAvatar", avatarAddress.ToHex(), dummyName);
@@ -766,7 +773,7 @@ namespace Nekoyume.BlockChain
             {
                 yield return waitForSeconds;
 
-                yield return ActionManager.instance.HackAndSlash(
+                yield return Game.Game.instance.ActionManager.HackAndSlash(
                     new List<Equipment>(), new List<Consumable>(), 1, 1).ToYieldInstruction();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }

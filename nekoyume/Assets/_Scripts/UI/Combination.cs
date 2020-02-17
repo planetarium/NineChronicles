@@ -431,7 +431,7 @@ namespace Nekoyume.UI
         {
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
-            ActionManager.instance.Combination(materialInfoList)
+            Game.Game.instance.ActionManager.Combination(materialInfoList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
 
@@ -439,7 +439,7 @@ namespace Nekoyume.UI
         {
             var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
-            ActionManager.instance.ItemEnhancement(baseItemGuid, otherItemGuidList)
+            Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }
 

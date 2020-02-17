@@ -40,7 +40,7 @@ namespace Nekoyume.BlockChain
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
                 new RewardGold { Gold = 1 },
                 BlockInterval,
-                100000,
+                5000000,
                 2048
             );
 #endif
