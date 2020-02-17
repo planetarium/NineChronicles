@@ -318,7 +318,7 @@ namespace Nekoyume.UI
 
         private void OnClickChallenge(ArenaCellView info)
         {
-            ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
+            Game.Game.instance.ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
             Find<LoadingScreen>().Show();
             Find<RankingBattleLoadingScreen>().Show(info.ArenaInfo);
         }

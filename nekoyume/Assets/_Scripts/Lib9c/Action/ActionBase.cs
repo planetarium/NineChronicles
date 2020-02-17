@@ -31,11 +31,11 @@ namespace Nekoyume.Action
 
             public IAccountStateDelta OutputStates { get; set; }
         }
-        
-        private static readonly Subject<ActionEvaluation<ActionBase>> RenderSubject =
+
+        public static readonly Subject<ActionEvaluation<ActionBase>> RenderSubject =
             new Subject<ActionEvaluation<ActionBase>>();
 
-        private static readonly Subject<ActionEvaluation<ActionBase>> UnrenderSubject =
+        public static readonly Subject<ActionEvaluation<ActionBase>> UnrenderSubject =
             new Subject<ActionEvaluation<ActionBase>>();
 
         public void Render(IActionContext context, IAccountStateDelta nextStates)
@@ -57,60 +57,6 @@ namespace Nekoyume.Action
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
-            });
-        }
-
-        public static IObservable<ActionEvaluation<T>> EveryRender<T>()
-            where T : ActionBase
-        {
-            return RenderSubject.AsObservable().Where(
-                eval => eval.Action is T
-            ).Select(eval => new ActionEvaluation<T>
-            {
-                Action = (T) eval.Action,
-                Signer = eval.Signer,
-                BlockIndex = eval.BlockIndex,
-                OutputStates = eval.OutputStates,
-            });
-        }
-
-        public static IObservable<ActionEvaluation<T>> EveryUnrender<T>()
-            where T : ActionBase
-        {
-            return UnrenderSubject.AsObservable().Where(
-                eval => eval.Action is T
-            ).Select(eval => new ActionEvaluation<T>
-            {
-                Action = (T) eval.Action,
-                Signer = eval.Signer,
-                BlockIndex = eval.BlockIndex,
-                OutputStates = eval.OutputStates,
-            });
-        }
-
-        public static IObservable<ActionEvaluation<ActionBase>> EveryRender(Address updatedAddress)
-        {
-            return RenderSubject.AsObservable().Where(
-                eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress)
-            ).Select(eval => new ActionEvaluation<ActionBase>
-            {
-                Action = eval.Action,
-                Signer = eval.Signer,
-                BlockIndex = eval.BlockIndex,
-                OutputStates = eval.OutputStates,
-            });
-        }
-
-        public static IObservable<ActionEvaluation<ActionBase>> EveryUnrender(Address updatedAddress)
-        {
-            return UnrenderSubject.AsObservable().Where(
-                eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress)
-            ).Select(eval => new ActionEvaluation<ActionBase>
-            {
-                Action = eval.Action,
-                Signer = eval.Signer,
-                BlockIndex = eval.BlockIndex,
-                OutputStates = eval.OutputStates,
             });
         }
     }

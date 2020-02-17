@@ -39,7 +39,9 @@ namespace Nekoyume.Game
         // FIXME Action.PatchTableSheet.Execute()에 의해서만 갱신됩니다.
         // 액션 실행 여부와 상관 없이 최신 상태를 반영하게끔 수정해야합니다.
         public TableSheets TableSheets { get; private set; }
-        
+
+        public ActionManager ActionManager { get; private set; }
+
         public bool IsInitialized { get; private set; }
 
         private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
@@ -71,6 +73,7 @@ namespace Nekoyume.Game
 #endif
             States = new States();
             LocalStateSettings = new LocalStateSettings();
+            ActionManager = new ActionManager(_agent);
             MainCanvas.instance.InitializeFirst();
         }
 
