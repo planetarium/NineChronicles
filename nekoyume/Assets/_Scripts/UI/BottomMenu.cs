@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Module
         public CanvasGroup canvasGroup;
         private Animator _inventoryAnimator;
 
-        [SerializeField] private RectTransform _buttons;
+        [SerializeField] private RectTransform _buttons = null;
         private float _buttonsPositionY;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
