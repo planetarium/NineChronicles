@@ -5,6 +5,7 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
@@ -61,6 +62,8 @@ namespace Nekoyume.UI.Module
             : _tooltip = Widget.Find<ItemInformationTooltip>();
 
         public Model.Inventory SharedModel { get; private set; }
+        
+        public readonly Subject<Inventory> OnResetItems = new Subject<Inventory>();
 
         #region Mono
 
@@ -115,6 +118,7 @@ namespace Nekoyume.UI.Module
                 {
                     scrollerController.DisposeAddedAtSetData();
                     SharedModel.ResetItems(value);
+                    OnResetItems.OnNext(this);
                 })
                 .AddTo(_disposablesAtOnEnable);
         }
@@ -129,10 +133,11 @@ namespace Nekoyume.UI.Module
         {
             SharedModel.Dispose();
             SharedModel = null;
+            OnResetItems.Dispose();
         }
 
         #endregion
-
+        
         #region Subscribe
 
         private void SubscribeState(ItemType stateType)
