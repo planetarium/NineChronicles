@@ -142,7 +142,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Set(Player player)
+        public void Update()
         {
             if (_requireStage > 0)
             {

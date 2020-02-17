@@ -45,12 +45,12 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        private void ShowButtons(Player player)
+        private void UpdateButtons()
         {
-            btnQuest.Set(player);
-            btnCombination.Set(player);
-            btnShop.Set(player);
-            btnRanking.Set(player);
+            btnQuest.Update();
+            btnCombination.Update();
+            btnShop.Update();
+            btnRanking.Update();
 
             var addressHax = ReactiveAvatarState.Address.Value.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
@@ -83,9 +83,9 @@ namespace Nekoyume.UI
             if (!btnQuest.IsUnlocked)
             {
                 btnQuest.JingleTheCat();
-                return;    
+                return;
             }
-            
+
             Close();
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
@@ -121,7 +121,7 @@ namespace Nekoyume.UI
                 btnCombination.JingleTheCat();
                 return;
             }
-            
+
             if (combinationExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
@@ -159,18 +159,14 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            StartCoroutine(ShowSpeeches());
-            ShowButtons(Game.Game.instance.Stage.selectedPlayer);
+            StartCoroutine(CoStartSpeeches());
+            UpdateButtons();
             arenaPendingNCG.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            StopCoroutine(ShowSpeeches());
-            foreach (var bubble in SpeechBubbles)
-            {
-                bubble.Hide();
-            }
+            StopSpeeches();
 
             Find<Inventory>().Close(ignoreCloseAnimation);
             Find<StatusDetail>().Close(ignoreCloseAnimation);
@@ -181,10 +177,8 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        private IEnumerator ShowSpeeches()
+        private IEnumerator CoStartSpeeches()
         {
-            ShowButtons(Game.Game.instance.Stage.selectedPlayer);
-
             yield return new WaitForSeconds(2.0f);
 
             while (true)
@@ -207,25 +201,13 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoShowRequiredLevelSpeech(string pointerClickKey, int level)
+        private void StopSpeeches()
         {
-            _coroutine = null;
-            speechBubble.SetKey(pointerClickKey);
-            var format =
-                LocalizationManager.Localize(
-                    $"{pointerClickKey}{Random.Range(0, speechBubble.SpeechCount)}");
-            var speech = string.Format(format, level);
-            yield return StartCoroutine(speechBubble.CoShowText(speech, true));
-            if (npc)
+            StopCoroutine(CoStartSpeeches());
+            foreach (var bubble in SpeechBubbles)
             {
-                npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
-            }
-
-            speechBubble.ResetKey();
-            if (_coroutine is null)
-            {
-                _coroutine = StartCoroutine(ShowSpeeches());
+                bubble.Hide();
             }
         }
-    }
+}
 }

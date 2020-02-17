@@ -244,6 +244,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayStage(BattleLog log)
         {
+            IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
             {
@@ -251,10 +252,12 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(CoStageEnd(log));
+            IsInStage = false;
         }
 
         private IEnumerator CoPlayRankingBattle(BattleLog log)
         {
+            IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
             foreach (var e in log)
             {
@@ -262,6 +265,7 @@ namespace Nekoyume.Game
             }
 
             yield return StartCoroutine(CoRankingBattleEnd(log));
+            IsInStage = false;
         }
 
         private static IEnumerator CoDialog(int worldStage)
@@ -286,7 +290,6 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnter(BattleLog log)
         {
-            IsInStage = true;
             worldId = log.worldId;
             stageId = log.stageId;
             waveCount = log.waveCount;
@@ -317,7 +320,6 @@ namespace Nekoyume.Game
 
         private IEnumerator CoRankingBattleEnter(BattleLog log)
         {
-            IsInStage = true;
             waveCount = log.waveCount;
             waveTurn = 1;
 #if TEST_LOG
@@ -383,10 +385,8 @@ namespace Nekoyume.Game
                 }
             }
 
-            Widget.Find<BattleResult>().Show(_battleResultModel);
-
-            IsInStage = false;
             ActionRenderHandler.Instance.Pending = false;
+            Widget.Find<BattleResult>().Show(_battleResultModel);
             yield return null;
         }
 
@@ -414,10 +414,9 @@ namespace Nekoyume.Game
             playerCharacter.ShowSpeech("PLAYER_WIN");
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
-            Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
-
-            IsInStage = false;
+            
             ActionRenderHandler.Instance.Pending = false;
+            Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
             yield return null;
         }
 
@@ -455,8 +454,6 @@ namespace Nekoyume.Game
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
             }
-
-            ActionRenderHandler.Instance.Pending = true;
 
             ActionCamera.instance.ChaseX(player.transform);
             yield return null;
