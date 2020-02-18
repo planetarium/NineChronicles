@@ -7,18 +7,20 @@ namespace Nekoyume.UI
 {
     public abstract class XTweenWidget : Widget
     {
-        protected AnchoredPositionXTweener _xTween;
+        [SerializeField]
+        private AnchoredPositionXTweener xTweener;
+        protected AnchoredPositionXTweener XTweener => XTweener;
 
         protected override void Awake()
         {
             base.Awake();
-            _xTween = GetComponentInChildren<AnchoredPositionXTweener>();
+            xTweener = GetComponentInChildren<AnchoredPositionXTweener>();
         }
 
         public override void Show()
         { 
             base.Show();
-            _xTween.Show();
+            xTweener.StartTween();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -31,7 +33,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoClose(bool ignoreCloseAnimation)
         {
-            yield return new WaitWhile(_xTween.Close().IsPlaying);
+            yield return new WaitWhile(xTweener.StopTween().IsPlaying);
             base.Close(ignoreCloseAnimation);
         }
     }

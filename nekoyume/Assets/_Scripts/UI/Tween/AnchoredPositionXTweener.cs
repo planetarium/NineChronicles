@@ -9,8 +9,6 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionXTweener : MonoBehaviour
     {
-        // todo: add `begin`
-        // todo: `to` -> `end`
         [SerializeField] private float begin = 0f;
         [SerializeField] private float end = 0f;
         [SerializeField] private float duration = 1f;
@@ -18,7 +16,7 @@ namespace Nekoyume.UI.Tween
 
         [SerializeField] private Ease showEase = Ease.Linear;
         [SerializeField] private Ease closeEase = Ease.Linear;
-        // todo: `from` -> `isFrom`
+
         [SerializeField] private bool isFrom = false;
 
         private RectTransform _rectTransform;
@@ -32,7 +30,7 @@ namespace Nekoyume.UI.Tween
             originAnchoredPosition = _rectTransform.anchoredPosition;
         }
 
-        public Tweener Show()
+        public Tweener StartTween()
         {
             RefreshTween();
 
@@ -52,7 +50,7 @@ namespace Nekoyume.UI.Tween
             return _tween;
         }
 
-        public Tweener Close()
+        public Tweener StopTween()
         {
             RefreshTween();
             if(isFrom)
