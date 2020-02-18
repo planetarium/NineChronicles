@@ -83,11 +83,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 224241895537695928}
-  - component: {fileID: 114527996450611216}
   - component: {fileID: 222461731060466604}
   - component: {fileID: 5315089576105275126}
+  - component: {fileID: 399235454643485297}
   m_Layer: 5
-  m_Name: UI_CriticalText 1
+  m_Name: UI_ComboText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -115,25 +115,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &114527996450611216
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1395641390650610}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0012318aee94980ab461c47a5674c2b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  labels:
-  - {fileID: 0}
-  - {fileID: 0}
-  shadows:
-  - {fileID: 0}
-  - {fileID: 0}
-  group: {fileID: 5315089576105275126}
 --- !u!222 &222461731060466604
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -154,6 +135,21 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &399235454643485297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1395641390650610}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742dc5313ffb1ea40b9f53b53853c49e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shadowText: {fileID: 7897625634833168045}
+  meshText: {fileID: 6181815305103727915}
+  delayTime: 1
 --- !u!1 &283201490928505258
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +375,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 4538645621227449958}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
@@ -612,7 +608,7 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 827341235318623365}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}

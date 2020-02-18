@@ -808,6 +808,7 @@ namespace Nekoyume.Game.Character
                     break;
                 case "attackPoint":
                     AttackEndCalled = true;
+                    Widget.Find<Nekoyume.UI.Battle>().ShowComboText(CharacterModel.AttackCount);
                     break;
                 case "footstep":
                     AudioController.PlayFootStep();
