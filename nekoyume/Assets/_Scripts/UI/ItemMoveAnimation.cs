@@ -8,7 +8,7 @@ using System.Collections;
 
 namespace Nekoyume.UI
 {
-    class ItemMoveAnimation: AnimationWidget
+    public class ItemMoveAnimation : AnimationWidget
     {
         private Vector3 _endPosition;
         private float _middleXGap;
