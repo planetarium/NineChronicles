@@ -13,9 +13,10 @@ namespace Nekoyume.UI
     class ItemMoveAnimation: AnimationWidget
     {
         private Vector3 _endPosition;
+        private float _middleXGap;
         public Image itemImage = null;
         
-        public static ItemMoveAnimation Show(Sprite itemSprite, Vector3 startWorldPosition, Vector3 endWorldPosition, bool moveToLeft = false, float animationTime = 1f)
+        public static ItemMoveAnimation Show(Sprite itemSprite, Vector3 startWorldPosition, Vector3 endWorldPosition, bool moveToLeft = false, float animationTime = 1f, float middleXGap = 0f)
         {
             var result = Create<ItemMoveAnimation>(true);
 
@@ -26,6 +27,7 @@ namespace Nekoyume.UI
 
             result._endPosition = endWorldPosition;
             result._animationTime = animationTime;
+            result._middleXGap = middleXGap;
 
             result.StartCoroutine(result.CoPlay(moveToLeft));
             return result;
@@ -37,9 +39,9 @@ namespace Nekoyume.UI
 
             Vector3 midPath;
             if (moveToLeft)
-                midPath = new Vector3(_endPosition.x - (Mathf.Abs(_endPosition.x - transform.position.x)), (_endPosition.y + transform.position.y) / 2, _endPosition.z);
+                midPath = new Vector3(transform.position.x - _middleXGap, (_endPosition.y + transform.position.y) / 2, _endPosition.z);
             else
-                midPath = new Vector3(_endPosition.x + (Mathf.Abs(_endPosition.x - transform.position.x)), (_endPosition.y + transform.position.y) / 2, _endPosition.z);
+                midPath = new Vector3(transform.position.x + _middleXGap, (_endPosition.y + transform.position.y) / 2, _endPosition.z);
 
             Vector3[] path = new Vector3[] { transform.position, midPath, _endPosition };
 
@@ -48,11 +50,13 @@ namespace Nekoyume.UI
             tweenMove = transform.DOPath(path, _animationTime, PathType.CatmullRom).SetEase(Ease.OutSine);
 
             yield return new WaitWhile(tweenMove.IsPlaying);
+            itemImage.enabled = false;
             var vfx = VFXController.instance.Create<ItemMoveVFX>(_endPosition);
-            Destroy(gameObject);
 
             yield return new WaitWhile(() => vfx.gameObject.activeSelf);
             IsPlaying = false;
+
+            Destroy(gameObject);
         }
     }
 }
