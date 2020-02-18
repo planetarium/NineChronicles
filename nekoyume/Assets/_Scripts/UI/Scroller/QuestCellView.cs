@@ -33,6 +33,11 @@ namespace Nekoyume.UI.Scroller
 
         public System.Action onClickSubmitButton;
 
+        [Header("ItemMoveAnimation")]
+        [SerializeField, Range(.5f, 3.0f)] private float animationTime;
+        [SerializeField] private bool moveToLeft;
+        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")] private float middleXGap;
+
         #region Mono
 
         private void Awake()
@@ -61,7 +66,7 @@ namespace Nekoyume.UI.Scroller
             foreach(var view in rewardViews)
             {
                 if (view.gameObject.activeSelf)
-                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id), view.transform.position, Widget.Find<BottomMenu>().inventoryButton.transform.position);
+                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id), view.transform.position, Widget.Find<BottomMenu>().inventoryButton.transform.position, moveToLeft, animationTime, middleXGap);
             }
             var quest = Widget.Find<Quest>();   
             RequestReward();
