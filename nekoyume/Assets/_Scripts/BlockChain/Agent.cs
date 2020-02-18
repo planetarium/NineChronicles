@@ -168,6 +168,9 @@ namespace Nekoyume.BlockChain
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
             store = LoadStore(path, storageType);
+            store.UnstageTransactionIds(
+                new HashSet<TxId>(store.IterateStagedTransactionIds())
+            );
 
             try
             {
