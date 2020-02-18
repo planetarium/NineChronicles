@@ -96,7 +96,7 @@ namespace Nekoyume.Action
 
             avatarState.Customize(hair, lens, ear, tail);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToList();
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
             Log.Debug($"CreateAvatar CreateAvatarState: {sw.Elapsed}");

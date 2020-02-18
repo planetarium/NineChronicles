@@ -14,6 +14,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("buy")]
     public class Buy : GameAction
     {
@@ -23,8 +24,8 @@ namespace Nekoyume.Action
         public Guid productId;
         public BuyerResult buyerResult;
         public SellerResult sellerResult;
-        public IImmutableList<int> buyerCompletedQuestIds;
-        public IImmutableList<int> sellerCompletedQuestIds;
+        public List<int> buyerCompletedQuestIds;
+        public List<int> sellerCompletedQuestIds;
 
         [Serializable]
         public class BuyerResult : AttachmentActionResult

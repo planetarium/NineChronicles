@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
@@ -12,6 +13,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("ranking_battle")]
     public class RankingBattle : GameAction
     {
