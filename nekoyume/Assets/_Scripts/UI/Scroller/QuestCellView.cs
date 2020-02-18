@@ -58,10 +58,10 @@ namespace Nekoyume.UI.Scroller
         {
             AudioController.PlayClick();
             AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
-            for(int i=0; i < rewardViews.Length; i++)
+            foreach(var view in rewardViews)
             {
-                if (rewardViews[i].gameObject.activeSelf)
-                    QuestRewardItem.Show(rewardViews[i], i);
+                if (view.gameObject.activeSelf)
+                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id), view.transform.position, Widget.Find<BottomMenu>().inventoryButton.transform.position);
             }
             var quest = Widget.Find<Quest>();   
             RequestReward();
