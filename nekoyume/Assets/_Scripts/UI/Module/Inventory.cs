@@ -137,7 +137,6 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-        
         #region Subscribe
 
         private void SubscribeState(ItemType stateType)
