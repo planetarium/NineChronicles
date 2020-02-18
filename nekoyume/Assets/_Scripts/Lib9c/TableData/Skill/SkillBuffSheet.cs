@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -12,8 +13,8 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                SkillId = int.Parse(fields[0]);
-                BuffIds = new List<int> {int.Parse(fields[1])};
+                SkillId = ParseInt(fields[0]);
+                BuffIds = new List<int> {ParseInt(fields[1])};
             }
 
             public override void EndOfSheetInitialize()

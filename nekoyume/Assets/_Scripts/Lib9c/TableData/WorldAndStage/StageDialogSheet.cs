@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -16,9 +17,9 @@ namespace Nekoyume.TableData
             
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
-                StageId = int.Parse(fields[1]);
-                DialogId = int.Parse(fields[2]);
+                Id = ParseInt(fields[0]);
+                StageId = ParseInt(fields[1]);
+                DialogId = ParseInt(fields[2]);
             }
         }
 
