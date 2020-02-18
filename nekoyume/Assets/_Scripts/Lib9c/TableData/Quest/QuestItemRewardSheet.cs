@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -13,9 +14,9 @@ namespace Nekoyume.TableData
             public int Count { get; private set; }
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
-                ItemId = int.Parse(fields[1]);
-                Count = int.Parse(fields[2]);
+                Id = ParseInt(fields[0]);
+                ItemId = ParseInt(fields[1]);
+                Count = ParseInt(fields[2]);
             }
         }
 

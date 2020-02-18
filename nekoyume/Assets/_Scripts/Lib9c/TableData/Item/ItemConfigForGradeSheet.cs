@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -17,12 +18,12 @@ namespace Nekoyume.TableData
             
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
-                MonsterPartsCountForCombination = int.Parse(fields[1]);
-                MonsterPartsCountForCombinationWithNCG = int.Parse(fields[2]);
-                RandomBuffSkillMinCountForCombination = int.Parse(fields[3]);
-                RandomBuffSkillMaxCountForCombination = int.Parse(fields[4]);
-                EnhancementLimit = int.Parse(fields[5]);
+                Id = ParseInt(fields[0]);
+                MonsterPartsCountForCombination = ParseInt(fields[1]);
+                MonsterPartsCountForCombinationWithNCG = ParseInt(fields[2]);
+                RandomBuffSkillMinCountForCombination = ParseInt(fields[3]);
+                RandomBuffSkillMaxCountForCombination = ParseInt(fields[4]);
+                EnhancementLimit = ParseInt(fields[5]);
             }
         }
 
