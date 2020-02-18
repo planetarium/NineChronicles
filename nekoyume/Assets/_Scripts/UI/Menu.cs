@@ -209,5 +209,5 @@ namespace Nekoyume.UI
                 bubble.Hide();
             }
         }
-}
+    }
 }

@@ -552,7 +552,7 @@ namespace Nekoyume.Game
             Debug.LogWarning(
                 $"{nameof(waveTurn)}: {waveTurn} / {nameof(infosFirstWaveTurn)}: {infosFirstWaveTurn} / {nameof(CoSkill)}");
 #endif
-            yield return new WaitUntil(() => waveTurn == infos.First().WaveTurn);
+            yield return new WaitUntil(() => waveTurn == infosFirstWaveTurn);
             yield return StartCoroutine(CoBeforeSkill(character));
 
             yield return StartCoroutine(func(infos));
