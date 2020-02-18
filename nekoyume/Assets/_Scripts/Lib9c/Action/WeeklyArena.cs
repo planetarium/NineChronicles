@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet;
@@ -6,6 +7,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("weekly_arena")]
     public class WeeklyArena : ActionBase
     {
