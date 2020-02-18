@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.Serialization;
+using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 
 namespace Nekoyume.Model.State
 {
-    public class TableSheetsState : State, IEquatable<TableSheetsState>
+    [Serializable]
+    public class TableSheetsState : State, IEquatable<TableSheetsState>, ISerializable
     {
         public static readonly Address Address = new Address(new byte[]
             {
@@ -57,6 +60,16 @@ namespace Nekoyume.Model.State
                 .GetValue<Dictionary>("table_sheets")
                 .ToDictionary(pair => (string)(Text)pair.Key, pair => (string)(Text)pair.Value))
         {
+        }
+
+        protected TableSheetsState(SerializationInfo info, StreamingContext ctx)
+            : this((Dictionary)new Codec().Decode((byte[])info.GetValue("encoded", typeof(byte[]))))
+        {
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext ctx)
+        {
+            info.AddValue("encoded", new Codec().Encode(Serialize()));
         }
 
         public TableSheetsState UpdateTableSheet(string name, string csv)
