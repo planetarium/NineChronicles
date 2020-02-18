@@ -31,6 +31,7 @@ namespace Nekoyume.BlockChain
             var prevTimeStamp = _chain?.Tip?.Timestamp;
             // FIXME 년도가 바뀌면 깨지는 계산 방식. 테스트 끝나면 변경해야함
             // 하루 한번 보상을 제공
+            // TODO: Move ranking reward logic and condition into block action.
             if (prevTimeStamp is DateTimeOffset t && timeStamp.DayOfYear - t.DayOfYear == 1)
             {
                 var rankingRewardTx = RankingReward();
