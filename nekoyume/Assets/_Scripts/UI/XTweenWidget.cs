@@ -9,7 +9,7 @@ namespace Nekoyume.UI
     {
         [SerializeField]
         private AnchoredPositionXTweener xTweener;
-        protected AnchoredPositionXTweener XTweener => XTweener;
+        protected AnchoredPositionXTweener XTweener => xTweener;
 
         protected override void Awake()
         {
