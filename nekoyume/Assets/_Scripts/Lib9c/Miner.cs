@@ -38,7 +38,6 @@ namespace Nekoyume.BlockChain
             }
 
             var invalidTxs = txs;
-            var retryActions = new HashSet<IImmutableList<PolymorphicAction<ActionBase>>>();
 
             try
             {
@@ -55,14 +54,6 @@ namespace Nekoyume.BlockChain
             catch (InvalidTxException invalidTxException)
             {
                 var invalidTx = _chain.GetTransaction(invalidTxException.TxId);
-                if (invalidTxException is InvalidTxNonceException invalidTxNonceException)
-                {
-                    if (invalidTx.Signer == Address)
-                    {
-                        Log.Debug($"Tx[{invalidTxNonceException.TxId}] nonce is invalid. Retry it.");
-                        retryActions.Add(invalidTx.Actions);
-                    }
-                }
 
                 Log.Debug($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
                 invalidTxs.Add(invalidTx);
@@ -83,11 +74,6 @@ namespace Nekoyume.BlockChain
             finally
             {
                 _chain.UnstageTransactions(invalidTxs);
-
-                foreach (var retryAction in retryActions)
-                {
-                    _chain.MakeTransaction(_privateKey, retryAction);
-                }
             }
         }
 
