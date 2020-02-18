@@ -1,5 +1,6 @@
 ﻿using Nekoyume.Game.Controller;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI
 {
@@ -15,7 +16,11 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            SubmitWidget = OnClick;
+            SubmitWidget = () =>
+            {
+                EventSystem.current.SetSelectedGameObject(null);
+                OnClick();
+            };
         }
 
         public void Show(string keyStorePath, string privateKey)
