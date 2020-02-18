@@ -3,8 +3,10 @@
 namespace Nekoyume.UI
 {
     class AnimationWidget:Widget
-    {
+    { 
         public override WidgetType WidgetType => WidgetType.Animation;
+        public bool IsPlaying { get; protected set; }
+        protected float _animationTime;
 
         protected override void Awake()
         {

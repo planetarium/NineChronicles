@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
@@ -13,6 +14,7 @@ using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
+using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -50,6 +52,10 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
         private CharacterStats _tempStats;
+
+        [Header("ItemMoveAnimation")]
+        [SerializeField] private Image actionPointImage;
+        [SerializeField] private Transform buttonStarImageTransform;
 
         #region override
 
@@ -246,6 +252,13 @@ namespace Nekoyume.UI
 
         public void QuestClick(bool repeat)
         {
+            StartCoroutine(CoQuestClick(repeat));
+        }
+
+        private IEnumerator CoQuestClick(bool repeat)
+        {
+            var animation = ItemMoveAnimation.Show(actionPointImage.sprite, actionPointImage.transform.position, buttonStarImageTransform.position, true);
+            yield return new WaitWhile(() => animation.IsPlaying);
             Quest(repeat);
             AudioController.PlayClick();
             AnalyticsManager.Instance.BattleEntrance(repeat);
