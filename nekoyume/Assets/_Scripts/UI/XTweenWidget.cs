@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public abstract class XTweenWidget:Widget
+    public abstract class XTweenWidget : Widget
     {
         protected AnchoredPositionXTweener _xTween;
 
