@@ -273,7 +273,7 @@ namespace Nekoyume.UI
         private static void AddItem(ItemUsable item, bool canceled)
         {
             //아바타상태 인벤토리 업데이트
-            ActionManager.instance.AddItem(item.ItemId, canceled);
+            Game.Game.instance.ActionManager.AddItem(item.ItemId, canceled);
 
             //게임상의 인벤토리 업데이트
             States.Instance.CurrentAvatarState.inventory.AddItem(item);
@@ -282,7 +282,7 @@ namespace Nekoyume.UI
         private static void AddGold(decimal gold)
         {
             //판매자 에이전트 골드 업데이트
-            ActionManager.instance.AddGold();
+            Game.Game.instance.ActionManager.AddGold();
 
             //게임상의 골드 업데이트
             States.Instance.AgentState.gold += gold;
