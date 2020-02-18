@@ -52,20 +52,20 @@ namespace Nekoyume.BlockChain
             {
                 Log.Debug("Mining was canceled due to change of tip.");
             }
-            catch (InvalidTxNonceException invalidTxNonceException)
-            {
-                var invalidNonceTx = _chain.GetTransaction(invalidTxNonceException.TxId);
-
-                if (invalidNonceTx.Signer == Address)
-                {
-                    Log.Debug($"Tx[{invalidTxNonceException.TxId}] nonce is invalid. Retry it.");
-                    retryActions.Add(invalidNonceTx.Actions);
-                }
-            }
             catch (InvalidTxException invalidTxException)
             {
+                var invalidTx = _chain.GetTransaction(invalidTxException.TxId);
+                if (invalidTxException is InvalidTxNonceException invalidTxNonceException)
+                {
+                    if (invalidTx.Signer == Address)
+                    {
+                        Log.Debug($"Tx[{invalidTxNonceException.TxId}] nonce is invalid. Retry it.");
+                        retryActions.Add(invalidTx.Actions);
+                    }
+                }
+
                 Log.Debug($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
-                invalidTxs.Add(_chain.GetTransaction(invalidTxException.TxId));
+                invalidTxs.Add(invalidTx);
             }
             catch (UnexpectedlyTerminatedActionException actionException)
             {
