@@ -1,9 +1,7 @@
 ﻿using Nekoyume.Game.VFX;
 using UnityEngine;
 using UnityEngine.UI;
-using Nekoyume.UI.Module;
 using Nekoyume.Game;
-using Nekoyume.Helper;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using System.Collections;
