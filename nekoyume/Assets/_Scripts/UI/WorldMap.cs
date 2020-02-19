@@ -209,7 +209,6 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
                 true,
-                true,
                 BottomMenu.ToggleableType.WorldMap);
             bottomMenu.worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
@@ -291,7 +290,7 @@ namespace Nekoyume.UI
                 worldMapRoot.SetActive(false);
                 stage.SetActive(true);
                 var bottomMenu = Find<BottomMenu>();
-                bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true, true, BottomMenu.ToggleableType.WorldMap);
+                bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true, BottomMenu.ToggleableType.WorldMap);
                 bottomMenu.worldMapButton.Show();
                 bottomMenu.backButton.Hide();
                 bottomMenu.ToggleGroup?.SetToggledOffAll();

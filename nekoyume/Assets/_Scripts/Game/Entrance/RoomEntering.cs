@@ -19,7 +19,7 @@ namespace Nekoyume.Game.Entrance
             Widget.Find<BottomMenu>().Close();
             Widget.Find<UI.Inventory>().Close();
             Widget.Find<StatusDetail>().Close();
-            Widget.Find<UI.Quest>().Close();
+            Widget.Find<Quest>().Close();
 
             var stage = Game.instance.Stage;
             stage.stageId = 0;
@@ -43,23 +43,22 @@ namespace Nekoyume.Game.Entrance
             ActionCamera.instance.Idle();
 
             yield return new WaitForSeconds(1.0f);
-            Widget.Find<LoadingScreen>()?.Close();
+            Widget.Find<LoadingScreen>().Close();
 
             if (player)
                 while (player.transform.position.x < stage.roomPosition.x)
                 {
                     yield return null;
                 }
+
             player.RunSpeed = 0.0f;
             player.Animator.Idle();
 
-            var dialog = Widget.Find<Dialog>();
-            dialog.Show(1);
+            Widget.Find<Dialog>().Show(1);
             Widget.Find<Status>().Show();
             Widget.Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Quit,
                 _ => Game.Quit(),
-                true,
                 false,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,

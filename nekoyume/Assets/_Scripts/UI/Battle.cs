@@ -40,21 +40,23 @@ namespace Nekoyume.UI
                 repeatButton.SetToggledOff();
             }
 
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.Show(
-                UINavigator.NavigationType.Exit,
-                SubscribeOnExitButtonClick,
-                true,
-                false,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory);
+            if (stageId > GameConfig.RequireStage.UIBottomMenuInBattle)
+            {
+                var bottomMenu = Find<BottomMenu>();
+                bottomMenu.Show(
+                    UINavigator.NavigationType.Exit,
+                    SubscribeOnExitButtonClick,
+                    false,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat,
+                    BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Character,
+                    BottomMenu.ToggleableType.Inventory);
 
-            bottomMenu.exitButton.SetToggleListener(this);
-            bottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
+                bottomMenu.exitButton.SetToggleListener(this);
+                bottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
+            }
         }
 
         public void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
@@ -90,8 +92,8 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<BottomMenu>()?.Close(ignoreCloseAnimation);
-            Find<Status>()?.Close(ignoreCloseAnimation);
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
+            Find<Status>().Close(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }
