@@ -117,9 +117,12 @@ namespace Nekoyume.Action
                 tableSheets,
                 name
             );
-#if UNITY_EDITOR
-            AddItemsForTest(avatarState, ctx.Random, tableSheets);
-#endif
+
+            if (GameConfig.IsEditor)
+            {
+                AddItemsForTest(avatarState, ctx.Random, tableSheets);    
+            }
+            
             return avatarState;
         }
 
