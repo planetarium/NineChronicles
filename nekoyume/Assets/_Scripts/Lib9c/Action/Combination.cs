@@ -44,12 +44,16 @@ namespace Nekoyume.Action
             public ResultModel(Dictionary serialized) : base(serialized)
             {
                 materials = serialized["materials"].ToDictionary_Material_int();
+                gold = serialized["gold"].ToDecimal();
+                actionPoint = serialized["actionPoint"].ToInteger();
             }
 
             public override IValue Serialize() =>
                 new Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "materials"] = materials.Serialize(),
+                    [(Text) "gold"] = gold.Serialize(),
+                    [(Text) "actionPoint"] = actionPoint.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
         }
 

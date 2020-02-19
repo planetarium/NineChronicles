@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Manager;
 using Nekoyume.Model.Item;
-using Nekoyume.Pattern;
 using Nekoyume.State;
 using UniRx;
 
@@ -326,6 +326,26 @@ namespace Nekoyume.BlockChain
                 TableCsv = tableCsv,
             };
             ProcessAction(action);
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(int recipeId, int? subRecipeId = null)
+        {
+            // 결과 주소도 고정되게 바꿔야함
+            var action = new CombinationEquipment
+            {
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                ResultAddress = new PrivateKey().PublicKey.ToAddress(),
+                RecipeId = recipeId,
+                SubRecipeId = subRecipeId,
+            };
+            ProcessAction(action);
+
+            return _renderer.EveryRender<CombinationEquipment>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
         }
 
         #endregion
