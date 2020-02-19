@@ -43,6 +43,16 @@ namespace Nekoyume.Action
             {
                 return states;
             }
+            
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return states;
+
+            if (world.StageClearedId < GameConfig.RequireStage.ActionsInRankingBoard)
+            {
+                // 스테이지 클리어 부족 에러.
+                return states;
+            }
 
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
