@@ -244,7 +244,7 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
             }
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.itemUsable.ItemId);
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.mailId);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Push(MailType.Workshop, string.Format(format, result.itemUsable.Data.GetLocalizedName()));
@@ -267,7 +267,7 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemUsable.ItemId);
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.mailId);
             RenderQuest(avatarAddress, eval.Action.completedQuestIds);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -291,10 +291,11 @@ namespace Nekoyume.BlockChain
         private void ResponseSellCancellation(ActionBase.ActionEvaluation<SellCancellation> eval)
         {
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = eval.Action.result.itemUsable.ItemId;
+            var result = eval.Action.result;
+            var itemId = result.itemUsable.ItemId;
 
             LocalStateModifier.RemoveItem(avatarAddress, itemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemId);
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.mailId);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_COMPLETE");
             UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.result.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
@@ -308,11 +309,12 @@ namespace Nekoyume.BlockChain
             if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
             {
                 var buyerAgentAddress = States.Instance.AgentState.address;
-                var itemId = eval.Action.buyerResult.itemUsable.ItemId;
+                var result = eval.Action.buyerResult;
+                var itemId = result.itemUsable.ItemId;
 
                 LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
                 LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
-                LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, itemId);
+                LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, result.mailId);
                 RenderQuest(buyerAvatarAddress, eval.Action.buyerCompletedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
@@ -321,18 +323,18 @@ namespace Nekoyume.BlockChain
             {
                 var sellerAvatarAddress = eval.Action.sellerAvatarAddress;
                 var sellerAgentAddress = eval.Action.sellerAgentAddress;
-                var itemId = eval.Action.sellerResult.itemUsable.ItemId;
-                var gold = eval.Action.sellerResult.gold;
+                var result = eval.Action.sellerResult;
+                var itemId = result.itemUsable.ItemId;
+                var gold = result.gold;
 
                 LocalStateModifier.ModifyAgentGold(sellerAgentAddress, -gold);
-                LocalStateModifier.AddNewAttachmentMail(sellerAvatarAddress, itemId);
+                LocalStateModifier.AddNewAttachmentMail(sellerAvatarAddress, result.mailId);
                 RenderQuest(sellerAvatarAddress, eval.Action.sellerCompletedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var buyerName =
                     new AvatarState(
                             (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
                         .NameWithHash;
-                var result = eval.Action.sellerResult;
                 UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, result.itemUsable.GetLocalizedName()));
             }
 
@@ -394,7 +396,7 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.AddItem(avatarAddress, itemId);
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
-            LocalStateModifier.AddNewAttachmentMail(avatarAddress, itemUsable.ItemId);
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.mailId);
             RenderQuest(avatarAddress, eval.Action.completedQuestIds);
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,

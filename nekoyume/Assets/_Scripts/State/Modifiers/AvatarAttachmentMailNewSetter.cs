@@ -60,7 +60,7 @@ namespace Nekoyume.State.Modifiers
             {
                 foreach (var jsonConvertibleGuid in guidList)
                 {
-                    if (jsonConvertibleGuid.Value.Equals(attachmentMail.attachment.itemUsable.ItemId))
+                    if (jsonConvertibleGuid.Value.Equals(attachmentMail.mailId))
                     {
                         attachmentMail.New = true;
                     }

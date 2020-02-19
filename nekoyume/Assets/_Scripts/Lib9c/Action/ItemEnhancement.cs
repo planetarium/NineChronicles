@@ -31,6 +31,7 @@ namespace Nekoyume.Action
         public class ResultModel : AttachmentActionResult
         {
             protected override string TypeId => "itemEnhancement.result";
+            public Guid mailId;
             public IEnumerable<Guid> materialItemIdList;
             public decimal gold;
             public int actionPoint;
@@ -42,7 +43,14 @@ namespace Nekoyume.Action
             public ResultModel(Bencodex.Types.Dictionary serialized)
                 : base(serialized)
             {
+                mailId = serialized["id"].ToGuid();
             }
+
+            public override IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "id"] = mailId.Serialize()
+                }.Union((Bencodex.Types.Dictionary)base.Serialize()));
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -177,10 +185,12 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"ItemEnhancement Remove Materials: {sw.Elapsed}");
             sw.Restart();
-            var mail = new ItemEnhanceMail(result, ctx.BlockIndex)
+            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid())
             {
                 New = false
             };
+            result.mailId = mail.mailId;
+
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);

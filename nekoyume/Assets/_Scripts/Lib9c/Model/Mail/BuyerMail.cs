@@ -9,7 +9,7 @@ namespace Nekoyume.Model.Mail
         protected override string TypeId => "buyerMail";
         public override MailType MailType => MailType.Auction;
 
-        public BuyerMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(attachmentActionResult, blockIndex)
+        public BuyerMail(AttachmentActionResult attachmentActionResult, long blockIndex, Guid id) : base(attachmentActionResult, blockIndex, id)
         {
 
         }

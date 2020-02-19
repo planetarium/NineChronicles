@@ -27,18 +27,20 @@ namespace Nekoyume.Model.Mail
                 ["itemEnhance"] = d => new ItemEnhanceMail(d),
             };
 
+        public Guid mailId;
         public bool New;
         public long blockIndex;
         public virtual MailType MailType => MailType.System;
 
-        protected Mail(long blockIndex)
+        protected Mail(long blockIndex, Guid id)
         {
-            New = true;
+            this.mailId = id;
             this.blockIndex = blockIndex;
+            New = true;
         }
 
         protected Mail(Dictionary serialized)
-            : this((long)((Integer)serialized["blockIndex"]).Value)
+            : this((long)((Integer)serialized["blockIndex"]).Value, serialized["id"].ToGuid())
         {
             New = ((Bencodex.Types.Boolean)serialized["new"]).Value;
         }
@@ -50,6 +52,7 @@ namespace Nekoyume.Model.Mail
         public virtual IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
+                [(Text)"id"] = mailId.Serialize(),
                 [(Text)"typeId"] = (Text)TypeId,
                 [(Text)"new"] = new Bencodex.Types.Boolean(New),
                 [(Text)"blockIndex"] = (Integer)blockIndex,
