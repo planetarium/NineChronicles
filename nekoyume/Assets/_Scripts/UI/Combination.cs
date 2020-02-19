@@ -24,15 +24,16 @@ namespace Nekoyume.UI
     {
         public enum StateType
         {
-            None,
-            CombineEquipment,
+            SelectMenu,
+            NewCombineEquipment,
             CombineConsumable,
             EnhanceEquipment,
+            CombineEquipment,
             CombinationConfirm,
         }
 
         public readonly ReactiveProperty<StateType> State =
-            new ReactiveProperty<StateType>(StateType.CombineEquipment);
+            new ReactiveProperty<StateType>(StateType.SelectMenu);
 
         private const int NPCId = 300001;
 
@@ -161,7 +162,7 @@ namespace Nekoyume.UI
             var player = stage.GetPlayer();
             player.gameObject.SetActive(false);
 
-            State.SetValueAndForceNotify(StateType.None);
+            State.SetValueAndForceNotify(StateType.SelectMenu);
 
             Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Back,
@@ -249,12 +250,12 @@ namespace Nekoyume.UI
             inventory.Tooltip.Close();
             recipe.Hide();
 
-            selectionArea.SetActive(value == StateType.None);
-            leftArea.SetActive(value != StateType.None);
+            selectionArea.SetActive(value == StateType.SelectMenu);
+            leftArea.SetActive(value != StateType.SelectMenu);
 
             switch (value)
             {
-                case StateType.None:
+                case StateType.SelectMenu:
                     _toggleGroup.SetToggledOffAll();
 
                     combineEquipment.Hide();
@@ -267,7 +268,7 @@ namespace Nekoyume.UI
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(false);
                     break;
-                case StateType.CombineEquipment:
+                case StateType.NewCombineEquipment:
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
 
                     combineEquipment.Hide();
@@ -280,6 +281,25 @@ namespace Nekoyume.UI
                     categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(true);
+                    break;
+                case StateType.CombineEquipment:
+                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
+
+                    inventory.SharedModel.DeselectItemView();
+                    inventory.SharedModel.State.Value = ItemType.Material;
+                    inventory.SharedModel.DimmedFunc.Value = combineEquipment.DimFunc;
+                    inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
+
+                    combineEquipment.Show(true);
+                    combineConsumable.Hide();
+                    enhanceEquipment.Hide();
+                    equipmentCombinationPanel.Hide();
+                    elementalCombinationPanel.Hide();
+                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
+
+                    categoryTabArea.SetActive(true);
+                    inventory.gameObject.SetActive(true);
+                    equipmentRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombineConsumable:
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
@@ -350,6 +370,11 @@ namespace Nekoyume.UI
             }
         }
 
+        public void ShowLegacyCombineEquipment()
+        {
+            State.Value = StateType.CombineEquipment;
+        }
+
         private void ShowTooltip(InventoryItemView view)
         {
             if (view is null ||
@@ -407,7 +432,7 @@ namespace Nekoyume.UI
             }
             else if (toggleable.Name.Equals(combineEquipmentCategoryButton.Name))
             {
-                State.Value = StateType.CombineEquipment;
+                State.Value = StateType.NewCombineEquipment;
             }
             else if (toggleable.Name.Equals(enhanceEquipmentCategoryButton.Name))
             {
@@ -417,19 +442,19 @@ namespace Nekoyume.UI
 
         public void ChangeState(int index)
         {
-            State.SetValueAndForceNotify((StateType)index);
+            State.SetValueAndForceNotify((StateType) index);
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            if (State.Value == StateType.None)
+            if (State.Value == StateType.SelectMenu)
             {
                 Close();
                 Game.Event.OnRoomEnter.Invoke();
             }
             else
             {
-                State.SetValueAndForceNotify(StateType.None);
+                State.SetValueAndForceNotify(StateType.SelectMenu);
             }
         }
 
