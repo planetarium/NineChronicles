@@ -16,6 +16,7 @@ RUN dotnet publish NineChronicles.Standalone -c Release -r linux-x64 -o out --se
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.0
 WORKDIR /app
+RUN apt-get update && apt-get install -y libc6-dev
 COPY --from=build-env /app/out .
 
 VOLUME /data
