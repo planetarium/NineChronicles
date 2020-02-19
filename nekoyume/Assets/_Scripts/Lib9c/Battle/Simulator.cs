@@ -19,8 +19,9 @@ namespace Nekoyume.Battle
         public const decimal TurnPriority = 100m;
         public readonly TableSheets TableSheets;
         protected const int MaxTurn = 200;
+        public int TurnNumber;
+        public int WaveNumber;
         public int WaveTurn;
-        public int Turn;
 
         protected Simulator(
             IRandom random,
