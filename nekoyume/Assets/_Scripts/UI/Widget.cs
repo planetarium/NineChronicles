@@ -32,6 +32,7 @@ namespace Nekoyume.UI
 
         public RectTransform RectTransform { get; private set; }
         public virtual WidgetType WidgetType => WidgetType.Widget;
+        private bool _forceQuit;
 
         #region Mono
 
@@ -215,10 +216,19 @@ namespace Nekoyume.UI
                 IsCloseAnimationCompleted = false;
                 Animator.enabled = true;
                 Animator.Play("Close");
-                yield return new WaitUntil(() => IsCloseAnimationCompleted);
+                _forceQuit = false;
+                var coroutine = StartCoroutine(CoTimeOut());
+                yield return new WaitUntil(() => IsCloseAnimationCompleted || _forceQuit);
+                StopCoroutine(coroutine);
             }
 
             gameObject.SetActive(false);
+        }
+
+        private IEnumerator CoTimeOut()
+        {
+            yield return new WaitForSeconds(1f);
+            _forceQuit = true;
         }
 
         #region Call From Animation
