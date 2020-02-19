@@ -9,19 +9,37 @@ namespace Nekoyume.UI.Module
     [RequireComponent(typeof(RectTransform))]
     public class EquipmentSlot : MonoBehaviour
     {
-        public Image gradeImage;
-        public Image defaultImage;
-        public Image itemImage;
-        public ItemUsable item;
-        public TextMeshProUGUI enhancementText;
-        public ItemSubType itemSubType;
+        [SerializeField]
+        private Image gradeImage = null;
+
+        [SerializeField]
+        private Image defaultImage = null;
+
+        [SerializeField]
+        private Image itemImage = null;
+
+        [SerializeField]
+        private TextMeshProUGUI enhancementText = null;
+
+        [SerializeField]
+        private Image lockImage = null;
+
+        [SerializeField]
+        private ItemSubType itemSubType = ItemSubType.Armor;
+
+        [SerializeField]
+        private int itemSubTypeIndex = 1;
 
         private EventTrigger _eventTrigger;
         private System.Action<EquipmentSlot> _onClick;
         private System.Action<EquipmentSlot> _onDoubleClick;
-        
+
         public RectTransform RectTransform { get; private set; }
-        public bool IsEmpty => item is null;
+        public ItemSubType ItemSubType => itemSubType;
+        public int ItemSubTypeIndex => itemSubTypeIndex;
+        public ItemUsable Item { get; private set; }
+        public bool IsLock => lockImage.gameObject.activeSelf;
+        public bool IsEmpty => Item is null;
 
         private void Awake()
         {
@@ -35,33 +53,27 @@ namespace Nekoyume.UI.Module
             entry.eventID = EventTriggerType.PointerClick;
             entry.callback.AddListener(OnClick);
             _eventTrigger.triggers.Add(entry);
-            
+
             RectTransform = GetComponent<RectTransform>();
         }
 
-        public void Unequip()
-        {
-            if (defaultImage)
-            {
-                defaultImage.enabled = true;    
-            }
-            itemImage.enabled = false;
-            gradeImage.enabled = false;
-            enhancementText.enabled = false;
-            item = null;
-        }
-
         public void Set(ItemUsable equipment)
+        {
+            Set(equipment, _onClick, _onDoubleClick);
+        }
+        
+        public void Set(ItemUsable equipment, System.Action<EquipmentSlot> onClick, System.Action<EquipmentSlot> onDoubleClick)
         {
             var sprite = equipment.GetIconSprite();
             if (defaultImage)
             {
                 defaultImage.enabled = false;
             }
+
             itemImage.enabled = true;
             itemImage.overrideSprite = sprite;
             itemImage.SetNativeSize();
-            item = equipment;
+            Item = equipment;
 
             var gradeSprite = equipment.GetBackgroundSprite();
             if (gradeSprite is null)
@@ -72,7 +84,7 @@ namespace Nekoyume.UI.Module
             gradeImage.enabled = true;
             gradeImage.overrideSprite = gradeSprite;
 
-            if(equipment is Equipment equip && equip.level > 0)
+            if (equipment is Equipment equip && equip.level > 0)
             {
                 enhancementText.enabled = true;
                 enhancementText.text = $"+{equip.level}";
@@ -81,22 +93,42 @@ namespace Nekoyume.UI.Module
             {
                 enhancementText.enabled = false;
             }
-        }
-
-        public void SetOnClickAction(System.Action<EquipmentSlot> onClick, System.Action<EquipmentSlot> onDoubleClick)
-        {
+            
             _onClick = onClick;
             _onDoubleClick = onDoubleClick;
+        }
+        
+        public void Clear()
+        {
+            if (defaultImage)
+            {
+                defaultImage.enabled = true;
+            }
+
+            itemImage.enabled = false;
+            gradeImage.enabled = false;
+            enhancementText.enabled = false;
+            Item = null;
+            Unlock();
+        }
+
+        public void Lock()
+        {
+            Clear();
+            lockImage.gameObject.SetActive(true);
+        }
+
+        public void Unlock()
+        {
+            lockImage.gameObject.SetActive(false);
         }
 
         private void OnClick(BaseEventData eventData)
         {
-            PointerEventData data = eventData as PointerEventData;
-
-            if (data is null ||
+            if (!(eventData is PointerEventData data) ||
                 data.button != PointerEventData.InputButton.Left)
                 return;
-            
+
             switch (data.clickCount)
             {
                 case 1:
