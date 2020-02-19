@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UniRx;
-using UniRx.Triggers;
+using DG.Tweening;
 
 namespace Nekoyume.UI
 {
@@ -20,17 +20,20 @@ namespace Nekoyume.UI
             _combo.SubscribeTo(meshText).AddTo(gameObject);
         }
 
-        public void Set(bool attacked)
+        public void Show(int combo)
         {
-            _combo.Value = attacked ? _combo.Value + 1 : 0;
-        }
-
-        public void Show()
-        {
-            if (_combo.Value > 1)
+            _combo.Value = combo;
+            if (_combo.Value > 0)
             {
                 gameObject.SetActive(true);
+                Sequence seq = DOTween.Sequence();
+                GetComponent<RectTransform>().DOAnchorPosX(-200f, 0.3f).From();
                 StartCoroutine(CoClose());
+            }
+            else
+            {
+                StopAllCoroutines();
+                gameObject.SetActive(false);
             }
         }
 

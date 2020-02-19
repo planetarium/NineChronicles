@@ -218,7 +218,6 @@ namespace Nekoyume.Game.Character
                 if (this is Enemy)
                 {
                     index = 1;
-                    Widget.Find<UI.Battle>().SetComboText(false);
                 }
 
                 MissText.Show(position, force, index);
@@ -226,7 +225,6 @@ namespace Nekoyume.Game.Character
             }
 
             CurrentHP -= dmg;
-            if (this is Enemy) Widget.Find<UI.Battle>().SetComboText(true);
 
             if (isConsiderDie && IsDead)
             {
@@ -592,6 +590,11 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
+            if (this is Player)
+            {
+                Debug.Log(CharacterModel.AttackCount);
+                Widget.Find<Nekoyume.UI.Battle>().SetComboText(CharacterModel.AttackCount);
+            }
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
@@ -811,10 +814,6 @@ namespace Nekoyume.Game.Character
                     break;
                 case "attackPoint":
                     AttackEndCalled = true;
-                    if(this is Player) { 
-                        Debug.Log(CharacterModel.AttackCount);
-                        //Widget.Find<Nekoyume.UI.Battle>().ShowComboText(CharacterModel.AttackCount);
-                    }
                     break;
                 case "footstep":
                     AudioController.PlayFootStep();
