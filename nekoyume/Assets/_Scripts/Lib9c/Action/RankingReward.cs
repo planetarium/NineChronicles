@@ -8,6 +8,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("ranking_reward")]
     public class RankingReward : ActionBase
     {
