@@ -69,11 +69,7 @@ namespace Nekoyume.Model.State
             level = 1;
             exp = 0;
             inventory = new Inventory();
-#if UNITY_EDITOR
-            worldInformation = new WorldInformation(blockIndex, sheets.WorldSheet, true);
-#else
-            worldInformation = new WorldInformation(blockIndex, sheets.WorldSheet);
-#endif
+            worldInformation = new WorldInformation(blockIndex, sheets.WorldSheet, GameConfig.IsEditor);
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
             questList = new QuestList(
@@ -302,13 +298,13 @@ namespace Nekoyume.Model.State
         /// <returns>
         /// 완료된 퀘스트의 ID를 반환한다.
         /// </returns>
-        public ImmutableList<int> UpdateQuestRewards(IActionContext context)
+        public List<int> UpdateQuestRewards(IActionContext context)
         {
             var completedQuests = questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
             // 완료되었지만 보상을 받지 않은 퀘스트를 return 문에서 Select 하지 않고 미리 저장하는 이유는
             // 지연된 실행에 의해, return 시점에서 이미 모든 퀘스트의 보상 처리가 완료된 상태에서
             // completed를 호출 시 where문의 predicate가 평가되어 컬렉션이 텅 비기 때문이다.
-            var completedQuestIds = completedQuests.Select(quest => quest.Id).ToImmutableList();
+            var completedQuestIds = completedQuests.Select(quest => quest.Id).ToList();
             foreach (var quest in completedQuests)
             {
                 UpdateFromQuestReward(quest, context);

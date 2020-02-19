@@ -7,6 +7,7 @@ namespace Nekoyume.TableData
     [Serializable]
     public class GoldQuestSheet : Sheet<int, GoldQuestSheet.Row>
     {
+        [Serializable]
         public class Row : QuestSheet.Row
         {
             public TradeType Type { get; private set; }
