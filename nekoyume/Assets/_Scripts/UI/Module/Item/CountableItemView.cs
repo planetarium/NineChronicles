@@ -12,6 +12,8 @@ namespace Nekoyume.UI.Module
         public bool ignoreOne;
         public TextMeshProUGUI countText;
 
+        protected override ImageSizeType imageSizeType => ImageSizeType.Small;
+
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
         #region override

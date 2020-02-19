@@ -20,6 +20,7 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     // todo: `CombineEquipment`와 `CombineConsumable`로 분리해야 함. 공용 로직은 별도로 뺌.
+    [Serializable]
     [ActionType("combination")]
     public class Combination : GameAction
     {
@@ -43,19 +44,23 @@ namespace Nekoyume.Action
             public ResultModel(Dictionary serialized) : base(serialized)
             {
                 materials = serialized["materials"].ToDictionary_Material_int();
+                gold = serialized["gold"].ToDecimal();
+                actionPoint = serialized["actionPoint"].ToInteger();
             }
 
             public override IValue Serialize() =>
                 new Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "materials"] = materials.Serialize(),
+                    [(Text) "gold"] = gold.Serialize(),
+                    [(Text) "actionPoint"] = actionPoint.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
         }
 
         public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
         public ResultModel Result;
-        public IImmutableList<int> completedQuestIds;
+        public List<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
