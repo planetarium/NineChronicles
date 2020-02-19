@@ -13,6 +13,7 @@ namespace Libplanet.Standalone.Hosting
 
         public PrivateKey PrivateKey { get; set; }
 
+        public string StoreType { get; set; }
         public string StorePath { get; set; }
 
         public string GenesisBlockPath { get; set; }
