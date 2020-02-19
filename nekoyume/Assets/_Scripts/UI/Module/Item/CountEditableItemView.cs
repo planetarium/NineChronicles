@@ -16,6 +16,8 @@ namespace Nekoyume.UI.Module
         public bool IsMinCount => !(Model is null) && Model.Count.Value == Model.MinCount.Value;
         public bool IsMaxCount => !(Model is null) && Model.Count.Value == Model.MaxCount.Value;
 
+        protected override ImageSizeType imageSizeType => ImageSizeType.Middle;
+
         #region Mono
 
         protected override void Awake()
