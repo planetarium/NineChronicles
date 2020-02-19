@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Libplanet.Action;
 using LruCacheNet;
@@ -5,6 +6,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class TableSheets
     {   
         private static readonly LruCache<TableSheetsState, TableSheets> _cache = 

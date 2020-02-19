@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module
         public NotifiableButton settingsButton;
         public CanvasGroup canvasGroup;
 
-        [SerializeField] private RectTransform _buttons;
+        [SerializeField] private RectTransform _buttons = null;
         private float _buttonsPositionY;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
