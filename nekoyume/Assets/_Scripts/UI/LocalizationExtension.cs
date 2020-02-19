@@ -54,8 +54,44 @@ namespace Nekoyume.UI
                     );
             }
         }
+        
+        public static string GetTitle(this QuestModel quest)
+        {
+            switch (quest)
+            {
+                case CollectQuest collectQuest:
+                    return LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_TITLE");
+                case CombinationQuest combinationQuest:
+                    return LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_TITLE");
+                case GeneralQuest generalQuest:
+                    return LocalizationManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_TITLE");
+                case GoldQuest goldQuest:
+                    return LocalizationManager.Localize($"QUEST_GOLD_{goldQuest.Type}_TITLE");
+                case ItemEnhancementQuest itemEnhancementQuest:
+                    return LocalizationManager.Localize("QUEST_ITEM_ENHANCEMENT_TITLE");
+                case ItemGradeQuest itemGradeQuest:
+                    return LocalizationManager.Localize("QUEST_ITEM_GRADE_TITLE");
+                case ItemTypeCollectQuest itemTypeCollectQuest:
+                    return LocalizationManager.Localize("QUEST_ITEM_TYPE_TITLE");
+                case MonsterQuest monsterQuest:
+                    return LocalizationManager.Localize("QUEST_MONSTER_TITLE");
+                case TradeQuest tradeQuest:
+                    return LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_TITLE");
+                case WorldQuest worldQuest:
+                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal, out var worldRow))
+                    {
+                        return LocalizationManager.Localize("QUEST_WORLD_TITLE");;
+                    }
+                    throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
+                default:
+                    throw new NotSupportedException(
+                        $"Given quest[{quest}] doesn't support {nameof(GetTitle)}() method."
+                    );
 
-        public static string GetName(this QuestModel quest)
+            }
+        }
+
+        public static string GetContent(this QuestModel quest)
         {
             switch (quest)
             {
@@ -111,7 +147,7 @@ namespace Nekoyume.UI
                     throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
                 default:
                     throw new NotSupportedException(
-                        $"Given quest[{quest}] doesn't support {nameof(GetName)}() method."
+                        $"Given quest[{quest}] doesn't support {nameof(GetContent)}() method."
                     );
 
             }

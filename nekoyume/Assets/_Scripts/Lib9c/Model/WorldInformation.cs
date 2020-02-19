@@ -281,6 +281,16 @@ namespace Nekoyume.Model
             }
         }
 
+        public bool IsClearedStage(int stageId)
+        {
+            if (!TryGetWorldByStageId(stageId, out var world))
+            {
+                return false;
+            }
+
+            return world.IsUnlocked && world.StageClearedId >= stageId;
+        }
+
         /// <summary>
         /// 특정 월드를 잠금 해제한다.
         /// </summary>

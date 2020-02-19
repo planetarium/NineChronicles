@@ -12,6 +12,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("quest_reward")]
     public class QuestReward : GameAction
     {
