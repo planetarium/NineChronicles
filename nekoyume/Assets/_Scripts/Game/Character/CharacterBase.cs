@@ -218,6 +218,7 @@ namespace Nekoyume.Game.Character
                 if (this is Enemy)
                 {
                     index = 1;
+                    Widget.Find<UI.Battle>().SetComboText(false);
                 }
 
                 MissText.Show(position, force, index);
@@ -225,6 +226,8 @@ namespace Nekoyume.Game.Character
             }
 
             CurrentHP -= dmg;
+            if (this is Enemy) Widget.Find<UI.Battle>().SetComboText(true);
+
             if (isConsiderDie && IsDead)
             {
                 StartCoroutine(Dying());
@@ -808,7 +811,10 @@ namespace Nekoyume.Game.Character
                     break;
                 case "attackPoint":
                     AttackEndCalled = true;
-                    Widget.Find<Nekoyume.UI.Battle>().ShowComboText(CharacterModel.AttackCount);
+                    if(this is Player) { 
+                        Debug.Log(CharacterModel.AttackCount);
+                        //Widget.Find<Nekoyume.UI.Battle>().ShowComboText(CharacterModel.AttackCount);
+                    }
                     break;
                 case "footstep":
                     AudioController.PlayFootStep();

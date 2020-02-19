@@ -106,9 +106,19 @@ namespace Nekoyume.UI
         {
             comboText.StopAllCoroutines();
 
-            comboText.gameObject.SetActive(true);
-            comboText.Set(combo.ToString());
-            comboText.Close();
+            comboText.Show();
+            //comboText.Set(combo.ToString());
+        }
+
+        public void SetComboText(bool attacked)
+        {
+            comboText.StopAllCoroutines();
+            comboText.Set(attacked);
+
+            if (attacked)
+                comboText.Show();
+            else
+                comboText.gameObject.SetActive(false);
         }
 
         private void OnGetItem(DropItem dropItem)

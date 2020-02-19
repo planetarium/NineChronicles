@@ -12,16 +12,26 @@ namespace Nekoyume.UI
         public TextMeshProUGUI shadowText;
         public TextMeshProUGUI meshText;
         public float delayTime;
+        private ReactiveProperty<int> _combo = new ReactiveProperty<int>();
 
-        public void Set(string combo)
+        private void Awake()
         {
-            shadowText.text = combo;
-            meshText.text = combo;
+            _combo.SubscribeTo(shadowText).AddTo(gameObject);
+            _combo.SubscribeTo(meshText).AddTo(gameObject);
         }
 
-        public void Close()
+        public void Set(bool attacked)
         {
-            StartCoroutine(CoClose());
+            _combo.Value = attacked ? _combo.Value + 1 : 0;
+        }
+
+        public void Show()
+        {
+            if (_combo.Value > 1)
+            {
+                gameObject.SetActive(true);
+                StartCoroutine(CoClose());
+            }
         }
 
         private IEnumerator CoClose()
