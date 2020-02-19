@@ -170,7 +170,7 @@ GameObject:
   - component: {fileID: 8087319300551316670}
   - component: {fileID: 1501235471248933866}
   - component: {fileID: 5591983893492074739}
-  - component: {fileID: 5451286183632175687}
+  - component: {fileID: 6799913925112880146}
   m_Layer: 5
   m_Name: CategoryButton
   m_TagString: Untagged
@@ -299,6 +299,25 @@ MonoBehaviour:
   toggledOffText: {fileID: 5056889398972078957}
   toggledOnText: {fileID: 1181489440974156696}
   localizationKey: 
+--- !u!95 &6799913925112880146
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051761505041589587}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &2753318373144564913
 GameObject:
   m_ObjectHideFlags: 0
