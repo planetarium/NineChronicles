@@ -11,6 +11,8 @@ namespace Nekoyume.UI.Module
 
         public TouchHandler touchHandler;
 
+        protected override ImageSizeType imageSizeType => ImageSizeType.Small;
+
         protected void Awake()
         {
             RectTransform = GetComponent<RectTransform>();
