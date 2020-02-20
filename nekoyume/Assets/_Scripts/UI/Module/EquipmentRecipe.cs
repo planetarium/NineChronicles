@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
         public readonly ReactiveProperty<ItemSubType> FilterType =
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
 
-        public Equipment selectedRecipe;
+        public EquipmentRecipeCellView selectedRecipe;
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
@@ -43,16 +43,16 @@ namespace Nekoyume.UI.Module
 
         private void LoadRecipeList()
         {
-            var sheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
 
-            var totalCount = sheet.Count();
+            var totalCount = recipeSheet.Count();
             cellViews = new EquipmentRecipeCellView[totalCount];
 
-            int idx = 0;
-            foreach (var row in sheet)
+            var idx = 0;
+            foreach (var recipeRow in recipeSheet)
             {
                 cellViews[idx] = Instantiate(cellViewPrefab, cellViewParent);
-                cellViews[idx].Set(new Equipment(row, new System.Guid()));
+                cellViews[idx].Set(recipeRow);
                 cellViews[idx].OnClick.Subscribe(SubscribeOnClickCellView).AddTo(gameObject);
                 ++idx;
             }
@@ -67,7 +67,7 @@ namespace Nekoyume.UI.Module
                 data.Hide();
             }
 
-            var filteredRecipe = cellViews.Where(cellview => cellview.model.Data.ItemSubType == itemSubType);
+            var filteredRecipe = cellViews.Where(cellView => cellView.itemSubType == itemSubType);
 
             // FIXME : 테이블이 완성된 후 대응시켜야 함.
             foreach (var filtered in filteredRecipe)
@@ -128,7 +128,7 @@ namespace Nekoyume.UI.Module
 
         private void SubscribeOnClickCellView(EquipmentRecipeCellView cellView)
         {
-            selectedRecipe = cellView.model;
+            selectedRecipe = cellView;
 
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
