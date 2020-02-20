@@ -63,7 +63,7 @@ namespace Nekoyume.UI
 
             foreach (var equipment in _player.Equipments)
             {
-                if (!equipmentSlots.TryGet(equipment.Data.ItemSubType, out var slot))
+                if (!equipmentSlots.TryGetToEquip(equipment, out var slot))
                     continue;
                 
                 slot.Set(equipment);
