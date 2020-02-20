@@ -124,7 +124,7 @@ namespace Nekoyume.UI
 
             _state.SetValueAndForceNotify(stateType);
 
-            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
+            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
             _npc = go.GetComponent<NPC>();

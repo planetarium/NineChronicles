@@ -1654,6 +1654,7 @@ GameObject:
   - component: {fileID: 5150926840730230897}
   - component: {fileID: 1481777689759399775}
   - component: {fileID: 6836784520103154358}
+  - component: {fileID: 465299080115409957}
   m_Layer: 5
   m_Name: SubmitWithCostButton
   m_TagString: Untagged
@@ -1703,6 +1704,7 @@ MonoBehaviour:
   backgroundImageForSubmittable: {fileID: 7522171745577822625}
   submitText: {fileID: 8474765085078315147}
   submitTextForSubmittable: {fileID: 6171963424519086264}
+  animator: {fileID: 465299080115409957}
   costNCG: {fileID: 5206372613075928466}
   costNCGText: {fileID: 8232539570553547243}
   costNCGTextForSubmittable: {fileID: 2662059944514075168}
@@ -1767,7 +1769,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1794,3 +1796,22 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &465299080115409957
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8829394730994905627}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0

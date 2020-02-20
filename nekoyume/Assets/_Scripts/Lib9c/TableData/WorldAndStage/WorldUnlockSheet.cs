@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class WorldUnlockSheet : Sheet<int, WorldUnlockSheet.Row>
     {
+        [Serializable]
         public class Row : SheetRow<int>
         {
             public override int Key => Id;

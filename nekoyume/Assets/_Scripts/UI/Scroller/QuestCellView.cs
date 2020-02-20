@@ -20,8 +20,8 @@ namespace Nekoyume.UI.Scroller
     public class QuestCellView : EnhancedScrollerCellView
     {
         public Image background;
-        public Image contentTextBullet;
         public Image fillImage;
+        public TextMeshProUGUI titleText;
         public TextMeshProUGUI contentText;
         public TextMeshProUGUI progressText;
         public Slider progressBar;
@@ -43,10 +43,11 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             receiveButton.SetSubmitText(
-                LocalizationManager.Localize("UI_COMPLETED"),
+                LocalizationManager.Localize("UI_PROGRESS"),
                 LocalizationManager.Localize("UI_RECEIVE"));
             receiveButton.SetSubmittable(true); 
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
+            receiveButton.submitText.color = ColorHelper.HexToColorRGB("955c4a");
         }
 
         #endregion
@@ -79,7 +80,7 @@ namespace Nekoyume.UI.Scroller
             UpdateView();
 
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
-            var msg = string.Format(format, _quest.GetName());
+            var msg = string.Format(format, _quest.GetContent());
             Notification.Push(MailType.System, msg);
 
             // 로컬 아바타의 퀘스트 상태 업데이트.
@@ -104,7 +105,8 @@ namespace Nekoyume.UI.Scroller
         private void UpdateView()
         {
             var isReceived = false;
-            contentText.text = _quest.GetName();
+            titleText.text = _quest.GetTitle();
+            contentText.text = _quest.GetContent();
 
             string text = _quest.GetProgressText();
             bool showProgressBar = !string.IsNullOrEmpty(text); 
@@ -122,8 +124,8 @@ namespace Nekoyume.UI.Scroller
                 {
                     background.color = Color.white;
                     fillImage.color = ColorHelper.HexToColorRGB("ffffff");
-                    contentText.color = ColorHelper.HexToColorRGB("e0a491");
-                    contentTextBullet.color = ColorHelper.HexToColorRGB("e0a491");
+                    titleText.color = ColorHelper.HexToColorRGB("ffa78b");
+                    contentText.color = ColorHelper.HexToColorRGB("955c4a");
                     progressText.color = ColorHelper.HexToColorRGB("e0a491");
                     receiveButton.Show();
                     receiveButton.SetSubmittable(true);
@@ -133,21 +135,21 @@ namespace Nekoyume.UI.Scroller
                     isReceived = true;
                     fillImage.color = ColorHelper.HexToColorRGB("282828");
                     background.color = ColorHelper.HexToColorRGB("7b7b7b");
-                    contentText.color = ColorHelper.HexToColorRGB("3f3f3f");
-                    contentTextBullet.color = ColorHelper.HexToColorRGB("3f3f3f");
+                    titleText.color = ColorHelper.HexToColorRGB("614037");
+                    contentText.color = ColorHelper.HexToColorRGB("38251e");
                     progressText.color = ColorHelper.HexToColorRGB("282828");
-                    receiveButton.Show();
-                    receiveButton.SetSubmittable(false);
+                    receiveButton.Hide();
                 }
             }
             else
             {
                 background.color = Color.white;
                 fillImage.color = ColorHelper.HexToColorRGB("ffffff");
-                contentText.color = ColorHelper.HexToColorRGB("e0a491");
-                contentTextBullet.color = ColorHelper.HexToColorRGB("e0a491");
+                titleText.color = ColorHelper.HexToColorRGB("ffa78b");
+                contentText.color = ColorHelper.HexToColorRGB("955c4a");
                 progressText.color = ColorHelper.HexToColorRGB("e0a491");
-                receiveButton.Hide();
+                receiveButton.Show();
+                receiveButton.SetSubmittable(false);
             }
 
             var itemMap = _quest.Reward.ItemMap;

@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         {
             data = quest;
             Sprite sprite;
-            var text = quest.GetName();
+            var text = quest.GetContent();
             var color = ColorHelper.HexToColorRGB("fff9dd");
             if (quest.Complete)
             {

@@ -15,6 +15,9 @@ namespace Nekoyume.Helper
 
         private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_1";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
+        
+        private const string SmallItemBackgroundDefaultPath = "UI/Textures/item_bg_1_s";
+        private const string SmallItemBackgroundPathFormat = "UI/Textures/item_bg_{0}_s";
 
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
@@ -47,6 +50,12 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(ItemBackgroundPathFormat, grade)) ??
                    Resources.Load<Sprite>(ItemBackgroundDefaultPath);
+        }
+        
+        public static Sprite GetSmallItemBackground(int grade)
+        {
+            return Resources.Load<Sprite>(string.Format(SmallItemBackgroundPathFormat, grade)) ??
+                   Resources.Load<Sprite>(SmallItemBackgroundDefaultPath);
         }
 
         public static Sprite GetSkillIcon(int skillId)

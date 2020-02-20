@@ -96,7 +96,7 @@ namespace Nekoyume.Action
 
             avatarState.Customize(hair, lens, ear, tail);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToList();
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
             Log.Debug($"CreateAvatar CreateAvatarState: {sw.Elapsed}");
@@ -117,9 +117,12 @@ namespace Nekoyume.Action
                 tableSheets,
                 name
             );
-#if UNITY_EDITOR
-            AddItemsForTest(avatarState, ctx.Random, tableSheets);
-#endif
+
+            if (GameConfig.IsEditor)
+            {
+                AddItemsForTest(avatarState, ctx.Random, tableSheets);    
+            }
+            
             return avatarState;
         }
 

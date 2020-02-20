@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
@@ -59,6 +60,7 @@ namespace Nekoyume.BlockChain
             QuestReward();
             RankingBattle();
             WeeklyArenaReward();
+            CombinationEquipment();
         }
 
         public void Stop()
@@ -220,6 +222,37 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseWeeklyArenaReward).AddTo(_disposables);
         }
 
+        private void CombinationEquipment()
+        {
+            _renderer.EveryRender<CombinationEquipment>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
+        }
+
+        private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
+        {
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.AvatarAddress;
+            var resultAddress = eval.Action.ResultAddress;
+            var result = new Combination.ResultModel((Dictionary) eval.OutputStates.GetState(resultAddress));
+
+            LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
+            foreach (var pair in result.materials)
+            {
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
+            }
+            LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
+            LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.itemUsable.ItemId);
+
+            var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            UI.Notification.Push(MailType.Workshop, string.Format(format, result.itemUsable.Data.GetLocalizedName()));
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+        }
+
         private void ResponseCombination(ActionBase.ActionEvaluation<Combination> eval)
         {
             var agentAddress = eval.Signer;
@@ -342,7 +375,7 @@ namespace Nekoyume.BlockChain
         {
             UpdateCurrentAvatarState(eval);
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REWARD");
-            var msg = string.Format(format, eval.Action.Result.GetName());
+            var msg = string.Format(format, eval.Action.Result.GetContent());
             UI.Notification.Push(MailType.System, msg);
         }
 

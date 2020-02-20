@@ -22,8 +22,9 @@ namespace Nekoyume.Battle
 
         private int WorldId { get; }
         public int StageId { get; }
-        public int Exp { get; }
-        public int TurnLimit { get; }
+        private bool HasCleared { get; }
+        private int Exp { get; }
+        private int TurnLimit { get; }
         public IEnumerable<ItemBase> Rewards => _waveRewards;
 
         public StageSimulator(
@@ -39,6 +40,7 @@ namespace Nekoyume.Battle
 
             WorldId = worldId;
             StageId = stageId;
+            HasCleared = avatarState.worldInformation.HasStageCleared(WorldId, StageId);
 
             var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
@@ -80,24 +82,36 @@ namespace Nekoyume.Battle
 
         public override Player Simulate()
         {
+#if TEST_LOG
+            var sb = new System.Text.StringBuilder();
+#endif
             Log.worldId = WorldId;
             Log.stageId = StageId;
+            Log.waveCount = _waves.Count;
+            Log.clearedWaveNumber = 0;
+            Log.newlyCleared = false;
             Player.Spawn();
-            Turn = 1;
-#if TEST_LOG
-            UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / Turn start");
-#endif
+            TurnNumber = 1;
             for (var i = 0; i < _waves.Count; i++)
             {
-                var wave = _waves[i];
-                WaveTurn = 0;
                 Characters = new SimplePriorityQueue<CharacterBase, decimal>();
                 Characters.Enqueue(Player, TurnPriority / Player.SPD);
-                wave.Spawn(this);
+                
+                WaveNumber = i + 1;
+                WaveTurn = 1;
+                _waves[i].Spawn(this);
+#if TEST_LOG
+                sb.Clear();
+                sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                sb.Append(" / Wave Start");
+                UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
                 while (true)
                 {
                     // 제한 턴을 넘어서는 경우 break.
-                    if (Turn > TurnLimit)
+                    if (TurnNumber > TurnLimit)
                     {
                         if (i == 0)
                         {
@@ -109,7 +123,13 @@ namespace Nekoyume.Battle
                             Result = BattleLog.Result.TimeOver;
                         }
 #if TEST_LOG
-                        UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {nameof(Result)}: {Result.ToString()}");
+                        sb.Clear();
+                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                        sb.Append($" / {nameof(TurnLimit)}: {TurnLimit}");
+                        sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+                        UnityEngine.Debug.LogWarning(sb.ToString());
 #endif
                         break;
                     }
@@ -117,8 +137,22 @@ namespace Nekoyume.Battle
                     // 캐릭터 큐가 비어 있는 경우 break.
                     if (!Characters.TryDequeue(out var character))
                         break;
-
+#if TEST_LOG
+                    var turnBefore = TurnNumber;
+#endif
                     character.Tick();
+#if TEST_LOG
+                    var turnAfter = TurnNumber;
+                    if (turnBefore != turnAfter)
+                    {
+                        sb.Clear();
+                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                        sb.Append(" / Turn End");
+                        UnityEngine.Debug.LogWarning(sb.ToString());   
+                    }
+#endif
 
                     // 플레이어가 죽은 경우 break;
                     if (Player.IsDead)
@@ -132,27 +166,49 @@ namespace Nekoyume.Battle
                         {
                             Result = BattleLog.Result.Win;
                         }
+#if TEST_LOG
+                        sb.Clear();
+                        sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+                        sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+                        sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+                        sb.Append($" / {nameof(Player)} Dead");
+                        sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+                        UnityEngine.Debug.LogWarning(sb.ToString());
+#endif
                         break;
                     }
 
                     // 플레이어의 타겟(적)이 없는 경우 break.
                     if (!Player.Targets.Any())
                     {
-                        Log.clearedWave = i + 1;
-                        if (i == 0)
+                        Result = BattleLog.Result.Win;
+                        Log.clearedWaveNumber = WaveNumber;
+                        
+                        switch (WaveNumber)
                         {
-                            Player.GetExp(Exp, true);
-                        }
-                        else if (i == 1)
-                        {
-                            ItemMap = Player.GetRewards(_waveRewards);
-                            var dropBox = new DropBox(null, _waveRewards);
-                            Log.Add(dropBox);
-                            var getReward = new GetReward(null, _waveRewards);
-                            Log.Add(getReward);
+                            case 1:
+                                Player.GetExp(Exp, true);
+                                break;
+                            case 2:
+                            {
+                                ItemMap = Player.GetRewards(_waveRewards);
+                                var dropBox = new DropBox(null, _waveRewards);
+                                Log.Add(dropBox);
+                                var getReward = new GetReward(null, _waveRewards);
+                                Log.Add(getReward);
+                                break;
+                            }
+                            default:
+                                if (WaveNumber == _waves.Count)
+                                {
+                                    if (!HasCleared)
+                                    {
+                                        Log.newlyCleared = true;
+                                    }
+                                }
+                                break;
                         }
 
-                        Result = BattleLog.Result.Win;
                         break;
                     }
 
@@ -173,9 +229,13 @@ namespace Nekoyume.Battle
 
             Log.result = Result;
 #if TEST_LOG
-            var skillType = typeof(Nekoyume.Model.BattleStatus.Skill);
-            var skillCount = Log.events.Count(e => e.GetType().IsInheritsFrom(skillType));
-            UnityEngine.Debug.LogWarning($"{nameof(Turn)}: {Turn} / {skillCount} / {nameof(Simulate)} end / {Result.ToString()}");
+            sb.Clear();
+            sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
+            sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
+            sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
+            sb.Append($" / {nameof(Simulate)} End");
+            sb.Append($" / {nameof(Result)}: {Result.ToString()}");
+            UnityEngine.Debug.LogWarning(sb.ToString());
 #endif
             return Player;
         }
@@ -205,10 +265,6 @@ namespace Nekoyume.Battle
                     wave.HasBoss = waveData.HasBoss;
                 }
             }
-
-            wave.Exp = waveData.Number == 2
-                ? Exp
-                : 0;
 
             return wave;
         }
