@@ -31,6 +31,7 @@ namespace Nekoyume.UI
             CombineConsumable,
             EnhanceEquipment,
             CombineEquipment,
+            SelectSubRecipe,
             CombinationConfirm,
         }
 
