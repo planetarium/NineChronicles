@@ -2376,7 +2376,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 0
+  m_fontStyle: 1
   m_textAlignment: 514
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -6538,6 +6538,41 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_GO_BACK
+      objectReference: {fileID: 0}
+    - target: {fileID: 680059685548267356, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 680059685548267356, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 680059685548267356, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 680059685548267356, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 114586975932311630}
+    - target: {fileID: 680059685548267356, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: BackClick
+      objectReference: {fileID: 0}
+    - target: {fileID: 680059685548267356, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 1701704652269669235, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
