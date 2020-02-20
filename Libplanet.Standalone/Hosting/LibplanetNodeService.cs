@@ -17,10 +17,10 @@ using Serilog;
 
 namespace Libplanet.Standalone.Hosting
 {
-    public class LibplanetNodeService<T> : IHostedService
+    public class LibplanetNodeService<T> : IHostedService, IDisposable
         where T : IAction, new()
     {
-        public readonly IStore Store;
+        public readonly BaseStore Store;
 
         public readonly BlockChain<T> BlockChain;
 
@@ -127,6 +127,12 @@ namespace Libplanet.Standalone.Hosting
             }
 
             return store ?? new DefaultStore(path, flush: false, compress: true);
+        }
+
+        public void Dispose()
+        {
+            Store?.Dispose();
+            Swarm?.Dispose();
         }
     }
 }
