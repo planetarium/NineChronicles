@@ -25,6 +25,7 @@ namespace Nekoyume.Action
         public class Result : AttachmentActionResult
         {
             public ShopItem shopItem;
+            public Guid id;
 
             protected override string TypeId => "sellCancellation.result";
 
@@ -35,12 +36,14 @@ namespace Nekoyume.Action
             public Result(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
+                id = serialized["id"].ToGuid();
             }
 
             public override IValue Serialize() =>
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "shopItem"] = shopItem.Serialize(),
+                    [(Text) "id"] = id.Serialize()
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
 
@@ -112,10 +115,12 @@ namespace Nekoyume.Action
                 shopItem = outUnregisteredItem,
                 itemUsable = outUnregisteredItem.ItemUsable
             };
-            var mail = new SellCancelMail(result, ctx.BlockIndex)
+            var mail = new SellCancelMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid())
             {
                 New = false
             };
+            result.id = mail.id;
+
             avatarState.Update(mail);
             avatarState.UpdateFromAddItem(result.itemUsable, true);
             avatarState.updatedAt = DateTimeOffset.UtcNow;
