@@ -32,7 +32,7 @@ namespace Nekoyume.Action
         public class ResultModel : AttachmentActionResult
         {
             public Dictionary<Material, int> materials;
-            public Guid mailId;
+            public Guid id;
             public decimal gold;
             public int actionPoint;
 
@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             public ResultModel(Dictionary serialized) : base(serialized)
             {   
                 materials = serialized["materials"].ToDictionary_Material_int();
-                mailId = serialized["id"].ToGuid();
+                id = serialized["id"].ToGuid();
                 gold = serialized["gold"].ToDecimal();
                 actionPoint = serialized["actionPoint"].ToInteger();
             }
@@ -54,7 +54,7 @@ namespace Nekoyume.Action
                 new Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "materials"] = materials.Serialize(),
-                    [(Text) "id"] = mailId.Serialize(),
+                    [(Text) "id"] = id.Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                     [(Text) "actionPoint"] = actionPoint.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
@@ -270,7 +270,7 @@ namespace Nekoyume.Action
                 // 액션 결과
                 Result.itemUsable = equipment;
                 var mail = new CombinationMail(Result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
-                Result.mailId = mail.mailId;
+                Result.id = mail.id;
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(equipment);
                 sw.Stop();
@@ -322,7 +322,7 @@ namespace Nekoyume.Action
                     // 액션 결과
                     Result.itemUsable = itemUsable;
                     var mail = new CombinationMail(Result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
-                    Result.mailId = mail.mailId;
+                    Result.id = mail.id;
                     avatarState.Update(mail);
                     avatarState.UpdateFromCombination(itemUsable);
                     sw.Stop();

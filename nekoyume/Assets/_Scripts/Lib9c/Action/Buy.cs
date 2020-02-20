@@ -31,7 +31,7 @@ namespace Nekoyume.Action
         public class BuyerResult : AttachmentActionResult
         {
             public ShopItem shopItem;
-            public Guid mailId;
+            public Guid id;
 
             protected override string TypeId => "buy.buyerResult";
 
@@ -42,14 +42,14 @@ namespace Nekoyume.Action
             public BuyerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
-                mailId = serialized["id"].ToGuid();
+                id = serialized["id"].ToGuid();
             }
 
             public override IValue Serialize() =>
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "shopItem"] = shopItem.Serialize(),
-                    [(Text) "id"] = mailId.Serialize(),
+                    [(Text) "id"] = id.Serialize(),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
 
@@ -57,7 +57,7 @@ namespace Nekoyume.Action
         public class SellerResult : AttachmentActionResult
         {
             public ShopItem shopItem;
-            public Guid mailId;
+            public Guid id;
             public decimal gold;
 
             protected override string TypeId => "buy.sellerResult";
@@ -69,7 +69,7 @@ namespace Nekoyume.Action
             public SellerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
-                mailId = serialized["id"].ToGuid();
+                id = serialized["id"].ToGuid();
                 gold = serialized["gold"].ToDecimal();
             }
 
@@ -77,7 +77,7 @@ namespace Nekoyume.Action
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "shopItem"] = shopItem.Serialize(),
-                    [(Text) "id"] = mailId.Serialize(),
+                    [(Text) "id"] = id.Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
@@ -192,7 +192,7 @@ namespace Nekoyume.Action
             {
                 New = false
             };
-            buyerResult.mailId = buyerMail.mailId;
+            buyerResult.id = buyerMail.id;
 
             sellerResult = new SellerResult
             {
@@ -204,7 +204,7 @@ namespace Nekoyume.Action
             {
                 New = false
             };
-            sellerResult.mailId = sellerMail.mailId;
+            sellerResult.id = sellerMail.id;
 
             buyerAvatarState.Update(buyerMail);
             buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);

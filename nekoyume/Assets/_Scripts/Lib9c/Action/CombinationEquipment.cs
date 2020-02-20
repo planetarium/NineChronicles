@@ -163,7 +163,7 @@ namespace Nekoyume.Action
                 itemUsable = equipment,
             };
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
-            result.mailId = mail.mailId;
+            result.id = mail.id;
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);
             return states
