@@ -22,6 +22,7 @@ namespace Nekoyume.UI
         private System.Action<EquipmentSlot> _onDoubleClick;
         
         public RectTransform RectTransform { get; private set; }
+        public bool IsEmpty => item is null;
 
         private void Awake()
         {

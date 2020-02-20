@@ -190,22 +190,19 @@ namespace Nekoyume.UI.Model
 
         #region Try Get
 
-        public bool TryGetItem(Guid guid, out ItemUsable itemUsable)
+        public bool TryGetItem(ItemBase itemBase, out InventoryItem inventoryItem)
         {
-            foreach (var inventoryItem in Equipments)
+            switch (itemBase.Data.ItemType)
             {
-                if (!(inventoryItem.ItemBase.Value is Equipment equipment)
-                    || !equipment.ItemId.Equals(guid))
-                {
-                    continue;
-                }
-
-                itemUsable = equipment;
-                return true;
+                case ItemType.Consumable:
+                    return TryGetConsumable((ItemUsable) itemBase, out inventoryItem);
+                case ItemType.Equipment:
+                    return TryGetEquipment((ItemUsable) itemBase, out inventoryItem);
+                case ItemType.Material:
+                    return TryGetMaterial((Material) itemBase, out inventoryItem);
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            itemUsable = null;
-            return false;
         }
 
         public bool TryGetEquipment(ItemUsable itemUsable, out InventoryItem inventoryItem)
