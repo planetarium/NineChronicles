@@ -43,7 +43,7 @@ namespace Nekoyume.UI
             tweenMove = transform.DOPath(path, 0.8f + 0.2f * index, PathType.CatmullRom).SetEase(Ease.OutSine);
 
             yield return new WaitWhile(tweenMove.IsPlaying);
-            VFXController.instance.Create<ItemMoveVFX>(_inventoryTransform.position);
+            Find<BottomMenu>().PlayGetItemAnimation();
             Destroy(gameObject);
         }
 
