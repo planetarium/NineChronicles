@@ -171,6 +171,19 @@ namespace Nekoyume.Model
                     (Bencodex.Types.Text) kv.Key.Serialize(),
                     (Bencodex.Types.Dictionary) kv.Value.Serialize())));
         }
+        
+        public bool HasWorldUnlocked(int worldId)
+        {
+            return TryGetWorld(worldId, out var world) && world.IsUnlocked;
+        }
+        
+        public bool HasStageCleared(int worldId, int stageId)
+        {
+            if (!TryGetWorld(worldId, out var world))
+                return false;
+
+            return stageId <= world.StageClearedId;
+        }
 
         /// <summary>
         /// 인자로 받은 `worldId`에 해당하는 `World` 객체를 얻는다.

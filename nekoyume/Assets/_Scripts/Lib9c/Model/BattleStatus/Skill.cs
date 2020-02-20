@@ -22,7 +22,7 @@ namespace Nekoyume.Model.BattleStatus
             [CanBeNull] public readonly Model.Buff.Buff Buff;
 
             public SkillInfo(CharacterBase character, int effect, bool critical, SkillCategory skillCategory,
-                int turn, ElementalType elementalType = ElementalType.Normal,
+                int waveTurn, ElementalType elementalType = ElementalType.Normal,
                 SkillTargetType targetType = SkillTargetType.Enemy, [CanBeNull] Model.Buff.Buff buff = null)
             {
                 Target = character;
@@ -32,7 +32,7 @@ namespace Nekoyume.Model.BattleStatus
                 ElementalType = elementalType;
                 SkillTargetType = targetType;
                 Buff = buff;
-                WaveTurn = turn;
+                WaveTurn = waveTurn;
             }
         }
 
