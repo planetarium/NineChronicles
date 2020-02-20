@@ -102,10 +102,10 @@ namespace Nekoyume.UI
             Find<BottomMenu>().exitButton.SharedModel.IsEnabled.Value = false;
         }
 
-        public void SetComboText(int combo)
-        {
+        public void ShowComboText(bool attacked)
+        { 
             comboText.StopAllCoroutines();
-            comboText.Show(combo);
+            comboText.Show(attacked);
         }
 
         private void OnGetItem(DropItem dropItem)

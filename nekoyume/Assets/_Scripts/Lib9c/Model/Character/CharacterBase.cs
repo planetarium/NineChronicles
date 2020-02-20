@@ -86,7 +86,7 @@ namespace Nekoyume.Model
             attackRange = RowData.AttackRange;
             defElementType = RowData.ElementalType;
             CurrentHP = HP;
-            AttackCount = 0;
+            AttackCountMax = 0;
         }
 
         protected CharacterBase(CharacterBase value)
@@ -114,7 +114,7 @@ namespace Nekoyume.Model
             // 캐릭터 테이블 데이타는 변하지 않는다는 가정 하에 얕은 복사.
             RowData = value.RowData;
             Stats = new CharacterStats(value.Stats);
-            AttackCount = value.AttackCount;
+            AttackCountMax = value.AttackCountMax;
         }
 
         public abstract object Clone();

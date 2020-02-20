@@ -13,6 +13,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI meshText;
         public float delayTime;
         private ReactiveProperty<int> _combo = new ReactiveProperty<int>();
+        public int comboMax;
 
         private void Awake()
         {
@@ -20,11 +21,12 @@ namespace Nekoyume.UI
             _combo.SubscribeTo(meshText).AddTo(gameObject);
         }
 
-        public void Show(int combo)
+        public void Show(bool attacked)
         {
-            _combo.Value = combo;
-            if (_combo.Value > 0)
+            if (attacked)
             {
+                if (++_combo.Value > comboMax)
+                    _combo.Value = 1;
                 gameObject.SetActive(true);
                 Sequence seq = DOTween.Sequence();
                 GetComponent<RectTransform>().DOAnchorPosX(-200f, 0.3f).From();

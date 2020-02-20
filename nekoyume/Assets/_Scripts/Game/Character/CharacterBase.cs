@@ -590,16 +590,13 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
-            if (this is Player)
-            {
-                Debug.Log(CharacterModel.AttackCount);
-                Widget.Find<Nekoyume.UI.Battle>().SetComboText(CharacterModel.AttackCount);
-            }
             for (var i = 0; i < skillInfosCount; i++)
             {
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessAttack(target, info, info.Target.IsDead, false);
+                if(this is Player)
+                    Widget.Find<Nekoyume.UI.Battle>().ShowComboText(info.Effect > 0);
             }
         }
 
