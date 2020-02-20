@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2892578596885429834}
   - component: {fileID: 2540273645456425560}
   m_Layer: 5
-  m_Name: UI_QuestRewardItem
+  m_Name: UI_ItemMoveAnimation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +49,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6921a7a81fdecea49a147d09f3bcf6a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
   itemImage: {fileID: 7800353834629510449}
 --- !u!1 &6996479214960864257
 GameObject:
