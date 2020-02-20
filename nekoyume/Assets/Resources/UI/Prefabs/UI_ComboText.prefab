@@ -148,8 +148,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shadowText: {fileID: 7897625634833168045}
-  meshText: {fileID: 6181815305103727915}
-  delayTime: 1
+  labelText: {fileID: 6181815305103727915}
+  group: {fileID: 5315089576105275126}
 --- !u!1 &283201490928505258
 GameObject:
   m_ObjectHideFlags: 0

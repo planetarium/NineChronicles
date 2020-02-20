@@ -30,6 +30,7 @@ namespace Nekoyume.UI
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
+            comboText.Close();
 
             if (isRepeat)
             {
