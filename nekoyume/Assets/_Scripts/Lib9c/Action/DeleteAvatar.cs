@@ -8,6 +8,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("delete_avatar")]
     public class DeleteAvatar : GameAction
     {

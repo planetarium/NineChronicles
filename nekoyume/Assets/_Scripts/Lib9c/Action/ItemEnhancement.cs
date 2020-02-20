@@ -16,6 +16,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
@@ -24,7 +25,7 @@ namespace Nekoyume.Action
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
         public ResultModel result;
-        public IImmutableList<int> completedQuestIds;
+        public List<int> completedQuestIds;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult

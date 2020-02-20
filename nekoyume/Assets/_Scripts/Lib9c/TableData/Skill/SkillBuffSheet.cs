@@ -1,9 +1,12 @@
+using System;
 using System.Collections.Generic;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class SkillBuffSheet : Sheet<int, SkillBuffSheet.Row>
     {
+        [Serializable]
         public class Row : SheetRow<int>
         {
             public override int Key => SkillId;

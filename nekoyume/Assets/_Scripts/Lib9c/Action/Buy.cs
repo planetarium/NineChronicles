@@ -14,6 +14,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("buy")]
     public class Buy : GameAction
     {
@@ -23,8 +24,8 @@ namespace Nekoyume.Action
         public Guid productId;
         public BuyerResult buyerResult;
         public SellerResult sellerResult;
-        public IImmutableList<int> buyerCompletedQuestIds;
-        public IImmutableList<int> sellerCompletedQuestIds;
+        public List<int> buyerCompletedQuestIds;
+        public List<int> sellerCompletedQuestIds;
 
         [Serializable]
         public class BuyerResult : AttachmentActionResult
@@ -118,6 +119,16 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"Buy Get Buyer AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
+            
+            if (!buyerAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return states;
+
+            if (world.StageClearedId < GameConfig.RequireStage.ActionsInShop)
+            {
+                // 스테이지 클리어 부족 에러.
+                return states;
+            }
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {

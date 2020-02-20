@@ -13,6 +13,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("sell_cancellation")]
     public class SellCancellation : GameAction
     {
@@ -76,6 +77,15 @@ namespace Nekoyume.Action
             Log.Debug($"Sell Cancel Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
 
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return states;
+
+            if (world.StageClearedId < GameConfig.RequireStage.ActionsInShop)
+            {
+                // 스테이지 클리어 부족 에러.
+                return states;
+            }
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {

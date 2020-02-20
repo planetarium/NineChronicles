@@ -39,7 +39,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            Game.Event.OnRoomEnter.AddListener(Show);
+            Game.Event.OnRoomEnter.AddListener(() => Show());
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus).AddTo(gameObject);
 
             CloseWidget = null;

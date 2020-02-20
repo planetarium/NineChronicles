@@ -449,3 +449,6 @@ modules.xml
 .idea/sonarlint
 
 # End of https://www.gitignore.io/api/csharp,dotnetcore,jetbrains+all
+
+# Except NineChronicles.Standalone.sln
+!NineChronicles.Standalone.sln

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -9,6 +10,7 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("add_gold")]
     public class AddGold : GameAction
     {

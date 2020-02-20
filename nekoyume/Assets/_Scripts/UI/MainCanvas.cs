@@ -11,14 +11,29 @@ namespace Nekoyume.UI
     [RequireComponent(typeof(Canvas))]
     public class MainCanvas : MonoSingleton<MainCanvas>
     {
-        public GameObject hud;
-        public GameObject popup;
-        public GameObject screen;
-        public GameObject tooltip;
-        public GameObject widget;
-        public GameObject animation;
-        public GameObject systemInfo;
-        public GameObject development;
+        [SerializeField]
+        private GameObject hudLayer = null;
+
+        [SerializeField]
+        private GameObject popupLayer = null;
+
+        [SerializeField]
+        private GameObject screenLayer = null;
+
+        [SerializeField]
+        private GameObject tooltipLayer = null;
+
+        [SerializeField]
+        private GameObject widgetLayer = null;
+
+        [SerializeField]
+        private GameObject animationLayer = null;
+
+        [SerializeField]
+        private GameObject systemInfoLayer = null;
+
+        [SerializeField]
+        private GameObject developmentLayer = null;
 
         private List<Widget> _firstWidgets;
         private List<Widget> _secondWidgets;
@@ -31,21 +46,21 @@ namespace Nekoyume.UI
             switch (widgetType)
             {
                 case WidgetType.Hud:
-                    return hud.transform;
+                    return hudLayer.transform;
                 case WidgetType.Popup:
-                    return popup.transform;
+                    return popupLayer.transform;
                 case WidgetType.Screen:
-                    return screen.transform;
+                    return screenLayer.transform;
                 case WidgetType.Tooltip:
-                    return tooltip.transform;
+                    return tooltipLayer.transform;
                 case WidgetType.Widget:
-                    return widget.transform;
+                    return widgetLayer.transform;
                 case WidgetType.Animation:
-                    return animation.transform;
+                    return animationLayer.transform;
                 case WidgetType.SystemInfo:
-                    return systemInfo.transform;
+                    return systemInfoLayer.transform;
                 case WidgetType.Development:
-                    return development.transform;
+                    return developmentLayer.transform;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
@@ -73,18 +88,17 @@ namespace Nekoyume.UI
                 // 팝업 영역.
                 Widget.Create<Settings>(),
                 Widget.Create<Confirm>(),
-                
+
                 // 팝업 영역: 알림.
                 Widget.Create<UpdatePopup>(),
                 Widget.Create<BlockFailPopup>(),
                 Widget.Create<ActionFailPopup>(),
                 Widget.Create<LoginPopup>(),
                 Widget.Create<SystemPopup>(),
-                
+
                 // 시스템 정보 영역.
                 Widget.Create<BlockChainMessageBoard>(true),
                 Widget.Create<Notification>(true),
-
             };
 
             foreach (var value in _firstWidgets)
@@ -175,7 +189,7 @@ namespace Nekoyume.UI
                     Debug.LogWarning($"value is null. last is {last.name}");
                     continue;
                 }
-                
+
                 value.Initialize();
                 last = value;
             }
@@ -189,25 +203,25 @@ namespace Nekoyume.UI
             switch (fromWidgetType)
             {
                 case WidgetType.Hud:
-                    from = hud;
+                    from = hudLayer;
                     break;
                 case WidgetType.Popup:
-                    from = popup;
+                    from = popupLayer;
                     break;
                 case WidgetType.Screen:
-                    from = screen;
+                    from = screenLayer;
                     break;
                 case WidgetType.Tooltip:
-                    from = tooltip;
+                    from = tooltipLayer;
                     break;
                 case WidgetType.Widget:
-                    from = widget;
+                    from = widgetLayer;
                     break;
                 case WidgetType.SystemInfo:
-                    from = systemInfo;
+                    from = systemInfoLayer;
                     break;
                 case WidgetType.Development:
-                    from = development;
+                    from = developmentLayer;
                     break;
             }
 
@@ -215,25 +229,25 @@ namespace Nekoyume.UI
             switch (targetWidgetType)
             {
                 case WidgetType.Hud:
-                    target = hud;
+                    target = hudLayer;
                     break;
                 case WidgetType.Popup:
-                    target = popup;
+                    target = popupLayer;
                     break;
                 case WidgetType.Screen:
-                    target = screen;
+                    target = screenLayer;
                     break;
                 case WidgetType.Tooltip:
-                    target = tooltip;
+                    target = tooltipLayer;
                     break;
                 case WidgetType.Widget:
-                    target = widget;
+                    target = widgetLayer;
                     break;
                 case WidgetType.SystemInfo:
-                    target = systemInfo;
+                    target = systemInfoLayer;
                     break;
                 case WidgetType.Development:
-                    target = development;
+                    target = developmentLayer;
                     break;
             }
 

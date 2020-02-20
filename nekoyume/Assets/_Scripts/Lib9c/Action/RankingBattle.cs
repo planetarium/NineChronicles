@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
@@ -12,6 +13,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("ranking_battle")]
     public class RankingBattle : GameAction
     {
@@ -39,6 +41,16 @@ namespace Nekoyume.Action
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))
             {
+                return states;
+            }
+            
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return states;
+
+            if (world.StageClearedId < GameConfig.RequireStage.ActionsInRankingBoard)
+            {
+                // 스테이지 클리어 부족 에러.
                 return states;
             }
 
