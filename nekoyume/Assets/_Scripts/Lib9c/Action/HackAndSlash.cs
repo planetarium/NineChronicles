@@ -67,7 +67,7 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug($"HAS exec started.");
+            Log.Debug("HAS exec started.");
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
@@ -140,8 +140,14 @@ namespace Nekoyume.Action
             Log.Debug($"HAS Simulator.Simulate(): {sw.Elapsed}");
             sw.Restart();
 
-            Log.Debug($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log.result}");
-            if (simulator.Result == BattleLog.Result.Win && simulator.Log.clearedWaveNumber == simulator.Log.waveCount)
+            Log.Debug($"Execute HackAndSlash({avatarAddress}). " +
+                      $"worldId: {worldId}, " +
+                      $"stageId: {stageId}, " +
+                      $"result: {simulator.Log?.result}, " +
+                      $"clearWave: {simulator.Log?.clearedWaveNumber}," +
+                      $"totalWave: {simulator.Log?.waveCount}");
+
+            if (simulator.Result == BattleLog.Result.Win && simulator.Log?.clearedWaveNumber == simulator.Log?.waveCount)
             {
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
