@@ -26,7 +26,7 @@ namespace Nekoyume.TableData
                 RequiredGold = long.Parse(fields[5]);
                 UnlockStage = int.Parse(fields[6]);
                 SubRecipeIds = new List<int>(3);
-                for (var i = 6; i < 8; i++)
+                for (var i = 7; i < 9; i++)
                 {
                     if (string.IsNullOrEmpty(fields[i]))
                     {

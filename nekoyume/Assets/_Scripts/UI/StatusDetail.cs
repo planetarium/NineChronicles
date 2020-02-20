@@ -15,7 +15,7 @@ namespace Nekoyume.UI
     /// Status 위젯과 함께 사용할 때에는 해당 위젯 하위에 포함되어야 함.
     /// 지금은 별도의 위젯으로 작동하는데, 이 때문에 위젯 라이프 사이클의 일관성을 잃음.(스스로 닫으면 안 되는 예외 발생)
     /// </summary>
-    public class StatusDetail : Widget
+    public class StatusDetail : XTweenWidget
     {
         public TextMeshProUGUI statusTitleText;
         public TextMeshProUGUI equipmentTitleText;

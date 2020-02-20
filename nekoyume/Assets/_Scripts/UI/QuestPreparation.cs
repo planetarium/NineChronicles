@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
@@ -45,6 +46,13 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
         private CharacterStats _tempStats;
+
+        [Header("ItemMoveAnimation")]
+        [SerializeField] private Image actionPointImage;
+        [SerializeField] private Transform buttonStarImageTransform;
+        [SerializeField, Range(.5f,3.0f)] private float animationTime;
+        [SerializeField] private bool moveToLeft;
+        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")] private float middleXGap;
 
         #region override
 
@@ -255,6 +263,13 @@ namespace Nekoyume.UI
 
         public void QuestClick(bool repeat)
         {
+            StartCoroutine(CoQuestClick(repeat));
+        }
+
+        private IEnumerator CoQuestClick(bool repeat)
+        {
+            var animation = ItemMoveAnimation.Show(actionPointImage.sprite, actionPointImage.transform.position, buttonStarImageTransform.position, moveToLeft, animationTime, middleXGap);
+            yield return new WaitWhile(() => animation.IsPlaying);
             Quest(repeat);
             AudioController.PlayClick();
             AnalyticsManager.Instance.BattleEntrance(repeat);
