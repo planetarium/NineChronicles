@@ -21,7 +21,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    public class Mail : Widget, IMail
+    public class Mail : XTweenWidget, IMail
     {
         public enum MailTabState : int
         {
