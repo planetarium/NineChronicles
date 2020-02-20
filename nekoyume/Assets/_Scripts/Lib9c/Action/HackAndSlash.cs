@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -76,6 +77,24 @@ namespace Nekoyume.Action
             }
             sw.Stop();
             Log.Debug($"HAS Get AgentAvatarStates: {sw.Elapsed}");
+
+            var worldInformation = avatarState.worldInformation;
+
+            if (!worldInformation.TryGetWorld(worldId, out var world))
+            {
+                throw new ArgumentException(
+                    $"{nameof(worldId)}({worldId}) not unlocked. If you want to clear, unlock first.");
+            }
+
+            if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
+                !world.IsStageCleared && stageId != world.StageBegin)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine($"{nameof(worldId)}({worldId})-{nameof(stageId)}({stageId}) is too big.");
+                sb.AppendLine($"Cleared {nameof(stageId)} is ({world.StageClearedId}).");
+                throw new ArgumentException(sb.ToString());
+            }
+
             sw.Restart();
 
             if (avatarState.actionPoint < GameConfig.HackAndSlashCostAP)
