@@ -209,7 +209,7 @@ Animator:
   m_GameObject: {fileID: 6721224639001731274}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a269a3ae58bbfd84f80fc7a52db19509, type: 2}
+  m_Controller: {fileID: 22100000, guid: 73d0bbf011ae0e74995f224b5fc0ab7c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -646,6 +646,11 @@ PrefabInstance:
       propertyPath: localizationKey
       value: UI_INVENTORY
       objectReference: {fileID: 0}
+    - target: {fileID: 5065275215712944306, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 7147112051511903611}
     - target: {fileID: 1571147999940200585, guid: ec91522f1096c47e0ac615f0792c176a,
         type: 3}
       propertyPath: m_text

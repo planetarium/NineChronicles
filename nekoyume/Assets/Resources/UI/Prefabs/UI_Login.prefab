@@ -301,6 +301,7 @@ GameObject:
   - component: {fileID: 222565893293542798}
   - component: {fileID: 114415706300778000}
   - component: {fileID: 114434716816546728}
+  - component: {fileID: 6829091179853559274}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -318,9 +319,10 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 3660486587957203405}
   m_Father: {fileID: 224713128984944290}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -382,7 +384,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -420,6 +422,25 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &6829091179853559274
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1791542542193638}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1871409625623706
 GameObject:
   m_ObjectHideFlags: 0
@@ -450,7 +471,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1153662533183968106}
-  - {fileID: 3660486587957203405}
   - {fileID: 224467274989310386}
   - {fileID: 5381938951404379297}
   m_Father: {fileID: 224579550419379388}
@@ -1322,13 +1342,13 @@ RectTransform:
   m_Children:
   - {fileID: 4947561065090006331}
   - {fileID: 457127346988617565}
-  m_Father: {fileID: 224713128984944290}
-  m_RootOrder: 1
+  m_Father: {fileID: 224467274989310386}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -265}
-  m_SizeDelta: {x: 0, y: 62}
+  m_AnchoredPosition: {x: 0, y: -120}
+  m_SizeDelta: {x: 78.666626, y: 62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7668520320815328029
 CanvasRenderer:
@@ -1406,7 +1426,7 @@ RectTransform:
   m_Children:
   - {fileID: 7727647580929309652}
   m_Father: {fileID: 1801807547346962906}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1762,6 +1782,7 @@ GameObject:
   - component: {fileID: 169039754051911114}
   - component: {fileID: 8100742520256639417}
   - component: {fileID: 6247638368318813775}
+  - component: {fileID: 230647305620736745}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -1779,9 +1800,10 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 540768192566440561}
   m_Father: {fileID: 8067957077704653704}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1881,6 +1903,25 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &230647305620736745
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1317407101622579307}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1437619221949717498
 GameObject:
   m_ObjectHideFlags: 0
@@ -2873,7 +2914,7 @@ RectTransform:
   m_Children:
   - {fileID: 6911061548777161384}
   m_Father: {fileID: 8067957077704653704}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2930,7 +2971,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 804349794341687056}
-  - {fileID: 1728732187397362177}
   - {fileID: 6231076077726508323}
   - {fileID: 4848944713417192832}
   m_Father: {fileID: 224579550419379388}
@@ -2981,6 +3021,7 @@ GameObject:
   - component: {fileID: 2307501247769252819}
   - component: {fileID: 6862770243837016148}
   - component: {fileID: 1165652993015128805}
+  - component: {fileID: 6383283279677081643}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -2998,9 +3039,10 @@ RectTransform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
+  m_Children:
+  - {fileID: 1728732187397362177}
   m_Father: {fileID: 1801807547346962906}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3100,6 +3142,25 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &6383283279677081643
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3776331340436766819}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3847580784963607935
 GameObject:
   m_ObjectHideFlags: 0
@@ -3288,7 +3349,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1282111778463223168}
-  - {fileID: 540768192566440561}
   - {fileID: 3994513601077857845}
   - {fileID: 3743537339772744543}
   m_Father: {fileID: 224579550419379388}
@@ -3515,6 +3575,7 @@ GameObject:
   - component: {fileID: 8916508796542213907}
   - component: {fileID: 3016139597534380394}
   - component: {fileID: 5603276412373269337}
+  - component: {fileID: 875511249517599157}
   m_Layer: 5
   m_Name: BtnDelete
   m_TagString: Untagged
@@ -3597,7 +3658,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -3635,6 +3696,25 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &875511249517599157
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5107315632115269272}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &5361682569209725100
 GameObject:
   m_ObjectHideFlags: 0
@@ -4045,7 +4125,7 @@ RectTransform:
   m_Children:
   - {fileID: 5522399068566794570}
   m_Father: {fileID: 224713128984944290}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4264,6 +4344,7 @@ GameObject:
   - component: {fileID: 5618454566617803476}
   - component: {fileID: 1062142247605508775}
   - component: {fileID: 2490623266823638118}
+  - component: {fileID: 2182191993978437891}
   m_Layer: 5
   m_Name: BtnDelete
   m_TagString: Untagged
@@ -4346,7 +4427,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -4384,6 +4465,25 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &2182191993978437891
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7611860595874530623}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &7748337583254944410
 GameObject:
   m_ObjectHideFlags: 0
@@ -4575,13 +4675,13 @@ RectTransform:
   m_Children:
   - {fileID: 7577138778652143594}
   - {fileID: 8572633960015180823}
-  m_Father: {fileID: 1801807547346962906}
-  m_RootOrder: 1
+  m_Father: {fileID: 6231076077726508323}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -265}
-  m_SizeDelta: {x: 0, y: 62}
+  m_AnchoredPosition: {x: 0, y: -120}
+  m_SizeDelta: {x: 78.666626, y: 62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7913278149414411012
 CanvasRenderer:
@@ -4660,13 +4760,13 @@ RectTransform:
   m_Children:
   - {fileID: 2729416887329996453}
   - {fileID: 4979442730428258394}
-  m_Father: {fileID: 8067957077704653704}
-  m_RootOrder: 1
+  m_Father: {fileID: 3994513601077857845}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -230}
-  m_SizeDelta: {x: 0, y: 62}
+  m_AnchoredPosition: {x: 0, y: -85}
+  m_SizeDelta: {x: 78.666626, y: 62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8318132438868768601
 CanvasRenderer:
@@ -4725,6 +4825,7 @@ GameObject:
   - component: {fileID: 7887326312310122076}
   - component: {fileID: 5809794150465906368}
   - component: {fileID: 5355079792821812066}
+  - component: {fileID: 5771477492673538302}
   m_Layer: 5
   m_Name: BtnDelete
   m_TagString: Untagged
@@ -4807,7 +4908,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -4845,6 +4946,25 @@ MonoBehaviour:
         m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &5771477492673538302
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8167038922622143488}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &8517679592530554973
 GameObject:
   m_ObjectHideFlags: 0
@@ -5158,6 +5278,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 224677300634831676}
     m_Modifications:
+    - target: {fileID: 2281915797853084, guid: 9958b2722fb81124bb04cd5640d9b4fc, type: 3}
+      propertyPath: m_Name
+      value: SettingButton
+      objectReference: {fileID: 0}
     - target: {fileID: 8906158154467180903, guid: 9958b2722fb81124bb04cd5640d9b4fc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5262,10 +5386,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2281915797853084, guid: 9958b2722fb81124bb04cd5640d9b4fc, type: 3}
-      propertyPath: m_Name
-      value: SettingButton
       objectReference: {fileID: 0}
     - target: {fileID: 3608999211004217049, guid: 9958b2722fb81124bb04cd5640d9b4fc,
         type: 3}
