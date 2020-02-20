@@ -21,18 +21,14 @@ namespace Nekoyume.UI.Module
         {
             IsToggleable = true;
 
-            button.OnClickAsObservable().Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                _toggleListener?.OnToggle(this);
-            }).AddTo(gameObject);
-
             if (!string.IsNullOrEmpty(localizationKey))
             {
                 string localization = LocalizationManager.Localize(localizationKey);
                 toggledOffText.text = localization;
                 toggledOnText.text = localization;
             }
+
+            button.onClick.AddListener(SubscribeOnClick);
         }
         
         #region IToggleable
@@ -63,5 +59,14 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
+
+        private void SubscribeOnClick()
+        {
+            if (IsToggledOn)
+                return;
+
+            AudioController.PlayClick();
+            _toggleListener?.OnToggle(this);
+        }
     }
 }

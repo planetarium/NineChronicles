@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 6698789193241777501}
   - component: {fileID: 5668575756728339445}
   - component: {fileID: 7638979988393841442}
+  - component: {fileID: 6624583594159216111}
   m_Layer: 5
   m_Name: UI_BattleResult
   m_TagString: Untagged
@@ -126,6 +127,25 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!95 &6624583594159216111
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 263417305685652019}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 990ab5e117d53c84db94ee08eda14140, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &342717255173292265
 GameObject:
   m_ObjectHideFlags: 0
@@ -1785,6 +1805,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8667842284378718185}
   - component: {fileID: 1654811042967831291}
+  - component: {fileID: 611660200146175038}
   m_Layer: 5
   m_Name: ButtonsArea
   m_TagString: Untagged
@@ -1838,6 +1859,26 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &611660200146175038
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4804435290493584517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1679637790, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 391.7
+  m_MinHeight: 65
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &4931107300133234107
 GameObject:
   m_ObjectHideFlags: 0
@@ -1850,6 +1891,7 @@ GameObject:
   - component: {fileID: 2767893331968543257}
   - component: {fileID: 7344372043628405757}
   - component: {fileID: 5478299572133443444}
+  - component: {fileID: 9165775328144018973}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -1932,7 +1974,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -1959,6 +2001,25 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &9165775328144018973
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4931107300133234107}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &4955485462491323271
 GameObject:
   m_ObjectHideFlags: 0
@@ -3044,6 +3105,7 @@ GameObject:
   - component: {fileID: 7631580888225715382}
   - component: {fileID: 4717430771000761776}
   - component: {fileID: 7074026571992738424}
+  - component: {fileID: 8594928801218447186}
   m_Layer: 5
   m_Name: SubmitButton
   m_TagString: Untagged
@@ -3126,7 +3188,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 3
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -3153,6 +3215,25 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!95 &8594928801218447186
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8816452105632705956}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &1091094662490926294
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3919,12 +4000,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c75875ee6d9a724ab977f6af0c747ab, type: 3}
---- !u!224 &2946634846980001026 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2855381624818415449, guid: 0c75875ee6d9a724ab977f6af0c747ab,
-    type: 3}
-  m_PrefabInstance: {fileID: 1100240318847875675}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8828973387584366379 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8485351490845318512, guid: 0c75875ee6d9a724ab977f6af0c747ab,
@@ -3937,6 +4012,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4bc746f35a40a28d25e70e7d5307a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &2946634846980001026 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2855381624818415449, guid: 0c75875ee6d9a724ab977f6af0c747ab,
+    type: 3}
+  m_PrefabInstance: {fileID: 1100240318847875675}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6847429375067028634
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4054,6 +4135,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_StageProgressBar
       objectReference: {fileID: 0}
+    - target: {fileID: 5227881270911501949, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5227881270800782870, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
       propertyPath: m_AnchorMax.x
@@ -4076,12 +4162,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e24fe60044abad4aa6aecedcbdd2ed9, type: 3}
---- !u!224 &1696694796370377440 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5227881270911501946, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
-    type: 3}
-  m_PrefabInstance: {fileID: 6847429375067028634}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6990079336486425012 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4469599033603894574, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
@@ -4094,6 +4174,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68c647ec5503cdf46850c1ec20c4a5b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &1696694796370377440 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 5227881270911501946, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+    type: 3}
+  m_PrefabInstance: {fileID: 6847429375067028634}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8030758803193536538
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4468,12 +4554,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c75875ee6d9a724ab977f6af0c747ab, type: 3}
---- !u!224 &5247439999934895939 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 2855381624818415449, guid: 0c75875ee6d9a724ab977f6af0c747ab,
-    type: 3}
-  m_PrefabInstance: {fileID: 8030758803193536538}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1923312657849105770 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8485351490845318512, guid: 0c75875ee6d9a724ab977f6af0c747ab,
@@ -4486,3 +4566,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e4bc746f35a40a28d25e70e7d5307a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &5247439999934895939 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2855381624818415449, guid: 0c75875ee6d9a724ab977f6af0c747ab,
+    type: 3}
+  m_PrefabInstance: {fileID: 8030758803193536538}
+  m_PrefabAsset: {fileID: 0}
