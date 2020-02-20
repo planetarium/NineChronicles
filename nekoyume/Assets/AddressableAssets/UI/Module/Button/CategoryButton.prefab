@@ -171,6 +171,7 @@ GameObject:
   - component: {fileID: 1501235471248933866}
   - component: {fileID: 5591983893492074739}
   - component: {fileID: 6799913925112880146}
+  - component: {fileID: 6331196818802198628}
   m_Layer: 5
   m_Name: CategoryButton
   m_TagString: Untagged
@@ -318,6 +319,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &6331196818802198628
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2051761505041589587}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2753318373144564913
 GameObject:
   m_ObjectHideFlags: 0
