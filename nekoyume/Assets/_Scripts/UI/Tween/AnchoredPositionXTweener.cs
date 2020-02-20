@@ -9,43 +9,64 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionXTweener : MonoBehaviour
     {
-        // todo: add `begin`
-        // todo: `to` -> `end`
-        [SerializeField] private float to = 0f;
+        [SerializeField] private float begin = 0f;
+        [SerializeField] private float end = 0f;
         [SerializeField] private float duration = 1f;
         [SerializeField] private bool snapping = false;
 
-        [SerializeField] private Ease ease = Ease.Linear;
-        // todo: `from` -> `isFrom`
-        [SerializeField] private bool from = false;
+        [SerializeField] private Ease showEase = Ease.Linear;
+        [SerializeField] private Ease closeEase = Ease.Linear;
+
+        [SerializeField] private bool isFrom = false;
 
         private RectTransform _rectTransform;
         private TweenerCore<Vector2, Vector2, VectorOptions> _tween;
 
+        private Vector2 originAnchoredPosition;
+
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
+            originAnchoredPosition = _rectTransform.anchoredPosition;
         }
 
-        private void OnEnable()
+        public Tweener StartTween()
         {
-            if (from)
+            RefreshTween();
+
+            _rectTransform.anchoredPosition = originAnchoredPosition;
+            if (isFrom)
             {
-                _tween = _rectTransform.DOAnchorPosX(to, duration, snapping)
-                    .SetEase(ease)
+                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping)
+                    .SetEase(showEase)
                     .From();
             }
             else
             {
-                _tween = _rectTransform.DOAnchorPosX(to, duration, snapping)
-                    .SetEase(ease);
+                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping)
+                    .SetEase(showEase);
             }
+
+            return _tween;
         }
 
-        private void OnDisable()
+        public Tweener StopTween()
         {
-            // todo: _tween.Kill();
-            _tween.Complete();
+            RefreshTween();
+            if(isFrom)
+            {
+                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase);
+            }
+            else
+            {
+                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase).From();
+            }
+            return _tween;
+        }
+
+        private void RefreshTween()
+        {
+            _tween?.Kill();
             _tween = null;
         }
     }

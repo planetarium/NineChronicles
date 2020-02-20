@@ -15,7 +15,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI
 {
-    public class Quest : Widget
+    public class Quest : XTweenWidget
     {
         public enum QuestTabState
         {

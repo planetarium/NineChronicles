@@ -40,11 +40,11 @@ namespace Nekoyume.UI.Module
         private Sprite _selectedButtonSprite;
         private Sprite _deselectedButtonSprite;
         private Sprite _equipmentsButtonIconSpriteBlack;
-        private Sprite _equipmentsButtonIconSpriteBlue;
+        private Sprite _equipmentsButtonIconSpriteHighlighted;
         private Sprite _consumablesButtonIconSpriteBlack;
-        private Sprite _consumablesButtonIconSpriteBlue;
+        private Sprite _consumablesButtonIconSpriteHighlighted;
         private Sprite _materialsButtonIconSpriteBlack;
-        private Sprite _materialsButtonIconSpriteBlue;
+        private Sprite _materialsButtonIconSpriteHighlighted;
 
         // todo: 분리..
         private ItemInformationTooltip _tooltip;
@@ -72,11 +72,11 @@ namespace Nekoyume.UI.Module
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
             _deselectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_brown_01");
             _equipmentsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_black");
-            _equipmentsButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_yellow");
+            _equipmentsButtonIconSpriteHighlighted = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_yellow");
             _consumablesButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_black");
-            _consumablesButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_yellow");
+            _consumablesButtonIconSpriteHighlighted = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_yellow");
             _materialsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_black");
-            _materialsButtonIconSpriteBlue = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_yellow");
+            _materialsButtonIconSpriteHighlighted = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_yellow");
             _switchButtonTransforms.Add(ItemType.Consumable, consumablesButton.GetComponent<RectTransform>());
             _switchButtonTransforms.Add(ItemType.Equipment, equipmentsButton.GetComponent<RectTransform>());
             _switchButtonTransforms.Add(ItemType.Material, materialsButton.GetComponent<RectTransform>());
@@ -151,7 +151,7 @@ namespace Nekoyume.UI.Module
             {
                 case ItemType.Equipment:
                     equipmentsButtonImage.sprite = _selectedButtonSprite;
-                    equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteBlue;
+                    equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteHighlighted;
                     consumablesButtonImage.sprite = _deselectedButtonSprite;
                     consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteBlack;
                     materialsButtonImage.sprite = _deselectedButtonSprite;
@@ -165,7 +165,7 @@ namespace Nekoyume.UI.Module
                     equipmentsButtonImage.sprite = _deselectedButtonSprite;
                     equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteBlack;
                     consumablesButtonImage.sprite = _selectedButtonSprite;
-                    consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteBlue;
+                    consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteHighlighted;
                     materialsButtonImage.sprite = _deselectedButtonSprite;
                     materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlack;
                     scrollerController.SetData(SharedModel.Consumables);
@@ -179,7 +179,7 @@ namespace Nekoyume.UI.Module
                     consumablesButtonImage.sprite = _deselectedButtonSprite;
                     consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteBlack;
                     materialsButtonImage.sprite = _selectedButtonSprite;
-                    materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlue;
+                    materialsButtonIconImage.sprite = _materialsButtonIconSpriteHighlighted;
                     scrollerController.SetData(SharedModel.Materials);
                     equipmentsButtonText.gameObject.SetActive(true);
                     consumablesButtonText.gameObject.SetActive(true);

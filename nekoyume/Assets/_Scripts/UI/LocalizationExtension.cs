@@ -200,8 +200,8 @@ namespace Nekoyume.UI
             {
                 case Equipment equipment:
                     return equipment.level > 0
-                        ? $"<color=#{GetColorHexByGrade(item)}>+{equipment.level}</color> {name}"
-                        : name;
+                        ? $"<color=#{GetColorHexByGrade(item)}>+{equipment.level} {name}</color>"
+                        : $"<color=#{GetColorHexByGrade(item)}>{name}</color>";
                 default:
                     return $"<color=#{GetColorHexByGrade(item)}>{name}</color>";
             }
