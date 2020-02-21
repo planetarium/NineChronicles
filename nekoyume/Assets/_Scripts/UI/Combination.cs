@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Assets.SimpleLocalization;
+using Libplanet;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -115,6 +117,18 @@ namespace Nekoyume.UI
             enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 ActionEnhanceEquipment();
+                StartCoroutine(CoCombineNPCAnimation());
+            }).AddTo(gameObject);
+
+            equipmentCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                ActionEnhancedCombinationEquipment(equipmentCombinationPanel);
+                StartCoroutine(CoCombineNPCAnimation());
+            }).AddTo(gameObject);
+
+            elementalCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                ActionEnhancedCombinationEquipment(elementalCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
 
@@ -352,7 +366,7 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(false);
 
                     var selectedRecipe = equipmentRecipe.selectedRecipe;
-                    bool isElemental = selectedRecipe.Data.ElementalType != ElementalType.Normal;
+                    var isElemental = selectedRecipe.elementalType != ElementalType.Normal;
 
                     if (isElemental)
                     {
@@ -499,6 +513,16 @@ namespace Nekoyume.UI
             enhanceEquipment.RemoveMaterialsAll();
         }
 
+        private void ActionEnhancedCombinationEquipment(EquipmentCombinationPanel combinationPanel)
+        {
+            var model = combinationPanel.recipeCellView.model;
+            var subRecipeId = model.SubRecipeIds.Any()
+                ? model.SubRecipeIds.First()
+                : (int?) null;
+            UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
+            CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId);
+        }
+
         private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
             IEnumerable<(Material material, int count)> materialInfoList)
         {
@@ -530,6 +554,7 @@ namespace Nekoyume.UI
             }
         }
 
+
         private void CreateCombinationAction(List<(Material material, int count)> materialInfoList)
         {
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
@@ -544,6 +569,13 @@ namespace Nekoyume.UI
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
+        }
+
+        private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId)
+        {
+            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
+            Notification.Push(MailType.Workshop, msg);
+            Game.Game.instance.ActionManager.CombinationEquipment(recipeId, subRecipeId);
         }
 
         #endregion
