@@ -113,7 +113,16 @@ namespace Nekoyume.UI
                     });
                     break;
                 case WidgetType.Hud:
+                    break;
                 case WidgetType.Animation:
+                    if(widget is AnimationScreen)
+                    {
+                        Pool.Add(type, new PoolElementModel
+                        {
+                            gameObject = go,
+                            widget = widget
+                        });
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
