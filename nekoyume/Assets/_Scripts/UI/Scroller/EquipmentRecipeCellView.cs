@@ -1,9 +1,12 @@
-﻿using Nekoyume.Model.Item;
+﻿using System;
+using System.Linq;
+using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using TMPro;
-using Nekoyume.Model.Stat;
+using Nekoyume.TableData;
 using UnityEngine.UI;
 using UniRx;
 
@@ -17,7 +20,9 @@ namespace Nekoyume.UI.Scroller
         public TextMeshProUGUI optionText;
         public SimpleCountableItemView itemView;
 
-        public Equipment model;
+        public EquipmentItemRecipeSheet.Row model;
+        public ItemSubType itemSubType;
+        public ElementalType elementalType;
 
         public readonly Subject<EquipmentRecipeCellView> OnClick = new Subject<EquipmentRecipeCellView>();
 
@@ -39,20 +44,31 @@ namespace Nekoyume.UI.Scroller
             gameObject.SetActive(false);
         }
 
-        public void Set(Equipment equipment)
+        public void Set(EquipmentItemRecipeSheet.Row recipeRow)
         {
-            model = equipment;
+            if (recipeRow is null)
+                return;
+
+            var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            var row = equipmentSheet.Values.FirstOrDefault(i => i.Id == recipeRow.ResultEquipmentId);
+            if (row is null)
+                return;
+
+            model = recipeRow;
+
+            var equipment = (Equipment) ItemFactory.Create(row, Guid.Empty);
+            itemSubType = row.ItemSubType;
+            elementalType = row.ElementalType;
 
             titleText.text = equipment.GetLocalizedName();
 
-            var item = new CountableItem(model, 1);
+            var item = new CountableItem(equipment, 1);
             itemView.SetData(item);
 
-            var data = equipment.Data;
-            var sprite = data.ElementalType.GetSprite();
-            var grade = data.Grade;
+            var sprite = row.ElementalType.GetSprite();
+            var grade = row.Grade;
 
-            for (int i = 0; i < elementalTypeImages.Length; ++i)
+            for (var i = 0; i < elementalTypeImages.Length; ++i)
             {
                 if (sprite is null || i >= grade)
                 {
@@ -64,9 +80,7 @@ namespace Nekoyume.UI.Scroller
                 elementalTypeImages[i].gameObject.SetActive(true);
             }
 
-            StatType statKey = model.UniqueStatType;
-            int statValue = model.StatsMap.GetStat(model.UniqueStatType);
-            string text = $"{statKey} +{statValue}";
+            var text = $"{row.Stat.Type} +{row.Stat.Value}";
             optionText.text = text;
         }
     }
