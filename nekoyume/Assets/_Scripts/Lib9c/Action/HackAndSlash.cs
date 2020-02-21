@@ -77,6 +77,52 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"HAS Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
+            
+            // 장비가 유효한지 검사한다.
+            {
+                var level = avatarState.level;
+                var ringCount = 0;
+                var failed = false;
+                foreach (var equipment in equipments)
+                {
+                    switch (equipment.Data.ItemSubType)
+                    {
+                        case ItemSubType.Weapon:
+                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                            break;
+                        case ItemSubType.Armor:
+                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                            break;
+                        case ItemSubType.Belt:
+                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                            break;
+                        case ItemSubType.Necklace:
+                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                            break;
+                        case ItemSubType.Ring:
+                            ringCount++;
+                            var requireLevel = ringCount == 1
+                                ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
+                                : ringCount == 2
+                                    ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
+                                    : int.MaxValue;
+                            failed = level < requireLevel;
+                            break;
+                        default:
+                            failed = true;
+                            break;
+                    }
+
+                    if (failed)
+                        break;
+                }
+
+                if (failed)
+                {
+                    // 장비가 유효하지 않은 에러.
+                    return states;
+                }
+            }
 
             if (avatarState.actionPoint < GameConfig.HackAndSlashCostAP)
             {

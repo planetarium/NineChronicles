@@ -812,15 +812,15 @@ namespace Nekoyume.Game
                 yield break;
 
             var key = string.Empty;
-            if (stageId == GameConfig.RequireStage.UIMainMenuCombination)
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
             {
                 key = "UI_UNLOCK_COMBINATION";
             }
-            else if (stageId == GameConfig.RequireStage.UIMainMenuShop)
+            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
                 key = "UI_UNLOCK_SHOP";
             }
-            else if (stageId == GameConfig.RequireStage.UIMainMenuRankingBoard)
+            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
             {
                 key = "UI_UNLOCK_RANKING";
             }
