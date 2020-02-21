@@ -94,6 +94,8 @@ namespace Nekoyume.Game.Character
             }
 
             SpeechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
+            if(!(this is EnemyPlayer))
+                Widget.Find<UI.Battle>().comboText.comboMax = CharacterModel.AttackCountMax;
         }
 
         protected override IEnumerator Dying()
