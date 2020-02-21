@@ -31,11 +31,11 @@ namespace Nekoyume.TableData
         {
             public override int Key => Id;
             public int Id { get; private set; }
-            public int RequiredActionPoint;
-            public long RequiredGold;
-            public int UnlockStage;
-            public List<MaterialInfo> Materials;
-            public List<OptionInfo> Options;
+            public int RequiredActionPoint { get; private set; }
+            public long RequiredGold { get; private set; }
+            public int UnlockStage { get; private set; }
+            public List<MaterialInfo> Materials { get; private set; }
+            public List<OptionInfo> Options { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
