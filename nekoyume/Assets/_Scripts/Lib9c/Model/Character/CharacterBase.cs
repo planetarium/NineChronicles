@@ -431,6 +431,12 @@ namespace Nekoyume.Model
 
                     return shouldContain;
                 }).ToList();
+                
+                // 기존 버프와 중복하는 것을 걷어내고 나니 사용할 스킬이 없는 경우에는 전체를 다시 고려한다.
+                if (!skills.Any())
+                {
+                    skills = _skills;
+                }
             }
 
             var selected = skills

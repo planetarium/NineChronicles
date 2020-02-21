@@ -42,7 +42,7 @@ namespace Nekoyume.Model.Buff
                 if (!buffSheet.TryGetValue(buffId, out var buffRow))
                     continue;
 
-                buffs.Add(BuffFactory.Get(buffRow));
+                buffs.Add(Get(buffRow));
             }
 
             return buffs;
