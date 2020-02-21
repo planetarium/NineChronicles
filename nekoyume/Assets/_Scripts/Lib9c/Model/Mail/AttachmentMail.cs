@@ -11,7 +11,7 @@ namespace Nekoyume.Model.Mail
     {
         public AttachmentActionResult attachment;
 
-        protected AttachmentMail(AttachmentActionResult attachmentActionResult, long blockIndex) : base(blockIndex)
+        protected AttachmentMail(AttachmentActionResult attachmentActionResult, long blockIndex, Guid id) : base(blockIndex, id)
         {
             attachment = attachmentActionResult;
         }
