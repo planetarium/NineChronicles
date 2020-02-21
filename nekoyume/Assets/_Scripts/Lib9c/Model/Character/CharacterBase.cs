@@ -402,6 +402,8 @@ namespace Nekoyume.Model
                 skills = skills.Where(skill =>
                 {
                     var skillId = skill.skillRow.Id;
+                    
+                    // 버프가 없는 스킬이면 포함한다.
                     if (!skillBuffSheet.TryGetValue(skillId, out var row))
                         return true;
 
@@ -416,6 +418,7 @@ namespace Nekoyume.Model
                             break;
                         }
 
+                        // 버프 정보 얻어오기 실패.
                         if (!buffSheet.TryGetValue(buffId, out var buffRow))
                             continue;
 
