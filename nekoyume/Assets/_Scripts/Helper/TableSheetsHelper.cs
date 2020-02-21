@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Nekoyume.Extension;
 using Nekoyume.TableData;
-using UniRx.Async;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -10,10 +10,10 @@ namespace Nekoyume.Helper
     {
         private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
-        public static async Task<TableSheets> MakeTableSheetsAsync()
+        public static async Task<TableSheets> MakeTableSheetsAsync(MonoBehaviour monoBehaviour)
         {
             var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
-            await request;
+            await monoBehaviour.StartCoroutineAsync(request);
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
                 throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
 

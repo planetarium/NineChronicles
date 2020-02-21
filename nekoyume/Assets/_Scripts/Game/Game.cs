@@ -80,7 +80,7 @@ namespace Nekoyume.Game
         private IEnumerator Start()
         {
             yield return Addressables.InitializeAsync();
-            var task = TableSheetsHelper.MakeTableSheetsAsync();
+            var task = TableSheetsHelper.MakeTableSheetsAsync(this);
             yield return task.AsIEnumerator();
             TableSheets = task.Result;
             AudioController.instance.Initialize();
