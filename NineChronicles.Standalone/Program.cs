@@ -94,8 +94,8 @@ namespace NineChronicles.Standalone
                 };
 
             var service = new LibplanetNodeService<NineChroniclesActionType>(properties, blockPolicy, minerLoopAction);
-            var cancellationTokenSource = new CancellationTokenSource();
-            await service.StartAsync(cancellationTokenSource.Token);
+            
+            await service.StartAsync(default);
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)
