@@ -15,6 +15,8 @@ namespace Nekoyume.UI.Module
         public Image effectImage;
         public Image glowImage;
         public Image equippedIcon;
+        
+        protected override ImageSizeType imageSizeType => ImageSizeType.Middle;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 

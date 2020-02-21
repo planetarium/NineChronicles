@@ -3,7 +3,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
 using UnityEngine;
-
 namespace Nekoyume.UI
 {
     public class Battle : Widget, IToggleListener
@@ -13,7 +12,8 @@ namespace Nekoyume.UI
         public ToggleableButton repeatButton;
         public BossStatus enemyPlayerStatus;
         public StageProgressBar stageProgressBar;
-        
+        public ComboText comboText;
+
         protected override void Awake()
         {
             base.Awake();
@@ -30,6 +30,7 @@ namespace Nekoyume.UI
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
+            comboText.Close();
 
             if (isRepeat)
             {
@@ -40,7 +41,7 @@ namespace Nekoyume.UI
                 repeatButton.SetToggledOff();
             }
 
-            if (stageId > GameConfig.RequireStage.UIBottomMenuInBattle)
+            if (stageId > GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
             {
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.Show(
@@ -102,6 +103,12 @@ namespace Nekoyume.UI
         {
             Game.Game.instance.Stage.isExitReserved = false;
             Find<BottomMenu>().exitButton.SharedModel.IsEnabled.Value = false;
+        }
+
+        public void ShowComboText(bool attacked)
+        { 
+            comboText.StopAllCoroutines();
+            comboText.Show(attacked);
         }
 
         private void OnGetItem(DropItem dropItem)

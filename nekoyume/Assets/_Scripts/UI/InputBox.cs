@@ -1,6 +1,7 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using TMPro;
+using UniRx;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
@@ -56,6 +57,12 @@ namespace Nekoyume.UI
             base.Show();
             blur?.Show();
             inputField.Select();
+
+            Observable.NextFrame().Subscribe(_ =>
+            {
+                inputField.placeholder.transform.SetAsFirstSibling();
+                inputField.textComponent.transform.SetAsFirstSibling();
+            });
         }
 
         public void Yes()

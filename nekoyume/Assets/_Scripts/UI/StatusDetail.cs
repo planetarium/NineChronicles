@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
@@ -57,17 +59,10 @@ namespace Nekoyume.UI
             _player = Game.Game.instance.Stage.selectedPlayer;
             var player = _player.Model;
 
-            // equip slot
-            if (equipmentSlots is null)
-                throw new NotFoundComponentException<EquipmentSlots>();
-
+            equipmentSlots.SetPlayer(_player.Model);
             foreach (var equipment in _player.Equipments)
             {
-                if (!equipmentSlots.TryGetToEquip(equipment, out var slot))
-                    continue;
-                
-                slot.Set(equipment);
-                slot.SetOnClickAction(ShowTooltip, null);
+                equipmentSlots.TryToEquip(equipment, ShowTooltip, null);
             }
 
             // status info
@@ -105,14 +100,14 @@ namespace Nekoyume.UI
             var tooltip = Find<ItemInformationTooltip>();
             
             if (slot is null ||
-                slot.item is null ||
+                slot.Item is null ||
                 slot.RectTransform == tooltip.Target)
             {
                 tooltip.Close();
                 return;
             }
             
-            tooltip.Show(slot.RectTransform, new CountableItem(slot.item, 1));
+            tooltip.Show(slot.RectTransform, new CountableItem(slot.Item, 1));
         }
 
         public void CloseClick()
