@@ -140,8 +140,8 @@ namespace Nekoyume.Action
             Log.Debug($"HAS Simulator.Simulate(): {sw.Elapsed}");
             sw.Restart();
 
-            Log.Debug($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log?.result}");
-            if (simulator.Result == BattleLog.Result.Win && simulator.Log?.clearedWave == 3)
+            Log.Debug($"Execute HackAndSlash. worldId: {worldId} stageId: {stageId} result: {simulator.Log.result}");
+            if (simulator.Result == BattleLog.Result.Win && simulator.Log.clearedWaveNumber == simulator.Log.waveCount)
             {
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
@@ -157,7 +157,7 @@ namespace Nekoyume.Action
 
             avatarState.Update(simulator);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx).ToList();
+            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());

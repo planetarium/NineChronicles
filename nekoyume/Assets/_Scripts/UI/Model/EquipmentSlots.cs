@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using UnityEngine;
 
@@ -9,7 +8,8 @@ namespace Nekoyume.UI.Model
 {
     public class EquipmentSlots : MonoBehaviour, IEnumerable<EquipmentSlot>
     {
-        public EquipmentSlot[] slots;
+        [SerializeField]
+        private EquipmentSlot[] slots = null;
 
         private void Awake()
         {
@@ -17,31 +17,53 @@ namespace Nekoyume.UI.Model
                 throw new NotFoundComponentException<EquipmentSlot>(gameObject);
         }
 
-        public bool TryGet(ItemSubType type, out EquipmentSlot slot)
+        /// <summary>
+        /// `equipment`를 장착하기 위한 슬롯을 반환한다.
+        /// 반지의 경우 이미 장착되어 있는 슬롯이 있다면 이를 반환한다.
+        /// </summary>
+        /// <param name="equipment"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot)
         {
-            if (type == ItemSubType.Ring)
+            var itemSubType = equipment.Data.ItemSubType;
+            var typeSlots = slots.Where(e => e.itemSubType == itemSubType).ToList();
+            if (!typeSlots.Any())
             {
-                slot = slots.FirstOrDefault(es => es.itemSubType == ItemSubType.Ring && es.item?.Data is null)
-                       ?? slots.First(es => es.itemSubType == ItemSubType.Ring);
-                return slot;
+                slot = null;
+                return false;
             }
 
-            slot = slots.FirstOrDefault(es => es.itemSubType == type);
+            if (itemSubType == ItemSubType.Ring)
+            {
+                var itemId = equipment.ItemId;
+                slot = typeSlots.FirstOrDefault(e => !e.IsEmpty && e.item.ItemId.Equals(itemId))
+                       ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
+                       ?? typeSlots.First();
+            }
+            else
+            {
+                slot = typeSlots.First();
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// `equipment`가 이미 장착되어 있는 슬롯을 반환한다.
+        /// </summary>
+        /// <param name="equipment"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public bool TryGetAlreadyEquip(Equipment equipment, out EquipmentSlot slot)
+        {
+            slot = slots.FirstOrDefault(e => !e.IsEmpty && e.item.Equals(equipment));
             return slot;
         }
 
-        public EquipmentSlot FindSlotWithItem(ItemUsable item)
-        {
-            foreach (var slot in slots)
-            {
-                if (item.Equals(slot.item))
-                {
-                    return slot;
-                }
-            }
-            return null;
-        }
-
+        /// <summary>
+        /// 모든 슬롯을 해제한다.
+        /// </summary>
         public void Clear()
         {
             foreach (var slot in slots)

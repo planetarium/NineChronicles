@@ -31,7 +31,7 @@ namespace Nekoyume.UI
             public bool ActionPointNotEnough;
             public bool ShouldExit;
             public bool ShouldRepeat;
-            public int ClearedWave;
+            public int ClearedWaveNumber;
 
             public IReadOnlyList<CountableItem> Rewards => _rewards;
 
@@ -165,12 +165,11 @@ namespace Nekoyume.UI
             StartCoroutine(EmitBattleWinVFX());
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionBattleWin);
 
-            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWave);
+            _victoryImageAnimator.SetInteger("ClearedWave", SharedModel.ClearedWaveNumber);
             victoryImageContainer.SetActive(true);
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
             defeatTextArea.root.SetActive(false);
-            bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
             stageProgressBar.Show();
@@ -187,18 +186,19 @@ namespace Nekoyume.UI
                 submitButton.gameObject.SetActive(false);
                 SubmitWidget = closeButton.onClick.Invoke;
             }
-
-            yield return StartCoroutine(CoUpdateRewards());
-
+            
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
+            yield return StartCoroutine(CoUpdateRewards());
         }
 
         private IEnumerator EmitBattleWinVFX()
         {
             yield return _battleWinVFXYield;
             AudioController.instance.PlaySfx(AudioController.SfxCode.Win);
-            switch (SharedModel.ClearedWave)
+            switch (SharedModel.ClearedWaveNumber)
             {
+                case 0:
+                    break;
                 case 1:
                     _battleWin01VFX =
                         VFXController.instance.Create<BattleWin01VFX>(ActionCamera.instance.transform,
@@ -209,7 +209,7 @@ namespace Nekoyume.UI
                         VFXController.instance.Create<BattleWin02VFX>(ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
-                case 3:
+                default:
                     _battleWin03VFX =
                         VFXController.instance.Create<BattleWin03VFX>(ActionCamera.instance.transform,
                             VfxBattleWinOffset);
@@ -248,7 +248,7 @@ namespace Nekoyume.UI
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
                 var view = rewardsArea.rewards[i];
-                var cleared = SharedModel.ClearedWave > i;
+                var cleared = SharedModel.ClearedWaveNumber > i;
                 if (i == 0)
                 {
                     view.Set(SharedModel.Exp, cleared);
@@ -292,10 +292,10 @@ namespace Nekoyume.UI
                 fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
             }
 
-
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
-            bottomText.enabled = true;
 
+            yield return new WaitUntil(() => IsCloseAnimationCompleted);
+            
             var floatTime = (float) limitSeconds;
             var floatTimeMinusOne = limitSeconds - 1f;
             while (limitSeconds > 0)
@@ -347,6 +347,7 @@ namespace Nekoyume.UI
             var stageId = SharedModel.ShouldRepeat
                 ? stage.stageId
                 : stage.stageId + 1;
+            ActionRenderHandler.Instance.Pending = true;
             yield return Game.Game.instance.ActionManager
                 .HackAndSlash(player.Equipments, new List<Consumable>(), worldId, stageId)
                 .Subscribe(_ => { }, (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));

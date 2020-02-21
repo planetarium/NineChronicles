@@ -16,6 +16,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
@@ -24,12 +25,13 @@ namespace Nekoyume.Action
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
         public ResultModel result;
-        public IImmutableList<int> completedQuestIds;
+        public List<int> completedQuestIds;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
             protected override string TypeId => "itemEnhancement.result";
+            public Guid id;
             public IEnumerable<Guid> materialItemIdList;
             public decimal gold;
             public int actionPoint;
@@ -41,7 +43,14 @@ namespace Nekoyume.Action
             public ResultModel(Bencodex.Types.Dictionary serialized)
                 : base(serialized)
             {
+                id = serialized["id"].ToGuid();
             }
+
+            public override IValue Serialize() =>
+                new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "id"] = id.Serialize()
+                }.Union((Bencodex.Types.Dictionary)base.Serialize()));
         }
 
         public override IAccountStateDelta Execute(IActionContext ctx)
@@ -176,10 +185,12 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"ItemEnhancement Remove Materials: {sw.Elapsed}");
             sw.Restart();
-            var mail = new ItemEnhanceMail(result, ctx.BlockIndex)
+            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid())
             {
                 New = false
             };
+            result.id = mail.id;
+
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);

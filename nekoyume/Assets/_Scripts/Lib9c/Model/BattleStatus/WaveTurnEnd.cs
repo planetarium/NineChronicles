@@ -6,17 +6,18 @@ namespace Nekoyume.Model.BattleStatus
     [Serializable]
     public class WaveTurnEnd : EventBase
     {
+        public readonly int TurnNumber;
         public readonly int WaveTurn;
-        public readonly int Turn;
-        public WaveTurnEnd(CharacterBase character, int waveTurn, int turn) : base(character)
-        {
+        
+        public WaveTurnEnd(CharacterBase character, int turnNumber, int waveTurn) : base(character)
+        {   
+            TurnNumber = turnNumber;
             WaveTurn = waveTurn;
-            Turn = turn;
         }
 
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield return stage.CoWaveTurnEnd(WaveTurn, Turn);
+            yield return stage.CoWaveTurnEnd(TurnNumber, WaveTurn);
         }
     }
 }

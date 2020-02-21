@@ -13,7 +13,7 @@ namespace Nekoyume.UI
     /// Status 위젯과 함께 사용할 때에는 해당 위젯 하위에 포함되어야 함.
     /// 지금은 별도의 위젯으로 작동하는데, 이 때문에 위젯 라이프 사이클의 일관성을 잃음.(스스로 닫으면 안 되는 예외 발생)
     /// </summary>
-    public class StatusDetail : Widget
+    public class StatusDetail : XTweenWidget
     {
         public TextMeshProUGUI statusTitleText;
         public TextMeshProUGUI equipmentTitleText;
@@ -63,7 +63,7 @@ namespace Nekoyume.UI
 
             foreach (var equipment in _player.Equipments)
             {
-                if (!equipmentSlots.TryGet(equipment.Data.ItemSubType, out var slot))
+                if (!equipmentSlots.TryGetToEquip(equipment, out var slot))
                     continue;
                 
                 slot.Set(equipment);
