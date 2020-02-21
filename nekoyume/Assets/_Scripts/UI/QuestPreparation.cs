@@ -268,9 +268,10 @@ namespace Nekoyume.UI
 
         private IEnumerator CoQuestClick(bool repeat)
         {
-            var animation = ItemMoveAnimation.Show(actionPointImage.sprite, 
-                actionPointImage.transform.position, 
-                buttonStarImageTransform.position, 
+            questButton.interactable = false;
+            var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
+                actionPointImage.transform.position,
+                buttonStarImageTransform.position,
                 moveToLeft,
                 animationTime,
                 middleXGap);
