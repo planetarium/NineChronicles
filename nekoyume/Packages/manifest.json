@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.neuecc.unirx": "https://github.com/starikcetin/unirx.git#f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
     "com.unity.addressables": "1.1.10",
     "com.unity.analytics": "3.3.2",
     "com.unity.collab-proxy": "1.2.16",
@@ -39,5 +40,11 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
+  },
+  "lock": {
+    "com.neuecc.unirx": {
+      "hash": "f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
+      "revision": "f93af89f2aafeccfc7aff9dee2cecc6d60ede06b"
+    }
   }
 }
