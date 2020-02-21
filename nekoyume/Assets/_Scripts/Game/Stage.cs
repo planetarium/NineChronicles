@@ -429,6 +429,7 @@ namespace Nekoyume.Game
             if (_rankingBattle)
             {
                 battle.Show();
+                battle.comboText.Close();
                 battle.stageProgressBar.Close();
             }
             else
