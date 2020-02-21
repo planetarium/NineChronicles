@@ -274,6 +274,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoQuestClick(bool repeat)
         {
+            questButton.interactable = false;
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite, actionPointImage.transform.position, buttonStarImageTransform.position, moveToLeft, animationTime, middleXGap);
             yield return new WaitWhile(() => animation.IsPlaying);
             Quest(repeat);

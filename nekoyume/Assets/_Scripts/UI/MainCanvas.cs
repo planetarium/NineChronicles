@@ -181,10 +181,6 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
-            // 애니메이션류.
-            _secondWidgets.Add(Widget.Create<AnimationScreen>());
-            yield return null;
-
             Widget last = null;
             foreach (var value in _secondWidgets)
             {
