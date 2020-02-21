@@ -6,10 +6,13 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.TableData
 {
+    /// <summary>
+    /// 어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.
+    /// </summary>
     [Serializable]
     public class TableSheets
     {   
-        private static readonly LruCache<TableSheetsState, TableSheets> _cache = 
+        private static readonly LruCache<TableSheetsState, TableSheets> Cache = 
         new LruCache<TableSheetsState, TableSheets>();
 
         public WorldSheet WorldSheet { get; private set; }
@@ -188,7 +191,7 @@ namespace Nekoyume.TableData
         /// TableSheetsState를 기준으로 초기화합니다.
         /// </summary>
         /// <param name="tableSheetsState">기준으로 삼을 상태입니다.</param>
-        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState)
+        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState) 
         {
             foreach (var pair in tableSheetsState.TableSheets)
             {
@@ -200,14 +203,14 @@ namespace Nekoyume.TableData
 
         public static TableSheets FromTableSheetsState(TableSheetsState tableSheetsState)
         {
-            if (_cache.TryGetValue(tableSheetsState, out var cached)) 
+            if (Cache.TryGetValue(tableSheetsState, out var cached)) 
             {
                 return cached;
             }
             var tableSheets = new TableSheets();
             tableSheets.InitializeWithTableSheetsState(tableSheetsState);
 
-            _cache.Add(tableSheetsState, tableSheets);
+            Cache.Add(tableSheetsState, tableSheets);
             return tableSheets;
         }
 

@@ -185,7 +185,16 @@ namespace Nekoyume.Model
 
         private void SelectSkill()
         {
-            _selectedSkill = Skills.Select(Simulator.Random);
+            if (Targets.Any())
+            {
+                var target = Targets[0];
+                _selectedSkill = Skills.Select(Simulator.Random, target.Buffs, Simulator.TableSheets.SkillBuffSheet,
+                    Simulator.TableSheets.BuffSheet);
+            }
+            else
+            {
+                _selectedSkill = Skills.Select(Simulator.Random, null, null, null);
+            }
         }
 
         private void UseSkill()
@@ -380,9 +389,51 @@ namespace Nekoyume.Model
             return GetEnumerator();
         }
 
-        public Skill.Skill Select(IRandom random)
+        public Skill.Skill Select(IRandom random, Dictionary<int, Buff.Buff> buffs, SkillBuffSheet skillBuffSheet,
+            BuffSheet buffSheet)
         {
-            var selected = _skills
+            var skills = _skills;
+
+            if (!(buffs is null) &&
+                !(skillBuffSheet is null) &&
+                !(buffSheet is null))
+            {
+                // 기존에 걸려 있는 버프들과 겹치지 않는 스킬만 골라내기.
+                skills = skills.Where(skill =>
+                {
+                    var skillId = skill.skillRow.Id;
+                    if (!skillBuffSheet.TryGetValue(skillId, out var row))
+                        return true;
+
+                    // 이 스킬을 포함해야 하는가? 기본 네.
+                    var shouldContain = true;
+                    foreach (var buffId in row.BuffIds)
+                    {
+                        // 기존 버프 중 ID가 같은 것이 있을 경우 아니오.
+                        if (buffs.Values.Any(buff => buff.RowData.Id == buffId))
+                        {
+                            shouldContain = false;
+                            break;
+                        }
+
+                        if (!buffSheet.TryGetValue(buffId, out var buffRow))
+                            continue;
+
+                        // 기존 버프 중 그룹 ID가 같고, ID가 크거나 같은 것이 있을 경우 아니오.
+                        if (buffs.Values.Any(buff =>
+                            buff.RowData.GroupId == buffRow.GroupId &&
+                            buff.RowData.Id >= buffRow.Id))
+                        {
+                            shouldContain = false;
+                            break;
+                        }
+                    }
+
+                    return shouldContain;
+                }).ToList();
+            }
+
+            var selected = skills
                 .Select(skill => new {skill, chance = random.Next(0, 100)})
                 .Where(t => t.skill.chance > t.chance)
                 .OrderBy(t => t.skill.skillRow.Id)
