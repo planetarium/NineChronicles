@@ -39,6 +39,7 @@ namespace NineChronicles.Standalone
             ushort? port = null,
             [Option("private-key")]
             string privateKeyString = null,
+            string storeType = null,
             string storePath = null,
             [Option("ice-server", new [] { 'I', })]
             string[] iceServerStrings = null,
@@ -68,6 +69,7 @@ namespace NineChronicles.Standalone
                 PrivateKey = privateKey,
                 IceServers = iceServerStrings.Select(LoadIceServer),
                 Peers = peerStrings.Select(LoadPeer),
+                StoreType = storeType,
                 StorePath = storePath,
             };
 
