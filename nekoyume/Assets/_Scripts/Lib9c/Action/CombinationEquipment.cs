@@ -130,17 +130,21 @@ namespace Nekoyume.Action
                         return states;
                     }
 
-                    if (optionRow.StatType != StatType.NONE)
+                    var random = ctx.Random;
+                    if (optionInfo.Ratio > random.Next(0, 100) * 0.01m)
                     {
-                        var statMap = GetStat(optionRow, ctx.Random);
-                        equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-                    }
-                    else
-                    {
-                        var skill = GetSkill(optionRow, tableSheets, ctx.Random);
-                        if (!(skill is null))
+                        if (optionRow.StatType != StatType.NONE)
                         {
-                            equipment.Skills.Add(skill);
+                            var statMap = GetStat(optionRow, ctx.Random);
+                            equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                        }
+                        else
+                        {
+                            var skill = GetSkill(optionRow, tableSheets, ctx.Random);
+                            if (!(skill is null))
+                            {
+                                equipment.Skills.Add(skill);
+                            }
                         }
                     }
                 }

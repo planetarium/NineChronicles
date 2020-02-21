@@ -6,8 +6,8 @@ namespace Nekoyume.TableData
     {
         public struct MaterialInfo
         {
-            public int Id;
-            public int Count;
+            public readonly int Id;
+            public readonly int Count;
 
             public MaterialInfo(int id, int count)
             {
@@ -18,10 +18,10 @@ namespace Nekoyume.TableData
 
         public struct OptionInfo
         {
-            public int Id;
-            public decimal Ratio;
+            public readonly int Id;
+            public readonly int Ratio;
 
-            public OptionInfo(int id, decimal ratio)
+            public OptionInfo(int id, int ratio)
             {
                 Id = id;
                 Ratio = ratio;
