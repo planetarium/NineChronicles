@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.EnumType;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -68,6 +69,7 @@ namespace Nekoyume.UI.Module
         public NotifiableButton settingsButton;
 
         public CanvasGroup canvasGroup;
+        public VFX inventoryVFX;
         private Animator _inventoryAnimator;
 
         [SerializeField] private RectTransform _buttons = null;
@@ -251,6 +253,7 @@ namespace Nekoyume.UI.Module
             if (_inventoryAnimator)
             {
                 _inventoryAnimator.Play("GetItem");
+                inventoryVFX.Play();
             }
         }
 
