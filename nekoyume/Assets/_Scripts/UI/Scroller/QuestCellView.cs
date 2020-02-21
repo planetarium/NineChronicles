@@ -67,7 +67,13 @@ namespace Nekoyume.UI.Scroller
             foreach(var view in rewardViews)
             {
                 if (view.gameObject.activeSelf)
-                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id), view.transform.position, Widget.Find<BottomMenu>().inventoryButton.transform.position, moveToLeft, animationTime, middleXGap);
+                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id), 
+                        view.transform.position, 
+                        Widget.Find<BottomMenu>().inventoryButton.transform.position, 
+                        moveToLeft,
+                        animationTime,
+                        middleXGap,
+                        true);
             }
             var quest = Widget.Find<Quest>();   
             RequestReward();
