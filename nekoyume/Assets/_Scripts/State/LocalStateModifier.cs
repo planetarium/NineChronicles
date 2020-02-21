@@ -178,10 +178,10 @@ namespace Nekoyume.State
         /// `avatarAddress`에 해당하는 아바타 상태의 `MailBox` 안에 `AttachmentMail` 리스트 중, `guid`를 보상으로 갖고 있는 메일을 신규 처리한다.(비휘발성)
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="guid"></param>
-        public static void AddNewAttachmentMail(Address avatarAddress, Guid guid)
+        /// <param name="mailId"></param>
+        public static void AddNewAttachmentMail(Address avatarAddress, Guid mailId)
         {
-            var modifier = new AvatarAttachmentMailNewSetter(guid);
+            var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
             if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
@@ -199,10 +199,10 @@ namespace Nekoyume.State
         /// `AddNewAttachmentMail()` 메서드 로직을 회귀한다.(비휘발성)
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="guid"></param>
-        public static void RemoveNewAttachmentMail(Address avatarAddress, Guid guid)
+        /// <param name="mailId"></param>
+        public static void RemoveNewAttachmentMail(Address avatarAddress, Guid mailId)
         {
-            var modifier = new AvatarAttachmentMailNewSetter(guid);
+            var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
             TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
         }
