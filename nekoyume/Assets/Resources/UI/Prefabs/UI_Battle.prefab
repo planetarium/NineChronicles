@@ -812,7 +812,7 @@ PrefabInstance:
     - target: {fileID: 5227881270911501946, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -97
       objectReference: {fileID: 0}
     - target: {fileID: 5227881270911501946, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
@@ -891,6 +891,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 688452911084739667}
     m_Modifications:
+    - target: {fileID: 7742241639680412019, guid: ea5ea545114c7784a8dc5248da82ebc7,
+        type: 3}
+      propertyPath: m_Name
+      value: UI_BossStatus
+      objectReference: {fileID: 0}
+    - target: {fileID: 7742241639680412019, guid: ea5ea545114c7784a8dc5248da82ebc7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7742241639680412028, guid: ea5ea545114c7784a8dc5248da82ebc7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -996,16 +1006,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 7742241639680412019, guid: ea5ea545114c7784a8dc5248da82ebc7,
-        type: 3}
-      propertyPath: m_Name
-      value: UI_BossStatus
-      objectReference: {fileID: 0}
-    - target: {fileID: 7742241639680412019, guid: ea5ea545114c7784a8dc5248da82ebc7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8527056056271361818, guid: ea5ea545114c7784a8dc5248da82ebc7,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -1103,6 +1103,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 688452911084739667}
     m_Modifications:
+    - target: {fileID: 8108601345447870424, guid: 73750b63d109a0a49b8f61418fcee5ae,
+        type: 3}
+      propertyPath: m_Name
+      value: UI_EnemyPlayerStatus
+      objectReference: {fileID: 0}
+    - target: {fileID: 8108601345447870424, guid: 73750b63d109a0a49b8f61418fcee5ae,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7068487444208850218, guid: 73750b63d109a0a49b8f61418fcee5ae,
         type: 3}
       propertyPath: animator
@@ -1212,16 +1222,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8108601345447870424, guid: 73750b63d109a0a49b8f61418fcee5ae,
-        type: 3}
-      propertyPath: m_Name
-      value: UI_EnemyPlayerStatus
-      objectReference: {fileID: 0}
-    - target: {fileID: 8108601345447870424, guid: 73750b63d109a0a49b8f61418fcee5ae,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8226122053239466122, guid: 73750b63d109a0a49b8f61418fcee5ae,
         type: 3}
