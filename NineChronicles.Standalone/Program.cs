@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Cocona;
+using Grpc.Core;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
@@ -11,11 +12,14 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
+using MagicOnion.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Serilog;
 
-using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>; 
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace NineChronicles.Standalone
 {
@@ -44,7 +48,12 @@ namespace NineChronicles.Standalone
             [Option("ice-server", new [] { 'I', })]
             string[] iceServerStrings = null,
             [Option("peer")]
-            string[] peerStrings = null
+            string[] peerStrings = null,
+            bool rpc = false,
+            [Option("rpc-host")]
+            string rpcHost = null,
+            [Option("rpc-port")]
+            int? rpcPort = null
         )
         {
             // Setup logger.
@@ -93,9 +102,52 @@ namespace NineChronicles.Standalone
                     }
                 };
 
-            var service = new LibplanetNodeService<NineChroniclesActionType>(properties, blockPolicy, minerLoopAction);
-            
-            await service.StartAsync(default);
+            var nodeService = new LibplanetNodeService<NineChroniclesActionType>(
+                properties, 
+                blockPolicy, 
+                minerLoopAction
+            );
+
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+
+            if (rpc)
+            {
+                if (string.IsNullOrEmpty(rpcHost))
+                {
+                    throw new CommandExitedException(
+                        "--rpc-host must be required when --rpc had been set.",
+                        -1
+                    );
+                }
+                else if (!(rpcPort is int rpcPortValue))
+                {
+                    throw new CommandExitedException(
+                        "--rpc-port must be required when --rpc had been set.",
+                        -1
+                    );
+                }
+                else
+                {
+                    hostBuilder = hostBuilder
+                        .UseMagicOnion(
+                            new ServerPort(rpcHost, rpcPortValue, ServerCredentials.Insecure)
+                        )
+                        .ConfigureServices((ctx, services) =>
+                        {
+                            services.AddHostedService(provider => new ActionEvaluationPublisher(
+                                nodeService.BlockChain,
+                                rpcHost,
+                                rpcPortValue
+                            ));
+                        });
+                }
+            }
+
+            await hostBuilder.ConfigureServices((ctx, services) =>
+            {
+                services.AddHostedService(provider => nodeService);
+                services.AddSingleton(provider => nodeService.BlockChain);
+            }).RunConsoleAsync();
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)
