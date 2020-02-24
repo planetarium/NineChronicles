@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.Model.State;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -18,9 +19,9 @@ namespace Nekoyume.TableData
             
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
-                Goal = int.Parse(fields[1]);
-                QuestRewardId = int.Parse(fields[2]);
+                Id = ParseInt(fields[0]);
+                Goal = ParseInt(fields[1]);
+                QuestRewardId = ParseInt(fields[2]);
             }
 
             public IValue Serialize() =>
