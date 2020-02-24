@@ -20,6 +20,8 @@ namespace Nekoyume.UI
         {
             var result = Create<ItemMoveAnimation>(true);
 
+            result.Show();
+            
             result.IsPlaying = true;
             result.itemImage.sprite = itemSprite;
             var rect = result.RectTransform;
@@ -61,7 +63,7 @@ namespace Nekoyume.UI
             }
             IsPlaying = false;
 
-            Destroy(gameObject);
+            Close();
         }
     }
 }
