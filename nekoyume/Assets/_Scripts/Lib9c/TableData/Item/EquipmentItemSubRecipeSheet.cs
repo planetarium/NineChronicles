@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -6,8 +7,8 @@ namespace Nekoyume.TableData
     {
         public struct MaterialInfo
         {
-            public int Id;
-            public int Count;
+            public readonly int Id;
+            public readonly int Count;
 
             public MaterialInfo(int id, int count)
             {
@@ -18,10 +19,10 @@ namespace Nekoyume.TableData
 
         public struct OptionInfo
         {
-            public int Id;
-            public decimal Ratio;
+            public readonly int Id;
+            public readonly int Ratio;
 
-            public OptionInfo(int id, decimal ratio)
+            public OptionInfo(int id, int ratio)
             {
                 Id = id;
                 Ratio = ratio;
@@ -31,31 +32,31 @@ namespace Nekoyume.TableData
         {
             public override int Key => Id;
             public int Id { get; private set; }
-            public int RequiredActionPoint;
-            public long RequiredGold;
-            public int UnlockStage;
-            public List<MaterialInfo> Materials;
-            public List<OptionInfo> Options;
+            public int RequiredActionPoint { get; private set; }
+            public long RequiredGold { get; private set; }
+            public int UnlockStage { get; private set; }
+            public List<MaterialInfo> Materials { get; private set; }
+            public List<OptionInfo> Options { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
-                RequiredActionPoint = int.Parse(fields[1]);
-                RequiredGold = long.Parse(fields[2]);
-                UnlockStage = int.Parse(fields[3]);
+                Id = ParseInt(fields[0]);
+                RequiredActionPoint = ParseInt(fields[1]);
+                RequiredGold = ParseLong(fields[2]);
+                UnlockStage = ParseInt(fields[3]);
                 Materials = new List<MaterialInfo>();
                 Options = new List<OptionInfo>();
                 for (var i = 0; i < 3; i++)
                 {
                     var offSet = i * 2;
-                    Materials.Add(new MaterialInfo(int.Parse(fields[4 + offSet]), int.Parse(fields[5 + offSet])));
+                    Materials.Add(new MaterialInfo(ParseInt(fields[4 + offSet]), ParseInt(fields[5 + offSet])));
                 }
                 for (var i = 0; i < 4; i++)
                 {
                     var offSet = i * 2;
                     if (string.IsNullOrEmpty(fields[10 + offSet]))
                         continue;
-                    Options.Add(new OptionInfo(int.Parse(fields[10 + offSet]), int.Parse(fields[11 + offSet])));
+                    Options.Add(new OptionInfo(ParseInt(fields[10 + offSet]), ParseInt(fields[11 + offSet])));
                 }
             }
         }

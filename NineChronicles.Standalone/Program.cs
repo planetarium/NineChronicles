@@ -75,8 +75,8 @@ namespace NineChronicles.Standalone
 
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(); 
-            Func<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey, Task> minerLoopAction =
-                async (chain, swarm, privateKey) =>
+            Func<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey, CancellationToken, Task> minerLoopAction =
+                async (chain, swarm, privateKey, cancellationToken) =>
                 {
                     var miner = new Miner(chain, swarm, privateKey);
                     while (true)
@@ -84,7 +84,7 @@ namespace NineChronicles.Standalone
                         Log.Debug("Miner called.");
                         try
                         {
-                            await miner.MineBlockAsync();
+                            await miner.MineBlockAsync(cancellationToken);
                         }
                         catch (Exception ex)
                         {
@@ -94,8 +94,8 @@ namespace NineChronicles.Standalone
                 };
 
             var service = new LibplanetNodeService<NineChroniclesActionType>(properties, blockPolicy, minerLoopAction);
-            var cancellationToken = new CancellationToken();
-            await service.StartAsync(cancellationToken);
+            var cancellationTokenSource = new CancellationTokenSource();
+            await service.StartAsync(cancellationTokenSource.Token);
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)

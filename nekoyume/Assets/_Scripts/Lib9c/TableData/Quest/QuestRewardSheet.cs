@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -16,7 +17,7 @@ namespace Nekoyume.TableData
             public List<int> RewardIds { get; private set; }
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
+                Id = ParseInt(fields[0]);
                 RewardIds = new List<int> {int.Parse(fields[1])};
             }
         }

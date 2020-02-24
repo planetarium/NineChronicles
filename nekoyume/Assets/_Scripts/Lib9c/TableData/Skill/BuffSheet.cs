@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.Skill;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -37,15 +38,15 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
-                GroupId = int.Parse(fields[1]);
-                Chance = int.Parse(fields[2]);
-                Duration = int.Parse(fields[3]);
+                Id = ParseInt(fields[0]);
+                GroupId = ParseInt(fields[1]);
+                Chance = ParseInt(fields[2]);
+                Duration = ParseInt(fields[3]);
                 TargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
                 StatModifier = new StatModifier(
                     (StatType) Enum.Parse(typeof(StatType), fields[5]),
                     (StatModifier.OperationType) Enum.Parse(typeof(StatModifier.OperationType), fields[6]),
-                    int.Parse(fields[7]));
+                    ParseInt(fields[7]));
                 IconResource = fields[8];
             }
         }

@@ -90,6 +90,7 @@ namespace Nekoyume.Action
 
 
             // 보조 레시피 검증
+            var optionIds = new HashSet<int>();
             if (!(SubRecipeId is null))
             {
                 var subSheet = tableSheets.EquipmentItemSubRecipeSheet;
@@ -130,18 +131,24 @@ namespace Nekoyume.Action
                         return states;
                     }
 
-                    if (optionRow.StatType != StatType.NONE)
+                    var random = ctx.Random;
+                    if (optionInfo.Ratio > random.Next(0, 100) * 0.01m)
                     {
-                        var statMap = GetStat(optionRow);
-                        equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-                    }
-                    else
-                    {
-                        var skill = GetSkill(optionRow, tableSheets);
-                        if (!(skill is null))
+                        if (optionRow.StatType != StatType.NONE)
                         {
-                            equipment.Skills.Add(skill);
+                            var statMap = GetStat(optionRow, ctx.Random);
+                            equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
                         }
+                        else
+                        {
+                            var skill = GetSkill(optionRow, tableSheets, ctx.Random);
+                            if (!(skill is null))
+                            {
+                                equipment.Skills.Add(skill);
+                            }
+                        }
+
+                        optionIds.Add(optionInfo.Id);
                     }
                 }
             }
@@ -154,6 +161,10 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= requiredActionPoint;
             agentState.gold -= requiredGold;
+            foreach (var id in optionIds)
+            {
+                agentState.unlockedOptions.Add(id);
+            }
 
             var result = new Combination.ResultModel
             {
@@ -189,19 +200,21 @@ namespace Nekoyume.Action
             SubRecipeId = plainValue["subRecipeId"].ToNullableInteger();
         }
 
-        private StatMap GetStat(EquipmentItemOptionSheet.Row row)
+        private static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
         {
-            // TODO 랜덤범위 계산 적용
-            return new StatMap(row.StatType, row.StatMin);
+            var value = random.Next(row.StatMin, row.StatMax + 1);
+            return new StatMap(row.StatType, value);
         }
 
-        private Skill GetSkill(EquipmentItemOptionSheet.Row row, TableSheets tableSheets)
+        private static Skill GetSkill(EquipmentItemOptionSheet.Row row, TableSheets tableSheets, IRandom random)
         {
             try
             {
                 var skillRow =
                     tableSheets.SkillSheet.OrderedList.First(r => r.Id == row.SkillId);
-                var skill = SkillFactory.Get(skillRow, row.SkillChanceMin, row.SkillDamageMin);
+                var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
+                var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
+                var skill = SkillFactory.Get(skillRow, dmg, chance);
                 return skill;
             }
             catch (InvalidOperationException)
