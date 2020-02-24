@@ -436,7 +436,7 @@ namespace Nekoyume.Game
             if (_rankingBattle)
             {
                 battle.Show();
-                Widget.Find<Status>().battleTimerView.Close();
+                battle.comboText.Close();
                 battle.stageProgressBar.Close();
             }
             else
