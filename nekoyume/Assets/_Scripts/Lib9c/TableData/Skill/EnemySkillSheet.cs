@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -15,9 +16,9 @@ namespace Nekoyume.TableData
             public int skillId;
             public override void Set(IReadOnlyList<string> fields)
             {
-                int.TryParse(fields[0], out id);
-                int.TryParse(fields[1], out characterId);
-                int.TryParse(fields[2], out skillId);
+                TryParseInt(fields[0], out id);
+                TryParseInt(fields[1], out characterId);
+                TryParseInt(fields[2], out skillId);
             }
         }
         

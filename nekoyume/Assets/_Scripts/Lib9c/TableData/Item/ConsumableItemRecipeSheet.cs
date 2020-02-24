@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -24,11 +25,11 @@ namespace Nekoyume.TableData
                     if (string.IsNullOrEmpty(fields[i]))
                         break;
                     
-                    MaterialItemIds.Add(int.Parse(fields[i]));
+                    MaterialItemIds.Add(ParseInt(fields[i]));
                 }
                 MaterialItemIds.Sort((left, right) => left - right);
                 
-                ResultConsumableItemId = int.Parse(fields[5]);
+                ResultConsumableItemId = ParseInt(fields[5]);
             }
 
             public bool IsMatch(IEnumerable<int> materialItemIds)

@@ -31,6 +31,7 @@ namespace Nekoyume.BlockChain
             var prevTimeStamp = _chain?.Tip?.Timestamp;
             // FIXME 년도가 바뀌면 깨지는 계산 방식. 테스트 끝나면 변경해야함
             // 하루 한번 보상을 제공
+            // TODO: Move ranking reward logic and condition into block action.
             if (prevTimeStamp is DateTimeOffset t && timeStamp.DayOfYear - t.DayOfYear == 1)
             {
                 var rankingRewardTx = RankingReward();
@@ -38,7 +39,6 @@ namespace Nekoyume.BlockChain
             }
 
             var invalidTxs = txs;
-            var retryActions = new HashSet<IImmutableList<PolymorphicAction<ActionBase>>>();
 
             try
             {
@@ -53,20 +53,12 @@ namespace Nekoyume.BlockChain
             {
                 Log.Debug("Mining was canceled due to change of tip.");
             }
-            catch (InvalidTxNonceException invalidTxNonceException)
-            {
-                var invalidNonceTx = _chain.GetTransaction(invalidTxNonceException.TxId);
-
-                if (invalidNonceTx.Signer == Address)
-                {
-                    Log.Debug($"Tx[{invalidTxNonceException.TxId}] nonce is invalid. Retry it.");
-                    retryActions.Add(invalidNonceTx.Actions);
-                }
-            }
             catch (InvalidTxException invalidTxException)
             {
+                var invalidTx = _chain.GetTransaction(invalidTxException.TxId);
+
                 Log.Debug($"Tx[{invalidTxException.TxId}] is invalid. mark to unstage.");
-                invalidTxs.Add(_chain.GetTransaction(invalidTxException.TxId));
+                invalidTxs.Add(invalidTx);
             }
             catch (UnexpectedlyTerminatedActionException actionException)
             {
@@ -84,11 +76,6 @@ namespace Nekoyume.BlockChain
             finally
             {
                 _chain.UnstageTransactions(invalidTxs);
-
-                foreach (var retryAction in retryActions)
-                {
-                    _chain.MakeTransaction(_privateKey, retryAction);
-                }
             }
         }
 
