@@ -17,10 +17,10 @@ using Serilog;
 
 namespace Libplanet.Standalone.Hosting
 {
-    public class LibplanetNodeService<T> : IHostedService
+    public class LibplanetNodeService<T> : IHostedService, IDisposable
         where T : IAction, new()
     {
-        public readonly IStore Store;
+        public readonly BaseStore Store;
 
         public readonly BlockChain<T> BlockChain;
 
@@ -28,7 +28,7 @@ namespace Libplanet.Standalone.Hosting
 
         private readonly IBlockPolicy<T> _blockPolicy;
 
-        private Func<BlockChain<T>, Swarm<T>, PrivateKey, Task> _minerLoopAction;
+        private Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> _minerLoopAction;
 
         private PrivateKey _privateKey;
 
@@ -39,7 +39,7 @@ namespace Libplanet.Standalone.Hosting
         public LibplanetNodeService(
             LibplanetNodeServiceProperties properties,
             IBlockPolicy<T> blockPolicy,
-            Func<BlockChain<T>, Swarm<T>, PrivateKey, Task> minerLoopAction)
+            Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> minerLoopAction)
         {
             _properties = properties;
 
@@ -87,7 +87,7 @@ namespace Libplanet.Standalone.Hosting
             if (!_properties.NoMiner)
             {
                 var minerLoopTask = Task.Run(
-                    () => _minerLoopAction(BlockChain, Swarm, _privateKey),
+                    async () => await _minerLoopAction(BlockChain, Swarm, _privateKey, cancellationToken),
                     cancellationToken: cancellationToken);
                 tasks.Add(minerLoopTask);
             }
@@ -127,6 +127,12 @@ namespace Libplanet.Standalone.Hosting
             }
 
             return store ?? new DefaultStore(path, flush: false, compress: true);
+        }
+
+        public void Dispose()
+        {
+            Store?.Dispose();
+            Swarm?.Dispose();
         }
     }
 }
