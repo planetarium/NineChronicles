@@ -4,6 +4,7 @@ using Bencodex.Types;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.State;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -36,12 +37,12 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
+                Id = ParseInt(fields[0]);
                 ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType), fields[1]);
                 SkillType = (SkillType) Enum.Parse(typeof(SkillType), fields[2]);
                 SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), fields[3]);
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
-                HitCount = int.Parse(fields[5]);
+                HitCount = ParseInt(fields[5]);
             }
             public IValue Serialize() =>
                 Bencodex.Types.Dictionary.Empty

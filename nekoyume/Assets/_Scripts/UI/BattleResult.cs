@@ -64,7 +64,7 @@ namespace Nekoyume.UI
         }
 
         private const int Timer = 10;
-        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.04f, 1.28f, 10f);
+        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, 1.2f, 10f);
 
         public CanvasGroup canvasGroup;
         public GameObject victoryImageContainer;

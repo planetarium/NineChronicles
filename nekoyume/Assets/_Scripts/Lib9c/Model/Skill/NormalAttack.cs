@@ -16,8 +16,10 @@ namespace Nekoyume.Model.Skill
             int simulatorWaveTurn,
             IEnumerable<Buff.Buff> buffs)
         {
-            return new Model.BattleStatus.NormalAttack((CharacterBase) caster.Clone(),
-                ProcessDamage(caster, simulatorWaveTurn, true), ProcessBuff(caster, simulatorWaveTurn, buffs));
+            var damage = ProcessDamage(caster, simulatorWaveTurn, true);
+            var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
+
+            return new Model.BattleStatus.NormalAttack((CharacterBase)caster.Clone(), damage, buff);
         }
     }
 }

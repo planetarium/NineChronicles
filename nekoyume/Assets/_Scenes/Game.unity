@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 76869997}
   - component: {fileID: 76869998}
   - component: {fileID: 76870000}
+  - component: {fileID: 76869999}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -168,6 +169,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   languageType: 0
   stage: {fileID: 1333831682}
+--- !u!114 &76869999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 76869996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dedfa4ac5c921c40b081f2a3438225a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &76870000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -586,6 +599,7 @@ GameObject:
   - component: {fileID: 1333831688}
   - component: {fileID: 1333831689}
   - component: {fileID: 1333831690}
+  - component: {fileID: 1333831691}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -869,6 +883,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 46aa168a607c4d6e85c0d69f42b9935d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1333831691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1333831681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38ccdc68e7b9b904d8923af4fb59ce63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1346351531

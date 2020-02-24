@@ -15,10 +15,12 @@ namespace Nekoyume.Model.State
         //F&F 테스트용 노마이너 기본 소지 골드
         public decimal gold = 1000;
         public readonly Dictionary<int, Address> avatarAddresses;
+        public HashSet<int> unlockedOptions;
 
         public AgentState(Address address) : base(address)
         {
             avatarAddresses = new Dictionary<int, Address>();
+            unlockedOptions = new HashSet<int>();
         }
 
         public AgentState(Dictionary serialized)
@@ -31,6 +33,9 @@ namespace Nekoyume.Model.State
                     kv => kv.Value.ToAddress()
                 );
             gold = serialized["gold"].ToDecimal();
+            unlockedOptions = serialized.ContainsKey((Text) "unlockedOptions")
+                ? serialized["unlockedOptions"].ToHashSet(StateExtensions.ToInteger)
+                : new HashSet<int>();
         }
 
         public object Clone()
@@ -50,6 +55,7 @@ namespace Nekoyume.Model.State
                     )
                 ),
                 [(Text)"gold"] = gold.Serialize(),
+                [(Text)"unlockedOptions"] = unlockedOptions.Select(i => i.Serialize()).Serialize(),
             }.Union((Dictionary)base.Serialize()));
     }
 }

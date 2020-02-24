@@ -175,6 +175,9 @@ namespace Nekoyume.BlockChain
             PrivateKey = privateKey;
             Address = privateKey.PublicKey.ToAddress();
             store = LoadStore(path, storageType);
+            store.UnstageTransactionIds(
+                new HashSet<TxId>(store.IterateStagedTransactionIds())
+            );
 
             try
             {
@@ -784,7 +787,7 @@ namespace Nekoyume.BlockChain
             var miner = new Miner(blocks, _swarm, PrivateKey);
             while (true)
             {
-                var task = Task.Run(async() => await miner.MineBlockAsync());
+                var task = Task.Run(async() => await miner.MineBlockAsync(_cancellationTokenSource.Token));
                 yield return new WaitUntil(() => task.IsCompleted);
             }
         }
