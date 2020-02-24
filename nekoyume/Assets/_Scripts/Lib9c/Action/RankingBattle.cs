@@ -93,7 +93,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return states;
 

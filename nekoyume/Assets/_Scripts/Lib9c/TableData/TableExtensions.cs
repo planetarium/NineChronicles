@@ -34,5 +34,14 @@ namespace Nekoyume.TableData
             }
             throw new ArgumentException(value);
         }
+
+        public static long ParseLong(string value)
+        {
+            if (TryParseLong(value, out var result))
+            {
+                return result;
+            }
+            throw new ArgumentException(value);
+        }
     }
 }

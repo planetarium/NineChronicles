@@ -58,9 +58,18 @@ namespace Tests.EditMode
         [Test]
         public void ParseDecimal()
         {
-            var expected = TableExtensions.ParseDecimal("5.6");
+            var expected = TableExtensions.ParseDecimal(Value);
             Assert.AreEqual(5.6m, expected);
             Assert.Throws<ArgumentException>(() => TableExtensions.ParseDecimal(""));
+        }
+
+        [Test]
+        public void ParseLong()
+        {
+            var expected = TableExtensions.ParseLong("700");
+            Assert.AreEqual(700, expected);
+            Assert.Throws<ArgumentException>(() => TableExtensions.ParseLong(""));
+
         }
     }
 }
