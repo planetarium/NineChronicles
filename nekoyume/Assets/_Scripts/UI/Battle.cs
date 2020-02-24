@@ -1,6 +1,7 @@
 ﻿using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using UnityEngine;
 namespace Nekoyume.UI
@@ -41,7 +42,9 @@ namespace Nekoyume.UI
                 repeatButton.SetToggledOff();
             }
 
-            if (stageId > GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
+            if (States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
+                out var world) &&
+                world.StageClearedId >= GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
             {
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.Show(
