@@ -9,7 +9,7 @@ namespace Nekoyume.TableData
         public class Row: SheetRow<int>
         {
             public override int Key => Id;
-            public int Id;
+            public int Id { get; private set; }
             public StatType StatType { get; private set; }
             public int StatMin { get; private set; }
             public int StatMax { get; private set; }

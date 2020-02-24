@@ -18,13 +18,15 @@ namespace Nekoyume.Model.Item
         // todo: Equipment or Equipment Material
         // Equipment
         Weapon,
-        RangedWeapon,
         Armor,
         Belt,
         Necklace,
         Ring,
-        Helm,
+        
+        // todo: 삭제해야 좋겠어요.
         Set,
+        RangedWeapon,
+        Helm,
         Shoes,
         
         // todo: Remove `EquipmentMaterial` and `FoodMaterial`
