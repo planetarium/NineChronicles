@@ -225,6 +225,7 @@ namespace Nekoyume.Game.Character
             }
 
             CurrentHP -= dmg;
+
             if (isConsiderDie && IsDead)
             {
                 StartCoroutine(Dying());
@@ -594,6 +595,8 @@ namespace Nekoyume.Game.Character
                 var info = skillInfos[i];
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessAttack(target, info, info.Target.IsDead, false);
+                if (this is Player && !(this is EnemyPlayer))
+                    Widget.Find<Nekoyume.UI.Battle>().ShowComboText(info.Effect > 0);
             }
         }
 

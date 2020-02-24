@@ -8,13 +8,13 @@ namespace Nekoyume.TableData
         {
             public override int Key => Id;
             public int Id { get; private set; }
-            public int ResultEquipmentId;
-            public int MaterialId;
-            public int MaterialCount;
-            public int RequiredActionPoint;
-            public long RequiredGold;
-            public int UnlockStage;
-            public List<int> SubRecipeIds;
+            public int ResultEquipmentId { get; private set; }
+            public int MaterialId { get; private set; }
+            public int MaterialCount { get; private set; }
+            public int RequiredActionPoint { get; private set; }
+            public long RequiredGold { get; private set; }
+            public int UnlockStage { get; private set; }
+            public List<int> SubRecipeIds { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -26,7 +26,7 @@ namespace Nekoyume.TableData
                 RequiredGold = long.Parse(fields[5]);
                 UnlockStage = int.Parse(fields[6]);
                 SubRecipeIds = new List<int>(3);
-                for (var i = 6; i < 8; i++)
+                for (var i = 7; i < 9; i++)
                 {
                     if (string.IsNullOrEmpty(fields[i]))
                     {

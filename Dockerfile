@@ -9,7 +9,7 @@ RUN if [ "$apt_source" != "" ]; then \
     /etc/apt/sources.list; \
   fi
 RUN apt-get update || true && \
-  apt-get install -y libxml2-utils xsltproc && \
+  apt-get install -y libxml2-utils xsltproc git && \
   rm -rf /var/lib/apt/lists/*
 
 ARG ulf

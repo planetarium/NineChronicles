@@ -39,6 +39,7 @@ namespace NineChronicles.Standalone
             ushort? port = null,
             [Option("private-key")]
             string privateKeyString = null,
+            string storeType = null,
             string storePath = null,
             [Option("ice-server", new [] { 'I', })]
             string[] iceServerStrings = null,
@@ -68,13 +69,14 @@ namespace NineChronicles.Standalone
                 PrivateKey = privateKey,
                 IceServers = iceServerStrings.Select(LoadIceServer),
                 Peers = peerStrings.Select(LoadPeer),
+                StoreType = storeType,
                 StorePath = storePath,
             };
 
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(); 
-            Func<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey, Task> minerLoopAction =
-                async (chain, swarm, privateKey) =>
+            Func<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey, CancellationToken, Task> minerLoopAction =
+                async (chain, swarm, privateKey, cancellationToken) =>
                 {
                     var miner = new Miner(chain, swarm, privateKey);
                     while (true)
@@ -82,7 +84,7 @@ namespace NineChronicles.Standalone
                         Log.Debug("Miner called.");
                         try
                         {
-                            await miner.MineBlockAsync();
+                            await miner.MineBlockAsync(cancellationToken);
                         }
                         catch (Exception ex)
                         {
@@ -92,8 +94,8 @@ namespace NineChronicles.Standalone
                 };
 
             var service = new LibplanetNodeService<NineChroniclesActionType>(properties, blockPolicy, minerLoopAction);
-            var cancellationToken = new CancellationToken();
-            await service.StartAsync(cancellationToken);
+            var cancellationTokenSource = new CancellationTokenSource();
+            await service.StartAsync(cancellationTokenSource.Token);
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)

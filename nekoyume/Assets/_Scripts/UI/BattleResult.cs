@@ -64,7 +64,7 @@ namespace Nekoyume.UI
         }
 
         private const int Timer = 10;
-        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.04f, 1.28f, 10f);
+        private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, 1.2f, 10f);
 
         public CanvasGroup canvasGroup;
         public GameObject victoryImageContainer;
@@ -170,7 +170,6 @@ namespace Nekoyume.UI
             defeatImageContainer.SetActive(false);
             topArea.SetActive(true);
             defeatTextArea.root.SetActive(false);
-            bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
             stageProgressBar.Show();
@@ -187,10 +186,9 @@ namespace Nekoyume.UI
                 submitButton.gameObject.SetActive(false);
                 SubmitWidget = closeButton.onClick.Invoke;
             }
-
-            yield return StartCoroutine(CoUpdateRewards());
-
+            
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
+            yield return StartCoroutine(CoUpdateRewards());
         }
 
         private IEnumerator EmitBattleWinVFX()
@@ -294,10 +292,10 @@ namespace Nekoyume.UI
                 fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
             }
 
-
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
-            bottomText.enabled = true;
 
+            yield return new WaitUntil(() => IsCloseAnimationCompleted);
+            
             var floatTime = (float) limitSeconds;
             var floatTimeMinusOne = limitSeconds - 1f;
             while (limitSeconds > 0)
