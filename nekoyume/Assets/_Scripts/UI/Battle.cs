@@ -41,7 +41,7 @@ namespace Nekoyume.UI
                 repeatButton.SetToggledOff();
             }
 
-            if (stageId > GameConfig.RequireStage.UIBottomMenuInBattle)
+            if (stageId > GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
             {
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.Show(
