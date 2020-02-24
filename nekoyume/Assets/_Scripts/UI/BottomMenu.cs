@@ -360,7 +360,7 @@ namespace Nekoyume.UI.Module
 
         private bool ShowChatButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
@@ -373,7 +373,7 @@ namespace Nekoyume.UI.Module
 
         private bool ShowMailButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
@@ -388,7 +388,7 @@ namespace Nekoyume.UI.Module
 
         private bool ShowQuestButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
@@ -406,7 +406,7 @@ namespace Nekoyume.UI.Module
 
         private bool ShowCharacterButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
@@ -419,7 +419,7 @@ namespace Nekoyume.UI.Module
 
         private bool ShowInventoryButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
@@ -438,7 +438,7 @@ namespace Nekoyume.UI.Module
 
         private bool ShowSettingsButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 

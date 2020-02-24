@@ -126,7 +126,7 @@ namespace Nekoyume.Action
             Log.Debug($"Buy Get Buyer AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
             
-            if (!buyerAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!buyerAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return states;
 

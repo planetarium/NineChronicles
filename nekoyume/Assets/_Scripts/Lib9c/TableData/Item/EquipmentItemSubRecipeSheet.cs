@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -39,23 +40,23 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
-                RequiredActionPoint = int.Parse(fields[1]);
-                RequiredGold = long.Parse(fields[2]);
-                UnlockStage = int.Parse(fields[3]);
+                Id = ParseInt(fields[0]);
+                RequiredActionPoint = ParseInt(fields[1]);
+                RequiredGold = ParseLong(fields[2]);
+                UnlockStage = ParseInt(fields[3]);
                 Materials = new List<MaterialInfo>();
                 Options = new List<OptionInfo>();
                 for (var i = 0; i < 3; i++)
                 {
                     var offSet = i * 2;
-                    Materials.Add(new MaterialInfo(int.Parse(fields[4 + offSet]), int.Parse(fields[5 + offSet])));
+                    Materials.Add(new MaterialInfo(ParseInt(fields[4 + offSet]), ParseInt(fields[5 + offSet])));
                 }
                 for (var i = 0; i < 4; i++)
                 {
                     var offSet = i * 2;
                     if (string.IsNullOrEmpty(fields[10 + offSet]))
                         continue;
-                    Options.Add(new OptionInfo(int.Parse(fields[10 + offSet]), int.Parse(fields[11 + offSet])));
+                    Options.Add(new OptionInfo(ParseInt(fields[10 + offSet]), ParseInt(fields[11 + offSet])));
                 }
             }
         }
