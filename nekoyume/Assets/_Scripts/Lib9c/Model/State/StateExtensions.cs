@@ -7,7 +7,6 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.State
 {
@@ -44,6 +43,11 @@ namespace Nekoyume.Model.State
         public static List<T> ToList<T>(this IValue serialized, Func<IValue, T> deserializer)
         {
             return serialized.ToEnumerable(deserializer).ToList();
+        }
+
+        public static HashSet<T> ToHashSet<T>(this IValue serialized, Func<IValue, T> deserializer)
+        {
+            return new HashSet<T>(serialized.ToEnumerable(deserializer));
         }
 
         #region Address

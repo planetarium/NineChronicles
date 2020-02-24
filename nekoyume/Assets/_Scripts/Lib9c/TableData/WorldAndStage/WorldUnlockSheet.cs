@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -20,16 +21,16 @@ namespace Nekoyume.TableData
             {
                 Id = string.IsNullOrEmpty(fields[0])
                     ? throw new SheetRowColumnException(nameof(Id))
-                    : int.Parse(fields[0]);
+                    : ParseInt(fields[0]);
                 WorldId = string.IsNullOrEmpty(fields[1])
                     ? throw new SheetRowColumnException(nameof(WorldId))
-                    : int.Parse(fields[1]);
+                    : ParseInt(fields[1]);
                 StageId = string.IsNullOrEmpty(fields[2])
                     ? throw new SheetRowColumnException(nameof(StageId))
-                    : int.Parse(fields[2]);
+                    : ParseInt(fields[2]);
                 WorldIdToUnlock = string.IsNullOrEmpty(fields[3])
                     ? throw new SheetRowColumnException(nameof(WorldIdToUnlock))
-                    : int.Parse(fields[3]);
+                    : ParseInt(fields[3]);
             }
         }
 

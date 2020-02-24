@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.Model.Stat;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -41,13 +42,13 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.TryParse(fields[0], out var id) ? id : 0;
-                CostAP = int.TryParse(fields[1], out var costAP) ? costAP : 0;
-                TurnLimit = int.TryParse(fields[2], out var turnLimit) ? turnLimit : 0;
+                Id = TryParseInt(fields[0], out var id) ? id : 0;
+                CostAP = TryParseInt(fields[1], out var costAP) ? costAP : 0;
+                TurnLimit = TryParseInt(fields[2], out var turnLimit) ? turnLimit : 0;
                 EnemyOptionalStatModifiers = new List<StatModifier>();
                 for (var i = 0; i < 6; i++)
                 {
-                    if (!int.TryParse(fields[3 + i], out var option) ||
+                    if (!TryParseInt(fields[3 + i], out var option) ||
                         option == 0)
                         continue;
 
@@ -83,14 +84,14 @@ namespace Nekoyume.TableData
                 for (var i = 0; i < 10; i++)
                 {
                     var offset = i * 4;
-                    if (!int.TryParse(fields[11 + offset], out var itemId))
+                    if (!TryParseInt(fields[11 + offset], out var itemId))
                         continue;
                     
                     Rewards.Add(new RewardData(
                         itemId,
-                        decimal.TryParse(fields[12 + offset], out var ratio) ? ratio : 0m,
-                        int.TryParse(fields[13 + offset], out var min) ? min : 0,
-                        int.TryParse(fields[14 + offset], out var max) ? max : 0
+                        TryParseDecimal(fields[12 + offset], out var ratio) ? ratio : 0m,
+                        TryParseInt(fields[13 + offset], out var min) ? min : 0,
+                        TryParseInt(fields[14 + offset], out var max) ? max : 0
                     ));
                 }
             }

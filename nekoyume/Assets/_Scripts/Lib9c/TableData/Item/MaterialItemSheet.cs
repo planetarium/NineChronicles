@@ -8,6 +8,7 @@ using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -59,13 +60,13 @@ namespace Nekoyume.TableData
                 StatType = string.IsNullOrEmpty(fields[4])
                     ? StatType.NONE
                     : (StatType) Enum.Parse(typeof(StatType), fields[4]);
-                StatMin = string.IsNullOrEmpty(fields[5]) ? 0 : int.Parse(fields[5]);
-                StatMax = string.IsNullOrEmpty(fields[6]) ? 0 : int.Parse(fields[6]);
-                SkillId = string.IsNullOrEmpty(fields[7]) ? 0 : int.Parse(fields[7]);
-                SkillDamageMin = string.IsNullOrEmpty(fields[8]) ? 0 : int.Parse(fields[8]);
-                SkillDamageMax = string.IsNullOrEmpty(fields[9]) ? 0 : int.Parse(fields[9]);
-                SkillChanceMin = string.IsNullOrEmpty(fields[10]) ? 0 : int.Parse(fields[10]);
-                SkillChanceMax = string.IsNullOrEmpty(fields[11]) ? 0 : int.Parse(fields[11]);
+                StatMin = string.IsNullOrEmpty(fields[5]) ? 0 : ParseInt(fields[5]);
+                StatMax = string.IsNullOrEmpty(fields[6]) ? 0 : ParseInt(fields[6]);
+                SkillId = string.IsNullOrEmpty(fields[7]) ? 0 : ParseInt(fields[7]);
+                SkillDamageMin = string.IsNullOrEmpty(fields[8]) ? 0 : ParseInt(fields[8]);
+                SkillDamageMax = string.IsNullOrEmpty(fields[9]) ? 0 : ParseInt(fields[9]);
+                SkillChanceMin = string.IsNullOrEmpty(fields[10]) ? 0 : ParseInt(fields[10]);
+                SkillChanceMax = string.IsNullOrEmpty(fields[11]) ? 0 : ParseInt(fields[11]);
                 ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
             }
 

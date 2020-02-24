@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -39,9 +40,9 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
+                Id = ParseInt(fields[0]);
                 ItemSubType = (ItemSubType) Enum.Parse(typeof(ItemSubType), fields[1]);
-                Grade = int.Parse(fields[2]);
+                Grade = ParseInt(fields[2]);
                 ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType), fields[3]);
             }
 

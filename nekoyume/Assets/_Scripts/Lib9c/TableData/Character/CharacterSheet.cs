@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Stat;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -38,20 +39,20 @@ namespace Nekoyume.TableData
                 ElementalType = Enum.TryParse<ElementalType>(fields[2], out var elementalType)
                     ? elementalType
                     : ElementalType.Normal;
-                HP = decimal.TryParse(fields[3], out var hp) ? hp : 0m;
-                ATK = decimal.TryParse(fields[4], out var damage) ? damage : 0m;
-                DEF = decimal.TryParse(fields[5], out var defense) ? defense : 0m;
-                CRI = decimal.TryParse(fields[6], out var cri) ? cri : 0m;
-                HIT = decimal.TryParse(fields[7], out var hit) ? hit : 0m;
-                SPD = decimal.TryParse(fields[8], out var spd) ? spd : 0m;
-                LvHP = decimal.TryParse(fields[9], out var lvHP) ? lvHP : 0m;
-                LvATK = decimal.TryParse(fields[10], out var lvDamage) ? lvDamage : 0m;
-                LvDEF = decimal.TryParse(fields[11], out var lvDefense) ? lvDefense : 0m;
-                LvCRI = decimal.TryParse(fields[12], out var lvCri) ? lvCri : 0m;
-                LvHIT = decimal.TryParse(fields[13], out var lvHit) ? lvHit : 0m;
-                LvSPD = decimal.TryParse(fields[14], out var lvSpd) ? lvSpd : 0m;
-                AttackRange = float.TryParse(fields[15], out var attackRange) ? attackRange : 1f;
-                RunSpeed = float.TryParse(fields[16], out var runSpeed) ? runSpeed : 1f;
+                HP = TryParseDecimal(fields[3], out var hp) ? hp : 0m;
+                ATK = TryParseDecimal(fields[4], out var damage) ? damage : 0m;
+                DEF = TryParseDecimal(fields[5], out var defense) ? defense : 0m;
+                CRI = TryParseDecimal(fields[6], out var cri) ? cri : 0m;
+                HIT = TryParseDecimal(fields[7], out var hit) ? hit : 0m;
+                SPD = TryParseDecimal(fields[8], out var spd) ? spd : 0m;
+                LvHP = TryParseDecimal(fields[9], out var lvHP) ? lvHP : 0m;
+                LvATK = TryParseDecimal(fields[10], out var lvDamage) ? lvDamage : 0m;
+                LvDEF = TryParseDecimal(fields[11], out var lvDefense) ? lvDefense : 0m;
+                LvCRI = TryParseDecimal(fields[12], out var lvCri) ? lvCri : 0m;
+                LvHIT = TryParseDecimal(fields[13], out var lvHit) ? lvHit : 0m;
+                LvSPD = TryParseDecimal(fields[14], out var lvSpd) ? lvSpd : 0m;
+                AttackRange = TryParseFloat(fields[15], out var attackRange) ? attackRange : 1f;
+                RunSpeed = TryParseFloat(fields[16], out var runSpeed) ? runSpeed : 1f;
             }
         }
         
