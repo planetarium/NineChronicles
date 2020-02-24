@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -22,11 +23,11 @@ namespace Nekoyume.TableData
                 StatModifiers = new Dictionary<int, StatModifier>
                 {
                     {
-                        int.Parse(fields[1]),
+                        ParseInt(fields[1]),
                         new StatModifier(
                             (StatType) Enum.Parse(typeof(StatType), fields[2]),
                             (StatModifier.OperationType) Enum.Parse(typeof(StatModifier.OperationType), fields[3]),
-                            int.Parse(fields[4]))
+                            ParseInt(fields[4]))
                     }
                 };
             }
