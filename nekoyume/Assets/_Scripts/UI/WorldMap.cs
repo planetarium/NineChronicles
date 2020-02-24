@@ -277,24 +277,23 @@ namespace Nekoyume.UI
 
             if (active)
             {
-                stage.SetActive(false);
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.worldMapButton.Hide();
-                bottomMenu.backButton.Show();
-                worldMapRoot.SetActive(true);
+                bottomMenu.backButton.Show();    
                 status.Close(true);
+                worldMapRoot.SetActive(true);
             }
             else
             {
-                
-                worldMapRoot.SetActive(false);
-                stage.SetActive(true);
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true, BottomMenu.ToggleableType.WorldMap);
                 bottomMenu.worldMapButton.Show();
                 bottomMenu.backButton.Hide();
                 bottomMenu.ToggleGroup?.SetToggledOffAll();
                 status.Show();
+                worldMapRoot.SetActive(false);
+                stage.SetActive(false);
+                stage.SetActive(true);
             }
         }
 
