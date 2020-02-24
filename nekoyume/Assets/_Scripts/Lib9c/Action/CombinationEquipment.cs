@@ -90,6 +90,7 @@ namespace Nekoyume.Action
 
 
             // 보조 레시피 검증
+            var optionIds = new HashSet<int>();
             if (!(SubRecipeId is null))
             {
                 var subSheet = tableSheets.EquipmentItemSubRecipeSheet;
@@ -146,6 +147,8 @@ namespace Nekoyume.Action
                                 equipment.Skills.Add(skill);
                             }
                         }
+
+                        optionIds.Add(optionInfo.Id);
                     }
                 }
             }
@@ -158,6 +161,10 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= requiredActionPoint;
             agentState.gold -= requiredGold;
+            foreach (var id in optionIds)
+            {
+                agentState.unlockedOptions.Add(id);
+            }
 
             var result = new Combination.ResultModel
             {

@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -34,11 +35,11 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
-                SetId = string.IsNullOrEmpty(fields[4]) ? 0 : int.Parse(fields[4]);
+                SetId = string.IsNullOrEmpty(fields[4]) ? 0 : ParseInt(fields[4]);
                 Stat = new DecimalStat(
                     (StatType) Enum.Parse(typeof(StatType), fields[5]),
-                    decimal.Parse(fields[6]));
-                AttackRange = decimal.Parse(fields[7]);
+                    ParseDecimal(fields[6]));
+                AttackRange = ParseDecimal(fields[7]);
                 SpineResourcePath = fields[8];
             }
             

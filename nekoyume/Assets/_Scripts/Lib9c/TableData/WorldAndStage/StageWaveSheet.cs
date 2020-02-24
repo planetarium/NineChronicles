@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -48,23 +49,23 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                StageId = int.TryParse(fields[0], out var stageId) ? stageId : 0;
+                StageId = TryParseInt(fields[0], out var stageId) ? stageId : 0;
                 Waves = new List<WaveData>();
-                if (!int.TryParse(fields[1], out var wave))
+                if (!TryParseInt(fields[1], out var wave))
                     return;
 
                 var monsters = new List<MonsterData>();
                 for (var i = 0; i < 4; i++)
                 {
                     var offset = i * 3;
-                    var characterId = int.TryParse(fields[2 + offset], out var outCharacterId) ? outCharacterId : 0;
+                    var characterId = TryParseInt(fields[2 + offset], out var outCharacterId) ? outCharacterId : 0;
                     if (characterId == 0)
                         break;
 
                     monsters.Add(new MonsterData(
                         characterId,
-                        int.TryParse(fields[3 + offset], out var level) ? level : 0,
-                        int.TryParse(fields[4 + offset], out var count) ? count : 0
+                        TryParseInt(fields[3 + offset], out var level) ? level : 0,
+                        TryParseInt(fields[4 + offset], out var count) ? count : 0
                     ));
                 }
 
