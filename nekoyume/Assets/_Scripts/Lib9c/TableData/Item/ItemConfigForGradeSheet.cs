@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class ItemConfigForGradeSheet : Sheet<int, ItemConfigForGradeSheet.Row>
     {
+        [Serializable]
         public class Row : SheetRow<int>
         {
             public override int Key => Id;

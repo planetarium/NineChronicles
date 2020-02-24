@@ -7,20 +7,22 @@ namespace Planetarium.Nekoyume.Editor
 {
     public static class LibplanetEditor
     {
-        [MenuItem("Tools/Libplanet/Delete All(Editor)")]
-        public static void DeleteAllEditor()
+        [MenuItem("Tools/Libplanet/Delete All(Editor) - Make Genesis Block For Dev To StreamingAssets Folder")]
+        public static void DeleteAllEditorAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
+            MakeGenesisBlock(BlockHelper.GenesisBlockPathDev);
         }
 
-        [MenuItem("Tools/Libplanet/Delete All(Player)")]
-        public static void DeleteAllPlayer()
+        [MenuItem("Tools/Libplanet/Delete All(Player) - Make Genesis Block For Prod To StreamingAssets Folder")]
+        public static void DeleteAllPlayerAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Production));
+            MakeGenesisBlock(BlockHelper.GenesisBlockPathProd);
         }
 
-        [MenuItem("Tools/Libplanet/Mine Genesis Block")]
-        public static void MineGenesisBlock()
+        [MenuItem("Tools/Libplanet/Make Genesis Block")]
+        public static void MakeGenesisBlock()
         {
             var path = EditorUtility.SaveFilePanel("Choose path to export the new genesis block",
                 Application.streamingAssetsPath,
@@ -31,8 +33,7 @@ namespace Planetarium.Nekoyume.Editor
                 return;
             }
 
-            var block = BlockHelper.MineGenesisBlock();
-            BlockHelper.ExportBlock(block, path);
+            MakeGenesisBlock(path);
         }
 
         private static void DeleteAll(string path)
@@ -41,6 +42,12 @@ namespace Planetarium.Nekoyume.Editor
             {
                 Directory.Delete(path, recursive: true);
             }
+        }
+
+        private static void MakeGenesisBlock(string path)
+        {
+            var block = BlockHelper.MineGenesisBlock();
+            BlockHelper.ExportBlock(block, path);
         }
     }
 }

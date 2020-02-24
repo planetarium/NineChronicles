@@ -123,7 +123,6 @@ namespace Nekoyume.UI
                 UINavigator.NavigationType.Back,
                 SubscribeBackButtonClick,
                 true,
-                true,
                 BottomMenu.ToggleableType.Mail,
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
@@ -310,7 +309,7 @@ namespace Nekoyume.UI
                     .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                     return;
-                ActionManager.instance
+                Game.Game.instance.ActionManager
                     .Buy(shopItem.SellerAgentAddress.Value, shopItem.SellerAvatarAddress.Value,
                         shopItem.ProductId.Value);
                 ResponseBuy(shopItem);
@@ -321,12 +320,12 @@ namespace Nekoyume.UI
                     .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                 {
-                    ActionManager.instance.Sell((ItemUsable) data.Item.Value.ItemBase.Value, data.Price.Value);
+                    Game.Game.instance.ActionManager.Sell((ItemUsable) data.Item.Value.ItemBase.Value, data.Price.Value);
                     ResponseSell();
                     return;
                 }
 
-                ActionManager.instance.SellCancellation(shopItem.SellerAvatarAddress.Value, shopItem.ProductId.Value);
+                Game.Game.instance.ActionManager.SellCancellation(shopItem.SellerAvatarAddress.Value, shopItem.ProductId.Value);
                 ResponseSellCancellation(shopItem);
             }
         }

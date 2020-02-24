@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 76869997}
   - component: {fileID: 76869998}
   - component: {fileID: 76870000}
+  - component: {fileID: 76869999}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -168,6 +169,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   languageType: 0
   stage: {fileID: 1333831682}
+--- !u!114 &76869999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 76869996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dedfa4ac5c921c40b081f2a3438225a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &76870000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,7 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 98550336}
   m_Layer: 5
-  m_Name: Tooltip
+  m_Name: TooltipLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -312,7 +325,7 @@ GameObject:
   m_Component:
   - component: {fileID: 384134973}
   m_Layer: 5
-  m_Name: SystemInfo
+  m_Name: SystemInfoLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -347,7 +360,7 @@ GameObject:
   m_Component:
   - component: {fileID: 721921032}
   m_Layer: 5
-  m_Name: Development
+  m_Name: DevelopmentLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -491,14 +504,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 577bdd3040bef426d8707b31f66e96f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hud: {fileID: 946775608}
-  popup: {fileID: 1346351531}
-  screen: {fileID: 1772531777}
-  tooltip: {fileID: 98550335}
-  widget: {fileID: 1162800116}
-  animation: {fileID: 1962509239}
-  systemInfo: {fileID: 384134972}
-  development: {fileID: 721921031}
+  hudLayer: {fileID: 946775608}
+  popupLayer: {fileID: 1346351531}
+  screenLayer: {fileID: 1772531777}
+  tooltipLayer: {fileID: 98550335}
+  widgetLayer: {fileID: 1162800116}
+  animationLayer: {fileID: 1962509239}
+  systemInfoLayer: {fileID: 384134972}
+  developmentLayer: {fileID: 721921031}
 --- !u!1 &946775608
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,7 +522,7 @@ GameObject:
   m_Component:
   - component: {fileID: 946775609}
   m_Layer: 5
-  m_Name: Hud
+  m_Name: HudLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -544,7 +557,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1162800117}
   m_Layer: 5
-  m_Name: Widget
+  m_Name: WidgetLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -586,6 +599,7 @@ GameObject:
   - component: {fileID: 1333831688}
   - component: {fileID: 1333831689}
   - component: {fileID: 1333831690}
+  - component: {fileID: 1333831691}
   m_Layer: 0
   m_Name: Stage
   m_TagString: Untagged
@@ -871,6 +885,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46aa168a607c4d6e85c0d69f42b9935d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1333831691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1333831681}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38ccdc68e7b9b904d8923af4fb59ce63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1346351531
 GameObject:
   m_ObjectHideFlags: 0
@@ -881,7 +907,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1346351532}
   m_Layer: 5
-  m_Name: Popup
+  m_Name: PopupLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -916,7 +942,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1772531778}
   m_Layer: 5
-  m_Name: Screen
+  m_Name: ScreenLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1071,7 +1097,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1962509240}
   m_Layer: 5
-  m_Name: Animation
+  m_Name: AnimationLayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

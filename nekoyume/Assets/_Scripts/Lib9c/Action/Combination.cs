@@ -20,6 +20,7 @@ using Material = Nekoyume.Model.Item.Material;
 namespace Nekoyume.Action
 {
     // todo: `CombineEquipment`와 `CombineConsumable`로 분리해야 함. 공용 로직은 별도로 뺌.
+    [Serializable]
     [ActionType("combination")]
     public class Combination : GameAction
     {
@@ -31,6 +32,7 @@ namespace Nekoyume.Action
         public class ResultModel : AttachmentActionResult
         {
             public Dictionary<Material, int> materials;
+            public Guid id;
             public decimal gold;
             public int actionPoint;
 
@@ -39,23 +41,29 @@ namespace Nekoyume.Action
             public ResultModel()
             {
             }
-
+      
             public ResultModel(Dictionary serialized) : base(serialized)
-            {
+            {   
                 materials = serialized["materials"].ToDictionary_Material_int();
+                id = serialized["id"].ToGuid();
+                gold = serialized["gold"].ToDecimal();
+                actionPoint = serialized["actionPoint"].ToInteger();
             }
 
             public override IValue Serialize() =>
                 new Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "materials"] = materials.Serialize(),
+                    [(Text) "id"] = id.Serialize(),
+                    [(Text) "gold"] = gold.Serialize(),
+                    [(Text) "actionPoint"] = actionPoint.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
         }
 
         public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
         public ResultModel Result;
-        public IImmutableList<int> completedQuestIds;
+        public List<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -98,9 +106,14 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"Combination Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
+            
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return states;
 
-            if (avatarState.level < GameConfig.CombinationRequiredLevel)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInCombination)
             {
+                // 스테이지 클리어 부족 에러.
                 return states;
             }
 
@@ -256,7 +269,8 @@ namespace Nekoyume.Action
 
                 // 액션 결과
                 Result.itemUsable = equipment;
-                var mail = new CombinationMail(Result, ctx.BlockIndex) {New = false};
+                var mail = new CombinationMail(Result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
+                Result.id = mail.id;
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(equipment);
                 sw.Stop();
@@ -307,7 +321,8 @@ namespace Nekoyume.Action
                     var itemUsable = GetFood(consumableItemRow, itemId);
                     // 액션 결과
                     Result.itemUsable = itemUsable;
-                    var mail = new CombinationMail(Result, ctx.BlockIndex) {New = false};
+                    var mail = new CombinationMail(Result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
+                    Result.id = mail.id;
                     avatarState.Update(mail);
                     avatarState.UpdateFromCombination(itemUsable);
                     sw.Stop();

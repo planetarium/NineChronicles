@@ -14,6 +14,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("buy")]
     public class Buy : GameAction
     {
@@ -23,13 +24,14 @@ namespace Nekoyume.Action
         public Guid productId;
         public BuyerResult buyerResult;
         public SellerResult sellerResult;
-        public IImmutableList<int> buyerCompletedQuestIds;
-        public IImmutableList<int> sellerCompletedQuestIds;
+        public List<int> buyerCompletedQuestIds;
+        public List<int> sellerCompletedQuestIds;
 
         [Serializable]
         public class BuyerResult : AttachmentActionResult
         {
             public ShopItem shopItem;
+            public Guid id;
 
             protected override string TypeId => "buy.buyerResult";
 
@@ -40,12 +42,14 @@ namespace Nekoyume.Action
             public BuyerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
+                id = serialized["id"].ToGuid();
             }
 
             public override IValue Serialize() =>
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "shopItem"] = shopItem.Serialize(),
+                    [(Text) "id"] = id.Serialize(),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
 
@@ -53,6 +57,7 @@ namespace Nekoyume.Action
         public class SellerResult : AttachmentActionResult
         {
             public ShopItem shopItem;
+            public Guid id;
             public decimal gold;
 
             protected override string TypeId => "buy.sellerResult";
@@ -64,6 +69,7 @@ namespace Nekoyume.Action
             public SellerResult(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
+                id = serialized["id"].ToGuid();
                 gold = serialized["gold"].ToDecimal();
             }
 
@@ -71,6 +77,7 @@ namespace Nekoyume.Action
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
                     [(Text) "shopItem"] = shopItem.Serialize(),
+                    [(Text) "id"] = id.Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                 }.Union((Bencodex.Types.Dictionary) base.Serialize()));
         }
@@ -118,6 +125,16 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"Buy Get Buyer AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
+            
+            if (!buyerAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                out var world))
+                return states;
+
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInShop)
+            {
+                // 스테이지 클리어 부족 에러.
+                return states;
+            }
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
@@ -171,10 +188,11 @@ namespace Nekoyume.Action
                 shopItem = outPair.Value,
                 itemUsable = outPair.Value.ItemUsable
             };
-            var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex)
+            var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid())
             {
                 New = false
             };
+            buyerResult.id = buyerMail.id;
 
             sellerResult = new SellerResult
             {
@@ -182,10 +200,11 @@ namespace Nekoyume.Action
                 itemUsable = outPair.Value.ItemUsable,
                 gold = taxedPrice
             };
-            var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex)
+            var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid())
             {
                 New = false
             };
+            sellerResult.id = sellerMail.id;
 
             buyerAvatarState.Update(buyerMail);
             buyerAvatarState.UpdateFromAddItem(buyerResult.itemUsable, false);

@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class ConsumableItemRecipeSheet : Sheet<int, ConsumableItemRecipeSheet.Row> 
     {
+        [Serializable]
         public class Row : SheetRow<int>
         {
             public override int Key => Id;

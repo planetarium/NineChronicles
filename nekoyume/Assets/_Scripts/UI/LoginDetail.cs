@@ -12,6 +12,7 @@ using TMPro;
 using UnityEngine.UI;
 using Nekoyume.TableData;
 using Nekoyume.Model.State;
+using System.Collections;
 
 namespace Nekoyume.UI
 {
@@ -81,16 +82,25 @@ namespace Nekoyume.UI
 
             Find<GrayLoadingScreen>().Show();
 
-            ActionManager.instance
+            Game.Game.instance.ActionManager
                 .CreateAvatar(AvatarState.CreateAvatarAddress(), _selectedIndex, nickName, _hair, _lens, _ear, _tail)
                 .Subscribe(eval =>
                 {
                     var avatarState = States.Instance.SelectAvatar(_selectedIndex);
-                    OnDidAvatarStateLoaded(avatarState);
+                    StartCoroutine(CreateAndLoginAnimation(avatarState));
                     ActionRenderHandler.Instance.RenderQuest(avatarState.address, eval.Action.completedQuestIds);
-                    Find<GrayLoadingScreen>()?.Close();
                 }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
-            AudioController.PlayClick();
+            AudioController.PlayClick();    
+        }
+
+        private IEnumerator CreateAndLoginAnimation(AvatarState state)
+        {
+            var grayLoadingScreen = Find<GrayLoadingScreen>();
+            if (grayLoadingScreen is null)
+                yield break;
+            grayLoadingScreen.Close();
+            yield return new WaitUntil(() => grayLoadingScreen.IsCloseAnimationCompleted);
+            OnDidAvatarStateLoaded(state);
         }
 
         public void LoginClick()

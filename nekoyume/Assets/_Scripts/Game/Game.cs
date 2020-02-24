@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
-using Nekoyume.Data;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -19,7 +18,7 @@ using UnityEngine.AddressableAssets;
 
 namespace Nekoyume.Game
 {
-    [RequireComponent(typeof(Agent))]
+    [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
@@ -39,7 +38,9 @@ namespace Nekoyume.Game
         // FIXME Action.PatchTableSheet.Execute()에 의해서만 갱신됩니다.
         // 액션 실행 여부와 상관 없이 최신 상태를 반영하게끔 수정해야합니다.
         public TableSheets TableSheets { get; private set; }
-        
+
+        public ActionManager ActionManager { get; private set; }
+
         public bool IsInitialized { get; private set; }
 
         private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
@@ -63,7 +64,20 @@ namespace Nekoyume.Game
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
-            _agent = GetComponent<Agent>();
+             _options = CommandLineOptions.Load(
+                CommandLineOptionsJsonPath,
+                WebCommandLineOptionsPathInit
+            );
+
+            if (_options.Client)
+            {
+                _agent = GetComponent<RPCAgent>();
+            }
+            else 
+            {
+                _agent = GetComponent<Agent>();
+            }
+
 #if UNITY_EDITOR
             LocalizationManager.Initialize(languageType);
 #else
@@ -81,15 +95,13 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoInitializeTableSheets());
             AudioController.instance.Initialize();
             yield return null;
+            ActionManager = new ActionManager(_agent);
             // Agent 초기화.
             // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            _options = CommandLineOptions.Load(
-                CommandLineOptionsJsonPath,
-                WebCommandLineOptionsPathInit
-            );
+            
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>

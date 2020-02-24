@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -19,10 +17,10 @@ using Serilog;
 
 namespace Libplanet.Standalone.Hosting
 {
-    public class LibplanetNodeService<T> : IHostedService
+    public class LibplanetNodeService<T> : IHostedService, IDisposable
         where T : IAction, new()
     {
-        public readonly IStore Store;
+        public readonly BaseStore Store;
 
         public readonly BlockChain<T> BlockChain;
 
@@ -30,7 +28,7 @@ namespace Libplanet.Standalone.Hosting
 
         private readonly IBlockPolicy<T> _blockPolicy;
 
-        private Func<BlockChain<T>, Swarm<T>, PrivateKey, Task> _minerLoopAction;
+        private Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> _minerLoopAction;
 
         private PrivateKey _privateKey;
 
@@ -41,7 +39,7 @@ namespace Libplanet.Standalone.Hosting
         public LibplanetNodeService(
             LibplanetNodeServiceProperties properties,
             IBlockPolicy<T> blockPolicy,
-            Func<BlockChain<T>, Swarm<T>, PrivateKey, Task> minerLoopAction)
+            Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> minerLoopAction)
         {
             _properties = properties;
 
@@ -52,7 +50,7 @@ namespace Libplanet.Standalone.Hosting
 
             var iceServers = _properties.IceServers;
 
-            Store = new DefaultStore(path: properties.StorePath);
+            Store = LoadStore(_properties.StorePath, _properties.StoreType);
             _blockPolicy = blockPolicy;
             BlockChain = new BlockChain<T>(_blockPolicy, Store, genesisBlock);
             _privateKey = _properties.PrivateKey;
@@ -76,7 +74,8 @@ namespace Libplanet.Standalone.Hosting
                 Swarm.BootstrapAsync(peers, null, null, cancellationToken: cancellationToken)
                     .Wait(cancellationToken);
 
-                Swarm.PreloadAsync(null, new Progress<PreloadState>((state) => Log.Debug("{@state}", state)), trustedStateValidators, cancellationToken: cancellationToken)
+                Swarm.PreloadAsync(null, new Progress<PreloadState>((state) => Log.Debug("{@state}", state)),
+                        trustedStateValidators, cancellationToken: cancellationToken)
                     .Wait(cancellationToken);
             }
 
@@ -84,14 +83,14 @@ namespace Libplanet.Standalone.Hosting
             {
                 Swarm.StartAsync(cancellationToken: cancellationToken, millisecondsBroadcastTxInterval: 15000),
             };
-    
+
             if (!_properties.NoMiner)
             {
                 var minerLoopTask = Task.Run(
-                    () => _minerLoopAction(BlockChain, Swarm, _privateKey),
+                    async () => await _minerLoopAction(BlockChain, Swarm, _privateKey, cancellationToken),
                     cancellationToken: cancellationToken);
                 tasks.Add(minerLoopTask);
-            }                                                                                                                                               
+            }
 
             return Task.WhenAll(
                 tasks
@@ -101,6 +100,39 @@ namespace Libplanet.Standalone.Hosting
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Swarm.StopAsync(cancellationToken);
+        }
+
+        private BaseStore LoadStore(string path, string type)
+        {
+            BaseStore store = null;
+
+            if (type == "rocksdb")
+            {
+                try
+                {
+                    store = new RocksDBStore.RocksDBStore(path, flush: false);
+                    Log.Debug("RocksDB is initialized.");
+                }
+                catch (TypeInitializationException e)
+                {
+                    Log.Error("RocksDB is not available. DefaultStore will be used. {0}", e);
+                }
+            }
+            else
+            {
+                var message = type is null
+                    ? "Storage Type is not specified"
+                    : $"Storage Type {type} is not supported";
+                Log.Debug($"{message}. DefaultStore will be used.");
+            }
+
+            return store ?? new DefaultStore(path, flush: false, compress: true);
+        }
+
+        public void Dispose()
+        {
+            Store?.Dispose();
+            Swarm?.Dispose();
         }
     }
 }

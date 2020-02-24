@@ -94,6 +94,8 @@ namespace Nekoyume.Game.Character
             }
 
             SpeechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
+            if(!(this is EnemyPlayer))
+                Widget.Find<UI.Battle>().comboText.comboMax = CharacterModel.AttackCountMax;
         }
 
         protected override IEnumerator Dying()
@@ -266,26 +268,6 @@ namespace Nekoyume.Game.Character
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 InitStats(Model);
-                var key = "";
-                if (Level == GameConfig.CombinationRequiredLevel)
-                {
-                    key = "UI_UNLOCK_COMBINATION";
-                }
-                else if (Level == GameConfig.ShopRequiredLevel)
-                {
-                    key = "UI_UNLOCK_SHOP";
-                }
-                else if (Level == GameConfig.RankingRequiredLevel)
-                {
-                    key = "UI_UNLOCK_RANKING";
-                }
-
-                if (!string.IsNullOrEmpty(key))
-                {
-                    var w = Widget.Find<Alert>();
-                    w.Show("UI_UNLOCK_TITLE", key);
-                    yield return new WaitWhile(() => w.isActiveAndEnabled);
-                }
             }
 
             UpdateHpBar();

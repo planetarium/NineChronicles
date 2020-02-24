@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class StageDialogSheet : Sheet<int, StageDialogSheet.Row>
     {
+        [Serializable]
         public class Row : SheetRow<int>
         {
             public override int Key => Id;

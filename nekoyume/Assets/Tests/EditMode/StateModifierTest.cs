@@ -90,11 +90,11 @@ namespace Tests.EditMode
             {
                 itemUsable = equipment
             };
-            var attachmentMail = new CombinationMail(combinationResult, 0) {New = false};
+            var attachmentMail = new CombinationMail(combinationResult, 0, new Guid()) {New = false};
             Assert.False(attachmentMail.New);
             _avatarState.mailBox.Add(attachmentMail);
             var modifier =
-                JsonTest(new AvatarAttachmentMailNewSetter(attachmentMail.attachment.itemUsable.ItemId));
+                JsonTest(new AvatarAttachmentMailNewSetter(attachmentMail.id));
             modifier.Modify(_avatarState);
             Assert.True(attachmentMail.New);
         }

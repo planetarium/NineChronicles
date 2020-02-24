@@ -25,7 +25,7 @@ namespace Nekoyume.UI
 
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
-        private bool _isCloseAnimationCompleted;
+        public bool IsCloseAnimationCompleted { get; private set; }
         
         protected System.Action CloseWidget;
         protected System.Action SubmitWidget;
@@ -106,8 +106,6 @@ namespace Nekoyume.UI
                 case WidgetType.Widget:
                 case WidgetType.SystemInfo:
                 case WidgetType.Development:
-                    go.transform.SetParent(MainCanvas.instance.widget.transform);
-                    go.SetActive(activate);
                     Pool.Add(type, new PoolElementModel
                     {
                         gameObject = go,
@@ -214,13 +212,24 @@ namespace Nekoyume.UI
         {
             if (Animator)
             {
-                _isCloseAnimationCompleted = false;
+                IsCloseAnimationCompleted = false;
                 Animator.enabled = true;
                 Animator.Play("Close");
-                yield return new WaitUntil(() => _isCloseAnimationCompleted);
+                var coroutine = StartCoroutine(CoCompleteCloseAnimation());
+                yield return new WaitUntil(() => IsCloseAnimationCompleted);
+                StopCoroutine(coroutine);
             }
 
             gameObject.SetActive(false);
+        }
+
+        private IEnumerator CoCompleteCloseAnimation()
+        {
+            yield return new WaitForSeconds(1f);
+            if (!IsCloseAnimationCompleted)
+            {
+                IsCloseAnimationCompleted = true;
+            }
         }
 
         #region Call From Animation
@@ -240,7 +249,7 @@ namespace Nekoyume.UI
                 Animator.enabled = false;
             }
 
-            _isCloseAnimationCompleted = true;
+            IsCloseAnimationCompleted = true;
         }
         
         #endregion

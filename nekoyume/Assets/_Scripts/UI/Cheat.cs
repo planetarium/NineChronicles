@@ -180,7 +180,7 @@ namespace Nekoyume
         {
             var tableName = GetTableName();
             var csv = LocalTableSheet.Find("TextRect/Text").GetComponent<TextMeshProUGUI>().text;
-            ActionManager.PatchTableSheet(tableName, csv);
+            Game.Game.instance.ActionManager.PatchTableSheet(tableName, csv);
         }
 
         private string GetTableName()

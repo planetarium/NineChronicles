@@ -1,3 +1,5 @@
+using System;
+using System.Text;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
@@ -13,7 +15,7 @@ namespace Nekoyume.UI
     /// Status 위젯과 함께 사용할 때에는 해당 위젯 하위에 포함되어야 함.
     /// 지금은 별도의 위젯으로 작동하는데, 이 때문에 위젯 라이프 사이클의 일관성을 잃음.(스스로 닫으면 안 되는 예외 발생)
     /// </summary>
-    public class StatusDetail : Widget
+    public class StatusDetail : XTweenWidget
     {
         public TextMeshProUGUI statusTitleText;
         public TextMeshProUGUI equipmentTitleText;
@@ -57,17 +59,10 @@ namespace Nekoyume.UI
             _player = Game.Game.instance.Stage.selectedPlayer;
             var player = _player.Model;
 
-            // equip slot
-            if (equipmentSlots is null)
-                throw new NotFoundComponentException<EquipmentSlots>();
-
+            equipmentSlots.SetPlayer(_player.Model);
             foreach (var equipment in _player.Equipments)
             {
-                if (!equipmentSlots.TryGet(equipment.Data.ItemSubType, out var slot))
-                    continue;
-                
-                slot.Set(equipment);
-                slot.SetOnClickAction(ShowTooltip, null);
+                equipmentSlots.TryToEquip(equipment, ShowTooltip, null);
             }
 
             // status info
@@ -105,14 +100,14 @@ namespace Nekoyume.UI
             var tooltip = Find<ItemInformationTooltip>();
             
             if (slot is null ||
-                slot.item is null ||
+                slot.Item is null ||
                 slot.RectTransform == tooltip.Target)
             {
                 tooltip.Close();
                 return;
             }
             
-            tooltip.Show(slot.RectTransform, new CountableItem(slot.item, 1));
+            tooltip.Show(slot.RectTransform, new CountableItem(slot.Item, 1));
         }
 
         public void CloseClick()

@@ -3,7 +3,6 @@ using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Module;
 using UnityEngine;
-
 namespace Nekoyume.UI
 {
     public class Battle : Widget, IToggleListener
@@ -13,7 +12,8 @@ namespace Nekoyume.UI
         public ToggleableButton repeatButton;
         public BossStatus enemyPlayerStatus;
         public StageProgressBar stageProgressBar;
-        
+        public ComboText comboText;
+
         protected override void Awake()
         {
             base.Awake();
@@ -30,6 +30,7 @@ namespace Nekoyume.UI
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
+            comboText.Close();
 
             if (isRepeat)
             {
@@ -40,21 +41,23 @@ namespace Nekoyume.UI
                 repeatButton.SetToggledOff();
             }
 
-            var bottomMenu = Find<BottomMenu>();
-            bottomMenu.Show(
-                UINavigator.NavigationType.Exit,
-                SubscribeOnExitButtonClick,
-                true,
-                false,
-                BottomMenu.ToggleableType.Mail,
-                BottomMenu.ToggleableType.Quest,
-                BottomMenu.ToggleableType.Chat,
-                BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory);
+            if (stageId > GameConfig.RequireClearedStageLevel.UIBottomMenuInBattle)
+            {
+                var bottomMenu = Find<BottomMenu>();
+                bottomMenu.Show(
+                    UINavigator.NavigationType.Exit,
+                    SubscribeOnExitButtonClick,
+                    false,
+                    BottomMenu.ToggleableType.Mail,
+                    BottomMenu.ToggleableType.Quest,
+                    BottomMenu.ToggleableType.Chat,
+                    BottomMenu.ToggleableType.IllustratedBook,
+                    BottomMenu.ToggleableType.Character,
+                    BottomMenu.ToggleableType.Inventory);
 
-            bottomMenu.exitButton.SetToggleListener(this);
-            bottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
+                bottomMenu.exitButton.SetToggleListener(this);
+                bottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
+            }
         }
 
         public void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
@@ -90,8 +93,8 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            Find<BottomMenu>()?.Close(ignoreCloseAnimation);
-            Find<Status>()?.Close(ignoreCloseAnimation);
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
+            Find<Status>().Close(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }
@@ -100,6 +103,12 @@ namespace Nekoyume.UI
         {
             Game.Game.instance.Stage.isExitReserved = false;
             Find<BottomMenu>().exitButton.SharedModel.IsEnabled.Value = false;
+        }
+
+        public void ShowComboText(bool attacked)
+        { 
+            comboText.StopAllCoroutines();
+            comboText.Show(attacked);
         }
 
         private void OnGetItem(DropItem dropItem)

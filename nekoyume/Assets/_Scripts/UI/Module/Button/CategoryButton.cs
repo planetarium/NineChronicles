@@ -1,4 +1,6 @@
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +11,9 @@ namespace Nekoyume.UI.Module
     {
         public Button button;
         public Image effectImage;
+        public TextMeshProUGUI toggledOffText;
+        public TextMeshProUGUI toggledOnText;
+        public string localizationKey;
         
         private IToggleListener _toggleListener;
 
@@ -16,11 +21,14 @@ namespace Nekoyume.UI.Module
         {
             IsToggleable = true;
 
-            button.OnClickAsObservable().Subscribe(_ =>
+            if (!string.IsNullOrEmpty(localizationKey))
             {
-                AudioController.PlayClick();
-                _toggleListener?.OnToggle(this);
-            }).AddTo(gameObject);
+                string localization = LocalizationManager.Localize(localizationKey);
+                toggledOffText.text = localization;
+                toggledOnText.text = localization;
+            }
+
+            button.onClick.AddListener(SubscribeOnClick);
         }
         
         #region IToggleable
@@ -38,14 +46,27 @@ namespace Nekoyume.UI.Module
         {
             button.interactable = false;
             effectImage.enabled = true;
+            toggledOffText.enabled = false;
+            toggledOnText.enabled = true;
         }
         
         public void SetToggledOff()
         {
             button.interactable = true;
             effectImage.enabled = false;
+            toggledOffText.enabled = true;
+            toggledOnText.enabled = false;
         }
 
         #endregion
+
+        private void SubscribeOnClick()
+        {
+            if (IsToggledOn)
+                return;
+
+            AudioController.PlayClick();
+            _toggleListener?.OnToggle(this);
+        }
     }
 }

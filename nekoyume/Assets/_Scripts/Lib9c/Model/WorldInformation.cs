@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -171,6 +170,19 @@ namespace Nekoyume.Model
                     (Bencodex.Types.Text) kv.Key.Serialize(),
                     (Bencodex.Types.Dictionary) kv.Value.Serialize())));
         }
+        
+        public bool HasWorldUnlocked(int worldId)
+        {
+            return TryGetWorld(worldId, out var world) && world.IsUnlocked;
+        }
+        
+        public bool HasStageCleared(int worldId, int stageId)
+        {
+            if (!TryGetWorld(worldId, out var world))
+                return false;
+
+            return stageId <= world.StageClearedId;
+        }
 
         /// <summary>
         /// 인자로 받은 `worldId`에 해당하는 `World` 객체를 얻는다.
@@ -182,7 +194,10 @@ namespace Nekoyume.Model
         public bool TryGetWorld(int worldId, out World world)
         {
             if (!_worlds.ContainsKey(worldId))
-                throw new KeyNotFoundException($"{nameof(worldId)}: {worldId}");
+            {
+                world = default;
+                return false;
+            }
 
             world = _worlds[worldId];
             return true;
@@ -253,22 +268,9 @@ namespace Nekoyume.Model
         /// <exception cref="ArgumentException"></exception>
         public void ClearStage(int worldId, int stageId, long clearedAt, WorldUnlockSheet unlockSheet)
         {
-            if (!_worlds.ContainsKey(worldId))
-                throw new ArgumentException(
-                    $"{nameof(worldId)}({worldId}) not unlocked. If you want to clear, unlock first.");
-
             var world = _worlds[worldId];
             if (stageId <= world.StageClearedId)
                 return;
-
-            if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
-                !world.IsStageCleared && stageId != world.StageBegin)
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine($"{nameof(worldId)}({worldId})-{nameof(stageId)}({stageId}) is too big.");
-                sb.AppendLine($"Cleared {nameof(stageId)} is ({world.StageClearedId}).");
-                throw new ArgumentException(sb.ToString());
-            }
 
             _worlds[worldId] = new World(world, clearedAt, stageId);
 
@@ -279,6 +281,16 @@ namespace Nekoyume.Model
                     UnlockWorld(worldIdToUnlock, clearedAt);
                 }
             }
+        }
+
+        public bool IsClearedStage(int stageId)
+        {
+            if (!TryGetWorldByStageId(stageId, out var world))
+            {
+                return false;
+            }
+
+            return world.IsUnlocked && world.StageClearedId >= stageId;
         }
 
         /// <summary>

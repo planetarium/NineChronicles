@@ -124,7 +124,7 @@ namespace Nekoyume.UI
 
             _state.SetValueAndForceNotify(stateType);
 
-            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true);
+            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
             _npc = go.GetComponent<NPC>();
@@ -318,7 +318,7 @@ namespace Nekoyume.UI
 
         private void OnClickChallenge(ArenaCellView info)
         {
-            ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
+            Game.Game.instance.ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
             Find<LoadingScreen>().Show();
             Find<RankingBattleLoadingScreen>().Show(info.ArenaInfo);
         }

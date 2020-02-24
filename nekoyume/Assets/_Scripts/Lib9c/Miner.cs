@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
@@ -23,7 +23,7 @@ namespace Nekoyume.BlockChain
 
         public Address Address { get; }
 
-        public async Task MineBlockAsync()
+        public async Task MineBlockAsync(CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
 
@@ -42,7 +42,8 @@ namespace Nekoyume.BlockChain
 
             try
             {
-                var block = await _chain.MineBlock(Address);
+                var block = await _chain.MineBlock(Address, DateTimeOffset.UtcNow, cancellationToken: cancellationToken);
+
                 if (_swarm.Running)
                 {
                     _swarm.BroadcastBlock(block);

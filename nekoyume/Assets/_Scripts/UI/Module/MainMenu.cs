@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
+using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
 using UnityEngine.UI;
 
@@ -35,10 +36,10 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
 
-        private int _requiredLevel;
+        private int _requireStage;
         private string _messageForCat;
         private MessageCat _cat;
-        
+
         public bool IsUnlocked { get; private set; }
 
         #region Mono
@@ -53,22 +54,23 @@ namespace Nekoyume.UI.Module
             switch (type)
             {
                 case MenuType.Combination:
-                    _requiredLevel = GameConfig.CombinationRequiredLevel;
+                    _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuCombination;
                     break;
                 case MenuType.Ranking:
-                    _requiredLevel = GameConfig.RankingRequiredLevel;
+                    _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard;
                     break;
                 case MenuType.Shop:
-                    _requiredLevel = GameConfig.ShopRequiredLevel;
+                    _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuShop;
                     break;
                 case MenuType.Quest:
-                    _requiredLevel = GameConfig.QuestRequiredLevel;
+                    _requireStage = GameConfig.RequireClearedStageLevel.UIMainMenuStage;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
-            _messageForCat = $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requiredLevel}";
+
+            _messageForCat =
+                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_requireStage} First!";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()
@@ -127,10 +129,10 @@ namespace Nekoyume.UI.Module
         {
             if (!_cat)
                 return;
-            
+
             _cat.Jingle();
         }
-        
+
         private void ResetLocalizationKey()
         {
             if (speechBubble)
@@ -139,10 +141,25 @@ namespace Nekoyume.UI.Module
                 speechBubble.Hide();
             }
         }
-        
-        public void Set(Player player)
+
+        public void Update()
         {
-            IsUnlocked = player.Level >= _requiredLevel;
+            if (_requireStage > 0)
+            {
+                if (States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+                    out var world))
+                {
+                    IsUnlocked = _requireStage <= world.StageClearedId;
+                }
+                else
+                {
+                    IsUnlocked = false;
+                }
+            }
+            else
+            {
+                IsUnlocked = true;
+            }
 
             if (npc)
             {
