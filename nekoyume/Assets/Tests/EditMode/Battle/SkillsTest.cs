@@ -23,7 +23,7 @@ namespace Tests.EditMode.Battle
         {
             _tableSheets = null;
         }
-        
+
         [Test]
         public void SelectTest()
         {
@@ -31,7 +31,7 @@ namespace Tests.EditMode.Battle
             Assert.IsTrue(skillSheet.Any());
             var skillRow = skillSheet.First().Value;
             var firstSkill = SkillFactory.Get(skillRow, 100, 100);
-            
+
             var skillBuffSheet = _tableSheets.SkillBuffSheet;
             Assert.IsTrue(skillBuffSheet.Any());
             var skillBuffRow = skillBuffSheet.First();
@@ -40,7 +40,7 @@ namespace Tests.EditMode.Battle
             var firstBuffSkill = SkillFactory.Get(skillRow, 100, 100);
             var buffs = BuffFactory.GetBuffs(firstBuffSkill, _tableSheets.SkillBuffSheet, _tableSheets.BuffSheet)
                 .ToDictionary(e => e.RowData.GroupId, e => e);
-            
+
             Assert.IsFalse(firstSkill.Equals(firstBuffSkill));
 
             var skills = new Skills {firstSkill};

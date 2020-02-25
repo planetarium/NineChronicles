@@ -22,7 +22,9 @@ namespace Nekoyume.TableData
             public SkillTargetType SkillTargetType { get; private set; }
             public int HitCount { get; private set; }
 
-            public Row() {}
+            public Row()
+            {
+            }
 
             public Row(Bencodex.Types.Dictionary serialized)
             {
@@ -30,8 +32,10 @@ namespace Nekoyume.TableData
                 ElementalType = (ElementalType) Enum.Parse(typeof(ElementalType),
                     (Bencodex.Types.Text) serialized["elemental_type"]);
                 SkillType = (SkillType) Enum.Parse(typeof(SkillType), (Bencodex.Types.Text) serialized["skill_type"]);
-                SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), (Bencodex.Types.Text) serialized["skill_category"]);
-                SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), (Bencodex.Types.Text) serialized["skill_target_type"]);
+                SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory),
+                    (Bencodex.Types.Text) serialized["skill_category"]);
+                SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType),
+                    (Bencodex.Types.Text) serialized["skill_target_type"]);
                 HitCount = (Bencodex.Types.Integer) serialized["hit_count"];
             }
 
@@ -44,6 +48,7 @@ namespace Nekoyume.TableData
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
                 HitCount = ParseInt(fields[5]);
             }
+
             public IValue Serialize() =>
                 Bencodex.Types.Dictionary.Empty
                     .Add("id", Id)

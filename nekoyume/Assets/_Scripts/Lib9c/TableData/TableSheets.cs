@@ -11,9 +11,9 @@ namespace Nekoyume.TableData
     /// </summary>
     [Serializable]
     public class TableSheets
-    {   
-        private static readonly LruCache<TableSheetsState, TableSheets> Cache = 
-        new LruCache<TableSheetsState, TableSheets>();
+    {
+        private static readonly LruCache<TableSheetsState, TableSheets> Cache =
+            new LruCache<TableSheetsState, TableSheets>();
 
         public WorldSheet WorldSheet { get; private set; }
         public StageWaveSheet StageWaveSheet { get; private set; }
@@ -139,7 +139,7 @@ namespace Nekoyume.TableData
                     ItemTypeCollectQuestSheet.Set(csv);
                     break;
                 case nameof(TableData.GoldQuestSheet):
-                    GoldQuestSheet= new GoldQuestSheet();
+                    GoldQuestSheet = new GoldQuestSheet();
                     GoldQuestSheet.Set(csv);
                     break;
                 case nameof(TableData.EnemySkillSheet):
@@ -151,7 +151,8 @@ namespace Nekoyume.TableData
                     ItemConfigForGradeSheet.Set(csv);
                     break;
                 case nameof(TableData.ConsumableItemRecipeSheet):
-                    ConsumableItemRecipeSheet = new ConsumableItemRecipeSheet();;
+                    ConsumableItemRecipeSheet = new ConsumableItemRecipeSheet();
+                    ;
                     ConsumableItemRecipeSheet.Set(csv);
                     break;
                 case nameof(TableData.QuestRewardSheet):
@@ -186,27 +187,29 @@ namespace Nekoyume.TableData
                     throw new InvalidDataException($"Not found {name} class in namespace `TableData`");
             }
         }
-        
+
         /// <summary>
         /// TableSheetsState를 기준으로 초기화합니다.
         /// </summary>
         /// <param name="tableSheetsState">기준으로 삼을 상태입니다.</param>
-        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState) 
+        public void InitializeWithTableSheetsState(TableSheetsState tableSheetsState)
         {
             foreach (var pair in tableSheetsState.TableSheets)
             {
                 SetToSheet(pair.Key, pair.Value);
             }
+
             ItemSheetInitialize();
             QuestSheetInitialize();
         }
 
         public static TableSheets FromTableSheetsState(TableSheetsState tableSheetsState)
         {
-            if (Cache.TryGetValue(tableSheetsState, out var cached)) 
+            if (Cache.TryGetValue(tableSheetsState, out var cached))
             {
                 return cached;
             }
+
             var tableSheets = new TableSheets();
             tableSheets.InitializeWithTableSheetsState(tableSheetsState);
 

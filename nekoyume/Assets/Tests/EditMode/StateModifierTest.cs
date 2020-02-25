@@ -22,7 +22,7 @@ namespace Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            _tableSheets = TableSheetsHelper.MakeTableSheets(); 
+            _tableSheets = TableSheetsHelper.MakeTableSheets();
             _agentState = new AgentState(new Address());
             _avatarState = new AvatarState(new Address(), _agentState.address, 0, _tableSheets, null);
         }
