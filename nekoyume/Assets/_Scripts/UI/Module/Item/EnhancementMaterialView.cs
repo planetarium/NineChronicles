@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                statView.Show(statType.ToString(), statValue.ToString(), additionalValueText);
+                statView.Show(statType, statValue, int.Parse(additionalValueText));
             }
         }
 
