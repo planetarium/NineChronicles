@@ -1249,7 +1249,7 @@ MonoBehaviour:
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
   m_Interactable: 1
-  m_TargetGraphic: {fileID: 0}
+  m_TargetGraphic: {fileID: 367037894475697486}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
@@ -1265,7 +1265,7 @@ Animator:
   m_GameObject: {fileID: 4532752904093690772}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 2db93b3f45b9c144f9d5d985f2a95adf, type: 2}
+  m_Controller: {fileID: 22100000, guid: d2c10dc1b1fc16a4690de417c1430e90, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
