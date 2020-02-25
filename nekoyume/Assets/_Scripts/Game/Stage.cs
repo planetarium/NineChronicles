@@ -348,7 +348,6 @@ namespace Nekoyume.Game
             Boss = null;
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
-            Widget.Find<Status>().battleTimerView.Close();
             yield return StartCoroutine(CoUnlockAlert());
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var failed = _battleResultModel.ClearedWaveNumber < log.waveCount;
