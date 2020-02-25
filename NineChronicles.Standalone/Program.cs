@@ -83,24 +83,27 @@ namespace NineChronicles.Standalone
             };
 
             // BlockPolicy shared through Lib9c.
-            IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(); 
-            Func<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey, CancellationToken, Task> minerLoopAction =
-                async (chain, swarm, privateKey, cancellationToken) =>
+            IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy();
+            async Task minerLoopAction(
+                BlockChain<NineChroniclesActionType> chain, 
+                Swarm<NineChroniclesActionType> swarm, 
+                PrivateKey privateKey, 
+                CancellationToken cancellationToken)
+            {
+                var miner = new Miner(chain, swarm, privateKey);
+                while (true)
                 {
-                    var miner = new Miner(chain, swarm, privateKey);
-                    while (true)
+                    Log.Debug("Miner called.");
+                    try
                     {
-                        Log.Debug("Miner called.");
-                        try
-                        {
-                            await miner.MineBlockAsync(cancellationToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "Exception occurred.");
-                        }
+                        await miner.MineBlockAsync(cancellationToken);
                     }
-                };
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Exception occurred.");
+                    }
+                }
+            }
 
             var nodeService = new LibplanetNodeService<NineChroniclesActionType>(
                 properties, 
