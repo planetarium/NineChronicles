@@ -107,12 +107,12 @@ namespace Nekoyume.UI
             if (retrieve)
             {
                 Model.SubmitButtonText.SubscribeTo(submitButtonForRetrieve).AddTo(_disposablesForModel);
-                Model.SubmitButtonEnabled.SubscribeTo(submitButtonForRetrieve).AddTo(_disposablesForModel);
+                Model.SubmitButtonEnabled.Subscribe(submitButtonForRetrieve.SetSubmittable).AddTo(_disposablesForModel);
             }
             else
             {
                 Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
-                Model.SubmitButtonEnabled.SubscribeTo(submitButton).AddTo(_disposablesForModel);
+                Model.SubmitButtonEnabled.Subscribe(submitButton.SetSubmittable).AddTo(_disposablesForModel);
             }
             submitGameObject.SetActive(!retrieve);
             submitGameObjectForRetrieve.SetActive(retrieve);
