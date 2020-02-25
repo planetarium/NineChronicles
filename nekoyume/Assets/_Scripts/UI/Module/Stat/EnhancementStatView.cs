@@ -1,3 +1,4 @@
+using System.Globalization;
 using Nekoyume.Model.Stat;
 using TMPro;
 using UnityEngine.UI;
@@ -18,7 +19,9 @@ namespace Nekoyume.UI.Module
 
         public void Show(StatType statType, int before, int after)
         {
-            Show(statType.ToString(), before.ToString(), after.ToString());
+            Show(statType.ToString(),
+                (statType == StatType.SPD ? before / 100f : before).ToString(CultureInfo.InvariantCulture),
+                (statType == StatType.SPD ? after / 100f : after).ToString(CultureInfo.InvariantCulture));
         }
 
         public void Show(string statType, string before, string after)
