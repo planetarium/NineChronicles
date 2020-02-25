@@ -13,6 +13,7 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI text;
         public Slider slider;
+        public Image image;
         public RectTransform tooltipArea;
         public CanvasGroup canvasGroup;
         public bool animateAlpha;

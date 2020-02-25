@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using DG.Tweening;
@@ -24,6 +25,7 @@ namespace Nekoyume.UI.Module
         public bool animateAlpha;
         public RectTransform tooltipArea;
         public Transform boxImageTransform;
+        public ActionPoint actionPoint;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private bool _updateEnable;
@@ -32,6 +34,7 @@ namespace Nekoyume.UI.Module
         private long _receivedIndex;
 
         private VanilaTooltip _tooltip;
+        private Coroutine lerpCoroutine;
         private static readonly int IsFull = Animator.StringToHash("IsFull");
         private static readonly int Reward = Animator.StringToHash("GetReward");
 
@@ -41,6 +44,7 @@ namespace Nekoyume.UI.Module
         {
             slider.maxValue = GameConfig.DailyRewardInterval;
             text.text = $"0 / {GameConfig.DailyRewardInterval}";
+            slider.value = 0;
             button.interactable = false;
             _animator = GetComponent<Animator>();
             _updateEnable = true;
@@ -66,6 +70,8 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
+        public void SetIndex(int index) => SetIndex((long) index);
+        
         private void SetIndex(long index)
         {
             if(!_updateEnable)
@@ -76,13 +82,32 @@ namespace Nekoyume.UI.Module
             var min = Math.Max(index - _receivedIndex, 0);
             var value = Math.Min(min, GameConfig.DailyRewardInterval);
             _isFull = value >= GameConfig.DailyRewardInterval;
-            
-            button.interactable = _isFull;
-            canvasGroup.interactable = _isFull;
-            _animator.SetBool(IsFull, _isFull);
 
-            text.text = $"{value} / {GameConfig.DailyRewardInterval}";
+            if(lerpCoroutine != null)
+                StopCoroutine(lerpCoroutine);
+            
+            lerpCoroutine = StartCoroutine(LerpSlider((int)value));
+        }
+        
+        private IEnumerator LerpSlider(int value, int additionalSpeed = 1)
+        {
+            var current = slider.value;
+            var speed = 4 * additionalSpeed;
+
+            while (current <= value - 15)
+            {
+                current = (int)Mathf.Lerp(current, value, Time.deltaTime * speed);
+                slider.value = current;
+                text.text = $"{current} / {GameConfig.DailyRewardInterval}";
+                yield return null;
+            }
+
             slider.value = value;
+            text.text = $"{value} / {GameConfig.DailyRewardInterval}";
+            canvasGroup.alpha = _isFull ? 1 : 0;
+            canvasGroup.interactable = _isFull;
+            button.interactable = _isFull;
+            _animator.SetBool(IsFull, _isFull);
         }
 
         public void GetReward()
@@ -101,6 +126,12 @@ namespace Nekoyume.UI.Module
             _animator.StopPlayback();
             _animator.SetTrigger(Reward);
             VFXController.instance.Create<ItemMoveVFX>(boxImageTransform.position);
+            ItemMoveAnimation.Show(actionPoint.image.sprite,
+                boxImageTransform.position,
+                actionPoint.image.transform.position,
+                true,
+                0.1f,
+                1f);
             SetIndex(0);
             _updateEnable = false;
         }
