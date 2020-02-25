@@ -36,6 +36,11 @@ namespace Nekoyume
         {
             return source.SubscribeWithState(gameObject, (x, t) => gameObject.SetActive(x));
         }
+
+        public static IDisposable SubscribeTo(this IObservable<bool> source, SubmitButton submitButton)
+        {
+            return source.SubscribeWithState(submitButton, (x, t) => t.SetSubmittable(x));
+        }
         
         public static IDisposable SubscribeTo(this IObservable<bool> source, Behaviour behaviour)
         {

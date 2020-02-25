@@ -298,6 +298,9 @@ namespace Nekoyume.UI
                 return;
             }
 
+            if (!ButtonEnabledFuncForBuy(data))
+                return;
+
             ItemCountAndPricePopup.Pop(SharedModel.ItemCountAndPricePopup.Value);
         }
 

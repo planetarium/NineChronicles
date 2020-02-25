@@ -59,6 +59,9 @@ namespace Nekoyume.UI
 
             SubmitWidget = () =>
             {
+                if (!submitButton.IsSubmittable && !submitButtonForRetrieve.IsSubmittable)
+                    return;
+                
                 AudioController.PlayClick();
                 Model.OnSubmitClick.OnNext(this);
                 Close();
@@ -104,12 +107,12 @@ namespace Nekoyume.UI
             if (retrieve)
             {
                 Model.SubmitButtonText.SubscribeTo(submitButtonForRetrieve).AddTo(_disposablesForModel);
-                Model.SubmitButtonEnabled.SubscribeTo(submitGameObjectForRetrieve).AddTo(_disposablesForModel);
+                Model.SubmitButtonEnabled.SubscribeTo(submitButtonForRetrieve).AddTo(_disposablesForModel);
             }
             else
             {
                 Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
-                Model.SubmitButtonEnabled.SubscribeTo(submitGameObject).AddTo(_disposablesForModel);
+                Model.SubmitButtonEnabled.SubscribeTo(submitButton).AddTo(_disposablesForModel);
             }
             submitGameObject.SetActive(!retrieve);
             submitGameObjectForRetrieve.SetActive(retrieve);
