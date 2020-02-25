@@ -146,6 +146,13 @@ namespace Nekoyume.UI.Module
                 .Subscribe(currentPageNumber =>
                     stagePageText.text = $"{currentPageNumber}/{SharedViewModel.PageCount.Value}")
                 .AddTo(_disposablesForModel);
+            SharedViewModel.CurrentPageNumber
+                .Subscribe(currentPageNumber =>
+                {
+                    previousButton.gameObject.SetActive(currentPageNumber != 1);
+                    nextButton.gameObject.SetActive(currentPageNumber != SharedViewModel.PageCount.Value);
+                })
+                .AddTo(_disposablesForModel);
 
             stageNameText.text = SharedViewModel.WorldName;
 
