@@ -85,9 +85,9 @@ GameObject:
   - component: {fileID: 3053886975560591763}
   - component: {fileID: 3053886975560591760}
   - component: {fileID: 7434278619177023938}
-  - component: {fileID: 5411197907206907077}
   - component: {fileID: 1840000510220927721}
   - component: {fileID: -9137729193417607844}
+  - component: {fileID: 9125478180068637838}
   m_Layer: 5
   m_Name: DailyBonus
   m_TagString: Untagged
@@ -191,22 +191,7 @@ MonoBehaviour:
   dailyBonusCanvasGroup: {fileID: -9137729193417607844}
   animateAlpha: 0
   tooltipArea: {fileID: 2493448372099798015}
---- !u!111 &5411197907206907077
-Animation:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3053886975560591762}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 23086f4a002f53d4ca2aec355d68d863, type: 2}
-  m_Animations:
-  - {fileID: 7400000, guid: 23086f4a002f53d4ca2aec355d68d863, type: 2}
-  m_WrapMode: 0
-  m_PlayAutomatically: 0
-  m_AnimatePhysics: 0
-  m_CullingType: 0
+  boxImageTransform: {fileID: 8718710296122514099}
 --- !u!114 &1840000510220927721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,6 +251,25 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!95 &9125478180068637838
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3053886975560591762}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 3e75a59853c04144192f9e1b2922d3ef, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3053886975728798314
 GameObject:
   m_ObjectHideFlags: 0

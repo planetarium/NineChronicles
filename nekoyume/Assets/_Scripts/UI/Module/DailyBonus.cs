@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.BlockChain;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model;
 using Nekoyume.State;
 using TMPro;
@@ -21,14 +23,17 @@ namespace Nekoyume.UI.Module
         public CanvasGroup dailyBonusCanvasGroup;
         public bool animateAlpha;
         public RectTransform tooltipArea;
+        public Transform boxImageTransform;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private bool _updateEnable;
         private bool _isFull;
-        private Animation _animation;
+        private Animator _animator;
         private long _receivedIndex;
 
         private VanilaTooltip _tooltip;
+        private static readonly int IsFull = Animator.StringToHash("IsFull");
+        private static readonly int Reward = Animator.StringToHash("GetReward");
 
         #region Mono
 
@@ -37,7 +42,7 @@ namespace Nekoyume.UI.Module
             slider.maxValue = GameConfig.DailyRewardInterval;
             text.text = $"0 / {GameConfig.DailyRewardInterval}";
             button.interactable = false;
-            _animation = GetComponent<Animation>();
+            _animator = GetComponent<Animator>();
             _updateEnable = true;
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
             ReactiveAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
@@ -74,10 +79,7 @@ namespace Nekoyume.UI.Module
             
             button.interactable = _isFull;
             canvasGroup.interactable = _isFull;
-            if (_isFull)
-            {
-                _animation.Play();
-            }
+            _animator.SetBool(IsFull, _isFull);
 
             text.text = $"{value} / {GameConfig.DailyRewardInterval}";
             slider.value = value;
@@ -91,11 +93,14 @@ namespace Nekoyume.UI.Module
                 Notification.Push(Nekoyume.Model.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
             });
             Notification.Push(Nekoyume.Model.Mail.MailType.System, LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
-            _animation.Stop();
             canvasGroup.alpha = 0;
             canvasGroup.interactable = false;
             button.interactable = false;
             _isFull = false;
+            _animator.SetBool(IsFull, _isFull);
+            _animator.StopPlayback();
+            _animator.SetTrigger(Reward);
+            VFXController.instance.Create<ItemMoveVFX>(boxImageTransform.position);
             SetIndex(0);
             _updateEnable = false;
         }
