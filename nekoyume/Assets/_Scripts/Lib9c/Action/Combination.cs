@@ -107,11 +107,11 @@ namespace Nekoyume.Action
             Log.Debug($"Combination Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
             
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return states;
 
-            if (world.StageClearedId < GameConfig.RequireStage.ActionsInCombination)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInCombination)
             {
                 // 스테이지 클리어 부족 에러.
                 return states;

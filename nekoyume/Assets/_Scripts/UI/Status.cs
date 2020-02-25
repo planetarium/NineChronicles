@@ -50,6 +50,7 @@ namespace Nekoyume.UI
         public void Show(bool animateAlpha = false)
         {
             base.Show();
+            battleTimerView.Close();
 
             if (animateAlpha)
             {
@@ -84,7 +85,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            battleTimerView.Close();
             base.Close(ignoreCloseAnimation);
         }
 

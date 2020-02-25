@@ -43,6 +43,13 @@ namespace Nekoyume.UI
             {
                 Model.OnClickSubmit.OnNext(Model);
                 AudioController.PlayClick();
+                ItemMoveAnimation.Show(itemInformation.Model.item.Value.ItemBase.Value.GetIconSprite(),
+                    itemInformation.transform.position, 
+                    Find<BottomMenu>().inventoryButton.transform.position,
+                    false,
+                    1f, 
+                    0.82f,
+                    true);
                 Close();
             }).AddTo(gameObject);
             touchHandler.OnClick.Subscribe(pointerEventData =>

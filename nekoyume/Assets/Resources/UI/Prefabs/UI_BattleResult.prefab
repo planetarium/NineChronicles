@@ -1484,6 +1484,7 @@ GameObject:
   - component: {fileID: 6344477898592055316}
   - component: {fileID: 473779116853553440}
   - component: {fileID: 8280459435808002684}
+  - component: {fileID: 8794876651915099195}
   m_Layer: 0
   m_Name: VictoryImageContainer
   m_TagString: Untagged
@@ -1564,6 +1565,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!225 &8794876651915099195
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4078483671067153580}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4165797894961911053
 GameObject:
   m_ObjectHideFlags: 0
@@ -1649,6 +1662,7 @@ GameObject:
   - component: {fileID: 9101350551897634300}
   - component: {fileID: 3489071626109299019}
   - component: {fileID: 2587578169237224854}
+  - component: {fileID: 6135916272473467533}
   m_Layer: 5
   m_Name: TopArea
   m_TagString: Untagged
@@ -1721,6 +1735,18 @@ MonoBehaviour:
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!225 &6135916272473467533
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4311357277872131300}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4591145547087743158
 GameObject:
   m_ObjectHideFlags: 0
@@ -3793,6 +3819,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8894803158464557673, guid: 0c75875ee6d9a724ab977f6af0c747ab,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -76
+      objectReference: {fileID: 0}
     - target: {fileID: 8922548160838840055, guid: 0c75875ee6d9a724ab977f6af0c747ab,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -3993,11 +4024,6 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8894803158464557673, guid: 0c75875ee6d9a724ab977f6af0c747ab,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -76
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0c75875ee6d9a724ab977f6af0c747ab, type: 3}
 --- !u!114 &8828973387584366379 stripped
@@ -4025,6 +4051,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 9101350551897634300}
     m_Modifications:
+    - target: {fileID: 5227881270911501949, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+        type: 3}
+      propertyPath: m_Name
+      value: UI_StageProgressBar
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227881270911501949, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5227881270911501946, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4130,15 +4166,15 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 5227881270911501949, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+    - target: {fileID: 6547093413828883969, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
-      propertyPath: m_Name
-      value: UI_StageProgressBar
+      propertyPath: m_LocalPosition.x
+      value: -143
       objectReference: {fileID: 0}
-    - target: {fileID: 5227881270911501949, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
+    - target: {fileID: 6547093413828883969, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
-      propertyPath: m_IsActive
-      value: 1
+      propertyPath: m_LocalPosition.y
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 5227881270800782870, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
         type: 3}
@@ -4149,16 +4185,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6547093413828883969, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -143
-      objectReference: {fileID: 0}
-    - target: {fileID: 6547093413828883969, guid: 3e24fe60044abad4aa6aecedcbdd2ed9,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3e24fe60044abad4aa6aecedcbdd2ed9, type: 3}

@@ -126,11 +126,11 @@ namespace Nekoyume.Action
             Log.Debug($"Buy Get Buyer AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
             
-            if (!buyerAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!buyerAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return states;
 
-            if (world.StageClearedId < GameConfig.RequireStage.ActionsInShop)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInShop)
             {
                 // 스테이지 클리어 부족 에러.
                 return states;

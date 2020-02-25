@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -43,12 +44,60 @@ namespace Nekoyume.Action
             {
                 return states;
             }
-            
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+
+            // 도전자의 장비가 유효한지 검사한다.
+            // 피도전자의 장비도 검사해야 하는가는 모르겠다. 이후에 필요하다면 추가하는 것으로 한다.
+            {
+                var equipments = avatarState.inventory.Items.Select(e => e.item).OfType<Equipment>().ToList();
+                var level = avatarState.level;
+                var ringCount = 0;
+                var failed = false;
+                foreach (var equipment in equipments)
+                {
+                    switch (equipment.Data.ItemSubType)
+                    {
+                        case ItemSubType.Weapon:
+                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                            break;
+                        case ItemSubType.Armor:
+                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                            break;
+                        case ItemSubType.Belt:
+                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                            break;
+                        case ItemSubType.Necklace:
+                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                            break;
+                        case ItemSubType.Ring:
+                            ringCount++;
+                            var requireLevel = ringCount == 1
+                                ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
+                                : ringCount == 2
+                                    ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
+                                    : int.MaxValue;
+                            failed = level < requireLevel;
+                            break;
+                        default:
+                            failed = true;
+                            break;
+                    }
+
+                    if (failed)
+                        break;
+                }
+
+                if (failed)
+                {
+                    // 장비가 유효하지 않은 에러.
+                    return states;
+                }
+            }
+
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return states;
 
-            if (world.StageClearedId < GameConfig.RequireStage.ActionsInRankingBoard)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
             {
                 // 스테이지 클리어 부족 에러.
                 return states;

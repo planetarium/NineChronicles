@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 76869997}
   - component: {fileID: 76869998}
   - component: {fileID: 76870000}
+  - component: {fileID: 76869999}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -168,6 +169,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   languageType: 0
   stage: {fileID: 1333831682}
+--- !u!114 &76869999
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 76869996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dedfa4ac5c921c40b081f2a3438225a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &76870000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -617,12 +630,14 @@ MonoBehaviour:
   bosswaveBGVFX: {fileID: 0}
   worldId: 0
   stageId: 0
+  waveCount: 0
+  newlyClearedStage: 0
+  waveNumber: 0
+  waveTurn: 0
   selectedPlayer: {fileID: 0}
   repeatStage: 0
   isExitReserved: 0
   zone: 
-  waveTurn: 0
-  turn: 0
 --- !u!4 &1333831683
 Transform:
   m_ObjectHideFlags: 0

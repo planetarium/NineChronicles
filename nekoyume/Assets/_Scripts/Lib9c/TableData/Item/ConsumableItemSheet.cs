@@ -5,6 +5,7 @@ using Bencodex.Types;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
+using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -37,7 +38,7 @@ namespace Nekoyume.TableData
 
                     Stats.Add(new StatMap(
                         (StatType) Enum.Parse(typeof(StatType), fields[4 + i * 2]),
-                        decimal.Parse(fields[5 + i * 2])));
+                        ParseDecimal(fields[5 + i * 2])));
                 }
             }
 

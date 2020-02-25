@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -18,11 +17,12 @@ namespace Nekoyume.Model
             public readonly string Name;
             public readonly int StageBegin;
             public readonly int StageEnd;
-            public readonly bool IsUnlocked;
             public readonly long UnlockedBlockIndex;
-            public readonly bool IsStageCleared;
             public readonly long StageClearedBlockIndex;
             public readonly int StageClearedId;
+
+            public bool IsUnlocked => UnlockedBlockIndex != -1;
+            public bool IsStageCleared => StageClearedBlockIndex != -1;
 
             public World(WorldSheet.Row worldRow, long unlockedBlockIndex = -1, long stageClearedBlockIndex = -1,
                 int stageClearedId = -1)
@@ -31,9 +31,7 @@ namespace Nekoyume.Model
                 Name = worldRow.Name;
                 StageBegin = worldRow.StageBegin;
                 StageEnd = worldRow.StageEnd;
-                IsUnlocked = unlockedBlockIndex != -1;
                 UnlockedBlockIndex = unlockedBlockIndex;
-                IsStageCleared = stageClearedBlockIndex != -1;
                 StageClearedBlockIndex = stageClearedBlockIndex;
                 StageClearedId = stageClearedId;
             }
@@ -44,9 +42,7 @@ namespace Nekoyume.Model
                 Name = world.Name;
                 StageBegin = world.StageBegin;
                 StageEnd = world.StageEnd;
-                IsUnlocked = true;
                 UnlockedBlockIndex = unlockedBlockIndex;
-                IsStageCleared = world.IsStageCleared;
                 StageClearedBlockIndex = world.StageClearedBlockIndex;
                 StageClearedId = world.StageClearedId;
             }
@@ -57,9 +53,7 @@ namespace Nekoyume.Model
                 Name = world.Name;
                 StageBegin = world.StageBegin;
                 StageEnd = world.StageEnd;
-                IsUnlocked = world.IsUnlocked;
                 UnlockedBlockIndex = world.UnlockedBlockIndex;
-                IsStageCleared = true;
                 StageClearedBlockIndex = stageClearedBlockIndex;
                 StageClearedId = stageClearedId;
             }
@@ -70,9 +64,7 @@ namespace Nekoyume.Model
                 Name = serialized.GetString("Name");
                 StageBegin = serialized.GetInteger("StageBegin");
                 StageEnd = serialized.GetInteger("StageEnd");
-                IsUnlocked = serialized.GetBoolean("IsUnlocked");
                 UnlockedBlockIndex = serialized.GetLong("UnlockedBlockIndex");
-                IsStageCleared = serialized.GetBoolean("IsStageCleared");
                 StageClearedBlockIndex = serialized.GetLong("StageClearedBlockIndex");
                 StageClearedId = serialized.GetInteger("StageClearedId");
             }
@@ -85,9 +77,7 @@ namespace Nekoyume.Model
                     [(Bencodex.Types.Text) "Name"] = Name.Serialize(),
                     [(Bencodex.Types.Text) "StageBegin"] = StageBegin.Serialize(),
                     [(Bencodex.Types.Text) "StageEnd"] = StageEnd.Serialize(),
-                    [(Bencodex.Types.Text) "IsUnlocked"] = IsUnlocked.Serialize(),
                     [(Bencodex.Types.Text) "UnlockedBlockIndex"] = UnlockedBlockIndex.Serialize(),
-                    [(Bencodex.Types.Text) "IsStageCleared"] = IsStageCleared.Serialize(),
                     [(Bencodex.Types.Text) "StageClearedBlockIndex"] = StageClearedBlockIndex.Serialize(),
                     [(Bencodex.Types.Text) "StageClearedId"] = StageClearedId.Serialize(),
                 });
@@ -195,15 +185,15 @@ namespace Nekoyume.Model
         public bool TryGetWorld(int worldId, out World world)
         {
             if (!_worlds.ContainsKey(worldId))
-                throw new KeyNotFoundException($"{nameof(worldId)}: {worldId}");
+            {
+                world = default;
+                return false;
+            }
 
             world = _worlds[worldId];
             return true;
         }
 
-        /// <summary>
-        /// `CurrentWorldId`와 `CurrentStageId`를 초기화 한다.
-        /// </summary>
         public bool TryGetFirstWorld(out World world)
         {
             if (_worlds.Count == 0)
@@ -240,7 +230,7 @@ namespace Nekoyume.Model
         /// </summary>
         /// <param name="world"></param>
         /// <returns></returns>
-        public bool TryGetUnlockedWorldByLastStageClearedAt(out World world)
+        public bool TryGetUnlockedWorldByStageClearedBlockIndex(out World world)
         {
             try
             {
@@ -266,22 +256,9 @@ namespace Nekoyume.Model
         /// <exception cref="ArgumentException"></exception>
         public void ClearStage(int worldId, int stageId, long clearedAt, WorldUnlockSheet unlockSheet)
         {
-            if (!_worlds.ContainsKey(worldId))
-                throw new ArgumentException(
-                    $"{nameof(worldId)}({worldId}) not unlocked. If you want to clear, unlock first.");
-
             var world = _worlds[worldId];
             if (stageId <= world.StageClearedId)
                 return;
-
-            if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
-                !world.IsStageCleared && stageId != world.StageBegin)
-            {
-                var sb = new StringBuilder();
-                sb.AppendLine($"{nameof(worldId)}({worldId})-{nameof(stageId)}({stageId}) is too big.");
-                sb.AppendLine($"Cleared {nameof(stageId)} is ({world.StageClearedId}).");
-                throw new ArgumentException(sb.ToString());
-            }
 
             _worlds[worldId] = new World(world, clearedAt, stageId);
 

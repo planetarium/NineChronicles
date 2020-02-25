@@ -348,7 +348,6 @@ namespace Nekoyume.Game
             Boss = null;
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
-            Widget.Find<Status>().battleTimerView.Close();
             yield return StartCoroutine(CoUnlockAlert());
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var failed = _battleResultModel.ClearedWaveNumber < log.waveCount;
@@ -437,6 +436,7 @@ namespace Nekoyume.Game
             if (_rankingBattle)
             {
                 battle.Show();
+                battle.comboText.Close();
                 battle.stageProgressBar.Close();
             }
             else
@@ -811,15 +811,15 @@ namespace Nekoyume.Game
                 yield break;
 
             var key = string.Empty;
-            if (stageId == GameConfig.RequireStage.UIMainMenuCombination)
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
             {
                 key = "UI_UNLOCK_COMBINATION";
             }
-            else if (stageId == GameConfig.RequireStage.UIMainMenuShop)
+            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
                 key = "UI_UNLOCK_SHOP";
             }
-            else if (stageId == GameConfig.RequireStage.UIMainMenuRankingBoard)
+            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
             {
                 key = "UI_UNLOCK_RANKING";
             }

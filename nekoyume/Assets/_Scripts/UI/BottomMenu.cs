@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.EnumType;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -68,6 +69,7 @@ namespace Nekoyume.UI.Module
         public NotifiableButton settingsButton;
 
         public CanvasGroup canvasGroup;
+        public VFX inventoryVFX;
         private Animator _inventoryAnimator;
 
         [SerializeField] private RectTransform _buttons = null;
@@ -251,6 +253,7 @@ namespace Nekoyume.UI.Module
             if (_inventoryAnimator)
             {
                 _inventoryAnimator.Play("GetItem");
+                inventoryVFX.Play();
             }
         }
 
@@ -357,11 +360,11 @@ namespace Nekoyume.UI.Module
 
         private bool ShowChatButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
-            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuChat)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuChat)
                 return false;
 
             chatButton.Show();
@@ -370,11 +373,11 @@ namespace Nekoyume.UI.Module
 
         private bool ShowMailButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
-            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuMail)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuMail)
                 return false;
 
             // todo: 제조 시도 후인지 추가 검사.
@@ -385,11 +388,11 @@ namespace Nekoyume.UI.Module
 
         private bool ShowQuestButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
-            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuQuest)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuQuest)
                 return false;
 
             questButton.Show();
@@ -403,11 +406,11 @@ namespace Nekoyume.UI.Module
 
         private bool ShowCharacterButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
-            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuCharacter)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter)
                 return false;
 
             characterButton.Show();
@@ -416,11 +419,11 @@ namespace Nekoyume.UI.Module
 
         private bool ShowInventoryButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
-            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuInventory)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuInventory)
                 return false;
 
             inventoryButton.Show();
@@ -435,11 +438,11 @@ namespace Nekoyume.UI.Module
 
         private bool ShowSettingsButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return false;
 
-            if (world.StageClearedId < GameConfig.RequireStage.UIBottomMenuSettings)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuSettings)
                 return false;
 
             settingsButton.Show();

@@ -215,10 +215,21 @@ namespace Nekoyume.UI
                 IsCloseAnimationCompleted = false;
                 Animator.enabled = true;
                 Animator.Play("Close");
+                var coroutine = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
+                StopCoroutine(coroutine);
             }
 
             gameObject.SetActive(false);
+        }
+
+        private IEnumerator CoCompleteCloseAnimation()
+        {
+            yield return new WaitForSeconds(1f);
+            if (!IsCloseAnimationCompleted)
+            {
+                IsCloseAnimationCompleted = true;
+            }
         }
 
         #region Call From Animation
