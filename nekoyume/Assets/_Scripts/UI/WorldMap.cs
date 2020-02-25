@@ -225,13 +225,13 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        private void LockWorld(WorldMapWorld world)
+        private static void LockWorld(WorldMapWorld world)
         {
             world.Set(-1, world.SharedViewModel.RowData.StageBegin);
             world.worldButton.SetActive(false);
         }
 
-        private void UnlockWorld(WorldMapWorld world, int openedStageId = -1, int selectedStageId = -1)
+        private static void UnlockWorld(WorldMapWorld world, int openedStageId = -1, int selectedStageId = -1)
         {
             world.Set(openedStageId, selectedStageId);
             world.worldButton.SetActive(true);

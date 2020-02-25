@@ -66,7 +66,7 @@ namespace Nekoyume.Action
             Log.Debug($"Sell Get AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
             
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return states;
 

@@ -110,7 +110,7 @@ namespace Nekoyume.Model.State
             Level = avatarState.level;
             AvatarName = avatarState.NameWithHash;
             Exp = avatarState.exp;
-            avatarState.worldInformation.TryGetUnlockedWorldByLastStageClearedAt(out var detail);
+            avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var detail);
             StageClearedBlockIndex = detail.StageClearedBlockIndex;
             UpdatedAt = avatarState.updatedAt;
         }

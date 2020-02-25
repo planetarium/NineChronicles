@@ -16,11 +16,11 @@ namespace Nekoyume.Model.Skill
             int simulatorWaveTurn,
             IEnumerable<Buff.Buff> buffs)
         {
-            return new BattleStatus.HealSkill(
-                (CharacterBase)caster.Clone(), 
-                ProcessHeal(caster, simulatorWaveTurn), 
-                ProcessBuff(caster, simulatorWaveTurn, buffs)
-            );
+            var clone = (CharacterBase) caster.Clone();
+            var heal = ProcessHeal(caster, simulatorWaveTurn);
+            var buff = ProcessBuff(caster, simulatorWaveTurn, buffs);
+            
+            return new BattleStatus.HealSkill(clone, heal, buff);
         }
 
         protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessHeal(CharacterBase caster, int simulatorWaveTurn)
