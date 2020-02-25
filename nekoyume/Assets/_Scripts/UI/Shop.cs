@@ -298,7 +298,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (!ButtonEnabledFuncForBuy(data))
+            if (SharedModel.State.Value == StateType.Buy && !ButtonEnabledFuncForBuy(data))
                 return;
 
             ItemCountAndPricePopup.Pop(SharedModel.ItemCountAndPricePopup.Value);
