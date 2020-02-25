@@ -199,10 +199,10 @@ namespace Nekoyume.UI
             if (!worldInformation.TryGetFirstWorld(out var firstWorld))
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
 
-            Show(firstWorld.Id, firstWorld.GetNextStageId(), true);
+            Show(firstWorld.Id, firstWorld.GetNextStageId(), true, true);
         }
 
-        public void Show(int worldId, int stageId, bool showWorld)
+        public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
             var bottomMenu = Find<BottomMenu>();
             bottomMenu.Show(
@@ -214,7 +214,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
                 .AddTo(_disposablesAtShow);
             
-            ShowWorld(worldId, stageId, showWorld);
+            ShowWorld(worldId, stageId, showWorld, callByShow);
             Show();
         }
 
@@ -250,9 +250,12 @@ namespace Nekoyume.UI
             ShowWorld(world.Id, world.GetNextStageId(), false);
         }
 
-        private void ShowWorld(int worldId, int stageId, bool showWorld)
+        private void ShowWorld(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
-            SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
+            if(callByShow)
+                CallByShowUpdateWorld();
+            else
+                SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             SelectedWorldId = worldId;
             Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SelectedWorldId, out var worldRow, true);
             SelectedWorldStageBegin = worldRow.StageBegin;
@@ -271,6 +274,18 @@ namespace Nekoyume.UI
             }
         }
 
+        private void CallByShowUpdateWorld()
+        {
+            var status = Find<Status>();
+
+            var bottomMenu = Find<BottomMenu>();
+            bottomMenu.worldMapButton.Hide();
+            bottomMenu.backButton.Show();    
+            stage.SetActive(false);
+            status.Close(true);
+            worldMapRoot.SetActive(true);
+        }
+
         private void UpdateWorld(bool active)
         {
             var status = Find<Status>();
@@ -279,7 +294,7 @@ namespace Nekoyume.UI
             {
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.worldMapButton.Hide();
-                bottomMenu.backButton.Show();    
+                bottomMenu.backButton.Show(); 
                 status.Close(true);
                 worldMapRoot.SetActive(true);
             }
