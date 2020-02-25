@@ -50,12 +50,13 @@ namespace Nekoyume.UI
             transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             Tweener tweenMove;
             tweenMove = transform.DOPath(path, _animationTime, PathType.CatmullRom).SetEase(Ease.OutSine);
-
-            yield return new WaitWhile(tweenMove.IsPlaying);
-            itemImage.enabled = false;
+            yield return new WaitForSeconds(_animationTime - 0.5f);
             if(endPointIsInventory)
                 Find<BottomMenu>().PlayGetItemAnimation();
-            else
+            yield return new WaitWhile(tweenMove.IsPlaying);
+            itemImage.enabled = false;
+            
+            if(!endPointIsInventory)
             {
                 var vfx = VFXController.instance.Create<ItemMoveVFX>(_endPosition);
 
