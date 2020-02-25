@@ -51,6 +51,7 @@ namespace Nekoyume.UI
         public GameObject stage;
         public StageInformation stageInformation;
         public SubmitButton submitButton;
+        public Animator worldMapAnimator;
 
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
@@ -222,6 +223,9 @@ namespace Nekoyume.UI
         {
             _disposablesAtShow.DisposeAllAndClear();
             Find<BottomMenu>().Close(true);
+            stage.SetActive(false);
+            worldMapRoot.SetActive(true);
+            worldMapAnimator.Play("Close");
             base.Close(ignoreCloseAnimation);
         }
 
