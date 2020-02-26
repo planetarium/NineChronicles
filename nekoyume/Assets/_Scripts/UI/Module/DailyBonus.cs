@@ -94,11 +94,11 @@ namespace Nekoyume.UI.Module
             var current = slider.value;
             var speed = 4 * additionalSpeed;
 
-            while (current <= value - 15)
+            while (current <= value - 2)
             {
-                current = (int)Mathf.Lerp(current, value, Time.deltaTime * speed);
+                current = Mathf.Lerp(current, value, Time.deltaTime * speed);
                 slider.value = current;
-                text.text = $"{current} / {GameConfig.DailyRewardInterval}";
+                text.text = $"{(int)current} / {GameConfig.DailyRewardInterval}";
                 yield return null;
             }
 
