@@ -219,6 +219,7 @@ MonoBehaviour:
   enhancementText: {fileID: 4379491137101888571}
   lockImage: {fileID: 1277656586473789476}
   itemSubType: 0
+  itemSubTypeIndex: 1
 --- !u!114 &6202325387254898463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -249,7 +250,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1483381611848371555
 RectTransform:
   m_ObjectHideFlags: 0
