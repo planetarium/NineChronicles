@@ -40,7 +40,8 @@ namespace Nekoyume.UI
         private EquipmentSlot _weaponSlot;
 
         private int _worldId;
-        private int _stageId;
+        private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
+        private int _requiredCost;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
@@ -98,7 +99,7 @@ namespace Nekoyume.UI
                 }
             }).AddTo(gameObject);
 
-            requiredPointText.text = GameConfig.HackAndSlashCostAP.ToString();
+            _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
             Game.Event.OnRoomEnter.AddListener(() => Close());
@@ -146,7 +147,7 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             _worldId = worldMap.SelectedWorldId;
-            _stageId = worldMap.SelectedStageId;
+            _stageId.Value = worldMap.SelectedStageId;
 
             Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Back,
@@ -244,7 +245,7 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            Find<WorldMap>().Show(_worldId, _stageId, false);
+            Find<WorldMap>().Show(_worldId, _stageId.Value, false);
             gameObject.SetActive(false);
         }
 
@@ -256,7 +257,16 @@ namespace Nekoyume.UI
 
         private void SubscribeActionPoint(int point)
         {
-            _buttonEnabled.Value = point >= GameConfig.HackAndSlashCostAP;
+            _buttonEnabled.Value = point >= _requiredCost;
+        }
+
+        private void SubscribeStage(int stageId)
+        {
+            var stage = Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(i => i.Id == stageId);
+            if (stage is null)
+                return;
+            _requiredCost = stage.CostAP;
+            requiredPointText.text = _requiredCost.ToString();
         }
 
         #endregion
@@ -287,7 +297,7 @@ namespace Nekoyume.UI
             {
                 var worldMap = Find<WorldMap>();
                 _worldId = worldMap.SelectedWorldId;
-                _stageId = worldMap.SelectedStageId;
+                _stageId.Value = worldMap.SelectedStageId;
                 Find<BottomMenu>().Show(
                     UINavigator.NavigationType.Back,
                     SubscribeBackButtonClick,
