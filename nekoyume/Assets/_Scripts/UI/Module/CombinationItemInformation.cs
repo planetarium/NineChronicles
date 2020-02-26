@@ -167,20 +167,6 @@ namespace Nekoyume.UI.Module
                     statCount++;
                 }
             }
-            else
-            {
-                statsArea.commonText.gameObject.SetActive(true);
-                statsArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
-
-                var data = Model.item.Value.ItemBase.Value.Data;
-                if (data.ItemType == ItemType.Material &&
-                    data is MaterialItemSheet.Row materialData &&
-                    materialData.StatType != StatType.NONE)
-                {
-                    AddStat(materialData);
-                    statCount++;
-                }
-            }
 
             if (statCount <= 0)
             {
@@ -221,17 +207,6 @@ namespace Nekoyume.UI.Module
                     skillCount++;
                 }
             }
-            else
-            {
-                var data = Model.item.Value.ItemBase.Value.Data;
-                if (data.ItemType == ItemType.Material &&
-                    data is MaterialItemSheet.Row materialData &&
-                    materialData.SkillId != 0)
-                {
-                    AddSkill(materialData.SkillId);
-                    skillCount++;
-                }
-            }
 
             if (skillCount <= 0)
             {
@@ -241,14 +216,6 @@ namespace Nekoyume.UI.Module
             }
 
             skillsArea.root.gameObject.SetActive(true);
-        }
-
-        private void AddStat(MaterialItemSheet.Row model, bool isMainStat = false)
-        {
-            var statView = GetDisabledStatView();
-            if (statView is null)
-                throw new NotFoundComponentException<BulletedStatView>();
-            statView.Show(model, isMainStat);
         }
 
         private void AddStat(StatMapEx model, bool isMainStat = false)

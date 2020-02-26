@@ -491,25 +491,6 @@ namespace Nekoyume.BlockChain
             Application.wantsToQuit += WantsToQuit;
         }
 
-        private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
-        {
-            public IAction BlockAction { get; } = new RewardGold {Gold = 1};
-
-            public InvalidBlockException ValidateNextBlock(
-                BlockChain<PolymorphicAction<ActionBase>> blocks,
-                Block<PolymorphicAction<ActionBase>> nextBlock
-            )
-            {
-                return null;
-            }
-
-            public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blocks)
-            {
-                Thread.Sleep(SleepInterval);
-                return blocks.Tip is null ? 0 : 1;
-            }
-        }
-
         private static void InitializeTelemetryClient(Address address)
         {
             _telemetryClient.Context.User.AuthenticatedUserId = address.ToHex();
@@ -790,25 +771,6 @@ namespace Nekoyume.BlockChain
                 var task = Task.Run(async() => await miner.MineBlockAsync(_cancellationTokenSource.Token));
                 yield return new WaitUntil(() => task.IsCompleted);
             }
-        }
-
-        private IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
-        {
-# if UNITY_EDITOR
-            return new DebugPolicy();
-# else
-            return new BlockPolicy<PolymorphicAction<ActionBase>>(
-                new RewardGold { Gold = 1 },
-                BlockInterval,
-                100000,
-                2048
-            );
-#endif
-        }
-
-        public void AppendBlock(Block<PolymorphicAction<ActionBase>> block)
-        {
-            blocks.Append(block);
         }
 
         private Transaction<PolymorphicAction<ActionBase>> MakeTransaction(
