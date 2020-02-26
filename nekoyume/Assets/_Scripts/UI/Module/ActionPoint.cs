@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DG.Tweening;
 using Nekoyume.Model;
 using Nekoyume.State;
@@ -20,6 +21,7 @@ namespace Nekoyume.UI.Module
 
         private IDisposable _disposable;
         private VanilaTooltip _tooltip;
+        private Coroutine lerpCoroutine;
 
         #region Mono
 
@@ -50,8 +52,27 @@ namespace Nekoyume.UI.Module
 
         private void SetPoint(int actionPoint)
         {
-            text.text = $"{actionPoint} / {slider.maxValue}";
-            slider.value = actionPoint;
+            if(lerpCoroutine != null)
+                StopCoroutine(lerpCoroutine);
+            
+            lerpCoroutine = StartCoroutine(LerpSlider(actionPoint));
+        }
+        
+        private IEnumerator LerpSlider(int value, int additionalSpeed = 1)
+        {
+            var current = slider.value;
+            var speed = 4 * additionalSpeed;
+
+            while (current <= value - 2)
+            {
+                current = Mathf.Lerp(current, value, Time.deltaTime * speed);
+                slider.value = current;
+                text.text = $"{(int)current} / {GameConfig.ActionPointMax}";
+                yield return null;
+            }
+
+            slider.value = value;
+            text.text = $"{value} / {GameConfig.ActionPointMax}";
         }
 
         public void ShowTooltip()

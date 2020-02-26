@@ -130,8 +130,8 @@ namespace Nekoyume.UI.Module
                 boxImageTransform.position,
                 actionPoint.image.transform.position,
                 true,
-                0.1f,
-                1f);
+                1f,
+                0.8f);
             SetIndex(0);
             _updateEnable = false;
         }
