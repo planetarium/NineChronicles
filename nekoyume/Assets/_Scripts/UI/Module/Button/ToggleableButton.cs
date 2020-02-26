@@ -81,7 +81,7 @@ namespace Nekoyume.UI.Module
                 inputBox.No();
             }
             else
-                _widget.Close(true);
+                _widget.Close();
         }
 
         #endregion
