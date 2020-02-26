@@ -143,12 +143,25 @@ namespace Nekoyume.Action
                 }
             }
 
-            if (avatarState.actionPoint < GameConfig.HackAndSlashCostAP)
+            var tableSheetState = TableSheetsState.FromActionContext(ctx);
+
+            sw.Stop();
+            Log.Debug($"HAS Get TableSheetsState: {sw.Elapsed}");
+            sw.Restart();
+
+            var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
+
+            sw.Stop();
+            Log.Debug($"HAS Initialize TableSheets: {sw.Elapsed}");
+            sw.Restart();
+
+            var stage = tableSheets.StageSheet.Values.First(i => i.Id == stageId);
+            if (avatarState.actionPoint < stage.CostAP)
             {
                 return states;
             }
 
-            avatarState.actionPoint -= GameConfig.HackAndSlashCostAP;
+            avatarState.actionPoint -= stage.CostAP;
 
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)
@@ -173,18 +186,6 @@ namespace Nekoyume.Action
 
                 ((Equipment) outNonFungibleItem).Equip();
             }
-            
-            var tableSheetState = TableSheetsState.FromActionContext(ctx);
-
-            sw.Stop();
-            Log.Debug($"HAS Get TableSheetsState: {sw.Elapsed}");
-            sw.Restart();
-
-            var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
-
-            sw.Stop();
-            Log.Debug($"HAS Initialize TableSheets: {sw.Elapsed}");
-            sw.Restart();
 
             var simulator = new StageSimulator(
                 ctx.Random, 
