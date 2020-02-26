@@ -37,8 +37,6 @@
         public const int BaseVictoryPoint = 20;
         public const int BaseDefeatPoint = -15;
 
-        public const int HackAndSlashCostAP = 5;
-
         public const int CombineConsumableCostAP = 5;
         public const int CombineEquipmentCostAP = 5;
         public const int CombineEquipmentCostNCG = 10;

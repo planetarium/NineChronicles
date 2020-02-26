@@ -371,7 +371,8 @@ namespace Nekoyume.Game
                     (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(States.Instance.CurrentAvatarState
                         .address));
             _battleResultModel.State = log.result;
-            _battleResultModel.ActionPointNotEnough = avatarState.actionPoint < GameConfig.HackAndSlashCostAP;
+            var stage = Game.instance.TableSheets.StageSheet.Values.First(i => i.Id == stageId);
+            _battleResultModel.ActionPointNotEnough = avatarState.actionPoint < stage.CostAP;
             _battleResultModel.ShouldExit = isExitReserved;
             _battleResultModel.ShouldRepeat = repeatStage;
 
