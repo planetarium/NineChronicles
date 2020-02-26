@@ -176,6 +176,7 @@ namespace Nekoyume.Game.Character
             {
                 SpeechBubble = Widget.Create<SpeechBubble>();
             }
+            SpeechBubble.enable = true;
 
             if (SpeechBubble.gameObject.activeSelf)
             {
@@ -184,7 +185,7 @@ namespace Nekoyume.Game.Character
 
             if (list.Length > 0)
             {
-                string join = string.Join("_", list.Select(x => x.ToString()).ToArray());
+                var join = string.Join("_", list.Select(x => x.ToString()).ToArray());
                 key = $"{key}_{join}_";
             }
             else
