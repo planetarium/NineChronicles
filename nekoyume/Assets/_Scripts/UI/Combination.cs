@@ -371,6 +371,7 @@ namespace Nekoyume.UI
 
                     if (isElemental)
                     {
+                        // 여기서 옵션 선택 화면을 보여준다.
                         elementalCombinationPanel.SetData(selectedRecipe);
                         equipmentCombinationPanel.Hide();
                     }
