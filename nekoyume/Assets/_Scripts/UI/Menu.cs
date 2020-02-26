@@ -91,7 +91,7 @@ namespace Nekoyume.UI
                 return;
             }
             
-            if (shopExclamationMark.gameObject.activeSelf)
+            if (questExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
                 var key = string.Format(FirstOpenQuestKeyFormat, addressHax);
