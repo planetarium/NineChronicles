@@ -48,7 +48,8 @@ namespace Nekoyume.UI
                     Find<BottomMenu>().inventoryButton.transform.position,
                     false,
                     1f, 
-                    0.82f);
+                    0.82f,
+                    true);
                 Close();
             }).AddTo(gameObject);
             touchHandler.OnClick.Subscribe(pointerEventData =>
