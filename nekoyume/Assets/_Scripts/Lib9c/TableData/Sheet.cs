@@ -10,7 +10,7 @@ using Serilog;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public abstract class Sheet<TKey, TValue> : IDictionary<TKey, TValue>
+    public abstract class Sheet<TKey, TValue> : IDictionary<TKey, TValue>, ISheet
         where TValue : SheetRow<TKey>, new()
     {
         private Dictionary<TKey, TValue> _impl;

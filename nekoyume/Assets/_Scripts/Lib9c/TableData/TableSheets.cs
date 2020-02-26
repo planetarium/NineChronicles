@@ -1,5 +1,5 @@
 using System;
-using System.IO;
+using System.Text;
 using Libplanet.Action;
 using LruCacheNet;
 using Nekoyume.Model.State;
@@ -14,6 +14,8 @@ namespace Nekoyume.TableData
     {
         private static readonly LruCache<TableSheetsState, TableSheets> Cache =
             new LruCache<TableSheetsState, TableSheets>();
+
+        #region sheets
 
         public WorldSheet WorldSheet { get; private set; }
         public StageWaveSheet StageWaveSheet { get; private set; }
@@ -50,142 +52,40 @@ namespace Nekoyume.TableData
         public EquipmentItemSubRecipeSheet EquipmentItemSubRecipeSheet { get; private set; }
         public EquipmentItemOptionSheet EquipmentItemOptionSheet { get; private set; }
 
+        #endregion
+
         public void SetToSheet(string name, string csv)
         {
-            switch (name)
+            var sheetPropertyInfo = GetType().GetProperty(name);
+            if (sheetPropertyInfo is null)
             {
-                case nameof(TableData.WorldSheet):
-                    WorldSheet = new WorldSheet();
-                    WorldSheet.Set(csv);
-                    break;
-                case nameof(TableData.StageWaveSheet):
-                    StageWaveSheet = new StageWaveSheet();
-                    StageWaveSheet.Set(csv);
-                    break;
-                case nameof(TableData.StageSheet):
-                    StageSheet = new StageSheet();
-                    StageSheet.Set(csv);
-                    break;
-                case nameof(TableData.CharacterSheet):
-                    CharacterSheet = new CharacterSheet();
-                    CharacterSheet.Set(csv);
-                    break;
-                case nameof(TableData.CharacterLevelSheet):
-                    CharacterLevelSheet = new CharacterLevelSheet();
-                    CharacterLevelSheet.Set(csv);
-                    break;
-                case nameof(TableData.SkillSheet):
-                    SkillSheet = new SkillSheet();
-                    SkillSheet.Set(csv);
-                    break;
-                case nameof(TableData.BuffSheet):
-                    BuffSheet = new BuffSheet();
-                    BuffSheet.Set(csv);
-                    break;
-                case nameof(TableData.MaterialItemSheet):
-                    MaterialItemSheet = new MaterialItemSheet();
-                    MaterialItemSheet.Set(csv);
-                    break;
-                case nameof(TableData.EquipmentItemSheet):
-                    EquipmentItemSheet = new EquipmentItemSheet();
-                    EquipmentItemSheet.Set(csv);
-                    break;
-                case nameof(TableData.ConsumableItemSheet):
-                    ConsumableItemSheet = new ConsumableItemSheet();
-                    ConsumableItemSheet.Set(csv);
-                    break;
-                case nameof(TableData.WorldQuestSheet):
-                    WorldQuestSheet = new WorldQuestSheet();
-                    WorldQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.CollectQuestSheet):
-                    CollectQuestSheet = new CollectQuestSheet();
-                    CollectQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.CombinationQuestSheet):
-                    CombinationQuestSheet = new CombinationQuestSheet();
-                    CombinationQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.TradeQuestSheet):
-                    TradeQuestSheet = new TradeQuestSheet();
-                    TradeQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.MonsterQuestSheet):
-                    MonsterQuestSheet = new MonsterQuestSheet();
-                    MonsterQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.ItemEnhancementQuestSheet):
-                    ItemEnhancementQuestSheet = new ItemEnhancementQuestSheet();
-                    ItemEnhancementQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.GeneralQuestSheet):
-                    GeneralQuestSheet = new GeneralQuestSheet();
-                    GeneralQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.SkillBuffSheet):
-                    SkillBuffSheet = new SkillBuffSheet();
-                    SkillBuffSheet.Set(csv);
-                    break;
-                case nameof(TableData.EquipmentItemSetEffectSheet):
-                    EquipmentItemSetEffectSheet = new EquipmentItemSetEffectSheet();
-                    EquipmentItemSetEffectSheet.Set(csv);
-                    break;
-                case nameof(TableData.ItemGradeQuestSheet):
-                    ItemGradeQuestSheet = new ItemGradeQuestSheet();
-                    ItemGradeQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.ItemTypeCollectQuestSheet):
-                    ItemTypeCollectQuestSheet = new ItemTypeCollectQuestSheet();
-                    ItemTypeCollectQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.GoldQuestSheet):
-                    GoldQuestSheet = new GoldQuestSheet();
-                    GoldQuestSheet.Set(csv);
-                    break;
-                case nameof(TableData.EnemySkillSheet):
-                    EnemySkillSheet = new EnemySkillSheet();
-                    EnemySkillSheet.Set(csv);
-                    break;
-                case nameof(TableData.ItemConfigForGradeSheet):
-                    ItemConfigForGradeSheet = new ItemConfigForGradeSheet();
-                    ItemConfigForGradeSheet.Set(csv);
-                    break;
-                case nameof(TableData.ConsumableItemRecipeSheet):
-                    ConsumableItemRecipeSheet = new ConsumableItemRecipeSheet();
-                    ;
-                    ConsumableItemRecipeSheet.Set(csv);
-                    break;
-                case nameof(TableData.QuestRewardSheet):
-                    QuestRewardSheet = new QuestRewardSheet();
-                    QuestRewardSheet.Set(csv);
-                    break;
-                case nameof(TableData.QuestItemRewardSheet):
-                    QuestItemRewardSheet = new QuestItemRewardSheet();
-                    QuestItemRewardSheet.Set(csv);
-                    break;
-                case nameof(TableData.WorldUnlockSheet):
-                    WorldUnlockSheet = new WorldUnlockSheet();
-                    WorldUnlockSheet.Set(csv);
-                    break;
-                case nameof(TableData.StageDialogSheet):
-                    StageDialogSheet = new StageDialogSheet();
-                    StageDialogSheet.Set(csv);
-                    break;
-                case nameof(TableData.EquipmentItemRecipeSheet):
-                    EquipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
-                    EquipmentItemRecipeSheet.Set(csv);
-                    break;
-                case nameof(TableData.EquipmentItemSubRecipeSheet):
-                    EquipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
-                    EquipmentItemSubRecipeSheet.Set(csv);
-                    break;
-                case nameof(TableData.EquipmentItemOptionSheet):
-                    EquipmentItemOptionSheet = new EquipmentItemOptionSheet();
-                    EquipmentItemOptionSheet.Set(csv);
-                    break;
-                default:
-                    throw new InvalidDataException($"Not found {name} class in namespace `TableData`");
+                var sb = new StringBuilder($"[{nameof(TableSheets)}]");
+                sb.Append($" / {nameof(SetToSheet)}({name}, csv)");
+                sb.Append(" / failed to get property");
+                throw new Exception(sb.ToString());
             }
+
+            var constructor = sheetPropertyInfo.PropertyType.GetConstructor(Type.EmptyTypes);
+            if (constructor is null)
+            {
+                var sb = new StringBuilder($"[{nameof(TableSheets)}]");
+                sb.Append($" / {nameof(SetToSheet)}({name}, csv)");
+                sb.Append(" / failed to get constructor");
+                throw new Exception(sb.ToString());
+            }
+
+            var sheetObject = constructor.Invoke(new object[] { });
+            var iSheet = (ISheet) sheetObject;
+            if (iSheet is null)
+            {
+                var sb = new StringBuilder($"[{nameof(TableSheets)}]");
+                sb.Append($" / {nameof(SetToSheet)}({name}, csv)");
+                sb.Append($" / failed to cast to {nameof(ISheet)}");
+                throw new Exception(sb.ToString());
+            }
+
+            iSheet.Set(csv);
+            sheetPropertyInfo.SetValue(this, sheetObject);
         }
 
         /// <summary>
