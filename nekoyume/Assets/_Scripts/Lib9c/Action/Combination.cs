@@ -144,191 +144,55 @@ namespace Nekoyume.Action
             };
 
             var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
-
-            var equipmentMaterials = materialRows
-                .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.EquipmentMaterial)
-                .ToList();
+            var consumableItemRecipeSheet = _tableSheets.ConsumableItemRecipeSheet;
+            var consumableItemSheet = _tableSheets.ConsumableItemSheet;
+            var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
+            var foodCount = materialRows.Min(pair => pair.Value);
+            var costAP = foodCount * GameConfig.CombineConsumableCostAP;
             sw.Stop();
-            Log.Debug($"Combination Get EquipmentMaterial rows: {sw.Elapsed}");
+            Log.Debug($"Combination Get Food Material rows: {sw.Elapsed}");
             sw.Restart();
-            if (equipmentMaterials.Count > 0)
+
+            if (avatarState.actionPoint < costAP)
             {
-                if (avatarState.actionPoint < GameConfig.CombineEquipmentCostAP)
-                {
-                    // ap 부족 에러.
-                    return states;
-                }
+                // ap 부족 에러.
+                return states;
+            }
 
-                // ap 차감.
-                avatarState.actionPoint -= GameConfig.CombineEquipmentCostAP;
-                Result.actionPoint = GameConfig.CombineEquipmentCostAP;
+            // ap 차감.
+            avatarState.actionPoint -= costAP;
+            Result.actionPoint = costAP;
 
-                if (equipmentMaterials.Count != 1)
-                {
-                    // 장비 베이스의 수량 에러.
-                    return states;
-                }
+            // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
+            var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
+                ? GameConfig.CombinationDefaultFoodId
+                : recipeRow.ResultConsumableItemId;
+            sw.Stop();
+            Log.Debug($"Combination Get Food id: {sw.Elapsed}");
+            sw.Restart();
 
-                var equipmentMaterial = equipmentMaterials[0].Key;
-                if (!TryGetItemType(equipmentMaterial.Id, out var outItemType))
-                {
-                    // 장비 베이스의 Id로 장비의 타입을 추측할 수 없는 에러.
-                    return states;
-                }
+            if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
+            {
+                // 소모품 테이블 값 가져오기 실패.
+                return states;
+            }
 
-                var monsterParts = materialRows
-                    .Where(materialRow => materialRow.Key.ItemSubType == ItemSubType.MonsterPart)
-                    .ToList();
-                sw.Stop();
-                Log.Debug($"Combination Get MonsterPart rows: {sw.Elapsed}");
-                sw.Restart();
-                var monsterPartsCount = monsterParts.Count;
-                if (monsterPartsCount == 0)
-                {
-                    // 몬스터 파츠의 수량 에러.
-                    return states;
-                }
-
-                if (!_tableSheets.ItemConfigForGradeSheet.TryGetValue(equipmentMaterial.Grade,
-                    out var configRow))
-                {
-                    // 아이템 설정 테이블 값 가져오기 실패.
-                    return states;
-                }
-
-                var ncgSlotCount = Math.Max(0, monsterPartsCount - configRow.MonsterPartsCountForCombination);
-                if (ncgSlotCount > 0)
-                {
-                    if (ncgSlotCount > configRow.MonsterPartsCountForCombinationWithNCG)
-                    {
-                        // 유료 슬롯 개수 제한 초과 에러.
-                        return states;
-                    }
-
-                    var costNCG = ncgSlotCount * GameConfig.CombineEquipmentCostNCG;
-                    if (agentState.gold < costNCG)
-                    {
-                        // gold 부족 에러.
-                        return states;
-                    }
-
-                    // gold 차감.
-                    agentState.gold -= costNCG;
-                    Result.gold = costNCG;
-                }
-
-                if (!TryGetItemEquipmentRow(
-                    outItemType,
-                    GetElementalType(ctx.Random, monsterParts),
-                    equipmentMaterial.Grade,
-                    out var itemEquipmentRow))
-                {
-                    // 장비 테이블 값 가져오기 실패.
-                    return states;
-                }
-
-                var equipment = (Equipment) ItemFactory.Create(itemEquipmentRow, ctx.Random.GenerateRandomGuid());
-                if (equipment is null)
-                {
-                    // 장비 생성 실패.
-                    return states;
-                }
-
-                sw.Stop();
-                Log.Debug($"Combination Create Equipment: {sw.Elapsed}");
-                sw.Restart();
-
-                foreach (var monsterPart in monsterParts)
-                {
-                    if (TryGetStat(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), out var statMap))
-                        equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-                    sw.Stop();
-                    Log.Debug($"Combination Add Additional Stats: {sw.Elapsed}");
-                    sw.Restart();
-                    if (TryGetSkill(monsterPart.Key, GetRoll(ctx.Random, monsterPart.Value, 0), _tableSheets, out var skill))
-                    {
-                        equipment.Skills.Add(skill);
-                    }
-                    sw.Stop();
-                    Log.Debug($"Combination Add Skill: {sw.Elapsed}");
-                    sw.Restart();
-                }
-
-                var buffSkillCount = Math.Min(
-                    ctx.Random.Next(configRow.RandomBuffSkillMinCountForCombination,
-                        configRow.RandomBuffSkillMaxCountForCombination + 1),
-                    configRow.RandomBuffSkillMaxCountForCombination);
-                for (var i = 0; i < buffSkillCount; i++)
-                {
-                    if (TryGetBuffSkill(ctx.Random, out var buffSkill))
-                        equipment.BuffSkills.Add(buffSkill);
-                    sw.Stop();
-                    Log.Debug($"Combination Add Buff Skill: {sw.Elapsed}");
-                    sw.Restart();
-                }
-
+            // 조합 결과 획득.
+            // TODO Materials 가 액션의 요소라 값이 변경되면 서명이 바뀔 수 있음.
+            // 액션의 결과를 별도의 주소에 저장해서 렌더러쪽에서 ActionEvaluation.OutputStates.GetState를 사용하면 좋을 것 같음.
+            for (var i = 0; i < foodCount; i++)
+            {
+                var itemId = ctx.Random.GenerateRandomGuid();
+                var itemUsable = GetFood(consumableItemRow, itemId);
                 // 액션 결과
-                Result.itemUsable = equipment;
+                Result.itemUsable = itemUsable;
                 var mail = new CombinationMail(Result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
                 Result.id = mail.id;
                 avatarState.Update(mail);
-                avatarState.UpdateFromCombination(equipment);
+                avatarState.UpdateFromCombination(itemUsable);
                 sw.Stop();
                 Log.Debug($"Combination Update AvatarState: {sw.Elapsed}");
                 sw.Restart();
-            }
-            else
-            {
-                var consumableItemRecipeSheet = _tableSheets.ConsumableItemRecipeSheet;
-                var consumableItemSheet = _tableSheets.ConsumableItemSheet;
-                var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
-                var foodCount = materialRows.Min(pair => pair.Value);
-                var costAP = foodCount * GameConfig.CombineConsumableCostAP;
-                sw.Stop();
-                Log.Debug($"Combination Get Food Material rows: {sw.Elapsed}");
-                sw.Restart();
-
-                if (avatarState.actionPoint < costAP)
-                {
-                    // ap 부족 에러.
-                    return states;
-                }
-
-                // ap 차감.
-                avatarState.actionPoint -= costAP;
-                Result.actionPoint = costAP;
-
-                // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
-                var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
-                    ? GameConfig.CombinationDefaultFoodId
-                    : recipeRow.ResultConsumableItemId;
-                sw.Stop();
-                Log.Debug($"Combination Get Food id: {sw.Elapsed}");
-                sw.Restart();
-
-                if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
-                {
-                    // 소모품 테이블 값 가져오기 실패.
-                    return states;
-                }
-
-                // 조합 결과 획득.
-                // TODO Materials 가 액션의 요소라 값이 변경되면 서명이 바뀔 수 있음.
-                // 액션의 결과를 별도의 주소에 저장해서 렌더러쪽에서 ActionEvaluation.OutputStates.GetState를 사용하면 좋을 것 같음.
-                for (var i = 0; i < foodCount; i++)
-                {
-                    var itemId = ctx.Random.GenerateRandomGuid();
-                    var itemUsable = GetFood(consumableItemRow, itemId);
-                    // 액션 결과
-                    Result.itemUsable = itemUsable;
-                    var mail = new CombinationMail(Result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
-                    Result.id = mail.id;
-                    avatarState.Update(mail);
-                    avatarState.UpdateFromCombination(itemUsable);
-                    sw.Stop();
-                    Log.Debug($"Combination Update AvatarState: {sw.Elapsed}");
-                    sw.Restart();
-                }
             }
 
             completedQuestIds = avatarState.UpdateQuestRewards(ctx);
@@ -501,58 +365,6 @@ namespace Nekoyume.Action
             var rollMin = rollMax * 0.7m;
             return rollMin + (rollMax - rollMin) *
                    DecimalEx.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
-        }
-
-        private static bool TryGetStat(MaterialItemSheet.Row itemRow, decimal roll, out StatMap statMap)
-        {
-            if (itemRow.StatType == StatType.NONE)
-            {
-                statMap = null;
-                return false;
-            }
-
-            var key = itemRow.StatType;
-            var value = Math.Floor(itemRow.StatMin + (itemRow.StatMax - itemRow.StatMin) * roll);
-            statMap = new StatMap(key, value);
-            return true;
-        }
-
-        public static bool TryGetSkill(
-            MaterialItemSheet.Row monsterParts,
-            decimal roll,
-            TableSheets tableSheets,
-            out Skill skill)
-        {
-            try
-            {
-                var skillRow =
-                    tableSheets.SkillSheet.OrderedList.First(r => r.Id == monsterParts.SkillId);
-                var chance = (int) (monsterParts.SkillChanceMin +
-                                    (monsterParts.SkillChanceMax - monsterParts.SkillChanceMin) * roll);
-                chance = Math.Max(monsterParts.SkillChanceMin, chance);
-                var value = (int) (monsterParts.SkillDamageMin +
-                                   (monsterParts.SkillDamageMax - monsterParts.SkillDamageMin) * roll);
-
-                skill = SkillFactory.Get(skillRow, value, chance);
-                return true;
-            }
-            catch (InvalidOperationException)
-            {
-                skill = null;
-                return false;
-            }
-        }
-
-        private bool TryGetBuffSkill(IRandom random, out BuffSkill buffSkill)
-        {
-            var buffSkills = _tableSheets.SkillSheet.OrderedList
-                .Where(item => item.SkillType == SkillType.Buff)
-                .ToList();
-            var index = random.Next(0, buffSkills.Count);
-            var row = buffSkills[index];
-
-            buffSkill = new BuffSkill(row, 0, 20);
-            return true;
         }
 
         private static ItemUsable GetFood(ConsumableItemSheet.Row equipmentItemRow, Guid itemId)
