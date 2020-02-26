@@ -11,19 +11,6 @@ namespace Nekoyume.UI.Module
 
         public bool IsShow => gameObject.activeSelf;
 
-        public void Show(MaterialItemSheet.Row itemRow, bool isMainStat)
-        {
-            if (itemRow is null)
-            {
-                Hide();
-                return;
-            }
-
-            bulletMainImage.enabled = isMainStat;
-            bulletSubImage.enabled = !isMainStat;
-            Show(itemRow.StatType, (itemRow.StatMin, itemRow.StatMax));
-        }
-
         public void Show(StatMapEx statMapEx, bool isMainStat)
         {
             if (statMapEx is null)
