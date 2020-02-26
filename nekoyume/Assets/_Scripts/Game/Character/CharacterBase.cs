@@ -225,15 +225,7 @@ namespace Nekoyume.Game.Character
             }
 
             CurrentHP -= dmg;
-
-            if (isConsiderDie && IsDead)
-            {
-                StartCoroutine(Dying());
-            }
-            else
-            {
-                Animator.Hit();
-            }
+            Animator.Hit();
 
             PopUpDmg(position, force, info, isConsiderElementalType);
         }
@@ -816,6 +808,11 @@ namespace Nekoyume.Game.Character
                     AudioController.PlayFootStep();
                     break;
             }
+        }
+
+        public void Dead()
+        {
+            StartCoroutine(Dying());
         }
     }
 }
