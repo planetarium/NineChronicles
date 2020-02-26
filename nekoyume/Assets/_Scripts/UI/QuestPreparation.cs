@@ -285,6 +285,7 @@ namespace Nekoyume.UI
                 moveToLeft,
                 animationTime,
                 middleXGap);
+            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address, -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
             Quest(repeat);
             AudioController.PlayClick();
@@ -495,31 +496,24 @@ namespace Nekoyume.UI
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
-            var equipments = new List<Equipment>();
-            foreach (var slot in equipmentSlots)
-            {
-                if (!slot.IsLock &&
-                    !slot.IsEmpty)
-                {
-                    equipments.Add((Equipment) slot.Item);
-                }
-            }
+            var equipments = equipmentSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Equipment) slot.Item)
+                .ToList();
 
-            var consumables = new List<Consumable>();
-            foreach (var slot in consumableSlots)
-            {
-                if (!slot.IsLock &&
-                    !slot.IsEmpty)
-                {
-                    consumables.Add((Consumable) slot.Item);
-                }
-            }
+            var consumables = consumableSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Consumable) slot.Item)
+                .ToList();
 
             _stage.isExitReserved = false;
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
-            Game.Game.instance.ActionManager.HackAndSlash(equipments, consumables, _worldId, _stageId)
-                .Subscribe(_ => { }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+            Game.Game.instance.ActionManager.HackAndSlash(equipments, consumables, _worldId, _stageId.Value)
+                .Subscribe(_ =>
+                {
+                    LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address, _requiredCost);
+                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
                 .AddTo(this);
         }
 
