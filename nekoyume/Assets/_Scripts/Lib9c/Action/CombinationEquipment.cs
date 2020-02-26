@@ -17,19 +17,20 @@ namespace Nekoyume.Action
     [ActionType("combination_equipment")]
     public class CombinationEquipment : GameAction
     {
+        public const string DeriveKey = "combinationEquipmentResult";
         public Address AvatarAddress;
-        public Address ResultAddress;
         public int RecipeId;
         public int? SubRecipeId;
 
         public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
+            var resultAddress = AvatarAddress.Derive(DeriveKey);
             if (ctx.Rehearsal)
             {
                 return states
                     .SetState(AvatarAddress, MarkChanged)
-                    .SetState(ResultAddress, MarkChanged)
+                    .SetState(resultAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged);
 
             }
@@ -179,7 +180,7 @@ namespace Nekoyume.Action
             avatarState.UpdateFromCombination(equipment);
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
-                .SetState(ResultAddress, result.Serialize())
+                .SetState(resultAddress, result.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());
         }
 
@@ -189,13 +190,11 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["recipeId"] = RecipeId.Serialize(),
                 ["subRecipeId"] = SubRecipeId.Serialize(),
-                ["resultAddress"] = ResultAddress.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
-            ResultAddress = plainValue["resultAddress"].ToAddress();
             RecipeId = plainValue["recipeId"].ToInteger();
             SubRecipeId = plainValue["subRecipeId"].ToNullableInteger();
         }

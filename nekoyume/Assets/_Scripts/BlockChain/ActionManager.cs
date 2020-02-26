@@ -334,7 +334,6 @@ namespace Nekoyume.BlockChain
             var action = new CombinationEquipment
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
-                ResultAddress = new PrivateKey().PublicKey.ToAddress(),
                 RecipeId = recipeId,
                 SubRecipeId = subRecipeId,
             };
