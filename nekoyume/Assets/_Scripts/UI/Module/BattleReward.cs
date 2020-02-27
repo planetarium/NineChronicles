@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module
         public RewardItems rewardItems;
         public TextMeshProUGUI rewardText;
         public TextMeshProUGUI failedText;
+        public Animator animator;
 
         private Star _star;
         private string _stageClearText;

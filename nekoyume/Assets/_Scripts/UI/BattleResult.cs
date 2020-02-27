@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using DG.Tweening;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -247,6 +248,7 @@ namespace Nekoyume.UI
             rewardsArea.root.SetActive(true);
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
             {
+                rewardsArea.rewards[i].animator.enabled = true;
                 var view = rewardsArea.rewards[i];
                 var cleared = SharedModel.ClearedWaveNumber > i;
                 if (i == 0)
@@ -271,8 +273,20 @@ namespace Nekoyume.UI
                 yield return null;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
-
+            
             yield return new WaitForSeconds(0.5f);
+
+            for (var i = 0; i < rewardsArea.rewards.Length; i++)
+            {
+                rewardsArea.rewards[i].animator.enabled = false;
+                Transform Transform = rewardsArea.rewards[i].transform;
+
+                Sequence sequence = DOTween.Sequence();
+                sequence.Append(Transform.DOScale(1.05f, 1f).SetEase(Ease.Linear));
+                sequence.Append(Transform.DOScale(1.0f, 1f).SetEase(Ease.Linear));
+                sequence.SetLoops(15);
+                sequence.Play();
+            }
         }
 
         private IEnumerator CoUpdateBottomText(int limitSeconds)

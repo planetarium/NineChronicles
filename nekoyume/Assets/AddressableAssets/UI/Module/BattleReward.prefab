@@ -38,9 +38,9 @@ RectTransform:
   m_Father: {fileID: 3924442175733597379}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 92, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 92, y: -146}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4320564656160438501
@@ -412,6 +412,7 @@ MonoBehaviour:
     - {fileID: 8744516812403821595}
   rewardText: {fileID: 3133474603565094073}
   failedText: {fileID: 7762069031130219875}
+  animator: {fileID: 3952096152766682899}
 --- !u!95 &3952096152766682899
 Animator:
   serializedVersion: 3

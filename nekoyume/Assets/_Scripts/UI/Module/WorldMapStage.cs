@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
 using TMPro;
@@ -63,6 +64,7 @@ namespace Nekoyume.UI.Module
         private Vector3 _disabledImageScale;
         private Vector3 _selectedImageScale;
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private Sequence sequence;
 
         public readonly Subject<WorldMapStage> onClick = new Subject<WorldMapStage>();
 
@@ -114,10 +116,17 @@ namespace Nekoyume.UI.Module
                 normalImage.enabled = false;
                 disabledImage.enabled = false;
                 selectedImage.enabled = true;
+                
+                sequence = DOTween.Sequence();
+                sequence.Append(transform.DOScale(1.2f, 1f).SetEase(Ease.Linear));
+                sequence.Append(transform.DOScale(1.0f, 1f).SetEase(Ease.Linear));
+                sequence.SetLoops(-1);
+                sequence.Play();
 
                 return;
             }
 
+            sequence.Pause();
             switch (value)
             {
                 case State.Normal:
