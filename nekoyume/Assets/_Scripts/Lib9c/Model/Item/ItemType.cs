@@ -22,13 +22,7 @@ namespace Nekoyume.Model.Item
         Belt,
         Necklace,
         Ring,
-        
-        // todo: 삭제해야 좋겠어요.
-        Set,
-        RangedWeapon,
-        Helm,
-        Shoes,
-        
+
         // todo: Remove `EquipmentMaterial` and `FoodMaterial`
         // todo: Material -> ETC
         // Material
