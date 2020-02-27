@@ -270,20 +270,15 @@ namespace Nekoyume.Model.State
 
         public void UpdateFromQuestReward(Quest.Quest quest, IActionContext context)
         {
-            var random = context.Random;
-            var items = new List<ItemBase>();
+            var items = new List<Material>();
             foreach (var pair in quest.Reward.ItemMap)
             {
                 var row = TableSheets.FromActionContext(context)
-                    .ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
-                var item = ItemFactory.Create(row, random.GenerateRandomGuid());
+                    .MaterialItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                var item = ItemFactory.CreateMaterial(row);
                 var map = inventory.AddItem(item, pair.Value);
                 itemMap.Add(map);
                 items.Add(item);
-                if (item is ItemUsable itemUsable)
-                {
-                    questList.UpdateItemGradeQuest(itemUsable);
-                }
             }
 
             quest.IsPaidInAction = true;

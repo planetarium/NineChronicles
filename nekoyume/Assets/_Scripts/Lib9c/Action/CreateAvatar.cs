@@ -130,14 +130,14 @@ namespace Nekoyume.Action
         {
             foreach (var row in tableSheets.MaterialItemSheet)
             {
-                avatarState.inventory.AddItem(ItemFactory.Create(row, default), 10);
+                avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);
             }
 
             foreach (var pair in tableSheets.EquipmentItemSheet.Where(pair =>
                 pair.Value.Id > GameConfig.DefaultAvatarWeaponId))
             {
                 var itemId = random.GenerateRandomGuid();
-                avatarState.inventory.AddItem((ItemUsable) ItemFactory.Create(pair.Value, itemId));
+                avatarState.inventory.AddItem(ItemFactory.CreateItemUsable(pair.Value, itemId, default));
             }
         }
     }
