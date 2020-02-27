@@ -728,6 +728,14 @@ namespace Nekoyume.Game
             yield return StartCoroutine(player.CoGetExp(exp));
         }
 
+        public IEnumerator CoDead(CharacterBase model)
+        {
+            var characters = GetComponentsInChildren<Character.CharacterBase>();
+            yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
+            var character = GetCharacter(model);
+            character.Dead();
+        }
+
         public Character.Player GetPlayer()
         {
             if (!(selectedPlayer is null) && selectedPlayer.gameObject.activeSelf)
