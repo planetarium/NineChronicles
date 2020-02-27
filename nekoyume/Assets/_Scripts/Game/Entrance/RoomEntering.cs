@@ -15,7 +15,6 @@ namespace Nekoyume.Game.Entrance
 
         private IEnumerator Act()
         {
-            //Widget.Find<LoadingScreen>().Show();
             Widget.Find<BottomMenu>().Close();
             Widget.Find<UI.Inventory>().Close();
             Widget.Find<StatusDetail>().Close();
