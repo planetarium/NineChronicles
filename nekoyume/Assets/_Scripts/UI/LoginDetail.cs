@@ -289,9 +289,9 @@ namespace Nekoyume.UI
         
         private void EnterRoom()
         {
+            Close();
             Game.Event.OnRoomEnter.Invoke();
             Find<Login>()?.Close();
-            Close();
         }
     }
 }
