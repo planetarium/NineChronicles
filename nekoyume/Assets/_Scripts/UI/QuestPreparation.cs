@@ -40,7 +40,8 @@ namespace Nekoyume.UI
         private EquipmentSlot _weaponSlot;
 
         private int _worldId;
-        private int _stageId;
+        private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
+        private int _requiredCost;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
@@ -98,7 +99,7 @@ namespace Nekoyume.UI
                 }
             }).AddTo(gameObject);
 
-            requiredPointText.text = GameConfig.HackAndSlashCostAP.ToString();
+            _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
             Game.Event.OnRoomEnter.AddListener(() => Close());
@@ -146,7 +147,7 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             _worldId = worldMap.SelectedWorldId;
-            _stageId = worldMap.SelectedStageId;
+            _stageId.Value = worldMap.SelectedStageId;
 
             Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Back,
@@ -244,7 +245,7 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            Find<WorldMap>().Show(_worldId, _stageId, false);
+            Find<WorldMap>().Show(_worldId, _stageId.Value, false);
             gameObject.SetActive(false);
         }
 
@@ -256,7 +257,16 @@ namespace Nekoyume.UI
 
         private void SubscribeActionPoint(int point)
         {
-            _buttonEnabled.Value = point >= GameConfig.HackAndSlashCostAP;
+            _buttonEnabled.Value = point >= _requiredCost;
+        }
+
+        private void SubscribeStage(int stageId)
+        {
+            var stage = Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(i => i.Id == stageId);
+            if (stage is null)
+                return;
+            _requiredCost = stage.CostAP;
+            requiredPointText.text = _requiredCost.ToString();
         }
 
         #endregion
@@ -275,6 +285,7 @@ namespace Nekoyume.UI
                 moveToLeft,
                 animationTime,
                 middleXGap);
+            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address, -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
             Quest(repeat);
             AudioController.PlayClick();
@@ -287,7 +298,7 @@ namespace Nekoyume.UI
             {
                 var worldMap = Find<WorldMap>();
                 _worldId = worldMap.SelectedWorldId;
-                _stageId = worldMap.SelectedStageId;
+                _stageId.Value = worldMap.SelectedStageId;
                 Find<BottomMenu>().Show(
                     UINavigator.NavigationType.Back,
                     SubscribeBackButtonClick,
@@ -485,31 +496,24 @@ namespace Nekoyume.UI
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
-            var equipments = new List<Equipment>();
-            foreach (var slot in equipmentSlots)
-            {
-                if (!slot.IsLock &&
-                    !slot.IsEmpty)
-                {
-                    equipments.Add((Equipment) slot.Item);
-                }
-            }
+            var equipments = equipmentSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Equipment) slot.Item)
+                .ToList();
 
-            var consumables = new List<Consumable>();
-            foreach (var slot in consumableSlots)
-            {
-                if (!slot.IsLock &&
-                    !slot.IsEmpty)
-                {
-                    consumables.Add((Consumable) slot.Item);
-                }
-            }
+            var consumables = consumableSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Consumable) slot.Item)
+                .ToList();
 
             _stage.isExitReserved = false;
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
-            Game.Game.instance.ActionManager.HackAndSlash(equipments, consumables, _worldId, _stageId)
-                .Subscribe(_ => { }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+            Game.Game.instance.ActionManager.HackAndSlash(equipments, consumables, _worldId, _stageId.Value)
+                .Subscribe(_ =>
+                {
+                    LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address, _requiredCost);
+                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
                 .AddTo(this);
         }
 
