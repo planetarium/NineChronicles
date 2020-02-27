@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Assets.SimpleLocalization;
-using Libplanet;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -15,11 +13,12 @@ namespace Nekoyume.UI.Module
     public class CombinationMaterialPanel : MonoBehaviour
     {
         public TextMeshProUGUI materialText;
-        public SimpleCountableItemView[] materialViews;
+        public RequiredItemView[] materialViews;
         public decimal costNcg;
         public int costAp;
 
         public List<(Nekoyume.Model.Item.Material, int)> MaterialList { get; private set; }
+        public bool IsCraftable { get; set; }
 
         private void Awake()
         {
@@ -53,16 +52,24 @@ namespace Nekoyume.UI.Module
                 costNcg += subRecipeRow.RequiredGold;
                 costAp += subRecipeRow.RequiredActionPoint;
             }
+
+            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+            IsCraftable = true;
+
             for (var index = 0; index < materialViews.Length; index++)
             {
                 var view = materialViews[index];
                 view.gameObject.SetActive(false);
                 if (index < MaterialList.Count)
                 {
-                    var (material, count) = MaterialList[index];
-                    var item = new CountableItem(material, count);
-                    view.SetData(item);
+                    var (material, requiredCount) = MaterialList[index];
+                    inventory.TryGetFungibleItem(material, out var inventoryItem);
+                    var item = new CountableItem(material, inventoryItem?.count ?? 0);
+                    view.SetData(item, requiredCount);
                     view.gameObject.SetActive(true);
+
+                    if (item.Count.Value < requiredCount)
+                        IsCraftable = false;
                 }
             }
         }

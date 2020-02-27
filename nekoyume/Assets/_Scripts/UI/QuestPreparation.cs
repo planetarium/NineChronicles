@@ -25,6 +25,7 @@ namespace Nekoyume.UI
         public Module.Inventory inventory;
 
         public TextMeshProUGUI consumableTitleText;
+
         // todo: `EquipmentSlot`을 사용하지 않든가, 이름을 바꿔야 하겠다. 또한 `EquipmentSlots`와 같이 `ConsumableSlots`를 만들어도 좋겠다.
         public EquipmentSlot[] consumableSlots;
         public DetailedStatView[] statusRows;
@@ -49,11 +50,20 @@ namespace Nekoyume.UI
         private CharacterStats _tempStats;
 
         [Header("ItemMoveAnimation")]
-        [SerializeField] private Image actionPointImage;
-        [SerializeField] private Transform buttonStarImageTransform;
-        [SerializeField, Range(.5f,3.0f)] private float animationTime;
-        [SerializeField] private bool moveToLeft;
-        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")] private float middleXGap;
+        [SerializeField]
+        private Image actionPointImage = null;
+
+        [SerializeField]
+        private Transform buttonStarImageTransform = null;
+
+        [SerializeField, Range(.5f, 3.0f)]
+        private float animationTime = 1f;
+
+        [SerializeField]
+        private bool moveToLeft = false;
+
+        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")]
+        private float middleXGap = 1f;
 
         #region override
 
@@ -377,7 +387,7 @@ namespace Nekoyume.UI
         {
             UpdateStats();
             inventory.Tooltip.Close();
-            
+
             if (slot.ItemSubType == ItemSubType.Armor)
             {
                 var armor = (Armor) slot.Item;

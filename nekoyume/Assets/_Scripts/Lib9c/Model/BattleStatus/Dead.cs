@@ -12,7 +12,7 @@ namespace Nekoyume.Model.BattleStatus
 
         public override IEnumerator CoExecute(IStage stage)
         {
-            yield break;
+            yield return stage.CoDead(Character);
         }
     }
 }
