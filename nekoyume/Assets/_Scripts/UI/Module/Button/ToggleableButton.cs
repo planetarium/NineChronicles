@@ -72,6 +72,10 @@ namespace Nekoyume.UI.Module
                 return;
 
             _disposableForWidgetControllable?.Dispose();
+
+            if (!_widget.IsActive())
+                return;
+            
             if (_widget is Confirm confirm)
             {
                 confirm.NoWithoutCallback();
@@ -81,7 +85,7 @@ namespace Nekoyume.UI.Module
                 inputBox.No();
             }
             else
-                _widget.Close(true);
+                _widget.Close();
         }
 
         #endregion
