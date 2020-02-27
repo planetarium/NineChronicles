@@ -206,22 +206,8 @@ namespace Nekoyume.UI.Module
                 descriptionArea.levelLimitGameObject.SetActive(false);
                 descriptionArea.combatPowerObject.SetActive(false);
 
-                var data = Model.item.Value.ItemBase.Value.Data;
-                if (data.ItemType == ItemType.Material &&
-                    data is MaterialItemSheet.Row materialData &&
-                    materialData.StatType != StatType.NONE)
-                {
-                    descriptionArea.commonGameObject.SetActive(true);
-                    descriptionArea.dividerImageGameObject.SetActive(true);
-                    descriptionArea.commonText.text = LocalizationManager.Localize("UI_ADDITIONAL_ABILITIES_WHEN_COMBINED");
-                    AddStat(materialData);
-                    statCount++;
-                }
-                else
-                {
                     descriptionArea.commonGameObject.SetActive(false);
                     descriptionArea.dividerImageGameObject.SetActive(false);
-                }
             }
 
             if (statCount <= 0)
@@ -263,17 +249,6 @@ namespace Nekoyume.UI.Module
                     skillCount++;
                 }
             }
-            else
-            {
-                var data = Model.item.Value.ItemBase.Value.Data;
-                if (data.ItemType == ItemType.Material &&
-                    data is MaterialItemSheet.Row materialData &&
-                    materialData.SkillId != 0)
-                {
-                    AddSkill(new Model.SkillView(materialData));
-                    skillCount++;
-                }
-            }
 
             if (skillCount <= 0)
             {
@@ -283,14 +258,6 @@ namespace Nekoyume.UI.Module
             }
 
             skillsArea.root.gameObject.SetActive(true);
-        }
-
-        private void AddStat(MaterialItemSheet.Row model, bool isMainStat = false)
-        {
-            var statView = GetDisabledStatView();
-            if (statView is null)
-                throw new NotFoundComponentException<BulletedStatView>();
-            statView.Show(model, isMainStat);
         }
 
         private void AddStat(StatMapEx model, bool isMainStat = false)
