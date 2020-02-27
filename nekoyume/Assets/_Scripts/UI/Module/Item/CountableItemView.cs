@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Module
 {
     public class CountableItemView<T> : ItemView<T> where T : Model.CountableItem
     {
-        private const string CountTextFormat = "{0}";
+        protected const string CountTextFormat = "{0}";
 
         public bool ignoreOne;
         public TextMeshProUGUI countText;
@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        protected void SetCount(int count)
+        protected virtual void SetCount(int count)
         {
             if(ignoreOne && count == 1)
             {

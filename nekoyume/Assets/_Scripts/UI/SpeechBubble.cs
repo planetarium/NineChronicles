@@ -105,13 +105,6 @@ namespace Nekoyume.UI
             yield return _coroutine;
         }
 
-        public IEnumerator CoShowText(string speech, bool instant = false)
-        {
-            BeforeSpeech();
-            _coroutine = StartCoroutine(ShowText(speech, instant));
-            yield return _coroutine;
-        }
-
         private IEnumerator ShowText(string speech, bool instant = false)
         {
             text.text = "";
