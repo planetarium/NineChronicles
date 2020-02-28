@@ -34,7 +34,7 @@ namespace Nekoyume.TableData
                 SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), (Bencodex.Types.Text) serialized["skill_category"]);
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), (Bencodex.Types.Text) serialized["skill_target_type"]);
                 HitCount = (Bencodex.Types.Integer) serialized["hit_count"];
-                Cooldown = serialized["cooldown"].ToInteger();
+                Cooldown = (Bencodex.Types.Integer) serialized["cooldown"];
             }
 
             public override void Set(IReadOnlyList<string> fields)

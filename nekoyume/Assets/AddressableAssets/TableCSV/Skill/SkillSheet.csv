@@ -1,13 +1,13 @@
 id,_name,elemental_type,skill_type,skill_category,skill_target_type,hit_count,cooldown
 100000,기본 공격,Normal,Attack,NormalAttack,Enemy,1,0
 100001,일격,Normal,Attack,BlowAttack,Enemy,1,1
-_100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1 // 노멀 속성의 전체 일격은 추가하면 안 됩니다.,1
+_100002,일격(전체),Normal,Attack,BlowAttack,Enemies,1,1 // 노멀 속성의 전체 일격은 추가하면 안 됩니다.
 100003,연사,Normal,Attack,DoubleAttack,Enemy,2,1
 100004,연사(전체),Normal,Attack,DoubleAttack,Enemy,2,1
 100005,광역 난사,Normal,Attack,AreaAttack,Enemies,5,1
 110000,불 공격,Fire,Attack,NormalAttack,Enemy,1,1
 110001,불꽃 일격,Fire,Attack,BlowAttack,Enemy,1,1
-110002,불꽃 일격(전체),Fire,Attack,BlowAttack,Enemies,1,1
+110002,불꽃 일격(전체),Fire,Attack,BlowAttack,Enemies,1,2
 110003,불꽃 연사,Fire,Attack,DoubleAttack,Enemy,2,1
 110004,불꽃 연사(전체),Fire,Attack,DoubleAttack,Enemy,2,1
 110005,용암 해일,Fire,Attack,AreaAttack,Enemies,3,1

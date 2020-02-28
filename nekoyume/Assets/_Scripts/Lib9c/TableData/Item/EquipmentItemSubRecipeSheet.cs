@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using static Nekoyume.TableData.TableExtensions;
 
@@ -49,14 +50,26 @@ namespace Nekoyume.TableData
                 for (var i = 0; i < 3; i++)
                 {
                     var offSet = i * 2;
-                    Materials.Add(new MaterialInfo(ParseInt(fields[4 + offSet]), ParseInt(fields[5 + offSet])));
+                    try
+                    {
+                        Materials.Add(new MaterialInfo(ParseInt(fields[4 + offSet]), ParseInt(fields[5 + offSet])));
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
                 }
                 for (var i = 0; i < 4; i++)
                 {
                     var offSet = i * 2;
                     if (string.IsNullOrEmpty(fields[10 + offSet]))
                         continue;
-                    Options.Add(new OptionInfo(ParseInt(fields[10 + offSet]), ParseInt(fields[11 + offSet])));
+                    try
+                    {
+                        Options.Add(new OptionInfo(ParseInt(fields[10 + offSet]), ParseInt(fields[11 + offSet])));
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
                 }
             }
         }
