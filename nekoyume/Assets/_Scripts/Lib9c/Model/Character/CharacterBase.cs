@@ -125,7 +125,7 @@ namespace Nekoyume.Model
         private Root _root;
 
         [NonSerialized]
-        private Skill.Skill _selectedSkill;
+        private Skills.SkillAndCooldown _selectedSkill;
 
         [NonSerialized]
         private BattleStatus.Skill _usedSkill;
@@ -186,9 +186,9 @@ namespace Nekoyume.Model
 
         private void ReduceSkillCooldown()
         {
-            foreach (var skill in Skills)
+            foreach (var skillAndCooldown in Skills.Where(e => e.Cooldown > 0))
             {
-                // skill.coolDown
+                skillAndCooldown.Cooldown--;
             }
         }
 
@@ -200,15 +200,17 @@ namespace Nekoyume.Model
         private void UseSkill()
         {
             // 스킬 사용.
-            _usedSkill = _selectedSkill.Use(
+            _usedSkill = _selectedSkill.Skill.Use(
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    _selectedSkill,
+                    _selectedSkill.Skill,
                     Simulator.TableSheets.SkillBuffSheet,
                     Simulator.TableSheets.BuffSheet
                 )
             );
+            // 쿨다운 적용.
+            _selectedSkill.Cooldown = _selectedSkill.Skill.SkillRow.Cooldown;
             Simulator.Log.Add(_usedSkill);
 
             foreach (var info in _usedSkill.SkillInfos)
@@ -360,9 +362,21 @@ namespace Nekoyume.Model
     /// int : cooldown
     /// </summary>
     [Serializable]
-    public class Skills : IEnumerable<(Skill.Skill, int)>
+    public class Skills : IEnumerable<Skills.SkillAndCooldown>
     {
-        private readonly List<(Skill.Skill, int)> _skills = new List<(Skill.Skill, int)>();
+        public class SkillAndCooldown
+        {
+            public readonly Skill.Skill Skill;
+            
+            public int Cooldown { get; set; }
+
+            public SkillAndCooldown(Skill.Skill skill)
+            {
+                Skill = skill;
+                Cooldown = 0;
+            }
+        }
+        private readonly List<SkillAndCooldown> _skills = new List<SkillAndCooldown>();
 
         public void Add(Skill.Skill s)
         {
@@ -371,7 +385,7 @@ namespace Nekoyume.Model
                 return;
             }
 
-            _skills.Add((s, 0));
+            _skills.Add(new SkillAndCooldown(s));
         }
 
         public void Clear()
@@ -379,7 +393,7 @@ namespace Nekoyume.Model
             _skills.Clear();
         }
 
-        public IEnumerator<(Skill.Skill, int)> GetEnumerator()
+        public IEnumerator<SkillAndCooldown> GetEnumerator()
         {
             return _skills.GetEnumerator();
         }
@@ -388,27 +402,26 @@ namespace Nekoyume.Model
         {
             return GetEnumerator();
         }
-        
-        public Skill.Skill Select(IRandom random)
+
+        public SkillAndCooldown Select(IRandom random)
         {
-            return PostSelect(random, _skills);
+            return PostSelect(random, GetSelectableSkills());
         }
 
         // info: 스킬 쿨다운을 적용하는 것과 별개로, 버프에 대해서 꼼꼼하게 걸러낼 필요가 생길 때 참고하기 위해서 유닛 테스트와 함께 남깁니다.
-        public Skill.Skill Select(IRandom random, Dictionary<int, Buff.Buff> buffs, SkillBuffSheet skillBuffSheet,
+        public SkillAndCooldown Select(IRandom random, Dictionary<int, Buff.Buff> buffs, SkillBuffSheet skillBuffSheet,
             BuffSheet buffSheet)
         {
-            var skills = _skills;
+            var skills = GetSelectableSkills();
 
             if (!(buffs is null) &&
                 !(skillBuffSheet is null) &&
                 !(buffSheet is null))
             {
                 // 기존에 걸려 있는 버프들과 겹치지 않는 스킬만 골라내기.
-                skills = skills.Where(tuple =>
+                skills = skills.Where(skillAndCooldown =>
                 {
-                    var (skill, _) = tuple;
-                    var skillId = skill.SkillRow.Id;
+                    var skillId = skillAndCooldown.Skill.SkillRow.Id;
 
                     // 버프가 없는 스킬이면 포함한다.
                     if (!skillBuffSheet.TryGetValue(skillId, out var row))
@@ -445,32 +458,31 @@ namespace Nekoyume.Model
                 // 기존 버프와 중복하는 것을 걷어내고 나니 사용할 스킬이 없는 경우에는 전체를 다시 고려한다.
                 if (!skills.Any())
                 {
-                    skills = _skills;
+                    skills = GetSelectableSkills();
                 }
             }
 
-            var selected = skills
-                .Select(tuple => new {skill = tuple.Item1, chance = random.Next(0, 100)})
-                .Where(t => t.skill.Chance > t.chance)
-                .OrderBy(t => t.skill.SkillRow.Id)
-                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
-                .Select(t => t.skill)
-                .ToList();
-
             return PostSelect(random, skills);
         }
+
+        private IEnumerable<SkillAndCooldown> GetSelectableSkills()
+        {
+            return _skills.Where(skillAndCooldown => skillAndCooldown.Cooldown == 0);
+        }
         
-        private Skill.Skill PostSelect(IRandom random, IEnumerable<(Skill.Skill, int)> skills)
+        private SkillAndCooldown PostSelect(IRandom random, IEnumerable<SkillAndCooldown> skills)
         {
             var selected = skills
-                .Select(tuple => new {skill = tuple.Item1, chance = random.Next(0, 100)})
-                .Where(t => t.skill.Chance > t.chance)
-                .OrderBy(t => t.skill.SkillRow.Id)
-                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
-                .Select(t => t.skill)
+                .Select(skillAndCooldown => new {skillAndCooldown, chance = random.Next(0, 100)})
+                .Where(t => t.skillAndCooldown.Skill.Chance > t.chance)
+                .OrderBy(t => t.skillAndCooldown.Skill.SkillRow.Id)
+                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skillAndCooldown.Skill.Chance)
+                .Select(t => t.skillAndCooldown)
                 .ToList();
 
-            return selected[random.Next(selected.Count)];
+            return selected.Any()
+                ? selected[random.Next(selected.Count)]
+                : null;
         }
     }
 }

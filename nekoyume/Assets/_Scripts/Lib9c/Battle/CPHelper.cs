@@ -45,8 +45,8 @@ namespace Nekoyume.Battle
         public static int GetCP(Enemy enemy)
         {
             var result = (decimal) GetCP(enemy.Stats.LevelStats, StatType.ATK);
-            result = enemy.Skills.Aggregate(result, (current, tuple) => current * GetCP(tuple.Item1));
-            return (int) enemy.BuffSkills.Aggregate(result, (current, tuple) => current * GetCP(tuple.Item1));
+            result = enemy.Skills.Aggregate(result, (current, skillAndCooldown) => current * GetCP(skillAndCooldown.Skill));
+            return (int) enemy.BuffSkills.Aggregate(result, (current, skillAndCooldown) => current * GetCP(skillAndCooldown.Skill));
         }
 
         /// <summary>
