@@ -92,8 +92,6 @@ namespace Nekoyume.Model
         protected CharacterBase(CharacterBase value)
         {
             _root = value._root;
-            _selectedSkill = value._selectedSkill;
-            _usedSkill = value._usedSkill;
             Id = value.Id;
             Simulator = value.Simulator;
             atkElementType = value.atkElementType;
@@ -124,12 +122,6 @@ namespace Nekoyume.Model
         [NonSerialized]
         private Root _root;
 
-        [NonSerialized]
-        private Skills.SkillAndCooldown _selectedSkill;
-
-        [NonSerialized]
-        private BattleStatus.Skill _usedSkill;
-
         public void InitAI()
         {
             SetSkill();
@@ -144,7 +136,6 @@ namespace Nekoyume.Model
                             BT.Sequence().OpenBranch(
                                 BT.Call(ReduceDurationOfBuffs),
                                 BT.Call(ReduceSkillCooldown),
-                                BT.Call(SelectSkill),
                                 BT.Call(UseSkill),
                                 BT.Call(RemoveBuffs)
                             )
@@ -171,8 +162,6 @@ namespace Nekoyume.Model
 
         private void BeginningOfTurn()
         {
-            _selectedSkill = null;
-            _usedSkill = null;
         }
 
         private void ReduceDurationOfBuffs()
@@ -192,28 +181,27 @@ namespace Nekoyume.Model
             }
         }
 
-        private void SelectSkill()
-        {
-            _selectedSkill = Skills.Select(Simulator.Random);
-        }
-
         private void UseSkill()
         {
+            // 스킬 선택.
+            var selectedSkill = Skills.Select(Simulator.Random);
+            
             // 스킬 사용.
-            _usedSkill = _selectedSkill.Skill.Use(
+            var usedSkill = selectedSkill.Skill.Use(
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    _selectedSkill.Skill,
+                    selectedSkill.Skill,
                     Simulator.TableSheets.SkillBuffSheet,
                     Simulator.TableSheets.BuffSheet
                 )
             );
+            
             // 쿨다운 적용.
-            _selectedSkill.Cooldown = _selectedSkill.Skill.SkillRow.Cooldown;
-            Simulator.Log.Add(_usedSkill);
+            selectedSkill.Cooldown = selectedSkill.Skill.SkillRow.Cooldown;
+            Simulator.Log.Add(usedSkill);
 
-            foreach (var info in _usedSkill.SkillInfos)
+            foreach (var info in usedSkill.SkillInfos)
             {
                 if (!info.Target.IsDead)
                     continue;
@@ -357,10 +345,6 @@ namespace Nekoyume.Model
         }
     }
 
-    /// <summary>
-    /// Skill.Skill
-    /// int : cooldown
-    /// </summary>
     [Serializable]
     public class Skills : IEnumerable<Skills.SkillAndCooldown>
     {
