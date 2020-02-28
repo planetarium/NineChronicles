@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
@@ -19,7 +20,7 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
+                Id = int.Parse(fields[0], CultureInfo.InvariantCulture);
                 StatModifiers = new Dictionary<int, StatModifier>
                 {
                     {

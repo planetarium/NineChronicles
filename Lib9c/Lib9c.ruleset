@@ -9,7 +9,7 @@
     non-deterministic. -->
     <Rule Id="S1449" Action="Warning" />
     <Rule Id="S4026" Action="Warning" />
-    <Rule Id="S4056" Action="None" />
+    <Rule Id="S4056" Action="Warning" />
     <Rule Id="S4057" Action="Warning" />
 
     <!-- These warnings should be enabled in the future... -->

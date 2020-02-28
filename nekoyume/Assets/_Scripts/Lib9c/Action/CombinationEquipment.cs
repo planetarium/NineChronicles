@@ -75,7 +75,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var equipmentMaterial = (Material) ItemFactory.CreateMaterial(materialSheet, material.Id);
+            Material equipmentMaterial = ItemFactory.CreateMaterial(materialSheet, material.Id);
             materials[equipmentMaterial] = recipe.MaterialCount;
 
             var requiredGold = recipe.RequiredGold;
@@ -118,7 +118,7 @@ namespace Nekoyume.Action
                         return states;
                     }
 
-                    var subMaterial = (Material) ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
+                    Material subMaterial = ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
                     materials[subMaterial] = materialInfo.Count;
 
                     requiredGold += subRecipe.RequiredGold;

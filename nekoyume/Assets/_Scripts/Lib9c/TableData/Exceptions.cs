@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Nekoyume.TableData
 {
@@ -18,6 +19,11 @@ namespace Nekoyume.TableData
 
     public class SheetRowNotFoundException : Exception
     {
+        public SheetRowNotFoundException(string sheetName, int intKey)
+            : this(sheetName, intKey.ToString(CultureInfo.InvariantCulture))
+        {
+        }
+
         public SheetRowNotFoundException(string sheetName, string key) : this(sheetName, "Key", key)
         {
         }

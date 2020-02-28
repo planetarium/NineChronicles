@@ -44,11 +44,11 @@ namespace Nekoyume.Battle
 
             var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
-                throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
 
             var stageWaveSheet = TableSheets.StageWaveSheet;
             if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
-                throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId.ToString());
+                throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId);
 
             Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
             TurnLimit = stageRow.TurnLimit;
@@ -69,7 +69,7 @@ namespace Nekoyume.Battle
         {
             var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
-                throw new SheetRowNotFoundException(nameof(stageSheet), StageId.ToString());
+                throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
 
             Exp = StageRewardExpHelper.GetExp(avatarState.level, stageId);
             TurnLimit = stageRow.TurnLimit;
