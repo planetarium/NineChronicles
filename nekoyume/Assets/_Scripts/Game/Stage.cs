@@ -58,6 +58,7 @@ namespace Nekoyume.Game
         public bool repeatStage;
         public bool isExitReserved;
         public string zone;
+        public Animator roomAnimator { get; private set; }
 
         private Camera _camera;
         private BattleLog _battleLog;
@@ -207,6 +208,9 @@ namespace Nekoyume.Game
 
             background = Instantiate(prefab, transform);
             background.name = prefabName;
+            if (prefabName == "room")
+                roomAnimator = background.GetComponent<Animator>();
+            
             foreach (Transform child in background.transform)
             {
                 var childName = child.name;

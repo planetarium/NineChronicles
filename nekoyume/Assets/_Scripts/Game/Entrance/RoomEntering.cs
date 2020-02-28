@@ -23,6 +23,7 @@ namespace Nekoyume.Game.Entrance
             var stage = Game.instance.Stage;
             stage.stageId = 0;
             stage.LoadBackground("room");
+            stage.roomAnimator.Play("EnteringRoom");
 
             yield return new WaitForEndOfFrame();
             stage.selectedPlayer = null;
