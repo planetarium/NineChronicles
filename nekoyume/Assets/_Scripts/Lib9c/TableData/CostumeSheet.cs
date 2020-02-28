@@ -1,16 +1,22 @@
+using System.Globalization;
+
 namespace Nekoyume.TableData
 {
     public class CostumeSheet
     {
-        public static string GetEyeOpenResourceByIndex(int eyeIndex)
-        {
-            return string.Format(GetEyeResourceFormatByIndex(eyeIndex), "open");
-        }
+        public static string GetEyeOpenResourceByIndex(int eyeIndex) =>
+            string.Format(
+                CultureInfo.InvariantCulture,
+                GetEyeResourceFormatByIndex(eyeIndex),
+                "open"
+            );
         
-        public static string GetEyeHalfResourceByIndex(int eyeIndex)
-        {
-            return string.Format(GetEyeResourceFormatByIndex(eyeIndex), "half");
-        }
+        public static string GetEyeHalfResourceByIndex(int eyeIndex) =>
+            string.Format(
+                CultureInfo.InvariantCulture,
+                GetEyeResourceFormatByIndex(eyeIndex),
+                "half"
+            );
         
         private static string GetEyeResourceFormatByIndex(int eyeIndex)
         {

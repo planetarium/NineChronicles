@@ -10,7 +10,9 @@ namespace Nekoyume.Model.Stat
     /// </summary>
     public class EquipmentStats : Stats
     {
+#pragma warning disable CS0169
         private readonly EquipmentItemSheet.Row _row;
+#pragma warning restore CS0169
 
         private readonly Stats _enhancementStats = new Stats();
         private readonly Stats _combinationStats = new Stats();
