@@ -51,6 +51,7 @@ namespace Nekoyume.UI
         public GameObject stage;
         public StageInformation stageInformation;
         public SubmitButton submitButton;
+        public Animator worldMapAnimator;
 
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
@@ -199,10 +200,10 @@ namespace Nekoyume.UI
             if (!worldInformation.TryGetFirstWorld(out var firstWorld))
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
 
-            Show(firstWorld.Id, firstWorld.GetNextStageId(), true);
+            Show(firstWorld.Id, firstWorld.GetNextStageId(), true, true);
         }
 
-        public void Show(int worldId, int stageId, bool showWorld)
+        public void Show(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
             var bottomMenu = Find<BottomMenu>();
             bottomMenu.Show(
@@ -214,7 +215,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
                 .AddTo(_disposablesAtShow);
             
-            ShowWorld(worldId, stageId, showWorld);
+            ShowWorld(worldId, stageId, showWorld, callByShow);
             Show();
         }
 
@@ -222,6 +223,9 @@ namespace Nekoyume.UI
         {
             _disposablesAtShow.DisposeAllAndClear();
             Find<BottomMenu>().Close(true);
+            stage.SetActive(false);
+            worldMapRoot.SetActive(true);
+            worldMapAnimator.Play("Close");
             base.Close(ignoreCloseAnimation);
         }
 
@@ -250,9 +254,12 @@ namespace Nekoyume.UI
             ShowWorld(world.Id, world.GetNextStageId(), false);
         }
 
-        private void ShowWorld(int worldId, int stageId, bool showWorld)
+        private void ShowWorld(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
-            SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
+            if(callByShow)
+                CallByShowUpdateWorld();
+            else
+                SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
             SelectedWorldId = worldId;
             Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SelectedWorldId, out var worldRow, true);
             SelectedWorldStageBegin = worldRow.StageBegin;
@@ -271,30 +278,41 @@ namespace Nekoyume.UI
             }
         }
 
+        private void CallByShowUpdateWorld()
+        {
+            var status = Find<Status>();
+
+            var bottomMenu = Find<BottomMenu>();
+            bottomMenu.worldMapButton.Hide();
+            bottomMenu.backButton.Show();    
+            stage.SetActive(false);
+            status.Close(true);
+            worldMapRoot.SetActive(true);
+        }
+
         private void UpdateWorld(bool active)
         {
             var status = Find<Status>();
 
             if (active)
             {
-                stage.SetActive(false);
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.worldMapButton.Hide();
-                bottomMenu.backButton.Show();
-                worldMapRoot.SetActive(true);
+                bottomMenu.backButton.Show(); 
                 status.Close(true);
+                worldMapRoot.SetActive(true);
             }
             else
             {
-                
-                worldMapRoot.SetActive(false);
-                stage.SetActive(true);
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true, BottomMenu.ToggleableType.WorldMap);
                 bottomMenu.worldMapButton.Show();
                 bottomMenu.backButton.Hide();
                 bottomMenu.ToggleGroup?.SetToggledOffAll();
                 status.Show();
+                worldMapRoot.SetActive(false);
+                stage.SetActive(false);
+                stage.SetActive(true);
             }
         }
 

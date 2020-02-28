@@ -8,7 +8,7 @@ namespace Nekoyume.Model.Item
     {
         public new ConsumableItemSheet.Row Data { get; }
 
-        public Consumable(ConsumableItemSheet.Row data, Guid id) : base(data, id)
+        public Consumable(ConsumableItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data, id, requiredBlockIndex)
         {
             Data = data;
         }

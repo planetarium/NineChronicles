@@ -34,9 +34,14 @@ namespace Nekoyume.UI.Scroller
         public System.Action onClickSubmitButton;
 
         [Header("ItemMoveAnimation")]
-        [SerializeField, Range(.5f, 3.0f)] private float animationTime;
-        [SerializeField] private bool moveToLeft;
-        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")] private float middleXGap;
+        [SerializeField, Range(.5f, 3.0f)]
+        private float animationTime = 1f;
+
+        [SerializeField]
+        private bool moveToLeft = false;
+
+        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")]
+        private float middleXGap = 1f;
 
         #region Mono
 
@@ -45,7 +50,7 @@ namespace Nekoyume.UI.Scroller
             receiveButton.SetSubmitText(
                 LocalizationManager.Localize("UI_PROGRESS"),
                 LocalizationManager.Localize("UI_RECEIVE"));
-            receiveButton.SetSubmittable(true); 
+            receiveButton.SetSubmittable(true);
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
             receiveButton.submitText.color = ColorHelper.HexToColorRGB("955c4a");
         }
@@ -59,23 +64,24 @@ namespace Nekoyume.UI.Scroller
 
             UpdateView();
         }
-         
+
         private void OnReceiveClick(SubmitButton submitButton)
         {
             AudioController.PlayClick();
             AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
-            foreach(var view in rewardViews)
+            foreach (var view in rewardViews)
             {
                 if (view.gameObject.activeSelf)
-                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id), 
-                        view.transform.position, 
-                        Widget.Find<BottomMenu>().inventoryButton.transform.position, 
+                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id),
+                        view.transform.position,
+                        Widget.Find<BottomMenu>().inventoryButton.transform.position,
                         moveToLeft,
                         animationTime,
                         middleXGap,
                         true);
             }
-            var quest = Widget.Find<Quest>();   
+
+            var quest = Widget.Find<Quest>();
             RequestReward();
             quest.UpdateTabs();
             onClickSubmitButton?.Invoke();
@@ -95,6 +101,7 @@ namespace Nekoyume.UI.Scroller
             {
                 return;
             }
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var rewardMap = quest.Reward.ItemMap;
 
@@ -105,6 +112,7 @@ namespace Nekoyume.UI.Scroller
 
                 LocalStateModifier.AddItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
             }
+
             LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
         }
 
@@ -115,7 +123,7 @@ namespace Nekoyume.UI.Scroller
             contentText.text = _quest.GetContent();
 
             string text = _quest.GetProgressText();
-            bool showProgressBar = !string.IsNullOrEmpty(text); 
+            bool showProgressBar = !string.IsNullOrEmpty(text);
             progressText.gameObject.SetActive(showProgressBar);
             progressBar.gameObject.SetActive(showProgressBar);
             if (showProgressBar)
@@ -166,8 +174,8 @@ namespace Nekoyume.UI.Scroller
                     var pair = itemMap.ElementAt(i);
                     var rewardView = rewardViews[i];
                     rewardView.ignoreOne = true;
-                    var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
-                    var item = ItemFactory.Create(row, new Guid());
+                    var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                    var item = ItemFactory.CreateMaterial(row);
                     var countableItem = new CountableItem(item, pair.Value);
                     countableItem.Dimmed.Value = isReceived;
                     rewardView.SetData(countableItem);

@@ -9,7 +9,6 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionXTweener : MonoBehaviour
     {
-        [SerializeField] private float begin = 0f;
         [SerializeField] private float end = 0f;
         [SerializeField] private float duration = 1f;
         [SerializeField] private bool snapping = false;

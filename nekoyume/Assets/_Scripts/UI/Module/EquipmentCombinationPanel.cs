@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module
             {
                 submitButton.HideNCG();
             }
-            submitButton.SetSubmittable(true);
+            submitButton.SetSubmittable(materialPanel.IsCraftable);
         }
 
         public void Hide()
@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Module
 
         public void SubscribeOnClickSubmit()
         {
-            submitButton.SetSubmittable(false);
+            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.NewCombineEquipment);
         }
     }
 }

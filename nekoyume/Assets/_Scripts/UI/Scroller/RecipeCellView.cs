@@ -90,9 +90,13 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 resultItemNameText.text = Model.ResultItemName;
-                SetItemView(Model.Row.ResultConsumableItemId, resultItemView);
+                var row = Game.Game.instance.TableSheets.ConsumableItemSheet.Values.First(r =>
+                    r.Id == Model.Row.ResultConsumableItemId);
+                var result = new Item(ItemFactory.CreateItemUsable(row, Guid.Empty, default));
+                SetItemView(result, resultItemView);
                 
                 var materialInfosCount = Model.MaterialInfos.Count;
+                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
                 for (var i = 0; i < materialItemViews.Length; i++)
                 {
                     var view = materialItemViews[i];
@@ -100,7 +104,9 @@ namespace Nekoyume.UI.Scroller
                     {
                         var info = Model.MaterialInfos[i];
                         view.Show();
-                        SetItemView(info.Id, view, !info.IsEnough);    
+                        var item = new Item(
+                            ItemFactory.CreateMaterial(materialSheet.Values.First(r => r.Id == info.Id)));
+                        SetItemView(item, view, !info.IsEnough);
                     }
                     else
                     {
@@ -121,10 +127,9 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void SetItemView(int itemId, SimpleItemView itemView, bool isDimmed = false)
+        private void SetItemView(Item item, SimpleItemView itemView, bool isDimmed = false)
         {
-            var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(i => i.Id == itemId);
-            itemView.SetData(new Item(ItemFactory.Create(row, new Guid())));
+            itemView.SetData(item);
             itemView.Model.Dimmed.Value = isDimmed;
             itemView.gameObject.SetActive(true);
         }
