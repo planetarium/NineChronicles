@@ -17,26 +17,32 @@ namespace Nekoyume.Action
     [ActionType("combination_equipment")]
     public class CombinationEquipment : GameAction
     {
-        public const string DeriveKey = "combinationEquipmentResult";
         public Address AvatarAddress;
         public int RecipeId;
+        public int SlotIndex;
         public int? SubRecipeId;
 
         public override IAccountStateDelta Execute(IActionContext ctx)
         {
             var states = ctx.PreviousStates;
-            var resultAddress = AvatarAddress.Derive(DeriveKey);
+            var slotAddress = AvatarAddress.Derive(string.Format(CombinationSlotState.DeriveFormat, SlotIndex));
             if (ctx.Rehearsal)
             {
                 return states
                     .SetState(AvatarAddress, MarkChanged)
-                    .SetState(resultAddress, MarkChanged)
+                    .SetState(slotAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged);
 
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))
+            {
+                return states;
+            }
+
+            var slotState = states.GetCombinationSlotState(AvatarAddress, SlotIndex);
+            if (slotState is null || !slotState.Validate(avatarState, ctx.BlockIndex))
             {
                 return states;
             }
@@ -175,13 +181,14 @@ namespace Nekoyume.Action
                 materials = materials,
                 itemUsable = equipment,
             };
+            slotState.Update(result, ctx.BlockIndex + recipe.RequiredBlockIndex);
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
             result.id = mail.id;
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
-                .SetState(resultAddress, result.Serialize())
+                .SetState(slotAddress, slotState.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());
         }
 
@@ -191,6 +198,7 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["recipeId"] = RecipeId.Serialize(),
                 ["subRecipeId"] = SubRecipeId.Serialize(),
+                ["slotIndex"] = SlotIndex.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -198,6 +206,7 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             RecipeId = plainValue["recipeId"].ToInteger();
             SubRecipeId = plainValue["subRecipeId"].ToNullableInteger();
+            SlotIndex = plainValue["slotIndex"].ToInteger();
         }
 
         private static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)

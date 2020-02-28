@@ -136,5 +136,27 @@ namespace Nekoyume.Action
                 return null;
             }
         }
+
+        public static CombinationSlotState GetCombinationSlotState(this IAccountStateDelta states,
+            Address avatarAddress, int index)
+        {
+            var address = avatarAddress.Derive(string.Format(CombinationSlotState.DeriveFormat, index));
+            var value = states.GetState(address);
+            if (value is null)
+            {
+                Log.Warning("No combination slot state ({0})", address.ToHex());
+                return null;
+            }
+
+            try
+            {
+                return new CombinationSlotState((Dictionary) value);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
     }
 }
