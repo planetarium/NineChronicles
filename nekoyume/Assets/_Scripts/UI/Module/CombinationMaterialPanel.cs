@@ -25,27 +25,26 @@ namespace Nekoyume.UI.Module
             materialText.text = LocalizationManager.Localize("UI_MATERIALS");
         }
 
-        public void SetData(EquipmentItemRecipeSheet.Row row)
+        public void SetData(EquipmentItemRecipeSheet.Row row, int? subRecipeId)
         {
             MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
             costNcg = 0m;
             costAp = 0;
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var materialRow = materialSheet.Values.First(i => i.Id == row.MaterialId);
-            var baseMaterial = ItemFactory.CreateMaterial(materialRow);
+            var baseMaterial = (Nekoyume.Model.Item.Material)ItemFactory.Create(materialRow, Guid.Empty);
             MaterialList.Add((baseMaterial, row.MaterialCount));
             costNcg += row.RequiredGold;
             costAp += row.RequiredActionPoint;
-            // 서브 레시피 아이디도 선택이 되야함
-            if (row.SubRecipeIds.Any())
+
+            if (!(subRecipeId is null))
             {
-                var subRecipeId = row.SubRecipeIds.First();
                 var subRecipeSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
                 var subRecipeRow = subRecipeSheet.Values.First(i => i.Id == subRecipeId);
                 foreach (var materialInfo in subRecipeRow.Materials)
                 {
                     var subMaterialRow = materialSheet.Values.First(i => i.Id == materialInfo.Id);
-                    var subMaterial = ItemFactory.CreateMaterial(subMaterialRow);
+                    var subMaterial = (Nekoyume.Model.Item.Material)ItemFactory.Create(subMaterialRow, Guid.Empty);
                     MaterialList.Add((subMaterial, materialInfo.Count));
                 }
 

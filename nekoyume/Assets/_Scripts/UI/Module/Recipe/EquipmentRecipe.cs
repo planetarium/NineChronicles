@@ -27,7 +27,6 @@ namespace Nekoyume.UI.Module
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
-        // Start is called before the first frame update
         private void Awake()
         {
             _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
@@ -129,7 +128,7 @@ namespace Nekoyume.UI.Module
         private void SubscribeOnClickCellView(EquipmentRecipeCellView cellView)
         {
             selectedRecipe = cellView;
-
+            
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }
