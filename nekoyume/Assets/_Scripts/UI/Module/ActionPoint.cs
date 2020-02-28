@@ -34,24 +34,28 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            _disposable = ReactiveAvatarState.ActionPoint.Subscribe(SetPoint);
-
+            if(States.Instance.CurrentAvatarState != null)
+                SetPoint(States.Instance.CurrentAvatarState.actionPoint);
+            
             if (animateAlpha)
             {
                 canvasGroup.alpha = 0;
                 canvasGroup.DOFade(1, 1.0f);
             }
         }
-
-        private void OnDisable()
-        {
-            _disposable.Dispose();
-        }
-
+        
         #endregion
 
-        private void SetPoint(int actionPoint)
+        public void SetPoint(int actionPoint, bool useAnimation = false)
         {
+            if (!useAnimation)
+            {            
+                slider.value = actionPoint;
+                text.text = $"{actionPoint} / {GameConfig.ActionPointMax}";
+
+                return;
+            }
+            
             if(lerpCoroutine != null)
                 StopCoroutine(lerpCoroutine);
             
