@@ -18,8 +18,9 @@ namespace Nekoyume.Model.Item
         public StatsMap StatsMap { get; }
         public List<Skill.Skill> Skills { get; }
         public List<BuffSkill> BuffSkills { get; }
+        public long RequiredBlockIndex { get; private set; }
 
-        protected ItemUsable(ItemSheet.Row data, Guid id) : base(data)
+        protected ItemUsable(ItemSheet.Row data, Guid id, long requiredBlockIndex ) : base(data)
         {
             Data = data;
             ItemId = id;
@@ -43,6 +44,7 @@ namespace Nekoyume.Model.Item
 
             Skills = new List<Model.Skill.Skill>();
             BuffSkills = new List<BuffSkill>();
+            RequiredBlockIndex = requiredBlockIndex;
         }
 
         protected bool Equals(ItemUsable other)
@@ -77,6 +79,7 @@ namespace Nekoyume.Model.Item
                 [(Text)"statsMap"] = StatsMap.Serialize(),
                 [(Text)"skills"] = new List(Skills.Select(s => s.Serialize())),
                 [(Text)"buffSkills"] = new List(BuffSkills.Select(s => s.Serialize())),
+                [(Text)"requiredBlockIndex"] = RequiredBlockIndex.Serialize(),
             }.Union((Dictionary)base.Serialize()));
     }
 }

@@ -8,47 +8,38 @@ namespace Nekoyume.Model.Item
 {
     public static class ItemFactory
     {
-        public static ItemBase CreateMaterial(MaterialItemSheet sheet, int itemId)
+        public static Material CreateMaterial(MaterialItemSheet sheet, int itemId)
         {
             return !sheet.TryGetValue(itemId, out var itemData)
                 ? null
-                : Create(itemData, default);
+                : CreateMaterial(itemData);
         }
 
-        public static ItemBase Create(ItemSheet.Row itemRow, Guid id)
+        public static Material CreateMaterial(MaterialItemSheet.Row row)
+        {
+            return new Material(row);
+        }
+
+        public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id, long requiredBlockIndex)
         {
             switch (itemRow.ItemSubType)
             {
                 // Consumable
                 case ItemSubType.Food:
-                    return new Consumable((ConsumableItemSheet.Row)itemRow, id);
+                    return new Consumable((ConsumableItemSheet.Row)itemRow, id, requiredBlockIndex);
                 // Equipment
                 case ItemSubType.Weapon:
-                    return new Weapon((EquipmentItemSheet.Row)itemRow, id);
-                case ItemSubType.RangedWeapon:
-                    return new RangedWeapon((EquipmentItemSheet.Row)itemRow, id);
+                    return new Weapon((EquipmentItemSheet.Row)itemRow, id, requiredBlockIndex);
                 case ItemSubType.Armor:
-                    return new Armor((EquipmentItemSheet.Row)itemRow, id);
+                    return new Armor((EquipmentItemSheet.Row)itemRow, id, requiredBlockIndex);
                 case ItemSubType.Belt:
-                    return new Belt((EquipmentItemSheet.Row)itemRow, id);
+                    return new Belt((EquipmentItemSheet.Row)itemRow, id, requiredBlockIndex);
                 case ItemSubType.Necklace:
-                    return new Necklace((EquipmentItemSheet.Row)itemRow, id);
+                    return new Necklace((EquipmentItemSheet.Row)itemRow, id, requiredBlockIndex);
                 case ItemSubType.Ring:
-                    return new Ring((EquipmentItemSheet.Row)itemRow, id);
-                case ItemSubType.Helm:
-                    return new Helm((EquipmentItemSheet.Row)itemRow, id);
-                case ItemSubType.Set:
-                    return new SetItem((EquipmentItemSheet.Row)itemRow, id);
-                case ItemSubType.Shoes:
-                    return new Shoes((EquipmentItemSheet.Row)itemRow, id);
-                // Material
-                case ItemSubType.EquipmentMaterial:
-                case ItemSubType.FoodMaterial:
-                case ItemSubType.MonsterPart:
-                case ItemSubType.NormalMaterial:
-                    return new Material((MaterialItemSheet.Row)itemRow);
+                    return new Ring((EquipmentItemSheet.Row)itemRow, id, requiredBlockIndex);
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(itemRow.Id.ToString());
             }
         }
 
@@ -56,9 +47,22 @@ namespace Nekoyume.Model.Item
         {
             var data = (Dictionary)serialized["data"];
             serialized.TryGetValue((Text)"itemId", out IValue id);
-            var item = Create(
-                DeserializeRow(data),
-                id?.ToGuid() ?? default
+            var requiredBlockIndex = 0L;
+            if (serialized.TryGetValue((Text)"requiredBlockIndex", out var index))
+            {
+                requiredBlockIndex = index.ToLong();
+            }
+
+            var row = DeserializeRow(data);
+            if (row is MaterialItemSheet.Row materialRow)
+            {
+                return CreateMaterial(materialRow);
+            }
+
+            var item = CreateItemUsable(
+                row,
+                id?.ToGuid() ?? default,
+                requiredBlockIndex
             );
             if (item is ItemUsable itemUsable)
             {
@@ -91,6 +95,7 @@ namespace Nekoyume.Model.Item
                         equipment.level = (int)((Integer)level).Value;
                     }
                 }
+
             }
 
             return item;
@@ -106,14 +111,10 @@ namespace Nekoyume.Model.Item
                     return new ConsumableItemSheet.Row(serialized);
                 // Equipment
                 case ItemSubType.Weapon:
-                case ItemSubType.RangedWeapon:
                 case ItemSubType.Armor:
                 case ItemSubType.Belt:
                 case ItemSubType.Necklace:
                 case ItemSubType.Ring:
-                case ItemSubType.Helm:
-                case ItemSubType.Set:
-                case ItemSubType.Shoes:
                     return new EquipmentItemSheet.Row(serialized);
                 // Material
                 case ItemSubType.EquipmentMaterial:

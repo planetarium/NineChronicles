@@ -13,6 +13,7 @@ using Object = UnityEngine.Object;
 namespace Planetarium.Nekoyume.Editor
 {
     // todo: NPC 로직 추가
+    // todo: 사용자가 알기 쉽게 예외 상황 전부 알림 띄워주기.
     public static class SpineEditor
     {
         private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
@@ -61,6 +62,7 @@ namespace Planetarium.Nekoyume.Editor
 
         private static void CreateSpinePrefabInternal(SkeletonDataAsset skeletonDataAsset)
         {
+            // todo: 플레이어나 몬스터가 아닌 NPC도 이곳으로 들어올 수 있어야 해서, 아래 로직은 이 이전에 한 번 분기가 만들어져야 한다.
             if (!ValidateForPlayerOrMonster(skeletonDataAsset))
                 return;
             
@@ -105,6 +107,7 @@ namespace Planetarium.Nekoyume.Editor
             var controller = isPlayer
                 ? gameObject.AddComponent<PlayerSpineController>()
                 : gameObject.AddComponent<CharacterSpineController>();
+            // 지금은 예상 외의 애니메이션을 찾지 못하는 로직이다. animationAssetsPath 하위에 있는 모든 것을 검사..? 애초에 CreateAnimationReferenceAssets() 단계에서 검사할 수 있겠다.
             foreach (var animationType in CharacterAnimation.List)
             {
                 assetPath = Path.Combine(animationAssetsPath, $"{animationType}.asset");
@@ -193,7 +196,7 @@ namespace Planetarium.Nekoyume.Editor
             var data = skeletonDataAsset.GetSkeletonData(false);
             var hud = data.FindBone("HUD");
             
-            // todo: 커스터마이징 슬롯 검사.
+            // todo: 플레이어의 경우만 커스터마이징 슬롯 검사.
             
             return !(hud is null);
         }
@@ -203,6 +206,7 @@ namespace Planetarium.Nekoyume.Editor
             return true;
         }
 
+        // CharacterAnimation.Type에서 포함하지 않는 것을 이곳에서 걸러낼 수도 있겠다.
         /// <summary>
         /// `SkeletonDataAssetInspector.CreateAnimationReferenceAssets(): 242`
         /// </summary>

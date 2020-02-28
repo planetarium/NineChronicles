@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Item
@@ -17,7 +18,7 @@ namespace Nekoyume.Model.Item
         public new EquipmentItemSheet.Row Data { get; }
         public StatType UniqueStatType => Data.Stat.Type;
 
-        public Equipment(EquipmentItemSheet.Row data, Guid id) : base(data, id)
+        public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data, id, requiredBlockIndex)
         {
             Data = data;
         }

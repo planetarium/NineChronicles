@@ -6,7 +6,7 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class Ring : Equipment
     {
-        public Ring(EquipmentItemSheet.Row data, Guid id) : base(data, id)
+        public Ring(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data, id, requiredBlockIndex)
         {
         }
     }
