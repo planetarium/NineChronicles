@@ -273,7 +273,6 @@ namespace Nekoyume.UI
                 yield return null;
                 AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             }
-            
             yield return new WaitForSeconds(0.5f);
 
             for (var i = 0; i < rewardsArea.rewards.Length; i++)
