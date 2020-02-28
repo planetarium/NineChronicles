@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Scroller
 
             model = recipeRow;
 
-            var equipment = (Equipment) ItemFactory.Create(row, Guid.Empty);
+            var equipment = (Equipment) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
             itemSubType = row.ItemSubType;
             elementalType = row.ElementalType;
 

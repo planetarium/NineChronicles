@@ -163,7 +163,7 @@ namespace Nekoyume.UI.Module
                         out var itemRow, 
                         true
                     );
-                    var itemBase = ItemFactory.Create(itemRow, Guid.NewGuid());
+                    var itemBase = ItemFactory.CreateItemUsable(itemRow, Guid.NewGuid(), default);
                     resultItemView.SetData(new Item(itemBase));
                     resultItemNameText.gameObject.SetActive(true);
                     resultItemNameText.text = itemRow.GetLocalizedName();

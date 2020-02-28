@@ -174,8 +174,8 @@ namespace Nekoyume.UI.Scroller
                     var pair = itemMap.ElementAt(i);
                     var rewardView = rewardViews[i];
                     rewardView.ignoreOne = true;
-                    var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
-                    var item = ItemFactory.Create(row, new Guid());
+                    var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                    var item = ItemFactory.CreateMaterial(row);
                     var countableItem = new CountableItem(item, pair.Value);
                     countableItem.Dimmed.Value = isReceived;
                     rewardView.SetData(countableItem);

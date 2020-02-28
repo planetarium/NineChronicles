@@ -2,7 +2,6 @@ using System;
 using System.Globalization;
 using Nekoyume.TableData;
 using NUnit.Framework;
-using UnityScript.Steps;
 
 namespace Tests.EditMode
 {

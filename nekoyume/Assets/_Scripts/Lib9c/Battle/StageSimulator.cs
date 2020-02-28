@@ -284,8 +284,7 @@ namespace Nekoyume.Battle
                         var count = Random.Next(r.Min, r.Max + 1);
                         for (var i = 0; i < count; i++)
                         {
-                            var guid = Random.GenerateRandomGuid();
-                            var item = ItemFactory.Create(itemData, guid);
+                            var item = ItemFactory.CreateMaterial(itemData);
                             if (_waveRewards.Count < 4)
                             {
                                 _waveRewards.Add(item);
