@@ -19,15 +19,16 @@ using UnityEngine.AddressableAssets;
 
 namespace Nekoyume.Game
 {
-    [RequireComponent(typeof(Agent))]
+    [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
 
         private IAgent _agent;
-        
-        [SerializeField] private Stage stage = null;
-        
+
+        [SerializeField]
+        private Stage stage = null;
+
         public States States { get; private set; }
 
         public LocalStateSettings LocalStateSettings { get; private set; }
@@ -65,7 +66,18 @@ namespace Nekoyume.Game
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
-            _agent = GetComponent<Agent>();
+            _options = CommandLineOptions.Load(
+                CommandLineOptionsJsonPath,
+                WebCommandLineOptionsPathInit
+            );
+            if (_options.Client)
+            {
+                _agent = GetComponent<RPCAgent>();
+            }
+            else
+            {
+                _agent = GetComponent<Agent>();
+            }
 #if UNITY_EDITOR
             LocalizationManager.Initialize(languageType);
 #else
@@ -73,7 +85,6 @@ namespace Nekoyume.Game
 #endif
             States = new States();
             LocalStateSettings = new LocalStateSettings();
-            ActionManager = new ActionManager(_agent);
             MainCanvas.instance.InitializeFirst();
         }
 
@@ -83,15 +94,12 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoInitializeTableSheets());
             AudioController.instance.Initialize();
             yield return null;
+            ActionManager = new ActionManager(_agent);
             // Agent 초기화.
             // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            _options = CommandLineOptions.Load(
-                CommandLineOptionsJsonPath,
-                WebCommandLineOptionsPathInit
-            );
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>
@@ -114,7 +122,7 @@ namespace Nekoyume.Game
                 .Select(_ => Input.mousePosition)
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
-            
+
             ShowNext(agentInitializeSucceed);
         }
 
@@ -186,15 +194,17 @@ namespace Nekoyume.Game
 #endif
                     return;
                 }
+
                 confirm.CloseCallback = null;
 
                 Event.OnNestEnter.Invoke();
                 Widget.Find<Login>().Show();
                 Widget.Find<Menu>().Close();
             };
-            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT", blurRadius: 2);
+            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT",
+                blurRadius: 2);
         }
-        
+
         private void PlayMouseOnClickVFX(Vector3 position)
         {
             position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);
@@ -224,6 +234,7 @@ namespace Nekoyume.Game
                 );
                 yield break;
             }
+
             if (_options.testEnd)
             {
                 var w = Widget.Find<Confirm>();
@@ -270,7 +281,8 @@ namespace Nekoyume.Game
         {
             var confirm = Widget.Find<Confirm>();
             var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
-            var prevStoragePath = Path.Combine(BlockChain.Agent.PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
+            var prevStoragePath = Path.Combine(BlockChain.Agent.PrevStorageDirectoryPath,
+                $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
