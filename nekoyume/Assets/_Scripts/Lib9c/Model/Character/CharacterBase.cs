@@ -143,6 +143,7 @@ namespace Nekoyume.Model
                         BT.If(IsAlive).OpenBranch(
                             BT.Sequence().OpenBranch(
                                 BT.Call(ReduceDurationOfBuffs),
+                                BT.Call(ReduceSkillCooldown),
                                 BT.Call(SelectSkill),
                                 BT.Call(UseSkill),
                                 BT.Call(RemoveBuffs)
@@ -180,6 +181,14 @@ namespace Nekoyume.Model
             foreach (var pair in Buffs)
             {
                 pair.Value.remainedDuration--;
+            }
+        }
+
+        private void ReduceSkillCooldown()
+        {
+            foreach (var skill in Skills)
+            {
+                // skill.coolDown
             }
         }
 
@@ -397,7 +406,7 @@ namespace Nekoyume.Model
                 // 기존에 걸려 있는 버프들과 겹치지 않는 스킬만 골라내기.
                 skills = skills.Where(skill =>
                 {
-                    var skillId = skill.skillRow.Id;
+                    var skillId = skill.SkillRow.Id;
 
                     // 버프가 없는 스킬이면 포함한다.
                     if (!skillBuffSheet.TryGetValue(skillId, out var row))
@@ -440,9 +449,9 @@ namespace Nekoyume.Model
 
             var selected = skills
                 .Select(skill => new {skill, chance = random.Next(0, 100)})
-                .Where(t => t.skill.chance > t.chance)
-                .OrderBy(t => t.skill.skillRow.Id)
-                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.chance)
+                .Where(t => t.skill.Chance > t.chance)
+                .OrderBy(t => t.skill.SkillRow.Id)
+                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
                 .Select(t => t.skill)
                 .ToList();
 

@@ -89,15 +89,15 @@ namespace Nekoyume.Battle
 
         private static decimal GetCP(Skill skill)
         {
-            switch (skill.skillRow.SkillType)
+            switch (skill.SkillRow.SkillType)
             {
                 case SkillType.Attack:
-                    switch (skill.skillRow.SkillCategory)
+                    switch (skill.SkillRow.SkillCategory)
                     {
                         case SkillCategory.NormalAttack:
                             return CPNormalAttackMultiply;
                         case SkillCategory.BlowAttack:
-                            switch (skill.skillRow.SkillTargetType)
+                            switch (skill.SkillRow.SkillTargetType)
                             {
                                 case SkillTargetType.Enemies:
                                     return CPBlowAllAttackMultiply;
@@ -110,7 +110,7 @@ namespace Nekoyume.Battle
                             return CPAreaAttackMultiply;
                         default:
                             throw new ArgumentOutOfRangeException(
-                                $"{nameof(skill.skillRow.SkillType)}, {nameof(skill.skillRow.SkillCategory)}");
+                                $"{nameof(skill.SkillRow.SkillType)}, {nameof(skill.SkillRow.SkillCategory)}");
                     }
                 case SkillType.Heal:
                     return CPHealMultiply;

@@ -25,11 +25,11 @@ namespace Nekoyume.Model.Skill
             bool isNormalAttack = false)
         {
             var infos = new List<BattleStatus.Skill.SkillInfo>();
-            var targets = skillRow.SkillTargetType.GetTarget(caster).ToList();
-            var elementalType = skillRow.ElementalType;
-            var totalDamage = caster.ATK + power;
-            var multipliers = GetMultiplier(skillRow.HitCount, 1m);
-            for (var i = 0; i < skillRow.HitCount; i++)
+            var targets = SkillRow.SkillTargetType.GetTarget(caster).ToList();
+            var elementalType = SkillRow.ElementalType;
+            var totalDamage = caster.ATK + Power;
+            var multipliers = GetMultiplier(SkillRow.HitCount, 1m);
+            for (var i = 0; i < SkillRow.HitCount; i++)
             {
                 var multiplier = multipliers[i];
                 var damage = (int) (totalDamage * multiplier);
@@ -70,14 +70,14 @@ namespace Nekoyume.Model.Skill
                     }
 
                     // 연타공격은 항상 연출이 크리티컬로 보이도록 처리.
-                    if (skillRow.SkillCategory == SkillCategory.DoubleAttack)
+                    if (SkillRow.SkillCategory == SkillCategory.DoubleAttack)
                     {
                         isCritical = true;
                     }
 
                     infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), damage, isCritical,
-                        skillRow.SkillCategory, simulatorWaveTurn, skillRow.ElementalType,
-                        skillRow.SkillTargetType));
+                        SkillRow.SkillCategory, simulatorWaveTurn, SkillRow.ElementalType,
+                        SkillRow.SkillTargetType));
                 }
             }
 

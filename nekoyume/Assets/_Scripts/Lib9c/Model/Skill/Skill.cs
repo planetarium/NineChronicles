@@ -11,26 +11,26 @@ namespace Nekoyume.Model.Skill
     [Serializable]
     public abstract class Skill : IState
     {
-        public readonly SkillSheet.Row skillRow;
-        public readonly int power;
-        public readonly int chance;
+        public readonly SkillSheet.Row SkillRow;
+        public readonly int Power;
+        public readonly int Chance;
 
         protected Skill(SkillSheet.Row skillRow, int power, int chance)
         {
-            this.skillRow = skillRow;
-            this.power = power;
-            this.chance = chance;
+            SkillRow = skillRow;
+            Power = power;
+            Chance = chance;
         }
 
         public abstract BattleStatus.Skill Use(
-            CharacterBase caster, 
+            CharacterBase caster,
             int simulatorWaveTurn,
             IEnumerable<Buff.Buff> buffs
         );
 
         protected bool Equals(Skill other)
         {
-            return skillRow.Equals(other.skillRow) && power == other.power && chance.Equals(other.chance);
+            return SkillRow.Equals(other.SkillRow) && Power == other.Power && Chance.Equals(other.Chance);
         }
 
         public override bool Equals(object obj)
@@ -45,15 +45,15 @@ namespace Nekoyume.Model.Skill
         {
             unchecked
             {
-                var hashCode = skillRow.GetHashCode();
-                hashCode = (hashCode * 397) ^ power;
-                hashCode = (hashCode * 397) ^ chance.GetHashCode();
+                var hashCode = SkillRow.GetHashCode();
+                hashCode = (hashCode * 397) ^ Power;
+                hashCode = (hashCode * 397) ^ Chance.GetHashCode();
                 return hashCode;
             }
         }
 
         protected IEnumerable<Model.BattleStatus.Skill.SkillInfo> ProcessBuff(
-            CharacterBase caster, 
+            CharacterBase caster,
             int simulatorWaveTurn,
             IEnumerable<Buff.Buff> buffs
         )
@@ -66,7 +66,8 @@ namespace Nekoyume.Model.Skill
                 {
                     target.AddBuff(buff);
                     infos.Add(new Model.BattleStatus.Skill.SkillInfo((CharacterBase) target.Clone(), 0, false,
-                        skillRow.SkillCategory, simulatorWaveTurn, ElementalType.Normal, skillRow.SkillTargetType, buff));
+                        SkillRow.SkillCategory, simulatorWaveTurn, ElementalType.Normal, SkillRow.SkillTargetType,
+                        buff));
                 }
             }
 
@@ -76,9 +77,9 @@ namespace Nekoyume.Model.Skill
         public IValue Serialize() =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "skillRow"] = skillRow.Serialize(),
-                [(Text) "power"] = (Integer) power,
-                [(Text) "chance"] = (Integer) chance
+                [(Text) "skillRow"] = SkillRow.Serialize(),
+                [(Text) "power"] = (Integer) Power,
+                [(Text) "chance"] = (Integer) Chance
             });
     }
 }

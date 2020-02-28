@@ -243,12 +243,12 @@ namespace Nekoyume.UI.Module
 
         private void AddSkill(Skill model)
         {
-            AddSkill(model.skillRow.Id);
+            AddSkill(model.SkillRow.Id);
         }
 
         private void AddBuffSkill(BuffSkill model)
         {
-            AddSkill(model.skillRow.Id);
+            AddSkill(model.SkillRow.Id);
         }
 
         private void AddSkill(int skillId)

@@ -121,7 +121,6 @@ namespace Nekoyume.Game
         private IEnumerator CoInitializeTableSheets()
         {
             TableSheets = new TableSheets();
-            //어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.
             var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
             yield return request;
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
