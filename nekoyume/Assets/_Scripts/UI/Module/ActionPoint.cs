@@ -48,6 +48,9 @@ namespace Nekoyume.UI.Module
 
         public void SetPoint(int actionPoint, bool useAnimation = false)
         {
+            if (!gameObject.activeSelf)
+                return;
+            
             if (!useAnimation)
             {            
                 slider.value = actionPoint;
@@ -55,7 +58,7 @@ namespace Nekoyume.UI.Module
 
                 return;
             }
-            
+
             if(lerpCoroutine != null)
                 StopCoroutine(lerpCoroutine);
             

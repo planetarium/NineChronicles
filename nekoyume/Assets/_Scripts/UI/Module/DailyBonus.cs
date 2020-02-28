@@ -48,19 +48,24 @@ namespace Nekoyume.UI.Module
             button.interactable = false;
             _animator = GetComponent<Animator>();
             _updateEnable = true;
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
-            ReactiveAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
         }
 
         private void OnEnable()
         {
             canvasGroup.alpha = 0;
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
+            ReactiveAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
             
             if (animateAlpha)
             {
                 dailyBonusCanvasGroup.alpha = 0;
                 dailyBonusCanvasGroup.DOFade(1, 1.0f);
             }
+        }
+
+        private void OnDisable()
+        {
+            _disposables.DisposeAllAndClear();
         }
 
         private void OnDestroy()
