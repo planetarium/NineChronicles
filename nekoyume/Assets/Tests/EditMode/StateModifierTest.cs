@@ -108,7 +108,7 @@ namespace Tests.EditMode
         private Equipment GetFirstEquipment()
         {
             var equipmentRowFirst = _tableSheets.EquipmentItemSheet.First;
-            return new Equipment(equipmentRowFirst, new Guid());
+            return new Equipment(equipmentRowFirst, new Guid(), 0);
         }
 
         private Material GetFirstMaterial()

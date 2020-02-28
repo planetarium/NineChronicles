@@ -53,8 +53,6 @@ namespace Nekoyume.Model
         public Belt belt;
         public Necklace necklace;
         public Ring ring;
-        public Helm helm;
-        public SetItem set;
 
         public CollectionMap monsterMap;
         public CollectionMap eventMap;
@@ -89,8 +87,6 @@ namespace Nekoyume.Model
             belt = null;
             necklace = null;
             ring = null;
-            helm = null;
-            set = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
             hairIndex = avatarState.hair;
@@ -116,8 +112,6 @@ namespace Nekoyume.Model
             belt = null;
             necklace = null;
             ring = null;
-            helm = null;
-            set = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
             hairIndex = avatarState.hair;
@@ -142,8 +136,6 @@ namespace Nekoyume.Model
             belt = null;
             necklace = null;
             ring = null;
-            helm = null;
-            set = null;
             monsterMap = new CollectionMap();
             eventMap = new CollectionMap();
             hairIndex = 0;
@@ -163,8 +155,6 @@ namespace Nekoyume.Model
             belt = value.belt;
             necklace = value.necklace;
             ring = value.ring;
-            helm = value.helm;
-            set = value.set;
             monsterMap = value.monsterMap;
             eventMap = value.eventMap;
             hairIndex = value.hairIndex;
@@ -227,9 +217,6 @@ namespace Nekoyume.Model
                     case ItemSubType.Weapon:
                         weapon = equipment as Weapon;
                         break;
-                    case ItemSubType.RangedWeapon:
-                        weapon = equipment as RangedWeapon;
-                        break;
                     case ItemSubType.Armor:
                         armor = equipment as Armor;
                         defElementType = equipment.Data.ElementalType;
@@ -242,12 +229,6 @@ namespace Nekoyume.Model
                         break;
                     case ItemSubType.Ring:
                         ring = equipment as Ring;
-                        break;
-                    case ItemSubType.Helm:
-                        helm = equipment as Helm;
-                        break;
-                    case ItemSubType.Set:
-                        set = equipment as SetItem;
                         break;
                     default:
                         throw new InvalidEquipmentException();

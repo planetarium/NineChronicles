@@ -14,6 +14,7 @@ namespace Nekoyume.TableData
             public int MaterialCount { get; private set; }
             public int RequiredActionPoint { get; private set; }
             public long RequiredGold { get; private set; }
+            public long RequiredBlockIndex { get; private set; }
             public int UnlockStage { get; private set; }
             public List<int> SubRecipeIds { get; private set; }
 
@@ -25,9 +26,10 @@ namespace Nekoyume.TableData
                 MaterialCount = ParseInt(fields[3]);
                 RequiredActionPoint = ParseInt(fields[4]);
                 RequiredGold = ParseLong(fields[5]);
-                UnlockStage = ParseInt(fields[6]);
+                RequiredBlockIndex = ParseLong(fields[6]);
+                UnlockStage = ParseInt(fields[7]);
                 SubRecipeIds = new List<int>(3);
-                for (var i = 7; i < 9; i++)
+                for (var i = 8; i < 10; i++)
                 {
                     if (string.IsNullOrEmpty(fields[i]))
                     {
