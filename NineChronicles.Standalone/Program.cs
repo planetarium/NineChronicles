@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Cocona;
+using Grpc.Core;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
@@ -11,11 +12,14 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
+using MagicOnion.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Serilog;
 
-using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>; 
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace NineChronicles.Standalone
 {
@@ -44,7 +48,12 @@ namespace NineChronicles.Standalone
             [Option("ice-server", new [] { 'I', })]
             string[] iceServerStrings = null,
             [Option("peer")]
-            string[] peerStrings = null
+            string[] peerStrings = null,
+            bool rpc = false,
+            [Option("rpc-host")]
+            string rpcHost = null,
+            [Option("rpc-port")]
+            int? rpcPort = null
         )
         {
             // Setup logger.
@@ -74,28 +83,74 @@ namespace NineChronicles.Standalone
             };
 
             // BlockPolicy shared through Lib9c.
-            IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(); 
-            Func<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey, CancellationToken, Task> minerLoopAction =
-                async (chain, swarm, privateKey, cancellationToken) =>
+            IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy();
+            async Task minerLoopAction(
+                BlockChain<NineChroniclesActionType> chain, 
+                Swarm<NineChroniclesActionType> swarm, 
+                PrivateKey privateKey, 
+                CancellationToken cancellationToken)
+            {
+                var miner = new Miner(chain, swarm, privateKey);
+                while (true)
                 {
-                    var miner = new Miner(chain, swarm, privateKey);
-                    while (true)
+                    Log.Debug("Miner called.");
+                    try
                     {
-                        Log.Debug("Miner called.");
-                        try
-                        {
-                            await miner.MineBlockAsync(cancellationToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "Exception occurred.");
-                        }
+                        await miner.MineBlockAsync(cancellationToken);
                     }
-                };
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Exception occurred.");
+                    }
+                }
+            }
 
-            var service = new LibplanetNodeService<NineChroniclesActionType>(properties, blockPolicy, minerLoopAction);
-            var cancellationTokenSource = new CancellationTokenSource();
-            await service.StartAsync(cancellationTokenSource.Token);
+            var nodeService = new LibplanetNodeService<NineChroniclesActionType>(
+                properties, 
+                blockPolicy, 
+                minerLoopAction
+            );
+
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+
+            if (rpc)
+            {
+                if (string.IsNullOrEmpty(rpcHost))
+                {
+                    throw new CommandExitedException(
+                        "--rpc-host must be required when --rpc had been set.",
+                        -1
+                    );
+                }
+                else if (!(rpcPort is int rpcPortValue))
+                {
+                    throw new CommandExitedException(
+                        "--rpc-port must be required when --rpc had been set.",
+                        -1
+                    );
+                }
+                else
+                {
+                    hostBuilder = hostBuilder
+                        .UseMagicOnion(
+                            new ServerPort(rpcHost, rpcPortValue, ServerCredentials.Insecure)
+                        )
+                        .ConfigureServices((ctx, services) =>
+                        {
+                            services.AddHostedService(provider => new ActionEvaluationPublisher(
+                                nodeService.BlockChain,
+                                rpcHost,
+                                rpcPortValue
+                            ));
+                        });
+                }
+            }
+
+            await hostBuilder.ConfigureServices((ctx, services) =>
+            {
+                services.AddHostedService(provider => nodeService);
+                services.AddSingleton(provider => nodeService.BlockChain);
+            }).RunConsoleAsync();
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)
