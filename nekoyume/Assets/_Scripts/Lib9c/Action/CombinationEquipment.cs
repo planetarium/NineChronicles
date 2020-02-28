@@ -87,7 +87,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var equipment = (Equipment) ItemFactory.Create(equipRow, ctx.Random.GenerateRandomGuid());
+            var equipment = (Equipment) ItemFactory.CreateItemUsable(
+                equipRow, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex + recipe.RequiredBlockIndex);
 
 
             // 보조 레시피 검증

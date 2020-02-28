@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Model.Item
@@ -21,7 +22,7 @@ namespace Nekoyume.Model.Item
 
             public Item(ItemBase itemBase, int count = 1)
             {
-                item = ItemFactory.Create(itemBase.Data, default);
+                item = ItemFactory.CreateMaterial((MaterialItemSheet.Row) itemBase.Data);
                 this.count = count;
             }
 

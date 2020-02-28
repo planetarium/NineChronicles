@@ -183,7 +183,7 @@ namespace Nekoyume.Action
             for (var i = 0; i < foodCount; i++)
             {
                 var itemId = ctx.Random.GenerateRandomGuid();
-                var itemUsable = GetFood(consumableItemRow, itemId);
+                var itemUsable = GetFood(consumableItemRow, itemId, ctx.BlockIndex);
                 // 액션 결과
                 Result.itemUsable = itemUsable;
                 var mail = new CombinationMail(Result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
@@ -367,7 +367,7 @@ namespace Nekoyume.Action
                    DecimalEx.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
         }
 
-        private static ItemUsable GetFood(ConsumableItemSheet.Row equipmentItemRow, Guid itemId)
+        private static ItemUsable GetFood(ConsumableItemSheet.Row equipmentItemRow, Guid itemId, long ctxBlockIndex)
         {
             // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
             /*
@@ -386,7 +386,7 @@ namespace Nekoyume.Action
              * Nekoyume.BlockChain.<CoMiner>d__31:MoveNext() (at Assets/_Scripts/BlockChain/Agent.cs:208)
              * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
              */
-            return (ItemUsable) ItemFactory.Create(equipmentItemRow, itemId);
+            return (ItemUsable) ItemFactory.CreateItemUsable(equipmentItemRow, itemId, ctxBlockIndex);
         }
     }
 }

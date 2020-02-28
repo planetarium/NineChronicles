@@ -43,7 +43,7 @@ namespace Nekoyume.Game
 
         public bool IsInitialized { get; private set; }
 
-        private const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
+        public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
         private CommandLineOptions _options;
 
