@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.State;
@@ -24,11 +25,14 @@ namespace Nekoyume.Model
             );
         }
 
-        public IValue Serialize()
-        {
-            return new Bencodex.Types.Dictionary(_dictionary.Select(kv =>
-                new KeyValuePair<IKey, IValue>((Text) kv.Key.ToString(), (Text) kv.Value.ToString())));
-        }
+        public IValue Serialize() => new Bencodex.Types.Dictionary(
+            _dictionary.Select(kv =>
+                new KeyValuePair<IKey, IValue>(
+                    (Text) kv.Key.ToString(CultureInfo.InvariantCulture),
+                    (Text) kv.Value.ToString(CultureInfo.InvariantCulture)
+                )
+            )
+        );
 
         public void Add(KeyValuePair<int, int> pair)
         {

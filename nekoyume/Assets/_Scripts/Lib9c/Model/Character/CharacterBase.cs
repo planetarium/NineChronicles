@@ -71,7 +71,7 @@ namespace Nekoyume.Model
             Simulator = simulator;
 
             if (!sheets.CharacterSheet.TryGetValue(characterId, out var row))
-                throw new SheetRowNotFoundException("CharacterSheet", characterId.ToString());
+                throw new SheetRowNotFoundException("CharacterSheet", characterId);
 
             RowData = row;
             Stats = new CharacterStats(RowData, level);
