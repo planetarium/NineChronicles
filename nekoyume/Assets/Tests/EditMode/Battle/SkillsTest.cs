@@ -61,6 +61,7 @@ namespace Tests.EditMode.Battle
             Assert.AreEqual(firstSkill, selectedSkill.Skill);
         }
 
+        // todo: 이후에 버프도 고려해서 걸러내는 로직이 완성돼 적용될 때에, 버프의 groupId로 걸러내는 등 테스트가 더 자세하게 나뉘어져야 하겠어요.
         [Test]
         public void SelectWithBuffsTest()
         {
