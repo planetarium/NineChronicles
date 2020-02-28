@@ -65,18 +65,20 @@ namespace Libplanet.Standalone.Hosting
                 iceServers: iceServers);
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             var peers = _properties.Peers.ToImmutableArray();
             if (peers.Any())
             {
                 var trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
-                Swarm.BootstrapAsync(peers, null, null, cancellationToken: cancellationToken)
-                    .Wait(cancellationToken);
+                await Swarm.BootstrapAsync(peers, null, null, cancellationToken: cancellationToken);
 
-                Swarm.PreloadAsync(null, new Progress<PreloadState>((state) => Log.Debug("{@state}", state)),
-                        trustedStateValidators, cancellationToken: cancellationToken)
-                    .Wait(cancellationToken);
+                await Swarm.PreloadAsync(
+                    null, 
+                    new Progress<PreloadState>((state) => Log.Debug("{@state}", state)),
+                    trustedStateValidators, 
+                    cancellationToken: cancellationToken
+                );
             }
 
             var tasks = new List<Task>
@@ -92,9 +94,7 @@ namespace Libplanet.Standalone.Hosting
                 tasks.Add(minerLoopTask);
             }
 
-            return Task.WhenAll(
-                tasks
-            );
+            await Task.WhenAll(tasks);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
