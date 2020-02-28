@@ -84,6 +84,12 @@ namespace Nekoyume.UI.Module
                 }).AddTo(gameObject);
         }
 
+        private void OnDisable()
+        {
+            sequence.Kill();
+            sequence = null;
+        }
+
         public void Show(ViewModel viewModel)
         {
             if (viewModel is null)
@@ -125,8 +131,8 @@ namespace Nekoyume.UI.Module
 
                 return;
             }
-
-            sequence.Pause();
+            
+            sequence?.Pause();
             switch (value)
             {
                 case State.Normal:
