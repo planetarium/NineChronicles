@@ -78,8 +78,8 @@ namespace Nekoyume.Model.Skill
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "skillRow"] = SkillRow.Serialize(),
-                [(Text) "power"] = (Integer) Power,
-                [(Text) "chance"] = (Integer) Chance
+                [(Text) "power"] = Power.Serialize(),
+                [(Text) "chance"] = Chance.Serialize()
             });
     }
 }

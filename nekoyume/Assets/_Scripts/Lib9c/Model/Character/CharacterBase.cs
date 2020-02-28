@@ -194,16 +194,7 @@ namespace Nekoyume.Model
 
         private void SelectSkill()
         {
-            if (Targets.Any())
-            {
-                var target = Targets[0];
-                _selectedSkill = Skills.Select(Simulator.Random, target.Buffs, Simulator.TableSheets.SkillBuffSheet,
-                    Simulator.TableSheets.BuffSheet);
-            }
-            else
-            {
-                _selectedSkill = Skills.Select(Simulator.Random, null, null, null);
-            }
+            _selectedSkill = Skills.Select(Simulator.Random);
         }
 
         private void UseSkill()
@@ -364,10 +355,14 @@ namespace Nekoyume.Model
         }
     }
 
+    /// <summary>
+    /// Skill.Skill
+    /// int : cooldown
+    /// </summary>
     [Serializable]
-    public class Skills : IEnumerable<Skill.Skill>
+    public class Skills : IEnumerable<(Skill.Skill, int)>
     {
-        private readonly List<Skill.Skill> _skills = new List<Skill.Skill>();
+        private readonly List<(Skill.Skill, int)> _skills = new List<(Skill.Skill, int)>();
 
         public void Add(Skill.Skill s)
         {
@@ -376,7 +371,7 @@ namespace Nekoyume.Model
                 return;
             }
 
-            _skills.Add(s);
+            _skills.Add((s, 0));
         }
 
         public void Clear()
@@ -384,7 +379,7 @@ namespace Nekoyume.Model
             _skills.Clear();
         }
 
-        public IEnumerator<Skill.Skill> GetEnumerator()
+        public IEnumerator<(Skill.Skill, int)> GetEnumerator()
         {
             return _skills.GetEnumerator();
         }
@@ -393,7 +388,13 @@ namespace Nekoyume.Model
         {
             return GetEnumerator();
         }
+        
+        public Skill.Skill Select(IRandom random)
+        {
+            return PostSelect(random, _skills);
+        }
 
+        // info: 스킬 쿨다운을 적용하는 것과 별개로, 버프에 대해서 꼼꼼하게 걸러낼 필요가 생길 때 참고하기 위해서 유닛 테스트와 함께 남깁니다.
         public Skill.Skill Select(IRandom random, Dictionary<int, Buff.Buff> buffs, SkillBuffSheet skillBuffSheet,
             BuffSheet buffSheet)
         {
@@ -404,8 +405,9 @@ namespace Nekoyume.Model
                 !(buffSheet is null))
             {
                 // 기존에 걸려 있는 버프들과 겹치지 않는 스킬만 골라내기.
-                skills = skills.Where(skill =>
+                skills = skills.Where(tuple =>
                 {
+                    var (skill, _) = tuple;
                     var skillId = skill.SkillRow.Id;
 
                     // 버프가 없는 스킬이면 포함한다.
@@ -448,7 +450,20 @@ namespace Nekoyume.Model
             }
 
             var selected = skills
-                .Select(skill => new {skill, chance = random.Next(0, 100)})
+                .Select(tuple => new {skill = tuple.Item1, chance = random.Next(0, 100)})
+                .Where(t => t.skill.Chance > t.chance)
+                .OrderBy(t => t.skill.SkillRow.Id)
+                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
+                .Select(t => t.skill)
+                .ToList();
+
+            return PostSelect(random, skills);
+        }
+        
+        private Skill.Skill PostSelect(IRandom random, IEnumerable<(Skill.Skill, int)> skills)
+        {
+            var selected = skills
+                .Select(tuple => new {skill = tuple.Item1, chance = random.Next(0, 100)})
                 .Where(t => t.skill.Chance > t.chance)
                 .OrderBy(t => t.skill.SkillRow.Id)
                 .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
