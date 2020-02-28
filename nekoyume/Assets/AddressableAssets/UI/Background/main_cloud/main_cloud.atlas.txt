@@ -1,0 +1,48 @@
+
+main_cloud.png
+size: 512,512
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+cloud_01
+  rotate: false
+  xy: 2, 155
+  size: 307, 184
+  orig: 307, 184
+  offset: 0, 0
+  index: -1
+cloud_02
+  rotate: true
+  xy: 375, 267
+  size: 238, 90
+  orig: 238, 90
+  offset: 0, 0
+  index: -1
+cloud_03
+  rotate: false
+  xy: 2, 341
+  size: 371, 164
+  orig: 371, 164
+  offset: 0, 0
+  index: -1
+cloud_04
+  rotate: false
+  xy: 2, 30
+  size: 279, 123
+  orig: 279, 123
+  offset: 0, 0
+  index: -1
+cloud_05
+  rotate: false
+  xy: 283, 2
+  size: 105, 49
+  orig: 105, 49
+  offset: 0, 0
+  index: -1
+moon
+  rotate: true
+  xy: 311, 53
+  size: 212, 164
+  orig: 212, 164
+  offset: 0, 0
+  index: -1
