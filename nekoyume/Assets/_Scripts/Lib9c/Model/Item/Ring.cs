@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.InteropServices.ComTypes;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Item
