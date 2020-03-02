@@ -141,13 +141,10 @@ namespace Nekoyume.Model.Stat
             value.AddCurrent(GetModifiedPart(Value));
         }
 
-        public override string ToString()
-        {
-            return string.Format("{0}{1}{2}",
-                Value >= 0 ? "+" : string.Empty,
-                Value,
-                Operation == OperationType.Percentage ? "%" : string.Empty);
-        }
+        public override string ToString() =>
+            (Value >= 0 ? "+" : string.Empty) +
+            Value +
+            (Operation == OperationType.Percentage ? "%" : string.Empty);
 
         #region PlayModeTest
 

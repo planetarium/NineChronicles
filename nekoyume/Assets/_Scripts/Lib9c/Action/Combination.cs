@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using DecimalMath;
@@ -83,8 +84,9 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
         }
 
-        public override IAccountStateDelta Execute(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext context)
         {
+            IActionContext ctx = context;
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
@@ -311,7 +313,7 @@ namespace Nekoyume.Action
         // todo: 하드코딩을 피할 방법 필요.
         private static bool TryGetItemType(int itemId, out ItemSubType outItemType)
         {
-            var type = itemId.ToString().Substring(0, 4);
+            var type = itemId.ToString(CultureInfo.InvariantCulture).Substring(0, 4);
             switch (type)
             {
                 case "3030":
@@ -386,7 +388,7 @@ namespace Nekoyume.Action
              * Nekoyume.BlockChain.<CoMiner>d__31:MoveNext() (at Assets/_Scripts/BlockChain/Agent.cs:208)
              * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
              */
-            return (ItemUsable) ItemFactory.CreateItemUsable(equipmentItemRow, itemId, ctxBlockIndex);
+            return ItemFactory.CreateItemUsable(equipmentItemRow, itemId, ctxBlockIndex);
         }
     }
 }

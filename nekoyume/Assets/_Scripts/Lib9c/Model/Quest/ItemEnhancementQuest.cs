@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.Item;
@@ -36,10 +37,13 @@ namespace Nekoyume.Model.Quest
             Complete = _count == _current;
         }
 
-        public override string GetProgressText()
-        {
-            return string.Format(GoalFormat, Math.Min(_count, _current), _count);
-        }
+        public override string GetProgressText() =>
+            string.Format(
+                CultureInfo.InvariantCulture,
+                GoalFormat,
+                Math.Min(_count, _current),
+               _count 
+            );
 
         public void Update(Equipment equipment)
         {

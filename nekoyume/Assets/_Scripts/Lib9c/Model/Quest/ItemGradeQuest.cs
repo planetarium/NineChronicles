@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.Item;
@@ -36,10 +37,14 @@ namespace Nekoyume.Model.Quest
             Complete = _current >= Goal;
         }
 
-        public override string GetProgressText()
-        {
-            return string.Format(GoalFormat, Math.Min(Goal, _current), Goal);
-        }
+        // FIXME: 이 메서드 구현은 중복된 코드가 다른 데서도 많이 있는 듯.
+        public override string GetProgressText() =>
+            string.Format(
+                CultureInfo.InvariantCulture,
+                GoalFormat,
+                Math.Min(Goal, _current),
+                Goal
+            );
 
         public void Update(ItemUsable itemUsable)
         {

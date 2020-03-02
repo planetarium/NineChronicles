@@ -17,8 +17,9 @@ namespace Nekoyume.Action
         public Address agentAddress;
         public Address avatarAddress;
 
-        public override IAccountStateDelta Execute(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext context)
         {
+            IActionContext ctx = context;
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {

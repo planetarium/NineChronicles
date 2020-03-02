@@ -22,8 +22,9 @@ namespace Nekoyume.Action
         public int SlotIndex;
         public int? SubRecipeId;
 
-        public override IAccountStateDelta Execute(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext context)
         {
+            IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var slotAddress = AvatarAddress.Derive(string.Format(CombinationSlotState.DeriveFormat, SlotIndex));
             if (ctx.Rehearsal)
@@ -81,7 +82,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var equipmentMaterial = (Material) ItemFactory.CreateMaterial(materialSheet, material.Id);
+            Material equipmentMaterial = ItemFactory.CreateMaterial(materialSheet, material.Id);
             materials[equipmentMaterial] = recipe.MaterialCount;
 
             var requiredGold = recipe.RequiredGold;
@@ -124,7 +125,7 @@ namespace Nekoyume.Action
                         return states;
                     }
 
-                    var subMaterial = (Material) ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
+                    Material subMaterial = ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
                     materials[subMaterial] = materialInfo.Count;
 
                     requiredGold += subRecipe.RequiredGold;

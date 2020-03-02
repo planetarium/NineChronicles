@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 using Nekoyume.Model.Skill;
@@ -39,7 +40,7 @@ namespace Nekoyume.Model.Item
                 case ItemSubType.Ring:
                     return new Ring((EquipmentItemSheet.Row)itemRow, id, requiredBlockIndex);
                 default:
-                    throw new ArgumentOutOfRangeException(itemRow.Id.ToString());
+                    throw new ArgumentOutOfRangeException(itemRow.Id.ToString(CultureInfo.InvariantCulture));
             }
         }
 
