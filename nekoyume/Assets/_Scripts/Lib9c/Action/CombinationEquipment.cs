@@ -27,8 +27,13 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
-            var slotAddress = AvatarAddress.Derive(string.Format(CultureInfo.InvariantCulture,
-                CombinationSlotState.DeriveFormat, SlotIndex));
+            var slotAddress = AvatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    SlotIndex
+                )
+            );
             if (ctx.Rehearsal)
             {
                 return states
@@ -45,7 +50,7 @@ namespace Nekoyume.Action
             }
 
             var slotState = states.GetCombinationSlotState(AvatarAddress, SlotIndex);
-            if (slotState is null || !slotState.Validate(avatarState, ctx.BlockIndex))
+            if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
             {
                 return states;
             }

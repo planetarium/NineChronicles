@@ -95,8 +95,13 @@ namespace Nekoyume.Model.State
             combinationSlotAddresses = new List<Address>(CombinationSlotCapacity);
             for (var i = 0; i < CombinationSlotCapacity; i++)
             {
-                var slotAddress = address.Derive(string.Format(CultureInfo.InvariantCulture,
-                    CombinationSlotState.DeriveFormat, i));
+                var slotAddress = address.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CombinationSlotState.DeriveFormat,
+                        i
+                    )
+                );
                 combinationSlotAddresses.Add(slotAddress);
             }
             UpdateGeneralQuest(new[] { createEvent, levelEvent });

@@ -59,8 +59,13 @@ namespace Nekoyume.Action
                 states = states.SetState(ctx.Signer, MarkChanged);
                 for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
                 {
-                    var slotAddress = avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture,
-                        CombinationSlotState.DeriveFormat, i));
+                    var slotAddress = avatarAddress.Derive(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            CombinationSlotState.DeriveFormat,
+                            i
+                        )
+                    );
                     states = states.SetState(slotAddress, MarkChanged);
                 }
                 return states.SetState(avatarAddress, MarkChanged);
