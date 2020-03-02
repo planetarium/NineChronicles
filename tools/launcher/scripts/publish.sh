@@ -26,9 +26,9 @@ if [ -d qt-runtime ]; then
     rm -rf qt-runtime
 fi
 
+# Install Qt Runtime.
 cp -r "qt-runtimes/$rid" qt-runtime
 
-# Install Qt Runtime.
 dotnet publish -r $rid --self-contained -o out/$rid
 
 # Clean up Qt Runtime used after build.
