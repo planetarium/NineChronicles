@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
             costAp = 0;
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var materialRow = materialSheet.Values.First(i => i.Id == row.MaterialId);
-            var baseMaterial = (Nekoyume.Model.Item.Material)ItemFactory.Create(materialRow, Guid.Empty);
+            var baseMaterial = ItemFactory.CreateMaterial(materialRow);
             MaterialList.Add((baseMaterial, row.MaterialCount));
             costNcg += row.RequiredGold;
             costAp += row.RequiredActionPoint;
@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
                 foreach (var materialInfo in subRecipeRow.Materials)
                 {
                     var subMaterialRow = materialSheet.Values.First(i => i.Id == materialInfo.Id);
-                    var subMaterial = (Nekoyume.Model.Item.Material)ItemFactory.Create(subMaterialRow, Guid.Empty);
+                    var subMaterial = ItemFactory.CreateMaterial(subMaterialRow);
                     MaterialList.Add((subMaterial, materialInfo.Count));
                 }
 
