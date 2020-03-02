@@ -156,7 +156,7 @@ namespace Nekoyume.Action
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Log.Error(e, $"Unexpected error occurred during {nameof(GetCombinationSlotState)}()");
                 throw;
             }
         }
