@@ -1,5 +1,7 @@
+using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using System;
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -65,6 +67,44 @@ namespace Nekoyume.UI.Module
 
             nameText.text = recipeName;
 
+            var optionSheet = Game.Game.instance.TableSheets.EquipmentItemOptionSheet;
+            var skillSheet = Game.Game.instance.TableSheets.SkillSheet;
+
+            for (int i = 0; i < optionTexts.Length; ++i)
+            {
+                if(i >= subRecipeRow.Options.Count)
+                {
+                    optionTexts[i].percentageText.enabled = false;
+                    optionTexts[i].descriptionText.enabled = false;
+                    continue;
+                }
+
+                optionTexts[i].percentageText.enabled = true;
+                optionTexts[i].descriptionText.enabled = true;
+
+                var optionInfo = subRecipeRow.Options[i];
+                optionSheet.TryGetValue(optionInfo.Id, out var optionRow);
+
+                if (optionRow.StatType != StatType.NONE)
+                {
+                    var statMin = optionRow.StatType == StatType.SPD
+                    ? (optionRow.StatMin / 100f).ToString(CultureInfo.InvariantCulture)
+                    : optionRow.StatMin.ToString();
+
+                    var statMax = optionRow.StatType == StatType.SPD
+                    ? (optionRow.StatMax / 100f).ToString(CultureInfo.InvariantCulture)
+                    : optionRow.StatMax.ToString();
+
+                    var description = $"{optionRow.StatType} +({statMin}~{statMax})";
+                    SetOptionText(optionTexts[i], optionInfo.Ratio, description);
+                }
+                else
+                {
+                    skillSheet.TryGetValue(optionRow.SkillId, out var skillRow);
+                    SetOptionText(optionTexts[i], optionInfo.Ratio, skillRow.GetLocalizedName());
+                }
+            }
+
             Show();
         }
 
@@ -75,7 +115,7 @@ namespace Nekoyume.UI.Module
 
         private void SetOptionText(OptionText optionText, int percentage, string description)
         {
-            optionText.percentageText.text = percentage.ToString();
+            optionText.percentageText.text = percentage.ToString("0%");
             optionText.descriptionText.text = description;
         }
     }
