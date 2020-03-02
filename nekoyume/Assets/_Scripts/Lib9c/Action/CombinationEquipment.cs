@@ -22,8 +22,9 @@ namespace Nekoyume.Action
         public int RecipeId;
         public int? SubRecipeId;
 
-        public override IAccountStateDelta Execute(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext context)
         {
+            IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var resultAddress = AvatarAddress.Derive(DeriveKey);
             if (ctx.Rehearsal)
