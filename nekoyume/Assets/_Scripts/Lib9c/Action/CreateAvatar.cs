@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
@@ -58,7 +59,8 @@ namespace Nekoyume.Action
                 states = states.SetState(ctx.Signer, MarkChanged);
                 for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
                 {
-                    var slotAddress = avatarAddress.Derive(string.Format(CombinationSlotState.DeriveFormat, i));
+                    var slotAddress = avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture,
+                        CombinationSlotState.DeriveFormat, i));
                     states = states.SetState(slotAddress, MarkChanged);
                 }
                 return states.SetState(avatarAddress, MarkChanged);

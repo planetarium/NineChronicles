@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -140,7 +141,8 @@ namespace Nekoyume.Action
         public static CombinationSlotState GetCombinationSlotState(this IAccountStateDelta states,
             Address avatarAddress, int index)
         {
-            var address = avatarAddress.Derive(string.Format(CombinationSlotState.DeriveFormat, index));
+            var address = avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture,
+                CombinationSlotState.DeriveFormat, index));
             var value = states.GetState(address);
             if (value is null)
             {

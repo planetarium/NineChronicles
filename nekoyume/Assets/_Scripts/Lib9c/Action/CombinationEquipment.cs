@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -26,7 +27,8 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
-            var slotAddress = AvatarAddress.Derive(string.Format(CombinationSlotState.DeriveFormat, SlotIndex));
+            var slotAddress = AvatarAddress.Derive(string.Format(CultureInfo.InvariantCulture,
+                CombinationSlotState.DeriveFormat, SlotIndex));
             if (ctx.Rehearsal)
             {
                 return states

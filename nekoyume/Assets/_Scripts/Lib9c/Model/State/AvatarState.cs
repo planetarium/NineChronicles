@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
@@ -94,7 +95,8 @@ namespace Nekoyume.Model.State
             combinationSlotAddresses = new List<Address>(CombinationSlotCapacity);
             for (var i = 0; i < CombinationSlotCapacity; i++)
             {
-                var slotAddress = address.Derive(string.Format(CombinationSlotState.DeriveFormat, i));
+                var slotAddress = address.Derive(string.Format(CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat, i));
                 combinationSlotAddresses.Add(slotAddress);
             }
             UpdateGeneralQuest(new[] { createEvent, levelEvent });
