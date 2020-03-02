@@ -84,13 +84,8 @@ namespace Nekoyume.BlockChain
         private ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)> lastTenBlocks;
 
         public long BlockIndex => blocks?.Tip?.Index ?? 0;
-
-        public IEnumerable<Transaction<PolymorphicAction<ActionBase>>> StagedTransactions =>
-            store.IterateStagedTransactionIds()
-                .Select(store.GetTransaction<PolymorphicAction<ActionBase>>);
-
-        protected PrivateKey PrivateKey { get; private set; }
-        public Address Address { get; set; }
+        public PrivateKey PrivateKey { get; private set; }
+        public Address Address { get; private set; }
 
         private ActionRenderer _actionRenderer = new ActionRenderer(
             ActionBase.RenderSubject,

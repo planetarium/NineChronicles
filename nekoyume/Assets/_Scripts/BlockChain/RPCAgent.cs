@@ -32,7 +32,7 @@ namespace Nekoyume.BlockChain
         
         private readonly Subject<long> _blockIndexSubject = new Subject<long>();
         
-        private PrivateKey _privateKey;
+        // private PrivateKey _privateKey;
 
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
@@ -55,8 +55,8 @@ namespace Nekoyume.BlockChain
         public Subject<long> BlockIndexSubject { get => _blockIndexSubject; }
 
         public long BlockIndex { get; private set; }
-
-        public Address Address { get => _privateKey.PublicKey.ToAddress(); }
+        public PrivateKey PrivateKey { get; private set; }
+        public Address Address { get; private set; }
 
 
         public void Initialize(
@@ -64,7 +64,8 @@ namespace Nekoyume.BlockChain
             PrivateKey privateKey,
             Action<bool> callback)
         {
-            _privateKey = privateKey;
+            PrivateKey = privateKey;
+            Address = PrivateKey.PublicKey.ToAddress();
 
             _channel = new Channel(
                 options.ClientHost, 
@@ -182,7 +183,7 @@ namespace Nekoyume.BlockChain
             Transaction<PolymorphicAction<ActionBase>> tx = 
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     nonce,
-                    _privateKey,
+                    PrivateKey,
                     actions
                 );
             await _service.PutTransaction(tx.Serialize(true));
