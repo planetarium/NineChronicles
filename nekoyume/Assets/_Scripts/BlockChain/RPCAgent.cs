@@ -32,8 +32,6 @@ namespace Nekoyume.BlockChain
         
         private readonly Subject<long> _blockIndexSubject = new Subject<long>();
         
-        // private PrivateKey _privateKey;
-
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
