@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
-using Nekoyume.Extension;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;

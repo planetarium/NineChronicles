@@ -360,16 +360,17 @@ namespace Nekoyume.Model
                 Cooldown = 0;
             }
         }
+        
         private readonly List<SkillAndCooldown> _skills = new List<SkillAndCooldown>();
 
-        public void Add(Skill.Skill s)
+        public void Add(Skill.Skill skill)
         {
-            if (s is null)
+            if (skill is null)
             {
                 return;
             }
 
-            _skills.Add(new SkillAndCooldown(s));
+            _skills.Add(new SkillAndCooldown(skill));
         }
 
         public void Clear()
@@ -466,7 +467,7 @@ namespace Nekoyume.Model
 
             return selected.Any()
                 ? selected[random.Next(selected.Count)]
-                : null;
+                : throw new Exception($"[{nameof(Skills)}] There is no selected skills");
         }
     }
 }

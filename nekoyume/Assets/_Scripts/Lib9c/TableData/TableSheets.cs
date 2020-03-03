@@ -65,16 +65,7 @@ namespace Nekoyume.TableData
                 throw new Exception(sb.ToString());
             }
 
-            var constructor = sheetPropertyInfo.PropertyType.GetConstructor(Type.EmptyTypes);
-            if (constructor is null)
-            {
-                var sb = new StringBuilder($"[{nameof(TableSheets)}]");
-                sb.Append($" / {nameof(SetToSheet)}({name}, csv)");
-                sb.Append(" / failed to get constructor");
-                throw new Exception(sb.ToString());
-            }
-
-            var sheetObject = constructor.Invoke(new object[] { });
+            var sheetObject = Activator.CreateInstance(sheetPropertyInfo.PropertyType);
             var iSheet = (ISheet) sheetObject;
             if (iSheet is null)
             {
