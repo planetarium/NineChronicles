@@ -257,7 +257,9 @@ namespace Launcher
             $"{S3Host}/{GameBinaryDownloadFilename}";
 
         private static string GameBinaryDownloadFilename =>
-            RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "macOS.tar.gz" : "win.zip";
+            RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                ? OSXGameBinaryDownloadFilename
+                : WindowsGameBinaryDownloadFilename;
 
         private const string WindowsGameBinaryDownloadFilename = "NineChronicles-alpha-2-win.zip";
 
