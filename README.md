@@ -17,7 +17,11 @@ Nine Chronicles
  1. Unity 2019.1.0f2 버전 설치
  1. 저장소 클론
     ```
-    $ git clone git@github.com:planetarium/nekoyume-unity.git
+    git clone git@github.com:planetarium/nekoyume-unity.git
+    ```
+ 1. 터미널에서 클론한 디렉터리로 들어가서 아래 명령 실행
+    ```
+    git config core.hooksPath hooks
     ```
  1. 유니티 실행후 프로젝트 빌드
 
