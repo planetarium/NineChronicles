@@ -34,15 +34,15 @@ namespace Nekoyume.Model
             )
         );
 
-        public void Add(KeyValuePair<int, int> pair)
+        public void Add(KeyValuePair<int, int> item)
         {
-            if (_dictionary.ContainsKey(pair.Key))
+            if (_dictionary.ContainsKey(item.Key))
             {
-                _dictionary[pair.Key] += pair.Value;
+                _dictionary[item.Key] += item.Value;
             }
             else
             {
-                _dictionary[pair.Key] = pair.Value;
+                _dictionary[item.Key] = item.Value;
             }
         }
 

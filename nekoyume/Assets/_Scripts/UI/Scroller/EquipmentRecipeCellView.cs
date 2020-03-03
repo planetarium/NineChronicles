@@ -50,8 +50,7 @@ namespace Nekoyume.UI.Scroller
                 return;
 
             var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
-            var row = equipmentSheet.Values.FirstOrDefault(i => i.Id == recipeRow.ResultEquipmentId);
-            if (row is null)
+            if (!equipmentSheet.TryGetValue(recipeRow.ResultEquipmentId, out var row))
                 return;
 
             model = recipeRow;
