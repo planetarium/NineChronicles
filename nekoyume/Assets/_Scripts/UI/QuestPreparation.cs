@@ -35,6 +35,7 @@ namespace Nekoyume.UI
         public Button questButton;
         public GameObject equipSlotGlow;
         public TextMeshProUGUI requiredPointText;
+        public ParticleSystem[] particles;
 
         private Stage _stage;
         private Game.Character.Player _player;
@@ -264,6 +265,17 @@ namespace Nekoyume.UI
         {
             questButton.interactable = ready;
             requiredPointText.color = ready ? Color.white : Color.red;
+            foreach (var particle in particles)
+            {
+                if (ready)
+                {
+                    particle.Play();
+                }
+                else
+                {
+                    particle.Stop();
+                }
+            }
         }
 
         private void SubscribeActionPoint(int point)
