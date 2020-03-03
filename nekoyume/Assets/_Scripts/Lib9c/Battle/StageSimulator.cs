@@ -22,7 +22,7 @@ namespace Nekoyume.Battle
 
         private int WorldId { get; }
         public int StageId { get; }
-        private bool HasCleared { get; }
+        private bool IsCleared { get; }
         private int Exp { get; }
         private int TurnLimit { get; }
         public IEnumerable<ItemBase> Rewards => _waveRewards;
@@ -40,7 +40,7 @@ namespace Nekoyume.Battle
 
             WorldId = worldId;
             StageId = stageId;
-            HasCleared = avatarState.worldInformation.HasStageCleared(WorldId, StageId);
+            IsCleared = avatarState.worldInformation.IsStageCleared(WorldId, StageId);
 
             var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
@@ -201,7 +201,7 @@ namespace Nekoyume.Battle
                             default:
                                 if (WaveNumber == _waves.Count)
                                 {
-                                    if (!HasCleared)
+                                    if (!IsCleared)
                                     {
                                         Log.newlyCleared = true;
                                     }

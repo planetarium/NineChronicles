@@ -74,7 +74,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            if (!avatarState.worldInformation.IsClearedStage(recipe.UnlockStage))
+            if (!avatarState.worldInformation.IsStageCleared(recipe.UnlockStage))
             {
                 return states;
             }
@@ -115,7 +115,7 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                if (!avatarState.worldInformation.IsClearedStage(subRecipe.UnlockStage))
+                if (!avatarState.worldInformation.IsStageCleared(subRecipe.UnlockStage))
                 {
                     return states;
                 }
