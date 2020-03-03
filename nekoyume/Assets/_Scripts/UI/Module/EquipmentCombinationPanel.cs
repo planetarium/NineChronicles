@@ -26,10 +26,10 @@ namespace Nekoyume.UI.Module
             }).AddTo(gameObject);
         }
 
-        public void SetData(EquipmentRecipeCellView view)
+        public virtual void SetData(EquipmentRecipeCellView view, int? subRecipeId = null)
         {
             recipeCellView.Set(view.model);
-            materialPanel.SetData(view.model);
+            materialPanel.SetData(view.model, subRecipeId);
 
             gameObject.SetActive(true);
             CostNCG = (int) materialPanel.costNcg;
