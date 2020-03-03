@@ -162,18 +162,17 @@ namespace Nekoyume.Model
                     (Bencodex.Types.Dictionary) kv.Value.Serialize())));
         }
         
-        public bool HasWorldUnlocked(int worldId)
-        {
-            return TryGetWorld(worldId, out var world) && world.IsUnlocked;
-        }
+        public bool IsWorldUnlocked(int worldId) =>
+            TryGetWorld(worldId, out var world)
+            && world.IsUnlocked;
         
-        public bool HasStageCleared(int worldId, int stageId)
-        {
-            if (!TryGetWorld(worldId, out var world))
-                return false;
-
-            return stageId <= world.StageClearedId;
-        }
+        public bool IsStageCleared(int worldId, int stageId) =>
+            TryGetWorld(worldId, out var world)
+            && stageId <= world.StageClearedId;
+        
+        public bool IsStageCleared(int stageId) =>
+            TryGetWorldByStageId(stageId, out var world)
+            && stageId <= world.StageClearedId;
 
         /// <summary>
         /// 인자로 받은 `worldId`에 해당하는 `World` 객체를 얻는다.
@@ -269,16 +268,6 @@ namespace Nekoyume.Model
                     UnlockWorld(worldIdToUnlock, clearedAt);
                 }
             }
-        }
-
-        public bool IsClearedStage(int stageId)
-        {
-            if (!TryGetWorldByStageId(stageId, out var world))
-            {
-                return false;
-            }
-
-            return world.IsUnlocked && world.StageClearedId >= stageId;
         }
 
         /// <summary>

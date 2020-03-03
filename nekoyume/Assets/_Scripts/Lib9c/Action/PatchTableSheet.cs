@@ -17,8 +17,9 @@ namespace Nekoyume.Action
         public string TableName;
         public string TableCsv;
 
-        public override IAccountStateDelta Execute(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext context)
         {
+            IActionContext ctx = context;
             var states = ctx.PreviousStates;
             var tableSheetsState = TableSheetsState.FromActionContext(ctx);
             Log.Debug($"[{ctx.BlockIndex}] {TableName} was patched by {ctx.Signer.ToHex()}\n" +

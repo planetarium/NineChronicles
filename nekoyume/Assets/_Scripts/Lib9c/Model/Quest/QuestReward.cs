@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.State;
@@ -24,10 +25,13 @@ namespace Nekoyume.Model.Quest
             );
         }
 
-        public IValue Serialize()
-        {
-            return new Dictionary(ItemMap.Select(kv =>
-                new KeyValuePair<IKey, IValue>((Text)kv.Key.ToString(), (Text)kv.Value.ToString())));
-        }
+        public IValue Serialize() => new Dictionary(
+            ItemMap.Select(kv =>
+                new KeyValuePair<IKey, IValue>(
+                    (Text)kv.Key.ToString(CultureInfo.InvariantCulture),
+                    (Text)kv.Value.ToString(CultureInfo.InvariantCulture)
+                )
+            )
+        );
     }
 }

@@ -38,8 +38,9 @@ namespace Nekoyume.Action
             price = plainValue["price"].ToDecimal();
         }
 
-        public override IAccountStateDelta Execute(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext context)
         {
+            IActionContext ctx = context;
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {

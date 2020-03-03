@@ -86,7 +86,7 @@ namespace Nekoyume.Model.State
         #region Integer
 
         public static IValue Serialize(this int number) =>
-            (Text)number.ToString();
+            (Text)number.ToString(CultureInfo.InvariantCulture);
 
         public static IValue Serialize(this int? number) =>
             Serialize(Serialize, number);
@@ -102,7 +102,7 @@ namespace Nekoyume.Model.State
         #region Long
 
         public static IValue Serialize(this long number) =>
-            (Text)number.ToString();
+            (Text)number.ToString(CultureInfo.InvariantCulture);
 
         public static IValue Serialize(this long? number) =>
             Serialize(Serialize, number);
@@ -144,7 +144,8 @@ namespace Nekoyume.Model.State
         #region DateTimeOffset
 
         public static IValue Serialize(this DateTimeOffset dateTime) =>
-            new Binary(Encoding.ASCII.GetBytes(dateTime.ToString("O")));
+            new Binary(
+                Encoding.ASCII.GetBytes(dateTime.ToString("O", CultureInfo.InvariantCulture)));
 
         public static IValue Serialize(this DateTimeOffset? dateTime) =>
             Serialize(Serialize, dateTime);

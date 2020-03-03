@@ -1,0 +1,30 @@
+on:
+  push: []
+  pull_request: []
+name: Build
+
+jobs:
+  build_9c:
+    name: build_lib9c
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@master
+      if: github.event_name != 'pull_request'
+    - uses: actions/checkout@master
+      if: github.event_name == 'pull_request'
+      with:
+        ref: ${{ github.pull_request.head.sha }}
+    - run: hooks/pre-commit
+    - uses: unsplash/comment-on-pr@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        msg: |
+          @${{ github.actor }} 린트 검사를 통과하지 못했습니다.
+          혹시 로컬에서 Git 훅을 설정하지 않으셨나요?
+          아래 명령으로 Git 훅 설정을 해주시기 바랍니다.
+
+          ```` bash
+          git config core.hooksPath hooks
+          ````
+      if: failure() && github.event_name == 'pull_request'
