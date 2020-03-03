@@ -170,6 +170,7 @@ namespace Nekoyume.UI
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
+            questButton.gameObject.SetActive(true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -502,7 +503,7 @@ namespace Nekoyume.UI
         {
             Find<LoadingScreen>().Show();
 
-            questButton.interactable = false;
+            questButton.gameObject.SetActive(false);
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
