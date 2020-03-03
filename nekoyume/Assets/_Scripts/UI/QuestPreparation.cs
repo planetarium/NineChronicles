@@ -532,7 +532,7 @@ namespace Nekoyume.UI
         {
             Game.Event.OnStageStart.Invoke(eval.Action.Result);
             Find<LoadingScreen>().Close();
-            Close();
+            Close(true);
         }
     }
 }
