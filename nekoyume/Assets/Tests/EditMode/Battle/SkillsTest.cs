@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Nekoyume.Helper;
 using Nekoyume.Model;
@@ -45,20 +46,16 @@ namespace Tests.EditMode.Battle
             var skills = new Skills {firstSkill};
             var selectedSkill = skills.Select(new Random());
             Assert.IsNotNull(selectedSkill);
-            Assert.AreEqual(firstSkill, selectedSkill.Skill);
+            Assert.AreEqual(firstSkill, selectedSkill);
 
-            selectedSkill.Cooldown = 1;
-            selectedSkill = skills.Select(new Random());
-            Assert.IsNull(selectedSkill);
+            skills.SetCooldown(selectedSkill.SkillRow.Id, 1);
+            Assert.Throws<Exception>(() => skills.Select(new Random()));
 
-            foreach (var skill in skills)
-            {
-                skill.Cooldown = 0;
-            }
+            skills.ReduceCooldown();
             
             selectedSkill = skills.Select(new Random());
             Assert.IsNotNull(selectedSkill);
-            Assert.AreEqual(firstSkill, selectedSkill.Skill);
+            Assert.AreEqual(firstSkill, selectedSkill);
         }
 
         // todo: 이후에 버프도 고려해서 걸러내는 로직이 완성돼 적용될 때에, 버프의 groupId로 걸러내는 등 테스트가 더 자세하게 나뉘어져야 하겠어요.
@@ -79,11 +76,11 @@ namespace Tests.EditMode.Battle
 
             var skills = new Skills {firstSkill};
             var selectedSkill = skills.Select(new Random(), null, _tableSheets.SkillBuffSheet, _tableSheets.BuffSheet);
-            Assert.IsTrue(firstSkill.Equals(selectedSkill.Skill));
+            Assert.IsTrue(firstSkill.Equals(selectedSkill));
 
             skills.Add(firstBuffSkill);
             selectedSkill = skills.Select(new Random(), buffs, _tableSheets.SkillBuffSheet, _tableSheets.BuffSheet);
-            Assert.IsTrue(firstSkill.Equals(selectedSkill.Skill));
+            Assert.IsTrue(firstSkill.Equals(selectedSkill));
         }
     }
 }

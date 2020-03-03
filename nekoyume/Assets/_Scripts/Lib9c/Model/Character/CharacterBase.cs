@@ -175,10 +175,7 @@ namespace Nekoyume.Model
 
         private void ReduceSkillCooldown()
         {
-            foreach (var skillAndCooldown in Skills.Where(e => e.Cooldown > 0))
-            {
-                skillAndCooldown.Cooldown--;
-            }
+            Skills.ReduceCooldown();
         }
 
         private void UseSkill()
@@ -187,18 +184,18 @@ namespace Nekoyume.Model
             var selectedSkill = Skills.Select(Simulator.Random);
             
             // 스킬 사용.
-            var usedSkill = selectedSkill.Skill.Use(
+            var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    selectedSkill.Skill,
+                    selectedSkill,
                     Simulator.TableSheets.SkillBuffSheet,
                     Simulator.TableSheets.BuffSheet
                 )
             );
             
             // 쿨다운 적용.
-            selectedSkill.Cooldown = selectedSkill.Skill.SkillRow.Cooldown;
+            Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
 
             foreach (var info in usedSkill.SkillInfos)
@@ -346,22 +343,10 @@ namespace Nekoyume.Model
     }
 
     [Serializable]
-    public class Skills : IEnumerable<Skills.SkillAndCooldown>
+    public class Skills : IEnumerable<Skill.Skill>
     {
-        public class SkillAndCooldown
-        {
-            public readonly Skill.Skill Skill;
-            
-            public int Cooldown { get; set; }
-
-            public SkillAndCooldown(Skill.Skill skill)
-            {
-                Skill = skill;
-                Cooldown = 0;
-            }
-        }
-        
-        private readonly List<SkillAndCooldown> _skills = new List<SkillAndCooldown>();
+        private readonly List<Skill.Skill> _skills = new List<Skill.Skill>();
+        private Dictionary<int, int> _skillsCooldown = new Dictionary<int, int>();
 
         public void Add(Skill.Skill skill)
         {
@@ -370,7 +355,7 @@ namespace Nekoyume.Model
                 return;
             }
 
-            _skills.Add(new SkillAndCooldown(skill));
+            _skills.Add(skill);
         }
 
         public void Clear()
@@ -378,7 +363,7 @@ namespace Nekoyume.Model
             _skills.Clear();
         }
 
-        public IEnumerator<SkillAndCooldown> GetEnumerator()
+        public IEnumerator<Skill.Skill> GetEnumerator()
         {
             return _skills.GetEnumerator();
         }
@@ -388,13 +373,36 @@ namespace Nekoyume.Model
             return GetEnumerator();
         }
 
-        public SkillAndCooldown Select(IRandom random)
+        public void SetCooldown(int skillId, int cooldown)
+        {
+            _skillsCooldown[skillId] = cooldown;
+        }
+
+        public void ReduceCooldown()
+        {
+            if (!_skillsCooldown.Any())
+                return;
+
+            foreach (var key in _skillsCooldown.Keys.ToList())
+            {
+                var value = _skillsCooldown[key];
+                if (value <= 1)
+                {
+                    _skillsCooldown.Remove(key);
+                    continue;
+                }
+                
+                _skillsCooldown[key] = value - 1;
+            }
+        }
+
+        public Skill.Skill Select(IRandom random)
         {
             return PostSelect(random, GetSelectableSkills());
         }
 
         // info: 스킬 쿨다운을 적용하는 것과 별개로, 버프에 대해서 꼼꼼하게 걸러낼 필요가 생길 때 참고하기 위해서 유닛 테스트와 함께 남깁니다.
-        public SkillAndCooldown Select(IRandom random, Dictionary<int, Buff.Buff> buffs, SkillBuffSheet skillBuffSheet,
+        public Skill.Skill Select(IRandom random, Dictionary<int, Buff.Buff> buffs, SkillBuffSheet skillBuffSheet,
             BuffSheet buffSheet)
         {
             var skills = GetSelectableSkills();
@@ -404,9 +412,9 @@ namespace Nekoyume.Model
                 !(buffSheet is null))
             {
                 // 기존에 걸려 있는 버프들과 겹치지 않는 스킬만 골라내기.
-                skills = skills.Where(skillAndCooldown =>
+                skills = skills.Where(skill =>
                 {
-                    var skillId = skillAndCooldown.Skill.SkillRow.Id;
+                    var skillId = skill.SkillRow.Id;
 
                     // 버프가 없는 스킬이면 포함한다.
                     if (!skillBuffSheet.TryGetValue(skillId, out var row))
@@ -450,19 +458,19 @@ namespace Nekoyume.Model
             return PostSelect(random, skills);
         }
 
-        private IEnumerable<SkillAndCooldown> GetSelectableSkills()
+        private IEnumerable<Skill.Skill> GetSelectableSkills()
         {
-            return _skills.Where(skillAndCooldown => skillAndCooldown.Cooldown == 0);
+            return _skills.Where(skill => !_skillsCooldown.ContainsKey(skill.SkillRow.Id));
         }
         
-        private SkillAndCooldown PostSelect(IRandom random, IEnumerable<SkillAndCooldown> skills)
+        private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
         {
             var selected = skills
-                .Select(skillAndCooldown => new {skillAndCooldown, chance = random.Next(0, 100)})
-                .Where(t => t.skillAndCooldown.Skill.Chance > t.chance)
-                .OrderBy(t => t.skillAndCooldown.Skill.SkillRow.Id)
-                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skillAndCooldown.Skill.Chance)
-                .Select(t => t.skillAndCooldown)
+                .Select(skill => new {skill, chance = random.Next(0, 100)})
+                .Where(t => t.skill.Chance > t.chance)
+                .OrderBy(t => t.skill.SkillRow.Id)
+                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
+                .Select(t => t.skill)
                 .ToList();
 
             return selected.Any()
