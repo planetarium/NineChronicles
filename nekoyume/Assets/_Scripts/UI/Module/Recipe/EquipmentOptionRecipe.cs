@@ -40,6 +40,7 @@ namespace Nekoyume.UI.Module
                 var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
                 if (!equipmentSheet.TryGetValue(view.model.ResultEquipmentId, out var row))
                 {
+                    Debug.LogWarning($"Equipment ID not found : {view.model.ResultEquipmentId}");
                     Hide();
                     return;
                 }

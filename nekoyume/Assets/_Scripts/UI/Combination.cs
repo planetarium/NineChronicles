@@ -519,8 +519,8 @@ namespace Nekoyume.UI
         {
             var model = combinationPanel.recipeCellView.model;
             var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel) ?
-                elementalPanel.SelectedSubRecipeId :
-                (int?) null;
+                elementalPanel.SelectedSubRecipeId
+                : (int?) null;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
             CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId);
         }

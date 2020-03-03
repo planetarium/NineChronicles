@@ -128,7 +128,6 @@ namespace Nekoyume.UI.Module
         private void SubscribeOnClickCellView(EquipmentRecipeCellView cellView)
         {
             selectedRecipe = cellView;
-            
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }
