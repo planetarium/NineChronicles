@@ -22,9 +22,9 @@ namespace Nekoyume.Model.State
         {
             UnlockBlockIndex = serialized["unlockBlockIndex"].ToLong();
             UnlockStage = serialized["unlockStage"].ToInteger();
-            if (serialized.ContainsKey((Text) "result"))
+            if (serialized.TryGetValue((Text) "result", out var result))
             {
-                Result = new Combination.ResultModel((Dictionary)serialized["result"]);
+                Result = new Combination.ResultModel((Dictionary)result);
             }
         }
 
