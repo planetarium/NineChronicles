@@ -35,6 +35,7 @@ namespace Nekoyume.UI
         public Button questButton;
         public GameObject equipSlotGlow;
         public TextMeshProUGUI requiredPointText;
+        public ParticleSystem[] particles;
 
         private Stage _stage;
         private Game.Character.Player _player;
@@ -170,6 +171,7 @@ namespace Nekoyume.UI
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
+            questButton.gameObject.SetActive(true);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -263,6 +265,17 @@ namespace Nekoyume.UI
         {
             questButton.interactable = ready;
             requiredPointText.color = ready ? Color.white : Color.red;
+            foreach (var particle in particles)
+            {
+                if (ready)
+                {
+                    particle.Play();
+                }
+                else
+                {
+                    particle.Stop();
+                }
+            }
         }
 
         private void SubscribeActionPoint(int point)
@@ -502,7 +515,7 @@ namespace Nekoyume.UI
         {
             Find<LoadingScreen>().Show();
 
-            questButton.interactable = false;
+            questButton.gameObject.SetActive(false);
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
@@ -531,7 +544,7 @@ namespace Nekoyume.UI
         {
             Game.Event.OnStageStart.Invoke(eval.Action.Result);
             Find<LoadingScreen>().Close();
-            Close();
+            Close(true);
         }
     }
 }
