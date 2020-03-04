@@ -13,6 +13,8 @@ namespace Nekoyume.BlockChain
         Subject<long> BlockIndexSubject { get; }
         
         long BlockIndex { get; }
+        
+        PrivateKey PrivateKey { get; }
 
         Address Address { get; }
 
