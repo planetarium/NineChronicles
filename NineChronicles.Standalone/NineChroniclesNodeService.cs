@@ -103,7 +103,8 @@ namespace NineChronicles.Standalone
             IEnumerable<Peer> peers = null,
             bool rpcServer = false,
             string rpcListenHost = null,
-            int? rpcListenPort = null)
+            int? rpcListenPort = null,
+            CancellationToken cancellationToken = default)
         {
             LibplanetNodeServiceProperties properties = new LibplanetNodeServiceProperties
             {
@@ -187,7 +188,7 @@ namespace NineChronicles.Standalone
             {
                 services.AddHostedService(provider => nodeService);
                 services.AddSingleton(provider => nodeService.BlockChain);
-            }).RunConsoleAsync();
+            }).RunConsoleAsync(cancellationToken);
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)
