@@ -54,7 +54,7 @@ namespace Nekoyume.TableData
                 for (var i = 0; i < 4; i++)
                 {
                     var offSet = i * 2;
-                    if (string.IsNullOrEmpty(fields[10 + offSet]))
+                    if (string.IsNullOrEmpty(fields[10 + offSet]) || string.IsNullOrEmpty(fields[11 + offSet]))
                         continue;
                     Options.Add(new OptionInfo(ParseInt(fields[10 + offSet]), ParseInt(fields[11 + offSet])));
                 }
