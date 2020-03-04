@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -134,6 +135,34 @@ namespace Nekoyume.Action
                 );
 
                 return null;
+            }
+        }
+
+        public static CombinationSlotState GetCombinationSlotState(this IAccountStateDelta states,
+            Address avatarAddress, int index)
+        {
+            var address = avatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    index
+                )
+            );
+            var value = states.GetState(address);
+            if (value is null)
+            {
+                Log.Warning("No combination slot state ({0})", address.ToHex());
+                return null;
+            }
+
+            try
+            {
+                return new CombinationSlotState((Dictionary) value);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Unexpected error occurred during {nameof(GetCombinationSlotState)}()");
+                throw;
             }
         }
     }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
@@ -56,6 +57,17 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 states = states.SetState(ctx.Signer, MarkChanged);
+                for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
+                {
+                    var slotAddress = avatarAddress.Derive(
+                        string.Format(
+                            CultureInfo.InvariantCulture,
+                            CombinationSlotState.DeriveFormat,
+                            i
+                        )
+                    );
+                    states = states.SetState(slotAddress, MarkChanged);
+                }
                 return states.SetState(avatarAddress, MarkChanged);
             }
 
@@ -96,6 +108,13 @@ namespace Nekoyume.Action
             if (tail < 0) tail = 0;
 
             avatarState.Customize(hair, lens, ear, tail);
+
+            foreach (var address in avatarState.combinationSlotAddresses)
+            {
+                var slotState =
+                    new CombinationSlotState(address, GameConfig.RequireClearedStageLevel.ActionsInCombination);
+                states = states.SetState(address, slotState.Serialize());
+            }
 
             completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
