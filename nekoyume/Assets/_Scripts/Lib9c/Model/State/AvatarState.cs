@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Crypto;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -43,14 +45,14 @@ namespace Nekoyume.Model.State
         public int lens;
         public int ear;
         public int tail;
+        public List<Address> combinationSlotAddresses;
+        public const int CombinationSlotCapacity = 4;
 
         public string NameWithHash { get; private set; }
 
         public static Address CreateAvatarAddress()
         {
             var key = new PrivateKey();
-            var privateKeyHex = ByteUtil.Hex(key.ByteArray);
-
             return key.PublicKey.ToAddress();
         }
 
@@ -90,6 +92,18 @@ namespace Nekoyume.Model.State
                 new KeyValuePair<int, int>((int) createEvent, 1),
                 new KeyValuePair<int, int>((int) levelEvent, level),
             };
+            combinationSlotAddresses = new List<Address>(CombinationSlotCapacity);
+            for (var i = 0; i < CombinationSlotCapacity; i++)
+            {
+                var slotAddress = address.Derive(
+                    string.Format(
+                        CultureInfo.InvariantCulture,
+                        CombinationSlotState.DeriveFormat,
+                        i
+                    )
+                );
+                combinationSlotAddresses.Add(slotAddress);
+            }
             UpdateGeneralQuest(new[] { createEvent, levelEvent });
             UpdateCompletedQuest();
 
@@ -151,7 +165,7 @@ namespace Nekoyume.Model.State
             lens = (int)((Integer)serialized["lens"]).Value;
             ear = (int)((Integer)serialized["ear"]).Value;
             tail = (int)((Integer)serialized["tail"]).Value;
-
+            combinationSlotAddresses = serialized["combinationSlotAddresses"].ToList(StateExtensions.ToAddress);
             PostConstructor();
         }
 
@@ -340,6 +354,7 @@ namespace Nekoyume.Model.State
                 [(Text)"lens"] = (Integer)lens,
                 [(Text)"ear"] = (Integer)ear,
                 [(Text)"tail"] = (Integer)tail,
+                [(Text)"combinationSlotAddresses"] = combinationSlotAddresses.Select(i => i.Serialize()).Serialize(),
             }.Union((Dictionary)base.Serialize()));
     }
 }

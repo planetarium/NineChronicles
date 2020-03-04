@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using Serilog;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
@@ -30,7 +28,8 @@ namespace Nekoyume.TableData
                 Ratio = ratio;
             }
         }
-        public class Row: SheetRow<int>
+
+        public class Row : SheetRow<int>
         {
             public override int Key => Id;
             public int Id { get; private set; }
@@ -51,28 +50,19 @@ namespace Nekoyume.TableData
                 for (var i = 0; i < 3; i++)
                 {
                     var offset = i * 2;
-                    try
-                    {
-                        Materials.Add(new MaterialInfo(ParseInt(fields[4 + offset]), ParseInt(fields[5 + offset])));
-                    }
-                    catch (ArgumentException)
-                    {
-                        Log.Debug($"[{nameof(EquipmentItemSubRecipeSheet)}]{nameof(fields)}[{4 + offset}] or {nameof(fields)}[{5 + offset}] is null");
-                    }
+                    if (string.IsNullOrEmpty(fields[4 + offset]) || string.IsNullOrEmpty(fields[5 + offset]))
+                        continue;
+
+                    Materials.Add(new MaterialInfo(ParseInt(fields[4 + offset]), ParseInt(fields[5 + offset])));
                 }
+
                 for (var i = 0; i < 4; i++)
                 {
                     var offset = i * 2;
-                    if (string.IsNullOrEmpty(fields[10 + offset]))
+                    if (string.IsNullOrEmpty(fields[10 + offset]) || string.IsNullOrEmpty(fields[11 + offset]))
                         continue;
-                    try
-                    {
-                        Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseInt(fields[11 + offset])));
-                    }
-                    catch (ArgumentException)
-                    {
-                        Log.Debug($"[{nameof(EquipmentItemSubRecipeSheet)}]{nameof(fields)}[{10 + offset}] or {nameof(fields)}[{11 + offset}] is null");
-                    }
+
+                    Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseInt(fields[11 + offset])));
                 }
             }
         }
