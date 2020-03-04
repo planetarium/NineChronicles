@@ -372,7 +372,7 @@ namespace Nekoyume.UI
             StopVFX();
 
             Find<Battle>().Close();
-            Game.Event.OnRoomEnter.Invoke();
+            Game.Event.OnRoomEnter.Invoke(true);
             Close();
         }
 
