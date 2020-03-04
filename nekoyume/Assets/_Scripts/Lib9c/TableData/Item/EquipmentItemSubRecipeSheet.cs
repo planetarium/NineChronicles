@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Serilog;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
@@ -28,7 +30,8 @@ namespace Nekoyume.TableData
                 Ratio = ratio;
             }
         }
-        public class Row: SheetRow<int>
+
+        public class Row : SheetRow<int>
         {
             public override int Key => Id;
             public int Id { get; private set; }
@@ -48,15 +51,32 @@ namespace Nekoyume.TableData
                 Options = new List<OptionInfo>();
                 for (var i = 0; i < 3; i++)
                 {
-                    var offSet = i * 2;
-                    Materials.Add(new MaterialInfo(ParseInt(fields[4 + offSet]), ParseInt(fields[5 + offSet])));
+                    var offset = i * 2;
+                    try
+                    {
+                        Materials.Add(new MaterialInfo(ParseInt(fields[4 + offset]), ParseInt(fields[5 + offset])));
+                    }
+                    catch (ArgumentException)
+                    {
+                        Log.Debug(
+                            $"[{nameof(EquipmentItemSubRecipeSheet)}]{nameof(fields)}[{4 + offset}] or {nameof(fields)}[{5 + offset}] is null");
+                    }
                 }
+
                 for (var i = 0; i < 4; i++)
                 {
-                    var offSet = i * 2;
-                    if (string.IsNullOrEmpty(fields[10 + offSet]))
+                    var offset = i * 2;
+                    if (string.IsNullOrEmpty(fields[10 + offset]) || string.IsNullOrEmpty(fields[11 + offset]))
                         continue;
-                    Options.Add(new OptionInfo(ParseInt(fields[10 + offSet]), ParseInt(fields[11 + offSet])));
+                    try
+                    {
+                        Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseInt(fields[11 + offset])));
+                    }
+                    catch (ArgumentException)
+                    {
+                        Log.Debug(
+                            $"[{nameof(EquipmentItemSubRecipeSheet)}]{nameof(fields)}[{10 + offset}] or {nameof(fields)}[{11 + offset}] is null");
+                    }
                 }
             }
         }
