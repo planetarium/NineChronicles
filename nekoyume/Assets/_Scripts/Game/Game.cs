@@ -69,7 +69,7 @@ namespace Nekoyume.Game
                 WebCommandLineOptionsPathInit
             );
 
-            if (_options.Client)
+            if (_options.RpcClient)
             {
                 _agent = GetComponent<RPCAgent>();
             }

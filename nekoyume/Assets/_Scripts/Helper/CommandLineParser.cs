@@ -30,19 +30,19 @@ namespace Nekoyume.Helper
 
         public bool noMiner;
 
-        public string[] peers = new string[]{ };
+        public string[] peers = new string[] { };
 
-        public string[] iceServers = new string[]{ };
+        public string[] iceServers = new string[] { };
 
         public string storagePath;
 
         public string storageType;
 
-        public bool client;
+        public bool rpcClient;
 
-        public string clientHost;
+        public string rpcServerHost;
 
-        public int clientPort;
+        public int rpcServerPort;
 
         public bool autoPlay;
 
@@ -161,35 +161,35 @@ namespace Nekoyume.Helper
             }
         }
 
-        [Option("client", Required = false, HelpText = "Play in client mode.")]
-        public bool Client
+        [Option("rpc-client", Required = false, HelpText = "Play in client mode.")]
+        public bool RpcClient
         {
-            get => client;
-            set 
+            get => rpcClient;
+            set
             {
-                client = value;
+                rpcClient = value;
                 Empty = false;
             }
         }
 
-        [Option("client-host", Required = false, HelpText = "The host name for client mode.")]
-        public string ClientHost
+        [Option("rpc-server-host", Required = false, HelpText = "The host name for client mode.")]
+        public string RpcServerHost
         {
-            get => clientHost;
+            get => rpcServerHost;
             set
             {
-                clientHost = value;
+                rpcServerHost = value;
                 Empty = false;
             }
         }
 
-        [Option("client-port", Required = false, HelpText = "The port number for client mode.")]
-        public int ClientPort
+        [Option("rpc-server-port", Required = false, HelpText = "The port number for client mode.")]
+        public int RpcServerPort
         {
-            get => clientPort;
+            get => rpcServerPort;
             set
             {
-                clientPort = value;
+                rpcServerPort = value;
                 Empty = false;
             }
         }

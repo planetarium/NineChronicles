@@ -65,8 +65,8 @@ namespace Nekoyume.BlockChain
             PrivateKey = privateKey;
 
             _channel = new Channel(
-                options.ClientHost, 
-                options.ClientPort, 
+                options.RpcServerHost,
+                options.RpcServerPort,
                 ChannelCredentials.Insecure
             );
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
