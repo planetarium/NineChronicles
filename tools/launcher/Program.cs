@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using Qml.Net;
 using Qml.Net.Runtimes;
@@ -23,15 +22,11 @@ namespace Launcher
 
             QmlNetConfig.ShouldEnsureUIThread = false;
 
-            using (var application = new QGuiApplication(args))
-            {
-                using (var qmlEngine = new QQmlApplicationEngine())
-                {
-                    Qml.Net.Qml.RegisterType<LibplanetController>("LibplanetLauncher");
-                    qmlEngine.Load("qml/Main.qml");
-                    return application.Exec();
-                }
-            }
+            using var application = new QGuiApplication(args);
+            using var qmlEngine = new QQmlApplicationEngine();
+            Qml.Net.Qml.RegisterType<LibplanetController>("LibplanetLauncher");
+            qmlEngine.Load("qml/Main.qml");
+            return application.Exec();
         }
     }
 }
