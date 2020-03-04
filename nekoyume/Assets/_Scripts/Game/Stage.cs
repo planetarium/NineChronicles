@@ -71,6 +71,8 @@ namespace Nekoyume.Game
         public Vector3 SelectPositionBegin(int index) => new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
         public Vector3 SelectPositionEnd(int index) => new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
+        public bool showLoadingScreen;
+
         protected void Awake()
         {
             _camera = Camera.main;
@@ -168,8 +170,9 @@ namespace Nekoyume.Game
             }
         }
 
-        private void OnRoomEnter()
+        private void OnRoomEnter(bool showScreen)
         {
+            showLoadingScreen = showScreen;
             gameObject.AddComponent<RoomEntering>();
         }
 

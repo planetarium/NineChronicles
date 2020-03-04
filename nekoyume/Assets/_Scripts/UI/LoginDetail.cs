@@ -290,8 +290,9 @@ namespace Nekoyume.UI
         private void EnterRoom()
         {
             Close();
-            Game.Event.OnRoomEnter.Invoke();
+            Game.Event.OnRoomEnter.Invoke(false);
             Find<Login>()?.Close();
+
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
-            Game.Event.OnRoomEnter.AddListener(Show);
+            Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
         }
