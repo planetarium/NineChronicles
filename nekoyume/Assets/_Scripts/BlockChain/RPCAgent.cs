@@ -54,7 +54,7 @@ namespace Nekoyume.BlockChain
 
         public long BlockIndex { get; private set; }
         public PrivateKey PrivateKey { get; private set; }
-        public Address Address { get; private set; }
+        public Address Address => PrivateKey.PublicKey.ToAddress();
 
 
         public void Initialize(
@@ -63,7 +63,6 @@ namespace Nekoyume.BlockChain
             Action<bool> callback)
         {
             PrivateKey = privateKey;
-            Address = PrivateKey.PublicKey.ToAddress();
 
             _channel = new Channel(
                 options.ClientHost, 
