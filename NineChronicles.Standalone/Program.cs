@@ -51,7 +51,7 @@ namespace NineChronicles.Standalone
             string[] peerStrings = null,
             bool rpc = false,
             [Option("rpc-host")]
-            string rpcHost = null,
+            string rpcHost = "0.0.0.0",
             [Option("rpc-port")]
             int? rpcPort = null
         )
