@@ -66,7 +66,7 @@ namespace Nekoyume.TableData
                 for (var i = 0; i < 4; i++)
                 {
                     var offset = i * 2;
-                    if (string.IsNullOrEmpty(fields[10 + offset]))
+                    if (string.IsNullOrEmpty(fields[10 + offset]) || string.IsNullOrEmpty(fields[11 + offset]))
                         continue;
                     try
                     {
