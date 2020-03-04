@@ -13,21 +13,7 @@ $ ./scripts/publish.sh win-x64
 
 ## Set up launcher
 
-There is `launcher.json` like below.
-
-```
-{
-  "storePath": "",
-  "appProtocolVersion": 1,
-  "keyStorePath": "",
-  "passphrase": "",
-  "iceServer": "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/",
-  "noMiner": true,
-  "seed": "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,9c-alpha-2020-2-seed.planetarium.dev,31234",
-  "genesisBlockPath": "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-9c-alpha-2020-2",
-  "gameBinaryPath": ""
-}
-```
+There is [*launcher.json*][launcher-json] like below.
 
 - `storePath`: Path of store.
 - `appProtoocolVersion`: `appProtocolVersion` used in `Swarm<T>` type constructor.
@@ -40,3 +26,6 @@ There is `launcher.json` like below.
 - `gameBinaryPath`: Path of a directory having executable game binary. If it is empty, it will be set value in default.  
    Windows: %LOCALAPPDATA%\planetarium\  
    Linux/macOS: $HOME/.local/share/planetarium/
+
+
+[launcher-json]: ./resources/launcher.json
