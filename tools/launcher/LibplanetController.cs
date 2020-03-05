@@ -49,7 +49,17 @@ namespace Launcher
 
             _cancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = _cancellationTokenSource.Token;
-            Task.Run(async () => await SyncTask(cancellationToken), cancellationToken);
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await SyncTask(cancellationToken);
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, "Unexpected exception occurrred.");
+                }
+            }, cancellationToken);
         }
 
         // It assumes StopSync() will be called when the background sync task is working well.
