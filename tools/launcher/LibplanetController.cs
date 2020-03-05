@@ -53,7 +53,7 @@ namespace Launcher
         }
 
         // It assumes StopSync() will be called when the background sync task is working well.
-        private void StopSync()
+        public void StopSync()
         {
             // If it already executing, stop run and restart.
             _cancellationTokenSource?.Cancel();
