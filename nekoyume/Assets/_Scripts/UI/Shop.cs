@@ -342,7 +342,7 @@ namespace Nekoyume.UI
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
             Close(true);
-            Game.Event.OnRoomEnter.Invoke();
+            Game.Event.OnRoomEnter.Invoke(true);
         }
         
         private void SubscribeOnToggledOn(IToggleable toggleable)
