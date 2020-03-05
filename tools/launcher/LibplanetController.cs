@@ -18,7 +18,6 @@ using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
-using LiteDB;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Qml.Net;
@@ -57,7 +56,7 @@ namespace Launcher
                 }
                 catch (Exception e)
                 {
-                    Log.Error(e, "Unexpected exception occurrred.");
+                    Log.Error(e, "Unexpected exception occurred.");
                 }
             }, cancellationToken);
         }
