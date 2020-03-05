@@ -84,7 +84,7 @@ namespace Tests.EditMode.Battle
         }
 
         [Test]
-        public void Select()
+        public void SelectSingle()
         {
             var skills = new Skills();
             var firstSkill = GetFirstSkill();
@@ -101,6 +101,26 @@ namespace Tests.EditMode.Battle
             selectedSkill = skills.Select(new Random());
             Assert.IsNotNull(selectedSkill);
             Assert.AreEqual(firstSkill, selectedSkill);
+        }
+
+        [Test]
+        public void SelectDoppelgangers()
+        {
+            var skills = new Skills();
+            var firstSkill = GetFirstSkill();
+            skills.Add(firstSkill);
+            skills.Add(firstSkill);
+            skills.Add(firstSkill);
+            
+            var selectedSkill = skills.Select(new Random());
+            Assert.IsNotNull(selectedSkill);
+            
+            skills.SetCooldown(selectedSkill.SkillRow.Id, 1);
+            Assert.Throws<Exception>(() => skills.Select(new Random()));
+
+            skills.ReduceCooldown();
+            selectedSkill = skills.Select(new Random());
+            Assert.IsNotNull(selectedSkill);
         }
 
         // todo: 이후에 버프도 고려해서 걸러내는 로직이 완성돼 적용될 때에, 버프의 groupId로 걸러내는 등 테스트가 더 자세하게 나뉘어져야 하겠어요.
