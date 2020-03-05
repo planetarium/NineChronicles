@@ -6,6 +6,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
@@ -132,41 +133,14 @@ namespace Nekoyume.Action
                         return states;
                     }
 
-                    Material subMaterial = ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
+                    var subMaterial = ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
                     materials[subMaterial] = materialInfo.Count;
 
                     requiredGold += subRecipe.RequiredGold;
                     requiredActionPoint += subRecipe.RequiredActionPoint;
                 }
 
-                var optionSheet = tableSheets.EquipmentItemOptionSheet;
-                foreach (var optionInfo in subRecipe.Options)
-                {
-                    if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
-                    {
-                        return states;
-                    }
-
-                    var random = ctx.Random;
-                    if (optionInfo.Ratio > random.Next(0, 100) * 0.01m)
-                    {
-                        if (optionRow.StatType != StatType.NONE)
-                        {
-                            var statMap = GetStat(optionRow, ctx.Random);
-                            equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-                        }
-                        else
-                        {
-                            var skill = GetSkill(optionRow, tableSheets, ctx.Random);
-                            if (!(skill is null))
-                            {
-                                equipment.Skills.Add(skill);
-                            }
-                        }
-
-                        optionIds.Add(optionInfo.Id);
-                    }
-                }
+                SelectOption(tableSheets, subRecipe, ctx.Random, equipment, optionIds);
             }
 
             // 자원 검증
@@ -237,6 +211,53 @@ namespace Nekoyume.Action
             catch (InvalidOperationException)
             {
                 return null;
+            }
+        }
+
+        public static void SelectOption(TableSheets tableSheets, EquipmentItemSubRecipeSheet.Row subRecipe,
+            IRandom random, Equipment equipment, HashSet<int> optionIds)
+        {
+            var optionSheet = tableSheets.EquipmentItemOptionSheet;
+            var optionSelector = new WeightedSelector<EquipmentItemOptionSheet.Row>(random);
+
+            while (!optionIds.Any())
+            {
+                if (optionSelector.Count == 0)
+                {
+                    foreach (var optionInfo in subRecipe.Options)
+                    {
+                        if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
+                        {
+                            continue;
+                        }
+
+                        optionSelector.Add(optionRow, optionInfo.Ratio);
+                    }
+                }
+                for (var i = 0; i < subRecipe.MaxOptionLimit; i++)
+                {
+                    try
+                    {
+                        var optionRow = optionSelector.Pop();
+                        if (optionRow.StatType != StatType.NONE)
+                        {
+                            var statMap = GetStat(optionRow, random);
+                            equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                        }
+                        else
+                        {
+                            var skill = GetSkill(optionRow, tableSheets, random);
+                            if (!(skill is null))
+                            {
+                                equipment.Skills.Add(skill);
+                            }
+                        }
+                        optionIds.Add(optionRow.Id);
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+                }
             }
         }
     }
