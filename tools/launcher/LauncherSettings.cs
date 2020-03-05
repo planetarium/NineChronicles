@@ -1,6 +1,6 @@
 namespace Launcher
 {
-    public class LauncherSetting
+    public class LauncherSettings
     {
         public string StorePath { get; set; }
 

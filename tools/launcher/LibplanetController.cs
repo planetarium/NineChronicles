@@ -223,10 +223,10 @@ namespace Launcher
             Process.Start(CurrentPlatform.OpenCommand, SettingFilePath);
         }
 
-        public LauncherSetting LoadSetting()
+        public LauncherSettings LoadSetting()
         {
             InitializeSettingFile();
-            return JsonSerializer.Deserialize<LauncherSetting>(
+            return JsonSerializer.Deserialize<LauncherSettings>(
                 File.ReadAllText(SettingFilePath),
                 new JsonSerializerOptions
                 {
