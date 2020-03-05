@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Launcher
+namespace Launcher.RuntimePlatform
 {
     public class WindowsPlatform : IRuntimePlatform
     {

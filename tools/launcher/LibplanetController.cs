@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
+using Launcher.RuntimePlatform;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
