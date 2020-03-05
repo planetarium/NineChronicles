@@ -66,10 +66,11 @@ namespace Nekoyume.Game
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
             _options = CommandLineOptions.Load(
-                CommandLineOptionsJsonPath,
-                WebCommandLineOptionsPathInit
+               CommandLineOptionsJsonPath,
+               WebCommandLineOptionsPathInit
             );
-            if (_options.Client)
+
+            if (_options.RpcClient)
             {
                 _agent = GetComponent<RPCAgent>();
             }

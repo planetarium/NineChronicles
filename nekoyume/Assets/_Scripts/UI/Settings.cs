@@ -1,25 +1,31 @@
-﻿using Assets.SimpleLocalization;
+﻿using System;
+using Assets.SimpleLocalization;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
+using Libplanet;
 using Nekoyume.Helper;
-using Nekoyume.BlockChain;
+using UniRx;
 
 namespace Nekoyume.UI
 {
     public class Settings : PopupWidget
     {
-        public TextMeshProUGUI addressTitle;
-        public TMP_InputField addressContent;
+        public TextMeshProUGUI addressTitleText;
+        public TMP_InputField addressContentInputField;
+        public Button addressCopyButton;
+        public TextMeshProUGUI privateKeyTitleText;
+        public TMP_InputField privateKeyContentInputField;
+        public Button privateKeyCopyButton;
         public TextMeshProUGUI warningText;
         public TextMeshProUGUI volumeMasterText;
         public Slider volumeMasterSlider;
         public Toggle volumeMasterToggle;
-        public TextMeshProUGUI confirmText;
+        public List<TextMeshProUGUI> muteTexts;
         public TextMeshProUGUI resetKeyStoreText;
         public TextMeshProUGUI resetStoreText;
-        public List<TextMeshProUGUI> muteTexts;
+        public TextMeshProUGUI confirmText;
         public Blur blur;
 
         #region Mono
@@ -28,29 +34,36 @@ namespace Nekoyume.UI
         {
             base.Awake();
             
-            volumeMasterSlider.onValueChanged.AddListener(value =>
-            {
-                SetVolumeMaster(value);
-            });
-
-            volumeMasterToggle.onValueChanged.AddListener(value =>
-            {
-                SetVolumeMasterMute(value);
-            });
+            addressTitleText.text = LocalizationManager.Localize("UI_YOUR_ADDRESS");
+            privateKeyTitleText.text = LocalizationManager.Localize("UI_YOUR_PRIVATE_KEY");
             warningText.text = LocalizationManager.Localize("UI_ACCOUNT_WARNING");
-            confirmText.text = LocalizationManager.Localize("UI_CLOSE");
+            
+            volumeMasterSlider.onValueChanged.AddListener(SetVolumeMaster);
+            volumeMasterToggle.onValueChanged.AddListener(SetVolumeMasterMute);
+            
             resetStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
             resetKeyStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");
+            confirmText.text = LocalizationManager.Localize("UI_CLOSE");
+
+            addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard());
+            privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard());
         }
 
         #endregion
 
         public override void Show()
         {
-            var addressString = $"{LocalizationManager.Localize("UI_YOUR_ADDRESS")}";
-            addressTitle.text = addressString;
-            addressContent.text = Game.Game.instance.Agent.Address.ToString();
-
+            if (Game.Game.instance.Agent.PrivateKey is null)
+            {
+                addressContentInputField.text = string.Empty;
+                privateKeyContentInputField.text = string.Empty;
+            }
+            else
+            {
+                addressContentInputField.text = Game.Game.instance.Agent.Address.ToHex();
+                privateKeyContentInputField.text = ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
+            }
+            
             var muteString = LocalizationManager.Localize("UI_MUTE_AUDIO");
             foreach (var text in muteTexts)
             {
@@ -87,11 +100,18 @@ namespace Nekoyume.UI
             SetVolumeMasterMute(settings.isVolumeMasterMuted);
         }
 
-        public void CopyAddressToClipboard()
+        private void CopyAddressToClipboard()
         {
-            var address = Game.Game.instance.Agent.Address;
-
-            ClipboardHelper.CopyToClipboard(address.ToString());
+            ClipboardHelper.CopyToClipboard(addressContentInputField.text);
+            
+            // todo: 복사되었습니다. 토스트.
+        }
+        
+        private void CopyPrivateKeyToClipboard()
+        {
+            ClipboardHelper.CopyToClipboard(privateKeyContentInputField.text);
+            
+            // todo: 복사되었습니다. 토스트.
         }
 
         private void SetVolumeMaster(float value)

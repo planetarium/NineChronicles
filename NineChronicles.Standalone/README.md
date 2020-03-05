@@ -5,7 +5,7 @@
 ```
 $ dotnet run -- --help
 
-Usage: NineChronicles.Standalone [--app-protocol-version <Int32>] [--genesis-block-path <String>] [--no-miner] [--host <String>] [--port <Nullable`1>] [--private-key <String>] [--store-path <String>] [--ice-server <String>...] [--peer <String>...] [--help] [--version]
+Usage: NineChronicles.Standalone [--app-protocol-version <Int32>] [--genesis-block-path <String>] [--no-miner] [--host <String>] [--port <Nullable`1>] [--private-key <String>] [--store-type <String>] [--store-path <String>] [--ice-server <String>...] [--peer <String>...] [--rpc-server] [--rpc-listen-host <String>] [--rpc-listen-port <Nullable`1>] [--help] [--version]
 
 Run standalone application with options.
 
@@ -16,9 +16,13 @@ Options:
   -H, --host <String>                    (Default: )
   -P, --port <Nullable`1>                (Default: )
   --private-key <String>                 (Default: )
+  --store-type <String>                  (Default: )
   --store-path <String>                  (Default: )
   -I, --ice-server <String>...           (Default: )
   --peer <String>...                     (Default: )
+  --rpc-server                          
+  --rpc-listen-host <String>             (Default: 0.0.0.0)
+  --rpc-listen-port <Nullable`1>         (Default: )
   -h, --help                            Show help message
   --version                             Show version
 ```
@@ -42,6 +46,9 @@ $ docker build . -f Dockerfile.standalone -t <IMAGE_TAG>
 - `--peer`: Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 `--peer peerA --peer peerB ...` 와 같이 추가할 수 있습니다.
 - `-G`, `--genesis-block-path`: 제네시스 블록의 경로를 지정합니다.
 - `-V`, `--app-protocol-version`: `Swarm<T>.AppProtocolVersion`의 값을 지정합니다.
+- `--rpc-server`: RPC 서버 모드로 시작합니다. 이 플래그가 설정되면 `--rpc-listen-port`를 지정해야 합니다.
+- `--rpc-listen-host`: RPC 서버 모드에서 사용할 호스트명입니다.
+- `--rpc-listen-port`: RPC 서버 모드에서 사용할 포트입니다.
 
 ### 형식
 
