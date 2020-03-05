@@ -70,7 +70,9 @@ namespace Nekoyume.Game.Entrance
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character,
                 BottomMenu.ToggleableType.Inventory,
-                BottomMenu.ToggleableType.Settings);
+                BottomMenu.ToggleableType.Settings,
+                BottomMenu.ToggleableType.Combination
+            );
 
             Destroy(this);
         }
