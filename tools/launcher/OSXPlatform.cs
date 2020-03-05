@@ -9,6 +9,6 @@ namespace Launcher
         public string OpenCommand => "open";
 
         public string ExecutableGameBinaryPath(string gameBinaryPath) =>
-            Path.Combine(gameBinaryPath, "MacOS", "Nine Chronicles.app", "Contents", "MacOS", "Nine Chronicles");
+            Path.Combine(gameBinaryPath, "Nine Chronicles.app", "Contents", "MacOS", "Nine Chronicles");
     }
 }
