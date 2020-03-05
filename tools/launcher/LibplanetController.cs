@@ -261,18 +261,39 @@ namespace Launcher
 
         private const string SettingFileName = "launcher.json";
 
+        private const string VersionHistoryFilename = "versions.json";
+
         // TODO: it should be configurable.
         private const string S3Host = "9c-test.s3.ap-northeast-2.amazonaws.com";
 
         private const ushort HttpPort = 80;
 
-        private static Uri GameBinaryDownloadUri(string deployBranch) =>
+        private static Uri BuildS3Uri(string path) =>
             new UriBuilder(
                 Uri.UriSchemeHttps,
                 S3Host,
                 HttpPort,
-                // TODO: the path should be separated with version one more time.
-                Path.Combine(deployBranch, CurrentPlatform.GameBinaryDownloadFilename)
+                path
             ).Uri;
+
+        // TODO: the path should be separated with version one more time.
+        private static Uri GameBinaryDownloadUri(string deployBranch) =>
+            BuildS3Uri(Path.Combine(deployBranch, CurrentPlatform.GameBinaryDownloadFilename));
+
+        private static Uri VersionHistoryUri(string deployBranch) =>
+            BuildS3Uri(Path.Combine(deployBranch, VersionHistoryFilename));
+
+        private static VersionDescriptor CurrentVersion(string deployBranch)
+        {
+            using var webClient = new WebClient();
+            var rawVersionHistory = webClient.DownloadString(VersionHistoryUri(deployBranch));
+            var versionHistory = JsonSerializer.Deserialize<VersionHistory>(
+                rawVersionHistory,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                });
+            return versionHistory.Versions.First(descriptor => descriptor.Version == versionHistory.CurrentVersion);
+        }
     }
 }
