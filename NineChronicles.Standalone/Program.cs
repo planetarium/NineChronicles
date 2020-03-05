@@ -91,7 +91,7 @@ namespace NineChronicles.Standalone
                 CancellationToken cancellationToken)
             {
                 var miner = new Miner(chain, swarm, privateKey);
-                while (true)
+                while (!cancellationToken.IsCancellationRequested)
                 {
                     Log.Debug("Miner called.");
                     try
