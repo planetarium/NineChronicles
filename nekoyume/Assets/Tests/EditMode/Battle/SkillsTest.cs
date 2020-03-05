@@ -35,15 +35,61 @@ namespace Tests.EditMode.Battle
         }
 
         [Test]
-        public void SelectTest()
+        public void AddAndClear()
+        {
+            var skills = new Skills();
+            Assert.AreEqual(0, skills.Count());
+            var firstSkill = GetFirstSkill();
+            skills.Add(firstSkill);
+            Assert.AreEqual(1, skills.Count());
+            skills.Clear();
+            Assert.AreEqual(0, skills.Count());
+        }
+
+        [Test]
+        public void SetAndGetCooldown()
+        {
+            var skills = new Skills();
+            var firstSkill = GetFirstSkill();
+            var firstSkillId = firstSkill.SkillRow.Id;
+            Assert.Throws<Exception>(() => skills.SetCooldown(firstSkillId, 1));
+            Assert.AreEqual(0, skills.GetCooldown(firstSkillId));
+            skills.Add(firstSkill);
+            Assert.DoesNotThrow(() => skills.SetCooldown(firstSkillId, 1));
+            Assert.AreEqual(1, skills.GetCooldown(firstSkillId));
+        }
+
+        [Test]
+        public void ReduceCooldown()
+        {
+            var skills = new Skills();
+            var firstSkill = GetFirstSkill();
+            var firstSkillId = firstSkill.SkillRow.Id;
+            skills.Add(firstSkill);
+            skills.SetCooldown(firstSkillId, 1);
+            Assert.AreEqual(1, skills.GetCooldown(firstSkillId));
+            skills.ReduceCooldown();
+            Assert.AreEqual(0, skills.GetCooldown(firstSkillId));
+        }
+
+        private Skill GetFirstSkill()
         {
             var skillRow = _skillSheet.First().Value;
             Assert.IsNotNull(skillRow);
-            
+
             var firstSkill = SkillFactory.Get(skillRow, 100, 100);
             Assert.IsNotNull(firstSkill);
+
+            return firstSkill;
+        }
+
+        [Test]
+        public void Select()
+        {
+            var skills = new Skills();
+            var firstSkill = GetFirstSkill();
+            skills.Add(firstSkill);
             
-            var skills = new Skills {firstSkill};
             var selectedSkill = skills.Select(new Random());
             Assert.IsNotNull(selectedSkill);
             Assert.AreEqual(firstSkill, selectedSkill);
@@ -52,7 +98,6 @@ namespace Tests.EditMode.Battle
             Assert.Throws<Exception>(() => skills.Select(new Random()));
 
             skills.ReduceCooldown();
-            
             selectedSkill = skills.Select(new Random());
             Assert.IsNotNull(selectedSkill);
             Assert.AreEqual(firstSkill, selectedSkill);
@@ -60,7 +105,7 @@ namespace Tests.EditMode.Battle
 
         // todo: 이후에 버프도 고려해서 걸러내는 로직이 완성돼 적용될 때에, 버프의 groupId로 걸러내는 등 테스트가 더 자세하게 나뉘어져야 하겠어요.
         [Test]
-        public void SelectWithBuffsTest()
+        public void SelectWithBuffs()
         {
             var skillRow = _skillSheet.First().Value;
             var firstSkill = SkillFactory.Get(skillRow, 100, 100);

@@ -182,7 +182,7 @@ namespace Nekoyume.Model
         {
             // 스킬 선택.
             var selectedSkill = Skills.Select(Simulator.Random);
-            
+
             // 스킬 사용.
             var usedSkill = selectedSkill.Use(
                 this,
@@ -193,7 +193,7 @@ namespace Nekoyume.Model
                     Simulator.TableSheets.BuffSheet
                 )
             );
-            
+
             // 쿨다운 적용.
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
@@ -375,7 +375,18 @@ namespace Nekoyume.Model
 
         public void SetCooldown(int skillId, int cooldown)
         {
+            if (_skills.All(e => e.SkillRow.Id != skillId))
+                throw new Exception(
+                    $"[{nameof(Skills)}.{nameof(SetCooldown)}()] Not found {nameof(skillId)}({skillId})");
+
             _skillsCooldown[skillId] = cooldown;
+        }
+
+        public int GetCooldown(int skillId)
+        {
+            return _skillsCooldown.ContainsKey(skillId)
+                ? _skillsCooldown[skillId]
+                : 0;
         }
 
         public void ReduceCooldown()
@@ -391,7 +402,7 @@ namespace Nekoyume.Model
                     _skillsCooldown.Remove(key);
                     continue;
                 }
-                
+
                 _skillsCooldown[key] = value - 1;
             }
         }
@@ -462,7 +473,7 @@ namespace Nekoyume.Model
         {
             return _skills.Where(skill => !_skillsCooldown.ContainsKey(skill.SkillRow.Id));
         }
-        
+
         private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
         {
             var selected = skills
