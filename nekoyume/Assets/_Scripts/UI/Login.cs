@@ -28,7 +28,7 @@ namespace Nekoyume.UI
             }
             _objectPool = Game.Game.instance.Stage.objectPool;
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
-            Game.Event.OnRoomEnter.AddListener(ClearPlayers);
+            Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
 
             CloseWidget = null;
         }

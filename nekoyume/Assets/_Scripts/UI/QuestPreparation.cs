@@ -113,7 +113,7 @@ namespace Nekoyume.UI
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
-            Game.Event.OnRoomEnter.AddListener(() => Close());
+            Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
         public override void Show()
