@@ -142,13 +142,13 @@ namespace Launcher
         }
 
         // TODO: download new client if there is.
-        private async Task DownloadGameBinaryAsync(string gameBinaryPath)
+        private async Task DownloadGameBinaryAsync(string gameBinaryPath, string deployBranch)
         {
             if (!Directory.Exists(gameBinaryPath))
             {
                 var tempFilePath = Path.GetTempFileName();
                 using var webClient = new WebClient();
-                await webClient.DownloadFileTaskAsync(GameBinaryDownloadUrl, tempFilePath);
+                await webClient.DownloadFileTaskAsync(GameBinaryDownloadUri(deployBranch), tempFilePath);
 
                 // Extract binary.
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -192,7 +192,7 @@ namespace Launcher
                 gameBinaryPath = DefaultGameBinaryPath;
             }
 
-            await DownloadGameBinaryAsync(gameBinaryPath);
+            await DownloadGameBinaryAsync(gameBinaryPath, setting.DeployBranch);
 
             StopSync();
 
@@ -261,9 +261,18 @@ namespace Launcher
 
         private const string SettingFileName = "launcher.json";
 
-        private const string S3Host = "https://9c-test.s3.ap-northeast-2.amazonaws.com";
-        
-        private string GameBinaryDownloadUrl =>
-            $"{S3Host}/{CurrentPlatform.GameBinaryDownloadFilename}";
+        // TODO: it should be configurable.
+        private const string S3Host = "9c-test.s3.ap-northeast-2.amazonaws.com";
+
+        private const ushort HttpPort = 80;
+
+        private static Uri GameBinaryDownloadUri(string deployBranch) =>
+            new UriBuilder(
+                Uri.UriSchemeHttps,
+                S3Host,
+                HttpPort,
+                // TODO: the path should be separated with version one more time.
+                Path.Combine(deployBranch, CurrentPlatform.GameBinaryDownloadFilename)
+            ).Uri;
     }
 }

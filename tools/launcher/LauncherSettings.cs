@@ -21,5 +21,11 @@ namespace Launcher
         public string GenesisBlockPath { get; set; }
         
         public string GameBinaryPath { get; set; }
+
+        /// <summary>
+        /// A criteria for deployment flows, in other words,
+        /// the name of directory which grouped deployments in s3 storage like branch.
+        /// </summary>
+        public string DeployBranch { get; set; }
     }
 }
