@@ -113,7 +113,7 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        private void SetOptionText(OptionText optionText, int percentage, string description)
+        private void SetOptionText(OptionText optionText, decimal percentage, string description)
         {
             optionText.percentageText.text = percentage.ToString("0%");
             optionText.descriptionText.text = description;
