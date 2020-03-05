@@ -89,6 +89,7 @@ namespace Launcher
                 IceServers = new[] {setting.IceServer}.Select(LoadIceServer),
                 Peers = new[] {setting.Seed}.Select(LoadPeer),
                 StorePath = storePath,
+                StoreType = setting.StoreType,
             };
 
             // BlockPolicy shared through Lib9c.

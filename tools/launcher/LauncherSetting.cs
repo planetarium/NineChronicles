@@ -4,6 +4,8 @@ namespace Launcher
     {
         public string StorePath { get; set; }
 
+        public string StoreType { get; set; }
+
         public string KeyStorePath { get; set; }
 
         public string Passphrase { get; set; }
