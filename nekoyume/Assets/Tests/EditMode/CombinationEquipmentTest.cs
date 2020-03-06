@@ -34,9 +34,8 @@ namespace Tests.EditMode
         }
 
         [Test]
-        public void SelectOptionEmpty()
+        public void SelectOptionEmptyByLimit()
         {
-            var optionIds = new HashSet<int>();
             var row = _tableSheets.EquipmentItemSubRecipeSheet.Values.First();
             row.Set(new List<string>
             {
@@ -48,7 +47,26 @@ namespace Tests.EditMode
                 default,
                 default
             );
-            CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment, optionIds);
+            var optionIds = CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment);
+            Assert.IsEmpty(optionIds);
+            Assert.IsEmpty(equipment.GetOptions());
+        }
+
+        [Test]
+        public void SelectOptionEmptyByRatio()
+        {
+            var row = _tableSheets.EquipmentItemSubRecipeSheet.Values.First();
+            row.Set(new List<string>
+            {
+                "1", "3", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0", "4", "0", "2", "0",
+                "", "", "2"
+            });
+            var equipment = (Equipment) ItemFactory.CreateItemUsable(
+                _tableSheets.EquipmentItemSheet.Values.First(),
+                default,
+                default
+            );
+            var optionIds = CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment);
             Assert.IsEmpty(optionIds);
             Assert.IsEmpty(equipment.GetOptions());
         }
@@ -56,7 +74,6 @@ namespace Tests.EditMode
         [Test]
         public void SelectOption([Values(1, 2)] int expected)
         {
-            var optionIds = new HashSet<int>();
             var row = _tableSheets.EquipmentItemSubRecipeSheet.Values.First();
             row.Set(new List<string>
             {
@@ -68,7 +85,7 @@ namespace Tests.EditMode
                 default,
                 default
             );
-            CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment, optionIds);
+            var optionIds = CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment);
             Assert.IsNotEmpty(optionIds);
             Assert.IsTrue(equipment.GetOptionCount() <= expected);
         }

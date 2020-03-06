@@ -13,6 +13,7 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -90,7 +91,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            Material equipmentMaterial = ItemFactory.CreateMaterial(materialSheet, material.Id);
+            var equipmentMaterial = ItemFactory.CreateMaterial(materialSheet, material.Id);
             materials[equipmentMaterial] = recipe.MaterialCount;
 
             var requiredGold = recipe.RequiredGold;
@@ -107,7 +108,7 @@ namespace Nekoyume.Action
 
 
             // 보조 레시피 검증
-            var optionIds = new HashSet<int>();
+            HashSet<int> optionIds = null;
             if (!(SubRecipeId is null))
             {
                 var subSheet = tableSheets.EquipmentItemSubRecipeSheet;
@@ -140,7 +141,7 @@ namespace Nekoyume.Action
                     requiredActionPoint += subRecipe.RequiredActionPoint;
                 }
 
-                SelectOption(tableSheets, subRecipe, ctx.Random, equipment, optionIds);
+                optionIds = SelectOption(tableSheets, subRecipe, ctx.Random, equipment);
             }
 
             // 자원 검증
@@ -151,9 +152,12 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= requiredActionPoint;
             agentState.gold -= requiredGold;
-            foreach (var id in optionIds)
+            if (!(optionIds is null))
             {
-                agentState.unlockedOptions.Add(id);
+                foreach (var id in optionIds)
+                {
+                    agentState.unlockedOptions.Add(id);
+                }
             }
 
             var result = new Combination.ResultModel
@@ -214,19 +218,30 @@ namespace Nekoyume.Action
             }
         }
 
-        public static void SelectOption(TableSheets tableSheets, EquipmentItemSubRecipeSheet.Row subRecipe,
-            IRandom random, Equipment equipment, HashSet<int> optionIds)
+        public static HashSet<int> SelectOption(
+            TableSheets tableSheets,
+            EquipmentItemSubRecipeSheet.Row subRecipe,
+            IRandom random,
+            Equipment equipment
+        )
         {
             var optionSheet = tableSheets.EquipmentItemOptionSheet;
             var optionSelector = new WeightedSelector<EquipmentItemOptionSheet.Row>(random);
+            var optionIds = new HashSet<int>();
+
+            if (subRecipe.MaxOptionLimit <= 0)
+            {
+                return optionIds;
+            }
 
             while (!optionIds.Any())
             {
+
                 if (optionSelector.Count == 0)
                 {
                     foreach (var optionInfo in subRecipe.Options)
                     {
-                        if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
+                        if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow) || optionInfo.Ratio <= 0m)
                         {
                             continue;
                         }
@@ -234,6 +249,12 @@ namespace Nekoyume.Action
                         optionSelector.Add(optionRow, optionInfo.Ratio);
                     }
                 }
+
+                if (optionSelector.Count == 0)
+                {
+                    break;
+                }
+
                 for (var i = 0; i < subRecipe.MaxOptionLimit; i++)
                 {
                     try
@@ -254,11 +275,15 @@ namespace Nekoyume.Action
                         }
                         optionIds.Add(optionRow.Id);
                     }
-                    catch (ArgumentException)
+                    catch (ArgumentOutOfRangeException)
                     {
+                        // 확률굴림에 실패
+                        Log.Debug("option select failed.");
                     }
                 }
             }
+
+            return optionIds;
         }
     }
 }
