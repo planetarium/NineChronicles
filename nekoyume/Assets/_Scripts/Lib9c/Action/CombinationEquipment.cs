@@ -17,6 +17,7 @@ using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("combination_equipment")]
     public class CombinationEquipment : GameAction
     {

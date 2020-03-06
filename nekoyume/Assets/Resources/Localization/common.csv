@@ -274,6 +274,7 @@ UI_MUSIC_VOLUME,Music Volume,음악 볼륨
 UI_SFX_VOLUME,SFX Volume,효과음 볼륨
 UI_MUTE_AUDIO,Mute,음소거
 UI_YOUR_ADDRESS,Your Address,당신의 주소
+UI_YOUR_PRIVATE_KEY,Your Private Key,당신의 비밀 키
 BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 채굴 중
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패
@@ -310,7 +311,7 @@ UI_ARENA_FOUNDATION,Arena Foundation,아레나 재단
 UI_BACK_TO_ARENA,Back to Arena,아레나로 돌아가기
 UI_RANKING_REWARDS_DESCRIPTION,Keep your ranking and get the daily rewards!,랭킹을 올리면 일일 보상을 얻을 수 있어요!
 UI_WIN_DRAW_LOSE_FORMAT,Win {0} Draw {1} Lose {2},승 {0} 무 {1} 패 {2}
-UI_ACCOUNT_WARNING,<sprite name=UI_main_icon_quest_02>Never expose this ID to others.[newline]Anyone can steal your assets if this key is exposed.,<sprite name=UI_main_icon_quest_02>절대 이 ID를 노출하지 마십시오.[newline]ID가 노출되면 누구나 당신의 계정에서 자산을 빼갈 수 있습니다.
+UI_ACCOUNT_WARNING,<sprite name=UI_main_icon_quest_02>Never expose the above private key to others.[newline]Anyone can steal your assets if this private key is exposed.,<sprite name=UI_main_icon_quest_02>위의 비밀 키를 절대 노출하지 마십시오.[newline]비밀 키가 노출되면 누구나 당신의 계정에서 자산을 빼갈 수 있습니다.
 UI_ID_CREATE_SUCCESS,ID Create Success!,ID가 생성되었습니다!
 UI_CHARACTER_SELECT,Select Character,캐릭터 선택
 UI_BATTLE_RESULT_FAILED_PHASE_0,Failed to acquire additional EXP.,추가 경험치를 획득하지 못했습니다.

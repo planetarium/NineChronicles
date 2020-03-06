@@ -24,9 +24,9 @@ namespace Nekoyume.Game
         public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
 
         private IAgent _agent;
-        
+
         [SerializeField] private Stage stage = null;
-        
+
         public States States { get; private set; }
 
         public LocalStateSettings LocalStateSettings { get; private set; }
@@ -64,16 +64,16 @@ namespace Nekoyume.Game
         {
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
-             _options = CommandLineOptions.Load(
-                CommandLineOptionsJsonPath,
-                WebCommandLineOptionsPathInit
+            _options = CommandLineOptions.Load(
+               CommandLineOptionsJsonPath,
+               WebCommandLineOptionsPathInit
             );
 
-            if (_options.Client)
+            if (_options.RpcClient)
             {
                 _agent = GetComponent<RPCAgent>();
             }
-            else 
+            else
             {
                 _agent = GetComponent<Agent>();
             }
@@ -101,7 +101,7 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-            
+
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>
@@ -124,7 +124,7 @@ namespace Nekoyume.Game
                 .Select(_ => Input.mousePosition)
                 .Subscribe(PlayMouseOnClickVFX)
                 .AddTo(gameObject);
-            
+
             ShowNext(agentInitializeSucceed);
         }
 
@@ -204,7 +204,7 @@ namespace Nekoyume.Game
             };
             confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT", blurRadius: 2);
         }
-        
+
         private void PlayMouseOnClickVFX(Vector3 position)
         {
             position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);

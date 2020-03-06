@@ -49,11 +49,11 @@ namespace NineChronicles.Standalone
             string[] iceServerStrings = null,
             [Option("peer")]
             string[] peerStrings = null,
-            bool rpc = false,
-            [Option("rpc-host")]
-            string rpcHost = null,
-            [Option("rpc-port")]
-            int? rpcPort = null
+            bool rpcServer = false,
+            [Option("rpc-listen-host")]
+            string rpcListenHost = "0.0.0.0",
+            [Option("rpc-listen-port")]
+            int? rpcListenPort = null
         )
         {
             // Setup logger.
@@ -91,7 +91,7 @@ namespace NineChronicles.Standalone
                 CancellationToken cancellationToken)
             {
                 var miner = new Miner(chain, swarm, privateKey);
-                while (true)
+                while (!cancellationToken.IsCancellationRequested)
                 {
                     Log.Debug("Miner called.");
                     try
@@ -113,19 +113,19 @@ namespace NineChronicles.Standalone
 
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
-            if (rpc)
+            if (rpcServer)
             {
-                if (string.IsNullOrEmpty(rpcHost))
+                if (string.IsNullOrEmpty(rpcListenHost))
                 {
                     throw new CommandExitedException(
-                        "--rpc-host must be required when --rpc had been set.",
+                        "--rpc-listen-host must be required when --rpc-server had been set.",
                         -1
                     );
                 }
-                else if (!(rpcPort is int rpcPortValue))
+                else if (!(rpcListenPort is int rpcPortValue))
                 {
                     throw new CommandExitedException(
-                        "--rpc-port must be required when --rpc had been set.",
+                        "--rpc-listen-port must be required when --rpc-server had been set.",
                         -1
                     );
                 }
@@ -133,13 +133,13 @@ namespace NineChronicles.Standalone
                 {
                     hostBuilder = hostBuilder
                         .UseMagicOnion(
-                            new ServerPort(rpcHost, rpcPortValue, ServerCredentials.Insecure)
+                            new ServerPort(rpcListenHost, rpcPortValue, ServerCredentials.Insecure)
                         )
                         .ConfigureServices((ctx, services) =>
                         {
                             services.AddHostedService(provider => new ActionEvaluationPublisher(
                                 nodeService.BlockChain,
-                                rpcHost,
+                                IPAddress.Loopback.ToString(),
                                 rpcPortValue
                             ));
                         });

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>Launcher</RootNamespace>
+        <OutputType>Exe</OutputType>
+        <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
+        <PublishSingleFile>true</PublishSingleFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="qml/**/*" CopyToOutputDirectory="Always" />
+        <Content Include="qt-runtime/**/*" CopyToOutputDirectory="Always" />
+        <Content Include="resources/**/*" CopyToOutputDirectory="Always"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Qml.Net" Version="0.10.1" />
+        <PackageReference Include="Qml.Net.OSXBinaries" Version="0.10.1" />
+        <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
+        <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
+        <PackageReference Include="Libplanet" Version="0.9.0-dev.20200212073732" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+        <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Libplanet.Standalone\Libplanet.Standalone.csproj" />
+        <ProjectReference Include="..\..\Lib9c\Lib9c.csproj" />
+    </ItemGroup>
+</Project>
