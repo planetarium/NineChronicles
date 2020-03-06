@@ -131,7 +131,8 @@ namespace Nekoyume.Model
                 BT.Selector().OpenBranch(
                     // process turn.
                     BT.Sequence().OpenBranch(
-                        BT.Call(BeginningOfTurn),
+                        // NOTE: 턴 시작 메소드는 이곳에서 구현하세요.
+                        // BT.Call(BeginningOfTurn),
                         BT.If(IsAlive).OpenBranch(
                             BT.Sequence().OpenBranch(
                                 BT.Call(ReduceDurationOfBuffs),
@@ -158,10 +159,6 @@ namespace Nekoyume.Model
         private bool IsAlive()
         {
             return !IsDead;
-        }
-
-        private void BeginningOfTurn()
-        {
         }
 
         private void ReduceDurationOfBuffs()
