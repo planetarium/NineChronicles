@@ -92,8 +92,6 @@ namespace Nekoyume.Model
         protected CharacterBase(CharacterBase value)
         {
             _root = value._root;
-            _selectedSkill = value._selectedSkill;
-            _usedSkill = value._usedSkill;
             Id = value.Id;
             Simulator = value.Simulator;
             atkElementType = value.atkElementType;
@@ -124,12 +122,6 @@ namespace Nekoyume.Model
         [NonSerialized]
         private Root _root;
 
-        [NonSerialized]
-        private Skill.Skill _selectedSkill;
-
-        [NonSerialized]
-        private BattleStatus.Skill _usedSkill;
-
         public void InitAI()
         {
             SetSkill();
@@ -139,11 +131,12 @@ namespace Nekoyume.Model
                 BT.Selector().OpenBranch(
                     // process turn.
                     BT.Sequence().OpenBranch(
-                        BT.Call(BeginningOfTurn),
+                        // NOTE: 턴 시작 메소드는 이곳에서 구현하세요.
+                        // BT.Call(BeginningOfTurn),
                         BT.If(IsAlive).OpenBranch(
                             BT.Sequence().OpenBranch(
                                 BT.Call(ReduceDurationOfBuffs),
-                                BT.Call(SelectSkill),
+                                BT.Call(ReduceSkillCooldown),
                                 BT.Call(UseSkill),
                                 BT.Call(RemoveBuffs)
                             )
@@ -168,12 +161,6 @@ namespace Nekoyume.Model
             return !IsDead;
         }
 
-        private void BeginningOfTurn()
-        {
-            _selectedSkill = null;
-            _usedSkill = null;
-        }
-
         private void ReduceDurationOfBuffs()
         {
             // 자신의 기존 버프 턴 조절.
@@ -183,26 +170,32 @@ namespace Nekoyume.Model
             }
         }
 
-        private void SelectSkill()
+        private void ReduceSkillCooldown()
         {
-            _selectedSkill = Skills.Select(Simulator.Random);
+            Skills.ReduceCooldown();
         }
 
         private void UseSkill()
         {
+            // 스킬 선택.
+            var selectedSkill = Skills.Select(Simulator.Random);
+
             // 스킬 사용.
-            _usedSkill = _selectedSkill.Use(
+            var usedSkill = selectedSkill.Use(
                 this,
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
-                    _selectedSkill,
+                    selectedSkill,
                     Simulator.TableSheets.SkillBuffSheet,
                     Simulator.TableSheets.BuffSheet
                 )
             );
-            Simulator.Log.Add(_usedSkill);
 
-            foreach (var info in _usedSkill.SkillInfos)
+            // 쿨다운 적용.
+            Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
+            Simulator.Log.Add(usedSkill);
+
+            foreach (var info in usedSkill.SkillInfos)
             {
                 if (!info.Target.IsDead)
                     continue;
@@ -346,23 +339,20 @@ namespace Nekoyume.Model
         }
     }
 
-    public class InformationFieldAttribute : Attribute
-    {
-    }
-
     [Serializable]
     public class Skills : IEnumerable<Skill.Skill>
     {
         private readonly List<Skill.Skill> _skills = new List<Skill.Skill>();
+        private Dictionary<int, int> _skillsCooldown = new Dictionary<int, int>();
 
-        public void Add(Skill.Skill s)
+        public void Add(Skill.Skill skill)
         {
-            if (s is null)
+            if (skill is null)
             {
                 return;
             }
 
-            _skills.Add(s);
+            _skills.Add(skill);
         }
 
         public void Clear()
@@ -380,17 +370,120 @@ namespace Nekoyume.Model
             return GetEnumerator();
         }
 
+        public void SetCooldown(int skillId, int cooldown)
+        {
+            if (_skills.All(e => e.SkillRow.Id != skillId))
+                throw new Exception(
+                    $"[{nameof(Skills)}.{nameof(SetCooldown)}()] Not found {nameof(skillId)}({skillId})");
+
+            _skillsCooldown[skillId] = cooldown;
+        }
+
+        public int GetCooldown(int skillId)
+        {
+            return _skillsCooldown.ContainsKey(skillId)
+                ? _skillsCooldown[skillId]
+                : 0;
+        }
+
+        public void ReduceCooldown()
+        {
+            if (!_skillsCooldown.Any())
+                return;
+
+            foreach (var key in _skillsCooldown.Keys.ToList())
+            {
+                var value = _skillsCooldown[key];
+                if (value <= 1)
+                {
+                    _skillsCooldown.Remove(key);
+                    continue;
+                }
+
+                _skillsCooldown[key] = value - 1;
+            }
+        }
+
         public Skill.Skill Select(IRandom random)
         {
-            var selected = _skills
+            return PostSelect(random, GetSelectableSkills());
+        }
+
+        // info: 스킬 쿨다운을 적용하는 것과 별개로, 버프에 대해서 꼼꼼하게 걸러낼 필요가 생길 때 참고하기 위해서 유닛 테스트와 함께 남깁니다.
+        public Skill.Skill Select(IRandom random, Dictionary<int, Buff.Buff> buffs, SkillBuffSheet skillBuffSheet,
+            BuffSheet buffSheet)
+        {
+            var skills = GetSelectableSkills();
+
+            if (!(buffs is null) &&
+                !(skillBuffSheet is null) &&
+                !(buffSheet is null))
+            {
+                // 기존에 걸려 있는 버프들과 겹치지 않는 스킬만 골라내기.
+                skills = skills.Where(skill =>
+                {
+                    var skillId = skill.SkillRow.Id;
+
+                    // 버프가 없는 스킬이면 포함한다.
+                    if (!skillBuffSheet.TryGetValue(skillId, out var row))
+                        return true;
+
+                    // 이 스킬을 포함해야 하는가? 기본 네.
+                    var shouldContain = true;
+                    foreach (var buffId in row.BuffIds)
+                    {
+                        // 기존 버프 중 ID가 같은 것이 있을 경우 아니오.
+                        if (buffs.Values.Any(buff => buff.RowData.Id == buffId))
+                        {
+                            shouldContain = false;
+                            break;
+                        }
+
+                        // 버프 정보 얻어오기 실패.
+                        if (!buffSheet.TryGetValue(buffId, out var buffRow))
+                            continue;
+
+                        // 기존 버프 중 그룹 ID가 같고, ID가 크거나 같은 것이 있을 경우 아니오.
+                        if (buffs.Values.Any(buff =>
+                            buff.RowData.GroupId == buffRow.GroupId &&
+                            buff.RowData.Id >= buffRow.Id))
+                        {
+                            shouldContain = false;
+                            break;
+                        }
+                    }
+
+                    return shouldContain;
+                }).ToList();
+
+                // 기존 버프와 중복하는 것을 걷어내고 나니 사용할 스킬이 없는 경우에는 전체를 다시 고려한다.
+                if (!skills.Any())
+                {
+                    skills = GetSelectableSkills();
+                }
+            }
+
+            return PostSelect(random, skills);
+        }
+
+        private IEnumerable<Skill.Skill> GetSelectableSkills()
+        {
+            return _skills.Where(skill => !_skillsCooldown.ContainsKey(skill.SkillRow.Id));
+        }
+
+        private Skill.Skill PostSelect(IRandom random, IEnumerable<Skill.Skill> skills)
+        {
+            var selected = skills
                 .Select(skill => new {skill, chance = random.Next(0, 100)})
-                .Where(t => t.skill.chance > t.chance)
-                .OrderBy(t => t.skill.skillRow.Id)
-                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.chance)
+                .Where(t => t.skill.Chance > t.chance)
+                .OrderBy(t => t.skill.SkillRow.Id)
+                .ThenBy(t => t.chance == 0 ? 1m : (decimal) t.chance / t.skill.Chance)
                 .Select(t => t.skill)
                 .ToList();
 
-            return selected[random.Next(selected.Count)];
+            return selected.Any()
+                ? selected[random.Next(selected.Count)]
+                : throw new Exception($"[{nameof(Skills)}] There is no selected skills");
         }
     }
 }

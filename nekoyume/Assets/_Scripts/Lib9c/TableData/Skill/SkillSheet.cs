@@ -21,6 +21,7 @@ namespace Nekoyume.TableData
             public SkillCategory SkillCategory { get; private set; }
             public SkillTargetType SkillTargetType { get; private set; }
             public int HitCount { get; private set; }
+            public int Cooldown { get; private set; }
 
             public Row() {}
 
@@ -33,6 +34,7 @@ namespace Nekoyume.TableData
                 SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), (Bencodex.Types.Text) serialized["skill_category"]);
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), (Bencodex.Types.Text) serialized["skill_target_type"]);
                 HitCount = (Bencodex.Types.Integer) serialized["hit_count"];
+                Cooldown = (Bencodex.Types.Integer) serialized["cooldown"];
             }
 
             public override void Set(IReadOnlyList<string> fields)
@@ -43,6 +45,7 @@ namespace Nekoyume.TableData
                 SkillCategory = (SkillCategory) Enum.Parse(typeof(SkillCategory), fields[3]);
                 SkillTargetType = (SkillTargetType) Enum.Parse(typeof(SkillTargetType), fields[4]);
                 HitCount = ParseInt(fields[5]);
+                Cooldown = ParseInt(fields[6]);
             }
             public IValue Serialize() =>
                 Bencodex.Types.Dictionary.Empty
@@ -51,7 +54,8 @@ namespace Nekoyume.TableData
                     .Add("skill_type", SkillType.ToString())
                     .Add("skill_category", SkillCategory.ToString())
                     .Add("skill_target_type", SkillTargetType.ToString())
-                    .Add("hit_count", HitCount);
+                    .Add("hit_count", HitCount)
+                    .Add("cooldown", Cooldown);
 
             public static Row Deserialize(Bencodex.Types.Dictionary serialized)
             {
