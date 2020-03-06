@@ -63,7 +63,7 @@ namespace Nekoyume.TableData
                     if (string.IsNullOrEmpty(fields[10 + offset]) || string.IsNullOrEmpty(fields[11 + offset]))
                         continue;
 
-                    Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseInt(fields[11 + offset])));
+                    Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseDecimal(fields[11 + offset])));
                 }
                 MaxOptionLimit = ParseInt(fields[18]);
             }
