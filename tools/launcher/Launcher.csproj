@@ -25,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Libplanet.Standalone\Libplanet.Standalone.csproj" />
-        <ProjectReference Include="..\..\Lib9c\Lib9c.csproj" />
+        <ProjectReference Include="..\..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
     </ItemGroup>
 </Project>

@@ -12,19 +12,14 @@ using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using Launcher.RuntimePlatform;
 using Libplanet;
-using Libplanet.Action;
-using Libplanet.Blockchain;
-using Libplanet.Blockchain.Policies;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
-using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using NineChronicles.Standalone;
 using Qml.Net;
 using Serilog;
 using JsonSerializer = System.Text.Json.JsonSerializer;
-using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Launcher
 {
@@ -32,8 +27,6 @@ namespace Launcher
     public class LibplanetController
     {
         private CancellationTokenSource _cancellationTokenSource;
-
-        private LibplanetNodeService<NineChroniclesActionType> _nodeService;
 
         // It used in qml/Main.qml to hide and turn on some menus.
         [NotifySignal]
@@ -51,13 +44,21 @@ namespace Launcher
             var cancellationToken = _cancellationTokenSource.Token;
             Task.Run(async () =>
             {
-                try
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    await SyncTask(cancellationToken);
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, "Unexpected exception occurred.");
+                    try
+                    {
+                        await SyncTask(cancellationToken);
+                    }
+                    catch (TimeoutException e)
+                    {
+                        Log.Error(e, "timeout occurred.");
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, "Unexpected exception occurred.");
+                        throw;
+                    }   
                 }
             }, cancellationToken);
         }
@@ -69,10 +70,7 @@ namespace Launcher
             _cancellationTokenSource?.Cancel();
             _cancellationTokenSource?.Dispose();
 
-            _nodeService?.Dispose();
-
             _cancellationTokenSource = null;
-            _nodeService = null;
         }
 
         public async Task SyncTask(CancellationToken cancellationToken)
@@ -102,42 +100,14 @@ namespace Launcher
                 StoreType = setting.StoreType,
             };
 
-            // BlockPolicy shared through Lib9c.
-            IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy();
-
-            // FIXME: Is it needed to mine in background mode?
-            Func<BlockChain<NineChroniclesActionType>, Swarm<NineChroniclesActionType>, PrivateKey, CancellationToken,
-                Task> minerLoopAction =
-                async (chain, swarm, privateKey, cancellationToken) =>
-                {
-                    var miner = new Miner(chain, swarm, privateKey);
-                    while (!cancellationToken.IsCancellationRequested)
-                    {
-                        Log.Debug("Miner called.");
-                        try
-                        {
-                            await miner.MineBlockAsync(cancellationToken);
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "Exception occurred while mining.");
-                        }
-                    }
-                };
-
-            _nodeService =
-                new LibplanetNodeService<NineChroniclesActionType>(properties, blockPolicy, minerLoopAction);
+            var service = new NineChroniclesNodeService(properties);
             try
             {
-                await _nodeService.StartAsync(cancellationToken);
+                await service.Run(true, rpcListenHost: RpcListenHost, rpcListenPort: RpcListenPort, cancellationToken);
             }
             catch (OperationCanceledException e)
             {
                 Log.Warning(e, "Background sync task was cancelled.");
-            }
-            finally
-            {
-                _nodeService.Dispose();
             }
         }
 
@@ -194,14 +164,14 @@ namespace Launcher
 
             await DownloadGameBinaryAsync(gameBinaryPath, setting.DeployBranch);
 
-            StopSync();
-
             RunGameProcess(gameBinaryPath);
         }
 
         public void RunGameProcess(string gameBinaryPath)
         {
-            Process process = Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath));
+            string commandArguments =
+                $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort}";
+            Process process = Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath), commandArguments);
 
             GameRunning = true;
             this.ActivateProperty(ctrl => ctrl.GameRunning);
@@ -209,9 +179,6 @@ namespace Launcher
             process.Exited += (sender, args) => {
                 GameRunning = false;
                 this.ActivateProperty(ctrl => ctrl.GameRunning);
-
-                // Restart the background sync task.
-                StartSync();
             };
             process.EnableRaisingEvents = true;
         }
@@ -267,6 +234,14 @@ namespace Launcher
         private const string S3Host = "9c-test.s3.ap-northeast-2.amazonaws.com";
 
         private const ushort HttpPort = 80;
+
+        private readonly string RpcServerHost = IPAddress.Loopback.ToString();
+
+        private const int RpcServerPort = 30000;
+
+        private const string RpcListenHost = "0.0.0.0";
+
+        private const int RpcListenPort = RpcServerPort;
 
         private static Uri BuildS3Uri(string path) =>
             new UriBuilder(
