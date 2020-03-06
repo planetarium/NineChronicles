@@ -20,9 +20,9 @@ namespace Nekoyume.TableData
         public struct OptionInfo
         {
             public readonly int Id;
-            public readonly int Ratio;
+            public readonly decimal Ratio;
 
-            public OptionInfo(int id, int ratio)
+            public OptionInfo(int id, decimal ratio)
             {
                 Id = id;
                 Ratio = ratio;
@@ -38,6 +38,7 @@ namespace Nekoyume.TableData
             public int UnlockStage { get; private set; }
             public List<MaterialInfo> Materials { get; private set; }
             public List<OptionInfo> Options { get; private set; }
+            public int MaxOptionLimit { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -62,8 +63,9 @@ namespace Nekoyume.TableData
                     if (string.IsNullOrEmpty(fields[10 + offset]) || string.IsNullOrEmpty(fields[11 + offset]))
                         continue;
 
-                    Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseInt(fields[11 + offset])));
+                    Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseDecimal(fields[11 + offset])));
                 }
+                MaxOptionLimit = ParseInt(fields[18]);
             }
         }
 
