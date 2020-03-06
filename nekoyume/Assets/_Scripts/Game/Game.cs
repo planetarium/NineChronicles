@@ -25,7 +25,8 @@ namespace Nekoyume.Game
 
         private IAgent _agent;
 
-        [SerializeField] private Stage stage = null;
+        [SerializeField]
+        private Stage stage = null;
 
         public States States { get; private set; }
 
@@ -77,7 +78,6 @@ namespace Nekoyume.Game
             {
                 _agent = GetComponent<Agent>();
             }
-
 #if UNITY_EDITOR
             LocalizationManager.Initialize(languageType);
 #else
@@ -91,7 +91,6 @@ namespace Nekoyume.Game
         private IEnumerator Start()
         {
             yield return Addressables.InitializeAsync();
-            TableSheets = new TableSheets();
             yield return StartCoroutine(CoInitializeTableSheets());
             AudioController.instance.Initialize();
             yield return null;
@@ -101,7 +100,6 @@ namespace Nekoyume.Game
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
             var agentInitialized = false;
             var agentInitializeSucceed = false;
-
             yield return StartCoroutine(
                 CoLogin(
                     succeed =>
@@ -130,7 +128,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoInitializeTableSheets()
         {
-            //어드레서블어셋에 새로운 테이블을 추가하면 AddressableAssetsContainer.asset에도 해당 csv파일을 추가해줘야합니다.
+            TableSheets = new TableSheets();
             var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
             yield return request;
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
@@ -196,13 +194,15 @@ namespace Nekoyume.Game
 #endif
                     return;
                 }
+
                 confirm.CloseCallback = null;
 
                 Event.OnNestEnter.Invoke();
                 Widget.Find<Login>().Show();
                 Widget.Find<Menu>().Close();
             };
-            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT", blurRadius: 2);
+            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT",
+                blurRadius: 2);
         }
 
         private void PlayMouseOnClickVFX(Vector3 position)
@@ -234,6 +234,7 @@ namespace Nekoyume.Game
                 );
                 yield break;
             }
+
             if (_options.testEnd)
             {
                 var w = Widget.Find<Confirm>();
@@ -280,7 +281,8 @@ namespace Nekoyume.Game
         {
             var confirm = Widget.Find<Confirm>();
             var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
-            var prevStoragePath = Path.Combine(BlockChain.Agent.PrevStorageDirectoryPath, $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
+            var prevStoragePath = Path.Combine(BlockChain.Agent.PrevStorageDirectoryPath,
+                $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)

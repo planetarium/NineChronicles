@@ -1,6 +1,7 @@
 using System;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -21,9 +22,9 @@ namespace Tests.EditMode
         [SetUp]
         public void SetUp()
         {
-            _tableSheets = new TableSheets();
+            _tableSheets = TableSheetsHelper.MakeTableSheets();
             _agentState = new AgentState(new Address());
-            _avatarState = new AvatarState(new Address(), _agentState.address, 0, null, null);
+            _avatarState = new AvatarState(new Address(), _agentState.address, 0, _tableSheets, null);
         }
 
         [TearDown]

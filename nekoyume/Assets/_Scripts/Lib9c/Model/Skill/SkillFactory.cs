@@ -1,4 +1,5 @@
 using Bencodex.Types;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Skill
@@ -37,9 +38,9 @@ namespace Nekoyume.Model.Skill
 
         public static Skill Deserialize(Dictionary serialized) =>
             Get(
-                SkillSheet.Row.Deserialize((Dictionary)serialized["skillRow"]),
-                (Integer)serialized["power"],
-                (Integer)serialized["chance"]
+                SkillSheet.Row.Deserialize((Dictionary) serialized["skillRow"]),
+                serialized["power"].ToInteger(),
+                serialized["chance"].ToInteger()
             );
     }
 }
