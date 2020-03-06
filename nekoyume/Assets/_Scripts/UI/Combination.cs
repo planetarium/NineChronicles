@@ -462,7 +462,7 @@ namespace Nekoyume.UI
             if (State.Value == StateType.SelectMenu)
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke();
+                Game.Event.OnRoomEnter.Invoke(true);
             }
             else if (State.Value == StateType.CombinationConfirm)
             {

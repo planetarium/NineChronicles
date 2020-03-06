@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using _Scripts.UI;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
@@ -154,6 +155,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Mail>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Quest>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<CombinationSlots>());
             yield return null;
 
             // 팝업류.

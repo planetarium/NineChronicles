@@ -374,7 +374,7 @@ namespace Nekoyume.UI
         {
             SharedViewModel.IsWorldShown.SetValueAndForceNotify(false);
             Close();
-            Game.Event.OnRoomEnter.Invoke();
+            Game.Event.OnRoomEnter.Invoke(true);
         }
 
         private void GoToQuestPreparation()
