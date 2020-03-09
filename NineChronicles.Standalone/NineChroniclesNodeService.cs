@@ -2,7 +2,6 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Cocona;
 using Grpc.Core;
 using Libplanet.Action;
 using Libplanet.Blockchain;
@@ -25,17 +24,17 @@ namespace NineChronicles.Standalone
     {
         private LibplanetNodeServiceProperties Properties { get; }
 
+        private RpcNodeServiceProperties RpcProperties { get; } 
+
         public NineChroniclesNodeService(
-            LibplanetNodeServiceProperties properties)
+            LibplanetNodeServiceProperties properties,
+            RpcNodeServiceProperties rpcNodeServiceProperties)
         {
             Properties = properties;
+            RpcProperties = rpcNodeServiceProperties;
         } 
         
-        public async Task Run(
-            bool rpcServer = false,
-            string rpcListenHost = null,
-            int? rpcListenPort = null,
-            CancellationToken cancellationToken = default)
+        public async Task Run(CancellationToken cancellationToken = default)
         {
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy();
@@ -67,38 +66,20 @@ namespace NineChronicles.Standalone
             );
 
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-
-            if (rpcServer)
+            if (RpcProperties.RpcServer)
             {
-                if (string.IsNullOrEmpty(rpcListenHost))
-                {
-                    throw new CommandExitedException(
-                        "--rpc-listen-host must be required when --rpc-server had been set.",
-                        -1
-                    );
-                }
-                else if (!(rpcListenPort is int rpcPortValue))
-                {
-                    throw new CommandExitedException(
-                        "--rpc-listen-port must be required when --rpc-server had been set.",
-                        -1
-                    );
-                }
-                else
-                {
-                    hostBuilder = hostBuilder
-                        .UseMagicOnion(
-                            new ServerPort(rpcListenHost, rpcPortValue, ServerCredentials.Insecure)
-                        )
-                        .ConfigureServices((ctx, services) =>
-                        {
-                            services.AddHostedService(provider => new ActionEvaluationPublisher(
-                                nodeService.BlockChain,
-                                IPAddress.Loopback.ToString(),
-                                rpcPortValue
-                            ));
-                        });
-                }
+                hostBuilder = hostBuilder
+                    .UseMagicOnion(
+                        new ServerPort(RpcProperties.RpcListenHost, RpcProperties.RpcListenPort, ServerCredentials.Insecure)
+                    )
+                    .ConfigureServices((ctx, services) =>
+                    {
+                        services.AddHostedService(provider => new ActionEvaluationPublisher(
+                            nodeService.BlockChain,
+                            IPAddress.Loopback.ToString(),
+                            RpcProperties.RpcListenPort
+                        ));
+                    });
             }
 
             await hostBuilder.ConfigureServices((ctx, services) =>

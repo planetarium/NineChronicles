@@ -74,12 +74,36 @@ namespace NineChronicles.Standalone
                 StorePath = storePath,
             };
 
-            var service = new NineChroniclesNodeService(properties);
-            await service.Run(
-                rpcServer: rpcServer,
-                rpcListenHost: rpcListenHost,
-                rpcListenPort: rpcListenPort
-            );
+            var rpcProperties = new RpcNodeServiceProperties
+            {
+                RpcServer = rpcServer,
+            };
+
+            if (rpcServer)
+            {
+                if (string.IsNullOrEmpty(rpcListenHost))
+                {
+                    throw new CommandExitedException(
+                        "--rpc-listen-host must be required when --rpc-server had been set.",
+                        -1
+                    );
+                }
+                else if (!(rpcListenPort is int rpcPortValue))
+                {
+                    throw new CommandExitedException(
+                        "--rpc-listen-port must be required when --rpc-server had been set.",
+                        -1
+                    );
+                }
+                else
+                {
+                    rpcProperties.RpcListenHost = rpcListenHost;
+                    rpcProperties.RpcListenPort = rpcPortValue;
+                }
+            }
+
+            var service = new NineChroniclesNodeService(properties, rpcProperties);
+            await service.Run();
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)

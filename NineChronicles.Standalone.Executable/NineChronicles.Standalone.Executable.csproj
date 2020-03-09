@@ -6,6 +6,10 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <PackageReference Include="Cocona.Lite" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <ProjectReference Include="..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
   </ItemGroup>
 

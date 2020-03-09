@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cocona.Lite" Version="1.2.0" />
     <PackageReference Include="MagicOnion" Version="3.0.9" />
     <PackageReference Include="MagicOnion.Hosting" Version="3.0.9" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
