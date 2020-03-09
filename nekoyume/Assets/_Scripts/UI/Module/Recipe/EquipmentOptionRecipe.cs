@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
             {
                 if (i >= view.model.SubRecipeIds.Count)
                 {
-                    equipmentOptionRecipeViews[i].Hide();
+                    equipmentOptionRecipeViews[i].ShowLocked();
                     continue;
                 }
 
@@ -45,10 +45,12 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
+                // isAvailable에 false 넣을 시 비활성화됩니다.
                 equipmentOptionRecipeViews[i].Show(
                     row.GetLocalizedName(),
                     new EquipmentItemSubRecipeSheet.MaterialInfo(view.model.MaterialId, view.model.MaterialCount),
                     subRecipeId,
+                    true,
                     () => onSelectOption(view, subRecipeId));
             }
 

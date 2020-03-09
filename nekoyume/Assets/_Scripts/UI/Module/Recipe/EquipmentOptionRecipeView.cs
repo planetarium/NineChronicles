@@ -36,6 +36,26 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button button = null;
 
+        [SerializeField]
+        private GameObject lockParent = null;
+
+        [SerializeField]
+        private GameObject header = null;
+
+        [SerializeField]
+        private GameObject options = null;
+
+        [SerializeField]
+        private Image decoration;
+
+        [SerializeField]
+        private Image panel;
+
+        [SerializeField]
+        private Image innerPanel;
+
+        private readonly Color disabledColor = new Color(0.5f, 0.5f, 0.5f);
+
         private void OnDisable()
         {
             button.onClick.RemoveAllListeners();
@@ -50,13 +70,16 @@ namespace Nekoyume.UI.Module
             string recipeName,
             EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo,
             int subRecipeId,
+            bool isAvailable,
             UnityAction onClick)
         {
             if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet
                 .TryGetValue(subRecipeId, out var subRecipeRow))
             {
                 requiredItemRecipeView.SetData(baseMaterialInfo, subRecipeRow.Materials);
-                button.onClick.AddListener(onClick);
+
+                if (isAvailable)
+                    button.onClick.AddListener(onClick);
             }
             else
             {
@@ -64,6 +87,9 @@ namespace Nekoyume.UI.Module
                 Hide();
                 return;
             }
+
+            SetLocked(false);
+            SetEnabled(isAvailable);
 
             nameText.text = recipeName;
 
@@ -108,9 +134,45 @@ namespace Nekoyume.UI.Module
             Show();
         }
 
+        public void ShowLocked()
+        {
+            SetLocked(true);
+            Show();
+        }
+
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        private void SetLocked(bool value)
+        {
+            lockParent.SetActive(value);
+            header.SetActive(!value);
+            options.SetActive(!value);
+            requiredItemRecipeView.gameObject.SetActive(!value);
+            SetPanelDimmed(value);
+        }
+
+        private void SetEnabled(bool value)
+        {
+            nameText.color = value ? Color.white : disabledColor;
+            descriptionText.color = value ? Color.white : disabledColor;
+
+            foreach (var option in optionTexts)
+            {
+                option.percentageText.color = value ? Color.white : disabledColor;
+                option.descriptionText.color = value ? Color.white : disabledColor;
+            }
+
+            SetPanelDimmed(!value);
+        }
+
+        private void SetPanelDimmed(bool isDimmed)
+        {
+            decoration.color = isDimmed ? disabledColor : Color.white;
+            panel.color = isDimmed ? disabledColor : Color.white;
+            innerPanel.color = isDimmed ? disabledColor : Color.white;
         }
 
         private void SetOptionText(OptionText optionText, decimal percentage, string description)

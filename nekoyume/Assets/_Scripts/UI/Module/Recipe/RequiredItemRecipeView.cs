@@ -52,9 +52,17 @@ namespace Nekoyume.UI.Module
             var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
 
             var item = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, materialId);
-            inventory.TryGetFungibleItem(item, out var inventoryItem);
-            var countableItem = new CountableItem(item, inventoryItem.count);
-            view.SetData(countableItem, requiredCount);
+
+            if (inventory.TryGetFungibleItem(item, out var inventoryItem))
+            {
+                var countableItem = new CountableItem(item, inventoryItem.count);
+                view.SetData(countableItem, requiredCount);
+            }
+            else
+            {
+                var countableItem = new CountableItem(item, 0);
+                view.SetData(countableItem, requiredCount);
+            }
         }
     }
 }
