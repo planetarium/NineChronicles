@@ -15,12 +15,16 @@ namespace Nekoyume.Game.Entrance
 
         private IEnumerator Act()
         {
+            var stage = Game.instance.Stage;
+            if (stage.showLoadingScreen)
+            {
+                Widget.Find<LoadingScreen>().Show();
+            }
             Widget.Find<BottomMenu>().Close();
             Widget.Find<UI.Inventory>().Close();
             Widget.Find<StatusDetail>().Close();
             Widget.Find<Quest>().Close();
 
-            var stage = Game.instance.Stage;
             stage.stageId = 0;
             stage.LoadBackground("room");
             stage.roomAnimator.Play("EnteringRoom");
@@ -66,7 +70,9 @@ namespace Nekoyume.Game.Entrance
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character,
                 BottomMenu.ToggleableType.Inventory,
-                BottomMenu.ToggleableType.Settings);
+                BottomMenu.ToggleableType.Settings,
+                BottomMenu.ToggleableType.Combination
+            );
 
             Destroy(this);
         }

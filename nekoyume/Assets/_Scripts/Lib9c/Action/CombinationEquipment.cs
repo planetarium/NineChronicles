@@ -1,42 +1,59 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     [ActionType("combination_equipment")]
     public class CombinationEquipment : GameAction
     {
-        public const string DeriveKey = "combinationEquipmentResult";
         public Address AvatarAddress;
         public int RecipeId;
+        public int SlotIndex;
         public int? SubRecipeId;
 
-        public override IAccountStateDelta Execute(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext context)
         {
+            IActionContext ctx = context;
             var states = ctx.PreviousStates;
-            var resultAddress = AvatarAddress.Derive(DeriveKey);
+            var slotAddress = AvatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    SlotIndex
+                )
+            );
             if (ctx.Rehearsal)
             {
                 return states
                     .SetState(AvatarAddress, MarkChanged)
-                    .SetState(resultAddress, MarkChanged)
+                    .SetState(slotAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged);
 
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))
+            {
+                return states;
+            }
+
+            var slotState = states.GetCombinationSlotState(AvatarAddress, SlotIndex);
+            if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
             {
                 return states;
             }
@@ -60,7 +77,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            if (!avatarState.worldInformation.IsClearedStage(recipe.UnlockStage))
+            if (!avatarState.worldInformation.IsStageCleared(recipe.UnlockStage))
             {
                 return states;
             }
@@ -75,7 +92,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            Material equipmentMaterial = ItemFactory.CreateMaterial(materialSheet, material.Id);
+            var equipmentMaterial = ItemFactory.CreateMaterial(materialSheet, material.Id);
             materials[equipmentMaterial] = recipe.MaterialCount;
 
             var requiredGold = recipe.RequiredGold;
@@ -92,7 +109,7 @@ namespace Nekoyume.Action
 
 
             // 보조 레시피 검증
-            var optionIds = new HashSet<int>();
+            HashSet<int> optionIds = null;
             if (!(SubRecipeId is null))
             {
                 var subSheet = tableSheets.EquipmentItemSubRecipeSheet;
@@ -101,7 +118,7 @@ namespace Nekoyume.Action
                     return states;
                 }
 
-                if (!avatarState.worldInformation.IsClearedStage(subRecipe.UnlockStage))
+                if (!avatarState.worldInformation.IsStageCleared(subRecipe.UnlockStage))
                 {
                     return states;
                 }
@@ -118,41 +135,14 @@ namespace Nekoyume.Action
                         return states;
                     }
 
-                    Material subMaterial = ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
+                    var subMaterial = ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
                     materials[subMaterial] = materialInfo.Count;
 
                     requiredGold += subRecipe.RequiredGold;
                     requiredActionPoint += subRecipe.RequiredActionPoint;
                 }
 
-                var optionSheet = tableSheets.EquipmentItemOptionSheet;
-                foreach (var optionInfo in subRecipe.Options)
-                {
-                    if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
-                    {
-                        return states;
-                    }
-
-                    var random = ctx.Random;
-                    if (optionInfo.Ratio > random.Next(0, 100) * 0.01m)
-                    {
-                        if (optionRow.StatType != StatType.NONE)
-                        {
-                            var statMap = GetStat(optionRow, ctx.Random);
-                            equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
-                        }
-                        else
-                        {
-                            var skill = GetSkill(optionRow, tableSheets, ctx.Random);
-                            if (!(skill is null))
-                            {
-                                equipment.Skills.Add(skill);
-                            }
-                        }
-
-                        optionIds.Add(optionInfo.Id);
-                    }
-                }
+                optionIds = SelectOption(tableSheets, subRecipe, ctx.Random, equipment);
             }
 
             // 자원 검증
@@ -163,9 +153,12 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= requiredActionPoint;
             agentState.gold -= requiredGold;
-            foreach (var id in optionIds)
+            if (!(optionIds is null))
             {
-                agentState.unlockedOptions.Add(id);
+                foreach (var id in optionIds)
+                {
+                    agentState.unlockedOptions.Add(id);
+                }
             }
 
             var result = new Combination.ResultModel
@@ -175,13 +168,14 @@ namespace Nekoyume.Action
                 materials = materials,
                 itemUsable = equipment,
             };
+            slotState.Update(result, ctx.BlockIndex + recipe.RequiredBlockIndex);
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
             result.id = mail.id;
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
-                .SetState(resultAddress, result.Serialize())
+                .SetState(slotAddress, slotState.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());
         }
 
@@ -191,6 +185,7 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["recipeId"] = RecipeId.Serialize(),
                 ["subRecipeId"] = SubRecipeId.Serialize(),
+                ["slotIndex"] = SlotIndex.Serialize(),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -198,6 +193,7 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             RecipeId = plainValue["recipeId"].ToInteger();
             SubRecipeId = plainValue["subRecipeId"].ToNullableInteger();
+            SlotIndex = plainValue["slotIndex"].ToInteger();
         }
 
         private static StatMap GetStat(EquipmentItemOptionSheet.Row row, IRandom random)
@@ -221,6 +217,74 @@ namespace Nekoyume.Action
             {
                 return null;
             }
+        }
+
+        public static HashSet<int> SelectOption(
+            TableSheets tableSheets,
+            EquipmentItemSubRecipeSheet.Row subRecipe,
+            IRandom random,
+            Equipment equipment
+        )
+        {
+            var optionSheet = tableSheets.EquipmentItemOptionSheet;
+            var optionSelector = new WeightedSelector<EquipmentItemOptionSheet.Row>(random);
+            var optionIds = new HashSet<int>();
+
+            if (subRecipe.MaxOptionLimit <= 0)
+            {
+                return optionIds;
+            }
+
+            while (!optionIds.Any())
+            {
+
+                if (optionSelector.Count == 0)
+                {
+                    foreach (var optionInfo in subRecipe.Options)
+                    {
+                        if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow) || optionInfo.Ratio <= 0m)
+                        {
+                            continue;
+                        }
+
+                        optionSelector.Add(optionRow, optionInfo.Ratio);
+                    }
+                }
+
+                if (optionSelector.Count == 0)
+                {
+                    break;
+                }
+
+                for (var i = 0; i < subRecipe.MaxOptionLimit; i++)
+                {
+                    try
+                    {
+                        var optionRow = optionSelector.Pop();
+                        if (optionRow.StatType != StatType.NONE)
+                        {
+                            var statMap = GetStat(optionRow, random);
+                            equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                        }
+                        else
+                        {
+                            var skill = GetSkill(optionRow, tableSheets, random);
+                            if (!(skill is null))
+                            {
+                                equipment.Skills.Add(skill);
+                            }
+                        }
+                        optionIds.Add(optionRow.Id);
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        // 확률굴림에 실패
+                        Log.Debug("option select failed.");
+                    }
+                }
+            }
+
+            return optionIds;
         }
     }
 }

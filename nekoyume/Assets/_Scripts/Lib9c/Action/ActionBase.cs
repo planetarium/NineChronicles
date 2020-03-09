@@ -25,7 +25,7 @@ namespace Nekoyume.Action
 
         public abstract IValue PlainValue { get; }
         public abstract void LoadPlainValue(IValue plainValue);
-        public abstract IAccountStateDelta Execute(IActionContext ctx);
+        public abstract IAccountStateDelta Execute(IActionContext context);
 
         private struct AccountStateDelta : IAccountStateDelta
         {
@@ -82,7 +82,7 @@ namespace Nekoyume.Action
                 OutputStates = new AccountStateDelta((byte[])info.GetValue("outputStates", typeof(byte[])));
             }
 
-            public void GetObjectData(SerializationInfo info, StreamingContext ctx)
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
             {
                 info.AddValue("action", ToBytes(Action));
                 info.AddValue("signer", Signer.ToByteArray());

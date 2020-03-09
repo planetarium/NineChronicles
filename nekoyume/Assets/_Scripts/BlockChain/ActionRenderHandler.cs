@@ -240,8 +240,8 @@ namespace Nekoyume.BlockChain
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
-            var resultAddress = avatarAddress.Derive(Action.CombinationEquipment.DeriveKey);
-            var result = new Combination.ResultModel((Dictionary) eval.OutputStates.GetState(resultAddress));
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.SlotIndex);
+            var result = slot.Result;
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);

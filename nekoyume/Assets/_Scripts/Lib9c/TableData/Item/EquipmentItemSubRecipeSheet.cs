@@ -20,15 +20,16 @@ namespace Nekoyume.TableData
         public struct OptionInfo
         {
             public readonly int Id;
-            public readonly int Ratio;
+            public readonly decimal Ratio;
 
-            public OptionInfo(int id, int ratio)
+            public OptionInfo(int id, decimal ratio)
             {
                 Id = id;
                 Ratio = ratio;
             }
         }
-        public class Row: SheetRow<int>
+
+        public class Row : SheetRow<int>
         {
             public override int Key => Id;
             public int Id { get; private set; }
@@ -37,6 +38,7 @@ namespace Nekoyume.TableData
             public int UnlockStage { get; private set; }
             public List<MaterialInfo> Materials { get; private set; }
             public List<OptionInfo> Options { get; private set; }
+            public int MaxOptionLimit { get; private set; }
 
             public override void Set(IReadOnlyList<string> fields)
             {
@@ -48,16 +50,22 @@ namespace Nekoyume.TableData
                 Options = new List<OptionInfo>();
                 for (var i = 0; i < 3; i++)
                 {
-                    var offSet = i * 2;
-                    Materials.Add(new MaterialInfo(ParseInt(fields[4 + offSet]), ParseInt(fields[5 + offSet])));
+                    var offset = i * 2;
+                    if (string.IsNullOrEmpty(fields[4 + offset]) || string.IsNullOrEmpty(fields[5 + offset]))
+                        continue;
+
+                    Materials.Add(new MaterialInfo(ParseInt(fields[4 + offset]), ParseInt(fields[5 + offset])));
                 }
+
                 for (var i = 0; i < 4; i++)
                 {
-                    var offSet = i * 2;
-                    if (string.IsNullOrEmpty(fields[10 + offSet]))
+                    var offset = i * 2;
+                    if (string.IsNullOrEmpty(fields[10 + offset]) || string.IsNullOrEmpty(fields[11 + offset]))
                         continue;
-                    Options.Add(new OptionInfo(ParseInt(fields[10 + offSet]), ParseInt(fields[11 + offSet])));
+
+                    Options.Add(new OptionInfo(ParseInt(fields[10 + offset]), ParseDecimal(fields[11 + offset])));
                 }
+                MaxOptionLimit = ParseInt(fields[18]);
             }
         }
 

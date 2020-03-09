@@ -19,7 +19,9 @@ namespace Nekoyume.Model.BattleStatus
             public readonly ElementalType ElementalType;
             public readonly SkillTargetType SkillTargetType;
             public readonly int WaveTurn;
-            [CanBeNull] public readonly Model.Buff.Buff Buff;
+
+            [CanBeNull]
+            public readonly Model.Buff.Buff Buff;
 
             public SkillInfo(CharacterBase character, int effect, bool critical, SkillCategory skillCategory,
                 int waveTurn, ElementalType elementalType = ElementalType.Normal,
@@ -37,9 +39,12 @@ namespace Nekoyume.Model.BattleStatus
         }
 
         public readonly IEnumerable<SkillInfo> SkillInfos;
-        [CanBeNull] public readonly IEnumerable<SkillInfo> BuffInfos;
 
-        protected Skill(CharacterBase character, IEnumerable<SkillInfo> skillInfos, IEnumerable<SkillInfo> buffInfos) : base(character)
+        [CanBeNull]
+        public readonly IEnumerable<SkillInfo> BuffInfos;
+
+        protected Skill(CharacterBase character, IEnumerable<SkillInfo> skillInfos,
+            IEnumerable<SkillInfo> buffInfos) : base(character)
         {
             SkillInfos = skillInfos;
             BuffInfos = buffInfos;

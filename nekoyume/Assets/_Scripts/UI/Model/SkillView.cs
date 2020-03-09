@@ -18,10 +18,10 @@ namespace Nekoyume.UI.Model
 
         public SkillView(Skill skill)
         {
-            iconSprite.Value = skill.skillRow.GetIcon();
-            name.Value = skill.skillRow.GetLocalizedName();
-            power.Value = $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {skill.power}";
-            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.chance}%";
+            iconSprite.Value = skill.SkillRow.GetIcon();
+            name.Value = skill.SkillRow.GetLocalizedName();
+            power.Value = $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {skill.Power}";
+            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
         }
         
         public SkillView(BuffSkill skill)
@@ -35,10 +35,10 @@ namespace Nekoyume.UI.Model
                 powerValue = buff.RowData.StatModifier.ToString();
             }
             
-            iconSprite.Value = skill.skillRow.GetIcon();
-            name.Value = skill.skillRow.GetLocalizedName();
+            iconSprite.Value = skill.SkillRow.GetIcon();
+            name.Value = skill.SkillRow.GetLocalizedName();
             power.Value = $"{LocalizationManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
-            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.chance}%";
+            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
         }
 
         public void Dispose()
