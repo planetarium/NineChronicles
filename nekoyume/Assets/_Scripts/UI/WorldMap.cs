@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Battle;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -95,14 +93,15 @@ namespace Nekoyume.UI
                     : States.Instance.CurrentAvatarState.level);
             }).AddTo(gameObject);
 
-            var tooltip = Widget.Find<ItemInformationTooltip>();
+            var tooltip = Find<ItemInformationTooltip>();
 
-            foreach(var view in stageInformation.rewardsAreaItemViews)
+            foreach (var view in stageInformation.rewardsAreaItemViews)
             {
                 view.touchHandler.OnClick.Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    var model = new Model.CountableItem(new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row), 1);
+                    var model = new Model.CountableItem(
+                        new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row), 1);
                     tooltip.Show(view.RectTransform, model);
                     tooltip.itemInformation.iconArea.itemView.countText.enabled = false;
                 }).AddTo(view);
@@ -214,7 +213,7 @@ namespace Nekoyume.UI
             bottomMenu.worldMapButton.button.OnClickAsObservable()
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
                 .AddTo(_disposablesAtShow);
-            
+
             ShowWorld(worldId, stageId, showWorld, callByShow);
             Show();
         }
@@ -250,13 +249,13 @@ namespace Nekoyume.UI
             CloseWidget += Pop;
             CloseWidget += () => CloseWidget = null;
             Push();
-            
+
             ShowWorld(world.Id, world.GetNextStageId(), false);
         }
 
         private void ShowWorld(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
-            if(callByShow)
+            if (callByShow)
                 CallByShowUpdateWorld();
             else
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
@@ -284,7 +283,7 @@ namespace Nekoyume.UI
 
             var bottomMenu = Find<BottomMenu>();
             bottomMenu.worldMapButton.Hide();
-            bottomMenu.backButton.Show();    
+            bottomMenu.backButton.Show();
             stage.SetActive(false);
             status.Close(true);
             worldMapRoot.SetActive(true);
@@ -298,14 +297,15 @@ namespace Nekoyume.UI
             {
                 var bottomMenu = Find<BottomMenu>();
                 bottomMenu.worldMapButton.Hide();
-                bottomMenu.backButton.Show(); 
+                bottomMenu.backButton.Show();
                 status.Close(true);
                 worldMapRoot.SetActive(true);
             }
             else
             {
                 var bottomMenu = Find<BottomMenu>();
-                bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true, BottomMenu.ToggleableType.WorldMap);
+                bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true,
+                    BottomMenu.ToggleableType.WorldMap);
                 bottomMenu.worldMapButton.Show();
                 bottomMenu.backButton.Hide();
                 bottomMenu.ToggleGroup?.SetToggledOffAll();
