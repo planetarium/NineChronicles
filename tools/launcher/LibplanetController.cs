@@ -236,18 +236,5 @@ namespace Launcher
         private const string RpcListenHost = "0.0.0.0";
 
         private const int RpcListenPort = RpcServerPort;
-
-        private VersionDescriptor CurrentVersion(string deployBranch)
-        {
-            using var webClient = new WebClient();
-            var rawVersionHistory = webClient.DownloadString(Storage.VersionHistoryUri(deployBranch));
-            var versionHistory = JsonSerializer.Deserialize<VersionHistory>(
-                rawVersionHistory,
-                new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                });
-            return versionHistory.Versions.First(descriptor => descriptor.Version == versionHistory.CurrentVersion);
-        }
     }
 }
