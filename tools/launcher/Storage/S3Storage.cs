@@ -16,7 +16,7 @@ namespace Launcher.Storage
 
         private static Uri BuildS3Uri(string path) =>
             new UriBuilder(
-                Uri.UriSchemeHttps,
+                Uri.UriSchemeHttp,
                 S3Host,
                 HttpPort,
                 path
@@ -25,7 +25,7 @@ namespace Launcher.Storage
         // TODO: the path should be separated with version one more time.
         public Uri GameBinaryDownloadUri(string deployBranch) =>
             BuildS3Uri(Path.Combine(deployBranch, CurrentPlatform.GameBinaryDownloadFilename));
-        
+
         public Uri VersionHistoryUri(string deployBranch) =>
             BuildS3Uri(Path.Combine(deployBranch, VersionHistoryFilename));
     }

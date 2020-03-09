@@ -31,13 +31,23 @@ namespace Launcher
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var currentVersion = await CurrentVersionAsync();
-                if (LatestVersion.Equals(currentVersion))
+                try
                 {
-                    VersionUpdated?.Invoke(this, new VersionUpdatedEventArgs(currentVersion) );
-                    LatestVersion = currentVersion;
+                    var currentVersion = await CurrentVersionAsync();
+                    Console.WriteLine(currentVersion.Version);
+                    Console.WriteLine(currentVersion.Description);
+                    if (!LatestVersion.Equals(currentVersion))
+                    {
+                        VersionUpdated?.Invoke(this, new VersionUpdatedEventArgs(currentVersion));
+                        LatestVersion = currentVersion;
+                    }
+
+                    await Task.Delay(checkInterval, cancellationToken);
                 }
-                await Task.Delay(checkInterval, cancellationToken);
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
             }
         }
 

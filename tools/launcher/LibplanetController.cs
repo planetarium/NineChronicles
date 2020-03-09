@@ -29,7 +29,7 @@ namespace Launcher
     {
         private CancellationTokenSource _cancellationTokenSource;
 
-        private S3Storage Storage { get; } 
+        private S3Storage Storage { get; }
 
         // It used in qml/Main.qml to hide and turn on some menus.
         [NotifySignal]
@@ -56,7 +56,11 @@ namespace Launcher
                 {
                     try
                     {
-                        await SyncTask(cancellationToken);
+                        var settings = LoadSettings();
+                        await Task.WhenAll(
+                            UpdateCheckTask(settings, cancellationToken),
+                            SyncTask(settings, cancellationToken)
+                        );
                     }
                     catch (TimeoutException e)
                     {
@@ -81,31 +85,38 @@ namespace Launcher
             _cancellationTokenSource = null;
         }
 
-        public async Task SyncTask(CancellationToken cancellationToken)
+        private async Task UpdateCheckTask(LauncherSettings settings, CancellationToken cancellationToken)
         {
-            var setting = LoadSetting();
+            // TODO: save current version in local file and load, and use it. 
+            var updateWatcher = new UpdateWatcher(Storage, settings.DeployBranch, default);
+            updateWatcher.VersionUpdated += (sender, e) => { Console.WriteLine(e.UpdatedVersion.Version); };
+            await updateWatcher.StartAsync(TimeSpan.FromSeconds(3), cancellationToken);
+        }
 
+        private async Task SyncTask(LauncherSettings settings, CancellationToken cancellationToken)
+        {
             PrivateKey privateKey = null;
-            if (!string.IsNullOrEmpty(setting.KeyStorePath) && !string.IsNullOrEmpty(setting.Passphrase))
+            if (!string.IsNullOrEmpty(settings.KeyStorePath) && !string.IsNullOrEmpty(settings.Passphrase))
             {
                 // TODO: get passphrase from UI, not setting file.
-                var protectedPrivateKey = ProtectedPrivateKey.FromJson(File.ReadAllText(setting.KeyStorePath));
-                privateKey = protectedPrivateKey.Unprotect(setting.Passphrase);
+                var protectedPrivateKey = ProtectedPrivateKey.FromJson(File.ReadAllText(settings.KeyStorePath));
+                privateKey = protectedPrivateKey.Unprotect(settings.Passphrase);
                 Log.Debug($"Address derived from key store, is {privateKey.PublicKey.ToAddress()}");
             }
 
-            var storePath = string.IsNullOrEmpty(setting.StorePath) ? DefaultStorePath : setting.StorePath;
+            var storePath = string.IsNullOrEmpty(settings.StorePath) ? DefaultStorePath : settings.StorePath;
 
             LibplanetNodeServiceProperties properties = new LibplanetNodeServiceProperties
             {
-                AppProtocolVersion = setting.AppProtocolVersion,
-                GenesisBlockPath = setting.GenesisBlockPath,
-                NoMiner = setting.NoMiner,
+                AppProtocolVersion = settings.AppProtocolVersion,
+                GenesisBlockPath = settings.GenesisBlockPath,
+                NoMiner = settings.NoMiner,
                 PrivateKey = privateKey ?? new PrivateKey(),
-                IceServers = new[] {setting.IceServer}.Select(LoadIceServer),
-                Peers = new[] {setting.Seed}.Select(LoadPeer),
+                IceServers = new[] {settings.IceServer}.Select(LoadIceServer),
+                Peers = new[] {settings.Seed}.Select(LoadPeer),
+                // FIXME: how can we validate it to use right store type?
                 StorePath = storePath,
-                StoreType = setting.StoreType,
+                StoreType = settings.StoreType,
             };
 
             var service = new NineChroniclesNodeService(properties);
@@ -163,7 +174,7 @@ namespace Launcher
 
         public async Task RunGame()
         {
-            var setting = LoadSetting();
+            var setting = LoadSettings();
             var gameBinaryPath = setting.GameBinaryPath;
             if (string.IsNullOrEmpty(gameBinaryPath))
             {
@@ -198,7 +209,7 @@ namespace Launcher
             Process.Start(CurrentPlatform.OpenCommand, SettingFilePath);
         }
 
-        public LauncherSettings LoadSetting()
+        public LauncherSettings LoadSettings()
         {
             InitializeSettingFile();
             return JsonSerializer.Deserialize<LauncherSettings>(

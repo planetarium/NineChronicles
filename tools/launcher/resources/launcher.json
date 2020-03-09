@@ -8,5 +8,6 @@
   "noMiner": true,
   "seed": "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,afb41a981311111eabe8e06719e43e0a-1817452618.us-east-2.elb.amazonaws.com,31234",
   "genesisBlockPath": "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-20200304",
-  "gameBinaryPath": ""
+  "gameBinaryPath": "",
+  "deployBranch": "launcher"
 }
