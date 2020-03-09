@@ -12,7 +12,7 @@ using Serilog;
 
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
-namespace NineChronicles.Standalone
+namespace NineChronicles.Standalone.Executable
 {
     public class Program
     {
