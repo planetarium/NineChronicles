@@ -100,11 +100,18 @@ namespace Nekoyume.Action
             
             // 장비가 유효한지 검사한다.
             {
+                var blockIndex = context.BlockIndex;
                 var level = avatarState.level;
                 var ringCount = 0;
                 var failed = false;
                 foreach (var equipment in equipments)
                 {
+                    if (equipment.RequiredBlockIndex < blockIndex)
+                    {
+                        failed = true;
+                        break;
+                    }
+                        
                     switch (equipment.Data.ItemSubType)
                     {
                         case ItemSubType.Weapon:
