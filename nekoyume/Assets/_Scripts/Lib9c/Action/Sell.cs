@@ -94,7 +94,7 @@ namespace Nekoyume.Action
                 return states;
             }
             
-            if (nonFungibleItem.RequiredBlockIndex < context.BlockIndex)
+            if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
             {
                 // 필요 블럭 인덱스 불충분 에러.
                 return states;

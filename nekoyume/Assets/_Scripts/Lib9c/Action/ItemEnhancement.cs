@@ -82,7 +82,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (enhancementItem.RequiredBlockIndex < context.BlockIndex)
+            if (enhancementItem.RequiredBlockIndex > context.BlockIndex)
             {
                 // 필요 블럭 인덱스 불충분 에러.
                 return states;
@@ -133,7 +133,7 @@ namespace Nekoyume.Action
                     return states;
                 }
                 
-                if (materialItem.RequiredBlockIndex < context.BlockIndex)
+                if (materialItem.RequiredBlockIndex > context.BlockIndex)
                 {
                     // 필요 블럭 인덱스 불충분 에러.
                     return states;

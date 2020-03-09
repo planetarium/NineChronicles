@@ -104,7 +104,7 @@ namespace Nekoyume.UI.Model
 
         public void AddItem(ItemBase itemBase, int count = 1)
         {
-            var agent = Game.Game.instance.Agent;
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
             InventoryItem inventoryItem;
             switch (itemBase.Data.ItemType)
             {
@@ -112,7 +112,7 @@ namespace Nekoyume.UI.Model
                     if (!(itemBase is Consumable consumable))
                         throw new InvalidCastException(nameof(itemBase));
 
-                    if (consumable.RequiredBlockIndex < agent.BlockIndex)
+                    if (consumable.RequiredBlockIndex > blockIndex)
                         break;
 
                     inventoryItem = CreateInventoryItem(consumable, count);
@@ -122,7 +122,7 @@ namespace Nekoyume.UI.Model
                     if (!(itemBase is Equipment equipment))
                         throw new InvalidCastException(nameof(itemBase));
 
-                    if (equipment.RequiredBlockIndex < agent.BlockIndex)
+                    if (equipment.RequiredBlockIndex > blockIndex)
                         break;
 
                     inventoryItem = CreateInventoryItem(equipment, count);

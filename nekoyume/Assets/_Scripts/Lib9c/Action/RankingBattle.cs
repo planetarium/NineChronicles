@@ -59,7 +59,7 @@ namespace Nekoyume.Action
                 var failed = false;
                 foreach (var equipment in equipments)
                 {
-                    if (equipment.RequiredBlockIndex < context.BlockIndex)
+                    if (equipment.RequiredBlockIndex > context.BlockIndex)
                     {
                         failed = true;
                         break;
