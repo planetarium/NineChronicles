@@ -84,14 +84,14 @@ namespace NineChronicles.Standalone.Executable
                 if (string.IsNullOrEmpty(rpcListenHost))
                 {
                     throw new CommandExitedException(
-                        "--rpc-listen-host must be required when --rpc-server had been set.",
+                        "--rpc-listen-host must be required when --rpc-server is present.",
                         -1
                     );
                 }
                 else if (!(rpcListenPort is int rpcPortValue))
                 {
                     throw new CommandExitedException(
-                        "--rpc-listen-port must be required when --rpc-server had been set.",
+                        "--rpc-listen-port must be required when --rpc-server is present.",
                         -1
                     );
                 }
