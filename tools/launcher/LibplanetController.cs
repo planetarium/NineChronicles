@@ -20,6 +20,7 @@ using NineChronicles.Standalone;
 using Qml.Net;
 using Serilog;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using static Launcher.RuntimePlatform.RuntimePlatform;
 
 namespace Launcher
 {
@@ -208,13 +209,6 @@ namespace Launcher
                 File.Copy(Path.Combine("resources", SettingFileName), SettingFilePath);
             }
         }
-        
-        private static IRuntimePlatform CurrentPlatform =>
-            RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
-                ? new OSXPlatform() as IRuntimePlatform
-                : RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                    ? new WindowsPlatform() as IRuntimePlatform
-                    : throw new PlatformNotSupportedException();
 
         private static string DefaultStorePath => Path.Combine(PlanetariumApplicationPath, "9c");
 
