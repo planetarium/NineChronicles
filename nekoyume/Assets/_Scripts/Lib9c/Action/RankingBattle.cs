@@ -49,7 +49,6 @@ namespace Nekoyume.Action
             // 도전자의 장비가 유효한지 검사한다.
             // 피도전자의 장비도 검사해야 하는가는 모르겠다. 이후에 필요하다면 추가하는 것으로 한다.
             {
-                var blockIndex = context.BlockIndex;
                 var equipments = avatarState.inventory.Items
                     .Select(e => e.item)
                     .OfType<Equipment>()
@@ -60,7 +59,7 @@ namespace Nekoyume.Action
                 var failed = false;
                 foreach (var equipment in equipments)
                 {
-                    if (equipment.RequiredBlockIndex < blockIndex)
+                    if (equipment.RequiredBlockIndex < context.BlockIndex)
                     {
                         failed = true;
                         break;
