@@ -10,7 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
-using Launcher.RuntimePlatform;
+using Launcher.Storage;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
@@ -29,9 +29,16 @@ namespace Launcher
     {
         private CancellationTokenSource _cancellationTokenSource;
 
+        private S3Storage Storage { get; } 
+
         // It used in qml/Main.qml to hide and turn on some menus.
         [NotifySignal]
         public bool GameRunning { get; set; }
+
+        public LibplanetController()
+        {
+            Storage = new S3Storage();
+        }
 
         public void StartSync()
         {
@@ -119,7 +126,7 @@ namespace Launcher
             {
                 var tempFilePath = Path.GetTempFileName();
                 using var webClient = new WebClient();
-                await webClient.DownloadFileTaskAsync(GameBinaryDownloadUri(deployBranch), tempFilePath);
+                await webClient.DownloadFileTaskAsync(Storage.GameBinaryDownloadUri(deployBranch), tempFilePath);
 
                 // Extract binary.
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -222,13 +229,6 @@ namespace Launcher
 
         private const string SettingFileName = "launcher.json";
 
-        private const string VersionHistoryFilename = "versions.json";
-
-        // TODO: it should be configurable.
-        private const string S3Host = "9c-test.s3.ap-northeast-2.amazonaws.com";
-
-        private const ushort HttpPort = 80;
-
         private readonly string RpcServerHost = IPAddress.Loopback.ToString();
 
         private const int RpcServerPort = 30000;
@@ -237,25 +237,10 @@ namespace Launcher
 
         private const int RpcListenPort = RpcServerPort;
 
-        private static Uri BuildS3Uri(string path) =>
-            new UriBuilder(
-                Uri.UriSchemeHttps,
-                S3Host,
-                HttpPort,
-                path
-            ).Uri;
-
-        // TODO: the path should be separated with version one more time.
-        private static Uri GameBinaryDownloadUri(string deployBranch) =>
-            BuildS3Uri(Path.Combine(deployBranch, CurrentPlatform.GameBinaryDownloadFilename));
-
-        private static Uri VersionHistoryUri(string deployBranch) =>
-            BuildS3Uri(Path.Combine(deployBranch, VersionHistoryFilename));
-
-        private static VersionDescriptor CurrentVersion(string deployBranch)
+        private VersionDescriptor CurrentVersion(string deployBranch)
         {
             using var webClient = new WebClient();
-            var rawVersionHistory = webClient.DownloadString(VersionHistoryUri(deployBranch));
+            var rawVersionHistory = webClient.DownloadString(Storage.VersionHistoryUri(deployBranch));
             var versionHistory = JsonSerializer.Deserialize<VersionHistory>(
                 rawVersionHistory,
                 new JsonSerializerOptions
