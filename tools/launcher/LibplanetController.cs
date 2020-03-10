@@ -32,8 +32,9 @@ namespace Launcher
         private S3Storage Storage { get; }
 
         // It used in qml/Main.qml to hide and turn on some menus.
-        [NotifySignal]
-        public bool GameRunning { get; set; }
+        [NotifySignal] public bool GameRunning => GameProcess?.HasExited ?? false;
+
+        private Process GameProcess { get; set; }
 
         public LibplanetController()
         {
@@ -89,7 +90,11 @@ namespace Launcher
         {
             // TODO: save current version in local file and load, and use it. 
             var updateWatcher = new UpdateWatcher(Storage, settings.DeployBranch, default);
-            updateWatcher.VersionUpdated += (sender, e) => { Console.WriteLine(e.UpdatedVersion.Version); };
+            updateWatcher.VersionUpdated += (sender, e) =>
+            {
+                // TODO: Download new client in background.
+                Console.WriteLine(e.UpdatedVersion.Version);
+            };
             await updateWatcher.StartAsync(TimeSpan.FromSeconds(3), cancellationToken);
         }
 
@@ -190,16 +195,19 @@ namespace Launcher
         {
             string commandArguments =
                 $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort}";
-            Process process = Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath), commandArguments);
+            GameProcess = Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath), commandArguments);
 
-            GameRunning = true;
             this.ActivateProperty(ctrl => ctrl.GameRunning);
 
-            process.Exited += (sender, args) => {
-                GameRunning = false;
+            GameProcess.Exited += (sender, args) => {
                 this.ActivateProperty(ctrl => ctrl.GameRunning);
             };
-            process.EnableRaisingEvents = true;
+            GameProcess.EnableRaisingEvents = true;
+        }
+
+        private void StopGameProcess(CancellationToken cancellationToken)
+        {
+            GameProcess?.Kill(true);
         }
 
         // NOTE: called by *settings* menu
