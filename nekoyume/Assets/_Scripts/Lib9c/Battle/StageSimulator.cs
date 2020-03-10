@@ -278,7 +278,7 @@ namespace Nekoyume.Battle
                 itemSelector.Add(r.ItemId, r.Ratio);
                 try
                 {
-                    var itemId = itemSelector.Pop();
+                    var itemId = itemSelector.Select(1).First();
                     if (TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
                     {
                         var count = Random.Next(r.Min, r.Max + 1);
