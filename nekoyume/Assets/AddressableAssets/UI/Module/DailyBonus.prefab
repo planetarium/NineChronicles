@@ -184,14 +184,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9adaed592cc44cf2bb70a39622e85f2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: -9137729193417607844}
+  animateAlpha: 0
   text: {fileID: 3053886975728798312}
   slider: {fileID: 3053886975560591760}
   button: {fileID: 3365668517307483660}
-  canvasGroup: {fileID: 5124867261552837371}
-  dailyBonusCanvasGroup: {fileID: -9137729193417607844}
-  animateAlpha: 0
+  additiveCanvasGroup: {fileID: 5124867261552837371}
   tooltipArea: {fileID: 2493448372099798015}
   boxImageTransform: {fileID: 8718710296122514099}
+  actionPoint: {fileID: 0}
 --- !u!114 &1840000510220927721
 MonoBehaviour:
   m_ObjectHideFlags: 0

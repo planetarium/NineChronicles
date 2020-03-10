@@ -1,27 +1,32 @@
 using System;
 using System.Collections;
-using DG.Tweening;
-using Nekoyume.Model;
 using Nekoyume.State;
+using Nekoyume.UI.Module.Common;
 using TMPro;
-using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class ActionPoint : MonoBehaviour
+    public class ActionPoint : AlphaAnimateModule
     {
-        public TextMeshProUGUI text;
-        public Slider slider;
-        public Image image;
-        public RectTransform tooltipArea;
-        public CanvasGroup canvasGroup;
-        public bool animateAlpha;
+        [SerializeField]
+        private TextMeshProUGUI text = null;
+
+        [SerializeField]
+        private Slider slider = null;
+
+        [SerializeField]
+        private Image image = null;
+
+        [SerializeField]
+        private RectTransform tooltipArea = null;
 
         private IDisposable _disposable;
         private VanilaTooltip _tooltip;
-        private Coroutine lerpCoroutine;
+        private Coroutine _lerpCoroutine;
+
+        public Image Image => image;
 
         #region Mono
 
@@ -32,39 +37,35 @@ namespace Nekoyume.UI.Module
             text.text = $"{MaxValue} / {MaxValue}";
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            if(States.Instance.CurrentAvatarState != null)
+            base.OnEnable();
+
+            if (States.Instance.CurrentAvatarState != null)
                 SetPoint(States.Instance.CurrentAvatarState.actionPoint);
-            
-            if (animateAlpha)
-            {
-                canvasGroup.alpha = 0;
-                canvasGroup.DOFade(1, 1.0f);
-            }
         }
-        
+
         #endregion
 
         public void SetPoint(int actionPoint, bool useAnimation = false)
         {
             if (!gameObject.activeSelf)
                 return;
-            
+
             if (!useAnimation)
-            {            
+            {
                 slider.value = actionPoint;
                 text.text = $"{actionPoint} / {GameConfig.ActionPointMax}";
 
                 return;
             }
 
-            if(lerpCoroutine != null)
-                StopCoroutine(lerpCoroutine);
-            
-            lerpCoroutine = StartCoroutine(LerpSlider(actionPoint));
+            if (_lerpCoroutine != null)
+                StopCoroutine(_lerpCoroutine);
+
+            _lerpCoroutine = StartCoroutine(LerpSlider(actionPoint));
         }
-        
+
         private IEnumerator LerpSlider(int value, int additionalSpeed = 1)
         {
             var current = slider.value;
@@ -74,7 +75,7 @@ namespace Nekoyume.UI.Module
             {
                 current = Mathf.Lerp(current, value, Time.deltaTime * speed);
                 slider.value = current;
-                text.text = $"{(int)current} / {GameConfig.ActionPointMax}";
+                text.text = $"{(int) current} / {GameConfig.ActionPointMax}";
                 yield return null;
             }
 
