@@ -21,10 +21,8 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private RectTransform tooltipArea = null;
-
-        private IDisposable _disposable;
-        private VanilaTooltip _tooltip;
-        private Coroutine _lerpCoroutine;
+        
+        private Coroutine _coLerpSlider;
 
         public Image Image => image;
 
@@ -60,13 +58,15 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (_lerpCoroutine != null)
-                StopCoroutine(_lerpCoroutine);
+            if (!(_coLerpSlider is null))
+            {
+                StopCoroutine(_coLerpSlider);
+            }
 
-            _lerpCoroutine = StartCoroutine(LerpSlider(actionPoint));
+            _coLerpSlider = StartCoroutine(CoLerpSlider(actionPoint));
         }
 
-        private IEnumerator LerpSlider(int value, int additionalSpeed = 1)
+        private IEnumerator CoLerpSlider(int value, int additionalSpeed = 1)
         {
             var current = slider.value;
             var speed = 4 * additionalSpeed;
@@ -85,14 +85,12 @@ namespace Nekoyume.UI.Module
 
         public void ShowTooltip()
         {
-            _tooltip = Widget.Find<VanilaTooltip>();
-            _tooltip?.Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
+            Widget.Find<VanilaTooltip>().Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
         }
 
         public void HideTooltip()
         {
-            _tooltip?.Close();
-            _tooltip = null;
+            Widget.Find<VanilaTooltip>().Close();
         }
     }
 }

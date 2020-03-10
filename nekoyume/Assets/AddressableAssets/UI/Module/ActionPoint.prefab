@@ -347,7 +347,7 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 8640
-  m_WholeNumbers: 1
+  m_WholeNumbers: 0
   m_Value: 8640
   m_OnValueChanged:
     m_PersistentCalls:
@@ -366,12 +366,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c1097c66ae5469c968183db5237bac9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 4135201330097319415}
+  animateAlpha: 0
   text: {fileID: 2724828360276689814}
   slider: {fileID: 2724828359984488558}
   image: {fileID: 339029149374476197}
   tooltipArea: {fileID: 8298632334966963583}
-  canvasGroup: {fileID: 4135201330097319415}
-  animateAlpha: 0
 --- !u!225 &4135201330097319415
 CanvasGroup:
   m_ObjectHideFlags: 0

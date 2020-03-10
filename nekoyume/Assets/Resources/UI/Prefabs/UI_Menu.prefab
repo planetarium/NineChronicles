@@ -4953,6 +4953,16 @@ PrefabInstance:
       propertyPath: actionPoint
       value: 
       objectReference: {fileID: 4790419082042193309}
+    - target: {fileID: 3053886975560591760, guid: 6eb4474f608217a448203f87a5cc8085,
+        type: 3}
+      propertyPath: m_WholeNumbers
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3053886975560591760, guid: 6eb4474f608217a448203f87a5cc8085,
+        type: 3}
+      propertyPath: m_Value
+      value: 8640
+      objectReference: {fileID: 0}
     - target: {fileID: 3758039849902333499, guid: 6eb4474f608217a448203f87a5cc8085,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -4994,6 +5004,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 21300000, guid: 281ce1318b6071040a4c7cee4ab5be4e,
         type: 3}
+    - target: {fileID: 3053886976429869804, guid: 6eb4474f608217a448203f87a5cc8085,
+        type: 3}
+      propertyPath: m_FillAmount
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3053886976429869807, guid: 6eb4474f608217a448203f87a5cc8085,
         type: 3}
       propertyPath: m_AnchorMax.x

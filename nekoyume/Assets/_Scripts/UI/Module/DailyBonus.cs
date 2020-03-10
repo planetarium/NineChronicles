@@ -41,10 +41,12 @@ namespace Nekoyume.UI.Module
         private bool _updateEnable;
         private bool _isFull;
         private Animator _animator;
-        private long _receivedIndex;
 
-        private VanilaTooltip _tooltip;
-        private Coroutine _lerpCoroutine;
+        private long _currentBlockIndex;
+        private long _rewardReceivedBlockIndex;
+        private long _currentValue;
+
+        private Coroutine _coUpdateSlider;
 
         private static readonly int IsFull = Animator.StringToHash("IsFull");
         private static readonly int Reward = Animator.StringToHash("GetReward");
@@ -65,8 +67,11 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
             additiveCanvasGroup.alpha = 0f;
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SetIndex).AddTo(_disposables);
-            ReactiveAvatarState.DailyRewardReceivedIndex.Subscribe(SetReceivedIndex).AddTo(_disposables);
+
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(blockIndex => SetBlockIndex(blockIndex, true)).AddTo(_disposables);
+            ReactiveAvatarState.DailyRewardReceivedIndex
+                .Subscribe(blockIndex => SetRewardReceivedBlockIndex(blockIndex, true)).AddTo(_disposables);
         }
 
         protected override void OnDisable()
@@ -82,44 +87,61 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public void SetIndex(int index) => SetIndex((long) index);
-
-        private void SetIndex(long index)
+        private void SetBlockIndex(long blockIndex, bool useLerp)
         {
-            if (!_updateEnable)
-            {
-                return;
-            }
-
-            var min = Math.Max(index - _receivedIndex, 0);
-            var value = Math.Min(min, GameConfig.DailyRewardInterval);
-            _isFull = value >= GameConfig.DailyRewardInterval;
-
-            if (_lerpCoroutine != null)
-                StopCoroutine(_lerpCoroutine);
-
-            _lerpCoroutine = StartCoroutine(LerpSlider((int) value));
+            _currentBlockIndex = blockIndex;
+            UpdateSlider(useLerp);
         }
 
-        private IEnumerator LerpSlider(int value, int additionalSpeed = 1)
+        private void SetRewardReceivedBlockIndex(long rewardReceivedBlockIndex, bool useLerp)
         {
-            var current = slider.value;
-            var speed = 4 * additionalSpeed;
+            _rewardReceivedBlockIndex = rewardReceivedBlockIndex;
+            SetBlockIndex(_currentBlockIndex, useLerp);
+        }
 
-            while (current <= value - 2)
+        private void UpdateSlider(bool useLerp)
+        {
+            var endValue = Math.Min(
+                Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex),
+                GameConfig.DailyRewardInterval);
+            
+            if (!(_coUpdateSlider is null))
             {
-                current = Mathf.Lerp(current, value, Time.deltaTime * speed);
-                slider.value = current;
-                text.text = $"{(int) current} / {GameConfig.DailyRewardInterval}";
+                StopCoroutine(_coUpdateSlider);
+                _coUpdateSlider = null;
+            }
+
+            if (useLerp)
+            {
+                _coUpdateSlider = StartCoroutine(CoUpdateSlider(endValue));
+            }
+            else
+            {
+                _currentValue = endValue;
+                slider.value = _currentValue;
+                text.text = $"{_currentValue} / {GameConfig.DailyRewardInterval}";
+
+                _isFull = _currentValue >= GameConfig.DailyRewardInterval;
+                additiveCanvasGroup.alpha = _isFull ? 1 : 0;
+                additiveCanvasGroup.interactable = _isFull;
+                button.interactable = _isFull;
+                _animator.SetBool(IsFull, _isFull);
+            }
+        }
+
+        private IEnumerator CoUpdateSlider(long endValue)
+        {
+            var distance = endValue - slider.value;
+            while (distance > GameConfig.DailyRewardInterval * 0.01f)
+            {
+                distance -= distance * Time.deltaTime * 2f;
+                _currentValue = (long) (endValue - distance);
+                slider.value = endValue - distance;
+                text.text = $"{_currentValue} / {GameConfig.DailyRewardInterval}";
                 yield return null;
             }
 
-            slider.value = value;
-            text.text = $"{value} / {GameConfig.DailyRewardInterval}";
-            additiveCanvasGroup.alpha = _isFull ? 1 : 0;
-            additiveCanvasGroup.interactable = _isFull;
-            button.interactable = _isFull;
-            _animator.SetBool(IsFull, _isFull);
+            UpdateSlider(false);
         }
 
         public void GetReward()
@@ -148,31 +170,22 @@ namespace Nekoyume.UI.Module
                     actionPoint.Image.transform.position,
                     true,
                     1f,
-                    0.8f);                
+                    0.8f);
             }
-            
-            SetIndex(0);
+
+            SetBlockIndex(0L, true);
             _updateEnable = false;
         }
 
         public void ShowTooltip()
         {
-            _tooltip = Widget.Find<VanilaTooltip>();
-            _tooltip?.Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION", tooltipArea.position);
+            Widget.Find<VanilaTooltip>().Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION",
+                tooltipArea.position);
         }
 
         public void HideTooltip()
         {
-            _tooltip?.Close();
-            _tooltip = null;
-        }
-
-        private void SetReceivedIndex(long index)
-        {
-            if (index != _receivedIndex)
-            {
-                _receivedIndex = index;
-            }
+            Widget.Find<VanilaTooltip>().Close();
         }
     }
 }
