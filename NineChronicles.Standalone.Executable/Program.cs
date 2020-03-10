@@ -10,8 +10,6 @@ using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
 using Serilog;
 
-using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
-
 namespace NineChronicles.Standalone.Executable
 {
     public class Program
@@ -108,20 +106,57 @@ namespace NineChronicles.Standalone.Executable
 
         private static IceServer LoadIceServer(string iceServerInfo)
         {
-            var uri = new Uri(iceServerInfo);
-            string[] userInfo = uri.UserInfo.Split(':');
-        
-            return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
+            try
+            {
+                var uri = new Uri(iceServerInfo);
+                string[] userInfo = uri.UserInfo.Split(':');
+
+                return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
+            }
+            catch (Exception e)
+            {
+                throw new CommandExitedException(
+                    $"--ice-server '{iceServerInfo}' seems invalid.\n" +
+                    $"{e.GetType()} {e.Message}\n" +
+                    $"{e.StackTrace}",
+                    -1);
+            }
         }
         
         private static BoundPeer LoadPeer(string peerInfo)
         {
             var tokens = peerInfo.Split(',');
-            var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
-            var host = tokens[1];
-            var port = int.Parse(tokens[2]);
-        
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port), 0);
+            if (tokens.Length != 3)
+            {
+                throw new CommandExitedException(
+                    $"--peer '{peerInfo}', should have format <pubkey>,<host>,<port>",
+                    -1);
+            }
+
+            if (!(tokens[0].Length == 130 || tokens[0].Length == 66))
+            {
+                throw new CommandExitedException(
+                    $"--peer '{peerInfo}', a length of public key must be 130 or 66 in hexadecimal," +
+                    $" but the length of given public key '{tokens[0]}' doesn't.",
+                    -1);
+            }
+
+            try
+            {
+                var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
+                var host = tokens[1];
+                var port = int.Parse(tokens[2]);
+
+                return new BoundPeer(pubKey, new DnsEndPoint(host, port), 0);
+            }
+            catch (Exception e)
+            {
+                throw new CommandExitedException(
+                    $"--peer '{peerInfo}' seems invalid.\n" +
+                    $"{e.GetType()} {e.Message}\n" +
+                    $"{e.StackTrace}",
+                    -1);
+            }
         }
     }
 }
