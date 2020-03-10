@@ -53,15 +53,15 @@ namespace Launcher
 
         private async Task<VersionDescriptor> CurrentVersionAsync()
         {
-                using var webClient = new WebClient();
-                var rawVersionHistory = await webClient.DownloadStringTaskAsync(Storage.VersionHistoryUri(DeployBranch));
-                var versionHistory = JsonSerializer.Deserialize<VersionHistory>(
-                    rawVersionHistory,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    });
-                return versionHistory.Versions.First(descriptor => descriptor.Version == versionHistory.CurrentVersion);
+            using var webClient = new WebClient();
+            var rawVersionHistory = await webClient.DownloadStringTaskAsync(Storage.VersionHistoryUri(DeployBranch));
+            var versionHistory = JsonSerializer.Deserialize<VersionHistory>(
+                rawVersionHistory,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                });
+            return versionHistory.Versions.First(descriptor => descriptor.Version == versionHistory.CurrentVersion);
         }
 
         public class VersionUpdatedEventArgs : EventArgs
