@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Launcher.Storage;
+using Serilog;
 
 namespace Launcher
 {
@@ -34,8 +35,6 @@ namespace Launcher
                 try
                 {
                     var currentVersion = await CurrentVersionAsync();
-                    Console.WriteLine(currentVersion.Version);
-                    Console.WriteLine(currentVersion.Description);
                     if (!LatestVersion.Equals(currentVersion))
                     {
                         VersionUpdated?.Invoke(this, new VersionUpdatedEventArgs(currentVersion));
@@ -46,7 +45,7 @@ namespace Launcher
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message);
+                    Log.Error(e, e.Message);
                 }
             }
         }

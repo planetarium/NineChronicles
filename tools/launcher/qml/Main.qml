@@ -25,10 +25,15 @@ Item {
         tooltip: "Libplanet Launcher, Not Flash (LLNF)"
 
         menu: Menu {
+            Text {
+                text: "Updating..."
+                visible: ctrl.updating
+            }
+
             MenuItem {
                 id: runMenu
                 text: "Run"
-                visible: !ctrl.gameRunning
+                visible: !ctrl.gameRunning && !ctrl.updating
                 onTriggered: {
                     ctrl.runGame()
                 }

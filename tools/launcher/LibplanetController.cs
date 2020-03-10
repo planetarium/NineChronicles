@@ -32,7 +32,11 @@ namespace Launcher
         private S3Storage Storage { get; }
 
         // It used in qml/Main.qml to hide and turn on some menus.
-        [NotifySignal] public bool GameRunning => GameProcess?.HasExited ?? false;
+        [NotifySignal]
+        public bool GameRunning => GameProcess?.HasExited ?? false;
+
+        [NotifySignal]
+        public bool Updating { get; private set; }
 
         private Process GameProcess { get; set; }
 
@@ -89,13 +93,40 @@ namespace Launcher
         private async Task UpdateCheckTask(LauncherSettings settings, CancellationToken cancellationToken)
         {
             // TODO: save current version in local file and load, and use it. 
-            var updateWatcher = new UpdateWatcher(Storage, settings.DeployBranch, default);
-            updateWatcher.VersionUpdated += (sender, e) =>
+            var updateWatcher = new UpdateWatcher(Storage, settings.DeployBranch, LocalCurrentVersion ?? default);
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            updateWatcher.VersionUpdated += async (sender, e) =>
             {
-                // TODO: Download new client in background.
-                Console.WriteLine(e.UpdatedVersion.Version);
+                Updating = true;
+                this.ActivateProperty(ctrl => ctrl.Updating);
+
+                var version = e.UpdatedVersion.Version;
+                var tempPath = Path.Combine(Path.GetTempPath(), "temp-9c-download" + version);
+                cts.Cancel();
+                await DownloadGameBinaryAsync(tempPath, settings.DeployBranch, version, cts.Token);
+                
+                // FIXME: it kills game process in force, if it was running. it should be
+                //        killed with some message.
+                SwapGameDirectory(
+                    LoadGameBinaryPath(settings),
+                    Path.Combine(tempPath, "MacOS"));
+                cts.Dispose();
+                cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                LocalCurrentVersion = e.UpdatedVersion;
+
+                Updating = false;
+                this.ActivateProperty(ctrl => ctrl.Updating);
             };
             await updateWatcher.StartAsync(TimeSpan.FromSeconds(3), cancellationToken);
+        }
+
+        private void SwapGameDirectory(string gameBinaryPath, string newGameBinaryPath)
+        {
+            GameProcess?.Kill();
+
+            if (Directory.Exists(gameBinaryPath))
+                Directory.Delete(gameBinaryPath, recursive: true);
+            Directory.Move(newGameBinaryPath, gameBinaryPath);
         }
 
         private async Task SyncTask(LauncherSettings settings, CancellationToken cancellationToken)
@@ -135,30 +166,51 @@ namespace Launcher
             }
         }
 
-        // TODO: download new client if there is.
-        private async Task DownloadGameBinaryAsync(string gameBinaryPath, string deployBranch)
+        private async Task DownloadGameBinaryAsync(string gameBinaryPath, string deployBranch, string version, CancellationToken cancellationToken)
         {
-            if (!Directory.Exists(gameBinaryPath))
+            var tempFilePath = Path.GetTempFileName();
+            using var webClient = new WebClient();
+            var cancelTaskCts = new CancellationTokenSource();
+            var cancelTask = Task.Run(() =>
             {
-                var tempFilePath = Path.GetTempFileName();
-                using var webClient = new WebClient();
-                await webClient.DownloadFileTaskAsync(Storage.GameBinaryDownloadUri(deployBranch), tempFilePath);
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                }
 
-                // Extract binary.
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    await using var tempFile = File.OpenRead(tempFilePath);
-                    using var gz = new GZipInputStream(tempFile);
-                    using var tar = TarArchive.CreateInputTarArchive(gz);
-                    tar.ExtractContents(gameBinaryPath);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    ZipFile.ExtractToDirectory(tempFilePath, gameBinaryPath);
-                }
+                webClient.CancelAsync();
+            }, cancelTaskCts.Token);
+
+            Log.Debug(Storage.GameBinaryDownloadUri(deployBranch, version).ToString());
+            await webClient.DownloadFileTaskAsync(Storage.GameBinaryDownloadUri(deployBranch, version), tempFilePath);
+            cancelTaskCts.Cancel();
+
+            // Extract binary.
+            // TODO: implement a function to extract with file extension.
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                await using var tempFile = File.OpenRead(tempFilePath);
+                using var gz = new GZipInputStream(tempFile);
+                using var tar = TarArchive.CreateInputTarArchive(gz);
+                tar.ExtractContents(gameBinaryPath);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                ZipFile.ExtractToDirectory(tempFilePath, gameBinaryPath);
             }
         }
-        
+
+        private static string LoadGameBinaryPath(LauncherSettings settings)
+        {
+            if (string.IsNullOrEmpty(settings.GameBinaryPath))
+            {
+                return DefaultGameBinaryPath;
+            }
+            else
+            {
+                return settings.GameBinaryPath;
+            }
+        }
+
         private static IceServer LoadIceServer(string iceServerInfo)
         {
             var uri = new Uri(iceServerInfo);
@@ -185,8 +237,6 @@ namespace Launcher
             {
                 gameBinaryPath = DefaultGameBinaryPath;
             }
-
-            await DownloadGameBinaryAsync(gameBinaryPath, setting.DeployBranch);
 
             RunGameProcess(gameBinaryPath);
         }
@@ -245,6 +295,28 @@ namespace Launcher
         private static string LocalApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
         private static string SettingFilePath => Path.Combine(PlanetariumApplicationPath, SettingFileName);
+
+        private VersionDescriptor? LocalCurrentVersion
+        {
+            get
+            {
+                if (!File.Exists(LocalCurrentVersionPath)) return null;
+                var raw = File.ReadAllText(LocalCurrentVersionPath);
+                return JsonSerializer.Deserialize<VersionDescriptor>(
+                    raw,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    });
+            }
+            set => File.WriteAllText(LocalCurrentVersionPath, JsonSerializer.Serialize((VersionDescriptor) value,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                }));
+        }
+
+        private string LocalCurrentVersionPath => Path.Combine(PlanetariumApplicationPath, "9c-current-version.json");
 
         private const string SettingFileName = "launcher.json";
 

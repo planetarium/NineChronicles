@@ -23,8 +23,8 @@ namespace Launcher.Storage
             ).Uri;
 
         // TODO: the path should be separated with version one more time.
-        public Uri GameBinaryDownloadUri(string deployBranch) =>
-            BuildS3Uri(Path.Combine(deployBranch, CurrentPlatform.GameBinaryDownloadFilename));
+        public Uri GameBinaryDownloadUri(string deployBranch, string version) =>
+            BuildS3Uri(Path.Combine(deployBranch, version, CurrentPlatform.GameBinaryDownloadFilename));
 
         public Uri VersionHistoryUri(string deployBranch) =>
             BuildS3Uri(Path.Combine(deployBranch, VersionHistoryFilename));
