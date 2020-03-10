@@ -27,14 +27,10 @@ namespace Tests.EditMode
         [Test]
         public void AddItem()
         {
-            if (_tableSheets.EquipmentItemSheet.First is null)
-            {
-                Debug.LogWarning($"{_tableSheets.EquipmentItemSheet} is empty.");
-                return;
-            }
-
             var inventory = new Inventory();
+            
             var row = _tableSheets.EquipmentItemSheet.First;
+            Assert.NotNull(row);
 
             var equipment = ItemFactory.CreateItemUsable(row, Guid.NewGuid(), -100);
             inventory.AddItem(equipment);
