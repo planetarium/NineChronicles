@@ -126,7 +126,7 @@ namespace Nekoyume.Game.Controller
             base.Awake();
 
             CurrentState = State.None;
-            Event.OnRoomEnter.AddListener(() => PlayMusic(AudioController.MusicCode.Main));
+            Event.OnRoomEnter.AddListener(b => PlayMusic(AudioController.MusicCode.Main));
 
             // FixMe. 돈 버는 소리는 언제쯤 켜둘 수 있을까요. 마이너모드에서 소리가 방해된다는 피드백으로 다시 꺼둡니다.
 //#if !UNITY_EDITOR

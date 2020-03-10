@@ -29,16 +29,14 @@ namespace Nekoyume.BlockChain
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
         private const float TxProcessInterval = 3.0f;
-        
+
         private readonly Subject<long> _blockIndexSubject = new Subject<long>();
-        
-        private PrivateKey _privateKey;
 
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
         private Channel _channel;
-    
+
         private IActionEvaluationHub _hub;
 
         private IBlockChainService _service;
@@ -55,8 +53,8 @@ namespace Nekoyume.BlockChain
         public Subject<long> BlockIndexSubject { get => _blockIndexSubject; }
 
         public long BlockIndex { get; private set; }
-
-        public Address Address { get => _privateKey.PublicKey.ToAddress(); }
+        public PrivateKey PrivateKey { get; private set; }
+        public Address Address => PrivateKey.PublicKey.ToAddress();
 
 
         public void Initialize(
@@ -64,18 +62,18 @@ namespace Nekoyume.BlockChain
             PrivateKey privateKey,
             Action<bool> callback)
         {
-            _privateKey = privateKey;
+            PrivateKey = privateKey;
 
             _channel = new Channel(
-                options.ClientHost, 
-                options.ClientPort, 
+                options.RpcServerHost,
+                options.RpcServerPort,
                 ChannelCredentials.Insecure
             );
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
 
             StartCoroutine(CoTxProcessor());
-            StartCoroutine(CoJoin(callback));   
+            StartCoroutine(CoJoin(callback));
         }
 
         public IValue GetState(Address address)
@@ -92,7 +90,7 @@ namespace Nekoyume.BlockChain
         #region Mono
 
         private void Awake()
-        {            
+        {
             _renderSubject = new Subject<ActionEvaluation<ActionBase>>();
             _unrenderSubject = new Subject<ActionEvaluation<ActionBase>>();
             _renderer = new ActionRenderer(_renderSubject, _unrenderSubject);
@@ -115,12 +113,13 @@ namespace Nekoyume.BlockChain
 
         private IEnumerator CoJoin(Action<bool> callback)
         {
-            Task t = Task.Run(async () => {
+            Task t = Task.Run(async () =>
+            {
                 await _hub.JoinAsync();
             });
 
             yield return new WaitUntil(() => t.IsCompleted);
-            
+
             // 랭킹의 상태를 한 번 동기화 한다.
             States.Instance.SetRankingState(
                 GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
@@ -158,7 +157,7 @@ namespace Nekoyume.BlockChain
             while (true)
             {
                 yield return new WaitForSeconds(TxProcessInterval);
-                
+
                 var actions = new List<PolymorphicAction<ActionBase>>();
                 while (_queuedActions.TryDequeue(out PolymorphicAction<ActionBase> action))
                 {
@@ -167,7 +166,7 @@ namespace Nekoyume.BlockChain
 
                 if (actions.Any())
                 {
-                    Task task = Task.Run(async () => 
+                    Task task = Task.Run(async () =>
                     {
                         await MakeTransaction(actions);
                     });
@@ -179,10 +178,10 @@ namespace Nekoyume.BlockChain
         private async Task MakeTransaction(List<PolymorphicAction<ActionBase>> actions)
         {
             long nonce = await GetNonceAsync();
-            Transaction<PolymorphicAction<ActionBase>> tx = 
+            Transaction<PolymorphicAction<ActionBase>> tx =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     nonce,
-                    _privateKey,
+                    PrivateKey,
                     actions
                 );
             await _service.PutTransaction(tx.Serialize(true));

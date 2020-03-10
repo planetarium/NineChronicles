@@ -26,12 +26,12 @@ namespace Nekoyume.Model.Skill
         protected IEnumerable<BattleStatus.Skill.SkillInfo> ProcessHeal(CharacterBase caster, int simulatorWaveTurn)
         {
             var infos = new List<BattleStatus.Skill.SkillInfo>();
-            var healPoint = caster.ATK + power;
-            foreach (var target in skillRow.SkillTargetType.GetTarget(caster))
+            var healPoint = caster.ATK + Power;
+            foreach (var target in SkillRow.SkillTargetType.GetTarget(caster))
             {
                 target.Heal(healPoint);
                 infos.Add(new BattleStatus.Skill.SkillInfo((CharacterBase)target.Clone(), healPoint, caster.IsCritical(false),
-                    skillRow.SkillCategory, simulatorWaveTurn));
+                    SkillRow.SkillCategory, simulatorWaveTurn));
             }
 
             return infos;

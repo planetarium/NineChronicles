@@ -34,7 +34,7 @@ namespace Nekoyume.Model.Buff
             BuffSheet buffSheet)
         {
             var buffs = new List<Buff>();
-            if (!skillBuffSheet.TryGetValue(skill.skillRow.Id, out var skillBuffRow))
+            if (!skillBuffSheet.TryGetValue(skill.SkillRow.Id, out var skillBuffRow))
                 return buffs;
             
             foreach (var buffId in skillBuffRow.BuffIds)
@@ -42,7 +42,7 @@ namespace Nekoyume.Model.Buff
                 if (!buffSheet.TryGetValue(buffId, out var buffRow))
                     continue;
 
-                buffs.Add(BuffFactory.Get(buffRow));
+                buffs.Add(Get(buffRow));
             }
 
             return buffs;

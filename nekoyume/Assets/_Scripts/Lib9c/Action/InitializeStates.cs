@@ -18,8 +18,9 @@ namespace Nekoyume.Action
         public TableSheetsState TableSheetsState { get; set; }
         public List<Address> WeeklyArenaAddresses { get; set; }
 
-        public override IAccountStateDelta Execute(IActionContext ctx)
+        public override IAccountStateDelta Execute(IActionContext context)
         {
+            IActionContext ctx = context;
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {

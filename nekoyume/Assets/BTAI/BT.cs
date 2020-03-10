@@ -331,7 +331,7 @@ namespace BTAI
     /// </summary>
     public class Repeat : Block
     {
-        public int count = 1;
+        public int count;
         int currentCount = 0;
         public Repeat(int count)
         {

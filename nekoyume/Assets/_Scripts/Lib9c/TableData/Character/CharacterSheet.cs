@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Nekoyume.Model.Character;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Stat;
@@ -34,7 +35,7 @@ namespace Nekoyume.TableData
 
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0]);
+                Id = int.Parse(fields[0], CultureInfo.InvariantCulture);
                 SizeType = (SizeType) Enum.Parse(typeof(SizeType), fields[1]);
                 ElementalType = Enum.TryParse<ElementalType>(fields[2], out var elementalType)
                     ? elementalType

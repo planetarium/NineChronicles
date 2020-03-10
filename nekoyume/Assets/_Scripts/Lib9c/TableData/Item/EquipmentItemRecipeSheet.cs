@@ -29,7 +29,7 @@ namespace Nekoyume.TableData
                 RequiredBlockIndex = ParseLong(fields[6]);
                 UnlockStage = ParseInt(fields[7]);
                 SubRecipeIds = new List<int>(3);
-                for (var i = 8; i < 10; i++)
+                for (var i = 8; i < 11; i++)
                 {
                     if (string.IsNullOrEmpty(fields[i]))
                     {

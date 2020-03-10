@@ -36,50 +36,50 @@ id,_name,item_sub_type,grade,elemental_type
 303402,단단한 반지,EquipmentMaterial,3,Normal
 303403,영험한 기운의 반지,EquipmentMaterial,4,Normal
 303404,전설의 반지,EquipmentMaterial,5,Normal
-304000,불의 정수,NormalMaterial,1,Fire
-304001,대지의 정수,NormalMaterial,1,Land
-304002,물의 정수,NormalMaterial,1,Water
-304003,바람의 정수,NormalMaterial,1,Wind
-305000,얼음의 염료,NormalMaterial,1,Water
-305001,불의 염료,NormalMaterial,1,Fire
-305002,숲의 염료,NormalMaterial,1,Normal
-305003,요정의 염료,NormalMaterial,1,Normal
-305004,여신의 염료,NormalMaterial,1,Normal
+304000,불의 정수,MonsterPart,1,Fire
+304001,대지의 정수,MonsterPart,1,Land
+304002,물의 정수,MonsterPart,1,Water
+304003,바람의 정수,MonsterPart,1,Wind
+305000,얼음의 염료,MonsterPart,1,Water
+305001,불의 염료,MonsterPart,1,Fire
+305002,숲의 염료,MonsterPart,1,Normal
+305003,요정의 염료,MonsterPart,1,Normal
+305004,여신의 염료,MonsterPart,1,Normal
 306000,물의 씨앗 껍질,MonsterPart,1,Water
 306001,물의 수상한 떡잎,MonsterPart,1,Water
 306002,물의 잎사귀 다발,MonsterPart,1,Water
-306003,물의 빛나는 꽃봉오리,MonsterPart,1,Water
+306003,물의 빛나는 꽃봉오리,MonsterPart,2,Water
 306004,물의 뻣뻣한 줄기,MonsterPart,2,Water
 306005,물의 물컹한 열매,MonsterPart,2,Water
-306006,물의 시든 꽃다발,MonsterPart,2,Water
-306007,물의 열매알,MonsterPart,2,Water
+306006,물의 시든 꽃다발,MonsterPart,3,Water
+306007,물의 열매알,MonsterPart,3,Water
 306008,물의 나무줄기,MonsterPart,3,Water
-306009,대지의 하찮은 자갈,MonsterPart,1,Land
-306010,대지의 돌날,MonsterPart,1,Land
-306011,대지의 두건,MonsterPart,1,Land
-306012,대지의 여우 꼬리,MonsterPart,1,Land
-306013,대지의 칼자루,MonsterPart,2,Land
-306014,대지의 큰 칼날,MonsterPart,2,Land
-306015,대지의 부러진 지팡이,MonsterPart,2,Land
-306016,대지의 부러진 지팡이,MonsterPart,2,Land
-306017,대지의 망토 조각,MonsterPart,3,Land
-306018,대지의 마력 구슬,MonsterPart,3,Land
-306019,대지의 여우 가죽,MonsterPart,3,Land
-306020,대지의 여우 송곳니,MonsterPart,3,Land
-306021,대지의 창 날,MonsterPart,3,Land
-306022,대지의 견장,MonsterPart,3,Land
+306009,대지의 하찮은 자갈,MonsterPart,2,Land
+306010,대지의 돌날,MonsterPart,2,Land
+306011,대지의 두건,MonsterPart,2,Land
+306012,대지의 여우 꼬리,MonsterPart,3,Land
+306013,대지의 칼자루,MonsterPart,3,Land
+306014,대지의 큰 칼날,MonsterPart,3,Land
+306015,대지의 부러진 지팡이,MonsterPart,4,Land
+306016,대지의 부러진 지팡이,MonsterPart,4,Land
+306017,대지의 망토 조각,MonsterPart,4,Land
+306018,대지의 마력 구슬,MonsterPart,5,Land
+306019,대지의 여우 가죽,MonsterPart,5,Land
+306020,대지의 여우 송곳니,MonsterPart,5,Land
+306021,대지의 창 날,MonsterPart,5,Land
+306022,대지의 견장,MonsterPart,5,Land
 306023,화염의 나무둔기,MonsterPart,1,Fire
 306024,화염의 작은 투구,MonsterPart,1,Fire
 306025,화염의 멧돼지뿔,MonsterPart,1,Fire
-306026,화염의 허리가방,MonsterPart,1,Fire
+306026,화염의 허리가방,MonsterPart,2,Fire
 306027,화염의 둔기 조각,MonsterPart,2,Fire
 306028,화염의 하얀 털다발,MonsterPart,2,Fire
-306029,화염의 큰 멧돼지뿔,MonsterPart,2,Fire
-306030,화염의 무거운 견장,MonsterPart,2,Fire
+306029,화염의 큰 멧돼지뿔,MonsterPart,3,Fire
+306030,화염의 무거운 견장,MonsterPart,3,Fire
 306031,화염의 달궈진 쇠사슬,MonsterPart,3,Fire
-306032,화염의 부러진 지팡이,MonsterPart,3,Fire
-306033,화염의 제림니르 도끼,MonsterPart,3,Fire
-306034,화염의 제림니르 철퇴,MonsterPart,3,Fire
+306032,화염의 부러진 지팡이,MonsterPart,4,Fire
+306033,화염의 제림니르 도끼,MonsterPart,4,Fire
+306034,화염의 제림니르 철퇴,MonsterPart,4,Fire
 306035,수액 덩어리,MonsterPart,2,Normal
 306036,화염의 수액 덩어리,MonsterPart,2,Fire
 306037,바람의 수액 덩어리,MonsterPart,2,Wind
@@ -100,4 +100,4 @@ id,_name,item_sub_type,grade,elemental_type
 306052,유령의 혼,MonsterPart,3,Wind
 306053,펜리르의 발톱,MonsterPart,4,Wind
 306054,펜리르의 황금 족쇄,MonsterPart,4,Wind
-306055,펜리르의 갈기,MonsterPart,5,Wind
+306055,펜리르의 갈기,MonsterPart,4,Wind

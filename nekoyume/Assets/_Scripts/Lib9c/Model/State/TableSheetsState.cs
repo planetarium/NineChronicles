@@ -67,7 +67,7 @@ namespace Nekoyume.Model.State
         {
         }
 
-        public void GetObjectData(SerializationInfo info, StreamingContext ctx)
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("encoded", new Codec().Encode(Serialize()));
         }
@@ -98,9 +98,9 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            if (other is TableSheetsState otherState)
+            if (obj is TableSheetsState otherState)
             {
                 return Equals(otherState);
             }

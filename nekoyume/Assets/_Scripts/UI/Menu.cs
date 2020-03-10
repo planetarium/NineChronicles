@@ -1,14 +1,9 @@
 using System.Collections;
-using Assets.SimpleLocalization;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
-using Nekoyume.Model;
-using Nekoyume.UI.AnimatedGraphics;
-using UniRx;
 using UnityEngine;
 using Player = Nekoyume.Game.Character.Player;
 
@@ -37,12 +32,14 @@ namespace Nekoyume.UI
         private Coroutine _coroutine;
         private Player _player;
 
+        private Coroutine _coLazyClose;
+
         protected override void Awake()
         {
             base.Awake();
 
             SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
-            Game.Event.OnRoomEnter.AddListener(Show);
+            Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
         }
@@ -66,7 +63,7 @@ namespace Nekoyume.UI
             rankingExclamationMark.gameObject.SetActive(btnRanking.IsUnlocked &&
                                                         PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
             questExclamationMark.gameObject.SetActive(btnRanking.IsUnlocked &&
-                                                        PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
+                                                      PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
         }
 
         private void HideButtons()
@@ -90,7 +87,7 @@ namespace Nekoyume.UI
                 btnQuest.JingleTheCat();
                 return;
             }
-            
+
             if (questExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
@@ -98,7 +95,7 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
-            Close();
+            _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
             AudioController.PlayClick();
@@ -169,6 +166,12 @@ namespace Nekoyume.UI
 
         public override void Show()
         {
+            if (!(_coLazyClose is null))
+            {
+                StopCoroutine(_coLazyClose);
+                _coLazyClose = null;
+            }
+
             base.Show();
 
             StartCoroutine(CoStartSpeeches());
@@ -186,6 +189,20 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
+            base.Close(ignoreCloseAnimation);
+        }
+
+        private IEnumerator CoLazyClose(float duration = 1f, bool ignoreCloseAnimation = false)
+        {
+            StopSpeeches();
+
+            Find<Inventory>().Close(ignoreCloseAnimation);
+            Find<StatusDetail>().Close(ignoreCloseAnimation);
+            Find<Quest>().Close(ignoreCloseAnimation);
+
+            Find<BottomMenu>().Close(true);
+            Find<Status>().Close(true);
+            yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
         }
 

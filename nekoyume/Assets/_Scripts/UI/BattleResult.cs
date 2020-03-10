@@ -385,7 +385,7 @@ namespace Nekoyume.UI
             StopVFX();
 
             Find<Battle>().Close();
-            Game.Event.OnRoomEnter.Invoke();
+            Game.Event.OnRoomEnter.Invoke(true);
             Close();
         }
 
@@ -408,10 +408,6 @@ namespace Nekoyume.UI
 
             StopVFX();
 
-            foreach (var reward in rewardsArea.rewards)
-            {
-                reward.StopVFX();
-            }
             canvasGroup.alpha = 0f;
         }
 
@@ -430,6 +426,11 @@ namespace Nekoyume.UI
             if (_battleWin03VFX)
             {
                 _battleWin03VFX.Stop();
+            }
+
+            foreach (var reward in rewardsArea.rewards)
+            {
+                reward.StopVFX();
             }
         }
     }

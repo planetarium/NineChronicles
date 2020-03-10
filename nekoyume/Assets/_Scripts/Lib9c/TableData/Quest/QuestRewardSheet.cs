@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
@@ -18,7 +19,7 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
-                RewardIds = new List<int> {int.Parse(fields[1])};
+                RewardIds = new List<int> {int.Parse(fields[1], CultureInfo.InvariantCulture)};
             }
         }
 

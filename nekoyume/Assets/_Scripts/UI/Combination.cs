@@ -2,10 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using Assets.SimpleLocalization;
-using Libplanet;
-using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -31,7 +28,6 @@ namespace Nekoyume.UI
             CombineConsumable,
             EnhanceEquipment,
             CombineEquipment,
-            SelectSubRecipe,
             CombinationConfirm,
         }
 
@@ -56,7 +52,7 @@ namespace Nekoyume.UI
         public CombineConsumable combineConsumable;
         public EnhanceEquipment enhanceEquipment;
         public EquipmentCombinationPanel equipmentCombinationPanel;
-        public EquipmentCombinationPanel elementalCombinationPanel;
+        public ElementalCombinationPanel elementalCombinationPanel;
         public Recipe recipe;
         public SpeechBubble speechBubble;
         public Transform npcPosition01;
@@ -466,7 +462,11 @@ namespace Nekoyume.UI
             if (State.Value == StateType.SelectMenu)
             {
                 Close();
-                Game.Event.OnRoomEnter.Invoke();
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
+            else if (State.Value == StateType.CombinationConfirm)
+            {
+                State.SetValueAndForceNotify(StateType.NewCombineEquipment);
             }
             else
             {
@@ -518,8 +518,8 @@ namespace Nekoyume.UI
         private void ActionEnhancedCombinationEquipment(EquipmentCombinationPanel combinationPanel)
         {
             var model = combinationPanel.recipeCellView.model;
-            var subRecipeId = model.SubRecipeIds.Any()
-                ? model.SubRecipeIds.First()
+            var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel) ?
+                elementalPanel.SelectedSubRecipeId
                 : (int?) null;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
             CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId);
