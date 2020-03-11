@@ -245,8 +245,8 @@ namespace Nekoyume.Action
                 optionRows = optionSelector.Select(subRecipe.MaxOptionLimit);
             }
             catch (Exception e) when (
-                e is InvalidCountException
-                || e is ListEmptyException
+                e is InvalidCountException ||
+                e is ListEmptyException
             )
             {
                 return optionIds;

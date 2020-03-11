@@ -49,16 +49,16 @@ namespace Nekoyume.Battle
             var result = new List<T>();
             var weight = 0m;
             var rnd = _random.Next(1, 100001) * 0.00001m;
-            var items = _items.OrderBy(i => i.Weight).ToList();
             while (result.Count < count)
             {
-                foreach (var item in items)
+                foreach (var item in _items.OrderBy(i => i.Weight).ToList())
                 {
                     weight += item.Weight;
 
                     if (rnd <= weight)
                     {
                         result.Add(item.Value);
+                        _items.Remove(item);
                     }
 
                     if (result.Count == count)
@@ -66,11 +66,8 @@ namespace Nekoyume.Battle
                         break;
                     }
                 }
-
-                items = items.Where(i => !result.Contains(i.Value)).ToList();
             }
 
-            _items = _items.Where(i => !result.Contains(i.Value)).ToList();
             return result;
         }
 
