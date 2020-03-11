@@ -15,7 +15,6 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
-using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
@@ -133,7 +132,7 @@ namespace Nekoyume.BlockChain
                 Debug.Log("Agent Exist");
                 return;
             }
-            
+
             disposed = false;
 
             InitAgent(callback, privateKey, options);
@@ -439,7 +438,7 @@ namespace Nekoyume.BlockChain
             {
                 try
                 {
-                    store = new RocksDBStore(path, flush: false);
+                    store = new RocksDBStore(path);
                     Debug.Log("RocksDB is initialized.");
                 }
                 catch (TypeInitializationException e)
@@ -760,10 +759,14 @@ namespace Nekoyume.BlockChain
         private IEnumerator CoMiner()
         {
             var miner = new Miner(blocks, _swarm, PrivateKey);
+            var sleepInterval = new WaitForSeconds(15);
             while (true)
             {
                 var task = Task.Run(async() => await miner.MineBlockAsync(_cancellationTokenSource.Token));
                 yield return new WaitUntil(() => task.IsCompleted);
+#if UNITY_EDITOR
+                yield return sleepInterval;
+#endif
             }
         }
 

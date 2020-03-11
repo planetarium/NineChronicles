@@ -13,33 +13,38 @@ SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
 cd "$SCRIPT_DIR"
 SCRIPT_DIR=$(pwd)
 
-echo "Bump Libplanet to $VERSION"
-echo "Downloading Libplanet package..."
+PROJECTS=("Libplanet" "Libplanet.RocksDBStore")
 
-wget "https://www.nuget.org/api/v2/package/Libplanet/${VERSION}"
 
-TMPDIR="$VERSION-tmp"
-mkdir -p "$TMPDIR"
+for project in "${PROJECTS[@]}"; do
+    echo "Bump $project to $VERSION"
+    echo "Downloading $project package..."
 
-mv "$VERSION" "$TMPDIR/"
+    wget "https://www.nuget.org/api/v2/package/$project/${VERSION}"
 
-cd "$TMPDIR"
-unzip -o "$VERSION"
+    TMPDIR="$VERSION-tmp"
+    mkdir -p "$TMPDIR"
 
-LIB_DIR="lib/netstandard2.0"
-LIBPLANET_FILES="Libplanet.dll Libplanet.Stun.dll Libplanet.xml"
-cd "$LIB_DIR"
+    mv "$VERSION" "$TMPDIR/"
 
-for f in $LIBPLANET_FILES; do
-    chmod 644 "$f"
+    cd "$TMPDIR"
+    unzip -o "$VERSION"
+
+    LIB_DIR="lib/netstandard2.0"
+    LIBPLANET_FILES=(*.{dll,xml})
+    cd "$LIB_DIR"
+
+    for f in $LIBPLANET_FILES; do
+        chmod 644 "$f"
+    done
+
+    PACKAGE_DIR="$SCRIPT_DIR/../nekoyume/Assets/Packages/"
+
+    for f in $LIBPLANET_FILES; do
+        cp "$f" "$PACKAGE_DIR"
+    done
+
+
+    cd "$SCRIPT_DIR"
+    rm -rf "$TMPDIR"
 done
-
-PACKAGE_DIR="$SCRIPT_DIR/../nekoyume/Assets/Packages/"
-
-for f in $LIBPLANET_FILES; do
-    cp "$f" "$PACKAGE_DIR"
-done
-
-
-cd "$SCRIPT_DIR"
-rm -rf "$TMPDIR"
