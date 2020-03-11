@@ -196,12 +196,7 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    UpdateCurrentAvatarState(eval);
-                    Widget.Find<Menu>().GetComponentInChildren<ActionPoint>()
-                        .SetPoint(States.Instance.CurrentAvatarState.actionPoint, true);
-                }).AddTo(_disposables);
+                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
         }
 
         private void QuestReward()

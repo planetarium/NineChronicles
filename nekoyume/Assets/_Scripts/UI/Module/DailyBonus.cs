@@ -22,10 +22,10 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI text = null;
 
         [SerializeField]
-        private Button button = null;
+        private Button additiveGroupButton = null;
 
         [SerializeField]
-        private CanvasGroup additiveCanvasGroup = null;
+        private CanvasGroup additiveGroupCanvas = null;
 
         [SerializeField]
         private RectTransform tooltipArea = null;
@@ -40,10 +40,9 @@ namespace Nekoyume.UI.Module
         private ActionPoint actionPoint = null;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private bool _isFull;
-
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
+        private bool _isFull;
 
         private static readonly int IsFull = Animator.StringToHash("IsFull");
         private static readonly int Reward = Animator.StringToHash("GetReward");
@@ -55,19 +54,21 @@ namespace Nekoyume.UI.Module
             sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
             sliderAnimator.SetMaxValue(GameConfig.DailyRewardInterval);
             sliderAnimator.SetValue(0f, false);
+
+            additiveGroupButton.OnClickAsObservable().Subscribe(_ => GetReward()).AddTo(gameObject);
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            additiveCanvasGroup.alpha = 0f;
+            additiveGroupCanvas.alpha = 0f;
 
             if (!(States.Instance.CurrentAvatarState is null))
             {
                 SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
-                SetRewardReceivedBlockIndex(States.Instance.CurrentAvatarState.dailyRewardReceivedIndex, false);    
+                SetRewardReceivedBlockIndex(States.Instance.CurrentAvatarState.dailyRewardReceivedIndex, false);
             }
-            
+
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(x => SetBlockIndex(x, true))
                 .AddTo(_disposables);
@@ -120,13 +121,13 @@ namespace Nekoyume.UI.Module
                 return;
 
             _isFull = sliderAnimator.IsFull;
-            additiveCanvasGroup.alpha = _isFull ? 1f : 0f;
-            additiveCanvasGroup.interactable = _isFull;
-            button.interactable = _isFull;
+            additiveGroupCanvas.alpha = _isFull ? 1f : 0f;
+            additiveGroupCanvas.interactable = _isFull;
+            additiveGroupButton.interactable = _isFull;
             animator.SetBool(IsFull, _isFull);
         }
 
-        public void GetReward()
+        private void GetReward()
         {
             Notification.Push(Nekoyume.Model.Mail.MailType.System,
                 LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
@@ -138,9 +139,9 @@ namespace Nekoyume.UI.Module
             });
 
             _isFull = false;
-            additiveCanvasGroup.alpha = 0;
-            additiveCanvasGroup.interactable = _isFull;
-            button.interactable = _isFull;
+            additiveGroupCanvas.alpha = 0;
+            additiveGroupCanvas.interactable = _isFull;
+            additiveGroupButton.interactable = _isFull;
             animator.SetBool(IsFull, _isFull);
             animator.StopPlayback();
             animator.SetTrigger(Reward);
@@ -159,8 +160,8 @@ namespace Nekoyume.UI.Module
 
         public void ShowTooltip()
         {
-            Widget.Find<VanilaTooltip>().Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION",
-                tooltipArea.position);
+            Widget.Find<VanilaTooltip>()
+                .Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION", tooltipArea.position);
         }
 
         public void HideTooltip()

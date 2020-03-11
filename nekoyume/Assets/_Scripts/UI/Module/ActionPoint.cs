@@ -1,8 +1,9 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,18 +12,19 @@ namespace Nekoyume.UI.Module
     public class ActionPoint : AlphaAnimateModule
     {
         [SerializeField]
-        private TextMeshProUGUI text = null;
+        private SliderAnimator sliderAnimator = null;
 
         [SerializeField]
-        private Slider slider = null;
+        private TextMeshProUGUI text = null;
 
         [SerializeField]
         private Image image = null;
 
         [SerializeField]
         private RectTransform tooltipArea = null;
-        
-        private Coroutine _coLerpSlider;
+
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private int _currentActionPoint;
 
         public Image Image => image;
 
@@ -30,63 +32,52 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            const long MaxValue = GameConfig.ActionPointMax;
-            slider.maxValue = GameConfig.ActionPointMax;
-            slider.value = 0;
-            text.text = $"0 / {GameConfig.ActionPointMax}";
+            sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
+            sliderAnimator.SetMaxValue(GameConfig.ActionPointMax);
+            sliderAnimator.SetValue(0f, false);
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
 
-            if (States.Instance.CurrentAvatarState != null)
-                SetPoint(States.Instance.CurrentAvatarState.actionPoint);
+            if (!(States.Instance.CurrentAvatarState is null))
+            {
+                SetActionPoint(States.Instance.CurrentAvatarState.actionPoint, false);
+            }
+
+            ReactiveAvatarState.ActionPoint
+                .Subscribe(x => SetActionPoint(x, true))
+                .AddTo(_disposables);
+        }
+
+        protected override void OnDisable()
+        {
+            sliderAnimator.Stop();
+            _disposables.DisposeAllAndClear();
+            base.OnDisable();
         }
 
         #endregion
 
-        public void SetPoint(int actionPoint, bool useAnimation = false)
+        private void SetActionPoint(int actionPoint, bool useAnimation)
         {
-            if (!gameObject.activeSelf)
+            if (_currentActionPoint == actionPoint)
                 return;
 
-            if (!useAnimation)
-            {
-                slider.value = actionPoint;
-                text.text = $"{actionPoint} / {GameConfig.ActionPointMax}";
-
-                return;
-            }
-
-            if (!(_coLerpSlider is null))
-            {
-                StopCoroutine(_coLerpSlider);
-            }
-
-            _coLerpSlider = StartCoroutine(CoLerpSlider(actionPoint));
+            _currentActionPoint = actionPoint;
+            sliderAnimator.SetValue(_currentActionPoint, useAnimation);
         }
 
-        private IEnumerator CoLerpSlider(int value, int additionalSpeed = 1)
+        private void OnSliderChange()
         {
-            var current = slider.value;
-            var speed = 4 * additionalSpeed;
-
-            while (current <= value - 2)
-            {
-                current = Mathf.Lerp(current, value, Time.deltaTime * speed);
-                slider.value = current;
-                text.text = $"{(int) current} / {GameConfig.ActionPointMax}";
-                yield return null;
-            }
-
-            slider.value = value;
-            text.text = $"{value} / {GameConfig.ActionPointMax}";
+            text.text = $"{(int) sliderAnimator.Value} / {sliderAnimator.MaxValue}";
         }
 
         public void ShowTooltip()
         {
-            Widget.Find<VanilaTooltip>().Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
+            Widget.Find<VanilaTooltip>()
+                .Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
         }
 
         public void HideTooltip()
