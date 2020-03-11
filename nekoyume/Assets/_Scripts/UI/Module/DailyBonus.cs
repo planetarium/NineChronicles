@@ -61,11 +61,15 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
             additiveCanvasGroup.alpha = 0f;
+            SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
+            SetRewardReceivedBlockIndex(States.Instance.CurrentAvatarState.dailyRewardReceivedIndex, false);
 
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SetBlockIndex).AddTo(_disposables);
+                .Subscribe(x => SetBlockIndex(x, true))
+                .AddTo(_disposables);
             ReactiveAvatarState.DailyRewardReceivedIndex
-                .Subscribe(SetRewardReceivedBlockIndex).AddTo(_disposables);
+                .Subscribe(x => SetRewardReceivedBlockIndex(x, true))
+                .AddTo(_disposables);
         }
 
         protected override void OnDisable()
@@ -77,31 +81,31 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        private void SetBlockIndex(long blockIndex)
+        private void SetBlockIndex(long blockIndex, bool useAnimation)
         {
             if (_currentBlockIndex == blockIndex)
                 return;
 
             _currentBlockIndex = blockIndex;
-            UpdateSlider();
+            UpdateSlider(useAnimation);
         }
 
-        private void SetRewardReceivedBlockIndex(long rewardReceivedBlockIndex)
+        private void SetRewardReceivedBlockIndex(long rewardReceivedBlockIndex, bool useAnimation)
         {
             if (_rewardReceivedBlockIndex == rewardReceivedBlockIndex)
                 return;
 
             _rewardReceivedBlockIndex = rewardReceivedBlockIndex;
-            UpdateSlider();
+            UpdateSlider(useAnimation);
         }
 
-        private void UpdateSlider()
+        private void UpdateSlider(bool useAnimation)
         {
             var endValue = Math.Min(
                 Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex),
                 GameConfig.DailyRewardInterval);
 
-            sliderAnimator.SetValue(endValue);
+            sliderAnimator.SetValue(endValue, useAnimation);
         }
 
         private void OnSliderChange()
