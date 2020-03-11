@@ -364,7 +364,7 @@ namespace Nekoyume.BlockChain
             if (Widget.Find<QuestPreparation>().IsActive() &&
                 Widget.Find<LoadingScreen>().IsActive())
             {
-                Widget.Find<QuestPreparation>().GoToStage(eval);
+                Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
             }
             else if (Widget.Find<BattleResult>().IsActive() &&
                 Widget.Find<StageLoadingScreen>().IsActive())
