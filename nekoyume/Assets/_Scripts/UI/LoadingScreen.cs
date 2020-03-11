@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             _tips = LocalizationManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
 
             var pos = transform.localPosition;
-            pos.z = -1f;
+            pos.z = -5f;
             transform.localPosition = pos;
 
             if (ReferenceEquals(loadingText, null) ||
