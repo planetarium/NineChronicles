@@ -32,7 +32,7 @@ namespace Nekoyume.UI.Module
             materialPanel.SetData(view.model, subRecipeId);
 
             gameObject.SetActive(true);
-            CostNCG = (int) materialPanel.costNcg;
+            CostNCG = (int)materialPanel.costNcg;
             CostAP = materialPanel.costAp;
             if (CostAP > 0)
             {

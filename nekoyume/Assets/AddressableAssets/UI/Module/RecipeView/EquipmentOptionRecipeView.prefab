@@ -843,7 +843,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -40}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -16, y: -70}
+  m_AnchoredPosition: {x: -16, y: -63.3}
   m_SizeDelta: {x: 26, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4619057915695629625
@@ -1686,7 +1686,7 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_Sprite: {fileID: 21300000, guid: ad5586c73944b6c408b2c82b7561802f, type: 3}
-  m_Type: 0
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1708,7 +1708,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 4903197832569191134}
   descriptionText: {fileID: 5328963771096891869}
-  unlockConditionText: {fileID: 7758105147874903525}
   optionTexts:
   - percentageText: {fileID: 3107984344119435587}
     descriptionText: {fileID: 1776206076903150930}
@@ -1718,14 +1717,15 @@ MonoBehaviour:
     descriptionText: {fileID: 4839694945128049527}
   - percentageText: {fileID: 5057060484075365903}
     descriptionText: {fileID: 5233995903509688576}
+  decoration: {fileID: 6303396811117360299}
+  panel: {fileID: 538494799808785563}
+  innerPanel: {fileID: 1859101181418896009}
+  unlockConditionText: {fileID: 7758105147874903525}
   requiredItemRecipeView: {fileID: 3787674628610104659}
   button: {fileID: 2024000046294461480}
   lockParent: {fileID: 5456164675267880335}
   header: {fileID: 7975084470098078680}
   options: {fileID: 7320624702909474117}
-  decoration: {fileID: 6303396811117360299}
-  panel: {fileID: 538494799808785563}
-  innerPanel: {fileID: 1859101181418896009}
 --- !u!1 &7028089283641427792
 GameObject:
   m_ObjectHideFlags: 0
@@ -1982,7 +1982,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 40}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 20, y: -70}
+  m_AnchoredPosition: {x: 20, y: -63.3}
   m_SizeDelta: {x: 26, y: 105}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4061863199021981956

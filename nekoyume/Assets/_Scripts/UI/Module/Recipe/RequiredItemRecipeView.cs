@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.Model.Item;
-using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
