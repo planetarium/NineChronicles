@@ -59,6 +59,12 @@ namespace Nekoyume.Action
                 var failed = false;
                 foreach (var equipment in equipments)
                 {
+                    if (equipment.RequiredBlockIndex > context.BlockIndex)
+                    {
+                        failed = true;
+                        break;
+                    }
+                    
                     switch (equipment.Data.ItemSubType)
                     {
                         case ItemSubType.Weapon:

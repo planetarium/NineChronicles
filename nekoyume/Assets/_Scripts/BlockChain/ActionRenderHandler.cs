@@ -35,10 +35,6 @@ namespace Nekoyume.BlockChain
 
         private ActionRenderer _renderer;
 
-        private ActionRenderHandler() : base()
-        {
-        }
-
         public void Start(ActionRenderer renderer)
         {
             _renderer = renderer;

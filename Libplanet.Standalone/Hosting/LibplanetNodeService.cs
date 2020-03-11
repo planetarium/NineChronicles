@@ -110,7 +110,7 @@ namespace Libplanet.Standalone.Hosting
             {
                 try
                 {
-                    store = new RocksDBStore.RocksDBStore(path, flush: false);
+                    store = new RocksDBStore.RocksDBStore(path);
                     Log.Debug("RocksDB is initialized.");
                 }
                 catch (TypeInitializationException e)

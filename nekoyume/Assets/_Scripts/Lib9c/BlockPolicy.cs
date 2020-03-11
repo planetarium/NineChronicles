@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -11,7 +10,6 @@ namespace Nekoyume.BlockChain
     public class BlockPolicy
     {
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
-        private static readonly TimeSpan SleepInterval = TimeSpan.FromSeconds(15);
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
         {
@@ -27,7 +25,6 @@ namespace Nekoyume.BlockChain
 
             public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blocks)
             {
-                Thread.Sleep(SleepInterval);
                 return blocks.Tip is null ? 0 : 1;
             }
         }
