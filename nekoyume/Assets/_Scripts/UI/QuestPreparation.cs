@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
-using Nekoyume.Action;
+using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Manager;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -36,6 +38,8 @@ namespace Nekoyume.UI
         public GameObject equipSlotGlow;
         public TextMeshProUGUI requiredPointText;
         public ParticleSystem[] particles;
+        public TMP_InputField levelField;
+        public Button simulateButton;
 
         private Stage _stage;
         private Game.Character.Player _player;
@@ -73,6 +77,8 @@ namespace Nekoyume.UI
             base.Awake();
 
             CloseWidget = null;
+            simulateButton.gameObject.SetActive(GameConfig.IsEditor);
+            levelField.gameObject.SetActive(GameConfig.IsEditor);
         }
 
         public override void Initialize()
@@ -540,11 +546,71 @@ namespace Nekoyume.UI
                 .AddTo(this);
         }
 
-        public void GoToStage(ActionBase.ActionEvaluation<HackAndSlash> eval)
+        public void GoToStage(BattleLog battleLog)
         {
-            Game.Event.OnStageStart.Invoke(eval.Action.Result);
+            Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);
+        }
+
+        public void SimulateBattle()
+        {
+            var level = States.Instance.CurrentAvatarState.level;
+            if (!string.IsNullOrEmpty(levelField.text))
+                level = int.Parse(levelField.text);
+            // 레벨 범위가 넘어간 값이면 만렙으로 설정
+            if (!Game.Game.instance.TableSheets.CharacterLevelSheet.ContainsKey(level))
+            {
+                level = Game.Game.instance.TableSheets.CharacterLevelSheet.Keys.Last();
+            }
+            Find<LoadingScreen>().Show();
+
+            questButton.gameObject.SetActive(false);
+            _player.StartRun();
+            ActionCamera.instance.ChaseX(_player.transform);
+
+            var stageId = _stageId.Value;
+            if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+                throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
+
+            var avatarState = new AvatarState(States.Instance.CurrentAvatarState) {level = level};
+            var consumables = consumableSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Consumable) slot.Item)
+                .ToList();
+            var equipments = equipmentSlots
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => (Equipment) slot.Item)
+                .ToList();
+            var inventoryEquipments = avatarState.inventory.Items
+                .Select(i => i.item)
+                .OfType<Equipment>()
+                .Where(i => i.equipped).ToList();
+
+            foreach (var equipment in inventoryEquipments)
+            {
+                equipment.Unequip();
+            }
+
+            foreach (var equipment in equipments)
+            {
+                if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                ((Equipment) outNonFungibleItem).Equip();
+            }
+            var simulator = new StageSimulator(
+                new Cheat.DebugRandom(),
+                avatarState,
+                consumables,
+                worldRow.Id,
+                stageId,
+                Game.Game.instance.TableSheets
+            );
+            simulator.Simulate();
+            GoToStage(simulator.Log);
         }
     }
 }

@@ -5,7 +5,7 @@
 ```
 $ dotnet run -- --help
 
-Usage: NineChronicles.Standalone [--app-protocol-version <Int32>] [--genesis-block-path <String>] [--no-miner] [--host <String>] [--port <Nullable`1>] [--private-key <String>] [--store-type <String>] [--store-path <String>] [--ice-server <String>...] [--peer <String>...] [--rpc-server] [--rpc-listen-host <String>] [--rpc-listen-port <Nullable`1>] [--help] [--version]
+Usage: NineChronicles.Standalone.Executable [--app-protocol-version <Int32>] [--genesis-block-path <String>] [--no-miner] [--host <String>] [--port <Nullable`1>] [--private-key <String>] [--store-type <String>] [--store-path <String>] [--ice-server <String>...] [--peer <String>...] [--rpc-server] [--rpc-listen-host <String>] [--rpc-listen-port <Nullable`1>] [--help] [--version]
 
 Run standalone application with options.
 
