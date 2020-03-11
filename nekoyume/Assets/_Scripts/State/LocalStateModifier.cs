@@ -246,6 +246,33 @@ namespace Nekoyume.State
 
         #endregion
 
+        #region Avater
+
+        /// <summary>
+        /// 아바타의 데일리 리워드 획득 블록 인덱스를 변경한다.(휘발성)
+        /// </summary>
+        /// <param name="avatarAddress"></param>
+        /// <param name="blockIndex"></param>
+        public static void ModifyAvatarDailyRewardReceivedIndex(Address avatarAddress, bool isAdd)
+        {
+            var blockIndex = isAdd ? 1000 : -1000;
+
+            var modifier = new AvatarDailyRewardReceivedIndexModifier(blockIndex);
+            LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
+
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
+                return;
+
+            modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+                return;
+
+            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
+        }
+
+        #endregion
+        
         #region WeeklyArena
 
         /// <summary>
