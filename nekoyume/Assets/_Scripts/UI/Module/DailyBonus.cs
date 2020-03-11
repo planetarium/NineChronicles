@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using JetBrains.Annotations;
@@ -17,10 +16,10 @@ namespace Nekoyume.UI.Module
     public class DailyBonus : AlphaAnimateModule
     {
         [SerializeField]
-        private TextMeshProUGUI text = null;
+        private SliderAnimator sliderAnimator = null;
 
         [SerializeField]
-        private Slider slider = null;
+        private TextMeshProUGUI text = null;
 
         [SerializeField]
         private Button button = null;
@@ -34,19 +33,17 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Transform boxImageTransform = null;
 
+        [SerializeField]
+        private Animator animator;
+
         [SerializeField, CanBeNull]
         private ActionPoint actionPoint = null;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private bool _updateEnable;
         private bool _isFull;
-        private Animator _animator;
 
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
-        private long _currentValue;
-
-        private Coroutine _coUpdateSlider;
 
         private static readonly int IsFull = Animator.StringToHash("IsFull");
         private static readonly int Reward = Animator.StringToHash("GetReward");
@@ -55,12 +52,9 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            slider.maxValue = GameConfig.DailyRewardInterval;
-            text.text = $"0 / {GameConfig.DailyRewardInterval}";
-            slider.value = 0;
-            button.interactable = false;
-            _animator = GetComponent<Animator>();
-            _updateEnable = true;
+            sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
+            sliderAnimator.SetMaxValue(GameConfig.DailyRewardInterval);
+            sliderAnimator.SetValue(0f, false);
         }
 
         protected override void OnEnable()
@@ -69,98 +63,79 @@ namespace Nekoyume.UI.Module
             additiveCanvasGroup.alpha = 0f;
 
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(blockIndex => SetBlockIndex(blockIndex, true)).AddTo(_disposables);
+                .Subscribe(SetBlockIndex).AddTo(_disposables);
             ReactiveAvatarState.DailyRewardReceivedIndex
-                .Subscribe(blockIndex => SetRewardReceivedBlockIndex(blockIndex, true)).AddTo(_disposables);
+                .Subscribe(SetRewardReceivedBlockIndex).AddTo(_disposables);
         }
 
         protected override void OnDisable()
         {
+            sliderAnimator.Stop();
             _disposables.DisposeAllAndClear();
             base.OnDisable();
         }
 
-        private void OnDestroy()
-        {
-            _disposables.DisposeAllAndClear();
-        }
-
         #endregion
 
-        private void SetBlockIndex(long blockIndex, bool useLerp)
+        private void SetBlockIndex(long blockIndex)
         {
+            if (_currentBlockIndex == blockIndex)
+                return;
+
             _currentBlockIndex = blockIndex;
-            UpdateSlider(useLerp);
+            UpdateSlider();
         }
 
-        private void SetRewardReceivedBlockIndex(long rewardReceivedBlockIndex, bool useLerp)
+        private void SetRewardReceivedBlockIndex(long rewardReceivedBlockIndex)
         {
+            if (_rewardReceivedBlockIndex == rewardReceivedBlockIndex)
+                return;
+
             _rewardReceivedBlockIndex = rewardReceivedBlockIndex;
-            SetBlockIndex(_currentBlockIndex, useLerp);
+            UpdateSlider();
         }
 
-        private void UpdateSlider(bool useLerp)
+        private void UpdateSlider()
         {
             var endValue = Math.Min(
                 Math.Max(0, _currentBlockIndex - _rewardReceivedBlockIndex),
                 GameConfig.DailyRewardInterval);
-            
-            if (!(_coUpdateSlider is null))
-            {
-                StopCoroutine(_coUpdateSlider);
-                _coUpdateSlider = null;
-            }
 
-            if (useLerp)
-            {
-                _coUpdateSlider = StartCoroutine(CoUpdateSlider(endValue));
-            }
-            else
-            {
-                _currentValue = endValue;
-                slider.value = _currentValue;
-                text.text = $"{_currentValue} / {GameConfig.DailyRewardInterval}";
-
-                _isFull = _currentValue >= GameConfig.DailyRewardInterval;
-                additiveCanvasGroup.alpha = _isFull ? 1 : 0;
-                additiveCanvasGroup.interactable = _isFull;
-                button.interactable = _isFull;
-                _animator.SetBool(IsFull, _isFull);
-            }
+            sliderAnimator.SetValue(endValue);
         }
 
-        private IEnumerator CoUpdateSlider(long endValue)
+        private void OnSliderChange()
         {
-            var distance = endValue - slider.value;
-            while (distance > GameConfig.DailyRewardInterval * 0.01f)
-            {
-                distance -= distance * Time.deltaTime * 2f;
-                _currentValue = (long) (endValue - distance);
-                slider.value = endValue - distance;
-                text.text = $"{_currentValue} / {GameConfig.DailyRewardInterval}";
-                yield return null;
-            }
+            text.text = $"{(int) sliderAnimator.Value} / {sliderAnimator.MaxValue}";
 
-            UpdateSlider(false);
+            if (_isFull == sliderAnimator.IsFull)
+                return;
+
+            _isFull = sliderAnimator.IsFull;
+            additiveCanvasGroup.alpha = _isFull ? 1f : 0f;
+            additiveCanvasGroup.interactable = _isFull;
+            button.interactable = _isFull;
+            animator.SetBool(IsFull, _isFull);
         }
 
         public void GetReward()
         {
+            Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
+
             Game.Game.instance.ActionManager.DailyReward().Subscribe(_ =>
             {
-                _updateEnable = true;
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
                     LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
             });
-            Notification.Push(Nekoyume.Model.Mail.MailType.System,
-                LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
-            additiveCanvasGroup.alpha = 0;
-            additiveCanvasGroup.interactable = false;
-            button.interactable = false;
+
             _isFull = false;
-            _animator.SetBool(IsFull, _isFull);
-            _animator.StopPlayback();
-            _animator.SetTrigger(Reward);
+            additiveCanvasGroup.alpha = 0;
+            additiveCanvasGroup.interactable = _isFull;
+            button.interactable = _isFull;
+            animator.SetBool(IsFull, _isFull);
+            animator.StopPlayback();
+            animator.SetTrigger(Reward);
             VFXController.instance.Create<ItemMoveVFX>(boxImageTransform.position);
 
             if (!(actionPoint is null))
@@ -172,9 +147,6 @@ namespace Nekoyume.UI.Module
                     1f,
                     0.8f);
             }
-
-            SetBlockIndex(0L, true);
-            _updateEnable = false;
         }
 
         public void ShowTooltip()

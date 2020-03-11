@@ -83,8 +83,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3053886975560591763}
-  - component: {fileID: 3053886975560591760}
   - component: {fileID: 7434278619177023938}
+  - component: {fileID: 3053886975560591760}
   - component: {fileID: 1840000510220927721}
   - component: {fileID: -9137729193417607844}
   - component: {fileID: 9125478180068637838}
@@ -120,6 +120,29 @@ RectTransform:
   m_AnchoredPosition: {x: -77.5, y: -81}
   m_SizeDelta: {x: 145, y: 22}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &7434278619177023938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3053886975560591762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9adaed592cc44cf2bb70a39622e85f2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: -9137729193417607844}
+  animateAlpha: 0
+  sliderAnimator:
+    slider: {fileID: 3053886975560591760}
+  text: {fileID: 3053886975728798312}
+  button: {fileID: 3365668517307483660}
+  additiveCanvasGroup: {fileID: 5124867261552837371}
+  tooltipArea: {fileID: 2493448372099798015}
+  boxImageTransform: {fileID: 8718710296122514099}
+  animator: {fileID: 9125478180068637838}
+  actionPoint: {fileID: 0}
 --- !u!114 &3053886975560591760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -172,27 +195,6 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &7434278619177023938
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3053886975560591762}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9adaed592cc44cf2bb70a39622e85f2c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canvasGroup: {fileID: -9137729193417607844}
-  animateAlpha: 0
-  text: {fileID: 3053886975728798312}
-  slider: {fileID: 3053886975560591760}
-  button: {fileID: 3365668517307483660}
-  additiveCanvasGroup: {fileID: 5124867261552837371}
-  tooltipArea: {fileID: 2493448372099798015}
-  boxImageTransform: {fileID: 8718710296122514099}
-  actionPoint: {fileID: 0}
 --- !u!114 &1840000510220927721
 MonoBehaviour:
   m_ObjectHideFlags: 0

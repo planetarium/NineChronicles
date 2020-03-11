@@ -31,8 +31,9 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             const long MaxValue = GameConfig.ActionPointMax;
-            slider.maxValue = MaxValue;
-            text.text = $"{MaxValue} / {MaxValue}";
+            slider.maxValue = GameConfig.ActionPointMax;
+            slider.value = 0;
+            text.text = $"0 / {GameConfig.ActionPointMax}";
         }
 
         protected override void OnEnable()
