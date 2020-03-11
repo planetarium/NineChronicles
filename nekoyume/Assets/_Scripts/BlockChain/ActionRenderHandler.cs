@@ -196,7 +196,13 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+                .Subscribe(eval =>
+                {
+                    var avatarAddress = eval.Action.avatarAddress;
+                    LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, false);
+                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.ActionPointMax);
+                    UpdateCurrentAvatarState(eval);
+                }).AddTo(_disposables);
         }
 
         private void QuestReward()

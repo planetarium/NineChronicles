@@ -230,6 +230,11 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
         {
+            // NOTE: 이곳에서 하는 것이 바람직 하지만, 연출 타이밍을 위해 밖에서 한다.
+            // var avatarAddress = States.Instance.CurrentAvatarState.address;
+            // LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
+            // LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
+            
             var action = new DailyReward
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,

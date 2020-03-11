@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using JetBrains.Annotations;
@@ -43,9 +44,12 @@ namespace Nekoyume.UI.Module
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
         private bool _isFull;
+        
+        // NOTE: CoGetDailyRewardAnimation() 연출 로직이 모두 흐르지 않았을 경우를 대비해서 연출 단계를 저장하는 필드.
+        private int _coGetDailyRewardAnimationStep = 0;
 
         private static readonly int IsFull = Animator.StringToHash("IsFull");
-        private static readonly int Reward = Animator.StringToHash("GetReward");
+        private static readonly int GetReward = Animator.StringToHash("GetReward");
 
         #region Mono
 
@@ -55,7 +59,7 @@ namespace Nekoyume.UI.Module
             sliderAnimator.SetMaxValue(GameConfig.DailyRewardInterval);
             sliderAnimator.SetValue(0f, false);
 
-            additiveGroupButton.OnClickAsObservable().Subscribe(_ => GetReward()).AddTo(gameObject);
+            additiveGroupButton.OnClickAsObservable().Subscribe(_ => GetDailyReward()).AddTo(gameObject);
         }
 
         protected override void OnEnable()
@@ -79,6 +83,23 @@ namespace Nekoyume.UI.Module
 
         protected override void OnDisable()
         {
+            if (_coGetDailyRewardAnimationStep > 0)
+            {
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                switch (_coGetDailyRewardAnimationStep)
+                {
+                    case 1:
+
+                        LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
+                        break;
+                    case 2:
+                        LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
+                        break;
+                }
+
+                _coGetDailyRewardAnimationStep = 0;
+            }
+
             sliderAnimator.Stop();
             _disposables.DisposeAllAndClear();
             base.OnDisable();
@@ -127,7 +148,18 @@ namespace Nekoyume.UI.Module
             animator.SetBool(IsFull, _isFull);
         }
 
-        private void GetReward()
+        public void ShowTooltip()
+        {
+            Widget.Find<VanilaTooltip>()
+                .Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION", tooltipArea.position);
+        }
+
+        public void HideTooltip()
+        {
+            Widget.Find<VanilaTooltip>().Close();
+        }
+
+        private void GetDailyReward()
         {
             Notification.Push(Nekoyume.Model.Mail.MailType.System,
                 LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
@@ -138,35 +170,31 @@ namespace Nekoyume.UI.Module
                     LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
             });
 
-            _isFull = false;
-            additiveGroupCanvas.alpha = 0;
-            additiveGroupCanvas.interactable = _isFull;
-            additiveGroupButton.interactable = _isFull;
-            animator.SetBool(IsFull, _isFull);
-            animator.StopPlayback();
-            animator.SetTrigger(Reward);
+            StartCoroutine(CoGetDailyRewardAnimation());
+        }
+
+        private IEnumerator CoGetDailyRewardAnimation()
+        {
+            _coGetDailyRewardAnimationStep = 1;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
+            _coGetDailyRewardAnimationStep = 2;
+            animator.SetTrigger(GetReward);
             VFXController.instance.Create<ItemMoveVFX>(boxImageTransform.position);
 
-            if (!(actionPoint is null))
-            {
-                ItemMoveAnimation.Show(actionPoint.Image.sprite,
-                    boxImageTransform.position,
-                    actionPoint.Image.transform.position,
-                    true,
-                    1f,
-                    0.8f);
-            }
-        }
+            if (actionPoint is null)
+                yield break;
 
-        public void ShowTooltip()
-        {
-            Widget.Find<VanilaTooltip>()
-                .Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION", tooltipArea.position);
-        }
+            ItemMoveAnimation.Show(actionPoint.Image.sprite,
+                boxImageTransform.position,
+                actionPoint.Image.transform.position,
+                true,
+                1f,
+                0.8f);
 
-        public void HideTooltip()
-        {
-            Widget.Find<VanilaTooltip>().Close();
+            yield return new WaitForSeconds(1.5f);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
+            _coGetDailyRewardAnimationStep = 0;
         }
     }
 }
