@@ -44,7 +44,7 @@ namespace Tests.EditMode.Battle
                 "", "", "", "", "", "", "", "", "", "", "", "", "", "", "2", "2"
             });
             var reward = StageSimulator.SetReward(row, new Cheat.DebugRandom(), _tableSheets);
-            Assert.IsTrue(reward.Count == 2);
+            Assert.AreEqual(2,reward.Count);
             Assert.IsNotEmpty(reward);
             Assert.AreEqual(new[]{306043, 303000}, reward.Select(i => i.Data.Id).ToArray());
         }
@@ -60,7 +60,7 @@ namespace Tests.EditMode.Battle
                 "", "", "", "", "", "", "", "", "", "", "", "", "", "", "2", "2"
             });
             var reward = StageSimulator.SetReward(row, new Cheat.DebugRandom(), _tableSheets);
-            Assert.IsTrue(reward.Count == 2);
+            Assert.AreEqual(2, reward.Count);
             Assert.IsNotEmpty(reward);
             Assert.AreEqual(1, reward.Select(i => i.Data.Id).ToImmutableHashSet().Count);
         }
