@@ -155,10 +155,17 @@ namespace Launcher
                 StoreType = settings.StoreType,
             };
 
-            var service = new NineChroniclesNodeService(properties);
+            var rpcProperties = new RpcNodeServiceProperties
+            {
+                RpcServer = true,
+                RpcListenHost = RpcListenHost,
+                RpcListenPort = RpcListenPort,
+            };
+
+            var service = new NineChroniclesNodeService(properties, rpcProperties);
             try
             {
-                await service.Run(true, rpcListenHost: RpcListenHost, rpcListenPort: RpcListenPort, cancellationToken);
+                await service.Run(cancellationToken);
             }
             catch (OperationCanceledException e)
             {
