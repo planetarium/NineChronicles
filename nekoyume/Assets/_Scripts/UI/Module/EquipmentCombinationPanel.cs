@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Module
 
         public virtual void SetData(EquipmentRecipeCellView view, int? subRecipeId = null)
         {
-            recipeCellView.Set(view.model);
+            recipeCellView.Set(view.model, true);
             materialPanel.SetData(view.model, subRecipeId);
 
             gameObject.SetActive(true);

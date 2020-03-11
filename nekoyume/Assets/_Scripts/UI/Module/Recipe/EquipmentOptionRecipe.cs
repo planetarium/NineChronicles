@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
 
         public void SetData(EquipmentRecipeCellView view, Action<EquipmentRecipeCellView, int> onSelectOption)
         {
-            equipmentRecipeCellView.Set(view.model);
+            equipmentRecipeCellView.Set(view.model, true);
 
             for (int i = 0; i < equipmentOptionRecipeViews.Length; ++i)
             {
