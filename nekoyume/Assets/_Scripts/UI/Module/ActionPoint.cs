@@ -1,7 +1,7 @@
 using System;
-using DG.Tweening;
-using Nekoyume.Model;
+using System.Collections.Generic;
 using Nekoyume.State;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -9,60 +9,80 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class ActionPoint : MonoBehaviour
+    public class ActionPoint : AlphaAnimateModule
     {
-        public TextMeshProUGUI text;
-        public Slider slider;
-        public RectTransform tooltipArea;
-        public CanvasGroup canvasGroup;
-        public bool animateAlpha;
+        [SerializeField]
+        private SliderAnimator sliderAnimator = null;
 
-        private IDisposable _disposable;
-        private VanilaTooltip _tooltip;
+        [SerializeField]
+        private TextMeshProUGUI text = null;
+
+        [SerializeField]
+        private Image image = null;
+
+        [SerializeField]
+        private RectTransform tooltipArea = null;
+
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+        private int _currentActionPoint;
+
+        public Image Image => image;
 
         #region Mono
 
         private void Awake()
         {
-            const long MaxValue = GameConfig.ActionPointMax;
-            slider.maxValue = MaxValue;
-            text.text = $"{MaxValue} / {MaxValue}";
+            sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
+            sliderAnimator.SetMaxValue(GameConfig.ActionPointMax);
+            sliderAnimator.SetValue(0f, false);
         }
 
-        private void OnEnable()
+        protected override void OnEnable()
         {
-            _disposable = ReactiveAvatarState.ActionPoint.Subscribe(SetPoint);
+            base.OnEnable();
 
-            if (animateAlpha)
+            if (!(States.Instance.CurrentAvatarState is null))
             {
-                canvasGroup.alpha = 0;
-                canvasGroup.DOFade(1, 1.0f);
+                SetActionPoint(States.Instance.CurrentAvatarState.actionPoint, false);
             }
+
+            ReactiveAvatarState.ActionPoint
+                .Subscribe(x => SetActionPoint(x, true))
+                .AddTo(_disposables);
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
-            _disposable.Dispose();
+            sliderAnimator.Stop();
+            _disposables.DisposeAllAndClear();
+            base.OnDisable();
         }
 
         #endregion
 
-        private void SetPoint(int actionPoint)
+        private void SetActionPoint(int actionPoint, bool useAnimation)
         {
-            text.text = $"{actionPoint} / {slider.maxValue}";
-            slider.value = actionPoint;
+            if (_currentActionPoint == actionPoint)
+                return;
+
+            _currentActionPoint = actionPoint;
+            sliderAnimator.SetValue(_currentActionPoint, useAnimation);
+        }
+
+        private void OnSliderChange()
+        {
+            text.text = $"{(int) sliderAnimator.Value} / {sliderAnimator.MaxValue}";
         }
 
         public void ShowTooltip()
         {
-            _tooltip = Widget.Find<VanilaTooltip>();
-            _tooltip?.Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
+            Widget.Find<VanilaTooltip>()
+                .Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
         }
 
         public void HideTooltip()
         {
-            _tooltip?.Close();
-            _tooltip = null;
+            Widget.Find<VanilaTooltip>().Close();
         }
     }
 }
