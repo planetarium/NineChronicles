@@ -109,9 +109,7 @@ namespace Nekoyume.UI.Model
             switch (itemBase.Data.ItemType)
             {
                 case ItemType.Consumable:
-                    if (!(itemBase is Consumable consumable))
-                        throw new InvalidCastException(nameof(itemBase));
-
+                    var consumable = (Consumable) itemBase;
                     if (consumable.RequiredBlockIndex > blockIndex)
                         break;
 
@@ -119,9 +117,7 @@ namespace Nekoyume.UI.Model
                     Consumables.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
-                    if (!(itemBase is Equipment equipment))
-                        throw new InvalidCastException(nameof(itemBase));
-
+                    var equipment = (Equipment) itemBase;
                     if (equipment.RequiredBlockIndex > blockIndex)
                         break;
 
@@ -130,9 +126,7 @@ namespace Nekoyume.UI.Model
                     Equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
-                    if (!(itemBase is Material material))
-                        throw new InvalidCastException(nameof(itemBase));
-
+                    var material = (Material) itemBase;
                     if (TryGetMaterial(material, out inventoryItem))
                     {
                         inventoryItem.Count.Value += count;
