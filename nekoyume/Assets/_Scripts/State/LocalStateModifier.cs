@@ -249,7 +249,7 @@ namespace Nekoyume.State
         #region Avater
 
         /// <summary>
-        /// 아바타의 행동력을 변경한다.(휘발성)
+        /// 아바타의 데일리 리워드 획득 블록 인덱스를 변경한다.(휘발성)
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="blockIndex"></param>
