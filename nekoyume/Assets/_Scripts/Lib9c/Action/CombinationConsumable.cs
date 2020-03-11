@@ -22,8 +22,8 @@ namespace Nekoyume.Action
 {
     // todo: `CombineEquipment`와 `CombineConsumable`로 분리해야 함. 공용 로직은 별도로 뺌.
     [Serializable]
-    [ActionType("combination")]
-    public class Combination : GameAction
+    [ActionType("combination_consumable")]
+    public class CombinationConsumable : GameAction
     {
         // todo: ResultModel.materials는 Combination.Materials 와 같은 값이기 때문에 추가로 더해주지 않아도 될 것으로 보임.
         // 클라이언트가 이미 알고 있거나 알 수 있는 액션의 구분자를 통해서 갖고 오는 형태가 좋아 보임.
@@ -71,7 +71,7 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
             }.ToImmutableDictionary();
 
-        public Combination()
+        public CombinationConsumable()
         {
             Materials = new Dictionary<Material, int>();
         }

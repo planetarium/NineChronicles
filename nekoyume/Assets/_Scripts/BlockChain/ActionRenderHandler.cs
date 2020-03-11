@@ -10,7 +10,6 @@ using Nekoyume.Manager;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
-using Combination = Nekoyume.Action.Combination;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Module;
 
@@ -121,7 +120,7 @@ namespace Nekoyume.BlockChain
 
         private void Combination()
         {
-            _renderer.EveryRender<Combination>()
+            _renderer.EveryRender<CombinationConsumable>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombination).AddTo(_disposables);
@@ -256,7 +255,7 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseCombination(ActionBase.ActionEvaluation<Combination> eval)
+        private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
