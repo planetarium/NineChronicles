@@ -61,9 +61,13 @@ namespace Nekoyume.UI.Module
         {
             base.OnEnable();
             additiveCanvasGroup.alpha = 0f;
-            SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
-            SetRewardReceivedBlockIndex(States.Instance.CurrentAvatarState.dailyRewardReceivedIndex, false);
 
+            if (!(States.Instance.CurrentAvatarState is null))
+            {
+                SetBlockIndex(Game.Game.instance.Agent.BlockIndex, false);
+                SetRewardReceivedBlockIndex(States.Instance.CurrentAvatarState.dailyRewardReceivedIndex, false);    
+            }
+            
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
                 .Subscribe(x => SetBlockIndex(x, true))
                 .AddTo(_disposables);
