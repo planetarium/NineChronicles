@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Module
         private Transform boxImageTransform = null;
 
         [SerializeField]
-        private Animator animator;
+        private Animator animator = null;
 
         [SerializeField, CanBeNull]
         private ActionPoint actionPoint = null;
