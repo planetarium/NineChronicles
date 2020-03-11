@@ -78,11 +78,19 @@ namespace Nekoyume.Action
 
             if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable enhancementItem))
             {
+                // 강화 장비가 없는 에러.
+                return states;
+            }
+
+            if (enhancementItem.RequiredBlockIndex > context.BlockIndex)
+            {
+                // 필요 블럭 인덱스 불충분 에러.
                 return states;
             }
 
             if (!(enhancementItem is Equipment enhancementEquipment))
             {
+                // 캐스팅 버그. 예외상황.
                 return states;
             }
             sw.Stop();
@@ -122,6 +130,12 @@ namespace Nekoyume.Action
                 if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
                 {
                     // 인벤토리에 재료로 등록한 장비가 없는 에러.
+                    return states;
+                }
+                
+                if (materialItem.RequiredBlockIndex > context.BlockIndex)
+                {
+                    // 필요 블럭 인덱스 불충분 에러.
                     return states;
                 }
 
