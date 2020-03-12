@@ -6,6 +6,7 @@ using DG.Tweening;
 using Nekoyume.Game.Controller;
 using System.Collections;
 using Nekoyume.UI.Module;
+using UnityEngine.UI.Extensions;
 
 namespace Nekoyume.UI
 {
@@ -39,6 +40,11 @@ namespace Nekoyume.UI
         {
             VFXController.instance.Create<ItemMoveVFX>(transform.position);
 
+            Tweener tweenScale = transform.DOScale(1.2f, 0.1f).SetEase(Ease.OutSine);
+            yield return new WaitWhile(tweenScale.IsPlaying);
+            
+            yield return new  WaitForSeconds(0.5f);
+
             Vector3 midPath;
             if (moveToLeft)
                 midPath = new Vector3(transform.position.x - _middleXGap, (_endPosition.y + transform.position.y) / 2, _endPosition.z);
@@ -47,7 +53,6 @@ namespace Nekoyume.UI
 
             Vector3[] path = new Vector3[] { transform.position, midPath, _endPosition };
 
-            transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             Tweener tweenMove;
             tweenMove = transform.DOPath(path, _animationTime, PathType.CatmullRom).SetEase(Ease.OutSine);
             yield return new WaitForSeconds(_animationTime - 0.5f);

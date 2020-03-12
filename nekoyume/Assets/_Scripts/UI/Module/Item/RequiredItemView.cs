@@ -17,10 +17,14 @@ namespace Nekoyume.UI.Module
 
         protected override void SetCount(int count)
         {
-            countText.text = string.Format(count >= RequiredCount ?
+            bool isEnough = count >= RequiredCount;
+
+            countText.text = string.Format(isEnough ?
                 CountTextFormatEnough :
                 CountTextFormatNotEnough,
                 Model.Count.Value, RequiredCount);
+
+            SetDim(!isEnough);
         }
     }
 }

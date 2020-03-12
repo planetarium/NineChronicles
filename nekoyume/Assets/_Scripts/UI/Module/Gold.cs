@@ -1,40 +1,30 @@
 using System;
-using DG.Tweening;
-using Nekoyume.Model;
 using Nekoyume.State;
+using Nekoyume.UI.Module.Common;
 using TMPro;
 using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public class Gold : MonoBehaviour
+    public class Gold : AlphaAnimateModule
     {
-        public TextMeshProUGUI text;
-        public CanvasGroup canvasGroup;
-        public bool animateAlpha;
+        [SerializeField]
+        private TextMeshProUGUI text = null;
 
         private IDisposable _disposable;
 
-        #region Mono
-
-        private void OnEnable()
+        protected override void OnEnable()
         {
+            base.OnEnable();
             _disposable = ReactiveAgentState.Gold.Subscribe(SetGold);
-
-            if (animateAlpha)
-            {
-                canvasGroup.alpha = 0;
-                canvasGroup.DOFade(1, 1.0f);
-            }
         }
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             _disposable.Dispose();
+            base.OnDisable();
         }
-
-        #endregion
 
         private void SetGold(decimal gold)
         {

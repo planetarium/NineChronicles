@@ -144,7 +144,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 1
+  m_FillAmount: 0.5
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -267,8 +267,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2724828359984488557}
-  - component: {fileID: 2724828359984488558}
   - component: {fileID: 5754555543490644276}
+  - component: {fileID: 2724828359984488558}
   - component: {fileID: 4135201330097319415}
   - component: {fileID: 4964743994697273151}
   m_Layer: 5
@@ -302,6 +302,25 @@ RectTransform:
   m_AnchoredPosition: {x: -5, y: -40}
   m_SizeDelta: {x: 145, y: 22}
   m_Pivot: {x: 1, y: 1}
+--- !u!114 &5754555543490644276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2724828359984488556}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c1097c66ae5469c968183db5237bac9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canvasGroup: {fileID: 4135201330097319415}
+  animateAlpha: 0
+  sliderAnimator:
+    slider: {fileID: 2724828359984488558}
+  text: {fileID: 2724828360276689814}
+  image: {fileID: 339029149374476197}
+  tooltipArea: {fileID: 8298632334966963583}
 --- !u!114 &2724828359984488558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -346,31 +365,14 @@ MonoBehaviour:
   m_HandleRect: {fileID: 0}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 8640
-  m_WholeNumbers: 1
-  m_Value: 8640
+  m_MaxValue: 100
+  m_WholeNumbers: 0
+  m_Value: 50
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &5754555543490644276
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2724828359984488556}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8c1097c66ae5469c968183db5237bac9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  text: {fileID: 2724828360276689814}
-  slider: {fileID: 2724828359984488558}
-  tooltipArea: {fileID: 8298632334966963583}
-  canvasGroup: {fileID: 4135201330097319415}
-  animateAlpha: 0
 --- !u!225 &4135201330097319415
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -495,7 +497,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: 1000 / 8640
+  m_text: 50 / 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
   m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
@@ -565,7 +567,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 2724828360276689814}
-    characterCount: 11
+    characterCount: 8
     spriteCount: 0
     spaceCount: 2
     wordCount: 2

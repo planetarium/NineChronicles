@@ -20,7 +20,7 @@ namespace Nekoyume.Model.Item
         public List<BuffSkill> BuffSkills { get; }
         public long RequiredBlockIndex { get; private set; }
 
-        protected ItemUsable(ItemSheet.Row data, Guid id, long requiredBlockIndex ) : base(data)
+        protected ItemUsable(ItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data)
         {
             Data = data;
             ItemId = id;
@@ -29,14 +29,14 @@ namespace Nekoyume.Model.Item
             switch (data)
             {
                 case ConsumableItemSheet.Row consumableItemRow:
+                {
+                    foreach (var statData in consumableItemRow.Stats)
                     {
-                        foreach (var statData in consumableItemRow.Stats)
-                        {
-                            StatsMap.AddStatValue(statData.StatType, statData.Value);
-                        }
-
-                        break;
+                        StatsMap.AddStatValue(statData.StatType, statData.Value);
                     }
+
+                    break;
+                }
                 case EquipmentItemSheet.Row equipmentItemRow:
                     StatsMap.AddStatValue(equipmentItemRow.Stat.Type, equipmentItemRow.Stat.Value);
                     break;
@@ -57,7 +57,7 @@ namespace Nekoyume.Model.Item
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((ItemUsable)obj);
+            return Equals((ItemUsable) obj);
         }
 
         public override int GetHashCode()
@@ -75,11 +75,11 @@ namespace Nekoyume.Model.Item
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text)"itemId"] = ItemId.Serialize(),
-                [(Text)"statsMap"] = StatsMap.Serialize(),
-                [(Text)"skills"] = new List(Skills.Select(s => s.Serialize())),
-                [(Text)"buffSkills"] = new List(BuffSkills.Select(s => s.Serialize())),
-                [(Text)"requiredBlockIndex"] = RequiredBlockIndex.Serialize(),
-            }.Union((Dictionary)base.Serialize()));
+                [(Text) "itemId"] = ItemId.Serialize(),
+                [(Text) "statsMap"] = StatsMap.Serialize(),
+                [(Text) "skills"] = new List(Skills.Select(s => s.Serialize())),
+                [(Text) "buffSkills"] = new List(BuffSkills.Select(s => s.Serialize())),
+                [(Text) "requiredBlockIndex"] = RequiredBlockIndex.Serialize(),
+            }.Union((Dictionary) base.Serialize()));
     }
 }
