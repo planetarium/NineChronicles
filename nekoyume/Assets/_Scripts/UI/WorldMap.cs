@@ -381,7 +381,7 @@ namespace Nekoyume.UI
         {
             Close();
             Find<Status>().Close(true);
-            Find<QuestPreparation>().ToggleWorldMap();
+            Find<QuestPreparation>().Show();
         }
     }
 }
