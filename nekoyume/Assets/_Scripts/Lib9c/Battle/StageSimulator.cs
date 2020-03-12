@@ -222,8 +222,9 @@ namespace Nekoyume.Battle
                     Characters.Enqueue(character, TurnPriority / character.SPD);
                 }
 
-                // 플레이어가 죽은 경우 break;
-                if (Player.IsDead)
+                // 제한 턴을 넘거나 플레이어가 죽은 경우 break;
+                if (TurnNumber > TurnLimit ||
+                    Player.IsDead)
                     break;
             }
 
