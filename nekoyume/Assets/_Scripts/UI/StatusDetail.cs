@@ -59,11 +59,7 @@ namespace Nekoyume.UI
             _player = Game.Game.instance.Stage.selectedPlayer;
             var player = _player.Model;
 
-            equipmentSlots.SetPlayer(_player.Model);
-            foreach (var equipment in _player.Equipments)
-            {
-                equipmentSlots.TryToEquip(equipment, ShowTooltip, null);
-            }
+            equipmentSlots.SetPlayer(_player.Model, ShowTooltip, null);
 
             // status info
             var tuples = player.Stats.GetBaseAndAdditionalStats();

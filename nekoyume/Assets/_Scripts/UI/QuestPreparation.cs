@@ -53,6 +53,7 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
         private CharacterStats _tempStats;
+        private bool _reset;
 
         [Header("ItemMoveAnimation")]
         [SerializeField]
@@ -137,30 +138,28 @@ namespace Nekoyume.UI
             if (_player is null)
                 throw new NotFoundComponentException<Game.Character.Player>();
 
-            // stop run immediately.
-            _player.UpdateEquipments(_player.Model.armor, _player.Model.weapon);
-            _player.UpdateCustomize();
-            _player.gameObject.SetActive(false);
-            _player.gameObject.SetActive(true);
-            _player.SpineController.Appear();
-
-            equipmentSlots.SetPlayer(_player.Model);
-            foreach (var equipment in _player.Equipments)
+            if (_reset)
             {
-                equipmentSlots.TryToEquip(equipment, ShowTooltip, Unequip);
+                _player.UpdateEquipments(_player.Model.armor, _player.Model.weapon);
+                _player.UpdateCustomize();
+                // stop run immediately.
+                _player.gameObject.SetActive(false);
+                _player.gameObject.SetActive(true);
+                _player.SpineController.Appear();
+                equipmentSlots.SetPlayer(_player.Model, ShowTooltip, Unequip);
+
+                var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
+
+                var idx = 0;
+                foreach (var (statType, value, additionalValue) in tuples)
+                {
+                    var info = statusRows[idx];
+                    info.Show(statType, value, additionalValue);
+                    ++idx;
+                }
+
+                _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
             }
-
-            var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
-
-            var idx = 0;
-            foreach (var (statType, value, additionalValue) in tuples)
-            {
-                var info = statusRows[idx];
-                info.Show(statType, value, additionalValue);
-                ++idx;
-            }
-
-            _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
 
             var worldMap = Find<WorldMap>();
             _worldId = worldMap.SelectedWorldId;
@@ -178,10 +177,12 @@ namespace Nekoyume.UI
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             questButton.gameObject.SetActive(true);
+            _reset = false;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            _reset = true;
             Find<BottomMenu>().Close(true);
 
             foreach (var slot in consumableSlots)
@@ -319,29 +320,6 @@ namespace Nekoyume.UI
             Quest(repeat);
             AudioController.PlayClick();
             AnalyticsManager.Instance.BattleEntrance(repeat);
-        }
-
-        public void ToggleWorldMap()
-        {
-            if (isActiveAndEnabled)
-            {
-                var worldMap = Find<WorldMap>();
-                _worldId = worldMap.SelectedWorldId;
-                _stageId.Value = worldMap.SelectedStageId;
-                Find<BottomMenu>().Show(
-                    UINavigator.NavigationType.Back,
-                    SubscribeBackButtonClick,
-                    true,
-                    BottomMenu.ToggleableType.Mail,
-                    BottomMenu.ToggleableType.Quest,
-                    BottomMenu.ToggleableType.Chat,
-                    BottomMenu.ToggleableType.IllustratedBook,
-                    BottomMenu.ToggleableType.Inventory);
-            }
-            else
-            {
-                Show();
-            }
         }
 
         #region slot
