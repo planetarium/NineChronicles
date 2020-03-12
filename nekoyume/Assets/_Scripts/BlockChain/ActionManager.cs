@@ -106,8 +106,8 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> Combination(
-            List<(Material material, int count)> materialInfoList)
+        public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
+            List<(Material material, int count)> materialInfoList, int slotIndex)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
@@ -125,6 +125,7 @@ namespace Nekoyume.BlockChain
                 }
             });
             action.AvatarAddress = States.Instance.CurrentAvatarState.address;
+            action.slotIndex = slotIndex;
             ProcessAction(action);
 
             return _renderer.EveryRender<CombinationConsumable>()

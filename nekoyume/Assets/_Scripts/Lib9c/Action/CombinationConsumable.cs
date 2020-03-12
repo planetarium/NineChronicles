@@ -5,14 +5,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
-using DecimalMath;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.Skill;
-using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -20,13 +16,10 @@ using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.Action
 {
-    // todo: `CombineEquipment`와 `CombineConsumable`로 분리해야 함. 공용 로직은 별도로 뺌.
     [Serializable]
     [ActionType("combination_consumable")]
     public class CombinationConsumable : GameAction
     {
-        // todo: ResultModel.materials는 Combination.Materials 와 같은 값이기 때문에 추가로 더해주지 않아도 될 것으로 보임.
-        // 클라이언트가 이미 알고 있거나 알 수 있는 액션의 구분자를 통해서 갖고 오는 형태가 좋아 보임.
         [Serializable]
         public class ResultModel : AttachmentActionResult
         {
@@ -61,8 +54,8 @@ namespace Nekoyume.Action
 
         public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
-        public ResultModel Result;
         public List<int> completedQuestIds;
+        public int slotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -86,10 +79,19 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
+            var slotAddress = AvatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    slotIndex
+                )
+            );
             if (ctx.Rehearsal)
             {
-                states = states.SetState(AvatarAddress, MarkChanged);
-                return states.SetState(ctx.Signer, MarkChanged);
+                return states
+                    .SetState(AvatarAddress, MarkChanged)
+                    .SetState(ctx.Signer, MarkChanged)
+                    .SetState(slotAddress, MarkChanged);
             }
 
             var sw = new Stopwatch();
@@ -117,6 +119,12 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            var slotState = states.GetCombinationSlotState(AvatarAddress, slotIndex);
+            if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
+            {
+                return states;
+            }
+
             var tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
             Log.Debug($"Combination Get TableSheetsState: {sw.Elapsed}");
@@ -138,7 +146,7 @@ namespace Nekoyume.Action
             Log.Debug($"Combination Remove Materials: {sw.Elapsed}");
             sw.Restart();
 
-            Result = new ResultModel
+            var result = new ResultModel
             {
                 materials = Materials
             };
@@ -161,7 +169,7 @@ namespace Nekoyume.Action
 
             // ap 차감.
             avatarState.actionPoint -= costAP;
-            Result.actionPoint = costAP;
+            result.actionPoint = costAP;
 
             // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
             var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
@@ -178,16 +186,14 @@ namespace Nekoyume.Action
             }
 
             // 조합 결과 획득.
-            // TODO Materials 가 액션의 요소라 값이 변경되면 서명이 바뀔 수 있음.
-            // 액션의 결과를 별도의 주소에 저장해서 렌더러쪽에서 ActionEvaluation.OutputStates.GetState를 사용하면 좋을 것 같음.
             for (var i = 0; i < foodCount; i++)
             {
                 var itemId = ctx.Random.GenerateRandomGuid();
                 var itemUsable = GetFood(consumableItemRow, itemId, ctx.BlockIndex);
                 // 액션 결과
-                Result.itemUsable = itemUsable;
-                var mail = new CombinationMail(Result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
-                Result.id = mail.id;
+                result.itemUsable = itemUsable;
+                var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
+                result.id = mail.id;
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(itemUsable);
                 sw.Stop();
@@ -200,153 +206,14 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
             states = states.SetState(AvatarAddress, avatarState.Serialize());
+            slotState.Update(result, ctx.BlockIndex);
             sw.Stop();
             Log.Debug($"Combination Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;
             Log.Debug($"Combination Total Executed Time: {ended - started}");
-            return states.SetState(ctx.Signer, agentState.Serialize());
-        }
-
-        private static ElementalType GetElementalType(IRandom random,
-            IEnumerable<KeyValuePair<MaterialItemSheet.Row, int>> monsterParts)
-        {
-            var elementalTypeCountForEachGrades =
-                new Dictionary<ElementalType, Dictionary<int, int>>(ElementalTypeComparer.Instance);
-            var maxGrade = 0;
-
-            // 전체 속성 가중치가 가장 큰 것을 리턴하기.
-            var elementalTypeWeights = new Dictionary<ElementalType, int>(ElementalTypeComparer.Instance);
-            var maxWeightElementalTypes = new List<ElementalType>();
-            var maxWeight = 0;
-
-            foreach (var monsterPart in monsterParts)
-            {
-                var key = monsterPart.Key.ElementalType;
-                var grade = Math.Max(1, monsterPart.Key.Grade);
-                if (grade > maxGrade)
-                {
-                    maxGrade = grade;
-                }
-
-                if (!elementalTypeCountForEachGrades.ContainsKey(key))
-                {
-                    elementalTypeCountForEachGrades[key] = new Dictionary<int, int>();
-                }
-
-                if (!elementalTypeCountForEachGrades[key].ContainsKey(grade))
-                {
-                    elementalTypeCountForEachGrades[key][grade] = 0;
-                }
-
-                elementalTypeCountForEachGrades[key][grade] += monsterPart.Value;
-
-                var weight = (int) Math.Pow(10, grade - 1) * monsterPart.Value;
-
-                if (!elementalTypeWeights.ContainsKey(key))
-                {
-                    elementalTypeWeights[key] = 0;
-                }
-
-                elementalTypeWeights[key] += weight;
-
-                var totalWeight = elementalTypeWeights[key];
-                if (totalWeight < maxWeight)
-                    continue;
-
-                if (totalWeight == maxWeight &&
-                    !maxWeightElementalTypes.Contains(key))
-                {
-                    maxWeightElementalTypes.Add(key);
-
-                    continue;
-                }
-
-                maxWeightElementalTypes.Clear();
-                maxWeightElementalTypes.Add(key);
-                maxWeight = totalWeight;
-            }
-
-            if (maxWeightElementalTypes.Count == 1)
-                return maxWeightElementalTypes[0];
-
-            // 높은 등급의 재료를 더 많이 갖고 있는 것을 리턴하기.
-            var maxGradeCountElementalTypes = new List<ElementalType>();
-            var maxGradeCount = 0;
-            foreach (var elementalType in maxWeightElementalTypes)
-            {
-                if (!elementalTypeCountForEachGrades[elementalType].ContainsKey(maxGrade))
-                    continue;
-
-                var gradeCount = elementalTypeCountForEachGrades[elementalType][maxGrade];
-                if (gradeCount < maxGradeCount)
-                    continue;
-
-                if (gradeCount == maxGradeCount &&
-                    !maxGradeCountElementalTypes.Contains(elementalType))
-                {
-                    maxGradeCountElementalTypes.Add(elementalType);
-
-                    continue;
-                }
-
-                maxGradeCountElementalTypes.Clear();
-                maxGradeCountElementalTypes.Add(elementalType);
-                maxGradeCount = gradeCount;
-            }
-
-            if (maxGradeCountElementalTypes.Count == 1)
-                return maxGradeCountElementalTypes[0];
-
-            // 무작위로 하나 고르기.
-            var index = random.Next(0, maxGradeCountElementalTypes.Count);
-            // todo: libplanet 에서 max 값 -1까지만 리턴하도록 수정된 후에 삭제.
-            if (index == maxGradeCountElementalTypes.Count)
-            {
-                index--;
-            }
-
-            return maxGradeCountElementalTypes[index];
-        }
-
-        // todo: 하드코딩을 피할 방법 필요.
-        private static bool TryGetItemType(int itemId, out ItemSubType outItemType)
-        {
-            var type = itemId.ToString(CultureInfo.InvariantCulture).Substring(0, 4);
-            switch (type)
-            {
-                case "3030":
-                    outItemType = ItemSubType.Weapon;
-                    return true;
-                case "3031":
-                    outItemType = ItemSubType.Armor;
-                    return true;
-                case "3032":
-                    outItemType = ItemSubType.Belt;
-                    return true;
-                case "3033":
-                    outItemType = ItemSubType.Necklace;
-                    return true;
-                case "3034":
-                    outItemType = ItemSubType.Ring;
-                    return true;
-                default:
-                    outItemType = ItemSubType.Armor;
-                    return false;
-            }
-        }
-
-        private static decimal GetRoll(IRandom random, int monsterPartsCount, int deltaLevel)
-        {
-            var normalizedRandomValue = random.Next(0, 100001) * 0.00001m;
-            var rollMax = DecimalEx.Pow(1m / (1m + GameConfig.CombinationValueP1 / monsterPartsCount),
-                              GameConfig.CombinationValueP2) *
-                          (deltaLevel <= 0
-                              ? 1m
-                              : DecimalEx.Pow(1m / (1m + GameConfig.CombinationValueL1 / deltaLevel),
-                                  GameConfig.CombinationValueL2));
-            var rollMin = rollMax * 0.7m;
-            return rollMin + (rollMax - rollMin) *
-                   DecimalEx.Pow(normalizedRandomValue, GameConfig.CombinationValueR1);
+            return states
+                .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(slotAddress, slotState.Serialize());
         }
 
         private static ItemUsable GetFood(ConsumableItemSheet.Row equipmentItemRow, Guid itemId, long ctxBlockIndex)
