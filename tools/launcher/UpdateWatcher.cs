@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,7 +34,7 @@ namespace Launcher
             {
                 try
                 {
-                    var currentVersion = await CurrentVersionAsync();
+                    var currentVersion = await CurrentVersionAsync(cancellationToken);
                     if (!LatestVersion.Equals(currentVersion))
                     {
                         VersionUpdated?.Invoke(this, new VersionUpdatedEventArgs(currentVersion));
@@ -50,10 +50,11 @@ namespace Launcher
             }
         }
 
-        private async Task<VersionDescriptor> CurrentVersionAsync()
+        private async Task<VersionDescriptor> CurrentVersionAsync(CancellationToken cancellationToken)
         {
-            using var webClient = new WebClient();
-            var rawVersionHistory = await webClient.DownloadStringTaskAsync(Storage.VersionHistoryUri(DeployBranch));
+            using var httpClient = new HttpClient();
+            var responseMessage = await httpClient.GetAsync(Storage.VersionHistoryUri(DeployBranch), cancellationToken);
+            var rawVersionHistory = await responseMessage.Content.ReadAsStringAsync();
             var versionHistory = JsonSerializer.Deserialize<VersionHistory>(
                 rawVersionHistory,
                 new JsonSerializerOptions

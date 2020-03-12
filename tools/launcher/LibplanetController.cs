@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading;
@@ -193,20 +194,11 @@ namespace Launcher
         private async Task DownloadGameBinaryAsync(string gameBinaryPath, string deployBranch, string version, CancellationToken cancellationToken)
         {
             var tempFilePath = Path.GetTempFileName();
-            using var webClient = new WebClient();
-            var cancelTaskCts = new CancellationTokenSource();
-            var cancelTask = Task.Run(() =>
-            {
-                while (!cancellationToken.IsCancellationRequested)
-                {
-                }
-
-                webClient.CancelAsync();
-            }, cancelTaskCts.Token);
-
+            using var httpClient = new HttpClient();
             Log.Debug(Storage.GameBinaryDownloadUri(deployBranch, version).ToString());
-            await webClient.DownloadFileTaskAsync(Storage.GameBinaryDownloadUri(deployBranch, version), tempFilePath);
-            cancelTaskCts.Cancel();
+            var responseMessage = await httpClient.GetAsync(Storage.GameBinaryDownloadUri(deployBranch, version), cancellationToken);
+            using var fileStream = new FileStream(tempFilePath, FileMode.CreateNew, FileAccess.Write);
+            await responseMessage.Content.CopyToAsync(fileStream);
 
             // Extract binary.
             // TODO: implement a function to extract with file extension.
