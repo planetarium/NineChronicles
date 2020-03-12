@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nito.AsyncEx;
 using Serilog;
 
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -22,9 +23,15 @@ namespace NineChronicles.Standalone
 {
     public class NineChroniclesNodeService
     {
+        private LibplanetNodeService<NineChroniclesActionType> NodeService { get; set; }
+
         private LibplanetNodeServiceProperties Properties { get; }
 
-        private RpcNodeServiceProperties RpcProperties { get; } 
+        private RpcNodeServiceProperties RpcProperties { get; }
+
+        public AsyncAutoResetEvent BootstrapEnded => NodeService.BootstrapEnded;
+
+        public AsyncAutoResetEvent PreloadEnded => NodeService.PreloadEnded;
 
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties properties,
@@ -59,7 +66,7 @@ namespace NineChronicles.Standalone
                 }
             }
 
-            var nodeService = new LibplanetNodeService<NineChroniclesActionType>(
+            NodeService = new LibplanetNodeService<NineChroniclesActionType>(
                 Properties, 
                 blockPolicy, 
                 minerLoopAction
@@ -75,7 +82,7 @@ namespace NineChronicles.Standalone
                     .ConfigureServices((ctx, services) =>
                     {
                         services.AddHostedService(provider => new ActionEvaluationPublisher(
-                            nodeService.BlockChain,
+                            NodeService.BlockChain,
                             IPAddress.Loopback.ToString(),
                             RpcProperties.RpcListenPort
                         ));
@@ -84,8 +91,8 @@ namespace NineChronicles.Standalone
 
             await hostBuilder.ConfigureServices((ctx, services) =>
             {
-                services.AddHostedService(provider => nodeService);
-                services.AddSingleton(provider => nodeService.BlockChain);
+                services.AddHostedService(provider => NodeService);
+                services.AddSingleton(provider => NodeService.BlockChain);
             }).RunConsoleAsync(cancellationToken);
         }
     }
