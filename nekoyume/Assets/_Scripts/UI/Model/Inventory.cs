@@ -28,7 +28,7 @@ namespace Nekoyume.UI.Model
 
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EffectEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
-        
+
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
@@ -104,16 +104,25 @@ namespace Nekoyume.UI.Model
 
         public void AddItem(ItemBase itemBase, int count = 1)
         {
+            var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
             InventoryItem inventoryItem;
             switch (itemBase.Data.ItemType)
             {
                 case ItemType.Consumable:
-                    inventoryItem = CreateInventoryItem(itemBase, count);
+                    var consumable = (Consumable) itemBase;
+                    if (consumable.RequiredBlockIndex > blockIndex)
+                        break;
+
+                    inventoryItem = CreateInventoryItem(consumable, count);
                     Consumables.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
-                    inventoryItem = CreateInventoryItem(itemBase, count);
-                    inventoryItem.EquippedEnabled.Value = ((Equipment) itemBase).equipped;
+                    var equipment = (Equipment) itemBase;
+                    if (equipment.RequiredBlockIndex > blockIndex)
+                        break;
+
+                    inventoryItem = CreateInventoryItem(equipment, count);
+                    inventoryItem.EquippedEnabled.Value = equipment.equipped;
                     Equipments.Add(inventoryItem);
                     break;
                 case ItemType.Material:
@@ -121,7 +130,7 @@ namespace Nekoyume.UI.Model
                     if (TryGetMaterial(material, out inventoryItem))
                     {
                         inventoryItem.Count.Value += count;
-                        return;
+                        break;
                     }
 
                     inventoryItem = CreateInventoryItem(itemBase, count);
@@ -143,23 +152,23 @@ namespace Nekoyume.UI.Model
             {
                 case ItemType.Consumable:
                     if (!TryGetConsumable((ItemUsable) itemBase, out inventoryItem))
-                        return;
+                        break;
 
                     Consumables.Remove(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     if (!TryGetEquipment((ItemUsable) itemBase, out inventoryItem))
-                        return;
+                        break;
 
                     Equipments.Remove(inventoryItem);
                     break;
                 case ItemType.Material:
                     if (!TryGetMaterial((Material) itemBase, out inventoryItem))
-                        return;
+                        break;
 
                     inventoryItem.Count.Value -= count;
                     if (inventoryItem.Count.Value > 0)
-                        return;
+                        break;
 
                     Materials.Remove(inventoryItem);
                     break;
@@ -283,7 +292,7 @@ namespace Nekoyume.UI.Model
             inventoryItem = null;
             return false;
         }
-        
+
         public bool TryGetMaterial(int id, out InventoryItem inventoryItem)
         {
             foreach (var item in Materials)
@@ -314,7 +323,7 @@ namespace Nekoyume.UI.Model
 
             SelectItemView(view);
         }
-        
+
         public void SelectItemView(InventoryItemView view)
         {
             if (view is null ||
@@ -346,7 +355,7 @@ namespace Nekoyume.UI.Model
         {
             SubscribeDimmedFunc(DimmedFunc.Value);
         }
-        
+
         public void UpdateEffectAll()
         {
             SubscribeEffectEnabledFunc(EffectEnabledFunc.Value);
@@ -381,7 +390,7 @@ namespace Nekoyume.UI.Model
                 item.Dimmed.Value = DimmedFunc.Value(item);
             }
         }
-        
+
         private void SubscribeEffectEnabledFunc(Func<InventoryItem, bool> func)
         {
             if (EffectEnabledFunc.Value == null)
@@ -404,7 +413,7 @@ namespace Nekoyume.UI.Model
                 item.EffectEnabled.Value = EffectEnabledFunc.Value(item);
             }
         }
-        
+
         private void SubscribeEquippedEnabledFunc(Func<InventoryItem, bool> func)
         {
             if (EquippedEnabledFunc.Value == null)
@@ -434,12 +443,12 @@ namespace Nekoyume.UI.Model
         {
             return false;
         }
-        
+
         private static bool DefaultCoveredFunc(InventoryItem inventoryItem)
         {
             return false;
         }
-        
+
         private static bool DefaultEquippedFunc(InventoryItem inventoryItem)
         {
             if (!(inventoryItem.ItemBase.Value is Equipment equipment))

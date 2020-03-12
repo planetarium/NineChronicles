@@ -14,14 +14,14 @@ namespace _Scripts.UI
         public override void Show()
         {
             var avatarState = States.Instance.CurrentAvatarState;
-            var idx = Game.instance.Agent.BlockIndex;
+            var blockIndex = Game.instance.Agent.BlockIndex;
             for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
             {
                 var value = Game.instance.Agent.GetState(avatarState.combinationSlotAddresses[i]);
                 if (value is null)
                     continue;
                 var slotState = new CombinationSlotState((Dictionary)value);
-                slots[i].SetData(slotState, idx);
+                slots[i].SetData(slotState, blockIndex);
             }
             base.Show();
         }

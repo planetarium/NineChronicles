@@ -1,0 +1,222 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Linq.Async</name>
+    </assembly>
+    <members>
+        <member name="T:System.Linq.AsyncEnumerable">
+            <summary>
+            Provides a set of extension methods for <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/>.
+            </summary>
+        </member>
+        <member name="M:System.Linq.AsyncEnumerable.Create``1(System.Func{System.Threading.CancellationToken,System.Collections.Generic.IAsyncEnumerator{``0}})">
+            <summary>
+            Creates a new enumerable using the specified delegates implementing the members of <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/>.
+            </summary>
+            <typeparam name="T">The type of the elements returned by the enumerable sequence.</typeparam>
+            <param name="getAsyncEnumerator">The delegate implementing the <see cref="M:System.Collections.Generic.IAsyncEnumerable`1.GetAsyncEnumerator(System.Threading.CancellationToken)"/> method.</param>
+            <returns>A new enumerable instance.</returns>
+        </member>
+        <member name="T:System.Linq.AsyncEnumerable.UnionAsyncIterator`1">
+            <summary>
+            An iterator that yields distinct values from two or more <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/>.
+            </summary>
+            <typeparam name="TSource">The type of the source enumerables.</typeparam>
+        </member>
+        <member name="T:System.Linq.AsyncEnumerable.UnionAsyncIterator2`1">
+            <summary>
+            An iterator that yields distinct values from two <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/>.
+            </summary>
+            <typeparam name="TSource">The type of the source enumerables.</typeparam>
+        </member>
+        <member name="T:System.Linq.AsyncEnumerable.UnionAsyncIteratorN`1">
+            <summary>
+            An iterator that yields distinct values from three or more <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/>.
+            </summary>
+            <typeparam name="TSource">The type of the source enumerables.</typeparam>
+        </member>
+        <member name="T:System.Linq.AsyncEnumerablePartition`1">
+            <summary>
+            An iterator that yields the items of part of an <see cref="T:System.Collections.Generic.IAsyncEnumerable`1"/>.
+            </summary>
+            <typeparam name="TSource">The type of the source enumerable.</typeparam>
+        </member>
+        <member name="T:System.Linq.AsyncListPartition`1">
+            <summary>
+            An iterator that yields the items of part of an <see cref="T:System.Collections.Generic.IList`1"/>.
+            </summary>
+            <typeparam name="TSource">The type of the source list.</typeparam>
+        </member>
+        <member name="T:System.Linq.IAsyncIListProvider`1">
+            <summary>
+            An iterator that can produce an array or <see cref="T:System.Collections.Generic.List`1"/> through an optimized path.
+            </summary>
+        </member>
+        <member name="M:System.Linq.IAsyncIListProvider`1.ToArrayAsync(System.Threading.CancellationToken)">
+            <summary>
+            Produce an array of the sequence through an optimized path.
+            </summary>
+            <param name="cancellationToken"></param>
+            <returns>The array.</returns>
+        </member>
+        <member name="M:System.Linq.IAsyncIListProvider`1.ToListAsync(System.Threading.CancellationToken)">
+            <summary>
+            Produce a <see cref="T:System.Collections.Generic.List`1"/> of the sequence through an optimized path.
+            </summary>
+            <param name="cancellationToken"></param>
+            <returns>The <see cref="T:System.Collections.Generic.List`1"/>.</returns>
+        </member>
+        <member name="M:System.Linq.IAsyncIListProvider`1.GetCountAsync(System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Returns the count of elements in the sequence.
+            </summary>
+            <param name="onlyIfCheap">If true then the count should only be calculated if doing
+            so is quick (sure or likely to be constant time), otherwise -1 should be returned.</param>
+            <param name="cancellationToken"></param>
+            <returns>The number of elements.</returns>
+        </member>
+        <member name="T:System.Linq.IAsyncPartition`1">
+            <summary>
+            An iterator that supports random access and can produce a partial sequence of its items through an optimized path.
+            </summary>
+        </member>
+        <member name="M:System.Linq.IAsyncPartition`1.Skip(System.Int32)">
+            <summary>
+            Creates a new partition that skips the specified number of elements from this sequence.
+            </summary>
+            <param name="count">The number of elements to skip.</param>
+            <returns>An <see cref="T:System.Linq.IAsyncPartition`1"/> with the first <paramref name="count"/> items removed.</returns>
+        </member>
+        <member name="M:System.Linq.IAsyncPartition`1.Take(System.Int32)">
+            <summary>
+            Creates a new partition that takes the specified number of elements from this sequence.
+            </summary>
+            <param name="count">The number of elements to take.</param>
+            <returns>An <see cref="T:System.Linq.IAsyncPartition`1"/> with only the first <paramref name="count"/> items.</returns>
+        </member>
+        <member name="M:System.Linq.IAsyncPartition`1.TryGetElementAtAsync(System.Int32,System.Threading.CancellationToken)">
+            <summary>
+            Gets the item associated with a 0-based index in this sequence.
+            </summary>
+            <param name="index">The 0-based index to access.</param>
+            <param name="cancellationToken">Token to observe for cancellation requests.</param>
+            <returns>The element if found, otherwise, the default value of <see cref="T:System.Linq.Maybe`1"/>.</returns>
+        </member>
+        <member name="M:System.Linq.IAsyncPartition`1.TryGetFirstAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets the first item in this sequence.
+            </summary>
+            <param name="cancellationToken">Token to observe for cancellation requests.</param>
+            <returns>The element if found, otherwise, the default value of <see cref="T:System.Linq.Maybe`1"/>.</returns>
+        </member>
+        <member name="M:System.Linq.IAsyncPartition`1.TryGetLastAsync(System.Threading.CancellationToken)">
+            <summary>
+            Gets the last item in this sequence.
+            </summary>
+            <param name="cancellationToken">Token to observe for cancellation requests.</param>
+            <returns>The element if found, otherwise, the default value of <see cref="T:System.Linq.Maybe`1"/>.</returns>
+        </member>
+        <member name="T:System.Linq.Internal.Grouping`2">
+            Adapted from System.Linq.Grouping from .NET Framework
+            Source: https://github.com/dotnet/corefx/blob/b90532bc97b07234a7d18073819d019645285f1c/src/System.Linq/src/System/Linq/Grouping.cs#L64
+        </member>
+        <member name="T:System.Linq.SingleLinkedNode`1">
+            <summary>
+            An immutable node in a singly-linked list of items.
+            </summary>
+            <typeparam name="TSource">The type of the node's item.</typeparam>
+        </member>
+        <member name="M:System.Linq.SingleLinkedNode`1.#ctor(`0)">
+            <summary>
+            Constructs a tail node.
+            </summary>
+            <param name="item">The item to place in the tail node.</param>
+        </member>
+        <member name="M:System.Linq.SingleLinkedNode`1.#ctor(System.Linq.SingleLinkedNode{`0},`0)">
+            <summary>
+            Constructs a node linked to the specified node.
+            </summary>
+            <param name="linked">The linked node.</param>
+            <param name="item">The item to place in this node.</param>
+        </member>
+        <member name="P:System.Linq.SingleLinkedNode`1.Item">
+            <summary>
+            The item held by this node.
+            </summary>
+        </member>
+        <member name="P:System.Linq.SingleLinkedNode`1.Linked">
+            <summary>
+            The next node in the singly-linked list.
+            </summary>
+        </member>
+        <member name="M:System.Linq.SingleLinkedNode`1.Add(`0)">
+            <summary>
+            Creates a new node that holds the specified item and is linked to this node.
+            </summary>
+            <param name="item">The item to place in the new node.</param>
+        </member>
+        <member name="M:System.Linq.SingleLinkedNode`1.GetCount">
+            <summary>
+            Gets the number of items in this and subsequent nodes by walking the linked list.
+            </summary>
+        </member>
+        <member name="M:System.Linq.SingleLinkedNode`1.GetEnumerator(System.Int32)">
+            <summary>
+            Gets an <see cref="T:System.Collections.Generic.IEnumerator`1"/> that enumerates the items of this node's singly-linked list in reverse.
+            </summary>
+            <param name="count">The number of items in this node.</param>
+        </member>
+        <member name="M:System.Linq.SingleLinkedNode`1.GetNode(System.Int32)">
+            <summary>
+            Gets the node at a logical index by walking the linked list.
+            </summary>
+            <param name="index">The logical index.</param>
+            <remarks>
+            The caller should make sure <paramref name="index"/> is less than this node's count.
+            </remarks>
+        </member>
+        <member name="M:System.Linq.SingleLinkedNode`1.ToArray(System.Int32)">
+            <summary>
+            Returns an <see cref="T:TSource[]"/> that contains the items of this node's singly-linked list in reverse.
+            </summary>
+            <param name="count">The number of items in this node.</param>
+        </member>
+        <member name="T:System.Collections.Generic.AsyncEnumerator">
+            <summary>
+            Provides a set of extension methods for <see cref="T:System.Collections.Generic.IAsyncEnumerator`1"/>.
+            </summary>
+        </member>
+        <member name="M:System.Collections.Generic.AsyncEnumerator.Create``1(System.Func{System.Threading.Tasks.ValueTask{System.Boolean}},System.Func{``0},System.Func{System.Threading.Tasks.ValueTask})">
+            <summary>
+            Creates a new enumerator using the specified delegates implementing the members of <see cref="T:System.Collections.Generic.IAsyncEnumerator`1"/>.
+            </summary>
+            <typeparam name="T">The type of the elements returned by the enumerator.</typeparam>
+            <param name="moveNextAsync">The delegate implementing the <see cref="M:System.Collections.Generic.IAsyncEnumerator`1.MoveNextAsync"/> method.</param>
+            <param name="getCurrent">The delegate implementing the <see cref="P:System.Collections.Generic.IAsyncEnumerator`1.Current"/> property getter.</param>
+            <param name="disposeAsync">The delegate implementing the <see cref="M:System.IAsyncDisposable.DisposeAsync"/> method.</param>
+            <returns>A new enumerator instance.</returns>
+        </member>
+        <member name="M:System.Collections.Generic.AsyncEnumerator.MoveNextAsync``1(System.Collections.Generic.IAsyncEnumerator{``0},System.Threading.CancellationToken)">
+            <summary>
+            Advances the enumerator to the next element in the sequence, returning the result asynchronously.
+            </summary>
+            <typeparam name="T">The type of the elements returned by the enumerator.</typeparam>
+            <param name="source">The enumerator to advance.</param>
+            <param name="cancellationToken">Cancellation token that can be used to cancel the operation.</param>
+            <returns>
+            Task containing the result of the operation: true if the enumerator was successfully advanced
+            to the next element; false if the enumerator has passed the end of the sequence.
+            </returns>
+        </member>
+        <member name="M:System.Collections.Generic.AsyncEnumerator.WithCancellation``1(System.Collections.Generic.IAsyncEnumerator{``0},System.Threading.CancellationToken)">
+            <summary>
+            Wraps the specified enumerator with an enumerator that checks for cancellation upon every invocation
+            of the <see cref="M:System.Collections.Generic.IAsyncEnumerator`1.MoveNextAsync"/> method.
+            </summary>
+            <typeparam name="T">The type of the elements returned by the enumerator.</typeparam>
+            <param name="source">The enumerator to augment with cancellation support.</param>
+            <param name="cancellationToken">The cancellation token to observe.</param>
+            <returns>An enumerator that honors cancellation requests.</returns>
+        </member>
+    </members>
+</doc>

@@ -12,6 +12,7 @@ using Nekoyume.UI;
 using UniRx;
 using Combination = Nekoyume.Action.Combination;
 using Nekoyume.Model.State;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.BlockChain
 {
@@ -33,10 +34,6 @@ namespace Nekoyume.BlockChain
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private ActionRenderer _renderer;
-
-        private ActionRenderHandler() : base()
-        {
-        }
 
         public void Start(ActionRenderer renderer)
         {
@@ -195,7 +192,13 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<DailyReward>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
+                .Subscribe(eval =>
+                {
+                    var avatarAddress = eval.Action.avatarAddress;
+                    LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, false);
+                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.ActionPointMax);
+                    UpdateCurrentAvatarState(eval);
+                }).AddTo(_disposables);
         }
 
         private void QuestReward()
@@ -364,7 +367,7 @@ namespace Nekoyume.BlockChain
             if (Widget.Find<QuestPreparation>().IsActive() &&
                 Widget.Find<LoadingScreen>().IsActive())
             {
-                Widget.Find<QuestPreparation>().GoToStage(eval);
+                Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
             }
             else if (Widget.Find<BattleResult>().IsActive() &&
                 Widget.Find<StageLoadingScreen>().IsActive())

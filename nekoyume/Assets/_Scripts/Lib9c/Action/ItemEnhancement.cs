@@ -8,8 +8,6 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.Skill;
-using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -20,7 +18,6 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
-        private TableSheets _tableSheets;
         public Guid itemId;
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
@@ -78,11 +75,19 @@ namespace Nekoyume.Action
 
             if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable enhancementItem))
             {
+                // 강화 장비가 없는 에러.
+                return states;
+            }
+
+            if (enhancementItem.RequiredBlockIndex > context.BlockIndex)
+            {
+                // 필요 블럭 인덱스 불충분 에러.
                 return states;
             }
 
             if (!(enhancementItem is Equipment enhancementEquipment))
             {
+                // 캐스팅 버그. 예외상황.
                 return states;
             }
             sw.Stop();
@@ -112,7 +117,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            _tableSheets = TableSheets.FromActionContext(ctx);
+            var tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
             Log.Debug($"ItemEnhancement Get TableSheets: {sw.Elapsed}");
             sw.Restart();
@@ -122,6 +127,12 @@ namespace Nekoyume.Action
                 if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
                 {
                     // 인벤토리에 재료로 등록한 장비가 없는 에러.
+                    return states;
+                }
+                
+                if (materialItem.RequiredBlockIndex > context.BlockIndex)
+                {
+                    // 필요 블럭 인덱스 불충분 에러.
                     return states;
                 }
 
@@ -222,16 +233,6 @@ namespace Nekoyume.Action
             itemId = plainValue["itemId"].ToGuid();
             materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-        }
-
-        private BuffSkill GetRandomBuffSkill(IRandom random)
-        {
-            var skillRows = _tableSheets.SkillSheet.OrderedList
-                .Where(i => (i.SkillType == SkillType.Debuff || i.SkillType == SkillType.Buff) &&
-                            i.SkillCategory != SkillCategory.Heal)
-                .ToList();
-            var skillRow = skillRows[random.Next(0, skillRows.Count)];
-            return (BuffSkill) SkillFactory.Get(skillRow, 0, 100);
         }
 
         private static Equipment UpgradeEquipment(Equipment equipment)

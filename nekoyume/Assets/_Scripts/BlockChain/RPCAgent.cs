@@ -205,7 +205,7 @@ namespace Nekoyume.BlockChain
         public void OnTipChanged(long index)
         {
             BlockIndex = index;
-            BlockIndexSubject.Publish(index);
+            BlockIndexSubject.OnNext(index);
         }
     }
 }

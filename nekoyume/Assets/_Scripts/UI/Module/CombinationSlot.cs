@@ -22,17 +22,17 @@ namespace Nekoyume.UI.Module
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SetIndex).AddTo(gameObject);
         }
 
-        public void SetData(CombinationSlotState state, long index)
+        public void SetData(CombinationSlotState state, long blockIndex)
         {
             var unlock = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(state.UnlockStage);
             lockText.gameObject.SetActive(!unlock);
             resultView.gameObject.SetActive(false);
             if (unlock)
             {
-                var canUse = state.Validate(States.Instance.CurrentAvatarState, index);
+                var canUse = state.Validate(States.Instance.CurrentAvatarState, blockIndex);
                 if (!(state.Result is null))
                 {
-                    canUse = canUse && state.Result.itemUsable.RequiredBlockIndex <= index;
+                    canUse = canUse && state.Result.itemUsable.RequiredBlockIndex <= blockIndex;
                     resultView.SetData(new Item(state.Result.itemUsable));
                     resultView.gameObject.SetActive(!canUse);
                 }
