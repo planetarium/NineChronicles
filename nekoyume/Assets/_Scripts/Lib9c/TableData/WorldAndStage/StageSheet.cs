@@ -40,6 +40,9 @@ namespace Nekoyume.TableData
             public string BGM { get; private set; }
             public List<RewardData> Rewards { get; private set; }
 
+            public int DropItemMin { get; private set; }
+            public int DropItemMax { get; private set; }
+
             public override void Set(IReadOnlyList<string> fields)
             {
                 Id = TryParseInt(fields[0], out var id) ? id : 0;
@@ -94,6 +97,9 @@ namespace Nekoyume.TableData
                         TryParseInt(fields[14 + offset], out var max) ? max : 0
                     ));
                 }
+
+                DropItemMin = TryParseInt(fields[51], out var dropMin) ? dropMin : 0;
+                DropItemMax = TryParseInt(fields[52], out var dropMax) ? dropMax : 0;
             }
         }
         
