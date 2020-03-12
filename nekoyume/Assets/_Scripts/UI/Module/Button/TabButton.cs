@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Nekoyume.Game.Controller;
+using Assets.SimpleLocalization;
 
 namespace Nekoyume.UI.Module
 {
@@ -14,6 +13,10 @@ namespace Nekoyume.UI.Module
         public Image disabledImage;
         public GameObject enabledContent;
         public Image enabledImage;
+
+        public TextMeshProUGUI enabledText;
+        public TextMeshProUGUI disabledText;
+        public string localizationKey;
 
         #region IToggleable
 
@@ -47,6 +50,8 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             button.onClick.AddListener(SubscribeOnClick);
+            enabledText.text = LocalizationManager.Localize(localizationKey);
+            disabledText.text = LocalizationManager.Localize(localizationKey);
         }
 
         private void SubscribeOnClick()
