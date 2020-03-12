@@ -30,9 +30,6 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject options = null;
 
-        private readonly Color disabledColor = new Color(0.5f, 0.5f, 0.5f);
-        private readonly Color disabledYellow = Color.yellow * 0.5f;
-
         private void OnDisable()
         {
             button.onClick.RemoveAllListeners();

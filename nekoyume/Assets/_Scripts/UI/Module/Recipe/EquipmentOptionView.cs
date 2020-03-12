@@ -37,8 +37,8 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected Image innerPanel;
 
-        private readonly Color disabledColor = new Color(0.5f, 0.5f, 0.5f);
-        private readonly Color disabledYellow = Color.yellow * 0.5f;
+        protected readonly Color disabledColor = new Color(0.5f, 0.5f, 0.5f);
+        protected readonly Color disabledYellow = Color.yellow * 0.5f;
 
         public void Show()
         {
