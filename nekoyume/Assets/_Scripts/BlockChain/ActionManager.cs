@@ -251,13 +251,14 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, IEnumerable<Guid> materialIds)
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, IEnumerable<Guid> materialIds, int slotIndex)
         {
             var action = new ItemEnhancement
             {
                 itemId = itemId,
                 materialIds = materialIds,
                 avatarAddress = States.Instance.CurrentAvatarState.address,
+                slotIndex = slotIndex,
             };
             ProcessAction(action);
 

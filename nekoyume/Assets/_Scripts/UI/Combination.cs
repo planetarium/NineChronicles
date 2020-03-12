@@ -511,7 +511,7 @@ namespace Nekoyume.UI
                 .ToList();
 
             UpdateCurrentAvatarState(enhanceEquipment, baseEquipmentGuid, otherEquipmentGuidList);
-            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList);
+            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList, 2);
             enhanceEquipment.RemoveMaterialsAll();
         }
 
@@ -565,11 +565,11 @@ namespace Nekoyume.UI
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
 
-        private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList)
+        private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList, int slotIndex)
         {
             var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList)
+            Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }
 

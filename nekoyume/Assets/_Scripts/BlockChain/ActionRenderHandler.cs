@@ -388,7 +388,8 @@ namespace Nekoyume.BlockChain
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            var result = eval.Action.result;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+            var result = (ItemEnhancement.ResultModel) slot.Result;
             var itemUsable = result.itemUsable;
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
@@ -403,7 +404,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, eval.Action.completedQuestIds);
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,
-                string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+                string.Format(format, result.itemUsable.Data.GetLocalizedName()));
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
