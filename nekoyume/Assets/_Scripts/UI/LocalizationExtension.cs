@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
@@ -10,6 +11,7 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
+using UnityEngine;
 using MailModel = Nekoyume.Model.Mail.Mail;
 using QuestModel = Nekoyume.Model.Quest.Quest;
 
@@ -205,6 +207,16 @@ namespace Nekoyume.UI
                 default:
                     return $"<color=#{GetColorHexByGrade(item)}>{name}</color>";
             }
+        }
+
+        public static string GetLocalizedNonColoredName(this ItemBase item)
+        {
+            return item.Data.GetLocalizedName();
+        }
+
+        public static Color GetItemGradeColor(this ItemBase item)
+        {
+            return ColorHelper.HexToColorRGB(GetColorHexByGrade(item));
         }
 
         public static string GetLocalizedDescription(this ItemBase item)
