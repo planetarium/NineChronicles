@@ -29,9 +29,6 @@ namespace Nekoyume.BlockChain
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
         private const float TxProcessInterval = 3.0f;
-
-        private readonly Subject<long> _blockIndexSubject = new Subject<long>();
-
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
@@ -42,15 +39,12 @@ namespace Nekoyume.BlockChain
         private IBlockChainService _service;
 
         private Codec _codec = new Codec();
-
-        private ActionRenderer _renderer;
-
         private Subject<ActionEvaluation<ActionBase>> _renderSubject;
         private Subject<ActionEvaluation<ActionBase>> _unrenderSubject;
 
-        public ActionRenderer ActionRenderer { get => _renderer; }
+        public ActionRenderer ActionRenderer { get; private set; }
 
-        public Subject<long> BlockIndexSubject { get => _blockIndexSubject; }
+        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         public long BlockIndex { get; private set; }
         public PrivateKey PrivateKey { get; private set; }
@@ -93,7 +87,7 @@ namespace Nekoyume.BlockChain
         {
             _renderSubject = new Subject<ActionEvaluation<ActionBase>>();
             _unrenderSubject = new Subject<ActionEvaluation<ActionBase>>();
-            _renderer = new ActionRenderer(_renderSubject, _unrenderSubject);
+            ActionRenderer = new ActionRenderer(_renderSubject, _unrenderSubject);
         }
 
         private async void OnDestroy()
