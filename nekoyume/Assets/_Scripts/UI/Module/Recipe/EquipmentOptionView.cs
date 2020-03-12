@@ -1,3 +1,4 @@
+using Assets.SimpleLocalization;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -65,9 +66,13 @@ namespace Nekoyume.UI.Module
                 "yellow"
                 : $"#{ColorHelper.ColorToHexRGBA(disabledYellow)}";
 
-            descriptionText.text = subRecipeRow.MaxOptionLimit == 1 ?
-                $"<color={colorTag}>One</color> option is randomly selected."
-                : $"<color={colorTag}>{subRecipeRow.MaxOptionLimit}</color> options are randomly selected.";
+            var format = LocalizationManager.Localize(
+               subRecipeRow.MaxOptionLimit == 1 ?
+               "UI_RANDOM_OPTION_COUNT_FORMAT_SINGULAR"
+               : "UI_RANDOM_OPTION_COUNT_FORMAT_PLURAL");
+
+            descriptionText.text = string.Format(format, colorTag,
+                subRecipeRow.MaxOptionLimit == 1 ? 1 : subRecipeRow.MaxOptionLimit);
 
             var optionSheet = Game.Game.instance.TableSheets.EquipmentItemOptionSheet;
             var skillSheet = Game.Game.instance.TableSheets.SkillSheet;
