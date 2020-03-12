@@ -227,10 +227,9 @@ namespace Nekoyume.Game
 #endif
                 };
                 w.Show(
-                    LocalizationManager.Localize("UI_MAINTENANCE"),
-                    LocalizationManager.Localize("UI_MAINTENANCE_CONTENT"),
-                    LocalizationManager.Localize("UI_OK"),
-                    false
+                    "UI_MAINTENANCE",
+                    "UI_MAINTENANCE_CONTENT",
+                    "UI_OK"
                 );
                 yield break;
             }
