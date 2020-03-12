@@ -25,11 +25,6 @@ Item {
         tooltip: "Libplanet Launcher, Not Flash (LLNF)"
 
         menu: Menu {
-            Text {
-                text: "Updating..."
-                visible: ctrl.updating
-            }
-
             MenuItem {
                 id: runMenu
                 text: "Run"
