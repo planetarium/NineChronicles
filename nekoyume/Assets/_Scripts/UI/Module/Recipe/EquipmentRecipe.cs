@@ -2,6 +2,7 @@
 using Nekoyume.Model.Item;
 using UniRx;
 using System.Linq;
+using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -36,8 +37,15 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(necklaceTabButton);
             _toggleGroup.RegisterToggleable(ringTabButton);
 
-            LoadRecipeList();
             FilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
+        }
+
+        private void OnEnable()
+        {
+            if (States.Instance.CurrentAvatarState is null)
+                return;
+            
+            LoadRecipeList();
         }
 
         private void LoadRecipeList()
@@ -47,11 +55,13 @@ namespace Nekoyume.UI.Module
             var totalCount = recipeSheet.Count();
             cellViews = new EquipmentRecipeCellView[totalCount];
 
+            States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var stageId);
             var idx = 0;
             foreach (var recipeRow in recipeSheet)
             {
+                var isAvailable = recipeRow.UnlockStage <= stageId;
                 cellViews[idx] = Instantiate(cellViewPrefab, cellViewParent);
-                cellViews[idx].Set(recipeRow, true);
+                cellViews[idx].Set(recipeRow, isAvailable);
                 cellViews[idx].OnClick.Subscribe(SubscribeOnClickCellView).AddTo(gameObject);
                 ++idx;
             }
