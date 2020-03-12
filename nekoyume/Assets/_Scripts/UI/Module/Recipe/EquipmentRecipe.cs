@@ -51,7 +51,7 @@ namespace Nekoyume.UI.Module
             foreach (var recipeRow in recipeSheet)
             {
                 cellViews[idx] = Instantiate(cellViewPrefab, cellViewParent);
-                cellViews[idx].Set(recipeRow);
+                cellViews[idx].Set(recipeRow, true);
                 cellViews[idx].OnClick.Subscribe(SubscribeOnClickCellView).AddTo(gameObject);
                 ++idx;
             }
