@@ -38,6 +38,11 @@ namespace Launcher
         [NotifySignal]
         public bool Updating { get; private set; }
 
+        [NotifySignal]
+        // FIXME: which name better for a flag which notices that
+        //        bootstrapping and preloading ended up?
+        public bool Preprocessing { get; private set; }
+
         private Process GameProcess { get; set; }
 
         public LibplanetController()
@@ -131,6 +136,9 @@ namespace Launcher
 
         private async Task SyncTask(LauncherSettings settings, CancellationToken cancellationToken)
         {
+            Preprocessing = true;
+            this.ActivateProperty(ctrl => ctrl.Preprocessing);
+
             PrivateKey privateKey = null;
             if (!string.IsNullOrEmpty(settings.KeyStorePath) && !string.IsNullOrEmpty(settings.Passphrase))
             {
@@ -165,7 +173,16 @@ namespace Launcher
             var service = new NineChroniclesNodeService(properties, rpcProperties);
             try
             {
-                await service.Run(cancellationToken);
+                await Task.WhenAll(
+                    service.Run(cancellationToken),
+                    Task.Run(async () =>
+                    {
+                        await service.BootstrapEnded.WaitAsync(cancellationToken);
+                        await service.PreloadEnded.WaitAsync(cancellationToken);
+
+                        Preprocessing = false;
+                        this.ActivateProperty(ctrl => ctrl.Preprocessing);
+                    }));
             }
             catch (OperationCanceledException e)
             {
