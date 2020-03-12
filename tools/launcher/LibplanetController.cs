@@ -131,7 +131,10 @@ namespace Launcher
             GameProcess?.Kill();
 
             if (Directory.Exists(gameBinaryPath))
+            {
                 Directory.Delete(gameBinaryPath, recursive: true);
+            }
+
             Directory.Move(newGameBinaryPath, gameBinaryPath);
         }
 
@@ -316,14 +319,21 @@ namespace Launcher
         {
             get
             {
-                if (!File.Exists(LocalCurrentVersionPath)) return null;
-                var raw = File.ReadAllText(LocalCurrentVersionPath);
-                return JsonSerializer.Deserialize<VersionDescriptor>(
-                    raw,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    });
+                try
+                {
+                    var raw = File.ReadAllText(LocalCurrentVersionPath);
+                    return JsonSerializer.Deserialize<VersionDescriptor>(
+                        raw,
+                        new JsonSerializerOptions
+                        {
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                        });
+                }
+                catch (Exception e)
+                {
+                    Log.Error(e, $"Unexpected exception occurred: {e.Message}");
+                    return null;
+                }
             }
             set => File.WriteAllText(LocalCurrentVersionPath, JsonSerializer.Serialize((VersionDescriptor) value,
                 new JsonSerializerOptions
