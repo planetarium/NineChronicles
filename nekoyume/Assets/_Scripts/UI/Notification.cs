@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using UniRx;
@@ -19,6 +20,9 @@ namespace Nekoyume.UI
         private static readonly List<Type> WidgetTypesForUX = new List<Type>();
 
         private static int _widgetEnableCount;
+
+        private static readonly List<(MailType mailType, string message, long requiredBlockIndex)> ReservationList =
+            new List<(MailType mailType, string message, long requiredBlockIndex)>();
 
         public static IReadOnlyCollection<NotificationCellView.Model> SharedModels => Models;
 
@@ -61,6 +65,11 @@ namespace Nekoyume.UI
             WidgetTypesForUX.Add(type);
         }
 
+        public static void Reserve(MailType mailType, string message, long requiredBlockIndex)
+        {
+            ReservationList.Add((mailType, message, requiredBlockIndex));
+        }
+
         #region Mono
 
         protected override void Awake()
@@ -72,6 +81,8 @@ namespace Nekoyume.UI
             scroller.SetModel(Models);
 
             CloseWidget = null;
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+                .AddTo(gameObject);
         }
 
         protected override void Update()
@@ -129,6 +140,17 @@ namespace Nekoyume.UI
                 throw new ArgumentOutOfRangeException(nameof(index));
 
             Models.RemoveAt(index);
+        }
+
+        private static void SubscribeBlockIndex(long blockIndex)
+        {
+            var list =
+                ReservationList.Where(i => i.requiredBlockIndex <= blockIndex);
+            foreach (var valueTuple in list)
+            {
+                Push(valueTuple.mailType, valueTuple.message);
+                ReservationList.Remove(valueTuple);
+            }
         }
     }
 }

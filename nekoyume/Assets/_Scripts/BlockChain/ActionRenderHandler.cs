@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
-using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
@@ -11,7 +10,6 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
-using Nekoyume.UI.Module;
 
 namespace Nekoyume.BlockChain
 {
@@ -227,7 +225,11 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-            UI.Notification.Push(MailType.Workshop, string.Format(format, result.itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.Data.GetLocalizedName()),
+                slot.UnlockBlockIndex
+            );
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
