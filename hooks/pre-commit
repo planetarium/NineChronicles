@@ -1,13 +1,53 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-cd Lib9c/
-if command -v dotnet > /dev/null; then
-  dotnet build -v q
-elif command -v msbuild > /dev/null; then
-  msbuild /r /v:q
-else
-  echo "You need .NET Core SDK or Mono SDK or Visual Studio." > /dev/stderr
-  exit 1
-fi
-cd ..
+build_lib9c() {
+  cd Lib9c/
+  if command -v dotnet > /dev/null; then
+    dotnet build -v q
+  elif command -v msbuild > /dev/null; then
+    msbuild /r /v:q
+  else
+    echo "You need .NET Core SDK or Mono SDK or Visual Studio." > /dev/stderr
+    exit 1
+  fi
+  cd ..
+}
+
+validate_libplanet_versions() {
+  SLN_PROJECT="NineChronicles.Standalone.Executable"
+  SLN_PATH="$SLN_PROJECT/$SLN_PROJECT.sln"
+
+  prev_project=""
+  prev_pkgname=""
+  prev_version=""
+  project=""
+
+  dotnet list "$SLN_PATH" package |
+    grep "^.*>* Libplanet\|^Project" |
+    while read -r line; do
+      if echo $line | grep "^Project" > /dev/null; then
+        project="$(echo "$line" | awk '{print $2}')"
+        continue
+      fi
+
+      read -r pkgname version <<< "$(echo "$line" | awk '{print $2, $3}')"
+
+      if [ -z "$prev_version" ]; then
+        prev_pkgname="$pkgname"
+        prev_version="$version"
+      fi
+
+      if [ ! "$prev_version" = "$version" ]; then
+        echo "All Libplanet versions must be the same."
+        echo "$prev_project - $prev_pkgname: $prev_version"
+        echo "$project - $pkgname: $version"
+        return 1;
+      fi
+
+      prev_project="$project"
+    done
+}
+
+validate_libplanet_versions
+build_lib9c
