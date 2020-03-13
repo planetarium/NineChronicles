@@ -70,7 +70,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            CloseWidget = () => {};
+            CloseWidget = () => { };
         }
 
         public override void Initialize()
@@ -95,7 +95,7 @@ namespace Nekoyume.UI
                 ActionCombineEquipment();
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
-            
+
             combineConsumable.RemoveMaterialsAll();
             combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
             combineConsumable.submitButton.OnSubmitClick.Subscribe(_ =>
@@ -201,7 +201,7 @@ namespace Nekoyume.UI
             combineConsumable.RemoveMaterialsAll();
             enhanceEquipment.RemoveMaterialsAll();
             speechBubble.gameObject.SetActive(false);
-            
+
             if (_npc01)
             {
                 _npc01.gameObject.SetActive(false);
@@ -253,6 +253,7 @@ namespace Nekoyume.UI
             {
                 combineConsumable.TryAddMaterial(inventoryItemViewModel);
             }
+
             combineConsumable.submitButton.gameObject.SetActive(true);
         }
 
@@ -330,7 +331,7 @@ namespace Nekoyume.UI
                     categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(true);
                     equipmentRecipe.gameObject.SetActive(false);
-                    break;  
+                    break;
                 case StateType.EnhanceEquipment:
                     _toggleGroup.SetToggledOn(enhanceEquipmentCategoryButton);
 
@@ -368,14 +369,15 @@ namespace Nekoyume.UI
                     if (isElemental)
                     {
                         // 여기서 옵션 선택 화면을 보여준다.
-                        elementalCombinationPanel.SetData(selectedRecipe);
+                        elementalCombinationPanel.SetData(selectedRecipe.model);
                         equipmentCombinationPanel.Hide();
                     }
                     else
                     {
-                        equipmentCombinationPanel.SetData(selectedRecipe);
+                        equipmentCombinationPanel.SetData(selectedRecipe.model);
                         elementalCombinationPanel.Hide();
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -491,11 +493,12 @@ namespace Nekoyume.UI
                 combineEquipment.baseMaterial.Model.Count.Value));
             materialInfoList.AddRange(combineEquipment.otherMaterials
                 .Where(e => !(e is null) && !(e.Model is null))
-                .Select(e => ((Material)e.Model.ItemBase.Value, e.Model.Count.Value)));
+                .Select(e => ((Material) e.Model.ItemBase.Value, e.Model.Count.Value)));
 
             UpdateCurrentAvatarState(combineEquipment, materialInfoList);
             CreateCombinationAction(materialInfoList);
             combineEquipment.RemoveMaterialsAll();
+            equipmentRecipe.UpdateRecipes();
         }
 
         private void ActionEnhanceEquipment()
@@ -513,29 +516,29 @@ namespace Nekoyume.UI
         private void ActionEnhancedCombinationEquipment(EquipmentCombinationPanel combinationPanel)
         {
             var model = combinationPanel.recipeCellView.model;
-            var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel) ?
-                elementalPanel.SelectedSubRecipeId
+            var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel)
+                ? elementalPanel.SelectedSubRecipeId
                 : (int?) null;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
             CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId);
         }
 
-        private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
+        private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
             IEnumerable<(Material material, int count)> materialInfoList)
         {
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            
+
             LocalStateModifier.ModifyAgentGold(agentAddress, -combinationPanel.CostNCG);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -combinationPanel.CostAP);
-            
+
             foreach (var (material, count) in materialInfoList)
             {
                 LocalStateModifier.RemoveItem(avatarAddress, material.Data.ItemId, count);
             }
         }
 
-        private void UpdateCurrentAvatarState(ICombinationPanel combinationPanel, Guid baseItemGuid,
+        private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel, Guid baseItemGuid,
             IEnumerable<Guid> otherItemGuidList)
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -585,7 +588,7 @@ namespace Nekoyume.UI
             _npc01.PlayAnimation(type == CharacterAnimation.Type.Greeting
                 ? NPCAnimation.Type.Greeting_01
                 : NPCAnimation.Type.Emotion_01);
-            
+
             speechBubble.SetKey(key);
             StartCoroutine(speechBubble.CoShowText());
         }

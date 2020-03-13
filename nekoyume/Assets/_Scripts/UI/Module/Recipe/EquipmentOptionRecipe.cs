@@ -1,6 +1,7 @@
+using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
-using System;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -13,48 +14,81 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private EquipmentOptionRecipeView[] equipmentOptionRecipeViews = null;
 
+        public readonly Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)> OnOptionClick =
+            new Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)>();
+
+        private void Awake()
+        {
+            foreach (var view in equipmentOptionRecipeViews)
+            {
+                if (view is null)
+                {
+                    throw new SerializeFieldNullException();
+                }
+
+                view.OnClick
+                    .Subscribe(item => OnOptionClick.OnNext((equipmentRecipeCellView, item)))
+                    .AddTo(gameObject);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            OnOptionClick.Dispose();
+        }
+
         public void Show()
         {
             gameObject.SetActive(true);
         }
-
-        public void Show(int recipe)
+        
+        public void Show(EquipmentItemRecipeSheet.Row recipeRow)
         {
+            equipmentRecipeCellView.Set(recipeRow);
+            InitializeOptionRecipes(recipeRow);
             Show();
         }
 
-        public void SetData(EquipmentRecipeCellView view, Action<EquipmentRecipeCellView, int> onSelectOption)
+        private void InitializeOptionRecipes(EquipmentItemRecipeSheet.Row recipeRow)
         {
-            equipmentRecipeCellView.Set(view.model, true);
-
-            for (int i = 0; i < equipmentOptionRecipeViews.Length; ++i)
+            for (var i = 0; i < equipmentOptionRecipeViews.Length; ++i)
             {
-                if (i >= view.model.SubRecipeIds.Count)
+                var optionRecipeView = equipmentOptionRecipeViews[i];
+
+                if (i >= recipeRow.SubRecipeIds.Count)
                 {
-                    equipmentOptionRecipeViews[i].ShowLocked();
+                    optionRecipeView.ShowLocked();
                     continue;
                 }
 
-                var subRecipeId = view.model.SubRecipeIds[i];
-
+                var subRecipeId = recipeRow.SubRecipeIds[i];
                 var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
-                if (!equipmentSheet.TryGetValue(view.model.ResultEquipmentId, out var row))
+                if (!equipmentSheet.TryGetValue(recipeRow.ResultEquipmentId, out var row))
                 {
-                    Debug.LogWarning($"Equipment ID not found : {view.model.ResultEquipmentId}");
+                    Debug.LogWarning($"Equipment ID not found : {recipeRow.ResultEquipmentId}");
                     Hide();
                     return;
                 }
 
-                // isAvailable에 false 넣을 시 비활성화됩니다.
-                equipmentOptionRecipeViews[i].Show(
+                optionRecipeView.Show(
                     row.GetLocalizedName(),
-                    new EquipmentItemSubRecipeSheet.MaterialInfo(view.model.MaterialId, view.model.MaterialCount),
                     subRecipeId,
-                    true,
-                    () => onSelectOption(view, subRecipeId));
+                    new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount));
             }
 
-            Show();
+            UpdateOptionRecipes();
+        }
+
+        private void UpdateOptionRecipes()
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+                return;
+            
+            foreach (var recipeView in equipmentOptionRecipeViews)
+            {
+                recipeView.Set(avatarState);
+            }
         }
 
         public void Hide()

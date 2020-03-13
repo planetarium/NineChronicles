@@ -1,7 +1,8 @@
-﻿using Nekoyume.UI.Scroller;
+﻿using System;
+using System.Collections.Generic;
+using Nekoyume.UI.Scroller;
 using Nekoyume.Model.Item;
 using UniRx;
-using System.Linq;
 using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,15 +19,15 @@ namespace Nekoyume.UI.Module
         public TabButton necklaceTabButton;
         public TabButton ringTabButton;
         public Transform cellViewParent;
-
         public ScrollRect scrollRect;
-
-        public readonly ReactiveProperty<ItemSubType> FilterType =
-            new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
-
         public EquipmentRecipeCellView selectedRecipe;
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
+
+        private readonly ReactiveProperty<ItemSubType> _filterType =
+            new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
+
+        private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
 
         private void Awake()
         {
@@ -37,33 +38,54 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(necklaceTabButton);
             _toggleGroup.RegisterToggleable(ringTabButton);
 
-            FilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
+            LoadRecipes();
+            _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
         }
 
         private void OnEnable()
         {
             if (States.Instance.CurrentAvatarState is null)
                 return;
-            
-            LoadRecipeList();
+
+            UpdateRecipes();
         }
 
-        private void LoadRecipeList()
+        private void OnDestroy()
         {
-            var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            _filterType.Dispose();
+            _disposablesAtLoadRecipeList.DisposeAllAndClear();
+        }
 
-            var totalCount = recipeSheet.Count();
+        private void LoadRecipes()
+        {
+            _disposablesAtLoadRecipeList.DisposeAllAndClear();
+
+            var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var totalCount = recipeSheet.Count;
             cellViews = new EquipmentRecipeCellView[totalCount];
 
-            States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(out var stageId);
             var idx = 0;
             foreach (var recipeRow in recipeSheet)
             {
-                var isAvailable = recipeRow.UnlockStage <= stageId;
-                cellViews[idx] = Instantiate(cellViewPrefab, cellViewParent);
-                cellViews[idx].Set(recipeRow, isAvailable);
-                cellViews[idx].OnClick.Subscribe(SubscribeOnClickCellView).AddTo(gameObject);
+                var cellView = Instantiate(cellViewPrefab, cellViewParent);
+                cellView.Set(recipeRow);
+                cellView.OnClick.Subscribe(SubscribeOnClickCellView).AddTo(_disposablesAtLoadRecipeList);
+                cellViews[idx] = cellView;
                 ++idx;
+            }
+            
+            UpdateRecipes();
+        }
+
+        public void UpdateRecipes()
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+                return;
+            
+            foreach (var cellView in cellViews)
+            {
+                cellView.Set(avatarState);
             }
         }
 
@@ -71,42 +93,35 @@ namespace Nekoyume.UI.Module
         {
             scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
 
-            foreach (var data in cellViews)
-            {
-                data.Hide();
-            }
-
-            var filteredRecipe = cellViews.Where(cellView => cellView.itemSubType == itemSubType);
-
             // FIXME : 테이블이 완성된 후 대응시켜야 함.
-            foreach (var filtered in filteredRecipe)
+            foreach (var cellView in cellViews)
             {
-                filtered.Show();
+                if (cellView.itemSubType == itemSubType)
+                {
+                    cellView.Show();
+                }
+                else
+                {
+                    cellView.Hide();
+                }
             }
 
             switch (itemSubType)
             {
                 case ItemSubType.Weapon:
                     _toggleGroup.SetToggledOn(weaponTabButton);
-
                     break;
                 case ItemSubType.Armor:
                     _toggleGroup.SetToggledOn(armorTabButton);
-
                     break;
                 case ItemSubType.Belt:
                     _toggleGroup.SetToggledOn(beltTabButton);
-
                     break;
                 case ItemSubType.Necklace:
                     _toggleGroup.SetToggledOn(necklaceTabButton);
-
                     break;
                 case ItemSubType.Ring:
                     _toggleGroup.SetToggledOn(ringTabButton);
-
-                    break;
-                default:
                     break;
             }
         }
@@ -115,23 +130,23 @@ namespace Nekoyume.UI.Module
         {
             if (toggleable.Name.Equals(weaponTabButton.Name))
             {
-                FilterType.SetValueAndForceNotify(ItemSubType.Weapon);
+                _filterType.SetValueAndForceNotify(ItemSubType.Weapon);
             }
             else if (toggleable.Name.Equals(armorTabButton.Name))
             {
-                FilterType.SetValueAndForceNotify(ItemSubType.Armor);
+                _filterType.SetValueAndForceNotify(ItemSubType.Armor);
             }
             else if (toggleable.Name.Equals(beltTabButton.Name))
             {
-                FilterType.SetValueAndForceNotify(ItemSubType.Belt);
+                _filterType.SetValueAndForceNotify(ItemSubType.Belt);
             }
             else if (toggleable.Name.Equals(necklaceTabButton.Name))
             {
-                FilterType.SetValueAndForceNotify(ItemSubType.Necklace);
+                _filterType.SetValueAndForceNotify(ItemSubType.Necklace);
             }
             else if (toggleable.Name.Equals(ringTabButton.Name))
             {
-                FilterType.SetValueAndForceNotify(ItemSubType.Ring);
+                _filterType.SetValueAndForceNotify(ItemSubType.Ring);
             }
         }
 

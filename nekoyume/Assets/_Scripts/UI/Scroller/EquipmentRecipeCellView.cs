@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -14,6 +16,8 @@ namespace Nekoyume.UI.Scroller
 {
     public class EquipmentRecipeCellView : MonoBehaviour
     {
+        private static readonly Color DisabledColor = new Color(0.5f, 0.5f, 0.5f);
+
         public Button button;
         public Image panelImageLeft;
         public Image panelImageRight;
@@ -23,6 +27,7 @@ namespace Nekoyume.UI.Scroller
         public TextMeshProUGUI optionText;
         public SimpleCountableItemView itemView;
         public GameObject lockParent;
+        public TextMeshProUGUI unlockConditionText;
 
         public EquipmentItemRecipeSheet.Row model;
         public ItemSubType itemSubType;
@@ -30,14 +35,16 @@ namespace Nekoyume.UI.Scroller
 
         public readonly Subject<EquipmentRecipeCellView> OnClick = new Subject<EquipmentRecipeCellView>();
 
-        private readonly Color disabledColor = new Color(0.5f, 0.5f, 0.5f);
-
         private void Awake()
         {
-            button.onClick.AddListener(() =>
-            {
-                OnClick.OnNext(this);
-            });
+            button.OnClickAsObservable()
+                .Subscribe(_ => OnClick.OnNext(this))
+                .AddTo(gameObject);
+        }
+
+        private void OnDestroy()
+        {
+            OnClick.Dispose();
         }
 
         public void Show()
@@ -45,19 +52,12 @@ namespace Nekoyume.UI.Scroller
             gameObject.SetActive(true);
         }
 
-        public void ShowLocked()
-        {
-            SetLocked(true);
-            SetPanelDimmed(true);
-            Show();
-        }
-
         public void Hide()
         {
             gameObject.SetActive(false);
         }
 
-        public void Set(EquipmentItemRecipeSheet.Row recipeRow, bool isAvailable)
+        public void Set(EquipmentItemRecipeSheet.Row recipeRow)
         {
             if (recipeRow is null)
                 return;
@@ -76,8 +76,6 @@ namespace Nekoyume.UI.Scroller
 
             var item = new CountableItem(equipment, 1);
             itemView.SetData(item);
-            SetLocked(false);
-            SetDimmed(!isAvailable);
 
             var sprite = row.ElementalType.GetSprite();
             var grade = row.Grade;
@@ -96,11 +94,53 @@ namespace Nekoyume.UI.Scroller
 
             var text = $"{row.Stat.Type} +{row.Stat.Value}";
             optionText.text = text;
+            
+            SetLocked(false);
+            SetDimmed(false);
         }
 
-        public void SetLocked(bool value)
+        public void Set(AvatarState avatarState)
+        {
+            if (model is null)
+                return;
+
+            // 해금 검사.
+            if (avatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
+            {
+                if (model.UnlockStage > stageId)
+                {
+                    SetLocked(true);
+                    return;
+                }
+
+                SetLocked(false);
+            }
+            else
+            {
+                SetLocked(true);
+                return;
+            }
+
+            // 재료 검사.
+            if (Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(model.MaterialId, out var materialRow) &&
+                avatarState.inventory.TryGetFungibleItem(materialRow.ItemId, out var material) &&
+                material.count >= model.MaterialCount)
+            {
+                SetDimmed(false);
+            }
+            else
+            {
+                SetDimmed(true);
+            }
+        }
+
+        private void SetLocked(bool value)
         {
             lockParent.SetActive(value);
+            unlockConditionText.text = value
+                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"), model.UnlockStage)
+                : string.Empty;
+            
             itemView.gameObject.SetActive(!value);
             titleText.enabled = !value;
             optionText.enabled = !value;
@@ -109,18 +149,20 @@ namespace Nekoyume.UI.Scroller
             {
                 icon.enabled = !value;
             }
+
+            SetPanelDimmed(value);
         }
 
-        public void SetDimmed(bool value)
+        private void SetDimmed(bool value)
         {
-            var color = value ? disabledColor : Color.white;
+            var color = value ? DisabledColor : Color.white;
             titleText.color = itemView.Model.ItemBase.Value.GetItemGradeColor() * color;
             optionText.color = color;
             itemView.Model.Dimmed.Value = value;
 
             foreach (var icon in elementalTypeImages)
             {
-                icon.color = value ? disabledColor : Color.white;
+                icon.color = value ? DisabledColor : Color.white;
             }
 
             SetPanelDimmed(value);
@@ -128,7 +170,7 @@ namespace Nekoyume.UI.Scroller
 
         private void SetPanelDimmed(bool value)
         {
-            var color = value ? disabledColor : Color.white;
+            var color = value ? DisabledColor : Color.white;
             panelImageLeft.color = color;
             panelImageRight.color = color;
             backgroundImage.color = color;

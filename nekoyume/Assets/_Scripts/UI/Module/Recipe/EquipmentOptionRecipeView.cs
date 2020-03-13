@@ -1,11 +1,9 @@
-using Nekoyume.Helper;
-using Nekoyume.Model.Stat;
+using Assets.SimpleLocalization;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using System;
-using System.Globalization;
 using TMPro;
+using UniRx;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -30,25 +28,36 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject options = null;
 
-        private void OnDisable()
+        private EquipmentItemSubRecipeSheet.Row _rowData;
+        
+        public readonly Subject<EquipmentOptionRecipeView> OnClick = new Subject<EquipmentOptionRecipeView>();
+
+        public bool IsLocked => lockParent.activeSelf;
+
+        private void Awake()
         {
-            button.onClick.RemoveAllListeners();
+            button.OnClickAsObservable().Subscribe(_ =>
+            {
+                if (IsLocked)
+                {
+                    return;
+                }
+                
+                OnClick.OnNext(this);
+            }).AddTo(gameObject);
         }
 
-        public void Show(
-            string recipeName,
-            EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo,
-            int subRecipeId,
-            bool isAvailable,
-            UnityAction onClick)
+        private void OnDestroy()
+        {
+            OnClick.Dispose();
+        }
+
+        public void Show(string recipeName, int subRecipeId, EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo)
         {
             if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet
-                .TryGetValue(subRecipeId, out var subRecipeRow))
+                .TryGetValue(subRecipeId, out _rowData))
             {
-                requiredItemRecipeView.SetData(baseMaterialInfo, subRecipeRow.Materials);
-
-                if (isAvailable && !(onClick is null))
-                    button.onClick.AddListener(onClick);
+                requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials);
             }
             else
             {
@@ -58,7 +67,46 @@ namespace Nekoyume.UI.Module
             }
 
             SetLocked(false);
-            Show(recipeName, subRecipeId, isAvailable);
+            Show(recipeName, subRecipeId);
+        }
+        
+        public void Set(AvatarState avatarState)
+        {
+            // 해금 검사.
+            if (avatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
+            {
+                if (_rowData.UnlockStage > stageId)
+                {
+                    SetLocked(true);
+                    return;
+                }
+
+                SetLocked(false);
+            }
+            else
+            {
+                SetLocked(true);
+                return;
+            }
+            
+            // 재료 검사.
+            var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            var inventory = avatarState.inventory;
+            var shouldDimmed = false;
+            foreach (var info in _rowData.Materials)
+            {
+                if (materialSheet.TryGetValue(info.Id, out var materialRow) &&
+                    inventory.TryGetFungibleItem(materialRow.ItemId, out var fungibleItem) &&
+                    fungibleItem.count >= info.Count)
+                {
+                    continue;
+                }
+
+                shouldDimmed = true;
+                break;
+            }
+            
+            SetDimmed(shouldDimmed);
         }
 
         public void ShowLocked()
@@ -70,6 +118,10 @@ namespace Nekoyume.UI.Module
         private void SetLocked(bool value)
         {
             lockParent.SetActive(value);
+            unlockConditionText.text = value
+                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"), _rowData.UnlockStage)
+                : string.Empty;
+            
             header.SetActive(!value);
             options.SetActive(!value);
             requiredItemRecipeView.gameObject.SetActive(!value);
