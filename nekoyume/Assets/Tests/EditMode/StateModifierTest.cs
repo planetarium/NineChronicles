@@ -91,7 +91,7 @@ namespace Tests.EditMode
             {
                 itemUsable = equipment
             };
-            var attachmentMail = new CombinationMail(combinationResult, 0, new Guid()) {New = false};
+            var attachmentMail = new CombinationMail(combinationResult, 0, new Guid(), 0);
             Assert.False(attachmentMail.New);
             _avatarState.mailBox.Add(attachmentMail);
             var modifier =

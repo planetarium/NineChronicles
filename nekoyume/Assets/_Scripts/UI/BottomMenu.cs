@@ -315,7 +315,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            HasNotificationInMail.OnNext(mailBox.Any(i => i.New));
+            HasNotificationInMail.OnNext(
+                mailBox.Any(i => i.New && i.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex)
+            );
             // todo: `Mail`과의 결합을 끊을 필요가 있어 보임.
             Find<Mail>().SetList(mailBox);
         }

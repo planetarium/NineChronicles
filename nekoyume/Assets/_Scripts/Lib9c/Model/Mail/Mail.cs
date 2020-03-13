@@ -31,18 +31,21 @@ namespace Nekoyume.Model.Mail
         public bool New;
         public long blockIndex;
         public virtual MailType MailType => MailType.System;
+        public long requiredBlockIndex;
 
-        protected Mail(long blockIndex, Guid id)
+        protected Mail(long blockIndex, Guid id, long requiredBlockIndex)
         {
             this.id = id;
             this.blockIndex = blockIndex;
-            New = true;
+            this.requiredBlockIndex = requiredBlockIndex;
         }
 
-        protected Mail(Dictionary serialized)
-            : this((long)((Integer)serialized["blockIndex"]).Value, serialized["id"].ToGuid())
+        protected Mail(Dictionary serialized) : this(
+            serialized["blockIndex"].ToLong(),
+            serialized["id"].ToGuid(),
+            serialized["requiredBlockIndex"].ToLong()
+        )
         {
-            New = ((Bencodex.Types.Boolean)serialized["new"]).Value;
         }
 
         public abstract void Read(IMail mail);
@@ -53,14 +56,14 @@ namespace Nekoyume.Model.Mail
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text)"id"] = id.Serialize(),
-                [(Text)"typeId"] = (Text)TypeId,
-                [(Text)"new"] = new Bencodex.Types.Boolean(New),
-                [(Text)"blockIndex"] = (Integer)blockIndex,
+                [(Text)"typeId"] = TypeId.Serialize(),
+                [(Text)"blockIndex"] = blockIndex.Serialize(),
+                [(Text)"requiredBlockIndex"] = requiredBlockIndex.Serialize(),
             });
 
         public static Mail Deserialize(Dictionary serialized)
         {
-            string typeId = ((Text)serialized["typeId"]).Value;
+            var typeId = serialized.GetString("typeId");
             Func<Dictionary, Mail> deserializer;
             try
             {

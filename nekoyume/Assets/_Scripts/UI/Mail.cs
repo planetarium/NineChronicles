@@ -129,13 +129,15 @@ namespace Nekoyume.UI
 
         public void UpdateTabs()
         {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             // 전체 탭
-            tabButtons[0].hasNotificationImage.enabled = _mailBox.Where(mail => mail.New).Count() > 0;
+            tabButtons[0].hasNotificationImage.enabled = _mailBox
+                .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
 
-            for (int i = 1; i < tabButtons.Length; ++i)
+            for (var i = 1; i < tabButtons.Length; ++i)
             {
-                int cnt = _mailBox.Where(mail => mail.MailType == (MailType) i && mail.New).Count();
-                tabButtons[i].hasNotificationImage.enabled = cnt > 0;
+                tabButtons[i].hasNotificationImage.enabled = _mailBox
+                    .Any(mail => mail.MailType == (MailType) i && mail.New && mail.requiredBlockIndex <= blockIndex);
             }
         }
 
@@ -148,7 +150,7 @@ namespace Nekoyume.UI
                 tabButtons[i].ChangeColor(i == state);
             }
 
-            var list = _mailBox.ToList();
+            var list = _mailBox.Where(i => i.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex).ToList();
             if (state > 0)
             {
                 list = list.FindAll(mail => mail.MailType == (MailType) state);
