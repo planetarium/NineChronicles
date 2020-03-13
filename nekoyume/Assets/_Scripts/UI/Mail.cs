@@ -269,24 +269,5 @@ namespace Nekoyume.UI
             });
             popup.Pop(model);
         }
-
-        private static void AddItem(ItemUsable item, bool canceled)
-        {
-            //아바타상태 인벤토리 업데이트
-            Game.Game.instance.ActionManager.AddItem(item.ItemId, canceled);
-
-            //게임상의 인벤토리 업데이트
-            States.Instance.CurrentAvatarState.inventory.AddItem(item);
-        }
-
-        private static void AddGold(decimal gold)
-        {
-            //판매자 에이전트 골드 업데이트
-            Game.Game.instance.ActionManager.AddGold();
-
-            //게임상의 골드 업데이트
-            States.Instance.AgentState.gold += gold;
-            ReactiveAgentState.Gold.SetValueAndForceNotify(States.Instance.AgentState.gold);
-        }
     }
 }

@@ -49,8 +49,6 @@ namespace Nekoyume.BlockChain
             SellCancellation();
             Buy();
             RankingReward();
-            AddItem();
-            AddGold();
             DailyReward();
             ItemEnhancement();
             QuestReward();
@@ -156,26 +154,6 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateAgentState).AddTo(_disposables);
-        }
-
-        private void AddItem()
-        {
-            _renderer.EveryRender<AddItem>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
-                .ObserveOnMainThread()
-                .Subscribe(UpdateCurrentAvatarState).AddTo(_disposables);
-        }
-
-        private void AddGold()
-        {
-            _renderer.EveryRender<AddGold>()
-                .Where(ValidateEvaluationForAgentState)
-                .ObserveOnMainThread()
-                .Subscribe(eval =>
-                {
-                    UpdateAgentState(eval);
-                    UpdateCurrentAvatarState(eval);
-                }).AddTo(_disposables);
         }
 
         private void ItemEnhancement()
