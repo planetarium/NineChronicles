@@ -22,6 +22,7 @@ using Nekoyume.Shared.Services;
 using Nekoyume.State;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Events;
 using static Nekoyume.Action.ActionBase;
 
 namespace Nekoyume.BlockChain
@@ -47,10 +48,15 @@ namespace Nekoyume.BlockChain
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         public long BlockIndex { get; private set; }
+        
         public PrivateKey PrivateKey { get; private set; }
+        
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
         public bool Connected { get; private set; }
+
+        public UnityEvent OnDisconnected { get; private set; }
+
 
         public void Initialize(
             CommandLineOptions options,
@@ -67,8 +73,12 @@ namespace Nekoyume.BlockChain
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
 
+            RegisterDisconnectEvent(_hub);
+
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
+
+            OnDisconnected = new UnityEvent();
         }
 
         public IValue GetState(Address address)
@@ -209,6 +219,18 @@ namespace Nekoyume.BlockChain
         {
             BlockIndex = index;
             BlockIndexSubject.OnNext(index);
+        }
+        
+        private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
+        {
+            try
+            {
+                await hub.WaitForDisconnect();
+            }
+            finally
+            {
+                OnDisconnected?.Invoke();
+            }
         }
     }
 }

@@ -124,6 +124,21 @@ namespace Nekoyume.Game
                 .AddTo(gameObject);
 
             ShowNext(agentInitializeSucceed);
+
+            if (Agent is RPCAgent rpcAgent)
+            {
+                rpcAgent.OnDisconnected
+                    .AsObservable()
+                    .ObserveOnMainThread()
+                    .Subscribe(_ =>
+                    {
+                        Widget.Find<SystemPopup>().Show(
+                            "UI_ERROR",
+                            "UI_ERROR_RPC_CONNECTION",
+                            "UI_QUIT"
+                        );
+                    });
+            }
         }
 
         private IEnumerator CoInitializeTableSheets()
