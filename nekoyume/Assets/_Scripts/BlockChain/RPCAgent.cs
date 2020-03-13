@@ -50,6 +50,7 @@ namespace Nekoyume.BlockChain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
+        public bool Connected { get; private set; }
 
         public void Initialize(
             CommandLineOptions options,
@@ -113,6 +114,14 @@ namespace Nekoyume.BlockChain
             });
 
             yield return new WaitUntil(() => t.IsCompleted);
+
+            if (t.IsFaulted)
+            {
+                callback(false);
+                yield break;
+            }
+
+            Connected = true;
 
             // 랭킹의 상태를 한 번 동기화 한다.
             States.Instance.SetRankingState(

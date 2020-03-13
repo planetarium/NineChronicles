@@ -159,6 +159,7 @@ namespace Nekoyume.Game
             }
             else
             {
+                // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
                 if (_agent is Agent agent && agent.BlockDownloadFailed)
                 {
                     var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
@@ -169,6 +170,14 @@ namespace Nekoyume.Game
                         errorMsg,
                         LocalizationManager.Localize("UI_QUIT"),
                         false
+                    );
+                }
+                else if (_agent is RPCAgent rpcAgent && !rpcAgent.Connected)
+                {
+                    Widget.Find<SystemPopup>().Show(
+                        "UI_ERROR",
+                        "UI_ERROR_RPC_CONNECTION",
+                        "UI_QUIT"
                     );
                 }
                 else
