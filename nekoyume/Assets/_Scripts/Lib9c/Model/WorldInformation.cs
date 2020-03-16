@@ -253,13 +253,15 @@ namespace Nekoyume.Model
         /// <returns></returns>
         public bool TryGetLastClearedStageId(out int stageId)
         {
-            stageId = -1;
-            foreach (var world in _worlds.Values.Where(world => world.IsStageCleared))
+            var clearedWorlds = _worlds.Values.Where(world => world.IsStageCleared).ToList();
+            if (clearedWorlds.Any())
             {
-                stageId = world.StageClearedId;
+                stageId = clearedWorlds.Last().StageClearedId;
+                return true;
             }
-
-            return stageId > -1;
+            
+            stageId = default;
+            return false;
         }
 
         /// <summary>
