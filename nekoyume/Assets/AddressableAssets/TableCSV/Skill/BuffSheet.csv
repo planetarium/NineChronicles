@@ -11,7 +11,7 @@ id,group,_name,chance,duration,target_type,stat_type,modify_type,modify_value,ic
 105001,105000,회피 증가,100,10,Self,HIT,Percentage,25,icon_buff_plus_hit
 106000,106000,속도 증가,20,10,Self,SPD,Percentage,25,icon_buff_plus_speed
 106001,106000,속도 증가,100,10,Self,SPD,Percentage,25,icon_buff_plus_speed
-202000,202000,공격 약화,20,6,Enemy,ATK,Percentage,-50,icon_buff_minus_attack
+202000,202000,공격 약화,20,6,Enemy,ATK,Percentage,-25,icon_buff_minus_attack
 202001,202000,공격 약화,100,6,Enemy,ATK,Percentage,-25,icon_buff_minus_attack
 203001,203000,방어 약화,100,6,Enemy,DEF,Percentage,-25,icon_buff_minus_defense
 204001,204000,치명 감소,100,10,Enemy,CRI,Percentage,-25,icon_buff_minus_critical
