@@ -124,6 +124,21 @@ namespace Nekoyume.Game
                 .AddTo(gameObject);
 
             ShowNext(agentInitializeSucceed);
+
+            if (Agent is RPCAgent rpcAgent)
+            {
+                rpcAgent.OnDisconnected
+                    .AsObservable()
+                    .ObserveOnMainThread()
+                    .Subscribe(_ =>
+                    {
+                        Widget.Find<SystemPopup>().Show(
+                            "UI_ERROR",
+                            "UI_ERROR_RPC_CONNECTION",
+                            "UI_QUIT"
+                        );
+                    });
+            }
         }
 
         private IEnumerator CoInitializeTableSheets()
@@ -159,6 +174,7 @@ namespace Nekoyume.Game
             }
             else
             {
+                // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
                 if (_agent is Agent agent && agent.BlockDownloadFailed)
                 {
                     var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
@@ -169,6 +185,14 @@ namespace Nekoyume.Game
                         errorMsg,
                         LocalizationManager.Localize("UI_QUIT"),
                         false
+                    );
+                }
+                else if (_agent is RPCAgent rpcAgent && !rpcAgent.Connected)
+                {
+                    Widget.Find<SystemPopup>().Show(
+                        "UI_ERROR",
+                        "UI_ERROR_RPC_CONNECTION",
+                        "UI_QUIT"
                     );
                 }
                 else
@@ -227,10 +251,9 @@ namespace Nekoyume.Game
 #endif
                 };
                 w.Show(
-                    LocalizationManager.Localize("UI_MAINTENANCE"),
-                    LocalizationManager.Localize("UI_MAINTENANCE_CONTENT"),
-                    LocalizationManager.Localize("UI_OK"),
-                    false
+                    "UI_MAINTENANCE",
+                    "UI_MAINTENANCE_CONTENT",
+                    "UI_OK"
                 );
                 yield break;
             }
