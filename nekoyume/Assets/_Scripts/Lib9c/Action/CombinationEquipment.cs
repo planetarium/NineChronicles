@@ -160,7 +160,7 @@ namespace Nekoyume.Action
                 }
             }
 
-            var result = new Combination.ResultModel
+            var result = new CombinationConsumable.ResultModel
             {
                 actionPoint = requiredActionPoint,
                 gold = requiredGold,

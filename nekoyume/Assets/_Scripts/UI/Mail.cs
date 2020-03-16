@@ -171,7 +171,7 @@ namespace Nekoyume.UI
         public void Read(CombinationMail mail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (Nekoyume.Action.Combination.ResultModel) mail.attachment;
+            var attachment = (Nekoyume.Action.CombinationConsumable.ResultModel) mail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials
