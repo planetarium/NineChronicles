@@ -2,6 +2,12 @@
 
 A system tray application to sync chain with network in background.
 
+## Dependencies
+
+- [.NETCore 3.1]
+
+[.NETCore 3.1]: https://dotnet.microsoft.com/download/dotnet-core/3.1
+
 ## Build
 
 ```/bin/bash
