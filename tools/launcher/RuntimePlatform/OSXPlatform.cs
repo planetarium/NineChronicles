@@ -1,10 +1,10 @@
 using System.IO;
 
-namespace Launcher
+namespace Launcher.RuntimePlatform
 {
     public sealed class OSXPlatform : IRuntimePlatform
     {
-        public string GameBinaryDownloadFilename => "NineChronicles-alpha-2-macOS.tar.gz";
+        public string GameBinaryDownloadFilename => "macOS.tar.gz";
 
         public string OpenCommand => "open";
 

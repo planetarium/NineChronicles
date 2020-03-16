@@ -28,7 +28,7 @@ Item {
             MenuItem {
                 id: runMenu
                 text: "Run"
-                visible: !ctrl.gameRunning
+                visible: !ctrl.gameRunning && !ctrl.updating && !ctrl.preprocessing
                 onTriggered: {
                     ctrl.runGame()
                 }

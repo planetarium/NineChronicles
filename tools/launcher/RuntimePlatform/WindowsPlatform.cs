@@ -1,10 +1,10 @@
 using System.IO;
 
-namespace Launcher
+namespace Launcher.RuntimePlatform
 {
     public class WindowsPlatform : IRuntimePlatform
     {
-        public string GameBinaryDownloadFilename => "NineChronicles-alpha-2-win.zip";
+        public string GameBinaryDownloadFilename => "win.zip";
 
         public string OpenCommand => "notepad.exe";
 
