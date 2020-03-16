@@ -479,7 +479,7 @@ namespace Nekoyume.UI
                 .ToList();
 
             UpdateCurrentAvatarState(combineConsumable, materialInfoList);
-            CreateCombinationAction(materialInfoList);
+            CreateCombinationAction(materialInfoList, 1);
             combineConsumable.RemoveMaterialsAll();
         }
 
@@ -494,7 +494,7 @@ namespace Nekoyume.UI
                 .Select(e => ((Material)e.Model.ItemBase.Value, e.Model.Count.Value)));
 
             UpdateCurrentAvatarState(combineEquipment, materialInfoList);
-            CreateCombinationAction(materialInfoList);
+            CreateCombinationAction(materialInfoList, 1);
             combineEquipment.RemoveMaterialsAll();
         }
 
@@ -506,7 +506,7 @@ namespace Nekoyume.UI
                 .ToList();
 
             UpdateCurrentAvatarState(enhanceEquipment, baseEquipmentGuid, otherEquipmentGuidList);
-            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList);
+            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList, 2);
             enhanceEquipment.RemoveMaterialsAll();
         }
 
@@ -552,19 +552,19 @@ namespace Nekoyume.UI
         }
 
 
-        private void CreateCombinationAction(List<(Material material, int count)> materialInfoList)
+        private void CreateCombinationAction(List<(Material material, int count)> materialInfoList, int slotIndex)
         {
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.Combination(materialInfoList)
+            Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
 
-        private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList)
+        private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList, int slotIndex)
         {
             var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList)
+            Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }
 

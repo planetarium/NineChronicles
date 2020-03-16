@@ -11,7 +11,7 @@ namespace Nekoyume.Model.State
         public const string DeriveFormat = "combination-slot-{0}";
         public long UnlockBlockIndex { get; private set; }
         public int UnlockStage { get; private set; }
-        public Combination.ResultModel Result { get; private set; }
+        public AttachmentActionResult Result { get; private set; }
 
         public CombinationSlotState(Address address, int unlockStage) : base(address)
         {
@@ -24,7 +24,7 @@ namespace Nekoyume.Model.State
             UnlockStage = serialized["unlockStage"].ToInteger();
             if (serialized.TryGetValue((Text) "result", out var result))
             {
-                Result = new Combination.ResultModel((Dictionary)result);
+                Result = AttachmentActionResult.Deserialize((Dictionary) result);
             }
         }
 
@@ -34,7 +34,7 @@ namespace Nekoyume.Model.State
                    && blockIndex >= UnlockBlockIndex;
         }
 
-        public void Update(Combination.ResultModel result, long recipeRequiredBlockIndex)
+        public void Update(AttachmentActionResult result, long recipeRequiredBlockIndex)
         {
             Result = result;
             UnlockBlockIndex = recipeRequiredBlockIndex;
