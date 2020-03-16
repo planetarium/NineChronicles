@@ -16,7 +16,7 @@ namespace Nekoyume.Action
             {
                 ["buy.buyerResult"] = d => new Buy.BuyerResult(d),
                 ["buy.sellerResult"] = d => new Buy.SellerResult(d),
-                ["combination.result-model"] = d => new Combination.ResultModel(d),
+                ["combination.result-model"] = d => new CombinationConsumable.ResultModel(d),
                 ["itemEnhancement.result"] = d => new ItemEnhancement.ResultModel(d),
                 ["sellCancellation.result"] = d => new SellCancellation.Result(d),
             };

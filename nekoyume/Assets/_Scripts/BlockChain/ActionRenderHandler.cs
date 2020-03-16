@@ -10,7 +10,6 @@ using Nekoyume.Manager;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
-using Combination = Nekoyume.Action.Combination;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Module;
 
@@ -121,7 +120,7 @@ namespace Nekoyume.BlockChain
 
         private void Combination()
         {
-            _renderer.EveryRender<Combination>()
+            _renderer.EveryRender<CombinationConsumable>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombination).AddTo(_disposables);
@@ -238,7 +237,7 @@ namespace Nekoyume.BlockChain
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.SlotIndex);
-            var result = slot.Result;
+            var result = (CombinationConsumable.ResultModel) slot.Result;
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
@@ -256,11 +255,12 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
-        private void ResponseCombination(ActionBase.ActionEvaluation<Combination> eval)
+        private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
-            var result = eval.Action.Result;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+            var result = (CombinationConsumable.ResultModel) slot.Result;
             var itemUsable = result.itemUsable;
             
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
@@ -388,7 +388,8 @@ namespace Nekoyume.BlockChain
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            var result = eval.Action.result;
+            var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+            var result = (ItemEnhancement.ResultModel) slot.Result;
             var itemUsable = result.itemUsable;
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
@@ -403,7 +404,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, eval.Action.completedQuestIds);
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,
-                string.Format(format, eval.Action.result.itemUsable.Data.GetLocalizedName()));
+                string.Format(format, result.itemUsable.Data.GetLocalizedName()));
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
