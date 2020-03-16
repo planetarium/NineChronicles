@@ -363,18 +363,17 @@ namespace Nekoyume.UI
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(false);
 
-                    var selectedRecipe = equipmentRecipe.selectedRecipe;
-                    var isElemental = selectedRecipe.elementalType != ElementalType.Normal;
+                    var selectedRecipe = equipmentRecipe.SelectedRecipe;
+                    var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
 
                     if (isElemental)
                     {
-                        // 여기서 옵션 선택 화면을 보여준다.
-                        elementalCombinationPanel.SetData(selectedRecipe.model);
                         equipmentCombinationPanel.Hide();
+                        elementalCombinationPanel.SetData(selectedRecipe.RowData);
                     }
                     else
                     {
-                        equipmentCombinationPanel.SetData(selectedRecipe.model);
+                        equipmentCombinationPanel.SetData(selectedRecipe.RowData);
                         elementalCombinationPanel.Hide();
                     }
 
@@ -498,7 +497,6 @@ namespace Nekoyume.UI
             UpdateCurrentAvatarState(combineEquipment, materialInfoList);
             CreateCombinationAction(materialInfoList);
             combineEquipment.RemoveMaterialsAll();
-            equipmentRecipe.UpdateRecipes();
         }
 
         private void ActionEnhanceEquipment()
@@ -515,12 +513,13 @@ namespace Nekoyume.UI
 
         private void ActionEnhancedCombinationEquipment(EquipmentCombinationPanel combinationPanel)
         {
-            var model = combinationPanel.recipeCellView.model;
+            var model = combinationPanel.recipeCellView.RowData;
             var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel)
                 ? elementalPanel.SelectedSubRecipeId
                 : (int?) null;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
             CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId);
+            equipmentRecipe.UpdateRecipes();
         }
 
         private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,

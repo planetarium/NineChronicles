@@ -18,27 +18,55 @@ namespace Nekoyume.UI.Scroller
     {
         private static readonly Color DisabledColor = new Color(0.5f, 0.5f, 0.5f);
 
-        public Button button;
-        public Image panelImageLeft;
-        public Image panelImageRight;
-        public Image backgroundImage;
-        public Image[] elementalTypeImages;
-        public TextMeshProUGUI titleText;
-        public TextMeshProUGUI optionText;
-        public SimpleCountableItemView itemView;
-        public GameObject lockParent;
-        public TextMeshProUGUI unlockConditionText;
+        [SerializeField]
+        private Button button;
 
-        public EquipmentItemRecipeSheet.Row model;
-        public ItemSubType itemSubType;
-        public ElementalType elementalType;
+        [SerializeField]
+        private Image panelImageLeft;
+
+        [SerializeField]
+        private Image panelImageRight;
+
+        [SerializeField]
+        private Image backgroundImage;
+
+        [SerializeField]
+        private Image[] elementalTypeImages;
+
+        [SerializeField]
+        private TextMeshProUGUI titleText;
+
+        [SerializeField]
+        private TextMeshProUGUI optionText;
+
+        [SerializeField]
+        private SimpleCountableItemView itemView;
+
+        [SerializeField]
+        private GameObject lockParent;
+
+        [SerializeField]
+        private TextMeshProUGUI unlockConditionText;
 
         public readonly Subject<EquipmentRecipeCellView> OnClick = new Subject<EquipmentRecipeCellView>();
+
+        private bool IsLocked => lockParent.activeSelf;
+        public EquipmentItemRecipeSheet.Row RowData { get; private set; }
+        public ItemSubType ItemSubType { get; private set; }
+        public ElementalType ElementalType { get; private set; }
 
         private void Awake()
         {
             button.OnClickAsObservable()
-                .Subscribe(_ => OnClick.OnNext(this))
+                .Subscribe(_ =>
+                {
+                    if (IsLocked)
+                    {
+                        return;
+                    }
+
+                    OnClick.OnNext(this);
+                })
                 .AddTo(gameObject);
         }
 
@@ -66,11 +94,11 @@ namespace Nekoyume.UI.Scroller
             if (!equipmentSheet.TryGetValue(recipeRow.ResultEquipmentId, out var row))
                 return;
 
-            model = recipeRow;
+            RowData = recipeRow;
 
             var equipment = (Equipment) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
-            itemSubType = row.ItemSubType;
-            elementalType = row.ElementalType;
+            ItemSubType = row.ItemSubType;
+            ElementalType = row.ElementalType;
 
             titleText.text = equipment.GetLocalizedNonColoredName();
 
@@ -94,20 +122,20 @@ namespace Nekoyume.UI.Scroller
 
             var text = $"{row.Stat.Type} +{row.Stat.Value}";
             optionText.text = text;
-            
+
             SetLocked(false);
             SetDimmed(false);
         }
 
         public void Set(AvatarState avatarState)
         {
-            if (model is null)
+            if (RowData is null)
                 return;
 
             // 해금 검사.
             if (avatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
             {
-                if (model.UnlockStage > stageId)
+                if (RowData.UnlockStage > stageId)
                 {
                     SetLocked(true);
                     return;
@@ -121,12 +149,47 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            // 재료 검사.
-            if (Game.Game.instance.TableSheets.MaterialItemSheet.TryGetValue(model.MaterialId, out var materialRow) &&
-                avatarState.inventory.TryGetFungibleItem(materialRow.ItemId, out var material) &&
-                material.count >= model.MaterialCount)
+            // 메인 재료 검사.
+            var inventory = avatarState.inventory;
+            var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            if (materialSheet.TryGetValue(RowData.MaterialId, out var materialRow) &&
+                inventory.TryGetFungibleItem(materialRow.ItemId, out var fungibleItem) &&
+                fungibleItem.count >= RowData.MaterialCount)
             {
-                SetDimmed(false);
+                // 서브 재료 검사.
+                if (RowData.SubRecipeIds.Any())
+                {
+                    var subSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
+                    var shouldDimmed = false;
+                    foreach (var subRow in RowData.SubRecipeIds
+                        .Select(subRecipeId => subSheet.TryGetValue(subRecipeId, out var subRow) ? subRow : null)
+                        .Where(item => !(item is null)))
+                    {
+                        foreach (var info in subRow.Materials)
+                        {
+                            if (materialSheet.TryGetValue(info.Id, out materialRow) &&
+                                inventory.TryGetFungibleItem(materialRow.ItemId, out fungibleItem) &&
+                                fungibleItem.count >= info.Count)
+                            {
+                                continue;
+                            }
+
+                            shouldDimmed = true;
+                            break;
+                        }
+
+                        if (shouldDimmed)
+                        {
+                            break;
+                        }
+                    }
+
+                    SetDimmed(shouldDimmed);
+                }
+                else
+                {
+                    SetDimmed(false);
+                }
             }
             else
             {
@@ -138,9 +201,12 @@ namespace Nekoyume.UI.Scroller
         {
             lockParent.SetActive(value);
             unlockConditionText.text = value
-                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"), model.UnlockStage)
+                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                    RowData.UnlockStage > 50
+                        ? "???"
+                        : RowData.UnlockStage.ToString())
                 : string.Empty;
-            
+
             itemView.gameObject.SetActive(!value);
             titleText.enabled = !value;
             optionText.enabled = !value;

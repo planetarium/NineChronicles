@@ -29,20 +29,21 @@ namespace Nekoyume.UI.Module
         private GameObject options = null;
 
         private EquipmentItemSubRecipeSheet.Row _rowData;
-        
+
         public readonly Subject<EquipmentOptionRecipeView> OnClick = new Subject<EquipmentOptionRecipeView>();
 
-        public bool IsLocked => lockParent.activeSelf;
+        private bool IsLocked => lockParent.activeSelf;
+        private bool NotEnoughMaterials { get; set; } = true;
 
         private void Awake()
         {
             button.OnClickAsObservable().Subscribe(_ =>
             {
-                if (IsLocked)
+                if (IsLocked || NotEnoughMaterials)
                 {
                     return;
                 }
-                
+
                 OnClick.OnNext(this);
             }).AddTo(gameObject);
         }
@@ -54,8 +55,7 @@ namespace Nekoyume.UI.Module
 
         public void Show(string recipeName, int subRecipeId, EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo)
         {
-            if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet
-                .TryGetValue(subRecipeId, out _rowData))
+            if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId, out _rowData))
             {
                 requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials);
             }
@@ -69,7 +69,7 @@ namespace Nekoyume.UI.Module
             SetLocked(false);
             Show(recipeName, subRecipeId);
         }
-        
+
         public void Set(AvatarState avatarState)
         {
             // 해금 검사.
@@ -88,7 +88,7 @@ namespace Nekoyume.UI.Module
                 SetLocked(true);
                 return;
             }
-            
+
             // 재료 검사.
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var inventory = avatarState.inventory;
@@ -105,7 +105,7 @@ namespace Nekoyume.UI.Module
                 shouldDimmed = true;
                 break;
             }
-            
+
             SetDimmed(shouldDimmed);
         }
 
@@ -119,13 +119,22 @@ namespace Nekoyume.UI.Module
         {
             lockParent.SetActive(value);
             unlockConditionText.text = value
-                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"), _rowData.UnlockStage)
+                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                    _rowData.UnlockStage > 50
+                        ? "???"
+                        : _rowData.UnlockStage.ToString())
                 : string.Empty;
-            
+
             header.SetActive(!value);
             options.SetActive(!value);
             requiredItemRecipeView.gameObject.SetActive(!value);
             SetPanelDimmed(value);
+        }
+
+        public override void SetDimmed(bool value)
+        {
+            base.SetDimmed(value);
+            NotEnoughMaterials = value;
         }
     }
 }

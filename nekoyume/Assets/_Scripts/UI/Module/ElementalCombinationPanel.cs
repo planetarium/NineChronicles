@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Module
         {
             SelectedSubRecipeId = optionRecipeView.SubRecipeId;
             equipmentOptionRecipe.gameObject.SetActive(false);
-            SetData(recipeView.model, SelectedSubRecipeId);
+            SetData(recipeView.RowData, SelectedSubRecipeId);
             confirmArea.SetActive(true);
         }
     }

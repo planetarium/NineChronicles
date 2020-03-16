@@ -11,16 +11,24 @@ namespace Nekoyume.UI.Module
 {
     public class EquipmentRecipe : MonoBehaviour
     {
-        public EquipmentRecipeCellView cellViewPrefab;
-        public EquipmentRecipeCellView[] cellViews;
-        public TabButton weaponTabButton;
-        public TabButton armorTabButton;
-        public TabButton beltTabButton;
-        public TabButton necklaceTabButton;
-        public TabButton ringTabButton;
-        public Transform cellViewParent;
-        public ScrollRect scrollRect;
-        public EquipmentRecipeCellView selectedRecipe;
+        [SerializeField]
+        private EquipmentRecipeCellView cellViewPrefab;
+        [SerializeField]
+        private EquipmentRecipeCellView[] cellViews;
+        [SerializeField]
+        private TabButton weaponTabButton;
+        [SerializeField]
+        private TabButton armorTabButton;
+        [SerializeField]
+        private TabButton beltTabButton;
+        [SerializeField]
+        private TabButton necklaceTabButton;
+        [SerializeField]
+        private TabButton ringTabButton;
+        [SerializeField]
+        private Transform cellViewParent;
+        [SerializeField]
+        private ScrollRect scrollRect;
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
@@ -28,6 +36,8 @@ namespace Nekoyume.UI.Module
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
 
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
+        
+        public EquipmentRecipeCellView SelectedRecipe { get; private set; }
 
         private void Awake()
         {
@@ -96,7 +106,7 @@ namespace Nekoyume.UI.Module
             // FIXME : 테이블이 완성된 후 대응시켜야 함.
             foreach (var cellView in cellViews)
             {
-                if (cellView.itemSubType == itemSubType)
+                if (cellView.ItemSubType == itemSubType)
                 {
                     cellView.Show();
                 }
@@ -152,7 +162,7 @@ namespace Nekoyume.UI.Module
 
         private void SubscribeOnClickCellView(EquipmentRecipeCellView cellView)
         {
-            selectedRecipe = cellView;
+            SelectedRecipe = cellView;
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }
