@@ -382,11 +382,6 @@ namespace Nekoyume.UI
             }
         }
 
-        public void ShowLegacyCombineEquipment()
-        {
-            State.Value = StateType.CombineEquipment;
-        }
-
         private void ShowTooltip(InventoryItemView view)
         {
             if (view is null ||

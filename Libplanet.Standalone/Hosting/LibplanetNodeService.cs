@@ -13,6 +13,7 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Store;
 using Microsoft.Extensions.Hosting;
+using Nito.AsyncEx;
 using Serilog;
 
 namespace Libplanet.Standalone.Hosting
@@ -25,6 +26,10 @@ namespace Libplanet.Standalone.Hosting
         public readonly BlockChain<T> BlockChain;
 
         public readonly Swarm<T> Swarm;
+
+        public AsyncAutoResetEvent BootstrapEnded { get; }
+
+        public AsyncAutoResetEvent PreloadEnded { get; }
 
         private readonly IBlockPolicy<T> _blockPolicy;
 
@@ -63,6 +68,9 @@ namespace Libplanet.Standalone.Hosting
                 host: _properties.Host,
                 listenPort: _properties.Port,
                 iceServers: iceServers);
+
+            PreloadEnded = new AsyncAutoResetEvent();
+            BootstrapEnded = new AsyncAutoResetEvent();
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -72,6 +80,7 @@ namespace Libplanet.Standalone.Hosting
             {
                 var trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
                 await Swarm.BootstrapAsync(peers, null, null, cancellationToken: cancellationToken);
+                BootstrapEnded.Set();
 
                 await Swarm.PreloadAsync(
                     null, 
@@ -79,6 +88,7 @@ namespace Libplanet.Standalone.Hosting
                     trustedStateValidators, 
                     cancellationToken: cancellationToken
                 );
+                PreloadEnded.Set();
             }
 
             var tasks = new List<Task>

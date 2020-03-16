@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Launcher</RootNamespace>
-        <OutputType>Exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
     </PropertyGroup>
@@ -11,7 +11,7 @@
     <ItemGroup>
         <Content Include="qml/**/*" CopyToOutputDirectory="Always" />
         <Content Include="qt-runtime/**/*" CopyToOutputDirectory="Always" />
-        <Content Include="resources/**/*" CopyToOutputDirectory="Always"/>
+        <Content Include="resources/**/*" CopyToOutputDirectory="Always" />
     </ItemGroup>
 
     <ItemGroup>
@@ -25,7 +25,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Libplanet.Standalone\Libplanet.Standalone.csproj" />
-        <ProjectReference Include="..\..\Lib9c\Lib9c.csproj" />
+        <ProjectReference Include="..\..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
     </ItemGroup>
 </Project>

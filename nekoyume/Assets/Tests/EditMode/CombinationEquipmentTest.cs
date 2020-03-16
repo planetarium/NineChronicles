@@ -77,7 +77,7 @@ namespace Tests.EditMode
             var row = _tableSheets.EquipmentItemSubRecipeSheet.Values.First();
             row.Set(new List<string>
             {
-                "1", "3", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0.01", "4", "0.001", "2", "0.01",
+                "1", "3", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0.5", "4", "0.3", "17", "0.2",
                 "", "", expected.ToString()
             });
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
@@ -87,7 +87,8 @@ namespace Tests.EditMode
             );
             var optionIds = CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment);
             Assert.IsNotEmpty(optionIds);
-            Assert.IsTrue(equipment.GetOptionCount() <= expected);
+            Assert.AreEqual(expected, optionIds.Count);
+            Assert.AreEqual(expected, equipment.GetOptionCount());
         }
     }
 }
