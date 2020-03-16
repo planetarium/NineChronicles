@@ -41,7 +41,7 @@ namespace Nekoyume.UI.Module
         {
             gameObject.SetActive(true);
         }
-        
+
         public void Show(EquipmentItemRecipeSheet.Row recipeRow)
         {
             equipmentRecipeCellView.Set(recipeRow);
@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Module
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
                 return;
-            
+
             foreach (var recipeView in equipmentOptionRecipeViews)
             {
                 recipeView.Set(avatarState);
