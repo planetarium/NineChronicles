@@ -22,6 +22,7 @@ using Nekoyume.Shared.Services;
 using Nekoyume.State;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Events;
 using static Nekoyume.Action.ActionBase;
 
 namespace Nekoyume.BlockChain
@@ -29,9 +30,6 @@ namespace Nekoyume.BlockChain
     public class RPCAgent : MonoBehaviour, IAgent, IActionEvaluationHubReceiver
     {
         private const float TxProcessInterval = 3.0f;
-
-        private readonly Subject<long> _blockIndexSubject = new Subject<long>();
-
         private readonly ConcurrentQueue<PolymorphicAction<ActionBase>> _queuedActions =
             new ConcurrentQueue<PolymorphicAction<ActionBase>>();
 
@@ -42,19 +40,22 @@ namespace Nekoyume.BlockChain
         private IBlockChainService _service;
 
         private Codec _codec = new Codec();
-
-        private ActionRenderer _renderer;
-
         private Subject<ActionEvaluation<ActionBase>> _renderSubject;
         private Subject<ActionEvaluation<ActionBase>> _unrenderSubject;
 
-        public ActionRenderer ActionRenderer { get => _renderer; }
+        public ActionRenderer ActionRenderer { get; private set; }
 
-        public Subject<long> BlockIndexSubject { get => _blockIndexSubject; }
+        public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         public long BlockIndex { get; private set; }
+        
         public PrivateKey PrivateKey { get; private set; }
+        
         public Address Address => PrivateKey.PublicKey.ToAddress();
+
+        public bool Connected { get; private set; }
+
+        public UnityEvent OnDisconnected { get; private set; }
 
 
         public void Initialize(
@@ -72,8 +73,12 @@ namespace Nekoyume.BlockChain
             _hub = StreamingHubClient.Connect<IActionEvaluationHub, IActionEvaluationHubReceiver>(_channel, this);
             _service = MagicOnionClient.Create<IBlockChainService>(_channel);
 
+            RegisterDisconnectEvent(_hub);
+
             StartCoroutine(CoTxProcessor());
             StartCoroutine(CoJoin(callback));
+
+            OnDisconnected = new UnityEvent();
         }
 
         public IValue GetState(Address address)
@@ -93,7 +98,7 @@ namespace Nekoyume.BlockChain
         {
             _renderSubject = new Subject<ActionEvaluation<ActionBase>>();
             _unrenderSubject = new Subject<ActionEvaluation<ActionBase>>();
-            _renderer = new ActionRenderer(_renderSubject, _unrenderSubject);
+            ActionRenderer = new ActionRenderer(_renderSubject, _unrenderSubject);
         }
 
         private async void OnDestroy()
@@ -119,6 +124,14 @@ namespace Nekoyume.BlockChain
             });
 
             yield return new WaitUntil(() => t.IsCompleted);
+
+            if (t.IsFaulted)
+            {
+                callback(false);
+                yield break;
+            }
+
+            Connected = true;
 
             // 랭킹의 상태를 한 번 동기화 한다.
             States.Instance.SetRankingState(
@@ -206,6 +219,18 @@ namespace Nekoyume.BlockChain
         {
             BlockIndex = index;
             BlockIndexSubject.OnNext(index);
+        }
+        
+        private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
+        {
+            try
+            {
+                await hub.WaitForDisconnect();
+            }
+            finally
+            {
+                OnDisconnected?.Invoke();
+            }
         }
     }
 }
