@@ -4,7 +4,6 @@ using UnityEngine.UI;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.Model.Item;
-using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
@@ -52,9 +51,17 @@ namespace Nekoyume.UI.Module
             var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
 
             var item = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, materialId);
-            inventory.TryGetFungibleItem(item, out var inventoryItem);
-            var countableItem = new CountableItem(item, inventoryItem.count);
-            view.SetData(countableItem, requiredCount);
+
+            if (inventory.TryGetFungibleItem(item, out var inventoryItem))
+            {
+                var countableItem = new CountableItem(item, inventoryItem.count);
+                view.SetData(countableItem, requiredCount);
+            }
+            else
+            {
+                var countableItem = new CountableItem(item, 0);
+                view.SetData(countableItem, requiredCount);
+            }
         }
     }
 }

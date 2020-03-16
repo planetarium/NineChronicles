@@ -30,9 +30,13 @@ namespace Nekoyume.UI.Module
             UpdateSlots(avatarState.level);
         }
 
-        public void SetPlayer(Player player)
+        public void SetPlayer(Player player, Action<EquipmentSlot> onClick, Action<EquipmentSlot> onDoubleClick)
         {
             UpdateSlots(player.Level);
+            foreach (var equipment in player.Equipments)
+            {
+                TryToEquip(equipment, onClick, onDoubleClick);
+            }
         }
 
         public bool TryToEquip(Equipment equipment, Action<EquipmentSlot> onClick, Action<EquipmentSlot> onDoubleClick)

@@ -13,7 +13,6 @@ using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
-using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -230,60 +229,48 @@ namespace Nekoyume.Action
             var optionSelector = new WeightedSelector<EquipmentItemOptionSheet.Row>(random);
             var optionIds = new HashSet<int>();
 
-            if (subRecipe.MaxOptionLimit <= 0)
+            foreach (var optionInfo in subRecipe.Options)
+            {
+                if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
+                {
+                    continue;
+                }
+
+                optionSelector.Add(optionRow, optionInfo.Ratio);
+            }
+
+            IEnumerable<EquipmentItemOptionSheet.Row> optionRows = new EquipmentItemOptionSheet.Row[0];
+            try
+            {
+                optionRows = optionSelector.Select(subRecipe.MaxOptionLimit);
+            }
+            catch (Exception e) when (
+                e is InvalidCountException ||
+                e is ListEmptyException
+            )
             {
                 return optionIds;
             }
-
-            while (!optionIds.Any())
+            finally
             {
-
-                if (optionSelector.Count == 0)
+                foreach (var optionRow in optionRows)
                 {
-                    foreach (var optionInfo in subRecipe.Options)
+                    if (optionRow.StatType != StatType.NONE)
                     {
-                        if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow) || optionInfo.Ratio <= 0m)
-                        {
-                            continue;
-                        }
-
-                        optionSelector.Add(optionRow, optionInfo.Ratio);
+                        var statMap = GetStat(optionRow, random);
+                        equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
                     }
-                }
-
-                if (optionSelector.Count == 0)
-                {
-                    break;
-                }
-
-                for (var i = 0; i < subRecipe.MaxOptionLimit; i++)
-                {
-                    try
+                    else
                     {
-                        var optionRow = optionSelector.Pop();
-                        if (optionRow.StatType != StatType.NONE)
+                        var skill = GetSkill(optionRow, tableSheets, random);
+                        if (!(skill is null))
                         {
-                            var statMap = GetStat(optionRow, random);
-                            equipment.StatsMap.AddStatAdditionalValue(statMap.StatType, statMap.Value);
+                            equipment.Skills.Add(skill);
                         }
-                        else
-                        {
-                            var skill = GetSkill(optionRow, tableSheets, random);
-                            if (!(skill is null))
-                            {
-                                equipment.Skills.Add(skill);
-                            }
-                        }
-                        optionIds.Add(optionRow.Id);
                     }
-                    catch (ArgumentOutOfRangeException)
-                    {
-                        // 확률굴림에 실패
-                        Log.Debug("option select failed.");
-                    }
+                    optionIds.Add(optionRow.Id);
                 }
             }
-
             return optionIds;
         }
     }
