@@ -31,7 +31,7 @@ namespace NineChronicles.Standalone
             try
             {
                 tx.Validate();
-                _blockChain.StageTransactions(new[] { tx }.ToImmutableHashSet());
+                _blockChain.StageTransaction(tx);
 
                 return UnaryResult(true);
             }

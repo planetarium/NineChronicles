@@ -24,7 +24,7 @@ namespace NineChronicles.Standalone.Executable
             [Option('V')]
             int appProtocolVersion,
             [Option('G')]
-            string genesisBlockPath, 
+            string genesisBlockPath,
             bool noMiner,
             [Option('H')]
             string host = null,
@@ -62,7 +62,8 @@ namespace NineChronicles.Standalone.Executable
             {
                 Host = host,
                 Port = port,
-                AppProtocolVersion = appProtocolVersion,
+                // TODO: AppProtocolVersion should have a standard string representation...
+                AppProtocolVersion = default(AppProtocolVersion),
                 GenesisBlockPath = genesisBlockPath,
                 NoMiner = noMiner,
                 PrivateKey = privateKey,
@@ -122,7 +123,7 @@ namespace NineChronicles.Standalone.Executable
                     -1);
             }
         }
-        
+
         private static BoundPeer LoadPeer(string peerInfo)
         {
             var tokens = peerInfo.Split(',');
@@ -147,7 +148,8 @@ namespace NineChronicles.Standalone.Executable
                 var host = tokens[1];
                 var port = int.Parse(tokens[2]);
 
-                return new BoundPeer(pubKey, new DnsEndPoint(host, port), 0);
+                // FIXME: It might be better to make Peer.AppProtocolVersion property nullable...
+                return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
             }
             catch (Exception e)
             {
