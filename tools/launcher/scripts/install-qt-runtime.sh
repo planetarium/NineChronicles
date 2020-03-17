@@ -20,16 +20,3 @@ if [ ! -d "qt-runtimes/$rid" ]; then
     popd
     echo "It might be finished."
 fi
-
-if [ -d qt-runtime ]; then
-    # Clean up Qt Runtime used in other build.
-    rm -rf qt-runtime
-fi
-
-# Install Qt Runtime.
-cp -r "qt-runtimes/$rid" qt-runtime
-
-dotnet publish -r $rid --self-contained -o out/$rid
-
-# Clean up Qt Runtime used after build.
-rm -rf qt-runtime
