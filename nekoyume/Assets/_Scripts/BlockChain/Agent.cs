@@ -327,33 +327,7 @@ namespace Nekoyume.BlockChain
             {
                 if (loadingScreen)
                 {
-                    string text;
-                    string format;
-
-                    switch (state)
-                    {
-                        case BlockDownloadState blockDownloadState:
-                            format = LocalizationManager.Localize("UI_LOADING_BLOCK_DOWNLOAD");
-                            text = string.Format(format, blockDownloadState.ReceivedBlockCount,
-                                blockDownloadState.TotalBlockCount);
-                            break;
-
-                        case StateDownloadState stateReferenceDownloadState:
-                            format = LocalizationManager.Localize("UI_LOADING_STATE_REFERENCE_DOWNLOAD");
-                            text = string.Format(format, stateReferenceDownloadState.ReceivedIterationCount,
-                                stateReferenceDownloadState.TotalIterationCount);
-                            break;
-
-                        case ActionExecutionState actionExecutionState:
-                            text =
-                                $"{actionExecutionState.ExecutedBlockCount} / {actionExecutionState.TotalBlockCount}";
-                            break;
-
-                        default:
-                            throw new Exception("Unknown state was reported during preload.");
-                    }
-
-                    loadingScreen.Message = $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
+                    loadingScreen.Message = GetLoadingScreenMessage(state);
                 }
             };
             PreloadEnded += (_, __) =>
@@ -919,6 +893,53 @@ namespace Nekoyume.BlockChain
         {
             SyncSucceed = false;
             BlockDownloadFailed = true;
+        }
+
+        private string GetLoadingScreenMessage(PreloadState state)
+        {
+            string localizationKey;
+            long count;
+            long totalCount;
+
+            switch (state)
+            {
+                case BlockHashDownloadState blockHashDownloadState:
+                    localizationKey = "UI_LOADING_BLOCK_HASH_DOWNLOAD";
+                    count = blockHashDownloadState.ReceivedBlockHashCount;
+                    totalCount = blockHashDownloadState.EstimatedTotalBlockHashCount;
+                    break;
+
+                case BlockDownloadState blockDownloadState:
+                    localizationKey = "UI_LOADING_BLOCK_DOWNLOAD";
+                    count = blockDownloadState.ReceivedBlockCount;
+                    totalCount = blockDownloadState.TotalBlockCount;
+                    break;
+
+                case BlockVerificationState blockVerificationState:
+                    localizationKey = "UI_LOADING_BLOCK_VERIFICATION";
+                    count = blockVerificationState.VerifiedBlockCount;
+                    totalCount = blockVerificationState.TotalBlockCount;
+                    break;
+
+                case StateDownloadState stateReferenceDownloadState:
+                    localizationKey = "UI_LOADING_STATE_REFERENCE_DOWNLOAD";
+                    count = stateReferenceDownloadState.ReceivedIterationCount;
+                    totalCount = stateReferenceDownloadState.TotalIterationCount;
+                    break;
+
+                case ActionExecutionState actionExecutionState:
+                    localizationKey = "UI_LOADING_ACTION_EXECUTE";
+                    count = actionExecutionState.ExecutedBlockCount;
+                    totalCount = actionExecutionState.TotalBlockCount;
+                    break;
+
+                default:
+                    throw new Exception("Unknown state was reported during preload.");
+            }
+
+            string format = LocalizationManager.Localize(localizationKey);
+            string text = string.Format(format, count, totalCount);
+            return $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
         }
     }
 }
