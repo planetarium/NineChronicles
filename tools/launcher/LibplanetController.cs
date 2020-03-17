@@ -96,6 +96,11 @@ namespace Launcher
             _cancellationTokenSource = null;
         }
 
+        public bool Login(string passphrase)
+        {
+            return passphrase == "1";
+        }
+
         private async Task UpdateCheckTask(LauncherSettings settings, CancellationToken cancellationToken)
         {
             // TODO: save current version in local file and load, and use it.

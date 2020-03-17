@@ -1,5 +1,9 @@
 import QtQuick 2.12
+import QtQuick.Controls 2.2
+import QtQuick.Window 2.12
+import QtQuick.Layouts 1.1
 import Qt.labs.platform 1.1
+
 
 import LibplanetLauncher 1.0
 
@@ -53,14 +57,64 @@ Item {
                 text: "Quit"
                 onTriggered: Qt.quit()
             }
+
+            MenuItem {
+                text: "test"
+                onTriggered: console.log(loader.item.open())
+            }
         }
     }
 
     LibplanetController {
         id: ctrl
+    }
 
-        Component.onCompleted: {
-            ctrl.startSync()
+    Window {
+        id: passphraseWindow
+        title: "Input passphrase"
+        width: 320
+        height: 80
+        flags: Qt.FramelessWindowHint
+
+        Column {
+            padding: 10
+            spacing: 5
+            Label {
+                 text: "Login is needed to continue launcher"
+            }
+
+            Row {
+                TextField {
+                    id: passphraseInput
+                    echoMode: TextInput.Password
+                    placeholderText: "Input passphrase"
+                }
+                Button {
+                    text: "login"
+                    onClicked: {
+                        const success = ctrl.login(passphraseInput.text)
+                        if (success) {
+                            passphraseWindow.close()
+                            ctrl.startSync();
+                        }
+                        else {
+                            passphraseWindow.height = 110
+                            loginFailMessage.visible = true
+                        }
+                    }
+                }
+            }
+
+            Label {
+                id: loginFailMessage
+                visible: false
+                text: "Passphrase seems wrong, try again."
+                color: "red"
+            }
         }
+    }
+
+    Component.onCompleted: {
+        passphraseWindow.show()
     }
 }
