@@ -517,8 +517,10 @@ namespace Nekoyume.UI
             var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel)
                 ? elementalPanel.SelectedSubRecipeId
                 : (int?) null;
+            var slotIndex = 0;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
-            CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId);
+            CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId, slotIndex);
+            LocalStateModifier.ModifyCombinationSlot(Game.Game.instance.TableSheets, model, combinationPanel, slotIndex);
             equipmentRecipe.UpdateRecipes();
         }
 
@@ -570,11 +572,11 @@ namespace Nekoyume.UI
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }
 
-        private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId)
+        private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId, int slotIndex)
         {
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.CombinationEquipment(recipeId, subRecipeId);
+            Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
         }
 
         #endregion

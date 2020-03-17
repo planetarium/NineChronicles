@@ -51,7 +51,7 @@ namespace Nekoyume.State
         /// <summary>
         /// 인자로 받은 에이전트 상태를 바탕으로 로컬 세팅을 초기화 한다.
         /// 에이전트 상태가 포함하는 모든 아바타 상태 또한 포함된다.
-        /// 이미 초기화되어 있는 에이전트와 같을 경우에는 아바타의 주소에 대해서만 
+        /// 이미 초기화되어 있는 에이전트와 같을 경우에는 아바타의 주소에 대해서만
         /// </summary>
         /// <param name="agentState"></param>
         /// <exception cref="ArgumentNullException"></exception>
@@ -74,7 +74,7 @@ namespace Nekoyume.State
                     _avatarModifierInfos.Remove(info);
                 }
 
-                // 에이전트에는 있지만, _avatarModifierInfos에는 없는 것 추가하기. 
+                // 에이전트에는 있지만, _avatarModifierInfos에는 없는 것 추가하기.
                 foreach (var avatarAddress in agentState.avatarAddresses.Values
                     .Where(avatarAddress =>
                         !_avatarModifierInfos.Any(
@@ -582,7 +582,7 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// `address`와 `typeOfModifier`에 해당하는 `T`형 상태 변경자를 반환한다. 
+        /// `address`와 `typeOfModifier`에 해당하는 `T`형 상태 변경자를 반환한다.
         /// </summary>
         /// <param name="address"></param>
         /// <param name="typeOfModifier"></param>

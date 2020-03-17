@@ -1,6 +1,5 @@
-using Bencodex.Types;
+using System.Linq;
 using Nekoyume.Game;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
@@ -15,13 +14,10 @@ namespace _Scripts.UI
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var blockIndex = Game.instance.Agent.BlockIndex;
-            for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
+            foreach (var pair in States.Instance.CombinationSlotStates
+                .Where(pair => !(pair.Value is null)))
             {
-                var value = Game.instance.Agent.GetState(avatarState.combinationSlotAddresses[i]);
-                if (value is null)
-                    continue;
-                var slotState = new CombinationSlotState((Dictionary)value);
-                slots[i].SetData(slotState, blockIndex);
+                slots[pair.Key].SetData(pair.Value, blockIndex);
             }
             base.Show();
         }

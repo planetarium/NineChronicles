@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using Libplanet;
+using Nekoyume.Action;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
+using Nekoyume.TableData;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.State
 {
@@ -272,7 +277,7 @@ namespace Nekoyume.State
         }
 
         #endregion
-        
+
         #region WeeklyArena
 
         /// <summary>
@@ -283,7 +288,7 @@ namespace Nekoyume.State
         {
             if (gold is 0m)
                 return;
-            
+
             var state = States.Instance.WeeklyArenaState;
             if (state is null)
                 return;
@@ -310,13 +315,13 @@ namespace Nekoyume.State
             {
                 weeklyArenaState.Set(avatarState);
             }
-            
+
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
             LocalStateSettings.Instance.Add(weeklyArenaAddress, modifier, true);
             modifier.Modify(weeklyArenaState);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(weeklyArenaState);
         }
-        
+
         /// <summary>
         /// `AddWeeklyArenaInfoActivator()` 메서드 로직을 회귀한다.(휘발)
         /// </summary>
@@ -326,16 +331,42 @@ namespace Nekoyume.State
         {
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
             LocalStateSettings.Instance.Remove(weeklyArenaAddress, modifier, true);
-            
+
             var state = States.Instance.WeeklyArenaState;
             if (!state.address.Equals(weeklyArenaAddress))
                 return;
-            
+
             modifier.Modify(state);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(state);
         }
 
         #endregion
+
+        public static void ModifyCombinationSlot(TableSheets tableSheets,
+            EquipmentItemRecipeSheet.Row row, EquipmentCombinationPanel panel, int slotIndex)
+        {
+            var requiredBlockIndex = row.RequiredBlockIndex + Game.Game.instance.Agent.BlockIndex;
+            var equipRow =
+                tableSheets.EquipmentItemSheet.Values.First(i => i.Id == row.ResultEquipmentId);
+            var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.Empty, requiredBlockIndex);
+            var materials = new Dictionary<Model.Item.Material, int>();
+            foreach (var (material, count) in panel.materialPanel.MaterialList)
+            {
+                materials[material] = count;
+            }
+
+            var result = new CombinationConsumable.ResultModel
+            {
+                actionPoint = panel.CostAP,
+                gold = panel.CostNCG,
+                materials = materials,
+                itemUsable = equipment,
+            };
+            var modifier = new CombinationSlotStateModifier(result);
+            var slotState = States.Instance.CombinationSlotStates[slotIndex];
+            modifier.Modify(slotState);
+            States.Instance.CombinationSlotStates[slotIndex] = slotState;
+        }
 
         /// <summary>
         /// `States.AvatarStates`가 포함하고 있는 아바타 상태 중에 `avatarAddress`와 같은 객체와 그 키를 반환한다.

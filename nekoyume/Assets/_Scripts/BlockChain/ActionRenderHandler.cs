@@ -35,7 +35,7 @@ namespace Nekoyume.BlockChain
         public void Start(ActionRenderer renderer)
         {
             _renderer = renderer;
-            
+
             Shop();
             Ranking();
             RewardGold();
@@ -223,6 +223,7 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
+            States.Instance.CombinationSlotStates[eval.Action.SlotIndex] = slot;
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
@@ -242,7 +243,7 @@ namespace Nekoyume.BlockChain
             var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
             var result = (CombinationConsumable.ResultModel) slot.Result;
             var itemUsable = result.itemUsable;
-            
+
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
@@ -324,7 +325,7 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
-        
+
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
             var battleResultWidget = Widget.Find<BattleResult>();
@@ -393,13 +394,13 @@ namespace Nekoyume.BlockChain
         {
             var weeklyArenaAddress = eval.Action.WeeklyArenaAddress;
             var avatarAddress = eval.Action.AvatarAddress;
-            
+
             // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 깎은 골드를 더하지 못함.
             // LocalStateModifier.ModifyAgentGold(States.Instance.AgentState.address, GameConfig.ArenaActivationCostNCG);
             // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 더한 골드를 빼주지 못함.
             // LocalStateModifier.ModifyWeeklyArenaGold(-GameConfig.ArenaActivationCostNCG);
             LocalStateModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
-            
+
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateWeeklyArenaState(eval);
