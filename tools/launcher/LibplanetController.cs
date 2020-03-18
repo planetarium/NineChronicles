@@ -127,6 +127,7 @@ namespace Launcher
                 var version = e.UpdatedVersion.Version;
                 var tempPath = Path.Combine(Path.GetTempPath(), "temp-9c-download" + version);
                 cts.Cancel();
+                cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 await DownloadGameBinaryAsync(tempPath, settings.DeployBranch, version, cts.Token);
 
                 // FIXME: it kills game process in force, if it was running. it should be
@@ -134,8 +135,6 @@ namespace Launcher
                 SwapGameDirectory(
                     LoadGameBinaryPath(settings),
                     Path.Combine(tempPath, "MacOS"));
-                cts.Dispose();
-                cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                 LocalCurrentVersion = e.UpdatedVersion;
 
                 Updating = false;
