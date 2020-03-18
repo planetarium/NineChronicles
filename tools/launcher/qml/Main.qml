@@ -103,7 +103,7 @@ Item {
                     onClicked: {
                         const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
                         if (success) {
-                            passphraseWindow.close()
+                            passphraseWindow.hide()
                             ctrl.startSync();
                         }
                         else {
