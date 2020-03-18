@@ -3738,6 +3738,11 @@ PrefabInstance:
       propertyPath: itemSubType
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 387389212801572156, guid: 5d633949e6ef14b458c0199e45af34c7,
+        type: 3}
+      propertyPath: itemSubTypeIndex
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4379491137101888571, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_textInfo.characterCount
