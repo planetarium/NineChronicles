@@ -124,21 +124,13 @@ namespace Nekoyume.UI.Module
             nameText.color = value ? DimmedColor : Color.white;
             descriptionText.color = value ? DimmedColor : Color.white;
 
-            if (value)
+            string fromColorTag = value ? ColorTagForDescriptionText1 : ColorTagForDescriptionText2;
+            string toColorTag =  value ? ColorTagForDescriptionText2 : ColorTagForDescriptionText1;
+            
+            if (descriptionText.text.Contains($"<color={fromColorTag}>"))
             {
-                if (descriptionText.text.Contains($"<color={ColorTagForDescriptionText1}>"))
-                {
-                    descriptionText.text = descriptionText.text
-                        .Replace($"<color={ColorTagForDescriptionText1}>", $"<color={ColorTagForDescriptionText2}>");
-                }
-            }
-            else
-            {
-                if (descriptionText.text.Contains($"<color={ColorTagForDescriptionText2}>"))
-                {
-                    descriptionText.text = descriptionText.text
-                        .Replace($"<color={ColorTagForDescriptionText2}>", $"<color={ColorTagForDescriptionText1}>");
-                }
+                descriptionText.text = descriptionText.text
+                    .Replace($"<color={fromColorTag}>", $"<color={toColorTag}>");
             }
 
             foreach (var option in optionTexts)
