@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using Libplanet.Net;
+
 namespace Launcher
 {
     public class LauncherSettings
@@ -10,7 +13,7 @@ namespace Launcher
 
         public string Passphrase { get; set; }
 
-        public int AppProtocolVersion { get; set; }
+        public string AppProtocolVersionToken { get; set; }
 
         public string IceServer { get; set; }
 
@@ -19,7 +22,7 @@ namespace Launcher
         public bool NoMiner { get; set; }
 
         public string GenesisBlockPath { get; set; }
-        
+
         public string GameBinaryPath { get; set; }
 
         /// <summary>
