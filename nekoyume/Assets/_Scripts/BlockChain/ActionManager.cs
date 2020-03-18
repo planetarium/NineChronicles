@@ -106,12 +106,12 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Combination>> Combination(
-            List<(Material material, int count)> materialInfoList)
+        public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
+            List<(Material material, int count)> materialInfoList, int slotIndex)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
-            var action = new Combination();
+            var action = new CombinationConsumable();
             materialInfoList.ForEach(info =>
             {
                 var (material, count) = info;
@@ -125,9 +125,10 @@ namespace Nekoyume.BlockChain
                 }
             });
             action.AvatarAddress = States.Instance.CurrentAvatarState.address;
+            action.slotIndex = slotIndex;
             ProcessAction(action);
 
-            return _renderer.EveryRender<Combination>()
+            return _renderer.EveryRender<CombinationConsumable>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()
@@ -250,13 +251,14 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, IEnumerable<Guid> materialIds)
+        public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, IEnumerable<Guid> materialIds, int slotIndex)
         {
             var action = new ItemEnhancement
             {
                 itemId = itemId,
                 materialIds = materialIds,
                 avatarAddress = States.Instance.CurrentAvatarState.address,
+                slotIndex = slotIndex,
             };
             ProcessAction(action);
 

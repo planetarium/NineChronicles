@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.Skill;
-using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -20,12 +19,11 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
-        private TableSheets _tableSheets;
         public Guid itemId;
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
-        public ResultModel result;
         public List<int> completedQuestIds;
+        public int slotIndex;
 
         [Serializable]
         public class ResultModel : AttachmentActionResult
@@ -44,12 +42,18 @@ namespace Nekoyume.Action
                 : base(serialized)
             {
                 id = serialized["id"].ToGuid();
+                materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
+                gold = serialized["gold"].ToDecimal();
+                actionPoint = serialized["actionPoint"].ToInteger();
             }
 
             public override IValue Serialize() =>
                 new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                 {
-                    [(Text) "id"] = id.Serialize()
+                    [(Text) "id"] = id.Serialize(),
+                    [(Text) "materialItemIdList"] =  materialItemIdList.Select(g => g.Serialize()).Serialize(),
+                    [(Text) "gold"] = gold.Serialize(),
+                    [(Text) "actionPoint"] = actionPoint.Serialize(),
                 }.Union((Bencodex.Types.Dictionary)base.Serialize()));
         }
 
@@ -57,10 +61,19 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
+            var slotAddress = avatarAddress.Derive(
+                string.Format(
+                    CultureInfo.InvariantCulture,
+                    CombinationSlotState.DeriveFormat,
+                    slotIndex
+                )
+            );
             if (ctx.Rehearsal)
             {
-                states = states.SetState(avatarAddress, MarkChanged);
-                return states.SetState(ctx.Signer, MarkChanged);
+                return states
+                    .SetState(avatarAddress, MarkChanged)
+                    .SetState(ctx.Signer, MarkChanged)
+                    .SetState(slotAddress, MarkChanged);
             }
             var sw = new Stopwatch();
             sw.Start();
@@ -93,11 +106,18 @@ namespace Nekoyume.Action
                 // 캐스팅 버그. 예외상황.
                 return states;
             }
+
+            var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
+            if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
+            {
+                return states;
+            }
+
             sw.Stop();
             Log.Debug($"ItemEnhancement Get Equipment: {sw.Elapsed}");
             sw.Restart();
 
-            result = new ResultModel
+            var result = new ResultModel
             {
                 itemUsable = enhancementEquipment,
                 materialItemIdList = materialIds
@@ -120,7 +140,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            _tableSheets = TableSheets.FromActionContext(ctx);
+            var tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
             Log.Debug($"ItemEnhancement Get TableSheets: {sw.Elapsed}");
             sw.Restart();
@@ -212,6 +232,8 @@ namespace Nekoyume.Action
 
             completedQuestIds = avatarState.UpdateQuestRewards(ctx);
 
+            slotState.Update(result, ctx.BlockIndex);
+
             sw.Stop();
             Log.Debug($"ItemEnhancement Update AvatarState: {sw.Elapsed}");
             sw.Restart();
@@ -221,6 +243,7 @@ namespace Nekoyume.Action
             var ended = DateTimeOffset.UtcNow;
             Log.Debug($"ItemEnhancement Total Executed Time: {ended - started}");
             return states
+                .SetState(slotAddress, slotState.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());
         }
 
@@ -236,16 +259,6 @@ namespace Nekoyume.Action
             itemId = plainValue["itemId"].ToGuid();
             materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-        }
-
-        private BuffSkill GetRandomBuffSkill(IRandom random)
-        {
-            var skillRows = _tableSheets.SkillSheet.OrderedList
-                .Where(i => (i.SkillType == SkillType.Debuff || i.SkillType == SkillType.Buff) &&
-                            i.SkillCategory != SkillCategory.Heal)
-                .ToList();
-            var skillRow = skillRows[random.Next(0, skillRows.Count)];
-            return (BuffSkill) SkillFactory.Get(skillRow, 0, 100);
         }
 
         private static Equipment UpgradeEquipment(Equipment equipment)

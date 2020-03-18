@@ -75,7 +75,10 @@ namespace Nekoyume.BlockChain
             }
             finally
             {
-                _chain.UnstageTransactions(invalidTxs);
+                foreach (var invalidTx in invalidTxs)
+                {
+                    _chain.UnstageTransaction(invalidTx);
+                }
             }
         }
 

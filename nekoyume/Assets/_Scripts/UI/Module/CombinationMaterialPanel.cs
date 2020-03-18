@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
             materialText.text = LocalizationManager.Localize("UI_MATERIALS");
         }
 
-        public void SetData(EquipmentItemRecipeSheet.Row row, int? subRecipeId)
+        public virtual void SetData(EquipmentItemRecipeSheet.Row row, int? subRecipeId)
         {
             MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
             costNcg = 0m;

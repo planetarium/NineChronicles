@@ -163,9 +163,9 @@ NPC_08_NAME,Cat Knight,발키리 전사
 NPC_09_NAME,Little Black Cat,작은 검은고양이
 NPC_10_NAME,Pig Trespasser,돼지부족 도살자
 NPC_11_NAME,Fenrir,펜리르
-UI_COMBINE_EQUIPMENT,Equip,장비 제작
-UI_COMBINE_CONSUMABLE,Food,소모품 제작
-UI_ENHANCE_EQUIPMENT,Enhancement,장비 강화
+UI_COMBINE_EQUIPMENT,Equipment,장비 제작
+UI_COMBINE_CONSUMABLE,Consumables,소모품 제작
+UI_UPGRADE_EQUIPMENT,Upgrade,장비 강화
 UI_RECIPE,Recipe,레시피
 UI_SKILL,Skill,스킬
 UI_SKILL_POWER,Power,위력
@@ -188,6 +188,7 @@ UI_EXIT,Exit,나가기
 UI_ERROR,Error,에러
 UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and can only include alphanumeric characters.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.
 UI_ERROR_FORMAT,Error occurred.[newline]({0})[newline]Please restart the game.,오류가 발생했습니다. ({0})[newline]게임을 다시 실행해 주세요.
+UI_ERROR_RPC_CONNECTION,RPC server connection failed.[newline][newline]Check if the game launcher is running[newline] and try again.,RPC 서버 연결 실패[newline][newline]게임 론처가 실행 중인지[newline] 확인 후 다시 실행해주세요.
 UI_MAIL,Mail,우편
 UI_QUEST,Quest,퀘스트
 UI_CHAT,Chat,채팅
@@ -320,3 +321,10 @@ UI_BATTLE_RESULT_FAILED_PHASE_2,Failed to move to the next stage.,다음 지역�
 UI_BATTLE_RESULT_CLEAR,Move on to the next stage.,다음 지역으로 넘어갑니다.
 UI_LOGIN_FIND_PASSPHRASE_TITLE,Enter your private key,프라이빗 키를 입력하세요
 UI_PROGRESS,In Progress,진행 중
+UI_RANDOM_OPTION_COUNT_FORMAT_SINGULAR,<color={0}>{1}</color> option is randomly selected.,<color={0}>{1}</color>개의 옵션이 무작위로 선택됩니다.
+UI_RANDOM_OPTION_COUNT_FORMAT_PLURAL,<color={0}>{1}</color> options are randomly selected.,<color={0}>{1}</color>개의 옵션이 무작위로 선택됩니다.
+UI_WEAPON,Weapon,무기
+UI_ARMOR,Armor,방어구
+UI_BELT,Belt,벨트
+UI_NECKLACE,Necklace,목걸이
+UI_RING,Ring,반지

@@ -189,11 +189,11 @@ namespace Nekoyume.BlockChain
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 blocks,
                 privateKey,
-                appProtocolVersion: 1,
+                appProtocolVersion: default(AppProtocolVersion),  // FIXME
                 host: host,
                 listenPort: port,
                 iceServers: iceServers,
-                differentVersionPeerEncountered: DifferentAppProtocolVersionPeerEncountered);
+                differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered);
 
             if (!consoleSink) InitializeTelemetryClient(_swarm.Address);
 
@@ -415,7 +415,7 @@ namespace Nekoyume.BlockChain
             var host = tokens[1];
             var port = int.Parse(tokens[2]);
 
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port), 0);
+            return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)
@@ -519,11 +519,20 @@ namespace Nekoyume.BlockChain
             Log.Logger = loggerConfiguration.CreateLogger();
         }
 
-        private void DifferentAppProtocolVersionPeerEncountered(object sender, DifferentProtocolVersionEventArgs e)
+        private bool DifferentAppProtocolVersionEncountered(
+            Peer peer,
+            AppProtocolVersion peerVersion,
+            AppProtocolVersion localVersion
+        )
         {
-            Debug.LogWarningFormat("Different Version Encountered Expected: {0} Actual : {1}",
-                e.ExpectedVersion, e.ActualVersion);
+            Debug.LogWarningFormat(
+                "Different Version Encountered; expected (local): {0}; actual ({1}): {2}",
+                localVersion, peer, peerVersion
+            );
             SyncSucceed = false;
+
+            // 로컬 앱 버전과 다른 피어는 일단 무시 (버전이 더 높든 낮든). (false 반환하면 만난 피어 무시함.)
+            return false;
         }
 
         private IEnumerator CoLogger()

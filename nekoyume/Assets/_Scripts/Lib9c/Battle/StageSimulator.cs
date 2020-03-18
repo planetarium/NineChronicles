@@ -36,7 +36,6 @@ namespace Nekoyume.Battle
             TableSheets tableSheets) : base(random, avatarState, foods, tableSheets)
         {
             _waves = new List<Wave>();
-            _waveRewards = new List<ItemBase>();
 
             WorldId = worldId;
             StageId = stageId;
@@ -54,7 +53,7 @@ namespace Nekoyume.Battle
             TurnLimit = stageRow.TurnLimit;
 
             SetWave(stageRow, stageWaveRow);
-            SetReward(stageRow);
+            _waveRewards = SetReward(stageRow, random, tableSheets);
         }
 
         public StageSimulator(
@@ -222,8 +221,9 @@ namespace Nekoyume.Battle
                     Characters.Enqueue(character, TurnPriority / character.SPD);
                 }
 
-                // 플레이어가 죽은 경우 break;
-                if (Player.IsDead)
+                // 제한 턴을 넘거나 플레이어가 죽은 경우 break;
+                if (TurnNumber > TurnLimit ||
+                    Player.IsDead)
                     break;
             }
 
@@ -269,33 +269,45 @@ namespace Nekoyume.Battle
             return wave;
         }
 
-        private void SetReward(StageSheet.Row stageRow)
+        public static List<ItemBase> SetReward(StageSheet.Row stageRow, IRandom random, TableSheets tableSheets)
         {
-            var itemSelector = new WeightedSelector<int>(Random);
-            var rewards = stageRow.Rewards.Where(r => r.Ratio > 0m).OrderBy(r => r.Ratio);
-            foreach (var r in rewards)
+            var itemSelector = new WeightedSelector<StageSheet.RewardData>(random);
+            foreach (var r in stageRow.Rewards)
             {
-                itemSelector.Add(r.ItemId, r.Ratio);
+                itemSelector.Add(r, r.Ratio);
+            }
+
+            var reward = new List<ItemBase>();
+            var maxCount = random.Next(stageRow.DropItemMin, stageRow.DropItemMax);
+            while (reward.Count < maxCount)
+            {
                 try
                 {
-                    var itemId = itemSelector.Pop();
-                    if (TableSheets.MaterialItemSheet.TryGetValue(itemId, out var itemData))
+                    var data = itemSelector.Select(1).First();
+                    if (tableSheets.MaterialItemSheet.TryGetValue(data.ItemId, out var itemData))
                     {
-                        var count = Random.Next(r.Min, r.Max + 1);
+                        var count = random.Next(data.Min, data.Max + 1);
                         for (var i = 0; i < count; i++)
                         {
                             var item = ItemFactory.CreateMaterial(itemData);
-                            if (_waveRewards.Count < 4)
+                            if (reward.Count < maxCount)
                             {
-                                _waveRewards.Add(item);
+                                reward.Add(item);
+                            }
+                            else
+                            {
+                                break;
                             }
                         }
                     }
                 }
-                catch (ArgumentOutOfRangeException)
+                catch (ListEmptyException)
                 {
+                    break;
                 }
             }
+
+            return reward;
         }
     }
 }
