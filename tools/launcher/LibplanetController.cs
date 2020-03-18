@@ -126,19 +126,31 @@ namespace Launcher
 
                 var version = e.UpdatedVersion.Version;
                 var tempPath = Path.Combine(Path.GetTempPath(), "temp-9c-download" + version);
+
+                Log.Debug("New update released! {version}", version);
+                Log.Debug("It will be downloaded at temporary path: {tempPath}", tempPath);
+
                 cts.Cancel();
                 cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                await DownloadGameBinaryAsync(tempPath, settings.DeployBranch, version, cts.Token);
+                try
+                {
+                    await DownloadGameBinaryAsync(tempPath, settings.DeployBranch, version,
+                        cts.Token);
 
-                // FIXME: it kills game process in force, if it was running. it should be
-                //        killed with some message.
-                SwapGameDirectory(
-                    LoadGameBinaryPath(settings),
-                    Path.Combine(tempPath, "MacOS"));
-                LocalCurrentVersion = e.UpdatedVersion;
+                    // FIXME: it kills game process in force, if it was running. it should be
+                    //        killed with some message.
+                    SwapGameDirectory(
+                        LoadGameBinaryPath(settings),
+                        Path.Combine(tempPath, "MacOS"));
+                    LocalCurrentVersion = e.UpdatedVersion;
 
-                Updating = false;
-                this.ActivateProperty(ctrl => ctrl.Updating);
+                    Updating = false;
+                    this.ActivateProperty(ctrl => ctrl.Updating);
+                }
+                catch (OperationCanceledException)
+                {
+                    Log.Debug("task was cancelled.");
+                }
             };
             await updateWatcher.StartAsync(TimeSpan.FromSeconds(3), cancellationToken);
         }
@@ -207,13 +219,25 @@ namespace Launcher
         {
             var tempFilePath = Path.GetTempFileName();
             using var httpClient = new HttpClient();
-            Log.Debug(Storage.GameBinaryDownloadUri(deployBranch, version).ToString());
+            httpClient.Timeout = Timeout.InfiniteTimeSpan;
+
+            Log.Debug("Start download game binary from '{url}' to {tempFilePath}.",
+                Storage.GameBinaryDownloadUri(deployBranch, version).ToString(),
+                tempFilePath);
             var responseMessage = await httpClient.GetAsync(Storage.GameBinaryDownloadUri(deployBranch, version), cancellationToken);
-            using var fileStream = new FileStream(tempFilePath, FileMode.CreateNew, FileAccess.Write);
+            if (File.Exists(tempFilePath))
+            {
+                File.Delete(tempFilePath);
+            }
+
+            using var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
             await responseMessage.Content.CopyToAsync(fileStream);
+            Log.Debug("Finished download from '{url}'!",
+                Storage.GameBinaryDownloadUri(deployBranch, version).ToString());
 
             // Extract binary.
             // TODO: implement a function to extract with file extension.
+            Log.Debug("Start to extract game binary.");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 await using var tempFile = File.OpenRead(tempFilePath);
@@ -225,6 +249,7 @@ namespace Launcher
             {
                 ZipFile.ExtractToDirectory(tempFilePath, gameBinaryPath);
             }
+            Log.Debug("Finished to extract game binary.");
         }
 
         private static string LoadGameBinaryPath(LauncherSettings settings)
