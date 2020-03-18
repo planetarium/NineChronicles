@@ -6,25 +6,53 @@
         <OutputType>WinExe</OutputType>
         <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <PublishDir>out\$(RuntimeIdentifier)</PublishDir>
     </PropertyGroup>
 
-    <ItemGroup>
+    <ItemGroup Label="Resources">
         <Content Include="qml/**/*" CopyToOutputDirectory="Always" />
         <Content Include="qt-runtime/**/*" CopyToOutputDirectory="Always" />
         <Content Include="resources/**/*" CopyToOutputDirectory="Always" />
     </ItemGroup>
 
-    <ItemGroup>
+    <ItemGroup Label="Package References">
         <PackageReference Include="Qml.Net" Version="0.10.1" />
         <PackageReference Include="Qml.Net.OSXBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
-        <PackageReference Include="Libplanet" Version="0.9.0-dev.20200212073732" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
         <PackageReference Include="SharpZipLib" Version="1.2.0" />
     </ItemGroup>
+    
+    <ItemGroup Label="Package References (Publish Helper)">
+        <PackageReference Include="Dotnet.Bundle" Version="0.9.12" Condition="'$(RuntimeIdentifier)' == 'osx-x64'" />
+        <PackageReference Include="NSubsys" Version="1.0.0" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
+    </ItemGroup>
 
-    <ItemGroup>
+    <ItemGroup Label="Project References">
         <ProjectReference Include="..\..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
     </ItemGroup>
+
+    <ItemGroup Label="Variables">
+        <_QtRuntime_Files Include="qt-runtimes\$(RuntimeIdentifier)\**\*" />
+        <_TempQtRuntime_Files Include="qt-runtime" />
+        <_QtRuntime_Directory Include="qt-runtimes\$(RuntimeIdentifier)" />
+    </ItemGroup>
+
+    <Target Name="Prepare QtRunitme" BeforeTargets="Build">
+        <Exec Condition="!Exists('@(_QtRuntime_Directory)')" Command="scripts\install-qt-runtime.sh $(RuntimeIdentifier)" />
+        <RemoveDir Directories="@(_TempQtRuntime_Files)" />
+        <Copy SourceFiles="@(_QtRuntime_Files)" DestinationFolder="qt-runtime\%(RecursiveDir)" />
+    </Target>
+
+    <Target Condition="'$(RuntimeIdentifier)' == 'osx-x64'" Name="Bundle MacOS Application" AfterTargets="Publish">
+        <CallTarget Targets="BundleApp" />
+    </Target>
+
+    <UsingTask TaskName="NSubsys.Tasks.NSubsys" AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll" />
+
+    <Target Condition="'$(RuntimeIdentifier)' == 'win-x64'" Name="Bundle MacOS Application" AfterTargets="Publish">
+        <NSubsys TargetFile="$(ProjectDir)\$(PublishDir)\$(ProjectName).exe" />
+    </Target>
 </Project>

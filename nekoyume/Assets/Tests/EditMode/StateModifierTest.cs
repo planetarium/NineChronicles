@@ -87,7 +87,7 @@ namespace Tests.EditMode
         public void AvatarNewAttachmentMailSetter()
         {
             var equipment = GetFirstEquipment();
-            var combinationResult = new Combination.ResultModel
+            var combinationResult = new CombinationConsumable.ResultModel
             {
                 itemUsable = equipment
             };
