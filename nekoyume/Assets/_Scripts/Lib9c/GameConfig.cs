@@ -13,7 +13,10 @@
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
         public const string UnicodePattern = @"[^\u0000-\u007F]";
         public const string DiscordLink = "https://discord.gg/NqshYve";
-        public const string BlockExplorerLinkFormat = "http://explorer.libplanet.io/9c-alpha/account/?{0}";
+
+        public const string BlockExplorerLinkFormat =
+            "http://explorer.libplanet.io/9c-alpha/account/?{0}";
+
         public const float PlayerSpeechBreakTime = 2f;
 
         //TODO 온체인으로 옮겨야함.
@@ -74,7 +77,7 @@
 
             #endregion
         }
-        
+
         public static class RequireClearedStageLevel
         {
             #region action
