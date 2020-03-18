@@ -1,11 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Assets.SimpleLocalization;
-using Nekoyume.Model.Item;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
-using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -23,7 +16,16 @@ namespace Nekoyume.UI.Module
                 Debug.LogWarning($"Equipment ID not found : {row.ResultEquipmentId}");
                 return;
             }
-            optionView.Show(equipmentRow.GetLocalizedName(), subRecipeId.Value, true);
+
+            if (subRecipeId.HasValue)
+            {
+                optionView.Show(equipmentRow.GetLocalizedName(), subRecipeId.Value);
+                optionView.SetDimmed(false);
+            }
+            else
+            {
+                optionView.Hide();
+            }
 
             base.SetData(row, subRecipeId);
         }
