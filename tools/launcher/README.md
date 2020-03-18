@@ -2,13 +2,19 @@
 
 A system tray application to sync chain with network in background.
 
+## Dependencies
+
+- [.NETCore 3.1]
+
+[.NETCore 3.1]: https://dotnet.microsoft.com/download/dotnet-core/3.1
+
 ## Build
 
 ```/bin/bash
-# ./scripts/publish.sh <rid>
+# dotnet publish -r <rid> --self-contained
 # rid = osx-x64 | win-x64
-$ ./scripts/publish.sh osx-x64
-$ ./scripts/publish.sh win-x64
+$ dotnet publish -r osx-x64 --self-contained  # out/osx-x64/Launcher.app
+$ dotnet publish -r win-x64 --self-contained  # out/win-x64/Launcher.exe
 ```
 
 ## Set up launcher

@@ -247,6 +247,24 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
+        /// 마지막으로 클리어한 스테이지 ID를 반환한다.
+        /// </summary>
+        /// <param name="stageId"></param>
+        /// <returns></returns>
+        public bool TryGetLastClearedStageId(out int stageId)
+        {
+            var clearedWorlds = _worlds.Values.Where(world => world.IsStageCleared).ToList();
+            if (clearedWorlds.Any())
+            {
+                stageId = clearedWorlds.Last().StageClearedId;
+                return true;
+            }
+            
+            stageId = default;
+            return false;
+        }
+
+        /// <summary>
         /// 스테이지를 클리어 시킨다.
         /// </summary>
         /// <param name="worldId"></param>

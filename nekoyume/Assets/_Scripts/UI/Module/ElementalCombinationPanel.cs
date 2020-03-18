@@ -1,4 +1,6 @@
-﻿using Nekoyume.UI.Scroller;
+﻿using Nekoyume.TableData;
+using Nekoyume.UI.Scroller;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -13,19 +15,27 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject confirmArea = null;
 
+        protected override void Awake()
+        {
+            base.Awake();
 
-        public void SetData(EquipmentRecipeCellView view)
+            equipmentOptionRecipe.OnOptionClick
+                .Subscribe(tuple => OnSelectOption(tuple.Item1, tuple.Item2))
+                .AddTo(gameObject);
+        }
+
+        public void SetData(EquipmentItemRecipeSheet.Row recipeRow)
         {
             gameObject.SetActive(true);
             confirmArea.SetActive(false);
-            equipmentOptionRecipe.SetData(view, OnSelectOption);
+            equipmentOptionRecipe.Show(recipeRow);
         }
 
-        public void OnSelectOption(EquipmentRecipeCellView view, int subRecipeId)
+        private void OnSelectOption(EquipmentRecipeCellView recipeView, EquipmentOptionRecipeView optionRecipeView)
         {
-            SelectedSubRecipeId = subRecipeId;
+            SelectedSubRecipeId = optionRecipeView.SubRecipeId;
             equipmentOptionRecipe.gameObject.SetActive(false);
-            SetData(view, subRecipeId);
+            SetData(recipeView.RowData, SelectedSubRecipeId);
             confirmArea.SetActive(true);
         }
     }

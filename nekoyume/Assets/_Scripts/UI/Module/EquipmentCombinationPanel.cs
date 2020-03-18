@@ -1,5 +1,6 @@
 ﻿using Assets.SimpleLocalization;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
@@ -20,20 +21,17 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI cancelButtonText;
         public SubmitWithCostButton submitButton;
 
-        public void Awake()
+        protected virtual void Awake()
         {
-            cancelButton.onClick.AddListener(SubscribeOnClickCancel);
-            submitButton.OnSubmitClick.Subscribe(_ =>
-            {
-                SubscribeOnClickSubmit();
-            }).AddTo(gameObject);
+            cancelButton.OnClickAsObservable().Subscribe(_ => SubscribeOnClickCancel()).AddTo(gameObject);
+            submitButton.OnSubmitClick.Subscribe(_ => SubscribeOnClickSubmit()).AddTo(gameObject);
             cancelButtonText.text = LocalizationManager.Localize("UI_CANCEL");
         }
 
-        public virtual void SetData(EquipmentRecipeCellView view, int? subRecipeId = null)
+        public void SetData(EquipmentItemRecipeSheet.Row recipeRow, int? subRecipeId = null)
         {
-            recipeCellView.Set(view.model, true);
-            materialPanel.SetData(view.model, subRecipeId);
+            recipeCellView.Set(recipeRow);
+            materialPanel.SetData(recipeRow, subRecipeId);
 
             gameObject.SetActive(true);
             CostNCG = (int) materialPanel.costNcg;
@@ -63,12 +61,12 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void SubscribeOnClickCancel()
+        private static void SubscribeOnClickCancel()
         {
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.NewCombineEquipment);
         }
 
-        public void SubscribeOnClickSubmit()
+        private static void SubscribeOnClickSubmit()
         {
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.NewCombineEquipment);
         }
