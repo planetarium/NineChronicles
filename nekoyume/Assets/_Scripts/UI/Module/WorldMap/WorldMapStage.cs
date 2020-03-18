@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.TableData;
 using TMPro;
@@ -63,6 +64,7 @@ namespace Nekoyume.UI.Module
         private Vector3 _disabledImageScale;
         private Vector3 _selectedImageScale;
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+        private Tweener _tweener;
 
         public readonly Subject<WorldMapStage> onClick = new Subject<WorldMapStage>();
 
@@ -82,6 +84,17 @@ namespace Nekoyume.UI.Module
                 }).AddTo(gameObject);
         }
 
+        private void OnEnable()
+        {
+            SubscribeSelect(SharedViewModel.selected.Value);
+        }
+
+        private void OnDisable()
+        {
+            _tweener?.Kill();
+            _tweener = null;
+        }
+
         public void Show(ViewModel viewModel)
         {
             if (viewModel is null)
@@ -94,8 +107,7 @@ namespace Nekoyume.UI.Module
             _disposablesForModel.DisposeAllAndClear();
             SharedViewModel = viewModel;
             SharedViewModel.state.Subscribe(SubscribeState).AddTo(_disposablesForModel);
-            SharedViewModel.selected.Subscribe(_ => SubscribeState(SharedViewModel.state.Value))
-                .AddTo(_disposablesForModel);
+            SharedViewModel.selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
 
             SetBoss(SharedViewModel.hasBoss);
             buttonText.text = SharedViewModel.stageNumber;
@@ -110,11 +122,6 @@ namespace Nekoyume.UI.Module
         {
             if (SharedViewModel.selected.Value)
             {
-                gameObject.SetActive(true);
-                normalImage.enabled = false;
-                disabledImage.enabled = false;
-                selectedImage.enabled = true;
-
                 return;
             }
 
@@ -140,6 +147,29 @@ namespace Nekoyume.UI.Module
             }
 
             normalImage.SetNativeSize();
+        }
+
+        private void SubscribeSelect(bool value)
+        {
+            _tweener?.Kill();
+            _tweener = null;
+            transform.localScale = Vector3.one;
+
+            if (!value)
+            {
+                SubscribeState(SharedViewModel.state.Value);
+                return;
+            }
+
+            gameObject.SetActive(true);
+            normalImage.enabled = false;
+            disabledImage.enabled = false;
+            selectedImage.enabled = true;
+
+            _tweener = transform
+                .DOScale(1.2f, 1f)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1, LoopType.Yoyo);
         }
 
         private void SetBoss(bool isBoss)
