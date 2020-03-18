@@ -47,6 +47,8 @@ namespace Launcher
 
         public PrivateKey PrivateKey { get; set; }
 
+        private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
+
         public KeyStore KeyStore => new KeyStore(LoadKeyStorePath(LoadSettings()));
 
         public LibplanetController()
@@ -309,7 +311,7 @@ namespace Launcher
         public void RunGameProcess(string gameBinaryPath)
         {
             string commandArguments =
-                $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort}";
+                $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort} --private-key {PrivateKeyHex}";
             GameProcess = Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath), commandArguments);
 
             this.ActivateProperty(ctrl => ctrl.GameRunning);
