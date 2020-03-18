@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            SubscribeSelect(SharedViewModel.selected.Value);
+            SubscribeSelect(SharedViewModel?.selected.Value ?? false);
         }
 
         private void OnDisable()
@@ -120,7 +120,7 @@ namespace Nekoyume.UI.Module
 
         private void SubscribeState(State value)
         {
-            if (SharedViewModel.selected.Value)
+            if (SharedViewModel?.selected.Value ?? false)
             {
                 return;
             }
@@ -157,7 +157,7 @@ namespace Nekoyume.UI.Module
 
             if (!value)
             {
-                SubscribeState(SharedViewModel.state.Value);
+                SubscribeState(SharedViewModel?.state.Value ?? State.Normal);
                 return;
             }
 
