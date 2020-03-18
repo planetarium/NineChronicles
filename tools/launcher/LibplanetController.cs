@@ -14,7 +14,6 @@ using ICSharpCode.SharpZipLib.Tar;
 using Launcher.Storage;
 using Libplanet;
 using Libplanet.Crypto;
-using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
 using NineChronicles.Standalone;
@@ -45,6 +44,10 @@ namespace Launcher
         public bool Preprocessing { get; private set; }
 
         private Process GameProcess { get; set; }
+
+        public PrivateKey PrivateKey { get; set; }
+
+        public KeyStore KeyStore => new KeyStore(LoadKeyStorePath(LoadSettings()));
 
         public LibplanetController()
         {
@@ -96,9 +99,19 @@ namespace Launcher
             _cancellationTokenSource = null;
         }
 
-        public bool Login(string passphrase)
+        public bool Login(string addressHex, string passphrase)
         {
-            return passphrase == "1";
+            var address = new Address(addressHex);
+            var protectedPrivateKey = KeyStore.ProtectedPrivateKeys[address];
+            try
+            {
+                PrivateKey = protectedPrivateKey.Unprotect(passphrase);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private async Task UpdateCheckTask(LauncherSettings settings, CancellationToken cancellationToken)
@@ -148,15 +161,6 @@ namespace Launcher
             Preprocessing = true;
             this.ActivateProperty(ctrl => ctrl.Preprocessing);
 
-            PrivateKey privateKey = null;
-            if (!string.IsNullOrEmpty(settings.KeyStorePath) && !string.IsNullOrEmpty(settings.Passphrase))
-            {
-                // TODO: get passphrase from UI, not setting file.
-                var protectedPrivateKey = ProtectedPrivateKey.FromJson(File.ReadAllText(settings.KeyStorePath));
-                privateKey = protectedPrivateKey.Unprotect(settings.Passphrase);
-                Log.Debug($"Address derived from key store, is {privateKey.PublicKey.ToAddress()}");
-            }
-
             var storePath = string.IsNullOrEmpty(settings.StorePath) ? DefaultStorePath : settings.StorePath;
             var appProtocolVersion = AppProtocolVersion.FromToken(settings.AppProtocolVersionToken);
 
@@ -165,7 +169,7 @@ namespace Launcher
                 AppProtocolVersion = appProtocolVersion,
                 GenesisBlockPath = settings.GenesisBlockPath,
                 NoMiner = settings.NoMiner,
-                PrivateKey = privateKey ?? new PrivateKey(),
+                PrivateKey = PrivateKey ?? new PrivateKey(),
                 IceServers = new[] {settings.IceServer}.Select(LoadIceServer),
                 Peers = new[] {settings.Seed}.Select(LoadPeer),
                 // FIXME: how can we validate it to use right store type?
@@ -233,6 +237,18 @@ namespace Launcher
             else
             {
                 return settings.GameBinaryPath;
+            }
+        }
+
+        private static string LoadKeyStorePath(LauncherSettings settings)
+        {
+            if (string.IsNullOrEmpty(settings.KeyStorePath))
+            {
+                return DefaultKeyStorePath;
+            }
+            else
+            {
+                return settings.KeyStorePath;
             }
         }
 
@@ -311,15 +327,21 @@ namespace Launcher
             }
         }
 
-        private static string DefaultStorePath => Path.Combine(PlanetariumApplicationPath, "9c");
+        private static string DefaultStorePath => Path.Combine(PlanetariumLocalApplicationPath, "9c");
 
-        private static string DefaultGameBinaryPath => Path.Combine(PlanetariumApplicationPath, "game");
+        private static string DefaultGameBinaryPath => Path.Combine(PlanetariumLocalApplicationPath, "game");
 
-        private static string PlanetariumApplicationPath => Path.Combine(LocalApplicationDataPath, "planetarium");
+        private static string DefaultKeyStorePath => Path.Combine(PlanetariumApplicationPath, "keystore");
+
+        private static string PlanetariumLocalApplicationPath => Path.Combine(LocalApplicationDataPath, "planetarium");
+
+        private static string PlanetariumApplicationPath => Path.Combine(ApplicationDataPath, "planetarium");
 
         private static string LocalApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-        private static string SettingFilePath => Path.Combine(PlanetariumApplicationPath, SettingFileName);
+        private static string ApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+        private static string SettingFilePath => Path.Combine(PlanetariumLocalApplicationPath, SettingFileName);
 
         private VersionDescriptor? LocalCurrentVersion
         {

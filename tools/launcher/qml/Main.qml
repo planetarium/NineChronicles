@@ -4,7 +4,6 @@ import QtQuick.Window 2.12
 import QtQuick.Layouts 1.1
 import Qt.labs.platform 1.1
 
-
 import LibplanetLauncher 1.0
 
 Item {
@@ -32,7 +31,7 @@ Item {
             MenuItem {
                 id: runMenu
                 text: "Run"
-                visible: !ctrl.gameRunning && !ctrl.updating && !ctrl.preprocessing
+                visible: ctrl.privateKey != null && !ctrl.gameRunning && !ctrl.updating && !ctrl.preprocessing
                 onTriggered: {
                     ctrl.runGame()
                 }
@@ -42,8 +41,9 @@ Item {
                 text: "Reload"
                 visible: !ctrl.gameRunning
                 onTriggered:{
+                    ctrl.privateKey = null  // expect to login again
                     ctrl.stopSync()
-                    ctrl.startSync()
+                    passphraseWindow.show()
                 }
             }
 
@@ -57,11 +57,6 @@ Item {
                 text: "Quit"
                 onTriggered: Qt.quit()
             }
-
-            MenuItem {
-                text: "test"
-                onTriggered: console.log(loader.item.open())
-            }
         }
     }
 
@@ -73,7 +68,7 @@ Item {
         id: passphraseWindow
         title: "Input passphrase"
         width: 320
-        height: 80
+        height: 130
         flags: Qt.FramelessWindowHint
 
         Column {
@@ -81,6 +76,20 @@ Item {
             spacing: 5
             Label {
                  text: "Login is needed to continue launcher"
+            }
+
+            Row {
+                Label {
+                    text: "Select Address"
+                    font.pixelSize: 12
+                    rightPadding: 10
+                }
+
+                ComboBox {
+                    id: addressComboBox
+                    width: 200
+                    model: Net.toListModel(ctrl.keyStore.addresses)
+                }
             }
 
             Row {
@@ -92,13 +101,13 @@ Item {
                 Button {
                     text: "login"
                     onClicked: {
-                        const success = ctrl.login(passphraseInput.text)
+                        const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
                         if (success) {
                             passphraseWindow.close()
                             ctrl.startSync();
                         }
                         else {
-                            passphraseWindow.height = 110
+                            passphraseWindow.height = 160
                             loginFailMessage.visible = true
                         }
                     }
