@@ -64,7 +64,6 @@ namespace Nekoyume.UI.Module
         private Vector3 _disabledImageScale;
         private Vector3 _selectedImageScale;
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-        // private Sequence sequence;
         private Tweener _tweener;
 
         public readonly Subject<WorldMapStage> onClick = new Subject<WorldMapStage>();
@@ -94,8 +93,6 @@ namespace Nekoyume.UI.Module
         {
             _tweener?.Kill();
             _tweener = null;
-            // sequence.Kill();
-            // sequence = null;
         }
 
         public void Show(ViewModel viewModel)
@@ -173,12 +170,6 @@ namespace Nekoyume.UI.Module
                 .DOScale(1.2f, 1f)
                 .SetEase(Ease.Linear)
                 .SetLoops(-1, LoopType.Yoyo);
-
-            // sequence = DOTween.Sequence();
-            // sequence.Append(transform.DOScale(1.2f, 1f).SetEase(Ease.Linear));
-            // sequence.Append(transform.DOScale(1.0f, 1f).SetEase(Ease.Linear));
-            // sequence.SetLoops(-1);
-            // sequence.Play();
         }
 
         private void SetBoss(bool isBoss)
