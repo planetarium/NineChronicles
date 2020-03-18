@@ -1,12 +1,10 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using System;
 using System.Globalization;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -20,6 +18,11 @@ namespace Nekoyume.UI.Module
             public TextMeshProUGUI descriptionText;
         }
 
+        private static readonly Color DimmedColor = new Color(0.5f, 0.5f, 0.5f);
+        private static readonly Color DisabledYellow = Color.yellow * 0.5f;
+        private const string ColorTagForDescriptionText1 = "yellow";
+        private static readonly string ColorTagForDescriptionText2 = $"#{ColorHelper.ColorToHexRGBA(DisabledYellow)}";
+
         [SerializeField]
         protected TextMeshProUGUI nameText = null;
 
@@ -30,26 +33,22 @@ namespace Nekoyume.UI.Module
         protected OptionText[] optionTexts = null;
 
         [SerializeField]
-        protected Image decoration;
+        protected Image decoration = null;
 
         [SerializeField]
-        protected Image panel;
+        protected Image panel = null;
 
         [SerializeField]
         protected Image innerPanel;
 
-        protected readonly Color disabledColor = new Color(0.5f, 0.5f, 0.5f);
-        protected readonly Color disabledYellow = Color.yellow * 0.5f;
+        public int SubRecipeId { get; private set; }
 
         public void Show()
         {
             gameObject.SetActive(true);
         }
-        
-        public void Show(
-            string recipeName,
-            int subRecipeId,
-            bool isAvailable)
+
+        public void Show(string recipeName, int subRecipeId)
         {
             if (!Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet
                 .TryGetValue(subRecipeId, out var subRecipeRow))
@@ -58,28 +57,23 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            SetEnabled(true);
-
+            SubRecipeId = subRecipeId;
             nameText.text = recipeName;
 
-            var colorTag = isAvailable ?
-                "yellow"
-                : $"#{ColorHelper.ColorToHexRGBA(disabledYellow)}";
-
             var format = LocalizationManager.Localize(
-               subRecipeRow.MaxOptionLimit == 1 ?
-               "UI_RANDOM_OPTION_COUNT_FORMAT_SINGULAR"
-               : "UI_RANDOM_OPTION_COUNT_FORMAT_PLURAL");
+                subRecipeRow.MaxOptionLimit == 1
+                    ? "UI_RANDOM_OPTION_COUNT_FORMAT_SINGULAR"
+                    : "UI_RANDOM_OPTION_COUNT_FORMAT_PLURAL");
 
-            descriptionText.text = string.Format(format, colorTag,
+            descriptionText.text = string.Format(format, ColorTagForDescriptionText1,
                 subRecipeRow.MaxOptionLimit == 1 ? 1 : subRecipeRow.MaxOptionLimit);
 
             var optionSheet = Game.Game.instance.TableSheets.EquipmentItemOptionSheet;
             var skillSheet = Game.Game.instance.TableSheets.SkillSheet;
 
-            for (int i = 0; i < optionTexts.Length; ++i)
+            for (var i = 0; i < optionTexts.Length; ++i)
             {
-                if(i >= subRecipeRow.Options.Count)
+                if (i >= subRecipeRow.Options.Count)
                 {
                     optionTexts[i].percentageText.enabled = false;
                     optionTexts[i].descriptionText.enabled = false;
@@ -90,17 +84,20 @@ namespace Nekoyume.UI.Module
                 optionTexts[i].descriptionText.enabled = true;
 
                 var optionInfo = subRecipeRow.Options[i];
-                optionSheet.TryGetValue(optionInfo.Id, out var optionRow);
+                if (!optionSheet.TryGetValue(optionInfo.Id, out var optionRow))
+                {
+                    continue;
+                }
 
                 if (optionRow.StatType != StatType.NONE)
                 {
                     var statMin = optionRow.StatType == StatType.SPD
-                    ? (optionRow.StatMin / 100f).ToString(CultureInfo.InvariantCulture)
-                    : optionRow.StatMin.ToString();
+                        ? (optionRow.StatMin / 100f).ToString(CultureInfo.InvariantCulture)
+                        : optionRow.StatMin.ToString();
 
                     var statMax = optionRow.StatType == StatType.SPD
-                    ? (optionRow.StatMax / 100f).ToString(CultureInfo.InvariantCulture)
-                    : optionRow.StatMax.ToString();
+                        ? (optionRow.StatMax / 100f).ToString(CultureInfo.InvariantCulture)
+                        : optionRow.StatMax.ToString();
 
                     var description = $"{optionRow.StatType} +({statMin}~{statMax})";
                     SetOptionText(optionTexts[i], optionInfo.Ratio, description);
@@ -112,6 +109,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
+            SetDimmed(false);
             Show();
         }
 
@@ -120,28 +118,37 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        protected void SetEnabled(bool value)
+        public virtual void SetDimmed(bool value)
         {
-            nameText.color = value ? Color.white : disabledColor;
-            descriptionText.color = value ? Color.white : disabledColor;
+            nameText.color = value ? DimmedColor : Color.white;
+            descriptionText.color = value ? DimmedColor : Color.white;
+
+            string fromColorTag = value ? ColorTagForDescriptionText1 : ColorTagForDescriptionText2;
+            string toColorTag =  value ? ColorTagForDescriptionText2 : ColorTagForDescriptionText1;
+            
+            if (descriptionText.text.Contains($"<color={fromColorTag}>"))
+            {
+                descriptionText.text = descriptionText.text
+                    .Replace($"<color={fromColorTag}>", $"<color={toColorTag}>");
+            }
 
             foreach (var option in optionTexts)
             {
-                option.percentageText.color = value ? Color.white : disabledColor;
-                option.descriptionText.color = value ? Color.white : disabledColor;
+                option.percentageText.color = value ? DimmedColor : Color.white;
+                option.descriptionText.color = value ? DimmedColor : Color.white;
             }
 
-            SetPanelDimmed(!value);
+            SetPanelDimmed(value);
         }
 
         protected void SetPanelDimmed(bool isDimmed)
         {
-            decoration.color = isDimmed ? disabledColor : Color.white;
-            panel.color = isDimmed ? disabledColor : Color.white;
-            innerPanel.color = isDimmed ? disabledColor : Color.white;
+            decoration.color = isDimmed ? DimmedColor : Color.white;
+            panel.color = isDimmed ? DimmedColor : Color.white;
+            innerPanel.color = isDimmed ? DimmedColor : Color.white;
         }
 
-        protected void SetOptionText(OptionText optionText, decimal percentage, string description)
+        protected static void SetOptionText(OptionText optionText, decimal percentage, string description)
         {
             optionText.percentageText.text = percentage.ToString("0%");
             optionText.descriptionText.text = description;

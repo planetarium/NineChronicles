@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Module
             costNcg += row.RequiredGold;
             costAp += row.RequiredActionPoint;
 
-            if (!(subRecipeId is null))
+            if (subRecipeId.HasValue)
             {
                 var subRecipeSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
                 var subRecipeRow = subRecipeSheet.Values.First(i => i.Id == subRecipeId);
