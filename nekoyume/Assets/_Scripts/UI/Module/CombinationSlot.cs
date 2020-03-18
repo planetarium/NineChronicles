@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SetIndex).AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(UpdateProgressBar).AddTo(gameObject);
         }
 
         public void SetData(CombinationSlotState state, long blockIndex)
@@ -42,9 +42,10 @@ namespace Nekoyume.UI.Module
             }
 
             progressBar.maxValue = state.UnlockBlockIndex;
+            sliderText.text = $"({progressBar.value} / {progressBar.maxValue})";
         }
 
-        private void SetIndex(long index)
+        private void UpdateProgressBar(long index)
         {
             var value = Math.Min(index, progressBar.maxValue);
             progressBar.value = value;

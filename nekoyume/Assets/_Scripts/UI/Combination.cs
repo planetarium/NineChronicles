@@ -184,7 +184,9 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory);
+                BottomMenu.ToggleableType.Inventory,
+                BottomMenu.ToggleableType.Combination
+            );
 
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
             _npc01 = go.GetComponent<NPC>();
