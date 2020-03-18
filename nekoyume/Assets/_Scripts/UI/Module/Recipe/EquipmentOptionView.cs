@@ -3,7 +3,6 @@ using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
 using System;
 using System.Globalization;
-using Nekoyume.Model.State;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
