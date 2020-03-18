@@ -45,6 +45,7 @@ namespace Launcher
 
         private Process GameProcess { get; set; }
 
+        [NotifySignal]
         public PrivateKey PrivateKey { get; set; }
 
         private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
@@ -108,6 +109,7 @@ namespace Launcher
             try
             {
                 PrivateKey = protectedPrivateKey.Unprotect(passphrase);
+                this.ActivateProperty(ctrl => ctrl.PrivateKey);
                 return true;
             }
             catch (Exception)
@@ -200,20 +202,25 @@ namespace Launcher
             var service = new NineChroniclesNodeService(properties, rpcProperties);
             try
             {
-                await Task.WhenAll(
-                    service.Run(cancellationToken),
-                    Task.Run(async () =>
-                    {
-                        await service.BootstrapEnded.WaitAsync(cancellationToken);
-                        await service.PreloadEnded.WaitAsync(cancellationToken);
+                var checkTask = Task.Run(async () =>
+                {
+                    await service.BootstrapEnded.WaitAsync(cancellationToken);
+                    await service.PreloadEnded.WaitAsync(cancellationToken);
 
-                        Preprocessing = false;
-                        this.ActivateProperty(ctrl => ctrl.Preprocessing);
-                    }));
+                    Preprocessing = false;
+                    this.ActivateProperty(ctrl => ctrl.Preprocessing);
+                });
+                await Task.WhenAll(
+                    checkTask,
+                    service.Run(cancellationToken));
             }
             catch (OperationCanceledException e)
             {
                 Log.Warning(e, "Background sync task was cancelled.");
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Unexpected exception occurred: {errorMessage}", e.Message);
             }
         }
 
@@ -312,7 +319,17 @@ namespace Launcher
         {
             string commandArguments =
                 $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort} --private-key {PrivateKeyHex}";
-            GameProcess = Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath), commandArguments);
+            try
+            {
+                GameProcess =
+                    Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath),
+                        commandArguments);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Unexpected exception: {msg}", e.Message);
+            }
+            GameProcess.OutputDataReceived += (sender, args) => { Console.WriteLine(args.Data); };
 
             this.ActivateProperty(ctrl => ctrl.GameRunning);
 
