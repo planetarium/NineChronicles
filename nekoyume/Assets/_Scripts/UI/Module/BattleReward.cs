@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using DG.Tweening;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Model;
 using TMPro;
@@ -22,6 +23,7 @@ namespace Nekoyume.UI.Module
 
         private Star _star;
         private string _stageClearText;
+        private Tweener _tweener = null;
 
         [Serializable]
         public struct StarArea
@@ -49,6 +51,7 @@ namespace Nekoyume.UI.Module
                 {
                     StopVFX();
                 }
+
                 emptyStar.gameObject.SetActive(!enable);
                 enabledStar.gameObject.SetActive(enable);
                 emptyStar.SetNativeSize();
@@ -80,6 +83,7 @@ namespace Nekoyume.UI.Module
                 {
                     view.gameObject.SetActive(false);
                 }
+
                 for (var i = 0; i < rewardItems.Count; i++)
                 {
                     items[i].SetData(rewardItems[i]);
@@ -110,6 +114,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        private void OnDisable()
+        {
+            _tweener?.Kill();
+            _tweener = null;
+        }
+
         public void Set(long exp, bool enable)
         {
             rewardText.text = $"EXP + {exp}";
@@ -131,6 +141,7 @@ namespace Nekoyume.UI.Module
             {
                 rewardText.text = _stageClearText;
             }
+
             rewardText.gameObject.SetActive(cleared);
             failedText.gameObject.SetActive(!cleared);
         }
@@ -158,6 +169,25 @@ namespace Nekoyume.UI.Module
         public void StopVFX()
         {
             _star.StopVFX();
+        }
+
+        public void StartShowAnimation()
+        {
+            animator.enabled = true;
+        }
+
+        public void StopShowAnimation()
+        {
+            animator.enabled = false;
+        }
+
+        public void StartScaleTween()
+        {
+            _tweener?.Kill();
+            _tweener = transform
+                .DOScale(1.05f, 1f)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1, LoopType.Yoyo);
         }
     }
 }
