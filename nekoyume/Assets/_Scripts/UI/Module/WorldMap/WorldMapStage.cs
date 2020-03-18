@@ -64,7 +64,8 @@ namespace Nekoyume.UI.Module
         private Vector3 _disabledImageScale;
         private Vector3 _selectedImageScale;
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-        private Sequence sequence;
+        // private Sequence sequence;
+        private Tweener _tweener;
 
         public readonly Subject<WorldMapStage> onClick = new Subject<WorldMapStage>();
 
@@ -84,10 +85,17 @@ namespace Nekoyume.UI.Module
                 }).AddTo(gameObject);
         }
 
+        private void OnEnable()
+        {
+            SubscribeSelect(SharedViewModel.selected.Value);
+        }
+
         private void OnDisable()
         {
-            sequence.Kill();
-            sequence = null;
+            _tweener?.Kill();
+            _tweener = null;
+            // sequence.Kill();
+            // sequence = null;
         }
 
         public void Show(ViewModel viewModel)
@@ -102,8 +110,7 @@ namespace Nekoyume.UI.Module
             _disposablesForModel.DisposeAllAndClear();
             SharedViewModel = viewModel;
             SharedViewModel.state.Subscribe(SubscribeState).AddTo(_disposablesForModel);
-            SharedViewModel.selected.Subscribe(_ => SubscribeState(SharedViewModel.state.Value))
-                .AddTo(_disposablesForModel);
+            SharedViewModel.selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
 
             SetBoss(SharedViewModel.hasBoss);
             buttonText.text = SharedViewModel.stageNumber;
@@ -118,21 +125,9 @@ namespace Nekoyume.UI.Module
         {
             if (SharedViewModel.selected.Value)
             {
-                gameObject.SetActive(true);
-                normalImage.enabled = false;
-                disabledImage.enabled = false;
-                selectedImage.enabled = true;
-                
-                sequence = DOTween.Sequence();
-                sequence.Append(transform.DOScale(1.2f, 1f).SetEase(Ease.Linear));
-                sequence.Append(transform.DOScale(1.0f, 1f).SetEase(Ease.Linear));
-                sequence.SetLoops(-1);
-                sequence.Play();
-
                 return;
             }
-            
-            sequence?.Pause();
+
             switch (value)
             {
                 case State.Normal:
@@ -157,6 +152,35 @@ namespace Nekoyume.UI.Module
             normalImage.SetNativeSize();
         }
 
+        private void SubscribeSelect(bool value)
+        {
+            _tweener?.Kill();
+            _tweener = null;
+            transform.localScale = Vector3.one;
+
+            if (!value)
+            {
+                SubscribeState(SharedViewModel.state.Value);
+                return;
+            }
+
+            gameObject.SetActive(true);
+            normalImage.enabled = false;
+            disabledImage.enabled = false;
+            selectedImage.enabled = true;
+
+            _tweener = transform
+                .DOScale(1.2f, 1f)
+                .SetEase(Ease.Linear)
+                .SetLoops(-1, LoopType.Yoyo);
+
+            // sequence = DOTween.Sequence();
+            // sequence.Append(transform.DOScale(1.2f, 1f).SetEase(Ease.Linear));
+            // sequence.Append(transform.DOScale(1.0f, 1f).SetEase(Ease.Linear));
+            // sequence.SetLoops(-1);
+            // sequence.Play();
+        }
+
         private void SetBoss(bool isBoss)
         {
             bossImage.enabled = isBoss;
@@ -173,5 +197,7 @@ namespace Nekoyume.UI.Module
                 selectedImage.transform.localScale = _selectedImageScale;
             }
         }
+
+
     }
 }
