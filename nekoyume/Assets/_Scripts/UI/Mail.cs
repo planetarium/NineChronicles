@@ -4,12 +4,7 @@ using System.Globalization;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
-using Nekoyume.Game.Factory;
 using Nekoyume.Helper;
-using Nekoyume.Model;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -76,7 +71,7 @@ namespace Nekoyume.UI
         public Blur blur;
 
         private static Sprite _selectedButtonSprite;
-        private MailBox _mailBox;
+        public MailBox MailBox { get; private set; }
 
         #region override
 
@@ -96,12 +91,13 @@ namespace Nekoyume.UI
             tabButtons[1].Init("UI_COMBINATION");
             tabButtons[2].Init("UI_SHOP");
             tabButtons[3].Init("SYSTEM");
+            ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
         }
 
         public override void Show()
         {
             tabState = MailTabState.All;
-            _mailBox = States.Instance.CurrentAvatarState.mailBox;
+            MailBox = States.Instance.CurrentAvatarState.mailBox;
             ChangeState(0);
             UpdateTabs();
             base.Show();
@@ -118,8 +114,8 @@ namespace Nekoyume.UI
 
         public void UpdateList()
         {
-            _mailBox = States.Instance.CurrentAvatarState.mailBox;
-            if (_mailBox is null)
+            MailBox = States.Instance.CurrentAvatarState.mailBox;
+            if (MailBox is null)
                 return;
 
             float pos = scroller.scroller.ScrollPosition;
@@ -129,13 +125,15 @@ namespace Nekoyume.UI
 
         public void UpdateTabs()
         {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             // 전체 탭
-            tabButtons[0].hasNotificationImage.enabled = _mailBox.Where(mail => mail.New).Count() > 0;
+            tabButtons[0].hasNotificationImage.enabled = MailBox
+                .Any(mail => mail.New && mail.requiredBlockIndex <= blockIndex);
 
-            for (int i = 1; i < tabButtons.Length; ++i)
+            for (var i = 1; i < tabButtons.Length; ++i)
             {
-                int cnt = _mailBox.Where(mail => mail.MailType == (MailType) i && mail.New).Count();
-                tabButtons[i].hasNotificationImage.enabled = cnt > 0;
+                tabButtons[i].hasNotificationImage.enabled = MailBox
+                    .Any(mail => mail.MailType == (MailType) i && mail.New && mail.requiredBlockIndex <= blockIndex);
             }
         }
 
@@ -148,7 +146,7 @@ namespace Nekoyume.UI
                 tabButtons[i].ChangeColor(i == state);
             }
 
-            var list = _mailBox.ToList();
+            var list = MailBox.Where(i => i.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex).ToList();
             if (state > 0)
             {
                 list = list.FindAll(mail => mail.MailType == (MailType) state);
@@ -157,11 +155,11 @@ namespace Nekoyume.UI
             scroller.SetData(list);
         }
 
-        public void SetList(MailBox mailBox)
+        private void SetList(MailBox mailBox)
         {
             if (mailBox is null)
                 return;
-            _mailBox = mailBox;
+            this.MailBox = mailBox;
 
             float pos = scroller.scroller.ScrollPosition;
             ChangeState((int) tabState);
@@ -268,25 +266,6 @@ namespace Nekoyume.UI
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id);
             });
             popup.Pop(model);
-        }
-
-        private static void AddItem(ItemUsable item, bool canceled)
-        {
-            //아바타상태 인벤토리 업데이트
-            Game.Game.instance.ActionManager.AddItem(item.ItemId, canceled);
-
-            //게임상의 인벤토리 업데이트
-            States.Instance.CurrentAvatarState.inventory.AddItem(item);
-        }
-
-        private static void AddGold(decimal gold)
-        {
-            //판매자 에이전트 골드 업데이트
-            Game.Game.instance.ActionManager.AddGold();
-
-            //게임상의 골드 업데이트
-            States.Instance.AgentState.gold += gold;
-            ReactiveAgentState.Gold.SetValueAndForceNotify(States.Instance.AgentState.gold);
         }
     }
 }

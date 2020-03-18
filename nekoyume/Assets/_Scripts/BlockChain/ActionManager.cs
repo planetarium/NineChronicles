@@ -193,42 +193,6 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<AddItem>> AddItem(Guid itemId, bool canceled)
-        {
-            var action = new AddItem
-            {
-                avatarAddress = States.Instance.CurrentAvatarState.address,
-                itemId = itemId,
-                canceled = canceled
-            };
-            ProcessAction(action);
-
-            return _renderer.EveryRender<AddItem>()
-                .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
-                .ObserveOnMainThread()
-                .Timeout(ActionTimeout); // Last() is for completion
-        }
-
-        public IObservable<ActionBase.ActionEvaluation<AddGold>> AddGold()
-        {
-            var action = new AddGold
-            {
-                agentAddress = States.Instance.AgentState.address,
-                avatarAddress = States.Instance.CurrentAvatarState.address,
-            };
-            ProcessAction(action);
-
-            return _renderer.EveryRender<AddGold>()
-                .Where(eval => eval.Action.Id.Equals(action.Id))
-                .Take(1)
-                .Last()
-                .ObserveOnMainThread()
-                .Timeout(ActionTimeout); // Last() is for completion
-
-        }
-
         public IObservable<ActionBase.ActionEvaluation<DailyReward>> DailyReward()
         {
             // NOTE: 이곳에서 하는 것이 바람직 하지만, 연출 타이밍을 위해 밖에서 한다.

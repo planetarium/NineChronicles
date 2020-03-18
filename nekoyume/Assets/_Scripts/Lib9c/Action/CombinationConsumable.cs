@@ -192,7 +192,7 @@ namespace Nekoyume.Action
                 var itemUsable = GetFood(consumableItemRow, itemId, ctx.BlockIndex);
                 // 액션 결과
                 result.itemUsable = itemUsable;
-                var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
+                var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
                 result.id = mail.id;
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(itemUsable);

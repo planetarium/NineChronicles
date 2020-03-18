@@ -74,6 +74,7 @@ namespace Nekoyume.UI.Module
         public CanvasGroup canvasGroup;
         public VFX inventoryVFX;
         private Animator _inventoryAnimator;
+        private long _blockIndex;
 
         [SerializeField] private RectTransform _buttons = null;
         private float _buttonsPositionY;
@@ -153,6 +154,8 @@ namespace Nekoyume.UI.Module
             HasNotificationInWorldMap.SubscribeTo(worldMapButton.SharedModel.HasNotification).AddTo(gameObject);
             HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification).AddTo(gameObject);
             HasNotificationInCombination.SubscribeTo(combinationButton.SharedModel.HasNotification).AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+                .AddTo(gameObject);
         }
 
         private void SubScribeOnClickChat(Unit unit)
@@ -315,9 +318,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            HasNotificationInMail.OnNext(mailBox.Any(i => i.New));
-            // todo: `Mail`과의 결합을 끊을 필요가 있어 보임.
-            Find<Mail>().SetList(mailBox);
+            HasNotificationInMail.OnNext(mailBox.Any(i => i.New && i.requiredBlockIndex <= _blockIndex));
         }
 
         private void SubscribeAvatarQuestList(QuestList questList)
@@ -331,6 +332,13 @@ namespace Nekoyume.UI.Module
             HasNotificationInQuest.OnNext(questList.Any(quest => quest.IsPaidInAction && quest.isReceivable));
             // todo: `Quest`와의 결합을 끊을 필요가 있어 보임.
             Find<Quest>().SetList(questList);
+        }
+
+        private void SubscribeBlockIndex(long blockIndex)
+        {
+            _blockIndex = blockIndex;
+            var mailBox = Find<Mail>().MailBox;
+            HasNotificationInMail.OnNext(mailBox.Any(i => i.New && i.requiredBlockIndex <= _blockIndex));
         }
 
         #endregion

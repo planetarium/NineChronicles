@@ -167,8 +167,9 @@ namespace Nekoyume.Action
                 materials = materials,
                 itemUsable = equipment,
             };
-            slotState.Update(result, ctx.BlockIndex + recipe.RequiredBlockIndex);
-            var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid()) {New = false};
+            var requiredIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
+            slotState.Update(result, requiredIndex);
+            var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredIndex);
             result.id = mail.id;
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);

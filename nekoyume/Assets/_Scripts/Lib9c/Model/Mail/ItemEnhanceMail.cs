@@ -9,7 +9,8 @@ namespace Nekoyume.Model.Mail
         protected override string TypeId => "itemEnhance";
         public override MailType MailType => MailType.Workshop;
 
-        public ItemEnhanceMail(AttachmentActionResult attachmentActionResult, long blockIndex, Guid id) : base(attachmentActionResult, blockIndex, id)
+        public ItemEnhanceMail(AttachmentActionResult attachmentActionResult, long blockIndex, Guid id, long requiredBlockIndex)
+            : base(attachmentActionResult, blockIndex, id, requiredBlockIndex)
         {
 
         }
