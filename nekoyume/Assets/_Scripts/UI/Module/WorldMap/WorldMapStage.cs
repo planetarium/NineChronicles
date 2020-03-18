@@ -188,7 +188,5 @@ namespace Nekoyume.UI.Module
                 selectedImage.transform.localScale = _selectedImageScale;
             }
         }
-
-
     }
 }

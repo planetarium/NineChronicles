@@ -74,7 +74,8 @@ namespace Nekoyume.UI.Module
             SharedViewModel = new ViewModel(worldRow);
 
             var stageRows = Game.Game.instance.TableSheets.StageWaveSheet.Values
-                .Where(stageRow => stageRow.StageId >= worldRow.StageBegin && stageRow.StageId <= worldRow.StageEnd)
+                .Where(stageRow => stageRow.StageId >= worldRow.StageBegin &&
+                                   stageRow.StageId <= worldRow.StageEnd)
                 .ToList();
             var stageRowsCount = stageRows.Count;
             if (worldRow.StagesCount != stageRowsCount)
@@ -140,7 +141,8 @@ namespace Nekoyume.UI.Module
             SharedViewModel.CurrentPageNumber.Value = 1;
 
             SharedViewModel.PageCount
-                .Subscribe(pageCount => stagePageText.text = $"{SharedViewModel.CurrentPageNumber.Value}/{pageCount}")
+                .Subscribe(pageCount =>
+                    stagePageText.text = $"{SharedViewModel.CurrentPageNumber.Value}/{pageCount}")
                 .AddTo(_disposablesForModel);
             SharedViewModel.CurrentPageNumber
                 .Subscribe(currentPageNumber =>
@@ -150,7 +152,8 @@ namespace Nekoyume.UI.Module
                 .Subscribe(currentPageNumber =>
                 {
                     previousButton.gameObject.SetActive(currentPageNumber != 1);
-                    nextButton.gameObject.SetActive(currentPageNumber != SharedViewModel.PageCount.Value);
+                    nextButton.gameObject.SetActive(
+                        currentPageNumber != SharedViewModel.PageCount.Value);
                 })
                 .AddTo(_disposablesForModel);
 
