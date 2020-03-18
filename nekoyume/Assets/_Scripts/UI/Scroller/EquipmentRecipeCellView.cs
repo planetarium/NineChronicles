@@ -178,7 +178,7 @@ namespace Nekoyume.UI.Scroller
                             break;
                         }
 
-                        if (shouldDimmed)
+                        if (!shouldDimmed)
                         {
                             break;
                         }
