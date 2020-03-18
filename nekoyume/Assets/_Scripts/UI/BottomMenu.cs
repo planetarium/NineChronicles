@@ -222,7 +222,7 @@ namespace Nekoyume.UI.Module
                 canvasGroup.alpha = 0;
                 canvasGroup.DOFade(1,  1.0f);
             }
-            
+
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
             SharedModel.NavigationAction = navigationAction;
 
@@ -338,6 +338,11 @@ namespace Nekoyume.UI.Module
         {
             _blockIndex = blockIndex;
             var mailBox = Find<Mail>().MailBox;
+            if (mailBox is null)
+            {
+                return;
+            }
+
             HasNotificationInMail.OnNext(mailBox.Any(i => i.New && i.requiredBlockIndex <= _blockIndex));
         }
 
