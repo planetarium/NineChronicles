@@ -62,8 +62,8 @@ namespace NineChronicles.Standalone.Executable
             {
                 Host = host,
                 Port = port,
-                // TODO: AppProtocolVersion should have a standard string representation...
-                AppProtocolVersion = default(AppProtocolVersion),
+                // FIXME: 버전 클레임을 매번 새로 서명해서 만들고 있으므로, 이렇게 냅두면 안 됨. 임시 조치.
+                AppProtocolVersion = AppProtocolVersion.Sign(privateKey, 1),
                 GenesisBlockPath = genesisBlockPath,
                 NoMiner = noMiner,
                 PrivateKey = privateKey,
