@@ -202,17 +202,16 @@ namespace Launcher
             var service = new NineChroniclesNodeService(properties, rpcProperties);
             try
             {
-                var checkTask = Task.Run(async () =>
-                {
-                    await service.BootstrapEnded.WaitAsync(cancellationToken);
-                    await service.PreloadEnded.WaitAsync(cancellationToken);
-
-                    Preprocessing = false;
-                    this.ActivateProperty(ctrl => ctrl.Preprocessing);
-                });
                 await Task.WhenAll(
-                    checkTask,
-                    service.Run(cancellationToken));
+                    service.Run(cancellationToken),
+                    Task.Run(async () =>
+                    {
+                        await service.BootstrapEnded.WaitAsync(cancellationToken);
+                        await service.PreloadEnded.WaitAsync(cancellationToken);
+
+                        Preprocessing = false;
+                        this.ActivateProperty(ctrl => ctrl.Preprocessing);
+                    }));
             }
             catch (OperationCanceledException e)
             {
