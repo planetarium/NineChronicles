@@ -21,7 +21,7 @@ namespace NineChronicles.Standalone.Executable
 
         [Command(Description = "Run standalone application with options.")]
         public async Task Run(
-            [Option("app-protocol-version", new[] { 'V' })]
+            [Option("app-protocol-version", new[] { 'V' }, Description = "App protocol version token")]
             string appProtocolVersionToken,
             [Option('G')]
             string genesisBlockPath,

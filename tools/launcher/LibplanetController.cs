@@ -246,7 +246,7 @@ namespace Launcher
             var host = tokens[1];
             var port = int.Parse(tokens[2]);
 
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port), appProtocolVersion);
+            return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
         }
 
         public async Task RunGame()
