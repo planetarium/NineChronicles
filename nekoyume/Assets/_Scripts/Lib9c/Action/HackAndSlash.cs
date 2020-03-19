@@ -27,7 +27,6 @@ namespace Nekoyume.Action
         public Address avatarAddress;
         public Address WeeklyArenaAddress;
         public BattleLog Result { get; private set; }
-        public List<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
@@ -97,7 +96,7 @@ namespace Nekoyume.Action
             }
 
             sw.Restart();
-            
+
             // 장비가 유효한지 검사한다.
             {
                 var level = avatarState.level;
@@ -110,7 +109,7 @@ namespace Nekoyume.Action
                         failed = true;
                         break;
                     }
-                        
+
                     switch (equipment.Data.ItemSubType)
                     {
                         case ItemSubType.Weapon:
@@ -195,10 +194,10 @@ namespace Nekoyume.Action
             }
 
             var simulator = new StageSimulator(
-                ctx.Random, 
-                avatarState, 
-                foods, 
-                worldId, 
+                ctx.Random,
+                avatarState,
+                foods,
+                worldId,
                 stageId,
                 tableSheets
             );
@@ -236,7 +235,7 @@ namespace Nekoyume.Action
 
             avatarState.Update(simulator);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
+            avatarState.UpdateQuestRewards(ctx);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());

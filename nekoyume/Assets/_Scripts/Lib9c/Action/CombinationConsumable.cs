@@ -62,7 +62,6 @@ namespace Nekoyume.Action
 
         public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
-        public List<int> completedQuestIds;
         public int slotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -212,7 +211,7 @@ namespace Nekoyume.Action
                 sw.Restart();
             }
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
+            avatarState.UpdateQuestRewards(ctx);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;

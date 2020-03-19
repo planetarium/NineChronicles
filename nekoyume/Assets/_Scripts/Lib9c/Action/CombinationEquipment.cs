@@ -181,6 +181,7 @@ namespace Nekoyume.Action
             result.id = mail.id;
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);
+            avatarState.UpdateQuestRewards(ctx);
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize())

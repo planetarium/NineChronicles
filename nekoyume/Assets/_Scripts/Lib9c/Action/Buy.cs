@@ -24,8 +24,6 @@ namespace Nekoyume.Action
         public Guid productId;
         public BuyerResult buyerResult;
         public SellerResult sellerResult;
-        public List<int> buyerCompletedQuestIds;
-        public List<int> sellerCompletedQuestIds;
 
         [Serializable]
         public class BuyerResult : AttachmentActionResult
@@ -126,7 +124,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"Buy Get Buyer AgentAvatarStates: {sw.Elapsed}");
             sw.Restart();
-            
+
             if (!buyerAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
                 out var world))
                 return states;
@@ -216,8 +214,8 @@ namespace Nekoyume.Action
             sellerAvatarState.updatedAt = timestamp;
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
-            buyerCompletedQuestIds = buyerAvatarState.UpdateQuestRewards(ctx);
-            sellerCompletedQuestIds = sellerAvatarState.UpdateQuestRewards(ctx);
+            buyerAvatarState.UpdateQuestRewards(ctx);
+            sellerAvatarState.UpdateQuestRewards(ctx);
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();

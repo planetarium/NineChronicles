@@ -124,83 +124,94 @@ namespace Nekoyume.Model.Quest
                 throw;
             }
         }
+
+        public static Quest Deserialize(IValue arg)
+        {
+            return Deserialize((Dictionary) arg);
+        }
     }
 
     [Serializable]
     public class QuestList : IEnumerable<Quest>, IState
     {
-        private readonly List<Quest> quests;
+        private readonly List<Quest> _quests;
+        public List<int> completedQuestIds = new List<int>();
 
         public QuestList(
             QuestSheet questSheet,
             QuestRewardSheet questRewardSheet,
             QuestItemRewardSheet questItemRewardSheet)
         {
-            quests = new List<Quest>();
+            _quests = new List<Quest>();
             foreach (var questData in questSheet.OrderedList)
             {
                 Quest quest;
                 QuestReward reward = GetQuestReward(
-                    questData.QuestRewardId, 
-                    questRewardSheet, 
+                    questData.QuestRewardId,
+                    questRewardSheet,
                     questItemRewardSheet
                 );
                 switch (questData)
                 {
                     case CollectQuestSheet.Row row:
                         quest = new CollectQuest(row, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case CombinationQuestSheet.Row row1:
                         quest = new CombinationQuest(row1, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case GeneralQuestSheet.Row row2:
                         quest = new GeneralQuest(row2, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case ItemEnhancementQuestSheet.Row row3:
                         quest = new ItemEnhancementQuest(row3, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case ItemGradeQuestSheet.Row row4:
                         quest = new ItemGradeQuest(row4, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case MonsterQuestSheet.Row row5:
                         quest = new MonsterQuest(row5, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case TradeQuestSheet.Row row6:
                         quest = new TradeQuest(row6, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case WorldQuestSheet.Row row7:
                         quest = new WorldQuest(row7, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case ItemTypeCollectQuestSheet.Row row8:
                         quest = new ItemTypeCollectQuest(row8, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                     case GoldQuestSheet.Row row9:
                         quest = new GoldQuest(row9, reward);
-                        quests.Add(quest);
+                        _quests.Add(quest);
                         break;
                 }
             }
         }
 
 
-        public QuestList(List serialized)
+        public QuestList(Dictionary serialized)
         {
-            quests = serialized.Select(q => Quest.Deserialize((Dictionary)q))
-                .ToList();
+            _quests = serialized.TryGetValue((Text)"quests", out var questsValue)
+                ? questsValue.ToList(Quest.Deserialize)
+                : new List<Quest>();
+
+            completedQuestIds = serialized.TryGetValue((Text) "completedQuestIds", out var idsValue)
+                ? idsValue.ToList(StateExtensions.ToInteger)
+                : new List<int>();
         }
 
         public IEnumerator<Quest> GetEnumerator()
         {
-            return quests.GetEnumerator();
+            return _quests.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -215,7 +226,7 @@ namespace Nekoyume.Model.Quest
             //                                     i.ItemSubType == itemUsable.Data.ItemSubType &&
             //                                     !i.Complete);
             //            quest?.Update(new List<ItemBase> {itemUsable});
-            var targets = quests.OfType<CombinationQuest>()
+            var targets = _quests.OfType<CombinationQuest>()
                 .Where(i => i.ItemType == itemUsable.Data.ItemType &&
                             i.ItemSubType == itemUsable.Data.ItemSubType &&
                             !i.Complete);
@@ -230,7 +241,7 @@ namespace Nekoyume.Model.Quest
             //            var quest = quests.OfType<TradeQuest>()
             //                .FirstOrDefault(i => i.Type == type && !i.Complete);
             //            quest?.Check();
-            var tradeQuests = quests.OfType<TradeQuest>()
+            var tradeQuests = _quests.OfType<TradeQuest>()
                 .Where(i => i.Type == type && !i.Complete);
             foreach (var tradeQuest in tradeQuests)
             {
@@ -240,7 +251,7 @@ namespace Nekoyume.Model.Quest
             //            var goldQuest = quests.OfType<GoldQuest>()
             //                .FirstOrDefault(i => i.Type == type && !i.Complete);
             //            goldQuest?.Update(price);
-            var goldQuests = quests.OfType<GoldQuest>()
+            var goldQuests = _quests.OfType<GoldQuest>()
                 .Where(i => i.Type == type && !i.Complete);
             foreach (var goldQuest in goldQuests)
             {
@@ -250,7 +261,7 @@ namespace Nekoyume.Model.Quest
 
         public void UpdateStageQuest(CollectionMap stageMap)
         {
-            var stageQuests = quests.OfType<WorldQuest>().ToList();
+            var stageQuests = _quests.OfType<WorldQuest>().ToList();
             foreach (var quest in stageQuests)
             {
                 quest.Update(stageMap);
@@ -259,7 +270,7 @@ namespace Nekoyume.Model.Quest
 
         public void UpdateMonsterQuest(CollectionMap monsterMap)
         {
-            var monsterQuests = quests.OfType<MonsterQuest>().ToList();
+            var monsterQuests = _quests.OfType<MonsterQuest>().ToList();
             foreach (var quest in monsterQuests)
             {
                 quest.Update(monsterMap);
@@ -268,7 +279,7 @@ namespace Nekoyume.Model.Quest
 
         public void UpdateCollectQuest(CollectionMap itemMap)
         {
-            var collectQuests = quests.OfType<CollectQuest>().ToList();
+            var collectQuests = _quests.OfType<CollectQuest>().ToList();
             foreach (var quest in collectQuests)
             {
                 quest.Update(itemMap);
@@ -280,7 +291,7 @@ namespace Nekoyume.Model.Quest
             //            var quest = quests.OfType<ItemEnhancementQuest>()
             //                .FirstOrDefault(i => !i.Complete && i.Grade == equipment.Data.Grade);
             //            quest?.Update(equipment);
-            var targets = quests.OfType<ItemEnhancementQuest>()
+            var targets = _quests.OfType<ItemEnhancementQuest>()
                 .Where(i => !i.Complete && i.Grade == equipment.Data.Grade);
             foreach (var target in targets)
             {
@@ -295,7 +306,7 @@ namespace Nekoyume.Model.Quest
                 //                var quest = quests.OfType<GeneralQuest>()
                 //                    .FirstOrDefault(i => i.Event == type && !i.Complete);
                 //                quest?.Update(eventMap);
-                var targets = quests.OfType<GeneralQuest>()
+                var targets = _quests.OfType<GeneralQuest>()
                     .Where(i => i.Event == type && !i.Complete);
                 foreach (var target in targets)
                 {
@@ -311,7 +322,7 @@ namespace Nekoyume.Model.Quest
             //            var quest = quests.OfType<ItemGradeQuest>()
             //                .FirstOrDefault(i => i.Grade == itemUsable.Data.Grade && !i.Complete);
             //            quest?.Update(itemUsable);
-            var targets = quests.OfType<ItemGradeQuest>()
+            var targets = _quests.OfType<ItemGradeQuest>()
                 .Where(i => i.Grade == itemUsable.Data.Grade && !i.Complete);
             foreach (var target in targets)
             {
@@ -326,7 +337,7 @@ namespace Nekoyume.Model.Quest
                 //                var quest = quests.OfType<ItemTypeCollectQuest>()
                 //                    .FirstOrDefault(i => i.ItemType == item.Data.ItemType && !i.Complete);
                 //                quest?.Update(item);
-                var targets = quests.OfType<ItemTypeCollectQuest>()
+                var targets = _quests.OfType<ItemTypeCollectQuest>()
                     .Where(i => i.ItemType == item.Data.ItemType && !i.Complete);
                 foreach (var target in targets)
                 {
@@ -335,19 +346,22 @@ namespace Nekoyume.Model.Quest
             }
         }
 
-        public IValue Serialize() =>
-            new List(this.Select(q => q.Serialize()));
+        public IValue Serialize() => new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)"quests"] = new List(this.Select(q => q.Serialize())),
+                [(Text) "completedQuestIds"] = new List(completedQuestIds.Select(i => i.Serialize()))
+            });
 
         public CollectionMap UpdateCompletedQuest(CollectionMap eventMap)
         {
             const QuestEventType type = QuestEventType.Complete;
-            eventMap[(int)type] = quests.Count(i => i.Complete);
+            eventMap[(int)type] = _quests.Count(i => i.Complete);
             return UpdateGeneralQuest(new[] { type }, eventMap);
         }
 
 
         private static QuestReward GetQuestReward(
-            int rewardId, 
+            int rewardId,
             QuestRewardSheet rewardSheet,
             QuestItemRewardSheet itemRewardSheet)
         {

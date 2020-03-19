@@ -214,6 +214,7 @@ namespace Nekoyume.BlockChain
             var avatarAddress = eval.Action.AvatarAddress;
             var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.SlotIndex);
             var result = (CombinationConsumable.ResultModel) slot.Result;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
@@ -224,6 +225,7 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
             States.Instance.CombinationSlotStates[eval.Action.SlotIndex] = slot;
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
@@ -243,6 +245,7 @@ namespace Nekoyume.BlockChain
             var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
             var result = (CombinationConsumable.ResultModel) slot.Result;
             var itemUsable = result.itemUsable;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
@@ -252,7 +255,7 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-            RenderQuest(avatarAddress, eval.Action.completedQuestIds);
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
@@ -295,11 +298,12 @@ namespace Nekoyume.BlockChain
                 var buyerAgentAddress = States.Instance.AgentState.address;
                 var result = eval.Action.buyerResult;
                 var itemId = result.itemUsable.ItemId;
+                var buyerAvatar = eval.OutputStates.GetAvatarState(buyerAvatarAddress);
 
                 LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
                 LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
                 LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
-                RenderQuest(buyerAvatarAddress, eval.Action.buyerCompletedQuestIds);
+                RenderQuest(buyerAvatarAddress, buyerAvatar.questList.completedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
             }
@@ -310,10 +314,11 @@ namespace Nekoyume.BlockChain
                 var result = eval.Action.sellerResult;
                 var itemId = result.itemUsable.ItemId;
                 var gold = result.gold;
+                var sellerAvatar = eval.OutputStates.GetAvatarState(sellerAvatarAddress);
 
                 LocalStateModifier.ModifyAgentGold(sellerAgentAddress, -gold);
                 LocalStateModifier.AddNewAttachmentMail(sellerAvatarAddress, result.id);
-                RenderQuest(sellerAvatarAddress, eval.Action.sellerCompletedQuestIds);
+                RenderQuest(sellerAvatarAddress, sellerAvatar.questList.completedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var buyerName =
                     new AvatarState(
@@ -334,8 +339,9 @@ namespace Nekoyume.BlockChain
             {
                 UpdateCurrentAvatarState(eval);
                 UpdateWeeklyArenaState(eval);
+                var avatarState = eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
 
-                foreach (var questId in eval.Action.completedQuestIds)
+                foreach (var questId in avatarState.questList.completedQuestIds)
                     LocalStateModifier.AddReceivableQuest(States.Instance.CurrentAvatarState.address, questId);
                 battleResultWidget.battleEndedStream.Dispose();
             });
@@ -351,7 +357,7 @@ namespace Nekoyume.BlockChain
                 Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
             }
             else if (Widget.Find<BattleResult>().IsActive() &&
-                Widget.Find<StageLoadingScreen>().IsActive())
+                     Widget.Find<StageLoadingScreen>().IsActive())
             {
                 Widget.Find<BattleResult>().NextStage(eval);
             }
@@ -372,6 +378,7 @@ namespace Nekoyume.BlockChain
             var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
             var result = (ItemEnhancement.ResultModel) slot.Result;
             var itemUsable = result.itemUsable;
+            var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
@@ -382,7 +389,7 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-            RenderQuest(avatarAddress, eval.Action.completedQuestIds);
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,
                 string.Format(format, result.itemUsable.Data.GetLocalizedName()));
