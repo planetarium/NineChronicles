@@ -170,6 +170,9 @@ namespace Nekoyume.Action
                 gold = requiredGold,
                 materials = materials,
                 itemUsable = equipment,
+                recipeId = RecipeId,
+                subRecipeId = SubRecipeId,
+                itemType = ItemType.Equipment,
             };
             var requiredIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
             slotState.Update(result, requiredIndex);

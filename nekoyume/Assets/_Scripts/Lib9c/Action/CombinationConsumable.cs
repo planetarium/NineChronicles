@@ -27,6 +27,9 @@ namespace Nekoyume.Action
             public Guid id;
             public decimal gold;
             public int actionPoint;
+            public int recipeId;
+            public int? subRecipeId;
+            public ItemType itemType;
 
             protected override string TypeId => "combination.result-model";
 
@@ -40,6 +43,9 @@ namespace Nekoyume.Action
                 id = serialized["id"].ToGuid();
                 gold = serialized["gold"].ToDecimal();
                 actionPoint = serialized["actionPoint"].ToInteger();
+                recipeId = serialized["recipeId"].ToInteger();
+                subRecipeId = serialized["subRecipeId"].ToNullableInteger();
+                itemType = itemUsable.Data.ItemType;
             }
 
             public override IValue Serialize() =>
@@ -49,6 +55,8 @@ namespace Nekoyume.Action
                     [(Text) "id"] = id.Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                     [(Text) "actionPoint"] = actionPoint.Serialize(),
+                    [(Text) "recipeId"] = recipeId.Serialize(),
+                    [(Text) "subRecipeId"] = subRecipeId.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
         }
 
@@ -148,7 +156,8 @@ namespace Nekoyume.Action
 
             var result = new ResultModel
             {
-                materials = Materials
+                materials = Materials,
+                itemType = ItemType.Consumable,
             };
 
             var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
@@ -178,6 +187,8 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug($"Combination Get Food id: {sw.Elapsed}");
             sw.Restart();
+            // FIXME 장비조합처럼 레시피 아이디만 받아다 만드는 방식으로 변경해야함. 현재 방식이면 맛없는 요리인걸 결과슬롯에서 미리 알 수 있다.
+            result.recipeId = recipeRow.Id;
 
             if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
             {

@@ -1,4 +1,6 @@
 using System;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -16,14 +18,22 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI progressText;
         public TextMeshProUGUI lockText;
         public TextMeshProUGUI sliderText;
+        public TouchHandler touchHandler;
+        private CombinationSlotState _data;
 
         private void Awake()
         {
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(UpdateProgressBar).AddTo(gameObject);
+            touchHandler.OnClick.Subscribe(pointerEventData =>
+            {
+                AudioController.PlayClick();
+                ShowPopup();
+            }).AddTo(gameObject);
         }
 
         public void SetData(CombinationSlotState state, long blockIndex)
         {
+            _data = state;
             var unlock = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(state.UnlockStage);
             lockText.gameObject.SetActive(!unlock);
             resultView.gameObject.SetActive(false);
@@ -50,6 +60,19 @@ namespace Nekoyume.UI.Module
             var value = Math.Min(index, progressBar.maxValue);
             progressBar.value = value;
             sliderText.text = $"({value} / {progressBar.maxValue})";
+        }
+
+        private void ShowPopup()
+        {
+            if (_data?.Result is null)
+            {
+                return;
+            }
+
+            if (_data.Result.itemUsable.RequiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
+            {
+                Widget.Find<CombinationSlotPopup>().Pop(_data);
+            }
         }
     }
 }
