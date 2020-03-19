@@ -22,9 +22,9 @@ $ dotnet publish -r win-x64 --self-contained  # out/win-x64/Launcher.exe
 There is [*launcher.json*][launcher-json] like below.
 
 - `storePath`: Path of store.
+- `storeType`: Type of store. (`rocksdb` | `default`)
 - `appProtoocolVersionToken`: `AppProtocolVersion` derived from `appProtocolVersionToken`, used in `Swarm<T>` type constructor.
 - `keyStorePath`: Path of keystore. If `noMiner` is true, it is not required.
-- `passphrase`: Passphrase used to protect keystore. If `noMiner` is true, it is not required.
 - `iceServer`: URL of ice server.
 - `seed`: information of the peer having role like *seed* or *bootstrap node*.
 - `noMiner`: A flag for mode to mine or not.
