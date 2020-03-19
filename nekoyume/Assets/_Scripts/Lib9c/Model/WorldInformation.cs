@@ -117,7 +117,7 @@ namespace Nekoyume.Model
         {
             if (worldSheet is null)
                 return;
-            
+
             var orderedSheet = worldSheet.OrderedList;
 
             if (openAllOfWorldsAndStages)
@@ -161,15 +161,15 @@ namespace Nekoyume.Model
                     (Bencodex.Types.Text) kv.Key.Serialize(),
                     (Bencodex.Types.Dictionary) kv.Value.Serialize())));
         }
-        
+
         public bool IsWorldUnlocked(int worldId) =>
             TryGetWorld(worldId, out var world)
             && world.IsUnlocked;
-        
+
         public bool IsStageCleared(int worldId, int stageId) =>
             TryGetWorld(worldId, out var world)
             && stageId <= world.StageClearedId;
-        
+
         public bool IsStageCleared(int stageId) =>
             TryGetWorldByStageId(stageId, out var world)
             && stageId <= world.StageClearedId;
@@ -225,7 +225,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 새롭게 스테이지를 클리어한 시간이 가장 최근인 월드를 얻는다. 
+        /// 새롭게 스테이지를 클리어한 시간이 가장 최근인 월드를 얻는다.
         /// </summary>
         /// <param name="world"></param>
         /// <returns></returns>
@@ -253,15 +253,13 @@ namespace Nekoyume.Model
         /// <returns></returns>
         public bool TryGetLastClearedStageId(out int stageId)
         {
-            var clearedWorlds = _worlds.Values.Where(world => world.IsStageCleared).ToList();
-            if (clearedWorlds.Any())
-            {
-                stageId = clearedWorlds.Last().StageClearedId;
-                return true;
-            }
-            
             stageId = default;
-            return false;
+            foreach (var world in _worlds.Values.Where(world => world.IsStageCleared))
+            {
+                stageId = Math.Max(stageId, world.StageClearedId);
+            }
+
+            return stageId != default;
         }
 
         /// <summary>
