@@ -12,6 +12,9 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+#if UNITY_EDITOR || UNITY_STANDALONE
+using TentuPlay.Api;
+#endif
 
 namespace Nekoyume.Action
 {
@@ -239,6 +242,17 @@ namespace Nekoyume.Action
             Log.Debug($"ItemEnhancement Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;
             Log.Debug($"ItemEnhancement Total Executed Time: {ended - started}");
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+            new TPStashEvent().CurrencyUse(
+                player_uuid: agentState.address.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)result.gold,
+                currency_total_quantity: (float)agentState.gold,
+                reference_entity: "items_enhancement",
+                reference_category_slug: "combination",
+                reference_slug: enhancementEquipment.Data.Id.ToString());
+#endif
             return states
                 .SetState(slotAddress, slotState.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());

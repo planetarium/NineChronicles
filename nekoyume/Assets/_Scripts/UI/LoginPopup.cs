@@ -14,6 +14,9 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNITY_EDITOR || UNITY_STANDALONE
+using TentuPlay.Api;
+#endif
 
 namespace Nekoyume.UI
 {
@@ -245,6 +248,11 @@ namespace Nekoyume.UI
             if (Login)
             {
                 Close();
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+                new TPStashEvent().Login(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
+                new TPUploadData().UploadData();
+#endif
             }
             else
             {
@@ -597,6 +605,13 @@ namespace Nekoyume.UI
                 keyPath
             );
             _privateKey = privateKey;
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+            TPStashEvent MyStashEvent = new TPStashEvent();
+            MyStashEvent.Join(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
+            MyStashEvent.Login(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
+            new TPUploadData().UploadData();
+# endif
         }
 
         private void SetState(States states)

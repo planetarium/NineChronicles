@@ -13,6 +13,9 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+#if UNITY_EDITOR || UNITY_STANDALONE
+using TentuPlay.Api;
+# endif
 
 namespace Nekoyume.Action
 {
@@ -291,6 +294,58 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug($"HAS Total Executed Time: {ended - started}");
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+            //TentuPlay
+            TPStashEvent MyStashEvent = new TPStashEvent();
+            MyStashEvent.PlayerStage(
+                player_uuid: agentState.address.ToHex(),
+                stage_category_slug: "HackAndSlash",
+                stage_slug: "HackAndSlash" + "_" + worldId.ToString() + "_" + stageId.ToString(),
+                stage_status: "S",
+                stage_level: worldId.ToString() + "_" + stageId.ToString(),
+                is_autocombat_committed: true
+                );
+            string stage_status = null;
+            switch (simulator.Log?.result)
+            {
+                case BattleLog.Result.Win:
+                    stage_status = "W";
+                    break;
+                case BattleLog.Result.Lose:
+                    stage_status = "L";
+                    break;
+                case BattleLog.Result.TimeOver:
+                    stage_status = "T";
+                    break;
+            }
+            int? stage_playtime = null;
+            switch (simulator.Log?.clearedWaveNumber)
+            {
+                case 0:
+                    stage_playtime = 3;
+                    break;
+                case 1:
+                    stage_playtime = 5;
+                    break;
+                case 2:
+                    stage_playtime = 15;
+                    break;
+                case 3:
+                    stage_playtime = 30;
+                    break;
+            }
+            MyStashEvent.PlayerStage(
+                player_uuid: agentState.address.ToHex(),
+                stage_category_slug: "HackAndSlash",
+                stage_slug: "HackAndSlash" + "_" + worldId.ToString() + "_" + stageId.ToString(),
+                stage_status: stage_status,
+                stage_level: worldId.ToString() + "_" + stageId.ToString(),
+                stage_score: simulator.Log?.clearedWaveNumber,
+                stage_playtime: stage_playtime,
+                is_autocombat_committed: true
+                );
+# endif
             return states.SetState(ctx.Signer, agentState.Serialize());
         }
     }

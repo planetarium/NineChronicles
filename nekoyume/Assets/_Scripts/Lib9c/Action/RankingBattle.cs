@@ -11,6 +11,9 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
+#if UNITY_EDITOR || UNITY_STANDALONE
+using TentuPlay.Api;
+#endif
 
 namespace Nekoyume.Action
 {
@@ -173,6 +176,50 @@ namespace Nekoyume.Action
 
             Result = simulator.Log;
 
+#if UNITY_EDITOR || UNITY_STANDALONE
+            //TentuPlay
+            TPStashEvent MyStashEvent = new TPStashEvent();
+            MyStashEvent.CurrencyUse(
+                player_uuid: agentState.address.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)100,
+                currency_total_quantity: (float)agentState.gold,
+                reference_entity: "stage_pvp",
+                reference_category_slug: "arena",
+                reference_slug: "WeeklyArena"
+                );
+            MyStashEvent.PlayerStage(
+                player_uuid: agentState.address.ToHex(),
+                stage_category_slug: "RankingBattle",
+                stage_slug: "RankingBattle",
+                stage_status: "S",
+                stage_level: null,
+                is_autocombat_committed: true
+                );
+            string stage_status = null;
+            switch (simulator.Log?.result)
+            {
+                case BattleLog.Result.Win:
+                    stage_status = "W";
+                    break;
+                case BattleLog.Result.Lose:
+                    stage_status = "L";
+                    break;
+                case BattleLog.Result.TimeOver:
+                    stage_status = "T";
+                    break;
+            }
+            MyStashEvent.PlayerStage(
+                player_uuid: agentState.address.ToHex(),
+                stage_category_slug: "RankingBattle",
+                stage_slug: "RankingBattle",
+                stage_status: stage_status,
+                stage_level: null,
+                stage_score: simulator.Log.diffScore,
+                stage_playtime: (int)(Math.Abs(simulator.Log.diffScore) / 5),
+                is_autocombat_committed: true
+                );
+#endif
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(WeeklyArenaAddress, weeklyArenaState.Serialize())

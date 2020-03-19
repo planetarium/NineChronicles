@@ -11,6 +11,10 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
+using Nekoyume.State;
+#if UNITY_EDITOR || UNITY_STANDALONE
+using TentuPlay.Api;
+#endif
 
 namespace Nekoyume.Game.Character
 {
@@ -264,6 +268,14 @@ namespace Nekoyume.Game.Character
 
             if (Level != level)
             {
+#if UNITY_EDITOR || UNITY_STANDALONE
+                new TPStashEvent().CharacterLevelUp(
+                    player_uuid: Game.instance.Agent.Address.ToHex(),
+                    characterarchetype_slug: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                    level_from: (int)level,
+                    level_to: (int)Level
+                    );
+#endif
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
