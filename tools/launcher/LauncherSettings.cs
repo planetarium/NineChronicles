@@ -1,6 +1,3 @@
-using System.Text.Json.Serialization;
-using Libplanet.Net;
-
 namespace Launcher
 {
     public class LauncherSettings
