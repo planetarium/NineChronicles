@@ -102,6 +102,7 @@ namespace Nekoyume.BlockChain
 
         private bool SyncSucceed { get; set; }
         public bool BlockDownloadFailed { get; private set; }
+        public AppProtocolVersion EncounteredHighestVersion { get; private set; }
 
         private static TelemetryClient _telemetryClient;
 
@@ -192,6 +193,8 @@ namespace Nekoyume.BlockChain
             FileHelper.WriteAllText("Block.log", "");
 #endif
             lastTenBlocks = new ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)>();
+
+            EncounteredHighestVersion = appProtocolVersion;
 
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 blocks,
@@ -542,7 +545,18 @@ namespace Nekoyume.BlockChain
                 "Different Version Encountered; expected (local): {0}; actual ({1}): {2}",
                 localVersion, peer, peerVersion
             );
-            SyncSucceed = false;
+            if (localVersion.Version < peerVersion.Version)
+            {
+                // 위 조건에 해당하지 않을 때는 true를 넣는 것이 아니라 no-op이어야 함.
+                // (이 콜백 함수 자체가 여러 차례 호출될 수 있기 때문에 SyncSucceed가 false로 채워졌는데
+                // 그 다음에 다시 true로 덮어씌어지거나 하면 안되기 때문.)
+                SyncSucceed = false;
+            }
+
+            if (peerVersion.Version > EncounteredHighestVersion.Version)
+            {
+                EncounteredHighestVersion = peerVersion;
+            }
 
             // 로컬 앱 버전과 다른 피어는 일단 무시 (버전이 더 높든 낮든). (false 반환하면 만난 피어 무시함.)
             return false;
