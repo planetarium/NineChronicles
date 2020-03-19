@@ -184,6 +184,19 @@ namespace Nekoyume.BlockChain
                         await MakeTransaction(actions);
                     });
                     yield return new WaitUntil(() => task.IsCompleted);
+
+                    if (task.IsFaulted)
+                    {
+                        Debug.LogException(task.Exception);
+                        Debug.LogError(
+                            "Unexpected exception occurred. re-enqueue actions for retransmission."
+                        );
+
+                        foreach (var action in actions)
+                        {
+                            _queuedActions.Enqueue(action);
+                        }
+                    }
                 }
             }
         }

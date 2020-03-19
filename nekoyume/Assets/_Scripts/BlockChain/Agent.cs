@@ -189,7 +189,8 @@ namespace Nekoyume.BlockChain
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 blocks,
                 privateKey,
-                appProtocolVersion: default(AppProtocolVersion),  // FIXME
+                // FIXME: 버전 클레임을 매번 새로 서명해서 만들고 있으므로, 이렇게 냅두면 안 됨. 임시 조치.
+                appProtocolVersion: AppProtocolVersion.Sign(privateKey, 1),
                 host: host,
                 listenPort: port,
                 iceServers: iceServers,
