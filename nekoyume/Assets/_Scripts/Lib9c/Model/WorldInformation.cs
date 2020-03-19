@@ -24,7 +24,8 @@ namespace Nekoyume.Model
             public bool IsUnlocked => UnlockedBlockIndex != -1;
             public bool IsStageCleared => StageClearedBlockIndex != -1;
 
-            public World(WorldSheet.Row worldRow, long unlockedBlockIndex = -1, long stageClearedBlockIndex = -1,
+            public World(WorldSheet.Row worldRow, long unlockedBlockIndex = -1,
+                long stageClearedBlockIndex = -1,
                 int stageClearedId = -1)
             {
                 Id = worldRow.Id;
@@ -78,7 +79,8 @@ namespace Nekoyume.Model
                     [(Bencodex.Types.Text) "StageBegin"] = StageBegin.Serialize(),
                     [(Bencodex.Types.Text) "StageEnd"] = StageEnd.Serialize(),
                     [(Bencodex.Types.Text) "UnlockedBlockIndex"] = UnlockedBlockIndex.Serialize(),
-                    [(Bencodex.Types.Text) "StageClearedBlockIndex"] = StageClearedBlockIndex.Serialize(),
+                    [(Bencodex.Types.Text) "StageClearedBlockIndex"] =
+                        StageClearedBlockIndex.Serialize(),
                     [(Bencodex.Types.Text) "StageClearedId"] = StageClearedId.Serialize(),
                 });
             }
@@ -113,7 +115,8 @@ namespace Nekoyume.Model
         /// </summary>
         private readonly Dictionary<int, World> _worlds = new Dictionary<int, World>();
 
-        public WorldInformation(long blockIndex, WorldSheet worldSheet, bool openAllOfWorldsAndStages = false)
+        public WorldInformation(long blockIndex, WorldSheet worldSheet,
+            bool openAllOfWorldsAndStages = false)
         {
             if (worldSheet is null)
                 return;
@@ -166,13 +169,9 @@ namespace Nekoyume.Model
             TryGetWorld(worldId, out var world)
             && world.IsUnlocked;
 
-        public bool IsStageCleared(int worldId, int stageId) =>
-            TryGetWorld(worldId, out var world)
-            && stageId <= world.StageClearedId;
-
         public bool IsStageCleared(int stageId) =>
-            TryGetWorldByStageId(stageId, out var world)
-            && stageId <= world.StageClearedId;
+            TryGetLastClearedStageId(out var clearedStageId)
+            && stageId <= clearedStageId;
 
         /// <summary>
         /// 인자로 받은 `worldId`에 해당하는 `World` 객체를 얻는다.
@@ -269,7 +268,8 @@ namespace Nekoyume.Model
         /// <param name="stageId"></param>
         /// <param name="clearedAt"></param>
         /// <exception cref="ArgumentException"></exception>
-        public void ClearStage(int worldId, int stageId, long clearedAt, WorldUnlockSheet unlockSheet)
+        public void ClearStage(int worldId, int stageId, long clearedAt,
+            WorldUnlockSheet unlockSheet)
         {
             var world = _worlds[worldId];
             if (stageId <= world.StageClearedId)

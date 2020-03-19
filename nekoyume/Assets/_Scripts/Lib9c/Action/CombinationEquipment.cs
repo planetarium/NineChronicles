@@ -42,7 +42,6 @@ namespace Nekoyume.Action
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged);
-
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
@@ -76,6 +75,7 @@ namespace Nekoyume.Action
                 }
             }
 
+            // 메인 레시피 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(recipe.UnlockStage))
             {
                 return states;
@@ -98,16 +98,18 @@ namespace Nekoyume.Action
             var requiredActionPoint = recipe.RequiredActionPoint;
 
             // 장비 제작
-            if (!tableSheets.EquipmentItemSheet.TryGetValue(recipe.ResultEquipmentId, out var equipRow))
+            if (!tableSheets.EquipmentItemSheet.TryGetValue(recipe.ResultEquipmentId,
+                out var equipRow))
             {
                 return states;
             }
 
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
-                equipRow, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex + recipe.RequiredBlockIndex);
+                equipRow, ctx.Random.GenerateRandomGuid(),
+                ctx.BlockIndex + recipe.RequiredBlockIndex);
 
 
-            // 보조 레시피 검증
+            // 서브 레시피 검증
             HashSet<int> optionIds = null;
             if (!(SubRecipeId is null))
             {
@@ -117,6 +119,7 @@ namespace Nekoyume.Action
                     return states;
                 }
 
+                // 서브 레시피 해금 검사.
                 if (!avatarState.worldInformation.IsStageCleared(subRecipe.UnlockStage))
                 {
                     return states;
@@ -129,7 +132,8 @@ namespace Nekoyume.Action
                         return states;
                     }
 
-                    if (!avatarState.inventory.RemoveFungibleItem(subMaterialRow.ItemId, materialInfo.Count))
+                    if (!avatarState.inventory.RemoveFungibleItem(subMaterialRow.ItemId,
+                        materialInfo.Count))
                     {
                         return states;
                     }
@@ -169,7 +173,8 @@ namespace Nekoyume.Action
             };
             var requiredIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
             slotState.Update(result, requiredIndex);
-            var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredIndex);
+            var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
+                requiredIndex);
             result.id = mail.id;
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);
@@ -188,7 +193,8 @@ namespace Nekoyume.Action
                 ["slotIndex"] = SlotIndex.Serialize(),
             }.ToImmutableDictionary();
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
         {
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             RecipeId = plainValue["recipeId"].ToInteger();
@@ -202,7 +208,8 @@ namespace Nekoyume.Action
             return new StatMap(row.StatType, value);
         }
 
-        private static Skill GetSkill(EquipmentItemOptionSheet.Row row, TableSheets tableSheets, IRandom random)
+        private static Skill GetSkill(EquipmentItemOptionSheet.Row row, TableSheets tableSheets,
+            IRandom random)
         {
             try
             {
@@ -240,7 +247,8 @@ namespace Nekoyume.Action
                 optionSelector.Add(optionRow, optionInfo.Ratio);
             }
 
-            IEnumerable<EquipmentItemOptionSheet.Row> optionRows = new EquipmentItemOptionSheet.Row[0];
+            IEnumerable<EquipmentItemOptionSheet.Row> optionRows =
+                new EquipmentItemOptionSheet.Row[0];
             try
             {
                 optionRows = optionSelector.Select(subRecipe.MaxOptionLimit);
@@ -269,9 +277,11 @@ namespace Nekoyume.Action
                             equipment.Skills.Add(skill);
                         }
                     }
+
                     optionIds.Add(optionRow.Id);
                 }
             }
+
             return optionIds;
         }
     }

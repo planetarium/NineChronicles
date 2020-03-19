@@ -72,18 +72,13 @@ namespace Nekoyume.UI.Module
 
         public void Set(AvatarState avatarState)
         {
-            // 해금 검사.
-            if (avatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
+            if (_rowData is null)
             {
-                if (_rowData.UnlockStage > stageId)
-                {
-                    SetLocked(true);
-                    return;
-                }
-
-                SetLocked(false);
+                return;
             }
-            else
+            
+            // 해금 검사.
+            if (!avatarState.worldInformation.IsStageCleared(_rowData.UnlockStage))
             {
                 SetLocked(true);
                 return;
