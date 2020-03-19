@@ -74,10 +74,15 @@ namespace Launcher
                     try
                     {
                         var settings = LoadSettings();
-                        await Task.WhenAll(
-                            UpdateCheckTask(settings, cancellationToken),
-                            SyncTask(settings, cancellationToken)
-                        );
+                        var tasks = new[] { SyncTask(settings, cancellationToken) }.ToList();
+
+                        // gameBinaryPath는 임의로 게임 바이너리 경로를 정해주기 위한 값이므로 비어있지 않다면 업데이트를 하지 않습니다.
+                        if (string.IsNullOrEmpty(settings.GameBinaryPath))
+                        {
+                            tasks.Add(UpdateCheckTask(settings, cancellationToken));
+                        }
+
+                        await Task.WhenAll(tasks);
                     }
                     catch (TimeoutException e)
                     {
