@@ -147,6 +147,8 @@ namespace Nekoyume.BlockChain
             int? port,
             bool consoleSink,
             bool development,
+            AppProtocolVersion appProtocolVersion,
+            IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
             string storageType = null)
         {
             InitializeLogger(consoleSink, development);
@@ -164,6 +166,11 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"Store Path: {path}");
             Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
+            Debug.LogFormat(
+                "AppProtocolVersion: {0}\nAppProtocolVersion.Token: {1}",
+                appProtocolVersion,
+                appProtocolVersion.Token
+            );
 
             var policy = BlockPolicy.GetPolicy();
             PrivateKey = privateKey;
@@ -189,12 +196,12 @@ namespace Nekoyume.BlockChain
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 blocks,
                 privateKey,
-                // FIXME: 버전 클레임을 매번 새로 서명해서 만들고 있으므로, 이렇게 냅두면 안 됨. 임시 조치.
-                appProtocolVersion: AppProtocolVersion.Sign(privateKey, 1),
+                appProtocolVersion: appProtocolVersion,
                 host: host,
                 listenPort: port,
                 iceServers: iceServers,
-                differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered);
+                differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered,
+                trustedAppProtocolVersionSigners: trustedAppProtocolVersionSigners);
 
             if (!consoleSink) InitializeTelemetryClient(_swarm.Address);
 
@@ -285,6 +292,9 @@ namespace Nekoyume.BlockChain
             var storagePath = options.StoragePath ?? DefaultStoragePath;
             var storageType = options.storageType;
             var development = options.Development;
+            var appProtocolVersion = AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
+                .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
             Init(
                 privateKey,
                 storagePath,
@@ -294,6 +304,8 @@ namespace Nekoyume.BlockChain
                 port,
                 consoleSink,
                 development,
+                appProtocolVersion,
+                trustedAppProtocolVersionSigners,
                 storageType
             );
 
