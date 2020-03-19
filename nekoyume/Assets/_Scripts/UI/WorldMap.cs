@@ -256,9 +256,14 @@ namespace Nekoyume.UI
         private void ShowWorld(int worldId, int stageId, bool showWorld, bool callByShow = false)
         {
             if (callByShow)
+            {
                 CallByShowUpdateWorld();
+            }
             else
+            {
                 SharedViewModel.IsWorldShown.SetValueAndForceNotify(showWorld);
+            }
+
             SelectedWorldId = worldId;
             Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SelectedWorldId, out var worldRow, true);
             SelectedWorldStageBegin = worldRow.StageBegin;
