@@ -76,7 +76,7 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
-            
+
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(_rowData.UnlockStage))
             {
