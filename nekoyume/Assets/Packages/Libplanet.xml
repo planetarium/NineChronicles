@@ -1169,6 +1169,18 @@
             <paramref name="publicKey"/>.</returns>
             <seealso cref="M:Libplanet.Address.#ctor(Libplanet.Crypto.PublicKey)"/>
         </member>
+        <member name="M:Libplanet.AddressExtensions.ToAddress(Libplanet.Crypto.PrivateKey)">
+            <summary>
+            Derives the corresponding <see cref="T:Libplanet.Address"/> from a <see
+            cref="T:Libplanet.Crypto.PrivateKey"/>.
+            <para>This enables a code like <c>privateKey.ToAddress()</c> instead
+            of <c>new Address(privateKey.PublicKey)</c>.</para>
+            </summary>
+            <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> to derive
+            the corresponding <see cref="T:Libplanet.Address"/> from.</param>
+            <returns>The corresponding <see cref="T:Libplanet.Address"/> derived from
+            <paramref name="privateKey"/>.</returns>
+        </member>
         <member name="T:Libplanet.Blockchain.BlockChain`1">
             <summary>
             A class have <see cref="T:Libplanet.Blocks.Block`1"/>s, <see cref="T:Libplanet.Tx.Transaction`1"/>s, and the chain
@@ -2988,6 +3000,16 @@
             <param name="signature">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Signature"/>.</param>
             <param name="signer">Gets the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</param>
         </member>
+        <member name="P:Libplanet.Net.AppProtocolVersion.Token">
+            <summary>
+            A token string which serializes an <see cref="T:Libplanet.Net.AppProtocolVersion"/>.
+            <para>As this is designed to be easy to copy and paste, the format consists of only
+            printable characters in the ASCII character set.</para>
+            <para>A token can be deserialized into an <see cref="T:Libplanet.Net.AppProtocolVersion"/> through
+            <see cref="M:Libplanet.Net.AppProtocolVersion.FromToken(System.String)"/> method.</para>
+            </summary>
+            <seealso cref="M:Libplanet.Net.AppProtocolVersion.FromToken(System.String)"/>
+        </member>
         <member name="M:Libplanet.Net.AppProtocolVersion.Sign(Libplanet.Crypto.PrivateKey,System.Int32,Bencodex.Types.IValue)">
             <summary>
             Claim a <paramref name="version"/> with <paramref name="extra"/> data and sign it
@@ -2999,6 +3021,16 @@
             <returns>A signed version claim.</returns>
             <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="signer"/> is
             <c>null</c>.</exception>
+        </member>
+        <member name="M:Libplanet.Net.AppProtocolVersion.FromToken(System.String)">
+            <summary>
+            Deserializes a <see cref="P:Libplanet.Net.AppProtocolVersion.Token"/> into an <see cref="T:Libplanet.Net.AppProtocolVersion"/> object.
+            </summary>
+            <param name="token">A <see cref="P:Libplanet.Net.AppProtocolVersion.Token"/> string.</param>
+            <returns>A deserialized <see cref="T:Libplanet.Net.AppProtocolVersion"/> object.</returns>
+            <exception cref="T:System.FormatException">Thrown when the given <paramref name="token"/>'s
+            format is invalid.  The detailed reason is in the message.</exception>
+            <seealso cref="P:Libplanet.Net.AppProtocolVersion.Token"/>
         </member>
         <member name="M:Libplanet.Net.AppProtocolVersion.Verify(Libplanet.Crypto.PublicKey)">
             <summary>
