@@ -81,7 +81,7 @@ namespace Launcher
                     {
                         Log.Error(e, "Unexpected exception occurred.");
                         throw;
-                    }   
+                    }
                 }
             }, cancellationToken);
         }
@@ -98,7 +98,7 @@ namespace Launcher
 
         private async Task UpdateCheckTask(LauncherSettings settings, CancellationToken cancellationToken)
         {
-            // TODO: save current version in local file and load, and use it. 
+            // TODO: save current version in local file and load, and use it.
             var updateWatcher = new UpdateWatcher(Storage, settings.DeployBranch, LocalCurrentVersion ?? default);
             var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             updateWatcher.VersionUpdated += async (sender, e) =>
@@ -110,7 +110,7 @@ namespace Launcher
                 var tempPath = Path.Combine(Path.GetTempPath(), "temp-9c-download" + version);
                 cts.Cancel();
                 await DownloadGameBinaryAsync(tempPath, settings.DeployBranch, version, cts.Token);
-                
+
                 // FIXME: it kills game process in force, if it was running. it should be
                 //        killed with some message.
                 SwapGameDirectory(
@@ -153,10 +153,11 @@ namespace Launcher
             }
 
             var storePath = string.IsNullOrEmpty(settings.StorePath) ? DefaultStorePath : settings.StorePath;
+            var appProtocolVersion = AppProtocolVersion.FromToken(settings.AppProtocolVersionToken);
 
             LibplanetNodeServiceProperties properties = new LibplanetNodeServiceProperties
             {
-                AppProtocolVersion = settings.AppProtocolVersion,
+                AppProtocolVersion = appProtocolVersion,
                 GenesisBlockPath = settings.GenesisBlockPath,
                 NoMiner = settings.NoMiner,
                 PrivateKey = privateKey ?? new PrivateKey(),
@@ -234,7 +235,7 @@ namespace Launcher
         {
             var uri = new Uri(iceServerInfo);
             string[] userInfo = uri.UserInfo.Split(':');
-        
+
             return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
         }
 
@@ -244,8 +245,8 @@ namespace Launcher
             var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
             var host = tokens[1];
             var port = int.Parse(tokens[2]);
-        
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port), 0);
+
+            return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
         }
 
         public async Task RunGame()

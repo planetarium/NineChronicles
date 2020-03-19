@@ -1,13 +1,13 @@
 {
   "storePath": "",
   "storeType": "",
-  "appProtocolVersion": 1,
+  "appProtocolVersionToken": "<app-protocol-version-token>",
   "keyStorePath": "",
   "passphrase": "",
   "iceServer": "turn://0ed3e48007413e7c2e638f13ddd75ad272c6c507e081bd76a75e4b7adc86c9af:0apejou+ycZFfwtREeXFKdfLj2gCclKzz5ZJ49Cmy6I=@turn.planetarium.dev:3478/",
   "noMiner": true,
-  "seed": "027bd36895d68681290e570692ad3736750ceaab37be402442ffb203967f98f7b6,afb41a981311111eabe8e06719e43e0a-1817452618.us-east-2.elb.amazonaws.com,31234",
-  "genesisBlockPath": "https://9c-test.s3.ap-northeast-2.amazonaws.com/genesis-block-20200304",
+  "seed": "<seed-peer-info>",
+  "genesisBlockPath": "<genesis-block-path>",
   "gameBinaryPath": "",
   "deployBranch": "launcher"
 }
