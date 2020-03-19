@@ -162,7 +162,7 @@ namespace Launcher
                 NoMiner = settings.NoMiner,
                 PrivateKey = privateKey ?? new PrivateKey(),
                 IceServers = new[] {settings.IceServer}.Select(LoadIceServer),
-                Peers = new[] {settings.Seed}.Select(peerInfo => LoadPeer(peerInfo, appProtocolVersion)),
+                Peers = new[] {settings.Seed}.Select(LoadPeer),
                 // FIXME: how can we validate it to use right store type?
                 StorePath = storePath,
                 StoreType = settings.StoreType,
@@ -239,7 +239,7 @@ namespace Launcher
             return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
         }
 
-        private static BoundPeer LoadPeer(string peerInfo, AppProtocolVersion appProtocolVersion)
+        private static BoundPeer LoadPeer(string peerInfo)
         {
             var tokens = peerInfo.Split(',');
             var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
