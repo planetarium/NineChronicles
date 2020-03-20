@@ -44,6 +44,11 @@ namespace Nekoyume.UI
         private int _lens;
         private int _ear;
         private int _tail;
+
+        private const int HairCount = 1;
+        private const int LensCount = 6;
+        private const int EarCount = 10;
+        private const int TailCount = 10;
         
 
         protected override void Awake()
@@ -214,7 +219,11 @@ namespace Nekoyume.UI
 
         public void ChangeHair(int offset)
         {
-            var hair = Mathf.Clamp(_hair + offset, 0, 0);
+            var hair = _hair + offset;
+
+            if (hair < 0) hair = HairCount + offset;
+            else if (hair >= HairCount) hair = 0;
+
             if (hair == _hair)
                 return;
 
@@ -225,7 +234,11 @@ namespace Nekoyume.UI
 
         public void ChangeLens(int offset)
         {
-            var lens = Mathf.Clamp(_lens + offset, 0, 5);
+            var lens = _lens + offset;
+
+            if (lens < 0) lens = LensCount + offset;
+            else if (lens >= LensCount) lens = 0;
+
             if (lens == _lens)
                 return;
             
@@ -242,9 +255,13 @@ namespace Nekoyume.UI
 
         public void ChangeEar(int offset)
         {
-            var ear = Mathf.Clamp(_ear + offset, 0, 9);
+            var ear = _ear + offset;
+
+            if (ear < 0) ear = EarCount + offset;
+            else if (ear >= EarCount) ear = 0;
+
             if (ear == _ear)
-                return;
+                return; 
             
             _ear = ear;
             
@@ -259,7 +276,11 @@ namespace Nekoyume.UI
 
         public void ChangeTail(int offset)
         {
-            var tail = Mathf.Clamp(_tail + offset, 0, 9);
+            var tail = _tail + offset;
+
+            if (tail < 0) tail = TailCount + offset;
+            else if (tail >= TailCount) tail = 0;
+
             if (tail == _tail)
                 return;
             
