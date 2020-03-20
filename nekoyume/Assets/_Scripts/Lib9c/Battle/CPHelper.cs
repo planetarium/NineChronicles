@@ -20,7 +20,7 @@ namespace Nekoyume.Battle
         public const decimal CPHealMultiply = 1.1m;
         public const decimal CPBuffMultiply = 1.1m;
         public const decimal CPDebuffMultiply = 1.1m;
-        
+
         /// <summary>
         /// `AvatarState`의 CP를 리턴한다.
         /// </summary>
@@ -31,7 +31,7 @@ namespace Nekoyume.Battle
             // todo: 구현!
             return 100;
         }
-        
+
         /// <summary>
         /// `Player`의 CP를 리턴한다.
         /// </summary>
@@ -39,14 +39,16 @@ namespace Nekoyume.Battle
         /// <returns></returns>
         public static int GetCP(Player player)
         {
-            return GetCP(player.Stats.LevelStats, StatType.ATK) + player.Equipments.Sum(GetCP);
+            return GetCharacterCP(player.Stats.LevelStats.GetStats(true)) +
+                   player.Equipments.Sum(GetCP);
         }
 
         public static int GetCP(Enemy enemy)
         {
-            var result = (decimal) GetCP(enemy.Stats.LevelStats, StatType.ATK);
+            var result = (decimal) GetCharacterCP(enemy.Stats.LevelStats.GetStats(true));
             result = enemy.Skills.Aggregate(result, (current, skill) => current * GetCP(skill));
-            return (int) enemy.BuffSkills.Aggregate(result, (current, skill) => current * GetCP(skill));
+            return (int) enemy.BuffSkills.Aggregate(result,
+                (current, skill) => current * GetCP(skill));
         }
 
         /// <summary>
@@ -59,21 +61,10 @@ namespace Nekoyume.Battle
         /// <returns></returns>
         public static int GetCP(Equipment equipment)
         {
-            var result = (decimal) GetCP(equipment.StatsMap, equipment.UniqueStatType, false);
+            var result = (decimal) GetCP(equipment.StatsMap, equipment.UniqueStatType);
             result = equipment.Skills.Aggregate(result, (current, skill) => current * GetCP(skill));
-            return (int) equipment.BuffSkills.Aggregate(result, (current, buffSkill) => current * GetCP(buffSkill));
-        }
-
-        /// <summary>
-        /// `Stats`의 CP를 리턴한다.
-        /// </summary>
-        /// <param name="stats"></param>
-        /// <param name="uniqueStatType"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentOutOfRangeException"></exception>
-        private static int GetCP(IStats stats, StatType uniqueStatType)
-        {
-            return GetCP(stats.GetStats(true), uniqueStatType);
+            return (int) equipment.BuffSkills.Aggregate(result,
+                (current, buffSkill) => current * GetCP(buffSkill));
         }
 
         /// <summary>
@@ -82,9 +73,9 @@ namespace Nekoyume.Battle
         /// <param name="statsMap"></param>
         /// <param name="uniqueStatType"></param>
         /// <returns></returns>
-        private static int GetCP(StatsMap statsMap, StatType uniqueStatType, bool isCharacter = true)
+        private static int GetCP(StatsMap statsMap, StatType uniqueStatType)
         {
-            return GetCP(statsMap.GetBaseAndAdditionalStats(true), uniqueStatType, isCharacter);
+            return GetEquipmentCP(statsMap.GetBaseAndAdditionalStats(true), uniqueStatType);
         }
 
         private static decimal GetCP(Skill skill)
@@ -123,36 +114,14 @@ namespace Nekoyume.Battle
             }
         }
 
-        private static int GetCP(
-            IEnumerable<(StatType statType, int value)> baseAndAdditionalStats,
-            StatType uniqueStatType, bool isCharacter = true)
+        private static int GetCharacterCP(
+            IEnumerable<(StatType statType, int value)> statTuples)
         {
             var part1 = 0m;
             var part2 = 1m;
             var part3 = 1m;
-            foreach (var (statType, value) in baseAndAdditionalStats)
+            foreach (var (statType, value) in statTuples)
             {
-                if (statType == uniqueStatType)
-                {
-                    switch (statType)
-                    {
-                        case StatType.CRI:
-                        case StatType.HIT:
-                        case StatType.SPD:
-                            part1 += value / 100m;
-                            if (isCharacter)
-                                break;
-
-                            part1 += 1m;
-                            break;
-                        default:
-                            part1 += value;
-                            break;
-                    }
-
-                    continue;
-                }
-
                 switch (statType)
                 {
                     case StatType.NONE:
@@ -165,15 +134,7 @@ namespace Nekoyume.Battle
                     case StatType.CRI:
                     case StatType.HIT:
                     case StatType.SPD:
-                        if (isCharacter)
-                        {
-                            part3 *= value / 100m;
-                        }
-                        else
-                        {
-                            part3 *= 1m + value / 100m;
-                        }
-
+                        part3 *= value / 100m;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -183,14 +144,14 @@ namespace Nekoyume.Battle
             return (int) (part1 * part2 * part3);
         }
 
-        private static int GetCP(
-            IEnumerable<(StatType statType, int baseValue, int additionalValue)> baseAndAdditionalStats,
-            StatType uniqueStatType, bool isCharacter = true)
+        private static int GetEquipmentCP(
+            IEnumerable<(StatType statType, int baseValue, int additionalValue)> statTuples,
+            StatType uniqueStatType)
         {
             var part1 = 0m;
             var part2 = 1m;
             var part3 = 1m;
-            foreach (var (statType, baseValue, additionalValue) in baseAndAdditionalStats)
+            foreach (var (statType, baseValue, additionalValue) in statTuples)
             {
                 if (statType == uniqueStatType)
                 {
@@ -201,9 +162,6 @@ namespace Nekoyume.Battle
                         case StatType.SPD:
                             part1 += baseValue / 100m;
                             part2 += additionalValue / 100m;
-                            if (isCharacter)
-                                break;
-
                             part1 += 1m;
                             break;
                         default:
@@ -227,15 +185,7 @@ namespace Nekoyume.Battle
                     case StatType.CRI:
                     case StatType.HIT:
                     case StatType.SPD:
-                        if (isCharacter)
-                        {
-                            part3 *= (baseValue + additionalValue) / 100m;
-                        }
-                        else
-                        {
-                            part3 *= 1 + (baseValue + additionalValue) / 100m;
-                        }
-
+                        part3 *= 1 + (baseValue + additionalValue) / 100m;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -244,5 +194,26 @@ namespace Nekoyume.Battle
 
             return (int) (part1 * part2 * part3);
         }
+
+        // private static int GetCP(StatType statType, int statValue)
+        // {
+        //     switch (statType)
+        //     {
+        //         case StatType.NONE:
+        //             break;
+        //         case StatType.HP:
+        //             return statValue;
+        //         case StatType.ATK:
+        //         case StatType.DEF:
+        //             return (int) (statValue * 0.1f);
+        //         case StatType.CRI:
+        //         case StatType.HIT:
+        //             return (int) (1 + statValue * 0.05f);
+        //         case StatType.SPD:
+        //             break;
+        //         default:
+        //             throw new ArgumentOutOfRangeException(nameof(statType), statType, null);
+        //     }
+        // }
     }
 }
