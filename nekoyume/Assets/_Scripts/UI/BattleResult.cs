@@ -178,17 +178,19 @@ namespace Nekoyume.UI
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
             stageProgressBar.Show();
 
-            if (SharedModel.ShouldRepeat)
-            {
-                submitButton.interactable = true;
-                SubmitWidget = submitButton.onClick.Invoke;
-                submitButtonText.text = LocalizationManager.Localize("UI_BATTLE_AGAIN");
-                submitButton.gameObject.SetActive(true);
-            }
-            else
+            if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
             {
                 submitButton.gameObject.SetActive(false);
                 SubmitWidget = closeButton.onClick.Invoke;
+            }
+            else
+            {
+                submitButton.interactable = true;
+                SubmitWidget = submitButton.onClick.Invoke;
+                submitButtonText.text = SharedModel.ShouldRepeat
+                    ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
+                    : LocalizationManager.Localize("UI_NEXT_STAGE");
+                submitButton.gameObject.SetActive(true);
             }
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
@@ -244,7 +246,7 @@ namespace Nekoyume.UI
             bottomText.enabled = false;
             closeButton.interactable = true;
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
-            submitButton.gameObject.SetActive(false);
+            submitButtonText.text = LocalizationManager.Localize("UI_BATTLE_AGAIN");
 
             StartCoroutine(CoUpdateRewards());
         }
@@ -296,13 +298,15 @@ namespace Nekoyume.UI
                 fullFormat =
                     LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
             }
-            else if (SharedModel.ShouldRepeat)
+            else if (SharedModel.ShouldExit)
             {
-                fullFormat = LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT");
+                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
             }
             else
             {
-                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                fullFormat = SharedModel.ShouldRepeat
+                    ? LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
+                    : LocalizationManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
             }
 
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
@@ -327,7 +331,7 @@ namespace Nekoyume.UI
                 floatTimeMinusOne = limitSeconds - 1f;
             }
 
-            if (!SharedModel.ShouldRepeat)
+            if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
             {
                 GoToMain();
             }
