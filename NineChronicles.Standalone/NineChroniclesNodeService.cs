@@ -39,16 +39,13 @@ namespace NineChronicles.Standalone
         {
             Properties = properties;
             RpcProperties = rpcNodeServiceProperties;
-        } 
-        
-        public async Task Run(CancellationToken cancellationToken = default)
-        {
+
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy();
             async Task minerLoopAction(
-                BlockChain<NineChroniclesActionType> chain, 
-                Swarm<NineChroniclesActionType> swarm, 
-                PrivateKey privateKey, 
+                BlockChain<NineChroniclesActionType> chain,
+                Swarm<NineChroniclesActionType> swarm,
+                PrivateKey privateKey,
                 CancellationToken cancellationToken)
             {
                 var miner = new Miner(chain, swarm, privateKey);
@@ -67,11 +64,14 @@ namespace NineChronicles.Standalone
             }
 
             NodeService = new LibplanetNodeService<NineChroniclesActionType>(
-                Properties, 
-                blockPolicy, 
+                Properties,
+                blockPolicy,
                 minerLoopAction
             );
+        }
 
+        public async Task Run(CancellationToken cancellationToken = default)
+        {
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
             if (RpcProperties.RpcServer)
             {

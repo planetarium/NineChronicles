@@ -1,17 +1,25 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
     public class SubmitWithCostButton : SubmitButton
     {
+        public Image costBackgroundImage;
+        public Image costBackgroundImageForSubmittable;
+        public GameObject costs;
         public GameObject costNCG;
+        public Image costNCGImage;
+        public Image costNCGImageForSubmittable;
         public TextMeshProUGUI costNCGText;
         public TextMeshProUGUI costNCGTextForSubmittable;
         public GameObject costAP;
+        public Image costAPImage;
+        public Image costAPImageForSubmittable;
         public TextMeshProUGUI costAPText;
         public TextMeshProUGUI costAPTextForSubmittable;
-        public GameObject rightSpacer;
+        public HorizontalLayoutGroup layoutGroup;
 
         public void ShowNCG(decimal ncg, bool isEnough)
         {
@@ -20,13 +28,13 @@ namespace Nekoyume.UI.Module
             costNCGTextForSubmittable.text = costNCGText.text;
             costNCGText.color = isEnough ? Color.white : Color.red;
             costNCGTextForSubmittable.color = costNCGText.color; 
-            UpdateRightSpacer();
+            UpdateSpace();
         }
 
         public void HideNCG()
         {
             costNCG.SetActive(false);
-            UpdateRightSpacer();
+            UpdateSpace();
         }
         
         public void ShowAP(int ap, bool isEnough)
@@ -36,13 +44,13 @@ namespace Nekoyume.UI.Module
             costAPTextForSubmittable.text = costAPText.text;
             costAPText.color = isEnough ? Color.white : Color.red;
             costAPTextForSubmittable.color = costAPText.color;
-            UpdateRightSpacer();
+            UpdateSpace();
         }
 
         public void HideAP()
         {
             costAP.SetActive(false);
-            UpdateRightSpacer();
+            UpdateSpace();
         }
 
         public override void SetSubmittable(bool submittable)
@@ -52,11 +60,25 @@ namespace Nekoyume.UI.Module
             costNCGTextForSubmittable.gameObject.SetActive(submittable);
             costAPText.gameObject.SetActive(!submittable);
             costAPTextForSubmittable.gameObject.SetActive(submittable);
+
+            costBackgroundImage.enabled = !submittable;
+            costAPImage.enabled = !submittable;
+            costNCGImage.enabled = !submittable;
+
+            costBackgroundImageForSubmittable.enabled = submittable;
+            costAPImageForSubmittable.enabled = submittable;
+            costNCGImageForSubmittable.enabled = submittable;
+
+            UpdateSpace();
         }
 
-        private void UpdateRightSpacer()
+        private void UpdateSpace()
         {
-            rightSpacer.SetActive(!costNCG.activeSelf && !costAP.activeSelf);
+            bool hasNoCost = !costAP.activeSelf && !costNCG.activeSelf;
+
+            costs.SetActive(!hasNoCost);
+            layoutGroup.childAlignment = hasNoCost ? TextAnchor.MiddleCenter : TextAnchor.MiddleLeft;
+            layoutGroup.spacing = costAP.activeSelf ^ costNCG.activeSelf ? 15 : 5;
         }
     }
 }

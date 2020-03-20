@@ -197,6 +197,8 @@ namespace Nekoyume.Game
                 }
                 else
                 {
+                    // FIXME: 최신 버전이 뭔지는 Agent.EncounrtedHighestVersion 속성에 들어있으니, 그걸 UI에서 표시해줘야 할 듯?
+                    // AppProtocolVersion? newVersion = _agent is Agent agent ? agent.EncounteredHighestVersion : null;
                     Widget.Find<UpdatePopup>().Show();
                 }
             }

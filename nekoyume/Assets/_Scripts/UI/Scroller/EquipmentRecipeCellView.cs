@@ -48,7 +48,8 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI unlockConditionText;
 
-        public readonly Subject<EquipmentRecipeCellView> OnClick = new Subject<EquipmentRecipeCellView>();
+        public readonly Subject<EquipmentRecipeCellView> OnClick =
+            new Subject<EquipmentRecipeCellView>();
 
         private bool IsLocked => lockParent.activeSelf;
         public EquipmentItemRecipeSheet.Row RowData { get; private set; }
@@ -133,17 +134,7 @@ namespace Nekoyume.UI.Scroller
                 return;
 
             // 해금 검사.
-            if (avatarState.worldInformation.TryGetLastClearedStageId(out var stageId))
-            {
-                if (RowData.UnlockStage > stageId)
-                {
-                    SetLocked(true);
-                    return;
-                }
-
-                SetLocked(false);
-            }
-            else
+            if (!avatarState.worldInformation.IsStageCleared(RowData.UnlockStage))
             {
                 SetLocked(true);
                 return;
@@ -162,13 +153,15 @@ namespace Nekoyume.UI.Scroller
                     var subSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
                     var shouldDimmed = false;
                     foreach (var subRow in RowData.SubRecipeIds
-                        .Select(subRecipeId => subSheet.TryGetValue(subRecipeId, out var subRow) ? subRow : null)
+                        .Select(subRecipeId =>
+                            subSheet.TryGetValue(subRecipeId, out var subRow) ? subRow : null)
                         .Where(item => !(item is null)))
                     {
                         foreach (var info in subRow.Materials)
                         {
                             if (materialSheet.TryGetValue(info.Id, out materialRow) &&
-                                inventory.TryGetFungibleItem(materialRow.ItemId, out fungibleItem) &&
+                                inventory.TryGetFungibleItem(materialRow.ItemId,
+                                    out fungibleItem) &&
                                 fungibleItem.count >= info.Count)
                             {
                                 continue;

@@ -26,5 +26,7 @@ namespace Libplanet.Standalone.Hosting
         public IEnumerable<IceServer> IceServers { get; set; }
 
         public AppProtocolVersion AppProtocolVersion { get; set; }
+
+        public ISet<PublicKey> TrustedAppProtocolVersionSigners { get; set; }
     }
 }
