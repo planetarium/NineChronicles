@@ -54,6 +54,10 @@ namespace Nekoyume.Helper
 
         public bool testEnd;
 
+        public string appProtocolVersion;
+
+        public string[] trustedAppProtocolVersionSigners;
+
         public bool Empty { get; private set; } = true;
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
@@ -246,6 +250,35 @@ namespace Nekoyume.Helper
             {
                 testEnd = value;
                 Empty = false;
+            }
+        }
+
+        [Option('V', "app-protocol-version",
+                Required = false,
+                HelpText = "App protocol version token.")]
+        public string AppProtocolVersion
+        {
+            get => appProtocolVersion;
+            set
+            {
+                appProtocolVersion = value;
+                Empty = false;
+            }
+        }
+
+        [Option('T', "trusted-app-protocol-version-signer",
+                Required = false,
+                HelpText = "Trustworthy signers who claim new app protocol versions")]
+        public IEnumerable<string> TrustedAppProtocolVersionSigners
+        {
+            get => trustedAppProtocolVersionSigners;
+            set
+            {
+                trustedAppProtocolVersionSigners = value.ToArray();
+                if (trustedAppProtocolVersionSigners.Any())
+                {
+                    Empty = false;
+                }
             }
         }
 
