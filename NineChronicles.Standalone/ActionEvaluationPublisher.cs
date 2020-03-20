@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using MagicOnion.Client;
 using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.Shared.Hubs;
+using Serilog;
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace NineChronicles.Standalone
@@ -48,9 +50,10 @@ namespace NineChronicles.Standalone
                 async ev =>
                 {
                     var formatter = new BinaryFormatter();
-                    using var s = new MemoryStream();
-                    formatter.Serialize(s, ev);
-                    await client.BroadcastAsync(s.ToArray());
+                    using var c = new MemoryStream();
+                    using var df = new DeflateStream(c, System.IO.Compression.CompressionLevel.Fastest);
+                    formatter.Serialize(df, ev);
+                    await client.BroadcastAsync(c.ToArray());
                 },
                 stoppingToken
             );
