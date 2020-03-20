@@ -12,7 +12,6 @@ namespace _Scripts.UI
 
         public override void Show()
         {
-            var avatarState = States.Instance.CurrentAvatarState;
             var blockIndex = Game.instance.Agent.BlockIndex;
             foreach (var pair in States.Instance.CombinationSlotStates
                 .Where(pair => !(pair.Value is null)))
