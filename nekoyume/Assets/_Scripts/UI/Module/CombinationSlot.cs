@@ -1,4 +1,5 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
@@ -25,16 +26,20 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(UpdateProgressBar).AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(UpdateProgressBar)
+                .AddTo(gameObject);
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
                 AudioController.PlayClick();
                 ShowPopup();
             }).AddTo(gameObject);
+            unlockText.text = LocalizationManager.Localize("UI_COMBINATION_SLOT_AVAILABLE");
         }
 
         public void SetData(CombinationSlotState state, long blockIndex, int slotIndex)
         {
+            lockText.text = string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                state.UnlockStage);
             _data = state;
             _slotIndex = slotIndex;
             var unlock = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(state.UnlockStage);
@@ -48,6 +53,9 @@ namespace Nekoyume.UI.Module
                     canUse = canUse && state.Result.itemUsable.RequiredBlockIndex <= blockIndex;
                     resultView.SetData(new Item(state.Result.itemUsable));
                     resultView.gameObject.SetActive(!canUse);
+                    progressText.text =
+                        string.Format(LocalizationManager.Localize("UI_COMBINATION_SLOT_CRAFT"),
+                            state.Result.itemUsable.GetLocalizedName());
                 }
                 unlockText.gameObject.SetActive(canUse);
                 progressText.gameObject.SetActive(!canUse);

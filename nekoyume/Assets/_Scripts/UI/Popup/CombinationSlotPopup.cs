@@ -31,8 +31,11 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            submitButton.submitText.text =
-                LocalizationManager.Localize("UI_RAPID_COMBINATION");
+            submitButton.SetSubmitText(
+                LocalizationManager.Localize("UI_COMBINATION_WAITING"),
+                LocalizationManager.Localize("UI_RAPID_COMBINATION")
+            );
+
             submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
