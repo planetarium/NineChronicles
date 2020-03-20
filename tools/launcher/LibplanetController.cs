@@ -197,6 +197,7 @@ namespace Launcher
                 // FIXME: how can we validate it to use right store type?
                 StorePath = storePath,
                 StoreType = settings.StoreType,
+                MinimumDifficulty = settings.MinimumDifficulty,
             };
 
             var rpcProperties = new RpcNodeServiceProperties

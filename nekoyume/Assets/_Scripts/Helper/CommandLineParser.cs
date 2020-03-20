@@ -58,6 +58,8 @@ namespace Nekoyume.Helper
 
         public string[] trustedAppProtocolVersionSigners;
 
+        public int minimumDifficulty = 100000;
+
         public bool Empty { get; private set; } = true;
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
@@ -279,6 +281,17 @@ namespace Nekoyume.Helper
                 {
                     Empty = false;
                 }
+            }
+        }
+
+        [Option('D', "minimum-difficulty", Required = false)]
+        public int MinimumDifficulty
+        {
+            get => minimumDifficulty;
+            set
+            {
+                minimumDifficulty = value;
+                Empty = false;
             }
         }
 

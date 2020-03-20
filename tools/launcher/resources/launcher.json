@@ -8,5 +8,6 @@
   "seed": "<seed-peer-info>",
   "genesisBlockPath": "<genesis-block-path>",
   "gameBinaryPath": "",
-  "deployBranch": "launcher"
+  "deployBranch": "launcher",
+  "minimumDifficulty": 50000000
 }
