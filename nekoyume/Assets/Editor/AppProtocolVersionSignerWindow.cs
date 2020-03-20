@@ -4,6 +4,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using Libplanet.KeyStore;
+using Nekoyume;
 using UnityEngine;
 using UnityEditor;
 
@@ -112,12 +113,8 @@ namespace Editor
             );
             if (GUILayout.Button("Sign"))
             {
-                Bencodex.Types.Dictionary downloadUrls = Bencodex.Types.Dictionary.Empty
-                    .Add("macOS", MacOSBinaryUrl)
-                    .Add("Windows", WindowsBinaryUrl);
-                Bencodex.Types.Dictionary extra = Bencodex.Types.Dictionary.Empty
-                    .Add("downloadUrls", downloadUrls)
-                    .Add("timestamp", $"{timestamp:O}");
+                var appProtocolVersionExtra =
+                    new AppProtocolVersionExtra(MacOSBinaryUrl, WindowsBinaryUrl, timestamp);
 
                 PrivateKey key;
                 try
@@ -135,7 +132,10 @@ namespace Editor
                     return;
                 }
 
-                AppProtocolVersion = Libplanet.Net.AppProtocolVersion.Sign(key, Version, extra);
+                AppProtocolVersion = Libplanet.Net.AppProtocolVersion.Sign(
+                    key,
+                    Version,
+                    appProtocolVersionExtra.Serialize());
             }
             EditorGUI.EndDisabledGroup();
 
