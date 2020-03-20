@@ -14,6 +14,7 @@ using ICSharpCode.SharpZipLib.Tar;
 using Launcher.Storage;
 using Libplanet;
 using Libplanet.Crypto;
+using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
 using NineChronicles.Standalone;
@@ -117,7 +118,8 @@ namespace Launcher
                 this.ActivateProperty(ctrl => ctrl.PrivateKey);
                 return true;
             }
-            catch (Exception)
+            catch (Exception e) when (e is IncorrectPassphraseException ||
+                                      e is MismatchedAddressException)
             {
                 return false;
             }
