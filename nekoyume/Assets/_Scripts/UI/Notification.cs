@@ -16,13 +16,13 @@ namespace Nekoyume.UI
 
         private static readonly ReactiveCollection<NotificationCellView.Model> Models =
             new ReactiveCollection<NotificationCellView.Model>();
-        
+
         private static readonly List<Type> WidgetTypesForUX = new List<Type>();
 
         private static int _widgetEnableCount;
 
-        private static readonly List<(MailType mailType, string message, long requiredBlockIndex)> ReservationList =
-            new List<(MailType mailType, string message, long requiredBlockIndex)>();
+        private static readonly List<(MailType mailType, string message, long requiredBlockIndex, Guid itemId)> ReservationList =
+            new List<(MailType mailType, string message, long requiredBlockIndex, Guid itemId)>();
 
         public static IReadOnlyCollection<NotificationCellView.Model> SharedModels => Models;
 
@@ -39,7 +39,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             Models.Add(new NotificationCellView.Model
             {
                 mailType = mailType,
@@ -61,13 +61,13 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             WidgetTypesForUX.Add(type);
         }
 
-        public static void Reserve(MailType mailType, string message, long requiredBlockIndex)
+        public static void Reserve(MailType mailType, string message, long requiredBlockIndex, Guid itemId)
         {
-            ReservationList.Add((mailType, message, requiredBlockIndex));
+            ReservationList.Add((mailType, message, requiredBlockIndex, itemId));
         }
 
         #region Mono
@@ -99,7 +99,7 @@ namespace Nekoyume.UI
                 break;
             }
         }
-        
+
         #endregion
 
         private static void SubscribeOnEnable(Widget widget)
@@ -111,7 +111,7 @@ namespace Nekoyume.UI
             }
 
             _widgetEnableCount++;
-            
+
             if (_widgetEnableCount == 1)
             {
                 Models.Clear();
@@ -125,15 +125,15 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             if (_widgetEnableCount == 0)
             {
                 return;
             }
-            
+
             _widgetEnableCount--;
         }
-        
+
         private void SubscribeToRemoveModel(int index)
         {
             if (index >= Models.Count)
@@ -144,12 +144,28 @@ namespace Nekoyume.UI
 
         private static void SubscribeBlockIndex(long blockIndex)
         {
-            var list =
-                ReservationList.Where(i => i.requiredBlockIndex <= blockIndex);
+            var list = ReservationList
+                .Where(i => i.requiredBlockIndex <= blockIndex).ToList();
             foreach (var valueTuple in list)
             {
                 Push(valueTuple.mailType, valueTuple.message);
                 ReservationList.Remove(valueTuple);
+            }
+        }
+
+        public static void Remove(Guid itemUsableItemId)
+        {
+            try
+            {
+                var message =
+                    ReservationList.First(m => m.itemId == itemUsableItemId);
+                ReservationList.Remove(message);
+            }
+            catch (ArgumentNullException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
             }
         }
     }

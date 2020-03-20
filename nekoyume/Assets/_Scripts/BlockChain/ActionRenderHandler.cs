@@ -231,7 +231,8 @@ namespace Nekoyume.BlockChain
             UI.Notification.Reserve(
                 MailType.Workshop,
                 string.Format(format, result.itemUsable.Data.GetLocalizedName()),
-                slot.UnlockBlockIndex
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId
             );
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             UpdateAgentState(eval);

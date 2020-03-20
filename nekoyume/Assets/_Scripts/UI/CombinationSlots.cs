@@ -17,7 +17,7 @@ namespace _Scripts.UI
             foreach (var pair in States.Instance.CombinationSlotStates
                 .Where(pair => !(pair.Value is null)))
             {
-                slots[pair.Key].SetData(pair.Value, blockIndex);
+                slots[pair.Key].SetData(pair.Value, blockIndex, pair.Key);
             }
             base.Show();
         }

@@ -19,7 +19,9 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI lockText;
         public TextMeshProUGUI sliderText;
         public TouchHandler touchHandler;
+
         private CombinationSlotState _data;
+        private int _slotIndex;
 
         private void Awake()
         {
@@ -31,9 +33,10 @@ namespace Nekoyume.UI.Module
             }).AddTo(gameObject);
         }
 
-        public void SetData(CombinationSlotState state, long blockIndex)
+        public void SetData(CombinationSlotState state, long blockIndex, int slotIndex)
         {
             _data = state;
+            _slotIndex = slotIndex;
             var unlock = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(state.UnlockStage);
             lockText.gameObject.SetActive(!unlock);
             resultView.gameObject.SetActive(false);
@@ -71,7 +74,7 @@ namespace Nekoyume.UI.Module
 
             if (_data.Result.itemUsable.RequiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
             {
-                Widget.Find<CombinationSlotPopup>().Pop(_data);
+                Widget.Find<CombinationSlotPopup>().Pop(_data, _slotIndex);
             }
         }
     }

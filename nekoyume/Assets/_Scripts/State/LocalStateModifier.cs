@@ -200,6 +200,24 @@ namespace Nekoyume.State
             ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
         }
 
+        public static void AddNewResultAttachmentMail(Address avatarAddress, Guid mailId,
+            long blockIndex)
+        {
+            var modifier = new AvatarAttachmentMailResultSetter(blockIndex, mailId);
+            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _,
+                out var isCurrentAvatarState))
+                return;
+
+            modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+                return;
+
+            AddNewAttachmentMail(avatarAddress, mailId);
+        }
+
         /// <summary>
         /// `AddNewAttachmentMail()` 메서드 로직을 회귀한다.(비휘발성)
         /// </summary>
@@ -209,6 +227,13 @@ namespace Nekoyume.State
         {
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
+        }
+
+        public static void RemoveAttachmentResult(Address avatarAddress, Guid mailId)
+        {
+            var resultModifier = new AvatarAttachmentMailResultSetter(mailId);
+            LocalStateSettings.Instance.Remove(avatarAddress, resultModifier);
             TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
         }
 
@@ -251,7 +276,7 @@ namespace Nekoyume.State
 
         #endregion
 
-        #region Avater
+        #region Avatar
 
         /// <summary>
         /// 아바타의 데일리 리워드 획득 블록 인덱스를 변경한다.(휘발성)
@@ -276,6 +301,24 @@ namespace Nekoyume.State
             ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
         }
 
+        public static void ModifyAvatarItemRequiredIndex(Address avatarAddress, Guid itemId,
+            long blockIndex)
+        {
+            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, itemId);
+            LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
+
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _,
+                out var isCurrentAvatarState))
+                return;
+
+            modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+                return;
+
+            ReactiveAvatarState.DailyRewardReceivedIndex
+                .SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
+        }
         #endregion
 
         #region WeeklyArena
@@ -342,8 +385,13 @@ namespace Nekoyume.State
 
         #endregion
 
-        public static void ModifyCombinationSlot(TableSheets tableSheets,
-            EquipmentItemRecipeSheet.Row row, EquipmentCombinationPanel panel, int slotIndex)
+        public static void ModifyCombinationSlot(
+            TableSheets tableSheets,
+            EquipmentItemRecipeSheet.Row row,
+            EquipmentCombinationPanel panel,
+            int slotIndex,
+            int? subRecipeId
+        )
         {
             var requiredBlockIndex = row.RequiredBlockIndex + Game.Game.instance.Agent.BlockIndex;
             var equipRow =
@@ -361,10 +409,20 @@ namespace Nekoyume.State
                 gold = panel.CostNCG,
                 materials = materials,
                 itemUsable = equipment,
+                recipeId = row.Id,
+                subRecipeId = subRecipeId,
             };
             var modifier = new CombinationSlotStateModifier(result);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
             modifier.Modify(slotState);
+            States.Instance.CombinationSlotStates[slotIndex] = slotState;
+        }
+
+        public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
+        {
+            var prevState = States.Instance.CombinationSlotStates[slotIndex];
+            var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
+            var slotState = modifier.Modify(prevState);
             States.Instance.CombinationSlotStates[slotIndex] = slotState;
         }
 

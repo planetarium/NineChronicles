@@ -522,7 +522,7 @@ namespace Nekoyume.UI
             var slotIndex = 0;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
             CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId, slotIndex);
-            LocalStateModifier.ModifyCombinationSlot(Game.Game.instance.TableSheets, model, combinationPanel, slotIndex);
+            LocalStateModifier.ModifyCombinationSlot(Game.Game.instance.TableSheets, model, combinationPanel, slotIndex, subRecipeId);
             equipmentRecipe.UpdateRecipes();
         }
 

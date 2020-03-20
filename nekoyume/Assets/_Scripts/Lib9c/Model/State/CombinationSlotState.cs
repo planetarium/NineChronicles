@@ -40,6 +40,12 @@ namespace Nekoyume.Model.State
             UnlockBlockIndex = recipeRequiredBlockIndex;
         }
 
+        public void Update(long blockIndex)
+        {
+            UnlockBlockIndex = blockIndex;
+            Result.itemUsable.Update(blockIndex);
+        }
+
         public override IValue Serialize()
         {
             var values = new Dictionary<IKey, IValue>
