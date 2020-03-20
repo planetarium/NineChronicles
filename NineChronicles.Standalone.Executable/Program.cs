@@ -38,6 +38,9 @@ namespace NineChronicles.Standalone.Executable
             string[] iceServerStrings = null,
             [Option("peer")]
             string[] peerStrings = null,
+            [Option("trusted-app-protocol-version-signer", new[] { 'T' },
+                    Description = "Trustworthy signers who claim new app protocol versions")]
+            string[] trustedAppProtocolVersionSigners = null,
             bool rpcServer = false,
             string rpcListenHost = "0.0.0.0",
             int? rpcListenPort = null
@@ -63,6 +66,9 @@ namespace NineChronicles.Standalone.Executable
                 Host = host,
                 Port = port,
                 AppProtocolVersion = AppProtocolVersion.FromToken(appProtocolVersionToken),
+                TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners
+                    .Select(s => new PublicKey(ByteUtil.ParseHex(s)))
+                    .ToHashSet(),
                 GenesisBlockPath = genesisBlockPath,
                 NoMiner = noMiner,
                 PrivateKey = privateKey,
