@@ -252,6 +252,15 @@ namespace Launcher
             {
                 Log.Warning(e, "Background sync task was cancelled.");
             }
+            catch (DifferentAppProtocolVersionException)
+            {
+                // FIXME: It should notice game will be shut down!
+                // It assumes another like updater, will run this, Launcher.
+                // FIXME: determine updater path.
+                const string updaterPath = "";
+                Process.Start(updaterPath);
+                Environment.Exit(0);
+            }
             catch (Exception e)
             {
                 Log.Error(e, "Unexpected exception occurred: {errorMessage}", e.Message);
