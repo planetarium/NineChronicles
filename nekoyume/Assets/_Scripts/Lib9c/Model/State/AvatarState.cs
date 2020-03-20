@@ -241,6 +241,18 @@ namespace Nekoyume.Model.State
             UpdateCompletedQuest();
         }
 
+        public void UpdateFromRapidCombination(CombinationConsumable.ResultModel result,
+            long requiredIndex)
+        {
+            var mail = mailBox.First(m => m.id == result.id);
+            mail.requiredBlockIndex = requiredIndex;
+            var item = inventory.Items
+                .Select(i => i.item)
+                .OfType<ItemUsable>()
+                .First(i => i.ItemId == result.itemUsable.ItemId);
+            item.Update(requiredIndex);
+        }
+
         // todo 1: 퀘스트 전용 함수임을 알 수 있는 네이밍이 필요함.
         // todo 2: 혹은 분리된 객체에게 위임하면 좋겠음.
         #region Quest From Action

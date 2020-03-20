@@ -10,6 +10,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
+using Nekoyume.State.Modifiers;
 
 namespace Nekoyume.BlockChain
 {
@@ -53,6 +54,7 @@ namespace Nekoyume.BlockChain
             RankingBattle();
             WeeklyArenaReward();
             CombinationEquipment();
+            RapidCombination();
         }
 
         public void Stop()
@@ -206,6 +208,30 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseCombinationEquipment).AddTo(_disposables);
+        }
+
+        private void RapidCombination()
+        {
+            _renderer.EveryRender<RapidCombination>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRapidCombination).AddTo(_disposables);
+        }
+
+        private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
+        {
+            var agentAddress = eval.Signer;
+            var avatarAddress = eval.Action.avatarAddress;
+            var agentState = eval.OutputStates.GetAgentState(agentAddress);
+            var slot =
+                eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
+            LocalStateModifier.ModifyAgentGold(agentAddress, agentState.modifiedGold);
+            LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, slot.Result.itemUsable.ItemId);
+            States.Instance.CombinationSlotStates[eval.Action.slotIndex] = slot;
+
+            AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)

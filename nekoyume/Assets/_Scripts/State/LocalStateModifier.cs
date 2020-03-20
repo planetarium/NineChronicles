@@ -319,6 +319,13 @@ namespace Nekoyume.State
             ReactiveAvatarState.DailyRewardReceivedIndex
                 .SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
         }
+
+        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid itemId)
+        {
+            var modifier = new AvatarItemRequiredIndexModifier(itemId);
+            LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
+        }
+
         #endregion
 
         #region WeeklyArena

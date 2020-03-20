@@ -96,7 +96,6 @@ namespace Nekoyume.UI
 
         private void RapidCombination()
         {
-            // Game.Game.instance.ActionManager.RapidCombination(_slotIndex);
             LocalStateModifier.ModifyAgentGold(States.Instance.AgentState.address, -_cost);
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             LocalStateModifier.UnlockCombinationSlot(_slotIndex, blockIndex);
@@ -109,6 +108,7 @@ namespace Nekoyume.UI
                 string.Format(format, result.itemUsable.Data.GetLocalizedName())
             );
             Notification.Remove(result.itemUsable.ItemId);
+            Game.Game.instance.ActionManager.RapidCombination(_slotIndex);
         }
     }
 }
