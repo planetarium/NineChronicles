@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
@@ -221,9 +222,13 @@ namespace Nekoyume.BlockChain
         public void OnRender(byte[] evaluation)
         {
             var formatter = new BinaryFormatter();
-            using (var stream = new MemoryStream(evaluation))
+            using (var compressed = new MemoryStream(evaluation))
+            using (var decompressed = new MemoryStream())
+            using (var df = new DeflateStream(compressed, CompressionMode.Decompress))
             {
-                var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(stream);
+                df.CopyTo(decompressed);
+                decompressed.Seek(0, SeekOrigin.Begin);
+                var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
                 _renderSubject.OnNext(ev);
             }
         }
