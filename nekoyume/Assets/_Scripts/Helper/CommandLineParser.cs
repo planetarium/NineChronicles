@@ -57,7 +57,7 @@ namespace Nekoyume.Helper
         public string appProtocolVersion;
 
         public string[] trustedAppProtocolVersionSigners = new string[] { };
-
+        // Unity 단독 빌드시의 해시 파워가 낮기 때문에, Unity 버전의 기존치는 .NET Core보다 낮게 잡습니다.
         public int minimumDifficulty = 100000;
 
         public bool Empty { get; private set; } = true;
