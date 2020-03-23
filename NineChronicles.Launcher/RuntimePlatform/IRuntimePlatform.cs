@@ -4,6 +4,7 @@ namespace Launcher
     {
         string GameBinaryDownloadFilename { get; }
         string OpenCommand { get; }
+        string CurrentWorkingDirectory { get; }
         string ExecutableGameBinaryPath(string gameBinaryPath);
     }
 }
