@@ -12,7 +12,7 @@ namespace Launcher
     public class UpdateWatcher
     {
         private S3Storage Storage { get; }
-        
+
         public VersionDescriptor LatestVersion { get; private set; }
 
         public string DeployBranch { get; }
@@ -40,6 +40,8 @@ namespace Launcher
                         VersionUpdated?.Invoke(this, new VersionUpdatedEventArgs(currentVersion));
                         LatestVersion = currentVersion;
                     }
+
+                    Log.Debug($"{nameof(UpdateWatcher)} checked.");
 
                     await Task.Delay(checkInterval, cancellationToken);
                 }

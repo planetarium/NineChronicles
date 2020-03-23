@@ -46,6 +46,13 @@ namespace Launcher
 
         private Process GameProcess { get; set; }
 
+        [NotifySignal]
+        public PrivateKey PrivateKey { get; set; }
+
+        private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
+
+        public KeyStore KeyStore => new KeyStore(LoadKeyStorePath(LoadSettings()));
+
         public LibplanetController()
         {
             Storage = new S3Storage();
@@ -68,10 +75,15 @@ namespace Launcher
                     try
                     {
                         var settings = LoadSettings();
-                        await Task.WhenAll(
-                            UpdateCheckTask(settings, cancellationToken),
-                            SyncTask(settings, cancellationToken)
-                        );
+                        var tasks = new[] { SyncTask(settings, cancellationToken) }.ToList();
+
+                        // gameBinaryPath는 임의로 게임 바이너리 경로를 정해주기 위한 값이므로 비어있지 않다면 업데이트를 하지 않습니다.
+                        if (string.IsNullOrEmpty(settings.GameBinaryPath))
+                        {
+                            tasks.Add(UpdateCheckTask(settings, cancellationToken));
+                        }
+
+                        await Task.WhenAll(tasks);
                     }
                     catch (TimeoutException e)
                     {
@@ -96,6 +108,23 @@ namespace Launcher
             _cancellationTokenSource = null;
         }
 
+        public bool Login(string addressHex, string passphrase)
+        {
+            var address = new Address(addressHex);
+            var protectedPrivateKey = KeyStore.ProtectedPrivateKeys[address];
+            try
+            {
+                PrivateKey = protectedPrivateKey.Unprotect(passphrase);
+                this.ActivateProperty(ctrl => ctrl.PrivateKey);
+                return true;
+            }
+            catch (Exception e) when (e is IncorrectPassphraseException ||
+                                      e is MismatchedAddressException)
+            {
+                return false;
+            }
+        }
+
         private async Task UpdateCheckTask(LauncherSettings settings, CancellationToken cancellationToken)
         {
             // TODO: save current version in local file and load, and use it.
@@ -108,20 +137,31 @@ namespace Launcher
 
                 var version = e.UpdatedVersion.Version;
                 var tempPath = Path.Combine(Path.GetTempPath(), "temp-9c-download" + version);
+
+                Log.Debug("New update released! {version}", version);
+                Log.Debug("It will be downloaded at temporary path: {tempPath}", tempPath);
+
                 cts.Cancel();
-                await DownloadGameBinaryAsync(tempPath, settings.DeployBranch, version, cts.Token);
-
-                // FIXME: it kills game process in force, if it was running. it should be
-                //        killed with some message.
-                SwapGameDirectory(
-                    LoadGameBinaryPath(settings),
-                    Path.Combine(tempPath, "MacOS"));
-                cts.Dispose();
                 cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                LocalCurrentVersion = e.UpdatedVersion;
+                try
+                {
+                    await DownloadGameBinaryAsync(tempPath, settings.DeployBranch, version,
+                        cts.Token);
 
-                Updating = false;
-                this.ActivateProperty(ctrl => ctrl.Updating);
+                    // FIXME: it kills game process in force, if it was running. it should be
+                    //        killed with some message.
+                    SwapGameDirectory(
+                        LoadGameBinaryPath(settings),
+                        Path.Combine(tempPath, "MacOS"));
+                    LocalCurrentVersion = e.UpdatedVersion;
+
+                    Updating = false;
+                    this.ActivateProperty(ctrl => ctrl.Updating);
+                }
+                catch (OperationCanceledException)
+                {
+                    Log.Debug("task was cancelled.");
+                }
             };
             await updateWatcher.StartAsync(TimeSpan.FromSeconds(3), cancellationToken);
         }
@@ -143,15 +183,6 @@ namespace Launcher
             Preprocessing = true;
             this.ActivateProperty(ctrl => ctrl.Preprocessing);
 
-            PrivateKey privateKey = null;
-            if (!string.IsNullOrEmpty(settings.KeyStorePath) && !string.IsNullOrEmpty(settings.Passphrase))
-            {
-                // TODO: get passphrase from UI, not setting file.
-                var protectedPrivateKey = ProtectedPrivateKey.FromJson(File.ReadAllText(settings.KeyStorePath));
-                privateKey = protectedPrivateKey.Unprotect(settings.Passphrase);
-                Log.Debug($"Address derived from key store, is {privateKey.PublicKey.ToAddress()}");
-            }
-
             var storePath = string.IsNullOrEmpty(settings.StorePath) ? DefaultStorePath : settings.StorePath;
             var appProtocolVersion = AppProtocolVersion.FromToken(settings.AppProtocolVersionToken);
 
@@ -160,7 +191,7 @@ namespace Launcher
                 AppProtocolVersion = appProtocolVersion,
                 GenesisBlockPath = settings.GenesisBlockPath,
                 NoMiner = settings.NoMiner,
-                PrivateKey = privateKey ?? new PrivateKey(),
+                PrivateKey = PrivateKey ?? new PrivateKey(),
                 IceServers = new[] {settings.IceServer}.Select(LoadIceServer),
                 Peers = new[] {settings.Seed}.Select(LoadPeer),
                 // FIXME: how can we validate it to use right store type?
@@ -193,19 +224,35 @@ namespace Launcher
             {
                 Log.Warning(e, "Background sync task was cancelled.");
             }
+            catch (Exception e)
+            {
+                Log.Error(e, "Unexpected exception occurred: {errorMessage}", e.Message);
+            }
         }
 
         private async Task DownloadGameBinaryAsync(string gameBinaryPath, string deployBranch, string version, CancellationToken cancellationToken)
         {
             var tempFilePath = Path.GetTempFileName();
             using var httpClient = new HttpClient();
-            Log.Debug(Storage.GameBinaryDownloadUri(deployBranch, version).ToString());
+            httpClient.Timeout = Timeout.InfiniteTimeSpan;
+
+            Log.Debug("Start download game binary from '{url}' to {tempFilePath}.",
+                Storage.GameBinaryDownloadUri(deployBranch, version).ToString(),
+                tempFilePath);
             var responseMessage = await httpClient.GetAsync(Storage.GameBinaryDownloadUri(deployBranch, version), cancellationToken);
-            using var fileStream = new FileStream(tempFilePath, FileMode.CreateNew, FileAccess.Write);
+            if (File.Exists(tempFilePath))
+            {
+                File.Delete(tempFilePath);
+            }
+
+            using var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
             await responseMessage.Content.CopyToAsync(fileStream);
+            Log.Debug("Finished download from '{url}'!",
+                Storage.GameBinaryDownloadUri(deployBranch, version).ToString());
 
             // Extract binary.
             // TODO: implement a function to extract with file extension.
+            Log.Debug("Start to extract game binary.");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 await using var tempFile = File.OpenRead(tempFilePath);
@@ -217,6 +264,7 @@ namespace Launcher
             {
                 ZipFile.ExtractToDirectory(tempFilePath, gameBinaryPath);
             }
+            Log.Debug("Finished to extract game binary.");
         }
 
         private static string LoadGameBinaryPath(LauncherSettings settings)
@@ -228,6 +276,18 @@ namespace Launcher
             else
             {
                 return settings.GameBinaryPath;
+            }
+        }
+
+        private static string LoadKeyStorePath(LauncherSettings settings)
+        {
+            if (string.IsNullOrEmpty(settings.KeyStorePath))
+            {
+                return DefaultKeyStorePath;
+            }
+            else
+            {
+                return settings.KeyStorePath;
             }
         }
 
@@ -264,8 +324,18 @@ namespace Launcher
         public void RunGameProcess(string gameBinaryPath)
         {
             string commandArguments =
-                $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort}";
-            GameProcess = Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath), commandArguments);
+                $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort} --private-key {PrivateKeyHex}";
+            try
+            {
+                GameProcess =
+                    Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath),
+                        commandArguments);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Unexpected exception: {msg}", e.Message);
+            }
+            GameProcess.OutputDataReceived += (sender, args) => { Console.WriteLine(args.Data); };
 
             this.ActivateProperty(ctrl => ctrl.GameRunning);
 
@@ -306,15 +376,21 @@ namespace Launcher
             }
         }
 
-        private static string DefaultStorePath => Path.Combine(PlanetariumApplicationPath, "9c");
+        private static string DefaultStorePath => Path.Combine(PlanetariumLocalApplicationPath, "9c");
 
-        private static string DefaultGameBinaryPath => Path.Combine(PlanetariumApplicationPath, "game");
+        private static string DefaultGameBinaryPath => Path.Combine(PlanetariumLocalApplicationPath, "game");
 
-        private static string PlanetariumApplicationPath => Path.Combine(LocalApplicationDataPath, "planetarium");
+        private static string DefaultKeyStorePath => Path.Combine(PlanetariumApplicationPath, "keystore");
+
+        private static string PlanetariumLocalApplicationPath => Path.Combine(LocalApplicationDataPath, "planetarium");
+
+        private static string PlanetariumApplicationPath => Path.Combine(ApplicationDataPath, "planetarium");
 
         private static string LocalApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-        private static string SettingFilePath => Path.Combine(PlanetariumApplicationPath, SettingFileName);
+        private static string ApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+
+        private static string SettingFilePath => Path.Combine(PlanetariumLocalApplicationPath, SettingFileName);
 
         private VersionDescriptor? LocalCurrentVersion
         {
