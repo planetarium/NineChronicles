@@ -24,18 +24,18 @@ namespace Nekoyume.State.Modifiers
 
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarItemRequiredIndexModifier m) || m._itemId != _itemId)
-                return;
-
-            _blockIndex += m._blockIndex;
+            if (modifier is AvatarItemRequiredIndexModifier m && m._itemId == _itemId)
+            {
+                _blockIndex += m._blockIndex;
+            }
         }
 
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
-            if (!(modifier is AvatarItemRequiredIndexModifier m) || m._itemId != _itemId)
-                return;
-
-            _blockIndex -= m._blockIndex;
+            if (modifier is AvatarItemRequiredIndexModifier m && m._itemId == _itemId)
+            {
+                _blockIndex -= m._blockIndex;
+            }
         }
 
         public override AvatarState Modify(AvatarState state)

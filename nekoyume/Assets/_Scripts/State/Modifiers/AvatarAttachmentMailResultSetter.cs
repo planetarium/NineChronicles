@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -23,8 +24,10 @@ namespace Nekoyume.State.Modifiers
             if (state is null)
                 return null;
 
-            var ids = guidList.Select(i => i.Value);
-            var attachmentMails = state.mailBox.OfType<AttachmentMail>().Where(m => ids.Contains(m.id));
+            var ids = new HashSet<Guid>(guidList.Select(i => i.Value));
+            var attachmentMails = state.mailBox
+                .OfType<AttachmentMail>()
+                .Where(m => ids.Contains(m.id));
             foreach (var attachmentMail in attachmentMails)
             {
                 attachmentMail.requiredBlockIndex = _blockIndex;

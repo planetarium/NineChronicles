@@ -155,17 +155,14 @@ namespace Nekoyume.UI
 
         public static void Remove(Guid itemUsableItemId)
         {
-            try
+            if (ReservationList.Any())
             {
                 var message =
-                    ReservationList.First(m => m.itemId == itemUsableItemId);
-                ReservationList.Remove(message);
-            }
-            catch (ArgumentNullException)
-            {
-            }
-            catch (InvalidOperationException)
-            {
+                    ReservationList.FirstOrDefault(m => m.itemId == itemUsableItemId);
+                if (message != default)
+                {
+                    ReservationList.Remove(message);
+                }
             }
         }
     }

@@ -44,11 +44,11 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
-                if (!pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
-                    return;
-
-                AudioController.PlayClick();
-                Close();
+                if (pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
+                {
+                    AudioController.PlayClick();
+                    Close();
+                }
             }).AddTo(gameObject);
 
             CloseWidget = null;

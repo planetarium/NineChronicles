@@ -58,13 +58,22 @@ namespace Nekoyume.State
             var modifier = new AvatarActionPointModifier(actionPoint);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
 
-            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
                 return;
+            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
+            {
                 return;
+            }
 
             ReactiveAvatarState.ActionPoint.SetValueAndForceNotify(outAvatarState.actionPoint);
         }
@@ -164,13 +173,22 @@ namespace Nekoyume.State
 
         private static void RemoveItemInternal(Address avatarAddress, AvatarStateModifier modifier)
         {
-            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
                 return;
+            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
+            {
                 return;
+            }
 
             ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
         }
@@ -189,31 +207,51 @@ namespace Nekoyume.State
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
-            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
                 return;
+            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
+            {
                 return;
+            }
 
             ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
         }
 
-        public static void AddNewResultAttachmentMail(Address avatarAddress, Guid mailId,
-            long blockIndex)
+        public static void AddNewResultAttachmentMail(
+            Address avatarAddress,
+            Guid mailId,
+            long blockIndex
+        )
         {
             var modifier = new AvatarAttachmentMailResultSetter(blockIndex, mailId);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
-            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _,
-                out var isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
                 return;
+            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
+            {
                 return;
+            }
 
             AddNewAttachmentMail(avatarAddress, mailId);
         }
@@ -251,13 +289,22 @@ namespace Nekoyume.State
             var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
-            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
                 return;
+            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
+            {
                 return;
+            }
 
             ReactiveAvatarState.QuestList.SetValueAndForceNotify(outAvatarState.questList);
         }
@@ -290,31 +337,51 @@ namespace Nekoyume.State
             var modifier = new AvatarDailyRewardReceivedIndexModifier(blockIndex);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
 
-            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
                 return;
+            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
+            {
                 return;
+            }
 
             ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
         }
 
-        public static void ModifyAvatarItemRequiredIndex(Address avatarAddress, Guid itemId,
-            long blockIndex)
+        public static void ModifyAvatarItemRequiredIndex(
+            Address avatarAddress,
+            Guid itemId,
+            long blockIndex
+        )
         {
             var modifier = new AvatarItemRequiredIndexModifier(blockIndex, itemId);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
 
-            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _,
-                out var isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
                 return;
+            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
+            {
                 return;
+            }
 
             ReactiveAvatarState.DailyRewardReceivedIndex
                 .SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
