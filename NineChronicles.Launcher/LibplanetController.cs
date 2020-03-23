@@ -394,7 +394,8 @@ namespace Launcher
 
         private static string DefaultStorePath => Path.Combine(PlanetariumLocalApplicationPath, "9c");
 
-        private static string DefaultGameBinaryPath => Path.Combine(PlanetariumLocalApplicationPath, "game");
+        // It assumes there is game binary file in same directory.
+        private static string DefaultGameBinaryPath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, CurrentPlatform.GameBinaryFilename);
 
         private static string DefaultKeyStorePath => Path.Combine(PlanetariumApplicationPath, "keystore");
 

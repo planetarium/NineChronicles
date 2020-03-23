@@ -7,6 +7,8 @@ namespace Launcher.RuntimePlatform
     {
         public string GameBinaryDownloadFilename => "macOS.tar.gz";
 
+        public string GameBinaryFilename => "Nine Chronicles.app";
+
         public string OpenCommand => "open";
 
         public string CurrentWorkingDirectory
@@ -25,6 +27,6 @@ namespace Launcher.RuntimePlatform
         }
 
         public string ExecutableGameBinaryPath(string gameBinaryPath) =>
-            Path.Combine(gameBinaryPath, "Nine Chronicles.app", "Contents", "MacOS", "Nine Chronicles");
+            Path.Combine(gameBinaryPath, GameBinaryFilename, "Contents", "MacOS", "Nine Chronicles");
     }
 }
