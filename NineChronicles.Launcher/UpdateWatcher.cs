@@ -1,7 +1,4 @@
 using System;
-using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Launcher.Storage;
@@ -34,7 +31,7 @@ namespace Launcher
             {
                 try
                 {
-                    var currentVersion = await CurrentVersionAsync(cancellationToken);
+                    var currentVersion = await VersionHelper.CurrentVersionAsync(Storage, DeployBranch, cancellationToken);
                     if (!LatestVersion.Equals(currentVersion))
                     {
                         VersionUpdated?.Invoke(this, new VersionUpdatedEventArgs(currentVersion));
@@ -50,20 +47,6 @@ namespace Launcher
                     Log.Error(e, e.Message);
                 }
             }
-        }
-
-        private async Task<VersionDescriptor> CurrentVersionAsync(CancellationToken cancellationToken)
-        {
-            using var httpClient = new HttpClient();
-            var responseMessage = await httpClient.GetAsync(Storage.VersionHistoryUri(DeployBranch), cancellationToken);
-            var rawVersionHistory = await responseMessage.Content.ReadAsStringAsync();
-            var versionHistory = JsonSerializer.Deserialize<VersionHistory>(
-                rawVersionHistory,
-                new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                });
-            return versionHistory.Versions.First(descriptor => descriptor.Version == versionHistory.CurrentVersion);
         }
 
         public class VersionUpdatedEventArgs : EventArgs
