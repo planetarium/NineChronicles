@@ -45,14 +45,15 @@ namespace Nekoyume.Model.State
             return MemberwiseClone();
         }
 
-        public void PurchaseGold(decimal cost)
+        public bool PurchaseGold(decimal cost)
         {
             if (gold - cost < 0)
             {
-                return;
+                return false;
             }
             gold -= cost;
             modifiedGold = cost;
+            return true;
         }
 
         public override IValue Serialize() =>

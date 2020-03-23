@@ -50,7 +50,12 @@ namespace Nekoyume.Action
             {
                 return states;
             }
-            agentState.PurchaseGold(cost);
+
+            if (!agentState.PurchaseGold(cost))
+            {
+                return states;
+            }
+
             slotState.Update(context.BlockIndex);
             avatarState.UpdateFromRapidCombination(
                 ((CombinationConsumable.ResultModel) slotState.Result),
