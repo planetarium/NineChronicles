@@ -7,7 +7,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.GZip;
@@ -21,8 +20,13 @@ using Libplanet.Standalone.Hosting;
 using NineChronicles.Standalone;
 using Qml.Net;
 using Serilog;
+<<<<<<< HEAD:NineChronicles.Launcher/LibplanetController.cs
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using static Launcher.RuntimePlatform.RuntimePlatform;
+=======
+using static Launcher.Common.RuntimePlatform.RuntimePlatform;
+using static Launcher.Common.Configuration;
+>>>>>>> Move configuration and path logic to common library:tools/launcher/Launcher/LibplanetController.cs
 
 namespace Launcher
 {
@@ -304,6 +308,7 @@ namespace Launcher
             Log.Debug("Finished to extract game binary.");
         }
 
+<<<<<<< HEAD:NineChronicles.Launcher/LibplanetController.cs
         private static string LoadGameBinaryPath(LauncherSettings settings)
         {
             if (string.IsNullOrEmpty(settings.GameBinaryPath))
@@ -334,6 +339,8 @@ namespace Launcher
             return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
         }
 
+=======
+>>>>>>> Move configuration and path logic to common library:tools/launcher/Launcher/LibplanetController.cs
         public async Task RunGame()
         {
             var setting = LoadSettings();
@@ -381,73 +388,6 @@ namespace Launcher
             InitializeSettingFile();
             Process.Start(CurrentPlatform.OpenCommand, SettingFilePath);
         }
-
-        public LauncherSettings LoadSettings()
-        {
-            InitializeSettingFile();
-            return JsonSerializer.Deserialize<LauncherSettings>(
-                File.ReadAllText(SettingFilePath),
-                new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                });
-        }
-
-        private void InitializeSettingFile()
-        {
-            if (!File.Exists(SettingFilePath))
-            {
-                File.Copy(Path.Combine("resources", SettingFileName), SettingFilePath);
-            }
-        }
-
-        private static string DefaultStorePath => Path.Combine(PlanetariumLocalApplicationPath, "9c");
-
-        // It assumes there is game binary file in same directory.
-        private static string DefaultGameBinaryPath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, CurrentPlatform.GameBinaryFilename);
-
-        private static string DefaultKeyStorePath => Path.Combine(PlanetariumApplicationPath, "keystore");
-
-        private static string PlanetariumLocalApplicationPath => Path.Combine(LocalApplicationDataPath, "planetarium");
-
-        private static string PlanetariumApplicationPath => Path.Combine(ApplicationDataPath, "planetarium");
-
-        private static string LocalApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-
-        private static string ApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-        private static string SettingFilePath => Path.Combine(PlanetariumLocalApplicationPath, SettingFileName);
-
-        private VersionDescriptor? LocalCurrentVersion
-        {
-            get
-            {
-                try
-                {
-                    var raw = File.ReadAllText(LocalCurrentVersionPath);
-                    return JsonSerializer.Deserialize<VersionDescriptor>(
-                        raw,
-                        new JsonSerializerOptions
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                        });
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, $"Unexpected exception occurred: {e.Message}");
-                    return null;
-                }
-            }
-            set => File.WriteAllText(LocalCurrentVersionPath, JsonSerializer.Serialize((VersionDescriptor) value,
-                new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                }));
-        }
-
-        private string LocalCurrentVersionPath => Path.Combine(PlanetariumApplicationPath, "9c-current-version.json");
-
-        private const string SettingFileName = "launcher.json";
 
         private readonly string RpcServerHost = IPAddress.Loopback.ToString();
 
