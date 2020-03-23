@@ -76,6 +76,16 @@
             public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 50;
 
             #endregion
+
+            #region character consumable slot
+
+            public const int CharacterConsumableSlot1 = 1;
+            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 2;
+            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 3;
+            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 4;
+            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 5;
+
+            #endregion
         }
 
         public static class RequireClearedStageLevel

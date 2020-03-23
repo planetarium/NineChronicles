@@ -84,6 +84,33 @@ namespace Nekoyume.UI.Module
                         ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
                         : GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2;
                     break;
+                case ItemSubType.Food:
+                    switch (ItemSubTypeIndex)
+                    {
+                        case 1:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot1;
+                            break;
+                        case 2:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot2;
+                            break;
+                        case 3:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot3;
+                            break;
+                        case 4:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot4;
+                            break;
+                        case 5:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot5;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

@@ -25,11 +25,6 @@ namespace Nekoyume.UI.Module
                 throw new SerializeFieldNullException();
         }
 
-        public void SetAvatar(AvatarState avatarState)
-        {
-            UpdateSlots(avatarState.level);
-        }
-
         public void SetPlayer(Player player, Action<EquipmentSlot> onClick, Action<EquipmentSlot> onDoubleClick)
         {
             UpdateSlots(player.Level);

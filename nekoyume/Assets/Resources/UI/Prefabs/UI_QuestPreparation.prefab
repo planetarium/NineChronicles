@@ -4367,6 +4367,11 @@ PrefabInstance:
       propertyPath: eventTrigger
       value: 
       objectReference: {fileID: 8713057331522714620}
+    - target: {fileID: 387389212801572156, guid: 5d633949e6ef14b458c0199e45af34c7,
+        type: 3}
+      propertyPath: itemSubTypeIndex
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4379491137101888571, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -5382,6 +5387,11 @@ PrefabInstance:
       propertyPath: eventTrigger
       value: 
       objectReference: {fileID: 2246341195619250585}
+    - target: {fileID: 387389212801572156, guid: 5d633949e6ef14b458c0199e45af34c7,
+        type: 3}
+      propertyPath: itemSubTypeIndex
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4379491137101888571, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -6416,6 +6426,11 @@ PrefabInstance:
       propertyPath: eventTrigger
       value: 
       objectReference: {fileID: 768576909363898667}
+    - target: {fileID: 387389212801572156, guid: 5d633949e6ef14b458c0199e45af34c7,
+        type: 3}
+      propertyPath: itemSubTypeIndex
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 4379491137101888571, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_sharedMaterial
@@ -10305,6 +10320,11 @@ PrefabInstance:
       propertyPath: eventTrigger
       value: 
       objectReference: {fileID: 2890035182492691611}
+    - target: {fileID: 387389212801572156, guid: 5d633949e6ef14b458c0199e45af34c7,
+        type: 3}
+      propertyPath: itemSubTypeIndex
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4379491137101888571, guid: 5d633949e6ef14b458c0199e45af34c7,
         type: 3}
       propertyPath: m_sharedMaterial
