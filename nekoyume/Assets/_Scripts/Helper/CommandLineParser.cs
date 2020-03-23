@@ -56,7 +56,7 @@ namespace Nekoyume.Helper
 
         public string appProtocolVersion;
 
-        public string[] trustedAppProtocolVersionSigners;
+        public string[] trustedAppProtocolVersionSigners = new string[] { };
 
         public int minimumDifficulty = 100000;
 

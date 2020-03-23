@@ -298,7 +298,9 @@ namespace Nekoyume.BlockChain
             var storagePath = options.StoragePath ?? DefaultStoragePath;
             var storageType = options.storageType;
             var development = options.Development;
-            var appProtocolVersion = AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            var appProtocolVersion = options.AppProtocolVersion is null
+                ? default
+                : AppProtocolVersion.FromToken(options.AppProtocolVersion);
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
             var minimumDifficulty = options.MinimumDifficulty;
