@@ -330,7 +330,7 @@ namespace Nekoyume.Helper
                 return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
             }
 
-            Debug.LogWarningFormat("Failed to find {0}. Using default options.", localPath);
+            Debug.LogErrorFormat("Failed to find {0}. Using default options.", localPath);
             return new CommandLineOptions();
         }
     }
