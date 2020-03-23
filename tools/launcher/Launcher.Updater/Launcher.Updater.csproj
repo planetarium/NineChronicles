@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Launcher.Updater</RootNamespace>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PublishDir>out\$(RuntimeIdentifier)</PublishDir>
+    <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Launcher.Common\Launcher.Common.csproj" />
+  </ItemGroup>
+
+</Project>
