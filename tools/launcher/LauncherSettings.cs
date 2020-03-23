@@ -8,8 +8,6 @@ namespace Launcher
 
         public string KeyStorePath { get; set; }
 
-        public string Passphrase { get; set; }
-
         public string AppProtocolVersionToken { get; set; }
 
         public string IceServer { get; set; }
