@@ -39,7 +39,7 @@ namespace Nekoyume.Battle
 
             WorldId = worldId;
             StageId = stageId;
-            IsCleared = avatarState.worldInformation.IsStageCleared(WorldId, StageId);
+            IsCleared = avatarState.worldInformation.IsStageCleared(StageId);
 
             var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
@@ -95,7 +95,7 @@ namespace Nekoyume.Battle
             {
                 Characters = new SimplePriorityQueue<CharacterBase, decimal>();
                 Characters.Enqueue(Player, TurnPriority / Player.SPD);
-                
+
                 WaveNumber = i + 1;
                 WaveTurn = 1;
                 _waves[i].Spawn(this);
@@ -149,7 +149,7 @@ namespace Nekoyume.Battle
                         sb.Append($" / {nameof(WaveNumber)}: {WaveNumber}");
                         sb.Append($" / {nameof(WaveTurn)}: {WaveTurn}");
                         sb.Append(" / Turn End");
-                        UnityEngine.Debug.LogWarning(sb.ToString());   
+                        UnityEngine.Debug.LogWarning(sb.ToString());
                     }
 #endif
 
@@ -182,7 +182,7 @@ namespace Nekoyume.Battle
                     {
                         Result = BattleLog.Result.Win;
                         Log.clearedWaveNumber = WaveNumber;
-                        
+
                         switch (WaveNumber)
                         {
                             case 1:

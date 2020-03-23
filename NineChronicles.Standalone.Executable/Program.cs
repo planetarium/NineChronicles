@@ -21,8 +21,8 @@ namespace NineChronicles.Standalone.Executable
 
         [Command(Description = "Run standalone application with options.")]
         public async Task Run(
-            [Option('V')]
-            int appProtocolVersion,
+            [Option("app-protocol-version", new[] { 'V' }, Description = "App protocol version token")]
+            string appProtocolVersionToken,
             [Option('G')]
             string genesisBlockPath,
             bool noMiner,
@@ -38,6 +38,9 @@ namespace NineChronicles.Standalone.Executable
             string[] iceServerStrings = null,
             [Option("peer")]
             string[] peerStrings = null,
+            [Option("trusted-app-protocol-version-signer", new[] { 'T' },
+                    Description = "Trustworthy signers who claim new app protocol versions")]
+            string[] trustedAppProtocolVersionSigners = null,
             bool rpcServer = false,
             string rpcListenHost = "0.0.0.0",
             int? rpcListenPort = null
@@ -62,8 +65,10 @@ namespace NineChronicles.Standalone.Executable
             {
                 Host = host,
                 Port = port,
-                // FIXME: 버전 클레임을 매번 새로 서명해서 만들고 있으므로, 이렇게 냅두면 안 됨. 임시 조치.
-                AppProtocolVersion = AppProtocolVersion.Sign(privateKey, 1),
+                AppProtocolVersion = AppProtocolVersion.FromToken(appProtocolVersionToken),
+                TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners
+                    .Select(s => new PublicKey(ByteUtil.ParseHex(s)))
+                    .ToHashSet(),
                 GenesisBlockPath = genesisBlockPath,
                 NoMiner = noMiner,
                 PrivateKey = privateKey,

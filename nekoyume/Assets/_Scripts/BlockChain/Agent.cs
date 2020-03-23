@@ -102,6 +102,7 @@ namespace Nekoyume.BlockChain
 
         private bool SyncSucceed { get; set; }
         public bool BlockDownloadFailed { get; private set; }
+        public AppProtocolVersion EncounteredHighestVersion { get; private set; }
 
         private static TelemetryClient _telemetryClient;
 
@@ -147,6 +148,8 @@ namespace Nekoyume.BlockChain
             int? port,
             bool consoleSink,
             bool development,
+            AppProtocolVersion appProtocolVersion,
+            IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
             string storageType = null)
         {
             InitializeLogger(consoleSink, development);
@@ -164,6 +167,11 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"Store Path: {path}");
             Debug.Log($"Genesis Block Hash: {genesisBlock.Hash}");
+            Debug.LogFormat(
+                "AppProtocolVersion: {0}\nAppProtocolVersion.Token: {1}",
+                appProtocolVersion,
+                appProtocolVersion.Token
+            );
 
             var policy = BlockPolicy.GetPolicy();
             PrivateKey = privateKey;
@@ -186,15 +194,17 @@ namespace Nekoyume.BlockChain
 #endif
             lastTenBlocks = new ConcurrentQueue<(Block<PolymorphicAction<ActionBase>>, DateTimeOffset)>();
 
+            EncounteredHighestVersion = appProtocolVersion;
+
             _swarm = new Swarm<PolymorphicAction<ActionBase>>(
                 blocks,
                 privateKey,
-                // FIXME: 버전 클레임을 매번 새로 서명해서 만들고 있으므로, 이렇게 냅두면 안 됨. 임시 조치.
-                appProtocolVersion: AppProtocolVersion.Sign(privateKey, 1),
+                appProtocolVersion: appProtocolVersion,
                 host: host,
                 listenPort: port,
                 iceServers: iceServers,
-                differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered);
+                differentAppProtocolVersionEncountered: DifferentAppProtocolVersionEncountered,
+                trustedAppProtocolVersionSigners: trustedAppProtocolVersionSigners);
 
             if (!consoleSink) InitializeTelemetryClient(_swarm.Address);
 
@@ -285,6 +295,9 @@ namespace Nekoyume.BlockChain
             var storagePath = options.StoragePath ?? DefaultStoragePath;
             var storageType = options.storageType;
             var development = options.Development;
+            var appProtocolVersion = AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
+                .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
             Init(
                 privateKey,
                 storagePath,
@@ -294,6 +307,8 @@ namespace Nekoyume.BlockChain
                 port,
                 consoleSink,
                 development,
+                appProtocolVersion,
+                trustedAppProtocolVersionSigners,
                 storageType
             );
 
@@ -530,7 +545,18 @@ namespace Nekoyume.BlockChain
                 "Different Version Encountered; expected (local): {0}; actual ({1}): {2}",
                 localVersion, peer, peerVersion
             );
-            SyncSucceed = false;
+            if (localVersion.Version < peerVersion.Version)
+            {
+                // 위 조건에 해당하지 않을 때는 true를 넣는 것이 아니라 no-op이어야 함.
+                // (이 콜백 함수 자체가 여러 차례 호출될 수 있기 때문에 SyncSucceed가 false로 채워졌는데
+                // 그 다음에 다시 true로 덮어씌어지거나 하면 안되기 때문.)
+                SyncSucceed = false;
+            }
+
+            if (peerVersion.Version > EncounteredHighestVersion.Version)
+            {
+                EncounteredHighestVersion = peerVersion;
+            }
 
             // 로컬 앱 버전과 다른 피어는 일단 무시 (버전이 더 높든 낮든). (false 반환하면 만난 피어 무시함.)
             return false;
