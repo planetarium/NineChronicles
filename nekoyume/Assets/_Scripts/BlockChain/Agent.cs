@@ -150,6 +150,7 @@ namespace Nekoyume.BlockChain
             bool development,
             AppProtocolVersion appProtocolVersion,
             IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
+            int minimumDifficulty,
             string storageType = null)
         {
             InitializeLogger(consoleSink, development);
@@ -173,7 +174,9 @@ namespace Nekoyume.BlockChain
                 appProtocolVersion.Token
             );
 
-            var policy = BlockPolicy.GetPolicy();
+            Debug.Log($"minimumDifficulty: {minimumDifficulty}");
+
+            var policy = BlockPolicy.GetPolicy(minimumDifficulty);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
             store.UnstageTransactionIds(
@@ -295,9 +298,12 @@ namespace Nekoyume.BlockChain
             var storagePath = options.StoragePath ?? DefaultStoragePath;
             var storageType = options.storageType;
             var development = options.Development;
-            var appProtocolVersion = AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            var appProtocolVersion = options.AppProtocolVersion is null
+                ? default
+                : AppProtocolVersion.FromToken(options.AppProtocolVersion);
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
+            var minimumDifficulty = options.MinimumDifficulty;
             Init(
                 privateKey,
                 storagePath,
@@ -309,6 +315,7 @@ namespace Nekoyume.BlockChain
                 development,
                 appProtocolVersion,
                 trustedAppProtocolVersionSigners,
+                minimumDifficulty,
                 storageType
             );
 

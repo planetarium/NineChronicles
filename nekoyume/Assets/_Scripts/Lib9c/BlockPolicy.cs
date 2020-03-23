@@ -35,7 +35,10 @@ namespace Nekoyume.BlockChain
                 true;
         }
 
-        public static IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
+        // FIXME 남은 설정들도 설정화 해야 할지도?
+        public static IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy(
+            int miniumDifficulty
+        )
         {
 #if UNITY_EDITOR
             return new DebugPolicy();
@@ -43,7 +46,7 @@ namespace Nekoyume.BlockChain
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
                 new RewardGold { Gold = 1 },
                 BlockInterval,
-                5000000,
+                miniumDifficulty,
                 2048
             );
 #endif
