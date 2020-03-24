@@ -2,18 +2,18 @@ id,_name,item_sub_type,grade,elemental_type,stat_type_1,stat_value_1,stat_type_2
 105000,보석,Food,1,Normal,,,,
 105001,보석,Food,2,Normal,,,,
 105002,보석,Food,3,Normal,,,,
-200000,맛없는 요리,Food,1,Normal,HP,10,,
-201000,참치캔,Food,1,Normal,HP,25,,
-201001,전설의 참치캔,Food,3,Normal,HP,50,DEF,50
-201002,계란후라이,Food,1,Normal,HP,100,,
-201003,반숙 후라이,Food,3,Normal,HP,150,SPD,90
-201004,전설의 후라이,Food,5,Normal,HP,200,SPD,180
-201005,대충 만든 오므라이스,Food,1,Normal,HP,50,,
-201006,공들인 오므라이스,Food,3,Normal,HP,100,HIT,25
-201007,전설의 오므라이스,Food,5,Normal,HP,150,HIT,50
-201008,그저 그런 비프라이스,Food,1,Normal,HP,100,,
-201009,윤기 나는 비프라이스,Food,3,Normal,HP,150,ATK,25
-201010,전설의 비프라이스,Food,5,Normal,HP,200,ATK,50
-201011,스테이크,Food,1,Normal,HP,150,,
-201012,모둠스테이크,Food,3,Normal,HP,200,CRI,5
-201013,전설의 스테이크,Food,5,Normal,HP,250,CRI,10
+200000,맛없는 요리,Food,1,Normal,HP,29,,
+201000,참치캔,Food,1,Normal,HP,128,,
+201001,전설의 참치캔,Food,3,Normal,HP,296,,
+201002,계란후라이,Food,1,Normal,ATK,29,,
+201003,반숙 후라이,Food,3,Normal,ATK,58,,
+201004,전설의 후라이,Food,5,Normal,ATK,127,,
+201005,대충 만든 오므라이스,Food,1,Normal,CRI,27,,
+201006,공들인 오므라이스,Food,3,Normal,CRI,59,,
+201007,전설의 오므라이스,Food,5,Normal,CRI,118,,
+201008,그저 그런 비프라이스,Food,1,Normal,HIT,32,,
+201009,윤기 나는 비프라이스,Food,3,Normal,HIT,73,,
+201010,전설의 비프라이스,Food,5,Normal,HIT,108,,
+201011,스테이크,Food,1,Normal,DEF,9,,
+201012,모둠스테이크,Food,3,Normal,DEF,17,,
+201013,전설의 스테이크,Food,5,Normal,DEF,38,,
