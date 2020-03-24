@@ -213,7 +213,7 @@ namespace Nekoyume.Game
             background.name = prefabName;
             if (prefabName == "room")
                 roomAnimator = background.GetComponent<Animator>();
-            
+
             foreach (Transform child in background.transform)
             {
                 var childName = child.name;
@@ -381,7 +381,7 @@ namespace Nekoyume.Game
             var stage = Game.instance.TableSheets.StageSheet.Values.First(i => i.Id == stageId);
             _battleResultModel.ActionPointNotEnough = avatarState.actionPoint < stage.CostAP;
             _battleResultModel.ShouldExit = isExitReserved;
-            _battleResultModel.ShouldRepeat = repeatStage;
+            _battleResultModel.ShouldRepeat = repeatStage || failed;
 
             if (!_battleResultModel.ShouldRepeat)
             {
@@ -421,7 +421,7 @@ namespace Nekoyume.Game
             playerCharacter.ShowSpeech("PLAYER_WIN");
             Widget.Find<UI.Battle>().Close();
             Widget.Find<Status>().Close();
-            
+
             ActionRenderHandler.Instance.Pending = false;
             Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
             yield return null;
