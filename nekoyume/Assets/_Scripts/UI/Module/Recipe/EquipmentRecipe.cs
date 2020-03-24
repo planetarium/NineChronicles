@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.UI.Scroller;
 using Nekoyume.Model.Item;
@@ -56,6 +56,14 @@ namespace Nekoyume.UI.Module
         {
             if (States.Instance.CurrentAvatarState is null)
                 return;
+
+            foreach (var cellView in cellViews)
+            {
+                if (cellView.ItemSubType == _filterType.Value)
+                {
+                    cellView.Show(true);
+                }
+            }
 
             UpdateRecipes();
         }

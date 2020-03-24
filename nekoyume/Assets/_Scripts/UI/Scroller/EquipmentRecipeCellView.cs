@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
@@ -11,6 +11,7 @@ using TMPro;
 using Nekoyume.TableData;
 using UnityEngine.UI;
 using UniRx;
+using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -48,6 +49,10 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI unlockConditionText;
 
+        [SerializeField]
+        private DOTweenGroupAlpha tweenAlpha;
+
+
         public readonly Subject<EquipmentRecipeCellView> OnClick =
             new Subject<EquipmentRecipeCellView>();
 
@@ -76,9 +81,13 @@ namespace Nekoyume.UI.Scroller
             OnClick.Dispose();
         }
 
-        public void Show()
+        public void Show(bool tween = false)
         {
             gameObject.SetActive(true);
+            if (tween)
+            {
+                tweenAlpha.Play();
+            }
         }
 
         public void Hide()
