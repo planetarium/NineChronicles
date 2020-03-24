@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
                 AudioController.PlayClick();
-                ShowPopup();
+                SelectSlot();
             }).AddTo(gameObject);
             unlockText.text = LocalizationManager.Localize("UI_COMBINATION_SLOT_AVAILABLE");
         }
@@ -83,6 +83,19 @@ namespace Nekoyume.UI.Module
             if (_data.Result.itemUsable.RequiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
             {
                 Widget.Find<CombinationSlotPopup>().Pop(_data, _slotIndex);
+            }
+        }
+
+        private void SelectSlot()
+        {
+            if (_data.Validate(States.Instance.CurrentAvatarState,
+                Game.Game.instance.Agent.BlockIndex))
+            {
+                Widget.Find<Menu>().CombinationClick(_slotIndex);
+            }
+            else
+            {
+                ShowPopup();
             }
         }
     }

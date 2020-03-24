@@ -63,6 +63,7 @@ namespace Nekoyume.UI
 
         private NPC _npc01;
         private NPC _npc02;
+        public int selectedIndex;
 
 
         #region Override
@@ -194,10 +195,25 @@ namespace Nekoyume.UI
 
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
+            if (selectedIndex == -1)
+            {
+                var pair = States.Instance.CombinationSlotStates
+                    .FirstOrDefault(i =>
+                        i.Value.Validate(
+                            States.Instance.CurrentAvatarState,
+                            Game.Game.instance.Agent.BlockIndex
+                        ));
+                if (!pair.Equals(default))
+                {
+                    selectedIndex = pair.Key;
+                }
+            }
+
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            selectedIndex = -1;
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             combineEquipment.RemoveMaterialsAll();
@@ -258,6 +274,12 @@ namespace Nekoyume.UI
             }
 
             combineConsumable.submitButton.gameObject.SetActive(true);
+        }
+
+        public void Show(int slotIndex)
+        {
+            selectedIndex = slotIndex;
+            Show();
         }
 
         private void SubscribeState(StateType value)
@@ -483,7 +505,7 @@ namespace Nekoyume.UI
                 .ToList();
 
             UpdateCurrentAvatarState(combineConsumable, materialInfoList);
-            CreateCombinationAction(materialInfoList, 1);
+            CreateCombinationAction(materialInfoList, selectedIndex);
             combineConsumable.RemoveMaterialsAll();
         }
 
@@ -498,7 +520,7 @@ namespace Nekoyume.UI
                 .Select(e => ((Material) e.Model.ItemBase.Value, e.Model.Count.Value)));
 
             UpdateCurrentAvatarState(combineEquipment, materialInfoList);
-            CreateCombinationAction(materialInfoList, 1);
+            CreateCombinationAction(materialInfoList, selectedIndex);
             combineEquipment.RemoveMaterialsAll();
         }
 
@@ -510,7 +532,7 @@ namespace Nekoyume.UI
                 .ToList();
 
             UpdateCurrentAvatarState(enhanceEquipment, baseEquipmentGuid, otherEquipmentGuidList);
-            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList, 2);
+            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList, selectedIndex);
             enhanceEquipment.RemoveMaterialsAll();
         }
 
@@ -520,12 +542,11 @@ namespace Nekoyume.UI
             var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel)
                 ? elementalPanel.SelectedSubRecipeId
                 : (int?) null;
-            var slotIndex = 0;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
             CreateEnhancedCombinationEquipmentAction(
                 model.Id,
                 subRecipeId,
-                slotIndex,
+                selectedIndex,
                 model,
                 combinationPanel
             );
