@@ -68,7 +68,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private bool moveToLeft = false;
 
-        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")]
+        [SerializeField, Range(0f, 10f),
+         Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
         #region override
@@ -107,7 +108,8 @@ namespace Nekoyume.UI
                         case ItemType.Consumable:
                         case ItemType.Equipment:
                             inventoryItem.EquippedEnabled.Value =
-                                TryToFindSlotAlreadyEquip((ItemUsable) inventoryItem.ItemBase.Value, out var _);
+                                TryToFindSlotAlreadyEquip((ItemUsable) inventoryItem.ItemBase.Value,
+                                    out var _);
                             break;
                         case ItemType.Material:
                             break;
@@ -147,6 +149,10 @@ namespace Nekoyume.UI
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
                 equipmentSlots.SetPlayer(_player.Model, ShowTooltip, Unequip);
+                foreach (var consumableSlot in consumableSlots)
+                {
+                    consumableSlot.Set(_player.Level);
+                }
 
                 var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
 
@@ -235,7 +241,8 @@ namespace Nekoyume.UI
             if (inventory.SharedModel.TryGetEquipment(slot.Item, out var item) ||
                 inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out item))
             {
-                inventory.Tooltip.Show(slot.RectTransform, item, tooltip => inventory.SharedModel.DeselectItemView());
+                inventory.Tooltip.Show(slot.RectTransform, item,
+                    tooltip => inventory.SharedModel.DeselectItemView());
             }
         }
 
@@ -292,7 +299,9 @@ namespace Nekoyume.UI
 
         private void SubscribeStage(int stageId)
         {
-            var stage = Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(i => i.Id == stageId);
+            var stage =
+                Game.Game.instance.TableSheets.StageSheet.Values.FirstOrDefault(
+                    i => i.Id == stageId);
             if (stage is null)
                 return;
             _requiredCost = stage.CostAP;
@@ -315,7 +324,8 @@ namespace Nekoyume.UI
                 moveToLeft,
                 animationTime,
                 middleXGap);
-            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address, -_requiredCost);
+            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                -_requiredCost);
             yield return new WaitWhile(() => animation.IsPlaying);
             Quest(repeat);
             AudioController.PlayClick();
@@ -344,8 +354,10 @@ namespace Nekoyume.UI
             // 이미 슬롯에 아이템이 있다면 해제한다.
             if (!slot.IsEmpty)
             {
-                if (inventory.SharedModel.TryGetEquipment(slot.Item, out var inventoryItemToUnequip) ||
-                    inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out inventoryItemToUnequip))
+                if (inventory.SharedModel.TryGetEquipment(slot.Item,
+                        out var inventoryItemToUnequip) ||
+                    inventory.SharedModel.TryGetConsumable(slot.Item as Consumable,
+                        out inventoryItemToUnequip))
                 {
                     inventoryItemToUnequip.EquippedEnabled.Value = false;
                 }
@@ -364,7 +376,8 @@ namespace Nekoyume.UI
                 equipSlotGlow.SetActive(false);
                 foreach (var item in inventory.SharedModel.Equipments)
                 {
-                    item.GlowEnabled.Value = item.ItemBase.Value.Data.ItemSubType == slot.ItemSubType;
+                    item.GlowEnabled.Value =
+                        item.ItemBase.Value.Data.ItemSubType == slot.ItemSubType;
                 }
 
                 return;
@@ -407,9 +420,10 @@ namespace Nekoyume.UI
             if (item.Data.ItemType == ItemType.Equipment)
                 return equipmentSlots.TryGetAlreadyEquip((Equipment) item, out slot);
 
-            foreach (var consumableSlot in consumableSlots)
+            foreach (var consumableSlot in consumableSlots.Where(consumableSlot =>
+                !consumableSlot.IsLock && !consumableSlot.IsEmpty))
             {
-                if (!item.Equals(consumableSlot.Item))
+                if (!consumableSlot.Item.Equals(item))
                     continue;
 
                 slot = consumableSlot;
@@ -425,7 +439,7 @@ namespace Nekoyume.UI
             if (item.Data.ItemType == ItemType.Equipment)
                 return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
 
-            slot = consumableSlots.FirstOrDefault(s => s.IsEmpty)
+            slot = consumableSlots.FirstOrDefault(s => !s.IsLock && s.IsEmpty)
                    ?? consumableSlots[0];
             return true;
         }
@@ -468,12 +482,14 @@ namespace Nekoyume.UI
         private void UpdateStats()
         {
             var equipments = equipmentSlots
-                .Select(x => x.Item as Equipment)
-                .Where(x => !(x is null))
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => slot.Item as Equipment)
+                .Where(item => !(item is null))
                 .ToList();
             var consumables = consumableSlots
-                .Select(x => x.Item as Consumable)
-                .Where(x => !(x is null))
+                .Where(slot => !slot.IsLock && !slot.IsEmpty)
+                .Select(slot => slot.Item as Consumable)
+                .Where(item => !(item is null))
                 .ToList();
 
             var stats = _tempStats.SetAll(
@@ -516,11 +532,14 @@ namespace Nekoyume.UI
             _stage.isExitReserved = false;
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
-            Game.Game.instance.ActionManager.HackAndSlash(equipments, consumables, _worldId, _stageId.Value)
-                .Subscribe(_ =>
-                {
-                    LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address, _requiredCost);
-                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+            Game.Game.instance.ActionManager
+                .HackAndSlash(equipments, consumables, _worldId, _stageId.Value)
+                .Subscribe(
+                    _ =>
+                    {
+                        LocalStateModifier.ModifyAvatarActionPoint(
+                            States.Instance.CurrentAvatarState.address, _requiredCost);
+                    }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
                 .AddTo(this);
         }
 
@@ -541,6 +560,7 @@ namespace Nekoyume.UI
             {
                 level = Game.Game.instance.TableSheets.CharacterLevelSheet.Keys.Last();
             }
+
             Find<LoadingScreen>().Show();
 
             questButton.gameObject.SetActive(false);
@@ -548,8 +568,10 @@ namespace Nekoyume.UI
             ActionCamera.instance.ChaseX(_player.transform);
 
             var stageId = _stageId.Value;
-            if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
-                throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
+            if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId,
+                out var worldRow))
+                throw new KeyNotFoundException(
+                    $"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
             var avatarState = new AvatarState(States.Instance.CurrentAvatarState) {level = level};
             var consumables = consumableSlots
@@ -572,13 +594,15 @@ namespace Nekoyume.UI
 
             foreach (var equipment in equipments)
             {
-                if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
+                if (!avatarState.inventory.TryGetNonFungibleItem(equipment,
+                    out ItemUsable outNonFungibleItem))
                 {
                     continue;
                 }
 
                 ((Equipment) outNonFungibleItem).Equip();
             }
+
             var simulator = new StageSimulator(
                 new Cheat.DebugRandom(),
                 avatarState,
