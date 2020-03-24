@@ -28,5 +28,7 @@ namespace Libplanet.Standalone.Hosting
         public AppProtocolVersion AppProtocolVersion { get; set; }
 
         public ISet<PublicKey> TrustedAppProtocolVersionSigners { get; set; }
+
+        public int MinimumDifficulty { get; set; }
     }
 }

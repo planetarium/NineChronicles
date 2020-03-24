@@ -16,6 +16,8 @@ namespace Launcher
 
         public bool NoMiner { get; set; }
 
+        public int MinimumDifficulty { get; set; }
+
         public string GenesisBlockPath { get; set; }
 
         public string GameBinaryPath { get; set; }

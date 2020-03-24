@@ -28,21 +28,22 @@ Nine Chronicles
 
 ### 커맨드라인 옵션
 
- - `--private-key`     : 사용할 프라이빗 키를 지정합니다.
- - `--keystore-path`   : 비밀키가 저장될 디렉터리 경로.
- - `--host`            : 사용할 Host 이름을 지정합니다.
- - `--port`            : 사용할 Port를 지정합니다.
- - `--no-miner`        : 마이닝을 사용하지 않습니다.
- - `--peer`            : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
- - `--ice-servers`     : NAT 우회에 사용할 TURN 서버 정보를 지정합니다. 지정하는 서버가 여럿일 경우 `--ice-servers serverA serverB` 와 같이 추가할 수 있습니다.
- - `--storage-path`    : 데이터를 저장할 경로를 지정합니다.
- - `--storage-type`    : 데이터를 저장할 저장소 타입을 지정합니다. 현재는 `--storage-type rocksdb` 로 `RocksDBStore` 를 지정할 수 있습니다.
- - `--rpc-client`      : 체인 데이터를 저장하지 않는 클라이언트 모드로 실행합니다.
- - `--rpc-server-host` : 클라이언트 모드에서 접속할 서버의 호스트명을 지정합니다.
- - `--rpc-server-port` : 클라이언트 모드에서 접속할 서버의 포트를 지정합니다.
- - `--auto-play`       : 백그라운드에서 캐릭터 생성 및 자동 전투를 수행합니다.
- - `--console-sink`    : 로그를 콘솔로 출력합니다.
- - `--development`     : 개발 모드로 실행합니다. 디버그용 UI를 표시하고 로그 레벨을 조정합니다.
+ - `--private-key`       : 사용할 프라이빗 키를 지정합니다.
+ - `--keystore-path`     : 비밀키가 저장될 디렉터리 경로.
+ - `--host`              : 사용할 Host 이름을 지정합니다.
+ - `--port`              : 사용할 Port를 지정합니다.
+ - `--no-miner`          : 마이닝을 사용하지 않습니다.
+ - `--minimum-difficulty`: 네트워크에서 합의된 최소 블록 채굴 난이도를 설정합니다.
+ - `--peer`              : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
+ - `--ice-servers`       : NAT 우회에 사용할 TURN 서버 정보를 지정합니다. 지정하는 서버가 여럿일 경우 `--ice-servers serverA serverB` 와 같이 추가할 수 있습니다.
+ - `--storage-path`      : 데이터를 저장할 경로를 지정합니다.
+ - `--storage-type`      : 데이터를 저장할 저장소 타입을 지정합니다. 현재는 `--storage-type rocksdb` 로 `RocksDBStore` 를 지정할 수 있습니다.
+ - `--rpc-client`        : 체인 데이터를 저장하지 않는 클라이언트 모드로 실행합니다.
+ - `--rpc-server-host`   : 클라이언트 모드에서 접속할 서버의 호스트명을 지정합니다.
+ - `--rpc-server-port`   : 클라이언트 모드에서 접속할 서버의 포트를 지정합니다.
+ - `--auto-play`         : 백그라운드에서 캐릭터 생성 및 자동 전투를 수행합니다.
+ - `--console-sink`      : 로그를 콘솔로 출력합니다.
+ - `--development`       : 개발 모드로 실행합니다. 디버그용 UI를 표시하고 로그 레벨을 조정합니다.
 
 #### Unity Editor 에서 커맨드라인 옵션 사용
 
