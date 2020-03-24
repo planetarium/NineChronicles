@@ -124,17 +124,6 @@ namespace Nekoyume.Model.Stat
             AddStatAdditionalValue(statModifier.StatType, statModifier.Value);
         }
 
-        public void SetStatAdditionalValue(StatType key, decimal additionalValue)
-        {
-            if (!_statMaps.ContainsKey(key))
-            {
-                _statMaps.Add(key, new StatMapEx(key));
-            }
-
-            _statMaps[key].AdditionalValue = additionalValue;
-            PostStatValueChanged(key);
-        }
-
         private void PostStatValueChanged(StatType key)
         {
             if (!_statMaps.ContainsKey(key))
@@ -335,39 +324,6 @@ namespace Nekoyume.Model.Stat
                 yield return _statMaps[StatType.HIT];
             if (HasAdditionalSPD)
                 yield return _statMaps[StatType.SPD];
-        }
-
-        public void ClearAdditionalStats()
-        {
-            if (HasAdditionalHP)
-            {
-                SetStatAdditionalValue(StatType.HP, 0);
-            }
-
-            if (HasAdditionalATK)
-            {
-                SetStatAdditionalValue(StatType.ATK, 0);
-            }
-
-            if (HasAdditionalCRI)
-            {
-                SetStatAdditionalValue(StatType.CRI, 0);
-            }
-
-            if (HasAdditionalDEF)
-            {
-                SetStatAdditionalValue(StatType.DEF, 0);
-            }
-
-            if (HasAdditionalHIT)
-            {
-                SetStatAdditionalValue(StatType.HIT, 0);
-            }
-
-            if (HasAdditionalSPD)
-            {
-                SetStatAdditionalValue(StatType.SPD, 0);
-            }
         }
     }
 }
