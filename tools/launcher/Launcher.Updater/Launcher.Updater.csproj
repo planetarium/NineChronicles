@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Launcher.Updater</RootNamespace>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <PublishDir>out\$(RuntimeIdentifier)</PublishDir>
+    <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
     <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
   </PropertyGroup>
