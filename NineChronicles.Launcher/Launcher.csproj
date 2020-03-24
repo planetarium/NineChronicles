@@ -22,9 +22,8 @@
         <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
-        <PackageReference Include="SharpZipLib" Version="1.2.0" />
     </ItemGroup>
-    
+
     <ItemGroup Label="Package References (Publish Helper)">
         <PackageReference Include="Dotnet.Bundle" Version="0.9.12" Condition="'$(RuntimeIdentifier)' == 'osx-x64'" />
         <PackageReference Include="NSubsys" Version="1.0.0" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />

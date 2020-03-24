@@ -2,16 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Runtime.InteropServices;
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.Tar;
-using Launcher.Storage;
+using Launcher.Common;
+using Launcher.Common.Storage;
 using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
@@ -20,13 +17,8 @@ using Libplanet.Standalone.Hosting;
 using NineChronicles.Standalone;
 using Qml.Net;
 using Serilog;
-<<<<<<< HEAD:NineChronicles.Launcher/LibplanetController.cs
-using JsonSerializer = System.Text.Json.JsonSerializer;
-using static Launcher.RuntimePlatform.RuntimePlatform;
-=======
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using static Launcher.Common.Configuration;
->>>>>>> Move configuration and path logic to common library:tools/launcher/Launcher/LibplanetController.cs
 
 namespace Launcher
 {
@@ -163,50 +155,9 @@ namespace Launcher
             var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             updateWatcher.VersionUpdated += async (sender, e) =>
             {
-                Updating = true;
-                this.ActivateProperty(ctrl => ctrl.Updating);
-
-                var version = e.UpdatedVersion.Version;
-                var tempPath = Path.Combine(Path.GetTempPath(), "temp-9c-download" + version);
-
-                Log.Debug("New update released! {version}", version);
-                Log.Debug("It will be downloaded at temporary path: {tempPath}", tempPath);
-
-                cts.Cancel();
-                cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                try
-                {
-                    await DownloadGameBinaryAsync(tempPath, settings.DeployBranch, version,
-                        cts.Token);
-
-                    // FIXME: it kills game process in force, if it was running. it should be
-                    //        killed with some message.
-                    SwapGameDirectory(
-                        LoadGameBinaryPath(settings),
-                        Path.Combine(tempPath, "MacOS"));
-                    LocalCurrentVersion = e.UpdatedVersion;
-
-                    Updating = false;
-                    this.ActivateProperty(ctrl => ctrl.Updating);
-                }
-                catch (OperationCanceledException)
-                {
-                    Log.Debug("task was cancelled.");
-                }
+                Restart();
             };
             await updateWatcher.StartAsync(TimeSpan.FromSeconds(3), cancellationToken);
-        }
-
-        private void SwapGameDirectory(string gameBinaryPath, string newGameBinaryPath)
-        {
-            GameProcess?.Kill();
-
-            if (Directory.Exists(gameBinaryPath))
-            {
-                Directory.Delete(gameBinaryPath, recursive: true);
-            }
-
-            Directory.Move(newGameBinaryPath, gameBinaryPath);
         }
 
         private async Task SyncTask(LauncherSettings settings, CancellationToken cancellationToken)
@@ -261,9 +212,7 @@ namespace Launcher
                 // FIXME: It should notice game will be shut down!
                 // It assumes another like updater, will run this, Launcher.
                 // FIXME: determine updater path.
-                const string updaterPath = "";
-                Process.Start(updaterPath);
-                Environment.Exit(0);
+                Restart();
             }
             catch (Exception e)
             {
@@ -308,39 +257,6 @@ namespace Launcher
             Log.Debug("Finished to extract game binary.");
         }
 
-<<<<<<< HEAD:NineChronicles.Launcher/LibplanetController.cs
-        private static string LoadGameBinaryPath(LauncherSettings settings)
-        {
-            if (string.IsNullOrEmpty(settings.GameBinaryPath))
-            {
-                return DefaultGameBinaryPath;
-            }
-            else
-            {
-                return settings.GameBinaryPath;
-            }
-        }
-
-        private static IceServer LoadIceServer(string iceServerInfo)
-        {
-            var uri = new Uri(iceServerInfo);
-            string[] userInfo = uri.UserInfo.Split(':');
-
-            return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
-        }
-
-        private static BoundPeer LoadPeer(string peerInfo)
-        {
-            var tokens = peerInfo.Split(',');
-            var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
-            var host = tokens[1];
-            var port = int.Parse(tokens[2]);
-
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
-        }
-
-=======
->>>>>>> Move configuration and path logic to common library:tools/launcher/Launcher/LibplanetController.cs
         public async Task RunGame()
         {
             var setting = LoadSettings();
@@ -387,6 +303,17 @@ namespace Launcher
         {
             InitializeSettingFile();
             Process.Start(CurrentPlatform.OpenCommand, SettingFilePath);
+        }
+
+        private void Restart()
+        {
+            // TODO: It should notice it will be shut down because of updates.
+            const string updaterFilename = "Launcher.Updater";
+            string updaterPath =
+                Path.Combine(CurrentPlatform.CurrentWorkingDirectory, updaterFilename);
+            GameProcess?.Kill();
+            Process.Start(updaterPath);
+            Environment.Exit(0);
         }
 
         private readonly string RpcServerHost = IPAddress.Loopback.ToString();
