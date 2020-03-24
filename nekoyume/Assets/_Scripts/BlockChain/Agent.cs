@@ -179,7 +179,7 @@ namespace Nekoyume.BlockChain
 
             var policy = BlockPolicy.GetPolicy(
                     minimumDifficulty,
-                    doesTransactionFollowPolicy: IsSignerAuthorized);
+                    getWhiteListSheet: GetWhiteListSheet);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
             store.UnstageTransactionIds(
@@ -283,26 +283,16 @@ namespace Nekoyume.BlockChain
 
         #endregion
 
-        private bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
+        private WhiteListSheet GetWhiteListSheet()
         {
-            WhiteListSheet GetWhiteListSheet()
+            var state = blocks?.GetState(TableSheetsState.Address);
+            if (state is null)
             {
-                var state = blocks?.GetState(TableSheetsState.Address);
-                if (state is null)
-                {
-                    return null;
-                }
+                return null;
+            }
 
-                var tableSheetsState = new TableSheetsState((Dictionary)state);
-                return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
-            };
-
-            var signerPublicKey = transaction.PublicKey;
-            var whiteListSheet = GetWhiteListSheet();
-
-            return whiteListSheet is null
-                   || whiteListSheet.Count == 0
-                   || whiteListSheet.Values.Any(row => signerPublicKey.Equals(row.PublicKey));
+            var tableSheetsState = new TableSheetsState((Dictionary)state);
+            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
         }
 
         private void InitAgent(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)

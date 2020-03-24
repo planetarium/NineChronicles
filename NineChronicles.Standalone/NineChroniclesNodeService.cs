@@ -34,8 +34,6 @@ namespace NineChronicles.Standalone
 
         private RpcNodeServiceProperties RpcProperties { get; }
 
-        private Func<WhiteListSheet> GetWhiteListSheet { get; set; }
-
         public AsyncAutoResetEvent BootstrapEnded => NodeService.BootstrapEnded;
 
         public AsyncAutoResetEvent PreloadEnded => NodeService.PreloadEnded;
@@ -50,7 +48,7 @@ namespace NineChronicles.Standalone
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(
                 properties.MinimumDifficulty,
-                IsSignerAuthorized
+                GetWhiteListSheet
             );
             async Task minerLoopAction(
                 BlockChain<NineChroniclesActionType> chain,
@@ -79,17 +77,6 @@ namespace NineChronicles.Standalone
                 minerLoopAction
             );
 
-            GetWhiteListSheet = () =>
-            {
-                var state = NodeService.BlockChain?.GetState(TableSheetsState.Address);
-                if (state is null)
-                {
-                    return null;
-                }
-
-                var tableSheetsState = new TableSheetsState((Dictionary)state);
-                return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
-            };
         }
 
         public async Task Run(CancellationToken cancellationToken = default)
@@ -118,14 +105,16 @@ namespace NineChronicles.Standalone
             }).RunConsoleAsync(cancellationToken);
         }
 
-        private bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
+        private WhiteListSheet GetWhiteListSheet()
         {
-            var signerPublicKey = transaction.PublicKey;
-            var whiteListSheet = GetWhiteListSheet?.Invoke();
+            var state = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
+            if (state is null)
+            {
+                return null;
+            }
 
-            return whiteListSheet is null
-                   || whiteListSheet.Count == 0
-                   || whiteListSheet.Values.Any(row => signerPublicKey.Equals(row.PublicKey));
+            var tableSheetsState = new TableSheetsState((Dictionary)state);
+            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
         }
 
     }
