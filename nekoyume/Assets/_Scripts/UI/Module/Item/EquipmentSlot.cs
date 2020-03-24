@@ -1,5 +1,10 @@
+using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Model.Item;
+using Nekoyume.UI.AnimatedGraphics;
 using TMPro;
+using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -30,9 +35,13 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private int itemSubTypeIndex = 1;
 
+        private int _requireLevel;
+        private string _messageForCat;
+        private MessageCat _cat;
+
         private EventTrigger _eventTrigger;
-        private System.Action<EquipmentSlot> _onClick;
-        private System.Action<EquipmentSlot> _onDoubleClick;
+        private Action<EquipmentSlot> _onClick;
+        private Action<EquipmentSlot> _onDoubleClick;
 
         public RectTransform RectTransform { get; private set; }
         public ItemSubType ItemSubType => itemSubType;
@@ -55,14 +64,100 @@ namespace Nekoyume.UI.Module
             _eventTrigger.triggers.Add(entry);
 
             RectTransform = GetComponent<RectTransform>();
+
+            switch (ItemSubType)
+            {
+                case ItemSubType.Weapon:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                    break;
+                case ItemSubType.Armor:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                    break;
+                case ItemSubType.Belt:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                    break;
+                case ItemSubType.Necklace:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                    break;
+                case ItemSubType.Ring:
+                    _requireLevel = ItemSubTypeIndex == 1
+                        ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
+                        : GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2;
+                    break;
+                case ItemSubType.Food:
+                    switch (ItemSubTypeIndex)
+                    {
+                        case 1:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot1;
+                            break;
+                        case 2:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot2;
+                            break;
+                        case 3:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot3;
+                            break;
+                        case 4:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot4;
+                            break;
+                        case 5:
+                            _requireLevel = GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot5;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            _messageForCat =
+                $"{LocalizationManager.Localize($"ITEM_SUB_TYPE_{ItemSubType.ToString()}")}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requireLevel}";
+
+            gameObject.AddComponent<ObservablePointerEnterTrigger>()
+                .OnPointerEnterAsObservable()
+                .Subscribe(x =>
+                {
+                    if (!IsLock)
+                    {
+                        return;
+                    }
+
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    _cat = Widget.Find<MessageCatManager>().Show(true, _messageForCat);
+                })
+                .AddTo(gameObject);
+
+            gameObject.AddComponent<ObservablePointerExitTrigger>()
+                .OnPointerExitAsObservable()
+                .Subscribe(x =>
+                {
+                    if (!IsLock || !_cat)
+                    {
+                        return;
+                    }
+
+                    _cat.Hide();
+                    _cat = null;
+                })
+                .AddTo(gameObject);
         }
 
         public void Set(ItemUsable equipment)
         {
             Set(equipment, _onClick, _onDoubleClick);
         }
-        
-        public void Set(ItemUsable equipment, System.Action<EquipmentSlot> onClick, System.Action<EquipmentSlot> onDoubleClick)
+
+        public void Set(ItemUsable equipment, Action<EquipmentSlot> onClick,
+            Action<EquipmentSlot> onDoubleClick)
         {
             var sprite = equipment.GetIconSprite();
             if (defaultImage)
@@ -93,11 +188,23 @@ namespace Nekoyume.UI.Module
             {
                 enhancementText.enabled = false;
             }
-            
+
             _onClick = onClick;
             _onDoubleClick = onDoubleClick;
         }
-        
+
+        public void Set(int avatarLevel)
+        {
+            if (avatarLevel < _requireLevel)
+            {
+                Lock();
+            }
+            else
+            {
+                Unlock();
+            }
+        }
+
         public void Clear()
         {
             if (defaultImage)
@@ -112,13 +219,13 @@ namespace Nekoyume.UI.Module
             Unlock();
         }
 
-        public void Lock()
+        private void Lock()
         {
             Clear();
             lockImage.gameObject.SetActive(true);
         }
 
-        public void Unlock()
+        private void Unlock()
         {
             lockImage.gameObject.SetActive(false);
         }

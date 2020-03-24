@@ -12,7 +12,7 @@ namespace Nekoyume.UI.Module
     /// <summary>
     /// 이 객체는 외부 UI에 의해서 장비의 장착이나 해제 상태가 변하고 있음.
     /// 외부 UI에서는 항상 인벤토리와 함께 사용하고 있어서 그에 따르는 중복 코드가 생길 여지가 큼.
-    /// UI간 결합을 끊고 이벤트 기반으로 동작하게끔 수정하면 좋겠음. 
+    /// UI간 결합을 끊고 이벤트 기반으로 동작하게끔 수정하면 좋겠음.
     /// </summary>
     public class EquipmentSlots : MonoBehaviour, IEnumerable<EquipmentSlot>
     {
@@ -23,11 +23,6 @@ namespace Nekoyume.UI.Module
         {
             if (slots is null)
                 throw new SerializeFieldNullException();
-        }
-
-        public void SetAvatar(AvatarState avatarState)
-        {
-            UpdateSlots(avatarState.level);
         }
 
         public void SetPlayer(Player player, Action<EquipmentSlot> onClick, Action<EquipmentSlot> onDoubleClick)
@@ -121,38 +116,7 @@ namespace Nekoyume.UI.Module
         {
             foreach (var equipmentSlot in slots)
             {
-                int requireLevel;
-                switch (equipmentSlot.ItemSubType)
-                {
-                    case ItemSubType.Weapon:
-                        requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
-                        break;
-                    case ItemSubType.Armor:
-                        requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
-                        break;
-                    case ItemSubType.Belt:
-                        requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
-                        break;
-                    case ItemSubType.Necklace:
-                        requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
-                        break;
-                    case ItemSubType.Ring:
-                        requireLevel = equipmentSlot.ItemSubTypeIndex == 1
-                            ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
-                            : GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                if (avatarLevel < requireLevel)
-                {
-                    equipmentSlot.Lock();
-                }
-                else
-                {
-                    equipmentSlot.Unlock();
-                }
+                equipmentSlot.Set(avatarLevel);
             }
         }
     }

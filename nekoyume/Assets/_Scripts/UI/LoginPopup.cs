@@ -336,7 +336,7 @@ namespace Nekoyume.UI
                 SetState(state);
                 Login = false;
             }
-            
+
             switch (State.Value)
             {
                 case States.CreateAccount:
@@ -402,45 +402,15 @@ namespace Nekoyume.UI
                 return _protectedPrivateKeys;
             }
 
-            if (!Directory.Exists(_keyStorePath))
+            _protectedPrivateKeys = KeyStore.GetProtectedPrivateKeys(_keyStorePath);
+
+            foreach (var protectedPrivateKey in _protectedPrivateKeys.Values)
             {
-                Directory.CreateDirectory(_keyStorePath);
+                SetImage(protectedPrivateKey.Address);
             }
-
-            var keyPaths = Directory.EnumerateFiles(_keyStorePath);
-
-            var protectedPrivateKeys = new Dictionary<string, ProtectedPrivateKey>();
-            foreach (var keyPath in keyPaths)
-            {
-                if (Path.GetFileName(keyPath) is string f && f.StartsWith("."))
-                {
-                    continue;
-                }
-
-                using (Stream stream = new FileStream(keyPath, FileMode.Open))
-                using (var reader = new StreamReader(stream))
-                {
-                    try
-                    {
-                        protectedPrivateKeys[keyPath] = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
-                        SetImage(protectedPrivateKeys[keyPath].Address);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogWarningFormat("The key file {0} is invalid: {1}", keyPath, e);
-                    }
-                }
-            }
-
-            Debug.LogFormat(
-                "Loaded {0} protected keys in the keystore:\n{1}",
-                protectedPrivateKeys.Count,
-                string.Join("\n", protectedPrivateKeys.Select(kv => $"- {kv.Value}: {kv.Key}"))
-            );
 
             // FIXME: 키가 여러 개 있을 수 있으므로 UI에서 목록으로 표시하고 유저가 선택하게 해야 함.
-            _protectedPrivateKeys = protectedPrivateKeys;
-            return protectedPrivateKeys;
+            return _protectedPrivateKeys;
         }
 
         private static PrivateKey CheckPrivateKey(Dictionary<string, ProtectedPrivateKey> protectedPrivateKeys,
@@ -487,11 +457,11 @@ namespace Nekoyume.UI
                     submitButton.SetSubmittable(!(string.IsNullOrEmpty(passPhraseField.text) ||
                                                   string.IsNullOrEmpty(retypeField.text)));
                     break;
-                
+
                 case States.Login:
                     submitButton.SetSubmittable(!string.IsNullOrEmpty(loginField.text));
                     break;
-                
+
                 case States.FindPassphrase:
                     submitButton.SetSubmittable(!string.IsNullOrEmpty(findPassphraseField.text));
                     break;
@@ -507,7 +477,7 @@ namespace Nekoyume.UI
         protected override void Update()
         {
             base.Update();
-            
+
             if (Input.GetKeyUp(KeyCode.Tab))
             {
                 switch (State.Value)

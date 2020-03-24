@@ -1,4 +1,4 @@
-﻿Key,English,Korean
+Key,English,Korean
 TITLE,Nine Chronicles,나인 크로니클
 ALL,All,전체
 ADVENTURE,Adventure,모험
@@ -213,8 +213,11 @@ UI_COMBINATION_RECIPE_CLOSE,Recipe Close,레시피 닫기
 UI_RECIPE_COMBINATION,Craft,조합
 UI_SHOP_NOTICE,8% of sales item price is taxed,판매가의 8%를 세금으로 징수합니다.
 UI_LOADING_BOOTSTRAP_START,Connecting to the network...,네트워크에 연결하고 있습니다...
+UI_LOADING_BLOCK_HASH_DOWNLOAD,Downloading block hashes... {0} / {1},블록 해시 다운로드 중... {0} / {1}
 UI_LOADING_BLOCK_DOWNLOAD,Downloading blocks... {0} / {1},블록 다운로드 중... {0} / {1}
+UI_LOADING_BLOCK_VERIFICATION,Verifying blocks... {0} / {1},블록 확인 중... {0} / {1}
 UI_LOADING_STATE_REFERENCE_DOWNLOAD,Downloading states... {0} / {1},상태 다운로드 중... {0} / {1}
+UI_LOADING_ACTION_EXECUTE,Executing actions... {0} / {1},액션 실행 중... {0} / {1}
 UI_RECEIVE,Receive,받기
 UI_RECEIVED,Received,받음
 UI_GET_REWARDS,Receive Rewards,보상 받기
@@ -323,9 +326,4 @@ UI_LOGIN_FIND_PASSPHRASE_TITLE,Enter your private key,프라이빗 키를 입력
 UI_PROGRESS,In Progress,진행 중
 UI_RANDOM_OPTION_COUNT_FORMAT_SINGULAR,<color={0}>{1}</color> option is randomly selected.,<color={0}>{1}</color>개의 옵션이 무작위로 선택됩니다.
 UI_RANDOM_OPTION_COUNT_FORMAT_PLURAL,<color={0}>{1}</color> options are randomly selected.,<color={0}>{1}</color>개의 옵션이 무작위로 선택됩니다.
-UI_WEAPON,Weapon,무기
-UI_ARMOR,Armor,방어구
-UI_BELT,Belt,벨트
-UI_NECKLACE,Necklace,목걸이
-UI_RING,Ring,반지
 UI_UNLOCK_CONDITION_STAGE,Clear Stage {0},{0} 스테이지 클리어

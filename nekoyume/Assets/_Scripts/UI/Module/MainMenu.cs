@@ -34,8 +34,6 @@ namespace Nekoyume.UI.Module
         public GameObject[] lockObjects;
         public GameObject[] unLockObjects;
 
-        private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
-
         private int _requireStage;
         private string _messageForCat;
         private MessageCat _cat;
@@ -90,7 +88,7 @@ namespace Nekoyume.UI.Module
 
                     bgTransform.DOScale(_originLocalScale * BgScale, TweenDuration);
                 })
-                .AddTo(_disposablesForAwake);
+                .AddTo(gameObject);
 
             gameObject.AddComponent<ObservablePointerExitTrigger>()
                 .OnPointerExitAsObservable()
@@ -110,17 +108,12 @@ namespace Nekoyume.UI.Module
                     bgTransform.DOScale(_originLocalScale, TweenDuration);
                     ResetLocalizationKey();
                 })
-                .AddTo(_disposablesForAwake);
+                .AddTo(gameObject);
         }
 
         private void OnEnable()
         {
             bgTransform.localScale = _originLocalScale;
-        }
-
-        private void OnDestroy()
-        {
-            _disposablesForAwake.DisposeAllAndClear();
         }
 
         #endregion

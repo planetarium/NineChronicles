@@ -1,5 +1,7 @@
 ﻿using Nekoyume.Constraints;
 using TMPro;
+using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 
 namespace Nekoyume.UI.AnimatedGraphics
@@ -10,10 +12,17 @@ namespace Nekoyume.UI.AnimatedGraphics
         private const string ShowString = "Show";
         private static readonly int ShowHash = Animator.StringToHash(ShowString);
 
-        [SerializeField] private Animator animator = null;
-        [SerializeField] private Transform messageTransform = null;
-        [SerializeField] private TextMeshProUGUI messageText = null;
-        [SerializeField] private ConstraintsToMousePosition constraintsToMousePosition = null;
+        [SerializeField]
+        private Animator animator = null;
+
+        [SerializeField]
+        private Transform messageTransform = null;
+
+        [SerializeField]
+        private TextMeshProUGUI messageText = null;
+
+        [SerializeField]
+        private ConstraintsToMousePosition constraintsToMousePosition = null;
 
         private GameObject _gameObject;
         private RectTransform _rectTransform;
@@ -36,7 +45,7 @@ namespace Nekoyume.UI.AnimatedGraphics
             _rectTransform.position = position;
             PostShow(message, reverseDirection);
         }
-        
+
         public void Show(bool followMouse, string message, bool reverseDirection = false)
         {
             constraintsToMousePosition.enabled = followMouse;
@@ -62,7 +71,7 @@ namespace Nekoyume.UI.AnimatedGraphics
 
             if (lazyHide)
             {
-                animator.Play("Hide");                
+                animator.Play("Hide");
             }
             else
             {
@@ -74,14 +83,16 @@ namespace Nekoyume.UI.AnimatedGraphics
         {
             if (reverseDirection)
             {
-                _rectTransform.localScale = new Vector3(-_originTransformLocalScale.x, _originTransformLocalScale.y,
+                _rectTransform.localScale = new Vector3(-_originTransformLocalScale.x,
+                    _originTransformLocalScale.y,
                     _originTransformLocalScale.z);
                 messageTransform.localScale = new Vector3(-_originMessageTransformLocalScale.x,
                     _originMessageTransformLocalScale.y, _originMessageTransformLocalScale.z);
             }
             else
             {
-                _rectTransform.localScale = new Vector3(_originTransformLocalScale.x, _originTransformLocalScale.y,
+                _rectTransform.localScale = new Vector3(_originTransformLocalScale.x,
+                    _originTransformLocalScale.y,
                     _originTransformLocalScale.z);
                 messageTransform.localScale = new Vector3(_originMessageTransformLocalScale.x,
                     _originMessageTransformLocalScale.y, _originMessageTransformLocalScale.z);
