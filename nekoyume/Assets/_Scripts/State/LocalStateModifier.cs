@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using Libplanet;
-using Nekoyume.Action;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
-using Nekoyume.UI.Module;
 
 namespace Nekoyume.State
 {
@@ -58,22 +54,13 @@ namespace Nekoyume.State
             var modifier = new AvatarActionPointModifier(actionPoint);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
 
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
                 return;
-            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
-            {
                 return;
-            }
 
             ReactiveAvatarState.ActionPoint.SetValueAndForceNotify(outAvatarState.actionPoint);
         }
@@ -173,22 +160,13 @@ namespace Nekoyume.State
 
         private static void RemoveItemInternal(Address avatarAddress, AvatarStateModifier modifier)
         {
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
                 return;
-            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
-            {
                 return;
-            }
 
             ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
         }
@@ -207,53 +185,15 @@ namespace Nekoyume.State
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
                 return;
-            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
-            {
                 return;
-            }
 
             ReactiveAvatarState.MailBox.SetValueAndForceNotify(outAvatarState.mailBox);
-        }
-
-        public static void AddNewResultAttachmentMail(
-            Address avatarAddress,
-            Guid mailId,
-            long blockIndex
-        )
-        {
-            var modifier = new AvatarAttachmentMailResultSetter(blockIndex, mailId);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier);
-
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
-                return;
-            }
-
-            modifier.Modify(outAvatarState);
-
-            if (!isCurrentAvatarState)
-            {
-                return;
-            }
-
-            AddNewAttachmentMail(avatarAddress, mailId);
         }
 
         /// <summary>
@@ -265,13 +205,6 @@ namespace Nekoyume.State
         {
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
-            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
-        }
-
-        public static void RemoveAttachmentResult(Address avatarAddress, Guid mailId)
-        {
-            var resultModifier = new AvatarAttachmentMailResultSetter(mailId);
-            LocalStateSettings.Instance.Remove(avatarAddress, resultModifier);
             TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
         }
 
@@ -289,22 +222,13 @@ namespace Nekoyume.State
             var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalStateSettings.Instance.Add(avatarAddress, modifier);
 
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
                 return;
-            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
-            {
                 return;
-            }
 
             ReactiveAvatarState.QuestList.SetValueAndForceNotify(outAvatarState.questList);
         }
@@ -323,7 +247,7 @@ namespace Nekoyume.State
 
         #endregion
 
-        #region Avatar
+        #region Avater
 
         /// <summary>
         /// 아바타의 데일리 리워드 획득 블록 인덱스를 변경한다.(휘발성)
@@ -337,60 +261,15 @@ namespace Nekoyume.State
             var modifier = new AvatarDailyRewardReceivedIndexModifier(blockIndex);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
 
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
+            if (!TryGetLoadedAvatarState(avatarAddress, out var outAvatarState, out _, out var isCurrentAvatarState))
                 return;
-            }
 
             modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
-            {
                 return;
-            }
 
             ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
-        }
-
-        public static void ModifyAvatarItemRequiredIndex(
-            Address avatarAddress,
-            Guid itemId,
-            long blockIndex
-        )
-        {
-            var modifier = new AvatarItemRequiredIndexModifier(blockIndex, itemId);
-            LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
-
-            if (!TryGetLoadedAvatarState(
-                avatarAddress,
-                out var outAvatarState,
-                out _,
-                out var isCurrentAvatarState)
-            )
-            {
-                return;
-            }
-
-            modifier.Modify(outAvatarState);
-
-            if (!isCurrentAvatarState)
-            {
-                return;
-            }
-
-            ReactiveAvatarState.DailyRewardReceivedIndex
-                .SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
-        }
-
-        public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid itemId)
-        {
-            var modifier = new AvatarItemRequiredIndexModifier(itemId);
-            LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
         }
 
         #endregion
@@ -426,11 +305,12 @@ namespace Nekoyume.State
             var avatarAddress = avatarState.address;
             var weeklyArenaState = States.Instance.WeeklyArenaState;
             var weeklyArenaAddress = weeklyArenaState.address;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
 
             if (addArenaInfoIfNotContained &&
                 !weeklyArenaState.ContainsKey(avatarAddress))
             {
-                weeklyArenaState.Set(avatarState);
+                weeklyArenaState.Set(avatarState, characterSheet);
             }
 
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
@@ -458,105 +338,6 @@ namespace Nekoyume.State
         }
 
         #endregion
-
-        public static void ModifyCombinationSlot(
-            TableSheets tableSheets,
-            EquipmentItemRecipeSheet.Row row,
-            EquipmentCombinationPanel panel,
-            int slotIndex,
-            int? subRecipeId
-        )
-        {
-            var requiredBlockIndex = row.RequiredBlockIndex + Game.Game.instance.Agent.BlockIndex;
-            var equipRow =
-                tableSheets.EquipmentItemSheet.Values.First(i => i.Id == row.ResultEquipmentId);
-            var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.Empty, requiredBlockIndex);
-            var materials = new Dictionary<Model.Item.Material, int>();
-            foreach (var (material, count) in panel.materialPanel.MaterialList)
-            {
-                materials[material] = count;
-            }
-
-            var result = new CombinationConsumable.ResultModel
-            {
-                actionPoint = panel.CostAP,
-                gold = panel.CostNCG,
-                materials = materials,
-                itemUsable = equipment,
-                recipeId = row.Id,
-                subRecipeId = subRecipeId,
-                itemType = ItemType.Equipment,
-            };
-            var modifier = new CombinationSlotStateModifier(result);
-            var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
-            States.Instance.CombinationSlotStates[slotIndex] = slotState;
-        }
-
-        public static void ModifyCombinationSlotConsumable(
-            TableSheets tableSheets,
-            CombineConsumable panel,
-            List<(Material material, int count)> materialInfoList,
-            int slotIndex
-        )
-        {
-            var requiredBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
-                i.Id == panel.resultItemView.Model.ItemBase.Value.Data.Id);
-            var consumable = ItemFactory.CreateItemUsable(consumableRow, Guid.Empty,
-                requiredBlockIndex);
-            var row = tableSheets.ConsumableItemRecipeSheet.Values.First(i =>
-                i.ResultConsumableItemId == consumableRow.Id);
-            var materials = new Dictionary<Model.Item.Material, int>();
-            foreach (var (material, count) in materialInfoList)
-            {
-                materials[material] = count;
-            }
-
-            var result = new CombinationConsumable.ResultModel
-            {
-                actionPoint = panel.CostAP,
-                gold = panel.CostNCG,
-                materials = materials,
-                itemUsable = consumable,
-                recipeId = row.Id,
-                itemType = ItemType.Consumable,
-            };
-            var modifier = new CombinationSlotStateModifier(result);
-            var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
-            States.Instance.CombinationSlotStates[slotIndex] = slotState;
-        }
-
-        public static void ModifyCombinationSlotItemEnhancement(
-            EnhanceEquipment panel,
-            IEnumerable<Guid> guidList,
-            int slotIndex
-        )
-        {
-            var requiredBlockIndex = Game.Game.instance.Agent.BlockIndex;
-            var equipment = (Equipment) panel.baseMaterial.Model.ItemBase.Value;
-            equipment.Update(requiredBlockIndex);
-            var result = new ItemEnhancement.ResultModel
-            {
-                actionPoint = panel.CostAP,
-                gold = panel.CostNCG,
-                materialItemIdList = guidList,
-                itemUsable = equipment,
-            };
-            var modifier = new CombinationSlotStateModifier(result);
-            var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
-            States.Instance.CombinationSlotStates[slotIndex] = slotState;
-        }
-
-        public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
-        {
-            var prevState = States.Instance.CombinationSlotStates[slotIndex];
-            var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
-            var slotState = modifier.Modify(prevState);
-            States.Instance.CombinationSlotStates[slotIndex] = slotState;
-        }
 
         /// <summary>
         /// `States.AvatarStates`가 포함하고 있는 아바타 상태 중에 `avatarAddress`와 같은 객체와 그 키를 반환한다.

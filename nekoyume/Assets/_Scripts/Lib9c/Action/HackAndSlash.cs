@@ -269,12 +269,12 @@ namespace Nekoyume.Action
                 if (weekly.ContainsKey(avatarAddress))
                 {
                     var info = weekly[avatarAddress];
-                    info.Update(avatarState);
+                    info.Update(avatarState, tableSheets.CharacterSheet);
                     weekly.Update(info);
                 }
                 else
                 {
-                    weekly.Set(avatarState);
+                    weekly.Set(avatarState, tableSheets.CharacterSheet);
                 }
                 sw.Stop();
                 Log.Debug($"HAS Update WeeklyArenaState: {sw.Elapsed}");

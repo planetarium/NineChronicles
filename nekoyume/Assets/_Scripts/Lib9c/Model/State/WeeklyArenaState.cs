@@ -9,6 +9,7 @@ using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.WeeklyArena;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Model.State
 {
@@ -134,9 +135,9 @@ namespace Nekoyume.Model.State
             return _map.Values.FirstOrDefault(info => info.AvatarAddress.Equals(avatarAddress));
         }
 
-        private void Update(AvatarState avatarState, bool active = false)
+        private void Update(AvatarState avatarState, CharacterSheet characterSheet, bool active = false)
         {
-            Add(avatarState.address, new ArenaInfo(avatarState, active));
+            Add(avatarState.address, new ArenaInfo(avatarState, characterSheet, active));
         }
 
         public void Update(ArenaInfo info)
@@ -144,9 +145,9 @@ namespace Nekoyume.Model.State
             Add(info.AvatarAddress, info);
         }
 
-        public void Set(AvatarState avatarState)
+        public void Set(AvatarState avatarState, CharacterSheet characterSheet)
         {
-            Update(avatarState);
+            Update(avatarState, characterSheet);
         }
 
         public void ResetCount(long ctxBlockIndex)
@@ -345,7 +346,7 @@ namespace Nekoyume.Model.State
         public int Score { get; private set; }
         public bool Receive;
 
-        public ArenaInfo(AvatarState avatarState, bool active)
+        public ArenaInfo(AvatarState avatarState, CharacterSheet characterSheet, bool active)
         {
             AvatarAddress = avatarState.address;
             AgentAddress = avatarState.agentAddress;
@@ -354,7 +355,7 @@ namespace Nekoyume.Model.State
             Level = avatarState.level;
             var armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
             ArmorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
-            CombatPoint = CPHelper.GetCP(avatarState);
+            CombatPoint = CPHelper.GetCP(avatarState, characterSheet);
             Active = active;
             DailyChallengeCount = GameConfig.ArenaChallengeCountMax;
             Score = GameConfig.ArenaScoreDefault;
@@ -405,11 +406,11 @@ namespace Nekoyume.Model.State
                 [(Text)"score"] = Score.Serialize(),
             });
 
-        public void Update(AvatarState state)
+        public void Update(AvatarState state, CharacterSheet characterSheet)
         {
             ArmorId = state.GetArmorId();
             Level = state.level;
-            CombatPoint = CPHelper.GetCP(state);
+            CombatPoint = CPHelper.GetCP(state, characterSheet);
         }
 
         public int Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
