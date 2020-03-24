@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
@@ -13,7 +12,6 @@ using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
-using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.State
@@ -151,7 +149,7 @@ namespace Nekoyume.Model.State
             worldInformation = new WorldInformation((Dictionary)serialized["worldInformation"]);
             updatedAt = serialized["updatedAt"].ToDateTimeOffset();
             agentAddress = new Address(((Binary)serialized["agentAddress"]).Value);
-            questList = new QuestList((List)serialized["questList"]);
+            questList = new QuestList((Dictionary) serialized["questList"]);
             mailBox = new MailBox((List)serialized["mailBox"]);
             blockIndex = (long)((Integer)serialized["blockIndex"]).Value;
             dailyRewardReceivedIndex = (long)((Integer)serialized["dailyRewardReceivedIndex"]).Value;
@@ -243,6 +241,18 @@ namespace Nekoyume.Model.State
             UpdateCompletedQuest();
         }
 
+        public void UpdateFromRapidCombination(CombinationConsumable.ResultModel result,
+            long requiredIndex)
+        {
+            var mail = mailBox.First(m => m.id == result.id);
+            mail.requiredBlockIndex = requiredIndex;
+            var item = inventory.Items
+                .Select(i => i.item)
+                .OfType<ItemUsable>()
+                .First(i => i.ItemId == result.itemUsable.ItemId);
+            item.Update(requiredIndex);
+        }
+
         // todo 1: 퀘스트 전용 함수임을 알 수 있는 네이밍이 필요함.
         // todo 2: 혹은 분리된 객체에게 위임하면 좋겠음.
         #region Quest From Action
@@ -304,10 +314,7 @@ namespace Nekoyume.Model.State
         /// <summary>
         /// 완료된 퀘스트의 보상 처리를 한다.
         /// </summary>
-        /// <returns>
-        /// 완료된 퀘스트의 ID를 반환한다.
-        /// </returns>
-        public List<int> UpdateQuestRewards(IActionContext context)
+        public void UpdateQuestRewards(IActionContext context)
         {
             var completedQuests = questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
             // 완료되었지만 보상을 받지 않은 퀘스트를 return 문에서 Select 하지 않고 미리 저장하는 이유는
@@ -319,7 +326,7 @@ namespace Nekoyume.Model.State
                 UpdateFromQuestReward(quest, context);
             }
 
-            return completedQuestIds;
+            questList.completedQuestIds = completedQuestIds;
         }
 
         #endregion

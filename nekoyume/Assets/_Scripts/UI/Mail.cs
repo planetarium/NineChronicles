@@ -185,6 +185,9 @@ namespace Nekoyume.UI
             {
                 LocalStateModifier.AddItem(avatarAddress, item.ItemId);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
+                LocalStateModifier.RemoveAttachmentResult(avatarAddress, mail.id);
+                LocalStateModifier.ModifyAvatarItemRequiredIndex(
+                    avatarAddress, item.ItemId, Game.Game.instance.Agent.BlockIndex);
             });
             popup.Pop(model);
         }

@@ -26,7 +26,6 @@ namespace Nekoyume.Action
         public int ear;
         public int tail;
         public string name;
-        public List<int> completedQuestIds;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>()
         {
@@ -98,7 +97,7 @@ namespace Nekoyume.Action
             Log.Debug($"Execute CreateAvatar. player : `{avatarAddress}`");
 
             agentState.avatarAddresses.Add(index, avatarAddress);
-            
+
             // Avoid NullReferenceException in test
             avatarState = CreateAvatarState(name, avatarAddress, ctx);
 
@@ -116,7 +115,7 @@ namespace Nekoyume.Action
                 states = states.SetState(address, slotState.Serialize());
             }
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
+            avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
             Log.Debug($"CreateAvatar CreateAvatarState: {sw.Elapsed}");
@@ -131,18 +130,18 @@ namespace Nekoyume.Action
         {
             var tableSheets = TableSheets.FromActionContext(ctx);
             var avatarState = new AvatarState(
-                avatarAddress, 
-                ctx.Signer, 
-                ctx.BlockIndex, 
+                avatarAddress,
+                ctx.Signer,
+                ctx.BlockIndex,
                 tableSheets,
                 name
             );
 
             if (GameConfig.IsEditor)
             {
-                AddItemsForTest(avatarState, ctx.Random, tableSheets);    
+                AddItemsForTest(avatarState, ctx.Random, tableSheets);
             }
-            
+
             return avatarState;
         }
 

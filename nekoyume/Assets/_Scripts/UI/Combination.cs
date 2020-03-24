@@ -10,6 +10,7 @@ using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
@@ -184,7 +185,9 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory);
+                BottomMenu.ToggleableType.Inventory,
+                BottomMenu.ToggleableType.Combination
+            );
 
             var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
             _npc01 = go.GetComponent<NPC>();
@@ -517,8 +520,15 @@ namespace Nekoyume.UI
             var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel)
                 ? elementalPanel.SelectedSubRecipeId
                 : (int?) null;
+            var slotIndex = 0;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
-            CreateEnhancedCombinationEquipmentAction(model.Id, subRecipeId);
+            CreateEnhancedCombinationEquipmentAction(
+                model.Id,
+                subRecipeId,
+                slotIndex,
+                model,
+                combinationPanel
+            );
             equipmentRecipe.UpdateRecipes();
         }
 
@@ -570,11 +580,14 @@ namespace Nekoyume.UI
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }
 
-        private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId)
+        private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId,
+            int slotIndex, EquipmentItemRecipeSheet.Row model, EquipmentCombinationPanel panel)
         {
+            LocalStateModifier.ModifyCombinationSlot(Game.Game.instance.TableSheets, model, panel,
+                slotIndex, subRecipeId);
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.CombinationEquipment(recipeId, subRecipeId);
+            Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
         }
 
         #endregion
