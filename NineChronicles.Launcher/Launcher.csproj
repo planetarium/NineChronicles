@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup Label="Project References">
-        <ProjectReference Include="..\..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
+        <ProjectReference Include="..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
     </ItemGroup>
 
     <ItemGroup Label="Variables">
