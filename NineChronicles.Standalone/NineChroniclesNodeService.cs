@@ -41,7 +41,9 @@ namespace NineChronicles.Standalone
             RpcProperties = rpcNodeServiceProperties;
 
             // BlockPolicy shared through Lib9c.
-            IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy();
+            IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(
+                properties.MinimumDifficulty
+            );
             async Task minerLoopAction(
                 BlockChain<NineChroniclesActionType> chain,
                 Swarm<NineChroniclesActionType> swarm,

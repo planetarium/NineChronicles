@@ -56,7 +56,9 @@ namespace Nekoyume.Helper
 
         public string appProtocolVersion;
 
-        public string[] trustedAppProtocolVersionSigners;
+        public string[] trustedAppProtocolVersionSigners = new string[] { };
+        // Unity 단독 빌드시의 해시 파워가 낮기 때문에, Unity 버전의 기존치는 .NET Core보다 낮게 잡습니다.
+        public int minimumDifficulty = 100000;
 
         public bool Empty { get; private set; } = true;
 
@@ -282,6 +284,17 @@ namespace Nekoyume.Helper
             }
         }
 
+        [Option('D', "minimum-difficulty", Required = false)]
+        public int MinimumDifficulty
+        {
+            get => minimumDifficulty;
+            set
+            {
+                minimumDifficulty = value;
+                Empty = false;
+            }
+        }
+
         public static CommandLineOptions Load(string localPath, string onlinePath)
         {
             var options = CommnadLineParser.GetCommandLineOptions();
@@ -317,7 +330,7 @@ namespace Nekoyume.Helper
                 return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
             }
 
-            Debug.Log("Failed to find options. Creating...");
+            Debug.LogErrorFormat("Failed to find {0}. Using default options.", localPath);
             return new CommandLineOptions();
         }
     }

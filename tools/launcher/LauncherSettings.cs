@@ -8,8 +8,6 @@ namespace Launcher
 
         public string KeyStorePath { get; set; }
 
-        public string Passphrase { get; set; }
-
         public string AppProtocolVersionToken { get; set; }
 
         public string IceServer { get; set; }
@@ -17,6 +15,8 @@ namespace Launcher
         public string Seed { get; set; }
 
         public bool NoMiner { get; set; }
+
+        public int MinimumDifficulty { get; set; }
 
         public string GenesisBlockPath { get; set; }
 

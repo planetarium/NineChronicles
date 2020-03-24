@@ -43,8 +43,8 @@ namespace Nekoyume.Game.Character
 
         public int Level
         {
-            get => CharacterModel.Stats.Level;
-            set => CharacterModel.Stats.SetLevel(value);
+            get => CharacterModel.Level;
+            set => CharacterModel.Level = value;
         }
 
         public int HP => CharacterModel.HP;
@@ -56,7 +56,7 @@ namespace Nekoyume.Game.Character
             {
                 _currentHp = Math.Min(Math.Max(value, 0), HP);
                 UpdateHpBar();
-                
+
 //                if (Animator?.Target != null)
 //                {
 //                    Debug.LogWarning($"{Animator.Target.name}'s {nameof(CurrentHP)} setter called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
@@ -100,7 +100,7 @@ namespace Nekoyume.Game.Character
 #if !UNITY_EDITOR
             attackPoint.SetActive(false);
 #endif
-        
+
             HitPointBoxCollider = GetComponent<BoxCollider>();
         }
 
@@ -348,7 +348,7 @@ namespace Nekoyume.Game.Character
             var character = other.gameObject.GetComponent<CharacterBase>();
             if (!character)
                 return;
-            
+
             StopRunIfTargetInAttackRange(character);
         }
 
@@ -360,7 +360,7 @@ namespace Nekoyume.Game.Character
             var character = other.gameObject.GetComponent<CharacterBase>();
             if (!character)
                 return;
-            
+
             StopRunIfTargetInAttackRange(character);
         }
 
@@ -617,11 +617,11 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 if (target is null)
                     continue;
-                
+
                 var effect = Game.instance.Stage.skillController.Get<SkillBlowVFX>(target, info);
                 if (effect is null)
                     continue;
-                
+
                 effect.Play();
                 ProcessAttack(target, info, info.Target.IsDead, true);
             }
@@ -641,7 +641,7 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 if (target is null)
                     continue;
-                
+
                 var first = skillInfosFirst == info;
                 var effect = Game.instance.Stage.skillController.Get<SkillDoubleVFX>(target, info);
                 if (effect is null)
@@ -675,11 +675,11 @@ namespace Nekoyume.Game.Character
             var effectTarget = Game.instance.Stage.GetCharacter(skillInfosFirst.Target);
             if (effectTarget is null)
                 yield break;
-            
+
             var effect = Game.instance.Stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfosFirst);
             if (effect is null)
                 yield break;
-            
+
             Model.BattleStatus.Skill.SkillInfo trigger = null;
             if (effect.finisher)
             {
@@ -697,7 +697,7 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 if (target is null)
                     continue;
-                
+
                 yield return new WaitForSeconds(0.14f);
                 if (trigger == info)
                 {

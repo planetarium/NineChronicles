@@ -3,6 +3,7 @@ using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
+using Libplanet.Tx;
 using Nekoyume.Action;
 
 namespace Nekoyume.BlockChain
@@ -27,9 +28,17 @@ namespace Nekoyume.BlockChain
             {
                 return blocks.Tip is null ? 0 : 1;
             }
+
+            public bool DoesTransactionFollowsPolicy(
+                Transaction<PolymorphicAction<ActionBase>> transaction
+            ) =>
+                true;
         }
 
-        public static IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy()
+        // FIXME 남은 설정들도 설정화 해야 할지도?
+        public static IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy(
+            int miniumDifficulty
+        )
         {
 #if UNITY_EDITOR
             return new DebugPolicy();
@@ -37,7 +46,7 @@ namespace Nekoyume.BlockChain
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
                 new RewardGold { Gold = 1 },
                 BlockInterval,
-                5000000,
+                miniumDifficulty,
                 2048
             );
 #endif

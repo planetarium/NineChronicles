@@ -1539,7 +1539,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Predicate{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
@@ -1556,8 +1556,11 @@
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>. 1024 by default.</param>
             <param name="difficultyBoundDivisor">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>. 128 by default.</param>
+            <param name="doesTransactionFollowPolicy">
+            A predicate that determines if the transaction follows the block policy.
+            </param>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Predicate{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
@@ -1571,6 +1574,9 @@
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>.</param>
             <param name="difficultyBoundDivisor">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.</param>
+            <param name="doesTransactionFollowPolicy">
+            A predicate that determines if the transaction follows the block policy.
+            </param>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction">
             <inheritdoc/>
@@ -1604,6 +1610,14 @@
             <summary>
             A block action to execute and be rendered for every block.
             </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0})">
+            <summary>
+            A predicate that determines if the transaction follows the block policy.
+            </summary>
+            <param name="transaction">A <see cref="T:Libplanet.Tx.Transaction`1"/> to determine.</param>
+            <returns><c>true</c> if <paramref name="transaction"/>is valid; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0})">
             <summary>
@@ -2964,7 +2978,7 @@
             As every peer can change its software by itself, this <see cref="T:Libplanet.Net.AppProtocolVersion"/>
             is theoretically arbitrary, hence a &#x201c;claim.&#x201d; (i.e., no authority).</para>
             <para>In order to verify who claimed a version, every <see cref="T:Libplanet.Net.AppProtocolVersion"/>
-            has its <see cref="F:Libplanet.Net.AppProtocolVersion.Signature"/> which is made by its <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.
+            has its <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/> which is made by its <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.
             <see cref="M:Libplanet.Net.AppProtocolVersion.Verify(Libplanet.Crypto.PublicKey)"/> method purposes to determine whether an information
             is claimed by its corresponding <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/> in fact.</para>
             </summary>
@@ -2981,11 +2995,6 @@
             by apps, such as a URL to download the software.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.AppProtocolVersion.Signature">
-            <summary>
-            A signature which verifies <seealso cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s claim of a version.
-            </summary>
-        </member>
         <member name="F:Libplanet.Net.AppProtocolVersion.Signer">
             <summary>
             A signer who claims presence of a version.
@@ -2997,8 +3006,13 @@
             </summary>
             <param name="version">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Version"/>.</param>
             <param name="extra">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Extra"/>.</param>
-            <param name="signature">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Signature"/>.</param>
+            <param name="signature">Sets the <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/>.</param>
             <param name="signer">Gets the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</param>
+        </member>
+        <member name="P:Libplanet.Net.AppProtocolVersion.Signature">
+            <summary>
+            A signature which verifies <seealso cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s claim of a version.
+            </summary>
         </member>
         <member name="P:Libplanet.Net.AppProtocolVersion.Token">
             <summary>
@@ -3028,6 +3042,8 @@
             </summary>
             <param name="token">A <see cref="P:Libplanet.Net.AppProtocolVersion.Token"/> string.</param>
             <returns>A deserialized <see cref="T:Libplanet.Net.AppProtocolVersion"/> object.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> is passed to
+            <paramref name="token"/>.</exception>
             <exception cref="T:System.FormatException">Thrown when the given <paramref name="token"/>'s
             format is invalid.  The detailed reason is in the message.</exception>
             <seealso cref="P:Libplanet.Net.AppProtocolVersion.Token"/>
@@ -3038,7 +3054,7 @@
             </summary>
             <param name="publicKey">A public key of the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</param>
             <returns><c>true</c> if and only if the given <paramref name="publicKey"/> is
-            <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s and the <see cref="F:Libplanet.Net.AppProtocolVersion.Signature"/> is certainly signed by
+            <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s and the <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/> is certainly signed by
             the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</returns>
         </member>
         <member name="M:Libplanet.Net.AppProtocolVersion.Equals(Libplanet.Net.AppProtocolVersion)">
@@ -4854,6 +4870,22 @@
         </member>
         <member name="M:Libplanet.Tx.TxId.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Tx.TxViolatingBlockPolicyException">
+            <summary>
+            The exception that is thrown when a <see cref="T:Libplanet.Tx.Transaction`1"/> does not follow the
+            block policy.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxViolatingBlockPolicyException.#ctor(Libplanet.Tx.TxId,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.TxViolatingBlockPolicyException"/> object.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.TxId"/>.
+            It is automatically included to the <see cref="P:System.Exception.Message"/>
+            string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
         </member>
     </members>
 </doc>
