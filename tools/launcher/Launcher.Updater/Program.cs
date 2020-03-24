@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -10,6 +11,8 @@ using ICSharpCode.SharpZipLib.Tar;
 using Launcher.Common;
 using Launcher.Common.Storage;
 using Serilog;
+
+using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
 namespace Launcher.Updater
 {
@@ -28,6 +31,7 @@ namespace Launcher.Updater
             Log.Debug("New update released! {version}", version);
             Log.Debug("It will be downloaded at temporary path: {tempPath}", tempPath);
 
+            var gameBinaryPath = Configuration.LoadGameBinaryPath(settings);
             try
             {
                 await DownloadGameBinaryAsync(s3Storage, tempPath, settings.DeployBranch, version,
@@ -36,7 +40,7 @@ namespace Launcher.Updater
                 // FIXME: it kills game process in force, if it was running. it should be
                 //        killed with some message.
                 SwapDirectory(
-                    Configuration.LoadGameBinaryPath(settings),
+                    gameBinaryPath,
                     Path.Combine(tempPath));
                 Configuration.LocalCurrentVersion = currentVersionDescriptor;
             }
@@ -44,6 +48,8 @@ namespace Launcher.Updater
             {
                 Log.Debug("task was cancelled.");
             }
+
+            Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
         }
 
         private static async Task DownloadGameBinaryAsync(S3Storage storage, string gameBinaryPath, string deployBranch, string version, CancellationToken cancellationToken)

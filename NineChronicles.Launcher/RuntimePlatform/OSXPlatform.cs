@@ -9,6 +9,8 @@ namespace Launcher.RuntimePlatform
 
         public string GameBinaryFilename => "Nine Chronicles.app";
 
+        public string LauncherFilename => "Launcher.app";
+
         public string OpenCommand => "open";
 
         public string CurrentWorkingDirectory
@@ -25,6 +27,9 @@ namespace Launcher.RuntimePlatform
                 return parentDirectory.FullName;
             }
         }
+
+        public string ExecutableLauncherBinaryPath =>
+            Path.Combine(CurrentWorkingDirectory, LauncherFilename, "Contents", "MacOS", "Launcher");
 
         public string ExecutableGameBinaryPath(string gameBinaryPath) =>
             Path.Combine(gameBinaryPath, GameBinaryFilename, "Contents", "MacOS", "Nine Chronicles");

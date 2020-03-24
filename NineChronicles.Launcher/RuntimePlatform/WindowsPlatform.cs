@@ -9,10 +9,15 @@ namespace Launcher.RuntimePlatform
 
         public string GameBinaryFilename => "Nine Chronicles.exe";
 
+        public string LauncherFilename => "Launcher.exe";
+
         public string OpenCommand => "notepad.exe";
 
         public string CurrentWorkingDirectory =>
             new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
+
+        public string ExecutableLauncherBinaryPath =>
+            Path.Combine(CurrentWorkingDirectory, LauncherFilename);
 
         public string ExecutableGameBinaryPath(string gameBinaryPath) =>
             Path.Combine(gameBinaryPath, GameBinaryFilename);
