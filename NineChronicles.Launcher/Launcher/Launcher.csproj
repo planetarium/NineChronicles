@@ -13,7 +13,7 @@
     <ItemGroup Label="Resources">
         <Content Include="qml/**/*" CopyToOutputDirectory="Always" />
         <Content Include="qt-runtime/**/*" CopyToOutputDirectory="Always" />
-        <Content Include="resources/**/*" CopyToOutputDirectory="Always" />
+        <Content Include="../resources/**/*" CopyToOutputDirectory="Always" />
     </ItemGroup>
 
     <ItemGroup Label="Package References">

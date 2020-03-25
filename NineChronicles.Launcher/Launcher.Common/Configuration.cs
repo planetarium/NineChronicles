@@ -28,7 +28,7 @@ namespace Launcher.Common
         {
             if (!File.Exists(SettingFilePath))
             {
-                File.Copy(Path.Combine("resources", SettingFileName), SettingFilePath);
+                File.Copy(SettingFileName, SettingFilePath);
             }
         }
 
@@ -98,7 +98,7 @@ namespace Launcher.Common
 
         public static string DefaultKeyStorePath => Path.Combine(PlanetariumApplicationPath, "keystore");
 
-        public static string SettingFilePath => Path.Combine(PlanetariumLocalApplicationPath, SettingFileName);
+        public static string SettingFilePath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, SettingFileName);
 
         private static string PlanetariumLocalApplicationPath => Path.Combine(LocalApplicationDataPath, "planetarium");
 

@@ -12,7 +12,7 @@ Item {
         running: true
         repeat: true
 
-        property string logoPathTemplate: "../resources/images/logo-%1.png"
+        property string logoPathTemplate: "../images/logo-%1.png"
         property int logoIndex: 0
         property int logoFrameCount: 4
 
