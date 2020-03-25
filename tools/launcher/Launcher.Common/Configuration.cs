@@ -108,6 +108,6 @@ namespace Launcher.Common
 
         private static string ApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
-        private static string LocalCurrentVersionPath => Path.Combine(PlanetariumApplicationPath, "9c-current-version.json");
+        private static string LocalCurrentVersionPath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "9c-current-version.json");
     }
 }
