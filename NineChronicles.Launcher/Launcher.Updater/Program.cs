@@ -30,7 +30,11 @@ namespace Launcher.Updater
             {
                 Console.Error.WriteLine($"New update released! {version}");
 
-                Directory.Delete(CurrentPlatform.BinariesPath, true);
+                if (Directory.Exists(CurrentPlatform.BinariesPath))
+                {
+                    Directory.Delete(CurrentPlatform.BinariesPath, true);
+                }
+
                 try
                 {
                     await DownloadBinariesAsync(s3Storage, settings.DeployBranch, version,
