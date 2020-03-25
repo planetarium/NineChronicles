@@ -414,15 +414,12 @@ namespace Nekoyume.Model.State
 
         public int Update(AvatarState avatarState, ArenaInfo enemyInfo, BattleLog.Result result)
         {
-            int score;
             switch (result)
             {
                 case BattleLog.Result.Win:
-                    score = GameConfig.BaseVictoryPoint;
                     ArenaRecord.Win++;
                     break;
                 case BattleLog.Result.Lose:
-                    score = GameConfig.BaseDefeatPoint;
                     ArenaRecord.Lose++;
                     break;
                 case BattleLog.Result.TimeOver:
@@ -432,23 +429,7 @@ namespace Nekoyume.Model.State
                     throw new ArgumentOutOfRangeException(nameof(result), result, null);
             }
 
-            var rating = Score;
-            var enemyRating = enemyInfo.Score;
-            if (rating != enemyRating)
-            {
-                switch (result)
-                {
-                    case BattleLog.Result.Win:
-                        score = (int)(DecimalEx.Pow((decimal)enemyRating / rating, 0.75m) *
-                                       GameConfig.BaseVictoryPoint);
-                        break;
-                    case BattleLog.Result.Lose:
-                        score = (int)(DecimalEx.Pow((decimal)rating / enemyRating, 0.75m) *
-                                       GameConfig.BaseDefeatPoint);
-                        break;
-                }
-            }
-
+            var score = ArenaScoreHelper.GetScore(Score, enemyInfo.Score, result);
             var calculated = Score + score;
             var current = Score;
             Score = Math.Max(1000, calculated);

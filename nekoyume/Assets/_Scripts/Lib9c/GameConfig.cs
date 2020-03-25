@@ -37,19 +37,12 @@
         public const int DailyRewardInterval = 2300;
         public const int DailyArenaInterval = 500;
         public const int WeeklyArenaInterval = 8000 * 7;
-        public const int BaseVictoryPoint = 20;
-        public const int BaseDefeatPoint = -15;
 
         public const int CombineConsumableCostAP = 5;
         public const int CombineEquipmentCostAP = 5;
         public const int CombineEquipmentCostNCG = 10;
         public const int EnhanceEquipmentCostAP = 5;
         public const int EnhanceEquipmentCostNCG = 10;
-        public const decimal CombinationValueP1 = 3m; // 30f;
-        public const decimal CombinationValueP2 = 1m; // 1.2f;
-        public const decimal CombinationValueL1 = 10m;
-        public const decimal CombinationValueL2 = 1m;
-        public const decimal CombinationValueR1 = 1.5m; // 2f;
         public const int CombinationDefaultFoodId = 200000;
 
         public const int RankingRewardFirst = 50;
