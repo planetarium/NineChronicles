@@ -53,7 +53,7 @@ namespace Nekoyume.UI.Module
             }
 
             var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
-            IsCraftable = true;
+            IsCraftable = true && Widget.Find<Combination>().selectedIndex >= 0;
 
             for (var index = 0; index < materialViews.Length; index++)
             {

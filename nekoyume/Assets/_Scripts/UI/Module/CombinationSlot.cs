@@ -23,6 +23,7 @@ namespace Nekoyume.UI.Module
 
         private CombinationSlotState _data;
         private int _slotIndex;
+        private long _prevBlockIndex;
 
         private void Awake()
         {
@@ -31,7 +32,7 @@ namespace Nekoyume.UI.Module
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
                 AudioController.PlayClick();
-                ShowPopup();
+                SelectSlot();
             }).AddTo(gameObject);
             unlockText.text = LocalizationManager.Localize("UI_COMBINATION_SLOT_AVAILABLE");
         }
@@ -62,15 +63,17 @@ namespace Nekoyume.UI.Module
                 progressBar.gameObject.SetActive(!canUse);
             }
 
-            progressBar.maxValue = state.UnlockBlockIndex;
+            _prevBlockIndex = blockIndex;
+            progressBar.maxValue = state.UnlockBlockIndex - _prevBlockIndex;
+            progressBar.value = 0;
             sliderText.text = $"({progressBar.value} / {progressBar.maxValue})";
         }
 
         private void UpdateProgressBar(long index)
         {
-            var value = Math.Min(index, progressBar.maxValue);
+            var value = Math.Min(index - _prevBlockIndex, progressBar.maxValue);
             progressBar.value = value;
-            sliderText.text = $"({value} / {progressBar.maxValue})";
+            sliderText.text = $"({progressBar.value} / {progressBar.maxValue})";
         }
 
         private void ShowPopup()
@@ -83,6 +86,19 @@ namespace Nekoyume.UI.Module
             if (_data.Result.itemUsable.RequiredBlockIndex > Game.Game.instance.Agent.BlockIndex)
             {
                 Widget.Find<CombinationSlotPopup>().Pop(_data, _slotIndex);
+            }
+        }
+
+        private void SelectSlot()
+        {
+            if (_data.Validate(States.Instance.CurrentAvatarState,
+                Game.Game.instance.Agent.BlockIndex))
+            {
+                Widget.Find<Menu>().CombinationClick(_slotIndex);
+            }
+            else
+            {
+                ShowPopup();
             }
         }
     }

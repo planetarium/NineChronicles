@@ -3,7 +3,7 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Launcher</RootNamespace>
-        <OutputType>WinExe</OutputType>
+        <OutputType>exe</OutputType>
         <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup Label="Project References">
-        <ProjectReference Include="..\..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
+        <ProjectReference Include="..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
     </ItemGroup>
 
     <ItemGroup Label="Variables">

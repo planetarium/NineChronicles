@@ -25,7 +25,8 @@ namespace Nekoyume.UI.Module
             States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
             !(baseMaterial is null) &&
             !baseMaterial.IsEmpty &&
-            otherMaterials.Count(e => !e.IsEmpty) > 0;
+            otherMaterials.Count(e => !e.IsEmpty) > 0 &&
+            Widget.Find<Combination>().selectedIndex >= 0;
 
         protected override void Awake()
         {
