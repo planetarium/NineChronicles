@@ -158,8 +158,7 @@ namespace Nekoyume.UI.Module
 
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
             var statValue = equipment.StatsMap.GetStat(equipment.UniqueStatType, true);
-            var resultValue = statValue +
-                              (int) equipment.GetIncrementAmountOfEnhancement(equipment.level + 1);
+            var resultValue = statValue + (int) equipment.GetIncrementAmountOfEnhancement();
             baseMaterial.UpdateStatView(resultValue.ToString(CultureInfo.InvariantCulture));
             UpdateMessageText();
 

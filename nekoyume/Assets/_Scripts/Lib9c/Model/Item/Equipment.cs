@@ -17,16 +17,9 @@ namespace Nekoyume.Model.Item
         public new EquipmentItemSheet.Row Data { get; }
         public StatType UniqueStatType => Data.Stat.Type;
 
-        public decimal GetIncrementAmountOfEnhancement(int toLevel)
+        public decimal GetIncrementAmountOfEnhancement()
         {
-            if (Data.ElementalType == ElementalType.Normal)
-            {
-                return StatsMap.GetStat(UniqueStatType, true) * 0.1m;
-            }
-
-            return toLevel == 4 || toLevel == 7 || toLevel == 10
-                ? StatsMap.GetStat(UniqueStatType, true) * 0.3m
-                : StatsMap.GetStat(UniqueStatType, true) * 0.1m;
+            return StatsMap.GetStat(UniqueStatType, true) * 0.1m;
         }
 
 
@@ -54,7 +47,7 @@ namespace Nekoyume.Model.Item
         public void LevelUp()
         {
             level++;
-            StatsMap.AddStatValue(UniqueStatType, GetIncrementAmountOfEnhancement(level));
+            StatsMap.AddStatValue(UniqueStatType, GetIncrementAmountOfEnhancement());
         }
 
         public override IValue Serialize() =>
