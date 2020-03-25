@@ -197,16 +197,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
             if (selectedIndex == -1)
             {
-                var pair = States.Instance.CombinationSlotStates
-                    .FirstOrDefault(i =>
-                        i.Value.Validate(
-                            States.Instance.CurrentAvatarState,
-                            Game.Game.instance.Agent.BlockIndex
-                        ));
-                if (!pair.Equals(default))
-                {
-                    selectedIndex = pair.Key;
-                }
+                ResetSelectedIndex();
             }
 
         }
@@ -587,18 +578,31 @@ namespace Nekoyume.UI
 
         private void CreateCombinationAction(List<(Material material, int count)> materialInfoList, int slotIndex)
         {
+            LocalStateModifier.ModifyCombinationSlotConsumable(
+                Game.Game.instance.TableSheets,
+                combineConsumable,
+                materialInfoList,
+                slotIndex
+            );
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
+            ResetSelectedIndex();
         }
 
         private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList, int slotIndex)
         {
+            LocalStateModifier.ModifyCombinationSlotItemEnhancement(
+                enhanceEquipment,
+                otherItemGuidList,
+                slotIndex
+            );
             var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
                 .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
+            ResetSelectedIndex();
         }
 
         private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId,
@@ -609,6 +613,7 @@ namespace Nekoyume.UI
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
+            ResetSelectedIndex();
         }
 
         #endregion
@@ -624,6 +629,17 @@ namespace Nekoyume.UI
 
             speechBubble.SetKey(key);
             StartCoroutine(speechBubble.CoShowText());
+        }
+
+        private void ResetSelectedIndex()
+        {
+            var pair = States.Instance.CombinationSlotStates
+                .FirstOrDefault(i =>
+                    i.Value.Validate(
+                        States.Instance.CurrentAvatarState,
+                        Game.Game.instance.Agent.BlockIndex
+                    ));
+            selectedIndex = pair.Equals(default) ? -1 : pair.Key;
         }
     }
 }
