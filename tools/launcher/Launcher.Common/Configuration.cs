@@ -61,14 +61,7 @@ namespace Launcher.Common
 
         public static string LoadGameBinaryPath(LauncherSettings settings)
         {
-            if (string.IsNullOrEmpty(settings.GameBinaryPath))
-            {
-                return DefaultGameBinaryPath;
-            }
-            else
-            {
-                return settings.GameBinaryPath;
-            }
+            return GameBinaryPath;
         }
 
         public static string LoadKeyStorePath(LauncherSettings settings)
@@ -106,7 +99,7 @@ namespace Launcher.Common
         public static string DefaultStorePath => Path.Combine(PlanetariumLocalApplicationPath, "9c");
 
         // It assumes there is game binary file in same directory.
-        public static string DefaultGameBinaryPath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, CurrentPlatform.GameBinaryFilename);
+        public static string GameBinaryPath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, CurrentPlatform.GameBinaryFilename);
 
         public static string DefaultKeyStorePath => Path.Combine(PlanetariumApplicationPath, "keystore");
 

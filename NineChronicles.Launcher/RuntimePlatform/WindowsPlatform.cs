@@ -16,10 +16,12 @@ namespace Launcher.RuntimePlatform
         public string CurrentWorkingDirectory =>
             new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
 
-        public string ExecutableLauncherBinaryPath =>
-            Path.Combine(CurrentWorkingDirectory, LauncherFilename);
+        public string BinariesPath => Path.Combine(CurrentWorkingDirectory, "Binaries");
 
-        public string ExecutableGameBinaryPath(string gameBinaryPath) =>
-            Path.Combine(gameBinaryPath, GameBinaryFilename);
+        public string ExecutableLauncherBinaryPath =>
+            Path.Combine(BinariesPath, LauncherFilename);
+
+        public string ExecutableGameBinaryPath =>
+            Path.Combine(BinariesPath, GameBinaryFilename);
     }
 }

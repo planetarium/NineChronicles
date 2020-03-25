@@ -33,7 +33,7 @@ Item {
                 text: "Run"
                 visible: ctrl.privateKey != null && !ctrl.gameRunning && !ctrl.updating && !ctrl.preprocessing
                 onTriggered: {
-                    ctrl.runGame()
+                    ctrl.runGameProcess()
                 }
             }
 

@@ -7,7 +7,8 @@ namespace Launcher
         string LauncherFilename { get; }
         string OpenCommand { get; }
         string CurrentWorkingDirectory { get; }
+        string BinariesPath { get; }
         string ExecutableLauncherBinaryPath { get; }
-        string ExecutableGameBinaryPath(string gameBinaryPath);
+        string ExecutableGameBinaryPath { get; }
     }
 }

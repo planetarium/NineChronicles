@@ -269,15 +269,14 @@ namespace Launcher
             RunGameProcess(gameBinaryPath);
         }
 
-        public void RunGameProcess(string gameBinaryPath)
+        public void RunGameProcess()
         {
             string commandArguments =
                 $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort} --private-key {PrivateKeyHex}";
             try
             {
                 GameProcess =
-                    Process.Start(CurrentPlatform.ExecutableGameBinaryPath(gameBinaryPath),
-                        commandArguments);
+                    Process.Start(CurrentPlatform.ExecutableGameBinaryPath, commandArguments);
             }
             catch (Exception e)
             {

@@ -28,10 +28,12 @@ namespace Launcher.RuntimePlatform
             }
         }
 
-        public string ExecutableLauncherBinaryPath =>
-            Path.Combine(CurrentWorkingDirectory, LauncherFilename, "Contents", "MacOS", "Launcher");
+        public string BinariesPath => Path.Combine(CurrentWorkingDirectory, "Binaries");
 
-        public string ExecutableGameBinaryPath(string gameBinaryPath) =>
-            Path.Combine(gameBinaryPath, GameBinaryFilename, "Contents", "MacOS", "Nine Chronicles");
+        public string ExecutableLauncherBinaryPath =>
+            Path.Combine(BinariesPath, LauncherFilename, "Contents", "MacOS", "Launcher");
+
+        public string ExecutableGameBinaryPath
+            => Path.Combine(BinariesPath, GameBinaryFilename, "Contents", "MacOS", "Nine Chronicles");
     }
 }
