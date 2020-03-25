@@ -124,6 +124,17 @@ namespace Nekoyume.Model.Stat
             AddStatAdditionalValue(statModifier.StatType, statModifier.Value);
         }
 
+        public void SetStatAdditionalValue(StatType key, decimal additionalValue)
+        {
+            if (!_statMaps.ContainsKey(key))
+            {
+                _statMaps.Add(key, new StatMapEx(key));
+            }
+
+            _statMaps[key].AdditionalValue = additionalValue;
+            PostStatValueChanged(key);
+        }
+
         private void PostStatValueChanged(StatType key)
         {
             if (!_statMaps.ContainsKey(key))

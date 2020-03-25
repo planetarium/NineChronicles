@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
-using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 
@@ -48,6 +47,10 @@ namespace Nekoyume.Model.Item
         {
             level++;
             StatsMap.AddStatValue(UniqueStatType, GetIncrementAmountOfEnhancement());
+            if (new[] {4, 7, 10}.Contains(level) && GetOptionCount() > 0)
+            {
+                UpdateOptions();
+            }
         }
 
         public override IValue Serialize() =>
@@ -69,6 +72,24 @@ namespace Nekoyume.Model.Item
             }
 
             return options;
+        }
+
+        private void UpdateOptions()
+        {
+            foreach (var statMapEx in StatsMap.GetAdditionalStats())
+            {
+                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue * 1.3m);
+            }
+
+            var skills = new List<Skill.Skill>();
+            skills.AddRange(Skills);
+            skills.AddRange(BuffSkills);
+            foreach (var skill in skills)
+            {
+                var chance = decimal.ToInt32(skill.Chance * 1.3m);
+                var power = decimal.ToInt32(skill.Power * 1.3m);
+                skill.Update(chance, power);
+            }
         }
     }
 }
