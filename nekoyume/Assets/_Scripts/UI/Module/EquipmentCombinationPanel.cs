@@ -76,7 +76,17 @@ namespace Nekoyume.UI.Module
                 submitButton.HideNCG();
             }
             submitButton.SetSubmittable(materialPanel.IsCraftable);
-            RequiredBlockIndexSubject.OnNext(recipeRow.RequiredBlockIndex);
+            var requiredBlockIndex = recipeRow.RequiredBlockIndex;
+            if (subRecipeId.HasValue)
+            {
+                var subSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
+                if (subSheet.TryGetValue((int) subRecipeId, out var subRecipe))
+                {
+                    requiredBlockIndex += subRecipe.RequiredBlockIndex;
+
+                }
+            }
+            RequiredBlockIndexSubject.OnNext(requiredBlockIndex);
         }
 
         public void Hide()
