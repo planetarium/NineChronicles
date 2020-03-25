@@ -639,7 +639,8 @@ namespace Nekoyume.UI
                         States.Instance.CurrentAvatarState,
                         Game.Game.instance.Agent.BlockIndex
                     ));
-            selectedIndex = pair.Equals(default) ? -1 : pair.Key;
+            var idx = pair.Value is null ? -1 : pair.Key;
+            selectedIndex = idx;
         }
     }
 }
