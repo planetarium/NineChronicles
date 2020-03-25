@@ -1,9 +1,8 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -36,10 +35,12 @@ namespace Nekoyume.UI.Module
             if (baseMaterial is null)
                 throw new SerializeFieldNullException();
 
-            baseMaterial.titleText.text = LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE");
+            baseMaterial.titleText.text =
+                LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE");
             foreach (var otherMaterial in otherMaterials)
             {
-                otherMaterial.titleText.text = LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
+                otherMaterial.titleText.text =
+                    LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
             }
 
             message.SetActive(false);
@@ -76,7 +77,8 @@ namespace Nekoyume.UI.Module
                     return true;
 
                 var baseEquipment = (Equipment) baseMaterial.Model.ItemBase.Value;
-                if (baseEquipment.Data.ItemSubType != row.ItemSubType || baseEquipment.Data.Grade != row.Grade)
+                if (baseEquipment.Data.ItemSubType != row.ItemSubType ||
+                    baseEquipment.Data.Grade != row.Grade)
                     return true;
 
                 var material = (Equipment) inventoryItem.ItemBase.Value;
@@ -100,7 +102,8 @@ namespace Nekoyume.UI.Module
             return baseMaterial.IsEmpty ? 0 : ItemEnhancement.GetRequiredAp();
         }
 
-        protected override bool TryAddBaseMaterial(InventoryItem viewModel, int count, out EnhancementMaterialView materialView)
+        protected override bool TryAddBaseMaterial(InventoryItem viewModel, int count,
+            out EnhancementMaterialView materialView)
         {
             if (viewModel is null ||
                 viewModel.ItemBase.Value.Data.ItemType != ItemType.Equipment)
@@ -148,15 +151,16 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        protected override bool TryAddOtherMaterial(InventoryItem viewModel, int count, out EnhancementMaterialView materialView)
+        protected override bool TryAddOtherMaterial(InventoryItem viewModel, int count,
+            out EnhancementMaterialView materialView)
         {
             if (!base.TryAddOtherMaterial(viewModel, count, out materialView))
                 return false;
 
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
             var statValue = equipment.StatsMap.GetStat(equipment.UniqueStatType, true);
-            var resultValue = statValue + equipment.levelStats;
-            baseMaterial.UpdateStatView(resultValue.ToString());
+            var resultValue = statValue + (int) equipment.GetIncrementAmountOfEnhancement();
+            baseMaterial.UpdateStatView(resultValue.ToString(CultureInfo.InvariantCulture));
             UpdateMessageText();
 
             return true;

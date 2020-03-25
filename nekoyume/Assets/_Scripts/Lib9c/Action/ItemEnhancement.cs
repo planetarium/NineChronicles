@@ -270,6 +270,7 @@ namespace Nekoyume.Action
 
         public static decimal GetRequiredGold(Equipment enhancementEquipment)
         {
+            return 0;
             return Math.Max(GameConfig.EnhanceEquipmentCostNCG,
                 GameConfig.EnhanceEquipmentCostNCG * enhancementEquipment.Data.Grade);
         }
