@@ -26,7 +26,8 @@ namespace Nekoyume.UI.Module
             States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
             !(baseMaterial is null) &&
             !baseMaterial.IsEmpty &&
-            otherMaterials.Count(e => !e.IsEmpty) > 0;
+            otherMaterials.Count(e => !e.IsEmpty) > 0 &&
+            Widget.Find<Combination>().selectedIndex >= 0;
 
         protected override void Awake()
         {
@@ -116,7 +117,7 @@ namespace Nekoyume.UI.Module
 
             if (!base.TryAddBaseMaterial(viewModel, count, out materialView))
                 return false;
-            
+
             if (!(viewModel.ItemBase.Value is Equipment equipment))
                 throw new InvalidCastException(nameof(viewModel.ItemBase.Value));
 
@@ -135,7 +136,7 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryRemoveBaseMaterial(view, out materialView))
                 return false;
-            
+
             foreach (var otherMaterial in otherMaterials)
             {
                 otherMaterial.Clear();
@@ -151,13 +152,13 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryAddOtherMaterial(viewModel, count, out materialView))
                 return false;
-            
+
             var equipment = (Equipment) baseMaterial.Model.ItemBase.Value;
             var statValue = equipment.StatsMap.GetStat(equipment.UniqueStatType, true);
             var resultValue = statValue + equipment.levelStats;
             baseMaterial.UpdateStatView(resultValue.ToString());
             UpdateMessageText();
-            
+
             return true;
         }
 
@@ -166,7 +167,7 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryRemoveOtherMaterial(view, out materialView))
                 return false;
-            
+
             baseMaterial.UpdateStatView();
             UpdateMessageText();
 

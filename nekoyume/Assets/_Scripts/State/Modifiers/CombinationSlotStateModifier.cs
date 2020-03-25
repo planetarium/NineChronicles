@@ -9,7 +9,7 @@ namespace Nekoyume.State.Modifiers
         private readonly AttachmentActionResult _result;
         public bool IsEmpty => !(_result is null);
 
-        public CombinationSlotStateModifier(CombinationConsumable.ResultModel resultModel)
+        public CombinationSlotStateModifier(AttachmentActionResult resultModel)
         {
             _unlockBlockIndex = resultModel.itemUsable.RequiredBlockIndex;
             _result = resultModel;

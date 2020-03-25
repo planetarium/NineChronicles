@@ -485,6 +485,64 @@ namespace Nekoyume.State
                 itemUsable = equipment,
                 recipeId = row.Id,
                 subRecipeId = subRecipeId,
+                itemType = ItemType.Equipment,
+            };
+            var modifier = new CombinationSlotStateModifier(result);
+            var slotState = States.Instance.CombinationSlotStates[slotIndex];
+            modifier.Modify(slotState);
+            States.Instance.CombinationSlotStates[slotIndex] = slotState;
+        }
+
+        public static void ModifyCombinationSlotConsumable(
+            TableSheets tableSheets,
+            CombineConsumable panel,
+            List<(Material material, int count)> materialInfoList,
+            int slotIndex
+        )
+        {
+            var requiredBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
+                i.Id == panel.resultItemView.Model.ItemBase.Value.Data.Id);
+            var consumable = ItemFactory.CreateItemUsable(consumableRow, Guid.Empty,
+                requiredBlockIndex);
+            var row = tableSheets.ConsumableItemRecipeSheet.Values.First(i =>
+                i.ResultConsumableItemId == consumableRow.Id);
+            var materials = new Dictionary<Model.Item.Material, int>();
+            foreach (var (material, count) in materialInfoList)
+            {
+                materials[material] = count;
+            }
+
+            var result = new CombinationConsumable.ResultModel
+            {
+                actionPoint = panel.CostAP,
+                gold = panel.CostNCG,
+                materials = materials,
+                itemUsable = consumable,
+                recipeId = row.Id,
+                itemType = ItemType.Consumable,
+            };
+            var modifier = new CombinationSlotStateModifier(result);
+            var slotState = States.Instance.CombinationSlotStates[slotIndex];
+            modifier.Modify(slotState);
+            States.Instance.CombinationSlotStates[slotIndex] = slotState;
+        }
+
+        public static void ModifyCombinationSlotItemEnhancement(
+            EnhanceEquipment panel,
+            IEnumerable<Guid> guidList,
+            int slotIndex
+        )
+        {
+            var requiredBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var equipment = (Equipment) panel.baseMaterial.Model.ItemBase.Value;
+            equipment.Update(requiredBlockIndex);
+            var result = new ItemEnhancement.ResultModel
+            {
+                actionPoint = panel.CostAP,
+                gold = panel.CostNCG,
+                materialItemIdList = guidList,
+                itemUsable = equipment,
             };
             var modifier = new CombinationSlotStateModifier(result);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
