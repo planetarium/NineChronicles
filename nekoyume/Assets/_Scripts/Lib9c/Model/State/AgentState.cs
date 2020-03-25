@@ -13,7 +13,7 @@ namespace Nekoyume.Model.State
     public class AgentState : State, ICloneable
     {
         //F&F 테스트용 노마이너 기본 소지 골드
-        public decimal gold = 1000;
+        public decimal gold = 1500;
         public readonly Dictionary<int, Address> avatarAddresses;
         public HashSet<int> unlockedOptions;
         public decimal modifiedGold;
