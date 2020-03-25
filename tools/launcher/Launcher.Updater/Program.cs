@@ -10,7 +10,6 @@ using ICSharpCode.SharpZipLib.GZip;
 using ICSharpCode.SharpZipLib.Tar;
 using Launcher.Common;
 using Launcher.Common.Storage;
-using Serilog;
 
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
@@ -28,8 +27,8 @@ namespace Launcher.Updater
             var version = currentVersionDescriptor.Version;
             var tempPath = Path.Combine(Path.GetTempPath(), "temp-9c-download" + currentVersionDescriptor);
 
-            Log.Debug("New update released! {version}", version);
-            Log.Debug("It will be downloaded at temporary path: {tempPath}", tempPath);
+            Console.Error.WriteLine($"New update released! {version}");
+            Console.Error.WriteLine($"It will be downloaded at temporary path: {tempPath}");
 
             var gameBinaryPath = Configuration.LoadGameBinaryPath(settings);
             try
@@ -46,7 +45,7 @@ namespace Launcher.Updater
             }
             catch (OperationCanceledException)
             {
-                Log.Debug("task was cancelled.");
+                Console.Error.WriteLine("task was cancelled.");
             }
 
             Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
@@ -58,10 +57,9 @@ namespace Launcher.Updater
             using var httpClient = new HttpClient();
             httpClient.Timeout = Timeout.InfiniteTimeSpan;
 
-            Log.Debug("Start download game binary from '{url}' to {tempFilePath}.",
-                storage.GameBinaryDownloadUri(deployBranch, version).ToString(),
-                tempFilePath);
-            var responseMessage = await httpClient.GetAsync(storage.GameBinaryDownloadUri(deployBranch, version), cancellationToken);
+            var gameBinaryDownloadUri = storage.GameBinaryDownloadUri(deployBranch, version);
+            Console.Error.WriteLine($"Start download game binary from '{gameBinaryDownloadUri}' to {tempFilePath}.");
+            var responseMessage = await httpClient.GetAsync(gameBinaryDownloadUri, cancellationToken);
             if (File.Exists(tempFilePath))
             {
                 File.Delete(tempFilePath);
@@ -69,12 +67,11 @@ namespace Launcher.Updater
 
             using var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
             await responseMessage.Content.CopyToAsync(fileStream);
-            Log.Debug("Finished download from '{url}'!",
-                storage.GameBinaryDownloadUri(deployBranch, version).ToString());
+            Console.Error.WriteLine($"Finished download from '{gameBinaryDownloadUri}'!");
 
             // Extract binary.
             // TODO: implement a function to extract with file extension.
-            Log.Debug("Start to extract game binary.");
+            Console.Error.WriteLine("Start to extract game binary.");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 await using var tempFile = File.OpenRead(tempFilePath);
@@ -86,7 +83,7 @@ namespace Launcher.Updater
             {
                 ZipFile.ExtractToDirectory(tempFilePath, gameBinaryPath);
             }
-            Log.Debug("Finished to extract game binary.");
+            Console.Error.WriteLine("Finished to extract game binary.");
         }
 
         private static void SwapDirectory(string gameBinaryPath, string newGameBinaryPath)
