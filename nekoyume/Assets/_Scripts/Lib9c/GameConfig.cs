@@ -32,7 +32,7 @@
         public const string DefaultPlayerEyeOpenResource = "eye_red_open";
         public const string DefaultPlayerEyeHalfResource = "eye_red_half";
         public const string DefaultPlayerTailResource = "tail_0001";
-        public const int ActionPointMax = 200;
+        public const int ActionPointMax = 120;
 
         public const int DailyRewardInterval = 2300;
         public const int DailyArenaInterval = 500;
