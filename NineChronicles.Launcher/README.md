@@ -49,3 +49,35 @@ There is [*launcher.json*][launcher-json] like below.
 
 
 [launcher-json]: ./resources/launcher.json
+
+
+## 배포 디렉토리 구조
+
+배포시 혹은 *Launcher.Updater*가 구성할 디렉토리 모양을 적어 보았습니다.
+S3 업로드 하는 배포 파일 또한 각각 *Binaries* 이하의 구조와 같아야 합니다.
+
+### MacOS
+
+```text
+/
+├── Launcher.Updater
+├── Binaries/
+├──── Launcher.app/
+└──── Nine Chronicles.app/
+```
+
+
+### Windows
+
+```text
+/
+├── Launcher.Updater.exe
+├── Binaries/
+├──── Launcher.exe
+├──── Nine Chronicles.exe
+├──── Nine Chronicles_Data/
+├────── ...
+├──── MonoBleedingEdge/
+├────── ...
+└──── ...
+```
