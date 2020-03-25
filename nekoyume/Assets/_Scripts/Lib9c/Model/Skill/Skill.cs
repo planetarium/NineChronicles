@@ -12,8 +12,8 @@ namespace Nekoyume.Model.Skill
     public abstract class Skill : IState
     {
         public readonly SkillSheet.Row SkillRow;
-        public readonly int Power;
-        public readonly int Chance;
+        public int Power { get; private set; }
+        public int Chance { get; private set; }
 
         protected Skill(SkillSheet.Row skillRow, int power, int chance)
         {
@@ -72,6 +72,12 @@ namespace Nekoyume.Model.Skill
             }
 
             return infos;
+        }
+
+        public void Update(int chance, int power)
+        {
+            Chance = chance;
+            Power = power;
         }
 
         public IValue Serialize() =>
