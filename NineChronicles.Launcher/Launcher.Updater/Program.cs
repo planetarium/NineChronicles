@@ -63,10 +63,11 @@ namespace Launcher.Updater
             {
                 File.Delete(tempFilePath);
             }
-
-            using var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
-            await responseMessage.Content.CopyToAsync(fileStream);
-            Console.Error.WriteLine($"Finished download from '{gameBinaryDownloadUri}'!");
+            using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write))
+            {
+                await responseMessage.Content.CopyToAsync(fileStream);
+                Console.Error.WriteLine($"Finished download from '{gameBinaryDownloadUri}'!");
+            }
 
             // Extract binary.
             // TODO: implement a function to extract with file extension.
