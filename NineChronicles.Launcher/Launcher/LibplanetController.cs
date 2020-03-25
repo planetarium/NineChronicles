@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -134,6 +135,9 @@ namespace Launcher
 
             var storePath = string.IsNullOrEmpty(settings.StorePath) ? DefaultStorePath : settings.StorePath;
             var appProtocolVersion = AppProtocolVersion.FromToken(settings.AppProtocolVersionToken);
+            var trustedAppProtocolVersionSigners = settings.TrustedAppProtocolVersionSigners
+                .Select(hex => new PublicKey(ByteUtil.ParseHex(hex)))
+                .ToImmutableHashSet();
 
             LibplanetNodeServiceProperties properties = new LibplanetNodeServiceProperties
             {
@@ -147,6 +151,7 @@ namespace Launcher
                 StorePath = storePath,
                 StoreType = settings.StoreType,
                 MinimumDifficulty = settings.MinimumDifficulty,
+                TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners,
             };
 
             var rpcProperties = new RpcNodeServiceProperties
