@@ -59,11 +59,6 @@ namespace Launcher.Common
                 }));
         }
 
-        public static string LoadGameBinaryPath(LauncherSettings settings)
-        {
-            return GameBinaryPath;
-        }
-
         public static string LoadKeyStorePath(LauncherSettings settings)
         {
             if (string.IsNullOrEmpty(settings.KeyStorePath))
