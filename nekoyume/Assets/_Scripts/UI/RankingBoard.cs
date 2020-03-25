@@ -176,7 +176,8 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOff();
                     filteredButton.SetToggledOn();
                     overallButton.SetToggledOff();
-                    rankingRewards.Show();
+                    arenaActivationButton.Hide();
+                    rankingRewards.Hide();
                     arenaPendingNCG.Hide();
                     currentAvatarCellView.Hide();
                     arenaRecordContainer.SetActive(false);
@@ -188,7 +189,8 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOff();
                     filteredButton.SetToggledOff();
                     overallButton.SetToggledOn();
-                    rankingRewards.Show();
+                    arenaActivationButton.Hide();
+                    rankingRewards.Hide();
                     arenaPendingNCG.Hide();
                     currentAvatarCellView.Hide();
                     arenaRecordContainer.SetActive(false);
