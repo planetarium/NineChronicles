@@ -60,6 +60,9 @@ namespace Nekoyume.BlockChain
 
         private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
+            // FIXME Tx가 들어간 블록에 대해 검사가 너무 느려서 테스트 기간 동안은 사용하지 않습니다.
+            // 속도를 정상화한 다음 복원해야 합니다.
+            // 참고: https://github.com/planetarium/nekoyume-unity/pull/1826
             return true;
         }
     }
