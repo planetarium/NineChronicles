@@ -14,6 +14,7 @@ namespace Nekoyume.Battle
     // NOTE: 확장 함수로 빼는 것이 어떨까?
     public static class CPHelper
     {
+        // 명중률에 레벨에 반영되고 있어서 반영해야 함.
         private static class LevelSettings
         {
             private const int MinLevel = 1;
@@ -35,12 +36,16 @@ namespace Nekoyume.Battle
             {
                 public readonly decimal minStat;
                 public readonly decimal maxStat;
-                public readonly decimal statRange;
                 public readonly decimal minCp;
                 public readonly decimal maxCp;
+                public readonly decimal minMultiply;
+                public readonly decimal maxMultiply;
+                public readonly decimal statRange;
                 public readonly decimal cpRange;
+                public readonly decimal multiplyRange;
 
-                public Settings(decimal minStat, decimal maxStat, decimal minCp, decimal maxCp)
+                public Settings(decimal minStat, decimal maxStat, decimal minCp, decimal maxCp,
+                    decimal minMultiply = 1m, decimal maxMultiply = 1m)
                 {
                     if (minStat > maxStat)
                     {
@@ -52,21 +57,30 @@ namespace Nekoyume.Battle
                         throw new ArgumentException($"{minCp} > {maxCp}");
                     }
 
+                    if (minMultiply > maxMultiply)
+                    {
+                        throw new ArgumentException($"{minMultiply} > {maxMultiply}");
+                    }
+
                     this.minStat = minStat;
                     this.maxStat = maxStat;
-                    statRange = this.maxStat - this.minStat;
                     this.minCp = minCp;
                     this.maxCp = maxCp;
+                    this.minMultiply = minMultiply;
+                    this.maxMultiply = maxMultiply;
+
+                    statRange = this.maxStat - this.minStat;
                     cpRange = this.maxCp - this.minCp;
+                    multiplyRange = this.maxMultiply - this.minMultiply;
                 }
             }
 
             public static readonly Settings HpSettings = new Settings(1m, 99999999m, 1m, 33333333m);
             public static readonly Settings AtkSettings = new Settings(0m, 9999999m, 0m, 33333333m);
             public static readonly Settings DefSettings = new Settings(0m, 9999999m, 0m, 33333333m);
-            public static readonly Settings CriSettings = new Settings(0m, 100m, 1m, 1.5m);
-            public static readonly Settings HitSettings = new Settings(0m, 100m, 1m, 30m);
-            public static readonly Settings SpdSettings = new Settings(0m, 10m, 1m, 10m);
+            public static readonly Settings CriSettings = new Settings(0m, 100m, 0m, 333333m, 1m, 1.5m);
+            public static readonly Settings HitSettings = new Settings(0m, 9999m, 0m, 333333m, 1m, 30m);
+            public static readonly Settings SpdSettings = new Settings(0m, 9999m, 0m, 333333m, 1m, 10m);
 
             public static decimal GetStatCP(StatType statType, decimal value)
             {
@@ -77,6 +91,17 @@ namespace Nekoyume.Battle
 
                 return settings.cpRange / settings.statRange * (value - settings.minStat) +
                        settings.minCp;
+            }
+
+            public static decimal GetStatMultiply(StatType statType, decimal value)
+            {
+                if (!TryGetSettings(statType, out var settings))
+                {
+                    return 0m;
+                }
+
+                return settings.multiplyRange / settings.statRange * (value - settings.minStat) +
+                       settings.minMultiply;
             }
 
             private static bool TryGetSettings(StatType type, out Settings settings)
@@ -403,7 +428,7 @@ namespace Nekoyume.Battle
             }
 
             var levelStats = row.ToStats(avatarState.level);
-            var levelStatsCP = GetStatsCP(levelStats);
+            var levelStatsCP = GetCharacterStatsCP(levelStats);
             var equipmentsCP = avatarState.inventory.Items
                 .Select(item => item.item)
                 .OfType<Equipment>()
@@ -422,7 +447,7 @@ namespace Nekoyume.Battle
         public static int GetCP(Player player)
         {
             var levelCP = LevelSettings.GetLevelCP(player.Level);
-            var levelStatsCP = GetStatsCP(player.Stats.LevelStats);
+            var levelStatsCP = GetCharacterStatsCP(player.Stats.LevelStats);
             var equipmentsCP = player.Equipments.Sum(GetCP);
 
             return (int) (levelCP + levelStatsCP + equipmentsCP);
@@ -437,7 +462,7 @@ namespace Nekoyume.Battle
         public static int GetCP(Enemy enemy)
         {
             var levelCP = LevelSettings.GetLevelCP(enemy.Level);
-            var levelStatsCP = GetStatsCP(enemy.Stats.LevelStats);
+            var levelStatsCP = GetCharacterStatsCP(enemy.Stats.LevelStats);
             var skills = enemy.Skills.Concat(enemy.BuffSkills).ToArray();
             var skillsMultiply = GetSkillsCPMultiply(skills);
 
@@ -451,19 +476,23 @@ namespace Nekoyume.Battle
         /// <returns></returns>
         public static int GetCP(ItemUsable itemUsable)
         {
-            var result = GetStatsCP(itemUsable.StatsMap);
-            var statTypes = itemUsable.StatsMap.GetStats(true).Select(tuple => tuple.statType).ToArray();
+            var result = GetItemStatsCP(itemUsable.StatsMap);
+            var statTypes = itemUsable.StatsMap.GetStats(true).Select(tuple => tuple.statType)
+                .ToArray();
             result *= StatSynergySettings.GetMultiply(statTypes);
 
             var skills = itemUsable.Skills.Concat(itemUsable.BuffSkills).ToArray();
             result *= GetSkillsCPMultiply(skills);
             result = statTypes.Aggregate(result, (current1, statType) =>
-                skills.Aggregate(current1, (current, skill) => current * StatAndSkillSynergySettings.GetMultiply(statType, skill.SkillRow)));
+                skills.Aggregate(current1,
+                    (current, skill) =>
+                        current * StatAndSkillSynergySettings.GetMultiply(statType,
+                            skill.SkillRow)));
             result *= ItemGradeSettings.GetMultiply(itemUsable.Data.Grade);
             return (int) result;
         }
 
-        private static decimal GetStatsCP(IStats stats)
+        private static decimal GetCharacterStatsCP(IStats stats)
         {
             var statTuples = stats.GetStats(true);
             var part1 = 0m;
@@ -482,7 +511,7 @@ namespace Nekoyume.Battle
                     case StatType.CRI:
                     case StatType.HIT:
                     case StatType.SPD:
-                        part2 *= StatSettings.GetStatCP(statType, value);
+                        part2 *= StatSettings.GetStatMultiply(statType, value);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -492,11 +521,18 @@ namespace Nekoyume.Battle
             return (int) (part1 * part2);
         }
 
+        private static decimal GetItemStatsCP(IStats stats)
+        {
+            var statTuples = stats.GetStats(true);
+            return statTuples.Sum(tuple => StatSettings.GetStatCP(tuple.statType, tuple.value));
+        }
+
         private static decimal GetSkillsCPMultiply(params Skill[] skills)
         {
             var result = 1m;
             var skillCategories = skills.Select(skill => skill.SkillRow.SkillCategory).ToArray();
-            result = skills.Aggregate(result, (current, skill) => current * SkillSettings.GetMultiply(skill));
+            result = skills.Aggregate(result,
+                (current, skill) => current * SkillSettings.GetMultiply(skill));
             result *= SkillSynergySettings.GetMultiply(skillCategories);
             return result;
         }
