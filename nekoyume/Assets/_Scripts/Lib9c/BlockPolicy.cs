@@ -60,12 +60,7 @@ namespace Nekoyume.BlockChain
 
         private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
-            var signerPublicKey = transaction.PublicKey;
-            var whiteListSheet = GetWhiteListSheet?.Invoke();
-
-            return whiteListSheet is null
-                   || whiteListSheet.Count == 0
-                   || whiteListSheet.Values.Any(row => signerPublicKey.Equals(row.PublicKey));
+            return true;
         }
     }
 }
