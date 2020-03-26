@@ -8,7 +8,7 @@ namespace Tests.EditMode.Battle
     public class ArenaScoreHelperTest
     {
         [Test]
-        public void GetExp()
+        public void GetScore()
         {
             var challengerRating = 10000;
             var defenderRating = challengerRating + Math.Abs(ArenaScoreHelper.DifferLowerLimit);
