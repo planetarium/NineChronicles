@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -13,10 +15,9 @@ namespace Nekoyume.Helper
     [Serializable]
     public class CommandLineOptions
     {
-        // JSON 직렬화를 위해 필드와 속성을 둘 다 기술합니다.
-        public string privateKey;
+        private string privateKey;
 
-        public string keyStorePath = Path.Combine(
+        private string keyStorePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "planetarium",
             "keystore"
@@ -24,41 +25,42 @@ namespace Nekoyume.Helper
         // Linux/macOS: $HOME/.config/planetarium/keystore
         // Windows: %USERPROFILE%\AppData\Roaming\planetarium\keystore
 
-        public string host;
+        private string host;
 
-        public int port;
+        private int port;
 
-        public bool noMiner;
+        private bool noMiner;
 
-        public string[] peers = new string[] { };
+        private string[] peers = new string[] { };
 
-        public string[] iceServers = new string[] { };
+        private string[] iceServers = new string[] { };
 
-        public string storagePath;
+        private string storagePath;
 
-        public string storageType;
+        private string storageType;
 
-        public bool rpcClient;
+        private bool rpcClient;
 
-        public string rpcServerHost;
+        private string rpcServerHost;
 
-        public int rpcServerPort;
+        private int rpcServerPort;
 
-        public bool autoPlay;
+        private bool autoPlay;
 
-        public bool consoleSink;
+        private bool consoleSink;
 
-        public bool development;
+        private bool development;
 
-        public bool maintenance;
+        private bool maintenance;
 
-        public bool testEnd;
+        private bool testEnd;
 
-        public string appProtocolVersion;
+        private string appProtocolVersion;
 
-        public string[] trustedAppProtocolVersionSigners = new string[] { };
+        private string[] trustedAppProtocolVersionSigners = new string[] { };
+
         // Unity 단독 빌드시의 해시 파워가 낮기 때문에, Unity 버전의 기존치는 .NET Core보다 낮게 잡습니다.
-        public int minimumDifficulty = 100000;
+        private int minimumDifficulty = 100000;
 
         public bool Empty { get; private set; } = true;
 
@@ -304,6 +306,19 @@ namespace Nekoyume.Helper
                 return options;
             }
 
+            var jsonOptions = new JsonSerializerOptions
+            {
+                AllowTrailingCommas = true,
+                Converters =
+                {
+                    new StringEnumerableConverter(),
+                },
+                DictionaryKeyPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                ReadCommentHandling = JsonCommentHandling.Skip,
+            };
+
             try
             {
                 var webResponse = WebRequest.Create(onlinePath).GetResponse();
@@ -315,7 +330,7 @@ namespace Nekoyume.Helper
                         stream.Read(data, 0, data.Length);
                         string jsonData = Encoding.UTF8.GetString(data);
                         Debug.Log($"Get options from web: {onlinePath}");
-                        return JsonUtility.FromJson<CommandLineOptions>(jsonData);
+                        return JsonSerializer.Deserialize<CommandLineOptions>(jsonData, jsonOptions);
                     }
                 }
             }
@@ -327,11 +342,61 @@ namespace Nekoyume.Helper
             if (File.Exists(localPath))
             {
                 Debug.Log($"Get options from local: {localPath}");
-                return JsonUtility.FromJson<CommandLineOptions>(File.ReadAllText(localPath));
+                return JsonSerializer.Deserialize<CommandLineOptions>(File.ReadAllText(localPath), jsonOptions);
             }
 
             Debug.LogErrorFormat("Failed to find {0}. Using default options.", localPath);
             return new CommandLineOptions();
+        }
+
+        private class StringEnumerableConverter : JsonConverter<IEnumerable<string>>
+        {
+            public override IEnumerable<string> Read(
+                ref Utf8JsonReader reader,
+                Type typeToConvert,
+                JsonSerializerOptions options)
+            {
+                if (reader.TokenType != JsonTokenType.StartArray)
+                {
+                    throw new JsonException("Expected a start of an array");
+                }
+
+                if (!reader.Read())
+                {
+
+                    throw new JsonException("Expected an end of an array or a string");
+                }
+
+                var result = new List<string>();
+                while (reader.TokenType != JsonTokenType.EndArray)
+                {
+                    result.Add(reader.GetString());
+                    if (!reader.Read())
+                    {
+                        throw new JsonException("Expected an end of an array or a string");
+                    }
+                }
+
+                if (reader.TokenType != JsonTokenType.EndArray)
+                {
+                    throw new JsonException("Expected an end of an array");
+                }
+
+                return result;
+            }
+
+            public override void Write(
+                Utf8JsonWriter writer,
+                IEnumerable<string> value,
+                JsonSerializerOptions options)
+            {
+                writer.WriteStartArray();
+                foreach (string el in value)
+                {
+                    writer.WriteStringValue(el);
+                }
+                writer.WriteEndArray();
+            }
         }
     }
 

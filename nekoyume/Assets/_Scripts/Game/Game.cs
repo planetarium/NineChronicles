@@ -240,7 +240,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoLogin(Action<bool> callback)
         {
-            if (_options.maintenance)
+            if (_options.Maintenance)
             {
                 var w = Widget.Create<Alert>();
                 w.CloseCallback = () =>
@@ -260,7 +260,7 @@ namespace Nekoyume.Game
                 yield break;
             }
 
-            if (_options.testEnd)
+            if (_options.TestEnd)
             {
                 var w = Widget.Find<Confirm>();
                 w.CloseCallback = result =>
@@ -290,7 +290,7 @@ namespace Nekoyume.Game
             {
                 Widget.Find<UI.Settings>().UpdateSoundSettings();
                 var title = Widget.Find<Title>();
-                title.Show(_options.keyStorePath, _options.privateKey);
+                title.Show(_options.KeyStorePath, _options.PrivateKey);
                 yield return new WaitUntil(() => loginPopup.Login);
                 title.Close();
             }
@@ -332,7 +332,7 @@ namespace Nekoyume.Game
             {
                 if (result == ConfirmResult.No)
                     return;
-                var keyPath = _options.keyStorePath;
+                var keyPath = _options.KeyStorePath;
                 if (Directory.Exists(keyPath))
                 {
                     Directory.Delete(keyPath, true);

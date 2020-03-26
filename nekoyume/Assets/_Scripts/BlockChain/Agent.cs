@@ -311,7 +311,7 @@ namespace Nekoyume.BlockChain
             var port = options.Port;
             var consoleSink = options.ConsoleSink;
             var storagePath = options.StoragePath ?? DefaultStoragePath;
-            var storageType = options.storageType;
+            var storageType = options.StorageType;
             var development = options.Development;
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
@@ -417,7 +417,7 @@ namespace Nekoyume.BlockChain
 
         private static string GetHost(CommandLineOptions options)
         {
-            return string.IsNullOrEmpty(options.host) ? null : options.Host;
+            return string.IsNullOrEmpty(options.Host) ? null : options.Host;
         }
 
         private static BoundPeer LoadPeer(string peerInfo)
