@@ -223,7 +223,7 @@ namespace Nekoyume.Battle
                             case SkillCategory.AreaAttack:
                                 return AreaAttackMultiply;
                             default:
-                                throw new ArgumentOutOfRangeException(
+                                throw new ArgumentException(
                                     $"{nameof(skill.SkillRow.SkillType)}, {nameof(skill.SkillRow.SkillCategory)}");
                         }
                     case SkillType.Heal:
@@ -233,7 +233,7 @@ namespace Nekoyume.Battle
                     case SkillType.Debuff:
                         return DebuffMultiply;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentException($"{nameof(skill.SkillRow.SkillType)}");
                 }
             }
         }
@@ -435,7 +435,7 @@ namespace Nekoyume.Battle
                 .Where(equipment => equipment.equipped)
                 .Sum(GetCP);
 
-            return (int) (levelCP + levelStatsCP + equipmentsCP);
+            return DecimalToInt(levelCP + levelStatsCP + equipmentsCP);
         }
 
         /// <summary>
@@ -450,7 +450,7 @@ namespace Nekoyume.Battle
             var levelStatsCP = GetCharacterStatsCP(player.Stats.LevelStats);
             var equipmentsCP = player.Equipments.Sum(GetCP);
 
-            return (int) (levelCP + levelStatsCP + equipmentsCP);
+            return DecimalToInt(levelCP + levelStatsCP + equipmentsCP);
         }
 
         /// <summary>
@@ -466,7 +466,7 @@ namespace Nekoyume.Battle
             var skills = enemy.Skills.Concat(enemy.BuffSkills).ToArray();
             var skillsMultiply = GetSkillsCPMultiply(skills);
 
-            return (int) ((levelCP + levelStatsCP) * skillsMultiply);
+            return DecimalToInt((levelCP + levelStatsCP) * skillsMultiply);
         }
 
         /// <summary>
@@ -489,7 +489,7 @@ namespace Nekoyume.Battle
                         current * StatAndSkillSynergySettings.GetMultiply(statType,
                             skill.SkillRow)));
             result *= ItemGradeSettings.GetMultiply(itemUsable.Data.Grade);
-            return (int) result;
+            return DecimalToInt(result);
         }
 
         private static decimal GetCharacterStatsCP(IStats stats)
@@ -518,7 +518,7 @@ namespace Nekoyume.Battle
                 }
             }
 
-            return (int) (part1 * part2);
+            return part1 * part2;
         }
 
         private static decimal GetItemStatsCP(IStats stats)
@@ -535,6 +535,16 @@ namespace Nekoyume.Battle
                 (current, skill) => current * SkillSettings.GetMultiply(skill));
             result *= SkillSynergySettings.GetMultiply(skillCategories);
             return result;
+        }
+
+        private static int DecimalToInt(decimal value)
+        {
+            if (value > int.MaxValue)
+            {
+                return int.MaxValue;
+            }
+
+            return (int) value;
         }
     }
 }
