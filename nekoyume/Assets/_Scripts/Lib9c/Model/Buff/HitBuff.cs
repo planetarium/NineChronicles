@@ -4,9 +4,9 @@ using Nekoyume.TableData;
 namespace Nekoyume.Model.Buff
 {
     [Serializable]
-    public class DodgeBuff : Buff
+    public class HitBuff : Buff
     {
-        public DodgeBuff(BuffSheet.Row row) : base(row)
+        public HitBuff(BuffSheet.Row row) : base(row)
         {
         }
     }

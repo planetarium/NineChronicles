@@ -43,10 +43,10 @@ _220001,방어 강화(전체),Normal,Buff,DefenseBuff,Ally,1,1 // 미구현
 _230001,치명 증가(전체),Normal,Buff,CriticalBuff,Ally,1,1 // 미구현
 230002,치명 감소,Normal,Debuff,CriticalBuff,Enemy,1,10
 230003,치명 감소(전체),Normal,Debuff,CriticalBuff,Enemies,1,10
-240000,회피 증가,Normal,Buff,DodgeBuff,Self,1,10
-_240001,회피 증가(전체),Normal,Buff,DodgeBuff,Ally,1,1 // 미구현
-240002,회피 감소,Normal,Debuff,DodgeBuff,Enemy,1,10
-240003,회피 감소(전체),Normal,Debuff,DodgeBuff,Enemies,1,10
+240000,명중 증가,Normal,Buff,HitBuff,Self,1,10
+_240001,명중 증가(전체),Normal,Buff,HitBuff,Ally,1,1 // 미구현
+240002,명중 감소,Normal,Debuff,HitBuff,Enemy,1,10
+240003,명중 감소(전체),Normal,Debuff,HitBuff,Enemies,1,10
 250000,속도 증가,Normal,Buff,SpeedBuff,Self,1,10
 _250001,속도 증가(전체),Normal,Buff,SpeedBuff,Ally,1,1 // 미구현
 250002,속도 감소,Normal,Debuff,SpeedBuff,Enemy,1,10

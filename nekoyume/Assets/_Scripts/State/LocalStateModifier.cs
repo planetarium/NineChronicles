@@ -420,7 +420,7 @@ namespace Nekoyume.State
         /// 현재 바라보고 있는 주간 아레나 상태가 포함하고 있는 `ArenaInfo` 중 현재 아바타 상태의 주소에 해당하는 것을 활성화 시킨다.(휘발)
         /// </summary>
         /// <param name="addArenaInfoIfNotContained">주간 아레나 상태에 현재 아바타 정보가 없으면 넣어준다.</param>
-        public static void AddWeeklyArenaInfoActivator(bool addArenaInfoIfNotContained = true)
+        public static void AddWeeklyArenaInfoActivator(CharacterSheet characterSheet, bool addArenaInfoIfNotContained = true)
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
@@ -430,7 +430,7 @@ namespace Nekoyume.State
             if (addArenaInfoIfNotContained &&
                 !weeklyArenaState.ContainsKey(avatarAddress))
             {
-                weeklyArenaState.Set(avatarState);
+                weeklyArenaState.Set(avatarState, characterSheet);
             }
 
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
