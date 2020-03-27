@@ -17,6 +17,7 @@ using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
+using Nekoyume.UI.Tween;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 
 namespace Nekoyume.UI
@@ -26,10 +27,9 @@ namespace Nekoyume.UI
         public enum StateType
         {
             SelectMenu,
-            NewCombineEquipment,
+            CombineEquipment,
             CombineConsumable,
             EnhanceEquipment,
-            CombineEquipment,
             CombinationConfirm,
         }
 
@@ -76,6 +76,8 @@ namespace Nekoyume.UI
         private NPC _npc02;
         public int selectedIndex;
 
+        public DOTweenGroupAlpha categoryTabAlphaTweener;
+        public AnchoredPositionYTweener categoryTabPositionTweener;
 
         #region Override
 
@@ -338,7 +340,7 @@ namespace Nekoyume.UI
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(false);
                     break;
-                case StateType.NewCombineEquipment:
+                case StateType.CombineEquipment:
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
 
                     combineEquipment.Hide();
@@ -349,27 +351,10 @@ namespace Nekoyume.UI
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
                     categoryTabArea.SetActive(true);
+                    categoryTabAlphaTweener.Play();
+                    categoryTabPositionTweener.StartTween();
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(true);
-                    break;
-                case StateType.CombineEquipment:
-                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
-
-                    inventory.SharedModel.DeselectItemView();
-                    inventory.SharedModel.State.Value = ItemType.Material;
-                    inventory.SharedModel.DimmedFunc.Value = combineEquipment.DimFunc;
-                    inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
-
-                    combineEquipment.Show(true);
-                    combineConsumable.Hide();
-                    enhanceEquipment.Hide();
-                    equipmentCombinationPanel.Hide();
-                    elementalCombinationPanel.Hide();
-                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
-
-                    categoryTabArea.SetActive(true);
-                    inventory.gameObject.SetActive(true);
-                    equipmentRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombineConsumable:
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
@@ -498,7 +483,7 @@ namespace Nekoyume.UI
             }
             else if (toggleable.Name.Equals(combineEquipmentCategoryButton.Name))
             {
-                State.Value = StateType.NewCombineEquipment;
+                State.Value = StateType.CombineEquipment;
             }
             else if (toggleable.Name.Equals(enhanceEquipmentCategoryButton.Name))
             {
@@ -520,7 +505,7 @@ namespace Nekoyume.UI
             }
             else if (State.Value == StateType.CombinationConfirm)
             {
-                State.SetValueAndForceNotify(StateType.NewCombineEquipment);
+                State.SetValueAndForceNotify(StateType.CombineEquipment);
             }
             else
             {

@@ -7,7 +7,7 @@ namespace Nekoyume.UI.Tween
 {
     // todo: `AnchoredPositionSingleTweener`로 바꾸고, 좌표계를 선택할 수 있도록. `RotateSingleTweener` 참고. 
     [RequireComponent(typeof(RectTransform))]
-    public class AnchoredPositionXTweener : MonoBehaviour
+    public class AnchoredPositionYTweener : MonoBehaviour
     {
         [SerializeField] private float startDelay = 0f;
         [SerializeField] private float end = 0f;
@@ -37,14 +37,14 @@ namespace Nekoyume.UI.Tween
             _rectTransform.anchoredPosition = originAnchoredPosition;
             if (isFrom)
             {
-                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping)
+                _tween = _rectTransform.DOAnchorPosY(end, duration, snapping)
                     .SetDelay(startDelay)
                     .SetEase(showEase)
                     .From();
             }
             else
             {
-                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping)
+                _tween = _rectTransform.DOAnchorPosY(end, duration, snapping)
                     .SetDelay(startDelay)
                     .SetEase(showEase);
             }
@@ -57,11 +57,11 @@ namespace Nekoyume.UI.Tween
             RefreshTween();
             if(isFrom)
             {
-                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase);
+                _tween = _rectTransform.DOAnchorPosY(end, duration, snapping).SetEase(closeEase);
             }
             else
             {
-                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase).From();
+                _tween = _rectTransform.DOAnchorPosY(end, duration, snapping).SetEase(closeEase).From();
             }
             return _tween;
         }

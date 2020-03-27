@@ -6,6 +6,7 @@ using UniRx;
 using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Module
 {
@@ -39,6 +40,11 @@ namespace Nekoyume.UI.Module
         
         public EquipmentRecipeCellView SelectedRecipe { get; private set; }
 
+        public DOTweenGroupAlpha tabAlphaTweener;
+        public AnchoredPositionYTweener tabPositionTweener;
+        public DOTweenGroupAlpha scrollAlphaTweener;
+        public AnchoredPositionYTweener scrollPositionTweener;
+
         private void Awake()
         {
             _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
@@ -57,13 +63,10 @@ namespace Nekoyume.UI.Module
             if (States.Instance.CurrentAvatarState is null)
                 return;
 
-            foreach (var cellView in cellViews)
-            {
-                if (cellView.ItemSubType == _filterType.Value)
-                {
-                    cellView.Show(true);
-                }
-            }
+            tabAlphaTweener.Play();
+            tabPositionTweener.StartTween();
+            scrollAlphaTweener.Play();
+            scrollPositionTweener.StartTween();
 
             UpdateRecipes();
         }

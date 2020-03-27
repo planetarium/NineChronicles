@@ -63,12 +63,12 @@ namespace Nekoyume.UI.Module
 
         private static void SubscribeOnClickCancel()
         {
-            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.NewCombineEquipment);
+            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
         }
 
         private static void SubscribeOnClickSubmit()
         {
-            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.NewCombineEquipment);
+            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
         }
     }
 }

@@ -50,8 +50,7 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI unlockConditionText;
 
         [SerializeField]
-        private DOTweenGroupAlpha tweenAlpha;
-
+        private DOTweenRectTransformMoveTo tweener;
 
         public readonly Subject<EquipmentRecipeCellView> OnClick =
             new Subject<EquipmentRecipeCellView>();
@@ -81,18 +80,21 @@ namespace Nekoyume.UI.Scroller
             OnClick.Dispose();
         }
 
-        public void Show(bool tween = false)
+        public void Show()
         {
             gameObject.SetActive(true);
-            if (tween)
-            {
-                tweenAlpha.Play();
-            }
         }
 
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        public void TweenFrom(EquipmentRecipeCellView view)
+        {
+            tweener.
+
+
         }
 
         public void Set(EquipmentItemRecipeSheet.Row recipeRow)
