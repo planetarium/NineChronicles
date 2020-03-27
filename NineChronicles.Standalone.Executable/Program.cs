@@ -69,8 +69,8 @@ namespace NineChronicles.Standalone.Executable
                 Port = port,
                 AppProtocolVersion = AppProtocolVersion.FromToken(appProtocolVersionToken),
                 TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners
-                    .Select(s => new PublicKey(ByteUtil.ParseHex(s)))
-                    .ToHashSet(),
+                    ?.Select(s => new PublicKey(ByteUtil.ParseHex(s)))
+                    ?.ToHashSet(),
                 GenesisBlockPath = genesisBlockPath,
                 NoMiner = noMiner,
                 PrivateKey = privateKey,
