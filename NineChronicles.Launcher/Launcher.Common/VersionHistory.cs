@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Launcher
+namespace Launcher.Common
 {
     public struct VersionHistory
     {

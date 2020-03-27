@@ -1,4 +1,4 @@
-namespace Launcher
+namespace Launcher.Common
 {
     public struct VersionDescriptor
     {

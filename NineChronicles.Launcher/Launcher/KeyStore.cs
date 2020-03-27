@@ -16,8 +16,8 @@ namespace Launcher
         public string KeyStorePath { get; }
 
         public Dictionary<Address, ProtectedPrivateKey> ProtectedPrivateKeys =>
-            Nekoyume.KeyStore.GetProtectedPrivateKeys(KeyStorePath)
-                .ToDictionary(pair => pair.Value.Address, pair => pair.Value);
+            Web3KeyStore.DefaultKeyStore.List()
+                .ToDictionary(pair => pair.Item2.Address, pair => pair.Item2);
 
         // Of course, it can be replaced with LINQ `Select`. But QML doesn't support it so exists.
         [NotifySignal]
