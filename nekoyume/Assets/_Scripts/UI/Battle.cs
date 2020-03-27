@@ -69,14 +69,14 @@ namespace Nekoyume.UI
             if (stage.isExitReserved)
             {
                 stage.isExitReserved = false;
-                bottomMenu.exitButton.toggleable = false;
+                bottomMenu.exitButton.Toggleable = false;
                 bottomMenu.exitButton.IsWidgetControllable = false;
                 bottomMenu.exitButton.SharedModel.IsEnabled.Value = false;
                 bottomMenu.exitButton.SetToggledOff();
             }
             else
             {
-                bottomMenu.exitButton.toggleable = true;
+                bottomMenu.exitButton.Toggleable = true;
                 bottomMenu.exitButton.IsWidgetControllable = true;
 
                 var confirm = Find<Confirm>();

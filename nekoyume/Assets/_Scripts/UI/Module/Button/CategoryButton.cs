@@ -9,12 +9,24 @@ namespace Nekoyume.UI.Module
 {
     public class CategoryButton : MonoBehaviour, IToggleable
     {
+        [SerializeField]
         private Button button;
+
+        [SerializeField]
         private Image selectedImage;
+
+        [SerializeField]
         private TextMeshProUGUI normalText;
+
+        [SerializeField]
         private TextMeshProUGUI selectedText;
+
+        [SerializeField]
         private TextMeshProUGUI disabledText;
+
+        [SerializeField]
         private string localizationKey;
+
 
         private IToggleListener _toggleListener;
 
@@ -22,7 +34,7 @@ namespace Nekoyume.UI.Module
 
         protected void Awake()
         {
-            toggleable = true;
+            Toggleable = true;
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
@@ -38,7 +50,7 @@ namespace Nekoyume.UI.Module
 
         public string Name => name;
 
-        public bool toggleable { get; set; }
+        public bool Toggleable { get; set; }
 
         public bool IsToggledOn => selectedImage.enabled;
 
@@ -53,6 +65,7 @@ namespace Nekoyume.UI.Module
             selectedImage.enabled = true;
             normalText.enabled = false;
             selectedText.enabled = true;
+            disabledText.enabled = false;
         }
 
         public void SetToggledOff()
@@ -61,6 +74,7 @@ namespace Nekoyume.UI.Module
             selectedImage.enabled = false;
             normalText.enabled = true;
             selectedText.enabled = false;
+            disabledText.enabled = false;
         }
 
         #endregion
