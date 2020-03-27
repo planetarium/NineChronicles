@@ -363,7 +363,6 @@ namespace Nekoyume.Helper
 
                 if (!reader.Read())
                 {
-
                     throw new JsonException("Expected an end of an array or a string");
                 }
 
