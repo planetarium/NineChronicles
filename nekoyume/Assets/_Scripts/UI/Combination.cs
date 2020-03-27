@@ -279,6 +279,8 @@ namespace Nekoyume.UI
                 // combineEquipmentCategoryButton.button.interactable = false;
                 // combineConsumableCategoryButton.button.interactable = false;
                 // enhanceEquipmentCategoryButton.button.interactable = false;
+
+                return;
             }
 
             selectionArea.combineEquipmentButton.interactable =
