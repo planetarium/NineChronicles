@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
 
         protected virtual void Awake()
         {
-            IsToggleable = true;
+            toggleable = true;
             IsWidgetControllable = true;
 
             button.OnClickAsObservable()
@@ -75,7 +75,7 @@ namespace Nekoyume.UI.Module
 
             if (!_widget.IsActive())
                 return;
-            
+
             if (_widget is Confirm confirm)
             {
                 confirm.NoWithoutCallback();
@@ -93,7 +93,9 @@ namespace Nekoyume.UI.Module
         #region IToggleable
 
         public string Name => name;
-        public bool IsToggleable { get; set; }
+
+        public bool toggleable { get; set; }
+
         public virtual bool IsToggledOn => toggledOnImage.gameObject.activeSelf;
 
         public virtual void SetToggleListener(IToggleListener toggleListener)
@@ -103,7 +105,7 @@ namespace Nekoyume.UI.Module
 
         public virtual void SetToggledOn()
         {
-            if (!IsToggleable)
+            if (!toggleable)
                 return;
 
             toggledOffImage.gameObject.SetActive(false);
@@ -115,7 +117,7 @@ namespace Nekoyume.UI.Module
 
         public virtual void SetToggledOff()
         {
-            if (!IsToggleable)
+            if (!toggleable)
                 return;
 
             toggledOffImage.gameObject.SetActive(true);

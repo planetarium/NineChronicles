@@ -40,12 +40,12 @@ namespace Nekoyume.UI
 
         public CanvasGroup canvasGroup;
         public RectTransform bg1;
-        
+
         // 토글 그룹과 카테고리 버튼들.
         private ToggleGroup _toggleGroup;
         public CategoryButton buyButton;
         public CategoryButton sellButton;
-        
+
         public RectTransform right;
 
         public Module.Inventory inventory;
@@ -83,7 +83,7 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            
+
             _toggleGroup = new ToggleGroup();
             _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
             _toggleGroup.RegisterToggleable(buyButton);
@@ -172,8 +172,8 @@ namespace Nekoyume.UI
             inventory.Tooltip.Close();
             inventory.SharedModel.DeselectItemView();
             shopItems.SharedModel.DeselectItemView();
-            buyButton.button.interactable = false;
-            sellButton.button.interactable = false;
+            buyButton.toggleable = false;
+            sellButton.toggleable = false;
             switch (stateType)
             {
                 case StateType.Show:
@@ -209,8 +209,8 @@ namespace Nekoyume.UI
                     {
                         canvasGroup.interactable = true;
                         _sequenceOfShopItems = null;
-                        buyButton.button.interactable = stateType == StateType.Sell;
-                        sellButton.button.interactable = stateType == StateType.Buy;
+                        buyButton.toggleable = stateType == StateType.Sell;
+                        sellButton.toggleable = stateType == StateType.Buy;
                     });
                 });
             }
@@ -344,7 +344,7 @@ namespace Nekoyume.UI
             Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
         }
-        
+
         private void SubscribeOnToggledOn(IToggleable toggleable)
         {
             // NPC Greeting, Emotion 구분을 위해 SubscribeState 외부에서 처리
@@ -359,7 +359,7 @@ namespace Nekoyume.UI
                 ShowSpeech("SPEECH_SHOP_SELL_");
             }
         }
-        
+
         #endregion
 
         #region Private Static Methods

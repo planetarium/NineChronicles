@@ -9,33 +9,38 @@ namespace Nekoyume.UI.Module
 {
     public class CategoryButton : MonoBehaviour, IToggleable
     {
-        public Button button;
-        public Image effectImage;
-        public TextMeshProUGUI toggledOffText;
-        public TextMeshProUGUI toggledOnText;
-        public string localizationKey;
-        
+        private Button button;
+        private Image selectedImage;
+        private TextMeshProUGUI normalText;
+        private TextMeshProUGUI selectedText;
+        private TextMeshProUGUI disabledText;
+        private string localizationKey;
+
         private IToggleListener _toggleListener;
+
+        public readonly Subject<CategoryButton> OnClick = new Subject<CategoryButton>();
 
         protected void Awake()
         {
-            IsToggleable = true;
+            toggleable = true;
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
                 string localization = LocalizationManager.Localize(localizationKey);
-                toggledOffText.text = localization;
-                toggledOnText.text = localization;
+                normalText.text = localization;
+                selectedText.text = localization;
             }
 
             button.onClick.AddListener(SubscribeOnClick);
         }
-        
+
         #region IToggleable
 
         public string Name => name;
-        public bool IsToggleable { get; set; }
-        public bool IsToggledOn => effectImage.enabled;
+
+        public bool toggleable { get; set; }
+
+        public bool IsToggledOn => selectedImage.enabled;
 
         public void SetToggleListener(IToggleListener toggleListener)
         {
@@ -45,17 +50,17 @@ namespace Nekoyume.UI.Module
         public void SetToggledOn()
         {
             button.interactable = false;
-            effectImage.enabled = true;
-            toggledOffText.enabled = false;
-            toggledOnText.enabled = true;
+            selectedImage.enabled = true;
+            normalText.enabled = false;
+            selectedText.enabled = true;
         }
-        
+
         public void SetToggledOff()
         {
             button.interactable = true;
-            effectImage.enabled = false;
-            toggledOffText.enabled = true;
-            toggledOnText.enabled = false;
+            selectedImage.enabled = false;
+            normalText.enabled = true;
+            selectedText.enabled = false;
         }
 
         #endregion
@@ -66,6 +71,7 @@ namespace Nekoyume.UI.Module
                 return;
 
             AudioController.PlayClick();
+            OnClick.OnNext(this);
             _toggleListener?.OnToggle(this);
         }
     }
