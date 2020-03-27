@@ -16,7 +16,9 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 using Material = Nekoyume.Model.Item.Material;
+using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 
 namespace Nekoyume.UI
 {
@@ -32,10 +34,21 @@ namespace Nekoyume.UI
             CombinationConfirm,
         }
 
+        [Serializable]
+        public struct SelectionArea
+        {
+            public GameObject root;
+            public Button combineEquipmentButton;
+            public Button combineConsumableButton;
+            public Button enhanceEquipmentButton;
+        }
+
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.SelectMenu);
 
         private const int NPCId = 300001;
+
+        public SelectionArea selectionArea;
 
         private ToggleGroup _toggleGroup;
         public CategoryButton combineEquipmentCategoryButton;
@@ -44,7 +57,6 @@ namespace Nekoyume.UI
 
         public GameObject leftArea;
         public GameObject categoryTabArea;
-        public GameObject selectionArea;
         public EquipmentRecipe equipmentRecipe;
 
         public Module.Inventory inventory;
@@ -91,7 +103,8 @@ namespace Nekoyume.UI
             inventory.SharedModel.OnDoubleClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
 
             combineEquipment.RemoveMaterialsAll();
-            combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
+            combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange)
+                .AddTo(gameObject);
             combineEquipment.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 ActionCombineEquipment();
@@ -99,7 +112,8 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
 
             combineConsumable.RemoveMaterialsAll();
-            combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
+            combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange)
+                .AddTo(gameObject);
             combineConsumable.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 ActionCombineConsumable();
@@ -112,7 +126,8 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
 
             enhanceEquipment.RemoveMaterialsAll();
-            enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
+            enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange)
+                .AddTo(gameObject);
             enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 ActionEnhanceEquipment();
@@ -133,42 +148,17 @@ namespace Nekoyume.UI
 
             recipe.RegisterListener(this);
             recipe.closeButton.OnClickAsObservable()
-                .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true)).AddTo(gameObject);
+                .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true))
+                .AddTo(gameObject);
 
             blur.gameObject.SetActive(false);
-        }
-
-        private IEnumerator CoCombineNPCAnimation()
-        {
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
-            Find<BottomMenu>().SetIntractable(false);
-            blur.gameObject.SetActive(true);
-            _npc01.SpineController.Disappear();
-            Push();
-            yield return new WaitForSeconds(.5f);
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
-            _npc02 = go.GetComponent<NPC>();
-            _npc02.SetSortingLayer(LayerType.UI);
-            _npc02.SpineController.Appear(.3f);
-            _npc02.PlayAnimation(NPCAnimation.Type.Appear_02);
-            yield return new WaitForSeconds(5f);
-            _npc02.SpineController.Disappear(.3f);
-            _npc02.PlayAnimation(NPCAnimation.Type.Disappear_02);
-            yield return new WaitForSeconds(.5f);
-            _npc02.gameObject.SetActive(false);
-            _npc01.SpineController.Appear();
-            yield return new WaitForSeconds(1f);
-            canvasGroup.interactable = true;
-            canvasGroup.blocksRaycasts = true;
-            Find<BottomMenu>().SetIntractable(true);
-            blur.gameObject.SetActive(false);
-            Pop();
         }
 
         public override void Show()
         {
             base.Show();
+
+            CheckLockOfCategoryButtons();
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("combination");
@@ -199,7 +189,12 @@ namespace Nekoyume.UI
             {
                 ResetSelectedIndex();
             }
+        }
 
+        public void Show(int slotIndex)
+        {
+            selectedIndex = slotIndex;
+            Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -267,10 +262,38 @@ namespace Nekoyume.UI
             combineConsumable.submitButton.gameObject.SetActive(true);
         }
 
-        public void Show(int slotIndex)
+        private void CheckLockOfCategoryButtons()
         {
-            selectedIndex = slotIndex;
-            Show();
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
+            if (!worldInformation.TryGetLastClearedStageId(out var stageId))
+            {
+                selectionArea.combineEquipmentButton.interactable = false;
+                selectionArea.combineConsumableButton.interactable = false;
+                selectionArea.enhanceEquipmentButton.interactable = false;
+
+                // combineEquipmentCategoryButton.button.interactable = false;
+                // combineConsumableCategoryButton.button.interactable = false;
+                // enhanceEquipmentCategoryButton.button.interactable = false;
+            }
+
+            selectionArea.combineEquipmentButton.interactable =
+                stageId >= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
+            selectionArea.combineConsumableButton.interactable =
+                stageId >= GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
+            selectionArea.enhanceEquipmentButton.interactable =
+                stageId >= GameConfig.RequireClearedStageLevel.ItemEnhancementAction;
+
+            // combineEquipmentCategoryButton.button.interactable =
+            //     stageId >= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
+            // combineConsumableCategoryButton.button.interactable =
+            //     stageId >= GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
+            // enhanceEquipmentCategoryButton.button.interactable =
+            //     stageId >= GameConfig.RequireClearedStageLevel.ItemEnhancementAction;
         }
 
         private void SubscribeState(StateType value)
@@ -278,7 +301,7 @@ namespace Nekoyume.UI
             inventory.Tooltip.Close();
             recipe.Hide();
 
-            selectionArea.SetActive(value == StateType.SelectMenu);
+            selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
 
             switch (value)
@@ -517,7 +540,8 @@ namespace Nekoyume.UI
 
         private void ActionEnhanceEquipment()
         {
-            var baseEquipmentGuid = ((Equipment) enhanceEquipment.baseMaterial.Model.ItemBase.Value).ItemId;
+            var baseEquipmentGuid =
+                ((Equipment) enhanceEquipment.baseMaterial.Model.ItemBase.Value).ItemId;
             var otherEquipmentGuidList = enhanceEquipment.otherMaterials
                 .Select(e => ((Equipment) e.Model.ItemBase.Value).ItemId)
                 .ToList();
@@ -559,7 +583,8 @@ namespace Nekoyume.UI
             }
         }
 
-        private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel, Guid baseItemGuid,
+        private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
+            Guid baseItemGuid,
             IEnumerable<Guid> otherItemGuidList)
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -576,7 +601,8 @@ namespace Nekoyume.UI
         }
 
 
-        private void CreateCombinationAction(List<(Material material, int count)> materialInfoList, int slotIndex)
+        private void CreateCombinationAction(List<(Material material, int count)> materialInfoList,
+            int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotConsumable(
                 Game.Game.instance.TableSheets,
@@ -587,11 +613,13 @@ namespace Nekoyume.UI
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
-                .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
+                .Subscribe(_ => { },
+                    _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
             ResetSelectedIndex();
         }
 
-        private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList, int slotIndex)
+        private void CreateItemEnhancementAction(Guid baseItemGuid,
+            IEnumerable<Guid> otherItemGuidList, int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotItemEnhancement(
                 enhanceEquipment,
@@ -600,8 +628,10 @@ namespace Nekoyume.UI
             );
             var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
-                .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
+            Game.Game.instance.ActionManager
+                .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
+                .Subscribe(_ => { },
+                    _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
             ResetSelectedIndex();
         }
 
@@ -618,7 +648,8 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
+        private void ShowSpeech(string key,
+            CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
             if (!_npc01)
                 return;
@@ -641,6 +672,34 @@ namespace Nekoyume.UI
                     ));
             var idx = pair.Value is null ? -1 : pair.Key;
             selectedIndex = idx;
+        }
+
+        private IEnumerator CoCombineNPCAnimation()
+        {
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+            Find<BottomMenu>().SetIntractable(false);
+            blur.gameObject.SetActive(true);
+            _npc01.SpineController.Disappear();
+            Push();
+            yield return new WaitForSeconds(.5f);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
+            _npc02 = go.GetComponent<NPC>();
+            _npc02.SetSortingLayer(LayerType.UI);
+            _npc02.SpineController.Appear(.3f);
+            _npc02.PlayAnimation(NPCAnimation.Type.Appear_02);
+            yield return new WaitForSeconds(5f);
+            _npc02.SpineController.Disappear(.3f);
+            _npc02.PlayAnimation(NPCAnimation.Type.Disappear_02);
+            yield return new WaitForSeconds(.5f);
+            _npc02.gameObject.SetActive(false);
+            _npc01.SpineController.Appear();
+            yield return new WaitForSeconds(1f);
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+            Find<BottomMenu>().SetIntractable(true);
+            blur.gameObject.SetActive(false);
+            Pop();
         }
     }
 }

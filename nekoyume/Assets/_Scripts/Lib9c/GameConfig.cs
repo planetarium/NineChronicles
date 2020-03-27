@@ -85,7 +85,9 @@
         {
             #region action
 
-            public const int ActionsInCombination = IsEditor ? 1 : 3;
+            public const int CombinationEquipmentAction = IsEditor ? 1 : 3;
+            public const int CombinationConsumableAction = IsEditor ? 1 : 6;
+            public const int ItemEnhancementAction = IsEditor ? 1 : 9;
             public const int ActionsInShop = IsEditor ? 1 : 17;
             public const int ActionsInRankingBoard = IsEditor ? 1 : 25;
 
@@ -94,7 +96,7 @@
             #region ui
 
             public const int UIMainMenuStage = 0;
-            public const int UIMainMenuCombination = ActionsInCombination;
+            public const int UIMainMenuCombination = CombinationEquipmentAction;
             public const int UIMainMenuShop = ActionsInShop;
             public const int UIMainMenuRankingBoard = ActionsInRankingBoard;
 

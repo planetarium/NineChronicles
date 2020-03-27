@@ -111,7 +111,7 @@ namespace Nekoyume.Action
             foreach (var address in avatarState.combinationSlotAddresses)
             {
                 var slotState =
-                    new CombinationSlotState(address, GameConfig.RequireClearedStageLevel.ActionsInCombination);
+                    new CombinationSlotState(address, GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
                 states = states.SetState(address, slotState.Serialize());
             }
 
