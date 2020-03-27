@@ -172,8 +172,8 @@ namespace Nekoyume.UI
             inventory.Tooltip.Close();
             inventory.SharedModel.DeselectItemView();
             shopItems.SharedModel.DeselectItemView();
-            buyButton.Toggleable = false;
-            sellButton.Toggleable = false;
+            buyButton.SetInteractable(false, true);
+            sellButton.SetInteractable(false, true);
             switch (stateType)
             {
                 case StateType.Show:
@@ -209,8 +209,8 @@ namespace Nekoyume.UI
                     {
                         canvasGroup.interactable = true;
                         _sequenceOfShopItems = null;
-                        buyButton.Toggleable = stateType == StateType.Sell;
-                        sellButton.Toggleable = stateType == StateType.Buy;
+                        buyButton.SetInteractable(stateType == StateType.Sell, true);
+                        sellButton.SetInteractable(stateType == StateType.Buy, true);
                     });
                 });
             }

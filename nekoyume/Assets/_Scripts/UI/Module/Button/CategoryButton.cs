@@ -10,22 +10,25 @@ namespace Nekoyume.UI.Module
     public class CategoryButton : MonoBehaviour, IToggleable
     {
         [SerializeField]
-        private Button button;
+        private Button button = null;
 
         [SerializeField]
-        private Image selectedImage;
+        private Image normalImage = null;
 
         [SerializeField]
-        private TextMeshProUGUI normalText;
+        private Image selectedImage = null;
 
         [SerializeField]
-        private TextMeshProUGUI selectedText;
+        private TextMeshProUGUI normalText = null;
 
         [SerializeField]
-        private TextMeshProUGUI disabledText;
+        private TextMeshProUGUI selectedText = null;
 
         [SerializeField]
-        private string localizationKey;
+        private TextMeshProUGUI disabledText = null;
+
+        [SerializeField]
+        private string localizationKey = null;
 
 
         private IToggleListener _toggleListener;
@@ -38,12 +41,12 @@ namespace Nekoyume.UI.Module
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                string localization = LocalizationManager.Localize(localizationKey);
+                var localization = LocalizationManager.Localize(localizationKey);
                 normalText.text = localization;
                 selectedText.text = localization;
             }
 
-            button.onClick.AddListener(SubscribeOnClick);
+            button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
         }
 
         #region IToggleable
@@ -61,7 +64,9 @@ namespace Nekoyume.UI.Module
 
         public void SetToggledOn()
         {
-            button.interactable = false;
+            if (!Toggleable)
+                return;
+
             selectedImage.enabled = true;
             normalText.enabled = false;
             selectedText.enabled = true;
@@ -70,7 +75,9 @@ namespace Nekoyume.UI.Module
 
         public void SetToggledOff()
         {
-            button.interactable = true;
+            if (!Toggleable)
+                return;
+
             selectedImage.enabled = false;
             normalText.enabled = true;
             selectedText.enabled = false;
@@ -79,11 +86,24 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        private void SubscribeOnClick()
+        public void SetInteractable(bool interactable, bool ignoreImageColor = false)
         {
-            if (IsToggledOn)
-                return;
+            button.interactable = interactable;
 
+            if (ignoreImageColor)
+            {
+                return;
+            }
+
+            var imageColor = button.interactable
+                ? Color.white
+                : Color.gray;
+            normalImage.color = imageColor;
+            selectedImage.color = imageColor;
+        }
+
+        private void SubscribeOnClick(Unit unit)
+        {
             AudioController.PlayClick();
             OnClick.OnNext(this);
             _toggleListener?.OnToggle(this);

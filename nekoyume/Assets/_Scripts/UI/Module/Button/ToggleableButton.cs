@@ -19,6 +19,8 @@ namespace Nekoyume.UI.Module
 
         private IToggleListener _toggleListener;
 
+        public readonly Subject<ToggleableButton> OnClick = new Subject<ToggleableButton>();
+
         #region Mono
 
         protected virtual void Awake()
@@ -26,17 +28,11 @@ namespace Nekoyume.UI.Module
             Toggleable = true;
             IsWidgetControllable = true;
 
-            button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    _toggleListener?.OnToggle(this);
-                })
-                .AddTo(gameObject);
+            button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                string text = LocalizationManager.Localize(localizationKey);
+                var text = LocalizationManager.Localize(localizationKey);
                 toggledOffText.text = text;
                 toggledOnText.text = text;
             }
@@ -137,6 +133,29 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        public void SetInteractable(bool interactable, bool ignoreImageColor = false)
+        {
+            button.interactable = interactable;
+
+            if (ignoreImageColor)
+            {
+                return;
+            }
+
+            var imageColor = button.interactable
+                ? Color.white
+                : Color.gray;
+            toggledOffImage.color = imageColor;
+            toggledOnImage.color = imageColor;
+        }
+
+        private void SubscribeOnClick(Unit unit)
+        {
+            AudioController.PlayClick();
+            OnClick.OnNext(this);
+            _toggleListener?.OnToggle(this);
         }
     }
 }

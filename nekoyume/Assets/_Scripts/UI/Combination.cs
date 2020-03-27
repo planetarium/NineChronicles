@@ -276,9 +276,9 @@ namespace Nekoyume.UI
                 selectionArea.combineConsumableButton.interactable = false;
                 selectionArea.enhanceEquipmentButton.interactable = false;
 
-                // combineEquipmentCategoryButton.button.interactable = false;
-                // combineConsumableCategoryButton.button.interactable = false;
-                // enhanceEquipmentCategoryButton.button.interactable = false;
+                combineEquipmentCategoryButton.SetInteractable(false);
+                combineConsumableCategoryButton.SetInteractable(false);
+                enhanceEquipmentCategoryButton.SetInteractable(false);
 
                 return;
             }
@@ -290,12 +290,12 @@ namespace Nekoyume.UI
             selectionArea.enhanceEquipmentButton.interactable =
                 stageId >= GameConfig.RequireClearedStageLevel.ItemEnhancementAction;
 
-            // combineEquipmentCategoryButton.button.interactable =
-            //     stageId >= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
-            // combineConsumableCategoryButton.button.interactable =
-            //     stageId >= GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
-            // enhanceEquipmentCategoryButton.button.interactable =
-            //     stageId >= GameConfig.RequireClearedStageLevel.ItemEnhancementAction;
+            combineEquipmentCategoryButton.SetInteractable(
+                stageId >= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
+            combineConsumableCategoryButton.SetInteractable(
+                stageId >= GameConfig.RequireClearedStageLevel.CombinationConsumableAction);
+            enhanceEquipmentCategoryButton.SetInteractable(
+                stageId >= GameConfig.RequireClearedStageLevel.ItemEnhancementAction);
         }
 
         private void SubscribeState(StateType value)
