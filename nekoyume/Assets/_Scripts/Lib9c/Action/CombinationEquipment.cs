@@ -175,7 +175,7 @@ namespace Nekoyume.Action
                 itemType = ItemType.Equipment,
             };
             var requiredIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
-            slotState.Update(result, requiredIndex);
+            slotState.Update(result, ctx.BlockIndex, requiredIndex);
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
                 requiredIndex);
             result.id = mail.id;
