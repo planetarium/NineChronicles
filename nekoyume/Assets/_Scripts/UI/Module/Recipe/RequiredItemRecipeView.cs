@@ -25,10 +25,14 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
-        public void SetData(EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo, List<EquipmentItemSubRecipeSheet.MaterialInfo> materials)
+        public void SetData(
+            EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo,
+            List<EquipmentItemSubRecipeSheet.MaterialInfo> materials,
+            bool checkInventory
+        )
         {
             requiredItemViews[0].gameObject.SetActive(true);
-            SetView(requiredItemViews[0], baseMaterialInfo.Id, baseMaterialInfo.Count);
+            SetView(requiredItemViews[0], baseMaterialInfo.Id, baseMaterialInfo.Count, checkInventory);
 
             for (int i = 1; i < requiredItemViews.Length; ++i)
             {
@@ -38,7 +42,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    SetView(requiredItemViews[i], materials[i - 1].Id, materials[i - 1].Count);
+                    SetView(requiredItemViews[i], materials[i - 1].Id, materials[i - 1].Count, checkInventory);
                     requiredItemViews[i].gameObject.SetActive(true);
                 }
             }
@@ -46,22 +50,24 @@ namespace Nekoyume.UI.Module
             Show();
         }
 
-        private void SetView(RequiredItemView view, int materialId, int requiredCount)
+        private void SetView(
+            RequiredItemView view,
+            int materialId,
+            int requiredCount,
+            bool checkInventory
+        )
         {
-            var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
-
             var item = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, materialId);
-
-            if (inventory.TryGetFungibleItem(item, out var inventoryItem))
+            var itemCount = requiredCount;
+            if (checkInventory)
             {
-                var countableItem = new CountableItem(item, inventoryItem.count);
-                view.SetData(countableItem, requiredCount);
+                var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+                itemCount = inventory.TryGetFungibleItem(item, out var inventoryItem)
+                    ? inventoryItem.count
+                    : 0;
             }
-            else
-            {
-                var countableItem = new CountableItem(item, 0);
-                view.SetData(countableItem, requiredCount);
-            }
+            var countableItem = new CountableItem(item, itemCount);
+            view.SetData(countableItem, requiredCount);
         }
     }
 }
