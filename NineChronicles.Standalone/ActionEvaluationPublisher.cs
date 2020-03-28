@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
@@ -52,8 +53,17 @@ namespace NineChronicles.Standalone
                     var formatter = new BinaryFormatter();
                     using var c = new MemoryStream();
                     using var df = new DeflateStream(c, System.IO.Compression.CompressionLevel.Fastest);
-                    formatter.Serialize(df, ev);
-                    await client.BroadcastAsync(c.ToArray());
+
+                    try
+                    {
+                        formatter.Serialize(df, ev);
+                        await client.BroadcastAsync(c.ToArray());
+                    }
+                    catch (SerializationException se)
+                    {
+                        // FIXME add logger as property
+                        Log.Error(se, $"Skip broadcasting since given action isn't serializable.");
+                    }
                 },
                 stoppingToken
             );
