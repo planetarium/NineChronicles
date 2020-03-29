@@ -878,25 +878,25 @@ namespace Nekoyume.BlockChain
             var hasOwnTx = false;
             while (true)
             {
-                var txs = store.IterateStagedTransactionIds()
-                    .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
-                    .Where(tx => tx.Signer.Equals(Address))
-                    .ToList();
+                // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
+                Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
+                    Task.Run(
+                        () => store.IterateStagedTransactionIds()
+                            .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
+                            .Where(tx => tx.Signer.Equals(Address))
+                            .ToList()
+                    );
 
-                if (hasOwnTx)
+                yield return new WaitUntil(() => getOwnTxs.IsCompleted);
+
+                if (!getOwnTxs.IsFaulted)
                 {
-                    if (txs.Count == 0)
+                    List<Transaction<PolymorphicAction<ActionBase>>> txs = getOwnTxs.Result;
+                    var next = txs.Any();
+                    if (next != hasOwnTx)
                     {
-                        hasOwnTx = false;
-                        OnHasOwnTx?.Invoke(false);
-                    }
-                }
-                else
-                {
-                    if (txs.Count > 0)
-                    {
-                        hasOwnTx = true;
-                        OnHasOwnTx?.Invoke(true);
+                        hasOwnTx = next;
+                        OnHasOwnTx?.Invoke(hasOwnTx);
                     }
                 }
 
