@@ -8,7 +8,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private EquipmentOptionView optionView;
 
-        public override void SetData(EquipmentItemRecipeSheet.Row row, int? subRecipeId)
+        public override void SetData(
+            EquipmentItemRecipeSheet.Row row,
+            int? subRecipeId,
+            bool checkInventory = true
+        )
         {
             var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             if (!equipmentSheet.TryGetValue(row.ResultEquipmentId, out var equipmentRow))
@@ -27,7 +31,7 @@ namespace Nekoyume.UI.Module
                 optionView.Hide();
             }
 
-            base.SetData(row, subRecipeId);
+            base.SetData(row, subRecipeId, checkInventory);
         }
     }
 }

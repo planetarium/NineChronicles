@@ -61,8 +61,8 @@ namespace Nekoyume.UI
             var resultItem = new CountableItem(result.itemUsable, 1);
             itemInformation.SetData(new Model.ItemInformation(resultItem));
             var subRecipeEnabled = result.subRecipeId.HasValue;
-            materialPanel.gameObject.SetActive(!subRecipeEnabled);
-            optionView.gameObject.SetActive(subRecipeEnabled);
+            materialPanel.gameObject.SetActive(false);
+            optionView.gameObject.SetActive(false);
             var recipeRow =
                 Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
                     r.Id == result.recipeId);
@@ -71,12 +71,14 @@ namespace Nekoyume.UI
                 optionView.Show(
                     result.itemUsable.GetLocalizedName(),
                     (int) result.subRecipeId,
-                    new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount)
+                    new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount),
+                    false
                 );
             }
             else
             {
-                materialPanel.SetData(recipeRow, null);
+                materialPanel.SetData(recipeRow, null, false);
+                materialPanel.gameObject.SetActive(true);
             }
             itemInformation.statsArea.root.gameObject.SetActive(false);
             itemInformation.skillsArea.root.gameObject.SetActive(false);
