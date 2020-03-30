@@ -1,10 +1,6 @@
 using System;
 using System.IO;
-using System.Net;
 using System.Text.Json;
-using Libplanet;
-using Libplanet.Crypto;
-using Libplanet.Net;
 using Serilog;
 
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
@@ -69,24 +65,6 @@ namespace Launcher.Common
             {
                 return settings.KeyStorePath;
             }
-        }
-
-        public static IceServer LoadIceServer(string iceServerInfo)
-        {
-            var uri = new Uri(iceServerInfo);
-            string[] userInfo = uri.UserInfo.Split(':');
-
-            return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
-        }
-
-        public static BoundPeer LoadPeer(string peerInfo)
-        {
-            var tokens = peerInfo.Split(',');
-            var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
-            var host = tokens[1];
-            var port = int.Parse(tokens[2]);
-
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
         }
 
         private const string SettingFileName = "launcher.json";

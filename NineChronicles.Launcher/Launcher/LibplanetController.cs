@@ -226,6 +226,24 @@ namespace Launcher
             Process.Start(CurrentPlatform.OpenCommand, SettingFilePath);
         }
 
+        private static IceServer LoadIceServer(string iceServerInfo)
+        {
+            var uri = new Uri(iceServerInfo);
+            string[] userInfo = uri.UserInfo.Split(':');
+
+            return new IceServer(new[] { uri }, userInfo[0], userInfo[1]);
+        }
+
+        private static BoundPeer LoadPeer(string peerInfo)
+        {
+            var tokens = peerInfo.Split(',');
+            var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
+            var host = tokens[1];
+            var port = int.Parse(tokens[2]);
+
+            return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
+        }
+
         private void Restart()
         {
             // TODO: It should notice it will be shut down because of updates.
