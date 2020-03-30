@@ -66,21 +66,22 @@ Item {
 
     Window {
         id: passphraseWindow
-        title: "Input passphrase"
+        title: "Sign in"
         width: 320
-        height: 130
+        height: ctrl.keyStoreEmpty ? 210 : 170
         flags: Qt.FramelessWindowHint
 
         Column {
             padding: 10
             spacing: 5
             Label {
-                 text: "Login is needed to continue launcher"
+                 text: "Sign in to continue launcher."
             }
 
             Row {
+                visible: !ctrl.keyStoreEmpty
                 Label {
-                    text: "Select Address"
+                    text: "Choose key:"
                     font.pixelSize: 12
                     rightPadding: 10
                 }
@@ -88,7 +89,21 @@ Item {
                 ComboBox {
                     id: addressComboBox
                     width: 200
-                    model: Net.toListModel(ctrl.keyStore.addresses)
+                    model: Net.toListModel(ctrl.keyStoreOptions)
+                }
+            }
+
+            Row {
+                visible: ctrl.keyStoreEmpty
+                Label {
+                    text: "There are no key in the key store."
+                }
+            }
+
+            Row {
+                visible: ctrl.keyStoreEmpty
+                Label {
+                    text: "Create a new private key first:"
                 }
             }
 
@@ -96,19 +111,58 @@ Item {
                 TextField {
                     id: passphraseInput
                     echoMode: TextInput.Password
-                    placeholderText: "Input passphrase"
+                    placeholderText: ctrl.keyStoreEmpty ? "New passphrase" : "Your passphrase"
                 }
+            }
+
+            Row {
+                visible: ctrl.keyStoreEmpty
+                TextField {
+                    id: passphraseInputRetype
+                    echoMode: TextInput.Password
+                    placeholderText: "Retype passphrase"
+                }
+            }
+
+            Row {
                 Button {
-                    text: "login"
+                    text: ctrl.keyStoreEmpty ? "Create && &Sign in" : "&Sign in"
                     onClicked: {
-                        const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
+                        const showError = (message) => {
+                            if (!loginFailMessage.visible) {
+                                passphraseWindow.height += 30
+                                loginFailMessage.visible = true
+                            }
+                            loginFailMessage.text = message
+                        }
+
+                        let success = false;
+                        if (ctrl.keyStoreEmpty) {
+                            if (passphraseInput.text == '') {
+                                showError("New passphrase is empty.");
+                            }
+                            else if (passphraseInputRetype.text == '') {
+                                showError("Please retype passphrase.")
+                            }
+                            else if (passphraseInput.text != passphraseInputRetype.text) {
+                                showError("Two passphrases do not match.");
+                            }
+                            else {
+                                // TODO: passphrase strength 검사해야 함
+                                ctrl.createPrivateKey(passphraseInput.text);
+                                success = true;
+                            }
+                        }
+                        else {
+                            success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
+                            if (!success) {
+                                showError("Passphrase seems wrong, try again.")
+                            }
+                        }
+
                         if (success) {
                             passphraseWindow.hide()
                             ctrl.startSync();
-                        }
-                        else {
-                            passphraseWindow.height = 160
-                            loginFailMessage.visible = true
                         }
                     }
                 }
@@ -117,7 +171,6 @@ Item {
             Label {
                 id: loginFailMessage
                 visible: false
-                text: "Passphrase seems wrong, try again."
                 color: "red"
             }
         }

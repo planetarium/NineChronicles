@@ -17,13 +17,8 @@ namespace Nekoyume.Helper
     {
         private string privateKey;
 
-        private string keyStorePath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "planetarium",
-            "keystore"
-        );
-        // Linux/macOS: $HOME/.config/planetarium/keystore
-        // Windows: %USERPROFILE%\AppData\Roaming\planetarium\keystore
+        // null이면 Web3KeyStore.DefaultStore 따름
+        private string keyStorePath;
 
         private string host;
 
