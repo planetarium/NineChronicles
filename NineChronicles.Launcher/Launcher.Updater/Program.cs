@@ -6,8 +6,6 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.Tar;
 using Launcher.Common;
 using Launcher.Common.Storage;
 
@@ -74,14 +72,12 @@ namespace Launcher.Updater
             Console.Error.WriteLine("Start to extract game binary.");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                await using var tempFile = File.OpenRead(tempFilePath);
-                using var gz = new GZipInputStream(tempFile);
-                using var tar = TarArchive.CreateInputTarArchive(gz);
-                tar.ExtractContents(CurrentPlatform.CurrentWorkingDirectory);
+                var process = Process.Start("tar", $"-zxvf {tempFilePath} -C {CurrentPlatform.CurrentWorkingDirectory}");
+                process.WaitForExit();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                ZipFile.ExtractToDirectory(tempFilePath, CurrentPlatform.BinariesPath);
+                ZipFile.ExtractToDirectory(tempFilePath, CurrentPlatform.CurrentWorkingDirectory);
             }
             Console.Error.WriteLine("Finished to extract game binary.");
         }
