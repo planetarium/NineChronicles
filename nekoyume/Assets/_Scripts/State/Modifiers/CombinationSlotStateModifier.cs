@@ -7,16 +7,22 @@ namespace Nekoyume.State.Modifiers
     {
         private readonly long _unlockBlockIndex;
         private readonly AttachmentActionResult _result;
+        private readonly long _blockIndex;
         public bool IsEmpty => !(_result is null);
 
-        public CombinationSlotStateModifier(AttachmentActionResult resultModel)
+        public CombinationSlotStateModifier(
+            AttachmentActionResult resultModel,
+            long blockIndex,
+            long unlockBlockIndex
+        )
         {
-            _unlockBlockIndex = resultModel.itemUsable.RequiredBlockIndex;
+            _unlockBlockIndex = unlockBlockIndex;
             _result = resultModel;
+            _blockIndex = blockIndex;
         }
         public CombinationSlotState Modify(CombinationSlotState state)
         {
-            state.Update(_result, _unlockBlockIndex);
+            state.Update(_result, _blockIndex, _unlockBlockIndex);
             return state;
         }
     }

@@ -228,7 +228,7 @@ namespace Nekoyume.Action
 
             avatarState.UpdateQuestRewards(ctx);
 
-            slotState.Update(result, ctx.BlockIndex);
+            slotState.Update(result, ctx.BlockIndex, ctx.BlockIndex);
 
             sw.Stop();
             Log.Debug($"ItemEnhancement Update AvatarState: {sw.Elapsed}");

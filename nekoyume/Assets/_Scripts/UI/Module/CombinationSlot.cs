@@ -23,7 +23,6 @@ namespace Nekoyume.UI.Module
 
         private CombinationSlotState _data;
         private int _slotIndex;
-        private long _prevBlockIndex;
 
         private void Awake()
         {
@@ -63,15 +62,14 @@ namespace Nekoyume.UI.Module
                 progressBar.gameObject.SetActive(!canUse);
             }
 
-            _prevBlockIndex = blockIndex;
-            progressBar.maxValue = state.UnlockBlockIndex - _prevBlockIndex;
-            progressBar.value = 0;
+            progressBar.maxValue = state.requiredBlockIndex;
+            progressBar.value = blockIndex - state.StartBlockIndex;
             sliderText.text = $"({progressBar.value} / {progressBar.maxValue})";
         }
 
         private void UpdateProgressBar(long index)
         {
-            var value = Math.Min(index - _prevBlockIndex, progressBar.maxValue);
+            var value = Math.Min(index - _data?.StartBlockIndex ?? index, progressBar.maxValue);
             progressBar.value = value;
             sliderText.text = $"({progressBar.value} / {progressBar.maxValue})";
         }
