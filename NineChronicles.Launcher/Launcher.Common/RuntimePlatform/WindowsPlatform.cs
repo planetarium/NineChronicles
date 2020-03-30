@@ -19,9 +19,9 @@ namespace Launcher.Common.RuntimePlatform
         public string BinariesPath => Path.Combine(CurrentWorkingDirectory, "Binaries");
 
         public string ExecutableLauncherBinaryPath =>
-            Path.Combine(BinariesPath, LauncherFilename);
+            Path.Combine(CurrentWorkingDirectory, LauncherFilename);
 
         public string ExecutableGameBinaryPath =>
-            Path.Combine(BinariesPath, GameBinaryFilename);
+            Path.Combine(CurrentWorkingDirectory, GameBinaryFilename);
     }
 }

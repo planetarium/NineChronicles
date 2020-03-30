@@ -77,7 +77,7 @@ namespace Launcher.Updater
                 await using var tempFile = File.OpenRead(tempFilePath);
                 using var gz = new GZipInputStream(tempFile);
                 using var tar = TarArchive.CreateInputTarArchive(gz);
-                tar.ExtractContents(CurrentPlatform.BinariesPath);
+                tar.ExtractContents(CurrentPlatform.CurrentWorkingDirectory);
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
