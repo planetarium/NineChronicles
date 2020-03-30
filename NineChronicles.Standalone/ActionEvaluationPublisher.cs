@@ -62,7 +62,7 @@ namespace NineChronicles.Standalone
                     catch (SerializationException se)
                     {
                         // FIXME add logger as property
-                        Log.Error(se, $"Skip broadcasting since given action isn't serializable.");
+                        Log.Error(se, "Skip broadcasting since given action isn't serializable.");
                     }
                 },
                 stoppingToken
