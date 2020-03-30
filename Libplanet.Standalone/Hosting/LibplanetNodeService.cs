@@ -65,6 +65,7 @@ namespace Libplanet.Standalone.Hosting
                 BlockChain,
                 _privateKey,
                 _properties.AppProtocolVersion,
+                trustedAppProtocolVersionSigners: _properties.TrustedAppProtocolVersionSigners,
                 host: _properties.Host,
                 listenPort: _properties.Port,
                 iceServers: iceServers);
