@@ -1,4 +1,4 @@
-namespace Launcher
+namespace Launcher.Common
 {
     public class LauncherSettings
     {
@@ -20,7 +20,7 @@ namespace Launcher
 
         public string GenesisBlockPath { get; set; }
 
-        public string GameBinaryPath { get; set; }
+        public string[] TrustedAppProtocolVersionSigners { get; set; }
 
         /// <summary>
         /// A criteria for deployment flows, in other words,
