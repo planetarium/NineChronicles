@@ -199,13 +199,19 @@ namespace Nekoyume.Action
             }
 
             // 조합 결과 획득.
+            var requiredBlockIndex = ctx.BlockIndex + recipeRow.RequiredBlockIndex;
             for (var i = 0; i < foodCount; i++)
             {
                 var itemId = ctx.Random.GenerateRandomGuid();
-                var itemUsable = GetFood(consumableItemRow, itemId, ctx.BlockIndex);
+                var itemUsable = GetFood(consumableItemRow, itemId, requiredBlockIndex);
                 // 액션 결과
                 result.itemUsable = itemUsable;
-                var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
+                var mail = new CombinationMail(
+                    result,
+                    ctx.BlockIndex,
+                    ctx.Random.GenerateRandomGuid(),
+                    requiredBlockIndex
+                );
                 result.id = mail.id;
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(itemUsable);
@@ -219,7 +225,7 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
             states = states.SetState(AvatarAddress, avatarState.Serialize());
-            slotState.Update(result, ctx.BlockIndex, ctx.BlockIndex);
+            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
             sw.Stop();
             Log.Debug($"Combination Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;

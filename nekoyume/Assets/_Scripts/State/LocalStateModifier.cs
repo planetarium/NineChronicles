@@ -502,8 +502,13 @@ namespace Nekoyume.State
         )
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            tableSheets.ConsumableItemRecipeSheet.TryGetValue(
+                materialInfoList.Select(i => i.material.Data.Id),
+                out var recipeRow
+            );
+            var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;
             var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
-                i.Id == panel.resultItemView.Model.ItemBase.Value.Data.Id);
+                i.Id == recipeRow.ResultConsumableItemId);
             var consumable = ItemFactory.CreateItemUsable(consumableRow, Guid.Empty,
                 blockIndex);
             var row = tableSheets.ConsumableItemRecipeSheet.Values.First(i =>
@@ -523,7 +528,7 @@ namespace Nekoyume.State
                 recipeId = row.Id,
                 itemType = ItemType.Consumable,
             };
-            var modifier = new CombinationSlotStateModifier(result, blockIndex, blockIndex);
+            var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
             modifier.Modify(slotState);
             States.Instance.CombinationSlotStates[slotIndex] = slotState;

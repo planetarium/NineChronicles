@@ -82,5 +82,38 @@ namespace Nekoyume.UI.Module
                 }
             }
         }
+
+        // FIXME 현재는 결과창에서만 사용중. 조합쪽에서도 쓸 수 있게 고쳐야함
+        public void SetData(ConsumableItemRecipeSheet.Row row)
+        {
+            MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
+            costNcg = 0m;
+            costAp = 0;
+            var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            foreach (var materialId in row.MaterialItemIds)
+            {
+                var materialRow = materialSheet.Values.First(i => i.Id == materialId);
+                var baseMaterial = ItemFactory.CreateMaterial(materialRow);
+                MaterialList.Add((baseMaterial, 1));
+                costNcg += row.RequiredGold;
+                costAp += row.RequiredActionPoint;
+            }
+
+            IsCraftable = true;
+
+            for (var index = 0; index < materialViews.Length; index++)
+            {
+                var view = materialViews[index];
+                view.gameObject.SetActive(false);
+                if (index < MaterialList.Count)
+                {
+                    var (material, requiredCount) = MaterialList[index];
+                    var itemCount = requiredCount;
+                    var item = new CountableItem(material, itemCount);
+                    view.SetData(item, requiredCount);
+                    view.gameObject.SetActive(true);
+                }
+            }
+        }
     }
 }
