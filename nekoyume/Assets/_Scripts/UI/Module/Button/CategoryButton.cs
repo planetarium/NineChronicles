@@ -1,7 +1,9 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.AnimatedGraphics;
 using TMPro;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,33 +11,141 @@ namespace Nekoyume.UI.Module
 {
     public class CategoryButton : MonoBehaviour, IToggleable
     {
-        public Button button;
-        public Image effectImage;
-        public TextMeshProUGUI toggledOffText;
-        public TextMeshProUGUI toggledOnText;
-        public string localizationKey;
-        
+        [SerializeField]
+        private Button button = null;
+
+        [SerializeField]
+        private Image normalImage = null;
+
+        [SerializeField]
+        private Image selectedImage = null;
+
+        [SerializeField]
+        private TextMeshProUGUI normalText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI selectedText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI disabledText = null;
+
+        [SerializeField]
+        private string localizationKey = null;
+
         private IToggleListener _toggleListener;
 
-        protected void Awake()
+        public readonly Subject<CategoryButton> OnClick = new Subject<CategoryButton>();
+
+        private void Awake()
         {
-            IsToggleable = true;
+            Toggleable = true;
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                string localization = LocalizationManager.Localize(localizationKey);
-                toggledOffText.text = localization;
-                toggledOnText.text = localization;
+                var localization = LocalizationManager.Localize(localizationKey);
+                normalText.text = localization;
+                selectedText.text = localization;
             }
 
-            button.onClick.AddListener(SubscribeOnClick);
+            button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+
+            InitializeMessageCat();
         }
-        
+
+
+        #region ILockableWithMessageCat // 가칭. IMessageCatTarget.. 등.
+
+        // NOTE: 아래 로직들은 반복되니 인터페이스로 묶어서 로직을 한 곳으로 모을 수 있어 보인다.
+        private bool _isLock;
+        private int _lockCondition;
+        private int _lockVariable;
+        private string _messageForCat;
+        private MessageCat _cat;
+
+        private void InitializeMessageCat()
+        {
+            var go = gameObject;
+            go.AddComponent<ObservablePointerEnterTrigger>()
+                .OnPointerEnterAsObservable()
+                .Subscribe(x =>
+                {
+                    if (!_isLock)
+                    {
+                        return;
+                    }
+
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    _cat = Widget.Find<MessageCatManager>().Show(true, _messageForCat);
+                })
+                .AddTo(go);
+
+            go.AddComponent<ObservablePointerExitTrigger>()
+                .OnPointerExitAsObservable()
+                .Subscribe(x =>
+                {
+                    if (!_isLock || _cat is null)
+                    {
+                        return;
+                    }
+
+                    _cat.Hide();
+                    _cat = null;
+                })
+                .AddTo(go);
+        }
+
+        public void SetLockCondition(int condition)
+        {
+            _lockCondition = condition;
+            _messageForCat =
+                $"<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_lockCondition} First!";
+            UpdateLock();
+        }
+
+        public void SetLockVariable(int variable)
+        {
+            _lockVariable = variable;
+            UpdateLock();
+        }
+
+        private void UpdateLock()
+        {
+            if (_lockVariable < _lockCondition)
+            {
+                Lock();
+            }
+            else
+            {
+                Unlock();
+            }
+        }
+
+        private void Lock()
+        {
+            _isLock = true;
+            SetInteractable(false);
+        }
+
+        private void Unlock()
+        {
+            _isLock = false;
+            SetInteractable(true);
+        }
+
+        #endregion
+
+
         #region IToggleable
 
         public string Name => name;
-        public bool IsToggleable { get; set; }
-        public bool IsToggledOn => effectImage.enabled;
+
+        public bool Toggleable { get; set; }
+
+        public bool IsToggledOn => selectedImage.enabled;
 
         public void SetToggleListener(IToggleListener toggleListener)
         {
@@ -44,28 +154,58 @@ namespace Nekoyume.UI.Module
 
         public void SetToggledOn()
         {
-            button.interactable = false;
-            effectImage.enabled = true;
-            toggledOffText.enabled = false;
-            toggledOnText.enabled = true;
+            if (!Toggleable)
+            {
+                return;
+            }
+
+            selectedImage.enabled = true;
+            normalText.enabled = false;
+            selectedText.enabled = true;
+            disabledText.enabled = false;
         }
-        
+
         public void SetToggledOff()
         {
-            button.interactable = true;
-            effectImage.enabled = false;
-            toggledOffText.enabled = true;
-            toggledOnText.enabled = false;
+            if (!Toggleable)
+            {
+                return;
+            }
+
+            selectedImage.enabled = false;
+            normalText.enabled = true;
+            selectedText.enabled = false;
+            disabledText.enabled = false;
         }
 
         #endregion
 
-        private void SubscribeOnClick()
+        public void SetInteractable(bool interactable, bool ignoreImageColor = false)
         {
-            if (IsToggledOn)
-                return;
+            button.interactable = interactable;
 
+            if (ignoreImageColor)
+            {
+                return;
+            }
+
+            var imageColor = button.interactable
+                ? Color.white
+                : Color.gray;
+            normalImage.color = imageColor;
+            selectedImage.color = imageColor;
+        }
+
+        private void SubscribeOnClick(Unit unit)
+        {
             AudioController.PlayClick();
+            OnClick.OnNext(this);
+
+            if (IsToggledOn)
+            {
+                return;
+            }
+
             _toggleListener?.OnToggle(this);
         }
     }

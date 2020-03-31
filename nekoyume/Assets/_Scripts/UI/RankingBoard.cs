@@ -52,7 +52,8 @@ namespace Nekoyume.UI
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
 
-        private readonly ReactiveProperty<StateType> _state = new ReactiveProperty<StateType>(StateType.Arena);
+        private readonly ReactiveProperty<StateType> _state =
+            new ReactiveProperty<StateType>(StateType.Arena);
 
         private readonly List<IDisposable> _disposablesAtClose = new List<IDisposable>();
 
@@ -62,16 +63,15 @@ namespace Nekoyume.UI
 
             _state.Subscribe(SubscribeState).AddTo(gameObject);
 
-            arenaButton.button.OnClickAsObservable()
-            .Subscribe(_ =>
-            {
-                _state.Value = StateType.Arena;
+            arenaButton.OnClick
+                .Subscribe(_ =>
+                {
+                    _state.Value = StateType.Arena;
                     // SubScribeState대신 밖에서 처리하는 이유는 랭킹보드 진입시에도 상태가 상태가 바뀌기 때문
                     ShowSpeech("SPEECH_RANKING_BOARD_ARENA_");
-            })
-            .AddTo(gameObject);
+                }).AddTo(gameObject);
 
-            filteredButton.button.OnClickAsObservable()
+            filteredButton.OnClick
                 .Subscribe(_ =>
                 {
                     _state.Value = StateType.Filtered;
@@ -80,7 +80,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            overallButton.button.OnClickAsObservable()
+            overallButton.OnClick
                 .Subscribe(_ =>
                 {
                     _state.Value = StateType.Overall;
@@ -89,7 +89,7 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            arenaActivationButton.button.OnClickAsObservable()
+            arenaActivationButton.OnSubmitClick
                 .Subscribe(_ =>
                 {
                     // todo: 아레나 참가하기.
@@ -98,7 +98,8 @@ namespace Nekoyume.UI
                     //     -GameConfig.ArenaActivationCostNCG);
                     // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 골드를 더하지 못함.
                     // LocalStateModifier.ModifyWeeklyArenaGold(GameConfig.ArenaActivationCostNCG);
-                    LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
+                    LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets
+                        .CharacterSheet);
                 }).AddTo(gameObject);
 
             CloseWidget = null;
@@ -215,13 +216,15 @@ namespace Nekoyume.UI
             var infos = weeklyArenaState.GetArenaInfos(avatarAddress, 0, 0);
             try
             {
-                var (rank, arenaInfo) = infos.First(tuple => tuple.arenaInfo.AvatarAddress.Equals(avatarAddress));
+                var (rank, arenaInfo) = infos.First(tuple =>
+                    tuple.arenaInfo.AvatarAddress.Equals(avatarAddress));
                 var record = arenaInfo.ArenaRecord;
                 if (arenaInfo.Active)
                 {
                     arenaRecordContainer.SetActive(true);
                     arenaRecordText.text = string.Format(
-                        LocalizationManager.Localize("UI_WIN_DRAW_LOSE_FORMAT"), record.Win, record.Draw, record.Lose);
+                        LocalizationManager.Localize("UI_WIN_DRAW_LOSE_FORMAT"), record.Win,
+                        record.Draw, record.Lose);
                     currentAvatarCellView.Show(rank, arenaInfo, false, true);
                     currentAvatarCellView.onClickInfo = OnClickAvatarInfo;
                     arenaActivationButton.Hide();
@@ -254,8 +257,10 @@ namespace Nekoyume.UI
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
                 var currentAvatarArenaInfo = weeklyArenaState.GetArenaInfo(avatarAddress);
 
-                var canChallenge = (currentAvatarArenaInfo is null) ?
-                                    false : currentAvatarArenaInfo.Active && currentAvatarArenaInfo.DailyChallengeCount > 0;
+                var canChallenge = (currentAvatarArenaInfo is null)
+                    ? false
+                    : currentAvatarArenaInfo.Active &&
+                      currentAvatarArenaInfo.DailyChallengeCount > 0;
 
                 for (var index = 0; index < _arenaAvatarStates.Count; index++)
                 {
@@ -328,7 +333,7 @@ namespace Nekoyume.UI
         private void SetAvatars(DateTimeOffset? dt)
         {
             _avatarRankingStates = States.Instance.RankingState?.GetAvatars(dt) ??
-                new Nekoyume.Model.State.RankingInfo[0];
+                                   new Nekoyume.Model.State.RankingInfo[0];
         }
 
         private void SetArenaInfos()
@@ -344,7 +349,7 @@ namespace Nekoyume.UI
             var avatarAddress = currentAvatarState.address;
 
             _arenaAvatarStates = States.Instance.WeeklyArenaState?.GetArenaInfos(avatarAddress)
-                ?? new List<(int rank, ArenaInfo arenaInfo)>();
+                                 ?? new List<(int rank, ArenaInfo arenaInfo)>();
         }
 
         private void ClearBoard()
@@ -361,7 +366,8 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.Invoke(true);
         }
 
-        private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
+        private void ShowSpeech(string key,
+            CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
             if (_npc)
             {
