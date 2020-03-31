@@ -157,6 +157,7 @@ namespace Nekoyume.Action
             {
                 materials = Materials,
                 itemType = ItemType.Consumable,
+
             };
 
             var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
@@ -164,11 +165,17 @@ namespace Nekoyume.Action
             var consumableItemSheet = tableSheets.ConsumableItemSheet;
             var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
             var foodCount = materialRows.Min(pair => pair.Value);
-            var costAP = foodCount * GameConfig.CombineConsumableCostAP;
+
+            if (!consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow))
+            {
+                return states;
+            }
+
             sw.Stop();
             Log.Debug($"Combination Get Food Material rows: {sw.Elapsed}");
             sw.Restart();
 
+            var costAP = recipeRow.RequiredActionPoint * foodCount;
             if (avatarState.actionPoint < costAP)
             {
                 // ap 부족 에러.
@@ -179,14 +186,10 @@ namespace Nekoyume.Action
             avatarState.actionPoint -= costAP;
             result.actionPoint = costAP;
 
-            // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
-            var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
-                ? GameConfig.CombinationDefaultFoodId
-                : recipeRow.ResultConsumableItemId;
+            var resultConsumableItemId = recipeRow.ResultConsumableItemId;
             sw.Stop();
             Log.Debug($"Combination Get Food id: {sw.Elapsed}");
             sw.Restart();
-            // FIXME 장비조합처럼 레시피 아이디만 받아다 만드는 방식으로 변경해야함. 현재 방식이면 맛없는 요리인걸 결과슬롯에서 미리 알 수 있다.
             result.recipeId = recipeRow.Id;
 
             if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
@@ -196,13 +199,19 @@ namespace Nekoyume.Action
             }
 
             // 조합 결과 획득.
+            var requiredBlockIndex = ctx.BlockIndex + recipeRow.RequiredBlockIndex;
             for (var i = 0; i < foodCount; i++)
             {
                 var itemId = ctx.Random.GenerateRandomGuid();
-                var itemUsable = GetFood(consumableItemRow, itemId, ctx.BlockIndex);
+                var itemUsable = GetFood(consumableItemRow, itemId, requiredBlockIndex);
                 // 액션 결과
                 result.itemUsable = itemUsable;
-                var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
+                var mail = new CombinationMail(
+                    result,
+                    ctx.BlockIndex,
+                    ctx.Random.GenerateRandomGuid(),
+                    requiredBlockIndex
+                );
                 result.id = mail.id;
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(itemUsable);
@@ -216,7 +225,7 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
             states = states.SetState(AvatarAddress, avatarState.Serialize());
-            slotState.Update(result, ctx.BlockIndex, ctx.BlockIndex);
+            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
             sw.Stop();
             Log.Debug($"Combination Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;

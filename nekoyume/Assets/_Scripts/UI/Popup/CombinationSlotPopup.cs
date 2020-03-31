@@ -4,6 +4,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -63,23 +64,40 @@ namespace Nekoyume.UI
             var subRecipeEnabled = result.subRecipeId.HasValue;
             materialPanel.gameObject.SetActive(false);
             optionView.gameObject.SetActive(false);
-            var recipeRow =
-                Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
-                    r.Id == result.recipeId);
-            if (subRecipeEnabled)
+            switch (result.itemType)
             {
-                optionView.Show(
-                    result.itemUsable.GetLocalizedName(),
-                    (int) result.subRecipeId,
-                    new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount),
-                    false
-                );
+                case ItemType.Equipment:
+                {
+                    var recipeRow =
+                        Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
+                            r.Id == result.recipeId);
+                    if (subRecipeEnabled)
+                    {
+                        optionView.Show(
+                            result.itemUsable.GetLocalizedName(),
+                            (int) result.subRecipeId,
+                            new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount),
+                            false
+                        );
+                    }
+                    else
+                    {
+                        materialPanel.SetData(recipeRow, null, false);
+                        materialPanel.gameObject.SetActive(true);
+                    }
+                    break;
+                }
+                case ItemType.Consumable:
+                {
+                    var recipeRow =
+                        Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First(r =>
+                            r.Id == result.recipeId);
+                    materialPanel.SetData(recipeRow);
+                    materialPanel.gameObject.SetActive(true);
+                    break;
+                }
             }
-            else
-            {
-                materialPanel.SetData(recipeRow, null, false);
-                materialPanel.gameObject.SetActive(true);
-            }
+
             itemInformation.statsArea.root.gameObject.SetActive(false);
             itemInformation.skillsArea.root.gameObject.SetActive(false);
             itemNameText.text = result.itemUsable.GetLocalizedName();
