@@ -9,7 +9,9 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -175,6 +177,9 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             blur.gameObject.SetActive(false);
+
+            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(ResetSelectedIndex)
+                .AddTo(gameObject);
         }
 
         public override void Show()
@@ -208,10 +213,6 @@ namespace Nekoyume.UI
 
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
-            if (selectedIndex == -1)
-            {
-                ResetSelectedIndex();
-            }
         }
 
         public void Show(int slotIndex)
@@ -222,7 +223,6 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            selectedIndex = -1;
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             combineEquipment.RemoveMaterialsAll();
@@ -625,7 +625,6 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
                 .Subscribe(_ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
-            ResetSelectedIndex();
         }
 
         private void CreateItemEnhancementAction(Guid baseItemGuid,
@@ -642,7 +641,6 @@ namespace Nekoyume.UI
                 .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
                 .Subscribe(_ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
-            ResetSelectedIndex();
         }
 
         private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId,
@@ -653,7 +651,6 @@ namespace Nekoyume.UI
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
-            ResetSelectedIndex();
         }
 
         #endregion
@@ -672,9 +669,9 @@ namespace Nekoyume.UI
             StartCoroutine(speechBubble.CoShowText());
         }
 
-        private void ResetSelectedIndex()
+        private void ResetSelectedIndex(Dictionary<int, CombinationSlotState> states)
         {
-            var pair = States.Instance.CombinationSlotStates
+            var pair = states
                 .FirstOrDefault(i =>
                     i.Value.Validate(
                         States.Instance.CurrentAvatarState,

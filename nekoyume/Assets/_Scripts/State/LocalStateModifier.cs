@@ -491,7 +491,7 @@ namespace Nekoyume.State
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
             modifier.Modify(slotState);
-            States.Instance.CombinationSlotStates[slotIndex] = slotState;
+            States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
         public static void ModifyCombinationSlotConsumable(
@@ -531,7 +531,7 @@ namespace Nekoyume.State
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
             modifier.Modify(slotState);
-            States.Instance.CombinationSlotStates[slotIndex] = slotState;
+            States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
         public static void ModifyCombinationSlotItemEnhancement(
@@ -553,7 +553,7 @@ namespace Nekoyume.State
             var modifier = new CombinationSlotStateModifier(result, blockIndex, blockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
             modifier.Modify(slotState);
-            States.Instance.CombinationSlotStates[slotIndex] = slotState;
+            States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
         public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
@@ -561,7 +561,7 @@ namespace Nekoyume.State
             var prevState = States.Instance.CombinationSlotStates[slotIndex];
             var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
             var slotState = modifier.Modify(prevState);
-            States.Instance.CombinationSlotStates[slotIndex] = slotState;
+            States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
         /// <summary>

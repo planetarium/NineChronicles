@@ -227,11 +227,11 @@ namespace Nekoyume.BlockChain
                 eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
             LocalStateModifier.ModifyAgentGold(agentAddress, agentState.modifiedGold);
             LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, slot.Result.itemUsable.ItemId);
-            States.Instance.CombinationSlotStates[eval.Action.slotIndex] = slot;
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
@@ -250,7 +250,6 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-            States.Instance.CombinationSlotStates[eval.Action.SlotIndex] = slot;
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -263,6 +262,7 @@ namespace Nekoyume.BlockChain
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
@@ -289,6 +289,7 @@ namespace Nekoyume.BlockChain
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot, eval.Action.slotIndex);
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
