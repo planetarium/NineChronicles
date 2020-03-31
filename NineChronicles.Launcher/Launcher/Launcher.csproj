@@ -7,13 +7,13 @@
         <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
-        <PublishDir>out\$(RuntimeIdentifier)</PublishDir>
+        <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
     </PropertyGroup>
 
     <ItemGroup Label="Resources">
         <Content Include="qml/**/*" CopyToOutputDirectory="Always" />
         <Content Include="qt-runtime/**/*" CopyToOutputDirectory="Always" />
-        <Content Include="resources/**/*" CopyToOutputDirectory="Always" />
+        <Content Include="../resources/**/*" CopyToOutputDirectory="Always" />
     </ItemGroup>
 
     <ItemGroup Label="Package References">
@@ -22,16 +22,16 @@
         <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
         <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
-        <PackageReference Include="SharpZipLib" Version="1.2.0" />
     </ItemGroup>
-    
+
     <ItemGroup Label="Package References (Publish Helper)">
         <PackageReference Include="Dotnet.Bundle" Version="0.9.12" Condition="'$(RuntimeIdentifier)' == 'osx-x64'" />
         <PackageReference Include="NSubsys" Version="1.0.0" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
     </ItemGroup>
 
     <ItemGroup Label="Project References">
-        <ProjectReference Include="..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
+        <ProjectReference Include="..\..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
+        <ProjectReference Include="..\Launcher.Common\Launcher.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup Label="Variables">

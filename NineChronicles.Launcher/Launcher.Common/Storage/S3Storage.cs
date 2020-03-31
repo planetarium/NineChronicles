@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using static Launcher.RuntimePlatform.RuntimePlatform;
+using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
-namespace Launcher.Storage
+namespace Launcher.Common.Storage
 {
     // TODO: make IStorage.
     public class S3Storage

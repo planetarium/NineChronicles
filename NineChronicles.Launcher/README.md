@@ -49,3 +49,44 @@ There is [*launcher.json*][launcher-json] like below.
 
 
 [launcher-json]: ./resources/launcher.json
+
+
+## 배포 디렉토리 구조
+
+### MacOS
+
+```text
+# 배포 시
+/
+├── Launcher.Updater
+└── launcher.json
+
+# Launcher.Updater가 구성하는 디렉터리 구조
+/
+├── Launcher.Updater
+└── launcher.json
+├── Launcher.app/
+└── Nine Chronicles.app/
+```
+
+
+### Windows
+
+```text
+# 배포 시
+/
+├── Launcher.Updater.exe
+└── launcher.json
+
+# Launcher.Updater가 구성하는 디렉터리 구조
+/
+├── Launcher.Updater.exe
+└── launcher.json
+├── Launcher.exe
+├── Nine Chronicles.exe
+├── Nine Chronicles_Data/
+├──── ...
+├── MonoBleedingEdge/
+├──── ...
+└── ...
+```

@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace Launcher.RuntimePlatform
+namespace Launcher.Common.RuntimePlatform
 {
     public static class RuntimePlatform
     {
