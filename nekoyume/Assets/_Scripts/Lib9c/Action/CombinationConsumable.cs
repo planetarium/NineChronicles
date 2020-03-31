@@ -157,6 +157,7 @@ namespace Nekoyume.Action
             {
                 materials = Materials,
                 itemType = ItemType.Consumable,
+
             };
 
             var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
@@ -164,11 +165,17 @@ namespace Nekoyume.Action
             var consumableItemSheet = tableSheets.ConsumableItemSheet;
             var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
             var foodCount = materialRows.Min(pair => pair.Value);
-            var costAP = foodCount * GameConfig.CombineConsumableCostAP;
+
+            if (!consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow))
+            {
+                return states;
+            }
+
             sw.Stop();
             Log.Debug($"Combination Get Food Material rows: {sw.Elapsed}");
             sw.Restart();
 
+            var costAP = recipeRow.RequiredActionPoint * foodCount;
             if (avatarState.actionPoint < costAP)
             {
                 // ap 부족 에러.
@@ -178,11 +185,6 @@ namespace Nekoyume.Action
             // ap 차감.
             avatarState.actionPoint -= costAP;
             result.actionPoint = costAP;
-
-            if (!consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow))
-            {
-                return states;
-            }
 
             var resultConsumableItemId = recipeRow.ResultConsumableItemId;
             sw.Stop();
