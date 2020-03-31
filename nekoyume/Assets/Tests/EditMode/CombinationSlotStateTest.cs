@@ -70,9 +70,10 @@ namespace Tests.EditMode
             var address = new PrivateKey().PublicKey.ToAddress();
             var state = new CombinationSlotState(address, 1);
             var result = new CombinationConsumable.ResultModel();
-            state.Update(result, 10);
+            state.Update(result,1, 10);
             Assert.AreEqual(result,state.Result);
             Assert.AreEqual(10, state.UnlockBlockIndex);
+            Assert.AreEqual(1, state.StartBlockIndex);
         }
 
         [Test]
@@ -89,17 +90,19 @@ namespace Tests.EditMode
                 materials = new Dictionary<Nekoyume.Model.Item.Material, int>(),
                 itemUsable = item
             };
-            state.Update(result, 10);
+            state.Update(result, 1,10);
             var serialized = (Dictionary) state.Serialize();
             Assert.IsTrue(serialized.ContainsKey((Text) "address"));
             Assert.IsTrue(serialized.ContainsKey((Text) "unlockBlockIndex"));
             Assert.IsTrue(serialized.ContainsKey((Text) "unlockStage"));
             Assert.IsTrue(serialized.ContainsKey((Text) "result"));
+            Assert.IsTrue(serialized.ContainsKey((Text) "startBlockIndex"));
             var deserialize = new CombinationSlotState(serialized);
             Assert.AreEqual(state.UnlockStage, deserialize.UnlockStage);
             Assert.AreEqual(state.UnlockBlockIndex, deserialize.UnlockBlockIndex);
             Assert.AreEqual(state.address, deserialize.address);
             Assert.AreEqual(state.Result.itemUsable, deserialize.Result.itemUsable);
+            Assert.AreEqual(state.StartBlockIndex, deserialize.StartBlockIndex);
         }
     }
 }

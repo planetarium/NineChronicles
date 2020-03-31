@@ -311,7 +311,7 @@ namespace Nekoyume.BlockChain
             var port = options.Port;
             var consoleSink = options.ConsoleSink;
             var storagePath = options.StoragePath ?? DefaultStoragePath;
-            var storageType = options.storageType;
+            var storageType = options.StorageType;
             var development = options.Development;
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
@@ -417,7 +417,7 @@ namespace Nekoyume.BlockChain
 
         private static string GetHost(CommandLineOptions options)
         {
-            return string.IsNullOrEmpty(options.host) ? null : options.Host;
+            return string.IsNullOrEmpty(options.Host) ? null : options.Host;
         }
 
         private static BoundPeer LoadPeer(string peerInfo)
@@ -878,25 +878,25 @@ namespace Nekoyume.BlockChain
             var hasOwnTx = false;
             while (true)
             {
-                var txs = store.IterateStagedTransactionIds()
-                    .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
-                    .Where(tx => tx.Signer.Equals(Address))
-                    .ToList();
+                // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
+                Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
+                    Task.Run(
+                        () => store.IterateStagedTransactionIds()
+                            .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
+                            .Where(tx => tx.Signer.Equals(Address))
+                            .ToList()
+                    );
 
-                if (hasOwnTx)
+                yield return new WaitUntil(() => getOwnTxs.IsCompleted);
+
+                if (!getOwnTxs.IsFaulted)
                 {
-                    if (txs.Count == 0)
+                    List<Transaction<PolymorphicAction<ActionBase>>> txs = getOwnTxs.Result;
+                    var next = txs.Any();
+                    if (next != hasOwnTx)
                     {
-                        hasOwnTx = false;
-                        OnHasOwnTx?.Invoke(false);
-                    }
-                }
-                else
-                {
-                    if (txs.Count > 0)
-                    {
-                        hasOwnTx = true;
-                        OnHasOwnTx?.Invoke(true);
+                        hasOwnTx = next;
+                        OnHasOwnTx?.Invoke(hasOwnTx);
                     }
                 }
 

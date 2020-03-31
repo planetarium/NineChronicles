@@ -25,7 +25,11 @@ namespace Nekoyume.UI.Module
             materialText.text = LocalizationManager.Localize("UI_MATERIALS");
         }
 
-        public virtual void SetData(EquipmentItemRecipeSheet.Row row, int? subRecipeId)
+        public virtual void SetData(
+            EquipmentItemRecipeSheet.Row row,
+            int? subRecipeId,
+            bool checkInventory = true
+        )
         {
             MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
             costNcg = 0m;
@@ -53,7 +57,7 @@ namespace Nekoyume.UI.Module
             }
 
             var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
-            IsCraftable = true && Widget.Find<Combination>().selectedIndex >= 0;
+            IsCraftable = Widget.Find<Combination>().selectedIndex >= 0;
 
             for (var index = 0; index < materialViews.Length; index++)
             {
@@ -62,8 +66,14 @@ namespace Nekoyume.UI.Module
                 if (index < MaterialList.Count)
                 {
                     var (material, requiredCount) = MaterialList[index];
-                    inventory.TryGetFungibleItem(material, out var inventoryItem);
-                    var item = new CountableItem(material, inventoryItem?.count ?? 0);
+                    var itemCount = requiredCount;
+                    if (checkInventory)
+                    {
+                        itemCount = inventory.TryGetFungibleItem(material, out var inventoryItem)
+                            ? inventoryItem.count
+                            : 0;
+                    }
+                    var item = new CountableItem(material, itemCount);
                     view.SetData(item, requiredCount);
                     view.gameObject.SetActive(true);
 

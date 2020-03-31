@@ -467,11 +467,12 @@ namespace Nekoyume.State
             int? subRecipeId
         )
         {
-            var requiredBlockIndex = row.RequiredBlockIndex + Game.Game.instance.Agent.BlockIndex;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
             var equipRow =
                 tableSheets.EquipmentItemSheet.Values.First(i => i.Id == row.ResultEquipmentId);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.Empty, requiredBlockIndex);
-            var materials = new Dictionary<Model.Item.Material, int>();
+            var materials = new Dictionary<Material, int>();
             foreach (var (material, count) in panel.materialPanel.MaterialList)
             {
                 materials[material] = count;
@@ -487,7 +488,7 @@ namespace Nekoyume.State
                 subRecipeId = subRecipeId,
                 itemType = ItemType.Equipment,
             };
-            var modifier = new CombinationSlotStateModifier(result);
+            var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
             modifier.Modify(slotState);
             States.Instance.CombinationSlotStates[slotIndex] = slotState;
@@ -500,11 +501,11 @@ namespace Nekoyume.State
             int slotIndex
         )
         {
-            var requiredBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
                 i.Id == panel.resultItemView.Model.ItemBase.Value.Data.Id);
             var consumable = ItemFactory.CreateItemUsable(consumableRow, Guid.Empty,
-                requiredBlockIndex);
+                blockIndex);
             var row = tableSheets.ConsumableItemRecipeSheet.Values.First(i =>
                 i.ResultConsumableItemId == consumableRow.Id);
             var materials = new Dictionary<Model.Item.Material, int>();
@@ -522,7 +523,7 @@ namespace Nekoyume.State
                 recipeId = row.Id,
                 itemType = ItemType.Consumable,
             };
-            var modifier = new CombinationSlotStateModifier(result);
+            var modifier = new CombinationSlotStateModifier(result, blockIndex, blockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
             modifier.Modify(slotState);
             States.Instance.CombinationSlotStates[slotIndex] = slotState;
@@ -534,9 +535,9 @@ namespace Nekoyume.State
             int slotIndex
         )
         {
-            var requiredBlockIndex = Game.Game.instance.Agent.BlockIndex;
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var equipment = (Equipment) panel.baseMaterial.Model.ItemBase.Value;
-            equipment.Update(requiredBlockIndex);
+            equipment.Update(blockIndex);
             var result = new ItemEnhancement.ResultModel
             {
                 actionPoint = panel.CostAP,
@@ -544,7 +545,7 @@ namespace Nekoyume.State
                 materialItemIdList = guidList,
                 itemUsable = equipment,
             };
-            var modifier = new CombinationSlotStateModifier(result);
+            var modifier = new CombinationSlotStateModifier(result, blockIndex, blockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
             modifier.Modify(slotState);
             States.Instance.CombinationSlotStates[slotIndex] = slotState;

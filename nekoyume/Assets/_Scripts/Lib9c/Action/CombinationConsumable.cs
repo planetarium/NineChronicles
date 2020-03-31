@@ -216,7 +216,7 @@ namespace Nekoyume.Action
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
             states = states.SetState(AvatarAddress, avatarState.Serialize());
-            slotState.Update(result, ctx.BlockIndex);
+            slotState.Update(result, ctx.BlockIndex, ctx.BlockIndex);
             sw.Stop();
             Log.Debug($"Combination Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;

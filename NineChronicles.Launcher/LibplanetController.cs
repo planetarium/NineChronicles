@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -51,7 +52,23 @@ namespace Launcher
 
         private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
 
-        public KeyStore KeyStore => new KeyStore(LoadKeyStorePath(LoadSettings()));
+        public IKeyStore KeyStore
+        {
+            get
+            {
+                LauncherSettings settings = LoadSettings();
+                return string.IsNullOrEmpty(settings.KeyStorePath)
+                    ? Web3KeyStore.DefaultKeyStore
+                    : new Web3KeyStore(settings.KeyStorePath);
+            }
+        }
+
+        [NotifySignal]
+        public bool KeyStoreEmpty => !KeyStore.ListIds().Any();
+
+        [NotifySignal]
+        public List<string> KeyStoreOptions =>
+            KeyStore.List().Select(pair => pair.Item2.Address.ToString()).ToList();
 
         public LibplanetController()
         {
@@ -111,7 +128,9 @@ namespace Launcher
         public bool Login(string addressHex, string passphrase)
         {
             var address = new Address(addressHex);
-            var protectedPrivateKey = KeyStore.ProtectedPrivateKeys[address];
+            ProtectedPrivateKey protectedPrivateKey = KeyStore.List()
+                .Select(pair => pair.Item2)
+                .First(ppk => ppk.Address.Equals(address));
             try
             {
                 PrivateKey = protectedPrivateKey.Unprotect(passphrase);
@@ -123,6 +142,14 @@ namespace Launcher
             {
                 return false;
             }
+        }
+
+        public void CreatePrivateKey(string passphrase)
+        {
+            PrivateKey = new PrivateKey();
+            ProtectedPrivateKey ppk = ProtectedPrivateKey.Protect(PrivateKey, passphrase);
+            KeyStore.Add(ppk);
+            this.ActivateProperty(ctrl => ctrl.PrivateKey);
         }
 
         private async Task UpdateCheckTask(LauncherSettings settings, CancellationToken cancellationToken)
@@ -277,18 +304,6 @@ namespace Launcher
             else
             {
                 return settings.GameBinaryPath;
-            }
-        }
-
-        private static string LoadKeyStorePath(LauncherSettings settings)
-        {
-            if (string.IsNullOrEmpty(settings.KeyStorePath))
-            {
-                return DefaultKeyStorePath;
-            }
-            else
-            {
-                return settings.KeyStorePath;
             }
         }
 
