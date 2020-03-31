@@ -16,7 +16,6 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using Material = Nekoyume.Model.Item.Material;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 
@@ -38,9 +37,9 @@ namespace Nekoyume.UI
         public struct SelectionArea
         {
             public GameObject root;
-            public Button combineEquipmentButton;
-            public Button combineConsumableButton;
-            public Button enhanceEquipmentButton;
+            public CategoryButton combineEquipmentButton;
+            public CategoryButton combineConsumableButton;
+            public CategoryButton enhanceEquipmentButton;
         }
 
         public readonly ReactiveProperty<StateType> State =
@@ -91,11 +90,35 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            selectionArea.combineEquipmentButton.OnClick
+                .Subscribe(_ => State.SetValueAndForceNotify(StateType.CombineEquipment))
+                .AddTo(gameObject);
+            selectionArea.combineConsumableButton.OnClick
+                .Subscribe(_ => State.SetValueAndForceNotify(StateType.CombineConsumable))
+                .AddTo(gameObject);
+            selectionArea.enhanceEquipmentButton.OnClick
+                .Subscribe(_ => State.SetValueAndForceNotify(StateType.EnhanceEquipment))
+                .AddTo(gameObject);
+
+            selectionArea.combineEquipmentButton.SetLockCondition(GameConfig
+                .RequireClearedStageLevel.CombinationEquipmentAction);
+            selectionArea.combineConsumableButton.SetLockCondition(GameConfig
+                .RequireClearedStageLevel.CombinationConsumableAction);
+            selectionArea.enhanceEquipmentButton.SetLockCondition(GameConfig
+                .RequireClearedStageLevel.ItemEnhancementAction);
+
             _toggleGroup = new ToggleGroup();
             _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
             _toggleGroup.RegisterToggleable(combineEquipmentCategoryButton);
             _toggleGroup.RegisterToggleable(combineConsumableCategoryButton);
             _toggleGroup.RegisterToggleable(enhanceEquipmentCategoryButton);
+
+            combineEquipmentCategoryButton.SetLockCondition(GameConfig.RequireClearedStageLevel
+                .CombinationEquipmentAction);
+            combineConsumableCategoryButton.SetLockCondition(GameConfig.RequireClearedStageLevel
+                .CombinationConsumableAction);
+            enhanceEquipmentCategoryButton.SetLockCondition(GameConfig.RequireClearedStageLevel
+                .ItemEnhancementAction);
 
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
@@ -272,30 +295,24 @@ namespace Nekoyume.UI
             var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
             if (!worldInformation.TryGetLastClearedStageId(out var stageId))
             {
-                selectionArea.combineEquipmentButton.interactable = false;
-                selectionArea.combineConsumableButton.interactable = false;
-                selectionArea.enhanceEquipmentButton.interactable = false;
+                selectionArea.combineEquipmentButton.SetLockVariable(0);
+                selectionArea.combineConsumableButton.SetLockVariable(0);
+                selectionArea.enhanceEquipmentButton.SetLockVariable(0);
 
-                combineEquipmentCategoryButton.SetInteractable(false);
-                combineConsumableCategoryButton.SetInteractable(false);
-                enhanceEquipmentCategoryButton.SetInteractable(false);
+                combineEquipmentCategoryButton.SetLockVariable(0);
+                combineConsumableCategoryButton.SetLockVariable(0);
+                enhanceEquipmentCategoryButton.SetLockVariable(0);
 
                 return;
             }
 
-            selectionArea.combineEquipmentButton.interactable =
-                stageId >= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
-            selectionArea.combineConsumableButton.interactable =
-                stageId >= GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
-            selectionArea.enhanceEquipmentButton.interactable =
-                stageId >= GameConfig.RequireClearedStageLevel.ItemEnhancementAction;
+            selectionArea.combineEquipmentButton.SetLockVariable(stageId);
+            selectionArea.combineConsumableButton.SetLockVariable(stageId);
+            selectionArea.enhanceEquipmentButton.SetLockVariable(stageId);
 
-            combineEquipmentCategoryButton.SetInteractable(
-                stageId >= GameConfig.RequireClearedStageLevel.CombinationEquipmentAction);
-            combineConsumableCategoryButton.SetInteractable(
-                stageId >= GameConfig.RequireClearedStageLevel.CombinationConsumableAction);
-            enhanceEquipmentCategoryButton.SetInteractable(
-                stageId >= GameConfig.RequireClearedStageLevel.ItemEnhancementAction);
+            combineEquipmentCategoryButton.SetLockVariable(stageId);
+            combineConsumableCategoryButton.SetLockVariable(stageId);
+            enhanceEquipmentCategoryButton.SetLockVariable(stageId);
         }
 
         private void SubscribeState(StateType value)

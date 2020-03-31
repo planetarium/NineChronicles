@@ -1,7 +1,9 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.AnimatedGraphics;
 using TMPro;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -30,12 +32,11 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private string localizationKey = null;
 
-
         private IToggleListener _toggleListener;
 
         public readonly Subject<CategoryButton> OnClick = new Subject<CategoryButton>();
 
-        protected void Awake()
+        private void Awake()
         {
             Toggleable = true;
 
@@ -47,7 +48,96 @@ namespace Nekoyume.UI.Module
             }
 
             button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+
+            InitializeMessageCat();
         }
+
+
+        #region ILockableWithMessageCat // 가칭. IMessageCatTarget.. 등.
+
+        // NOTE: 아래 로직들은 반복되니 인터페이스로 묶어서 로직을 한 곳으로 모을 수 있어 보인다.
+        private bool _isLock;
+        private int _lockCondition;
+        private int _lockVariable;
+        private string _messageForCat;
+        private MessageCat _cat;
+
+        private void InitializeMessageCat()
+        {
+            var go = gameObject;
+            go.AddComponent<ObservablePointerEnterTrigger>()
+                .OnPointerEnterAsObservable()
+                .Subscribe(x =>
+                {
+                    if (!_isLock)
+                    {
+                        return;
+                    }
+
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    _cat = Widget.Find<MessageCatManager>().Show(true, _messageForCat);
+                })
+                .AddTo(go);
+
+            go.AddComponent<ObservablePointerExitTrigger>()
+                .OnPointerExitAsObservable()
+                .Subscribe(x =>
+                {
+                    if (!_isLock || _cat is null)
+                    {
+                        return;
+                    }
+
+                    _cat.Hide();
+                    _cat = null;
+                })
+                .AddTo(go);
+        }
+
+        public void SetLockCondition(int condition)
+        {
+            _lockCondition = condition;
+            _messageForCat =
+                $"<sprite name=\"UI_icon_lock_01\"> LV.{_lockCondition}";
+            UpdateLock();
+        }
+
+        public void SetLockVariable(int variable)
+        {
+            _lockVariable = variable;
+            UpdateLock();
+        }
+
+        private void UpdateLock()
+        {
+            if (_lockVariable < _lockCondition)
+            {
+                Lock();
+            }
+            else
+            {
+                Unlock();
+            }
+        }
+
+        private void Lock()
+        {
+            _isLock = true;
+            SetInteractable(false);
+        }
+
+        private void Unlock()
+        {
+            _isLock = false;
+            SetInteractable(true);
+        }
+
+        #endregion
+
 
         #region IToggleable
 
@@ -65,7 +155,9 @@ namespace Nekoyume.UI.Module
         public void SetToggledOn()
         {
             if (!Toggleable)
+            {
                 return;
+            }
 
             selectedImage.enabled = true;
             normalText.enabled = false;
@@ -76,7 +168,9 @@ namespace Nekoyume.UI.Module
         public void SetToggledOff()
         {
             if (!Toggleable)
+            {
                 return;
+            }
 
             selectedImage.enabled = false;
             normalText.enabled = true;
@@ -106,6 +200,12 @@ namespace Nekoyume.UI.Module
         {
             AudioController.PlayClick();
             OnClick.OnNext(this);
+
+            if (IsToggledOn)
+            {
+                return;
+            }
+
             _toggleListener?.OnToggle(this);
         }
     }
