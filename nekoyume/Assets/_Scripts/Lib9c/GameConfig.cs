@@ -43,7 +43,6 @@
         public const int CombineEquipmentCostNCG = 10;
         public const int EnhanceEquipmentCostAP = 5;
         public const int EnhanceEquipmentCostNCG = 10;
-        public const int CombinationDefaultFoodId = 200000;
 
         public const int RankingRewardFirst = 50;
         public const int RankingRewardSecond = 30;

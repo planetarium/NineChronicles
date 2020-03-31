@@ -179,14 +179,15 @@ namespace Nekoyume.Action
             avatarState.actionPoint -= costAP;
             result.actionPoint = costAP;
 
-            // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
-            var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
-                ? GameConfig.CombinationDefaultFoodId
-                : recipeRow.ResultConsumableItemId;
+            if (!consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow))
+            {
+                return states;
+            }
+
+            var resultConsumableItemId = recipeRow.ResultConsumableItemId;
             sw.Stop();
             Log.Debug($"Combination Get Food id: {sw.Elapsed}");
             sw.Restart();
-            // FIXME 장비조합처럼 레시피 아이디만 받아다 만드는 방식으로 변경해야함. 현재 방식이면 맛없는 요리인걸 결과슬롯에서 미리 알 수 있다.
             result.recipeId = recipeRow.Id;
 
             if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
