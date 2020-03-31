@@ -24,6 +24,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Spine.Unity;
 using UnityEngine;
+using TentuPlay.Api;
 
 namespace Nekoyume.Game
 {
@@ -251,6 +252,17 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayStage(BattleLog log)
         {
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+            new TPStashEvent().PlayerStage(
+                player_uuid: Game.instance.Agent.Address.ToHex(),
+                stage_category_slug: "HackAndSlash",
+                stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_status: "S",
+                stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
+                is_autocombat_committed: true
+                );
+#endif
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
@@ -264,6 +276,18 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayRankingBattle(BattleLog log)
         {
+#if UNITY_EDITOR || UNITY_STANDALONE
+            new TPStashEvent().PlayerStage(
+                player_uuid: Game.instance.Agent.Address.ToHex(),
+                stage_category_slug: "RankingBattle",
+                stage_slug: "RankingBattle",
+                stage_status: "S",
+                stage_level: null,
+                is_autocombat_committed: true
+                );
+#endif
+
+
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
             foreach (var e in log)
@@ -395,6 +419,35 @@ namespace Nekoyume.Game
             ActionRenderHandler.Instance.Pending = false;
             Widget.Find<BattleResult>().Show(_battleResultModel);
             yield return null;
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+            string stage_status = null;
+            switch (log.result)
+            {
+                case BattleLog.Result.Win:
+                    stage_status = "W";
+                    break;
+                case BattleLog.Result.Lose:
+                    stage_status = "L";
+                    break;
+                case BattleLog.Result.TimeOver:
+                    stage_status = "T";
+                    break;
+            }
+            new TPStashEvent().PlayerStage(
+                player_uuid: Game.instance.Agent.Address.ToHex(),
+                stage_category_slug: "HackAndSlash",
+                stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_status: stage_status,
+                stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_score: log.clearedWaveNumber,
+                stage_playtime: null,
+                is_autocombat_committed: true
+                );
+            new TPUploadData().UploadData();
+
+# endif
+
         }
 
         private IEnumerator CoSlideBg()
@@ -425,6 +478,34 @@ namespace Nekoyume.Game
             ActionRenderHandler.Instance.Pending = false;
             Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
             yield return null;
+
+#if UNITY_EDITOR || UNITY_STANDALONE
+            string stage_status = null;
+            switch (log.result)
+            {
+                case BattleLog.Result.Win:
+                    stage_status = "W";
+                    break;
+                case BattleLog.Result.Lose:
+                    stage_status = "L";
+                    break;
+                case BattleLog.Result.TimeOver:
+                    stage_status = "T";
+                    break;
+            }
+            new TPStashEvent().PlayerStage(
+                player_uuid: Game.instance.Agent.Address.ToHex(),
+                stage_category_slug: "RankingBattle",
+                stage_slug: "RankingBattle",
+                stage_status: stage_status,
+                stage_level: null,
+                stage_score: log.diffScore,
+                stage_playtime: null,
+                is_autocombat_committed: true
+                );
+            new TPUploadData().UploadData();
+
+#endif
         }
 
         public IEnumerator CoSpawnPlayer(Player character)

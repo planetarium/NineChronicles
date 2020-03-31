@@ -181,6 +181,7 @@ namespace Nekoyume.Action
             result.id = mail.id;
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);
+            avatarState.UpdateQuestRewards(ctx);
 
 #if UNITY_EDITOR || UNITY_STANDALONE
             if (result.gold > 0)
