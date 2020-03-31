@@ -208,8 +208,11 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Combination
             );
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
-            _npc01 = go.GetComponent<NPC>();
+            if (_npc01 is null)
+            {
+                var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
+                _npc01 = go.GetComponent<NPC>();
+            }
 
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
@@ -230,10 +233,7 @@ namespace Nekoyume.UI
             enhanceEquipment.RemoveMaterialsAll();
             speechBubble.gameObject.SetActive(false);
 
-            if (_npc01)
-            {
-                _npc01.gameObject.SetActive(false);
-            }
+            _npc01 = null;
 
             if (_npc02)
             {
