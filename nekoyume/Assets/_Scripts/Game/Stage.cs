@@ -24,8 +24,9 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Spine.Unity;
 using UnityEngine;
+#if UNITY_EDITOR || UNITY_STANDALONE
 using TentuPlay.Api;
-
+#endif
 namespace Nekoyume.Game
 {
     public class Stage : MonoBehaviour, IStage

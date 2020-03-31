@@ -183,19 +183,6 @@ namespace Nekoyume.Action
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(ctx);
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-            if (result.gold > 0)
-            {
-                new TPStashEvent().CurrencyUse(
-                    player_uuid: agentState.address.ToHex(),
-                    currency_slug: "gold",
-                    currency_quantity: (float)result.gold,
-                    currency_total_quantity: (float)agentState.gold,
-                    reference_entity: "items",
-                    reference_category_slug: "combination",
-                    reference_slug: result.itemUsable.ItemId.ToString());
-            }
-# endif
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize())
