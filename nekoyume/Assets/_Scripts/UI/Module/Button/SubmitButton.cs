@@ -13,9 +13,9 @@ namespace Nekoyume.UI.Module
         public Image backgroundImageForSubmittable;
         public TextMeshProUGUI submitText;
         public TextMeshProUGUI submitTextForSubmittable;
-        
+
         public readonly Subject<SubmitButton> OnSubmitClick = new Subject<SubmitButton>();
-        
+
         public bool IsSubmittable { get; private set; }
 
         private void Awake()
@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Module
         public void Show() => gameObject.SetActive(true);
 
         public void Hide() => gameObject.SetActive(false);
-        
+
         public virtual void SetSubmittable(bool submittable)
         {
             IsSubmittable = submittable;
@@ -45,7 +45,7 @@ namespace Nekoyume.UI.Module
         {
             SetSubmitText(text, text);
         }
-        
+
         public void SetSubmitText(string nonSubmittableText, string submittableText)
         {
             submitText.text = nonSubmittableText;

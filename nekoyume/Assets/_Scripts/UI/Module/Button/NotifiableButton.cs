@@ -4,7 +4,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    // todo: ToggleableButton 상속하기.
     public class NotifiableButton : ToggleableButton
     {
         public class Model : IDisposable
@@ -23,7 +22,7 @@ namespace Nekoyume.UI.Module
 
         #region Mono
 
-        protected override void Awake() 
+        protected override void Awake()
         {
             base.Awake();
             SharedModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);

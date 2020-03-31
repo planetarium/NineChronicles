@@ -24,7 +24,7 @@ namespace Nekoyume.UI.Module
 
         public string Name => name;
 
-        public bool IsToggleable { get; set; }
+        public bool Toggleable { get; set; }
 
         public virtual bool IsToggledOn => enabledContent.activeSelf;
 
