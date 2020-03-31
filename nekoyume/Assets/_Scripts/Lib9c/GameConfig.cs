@@ -13,7 +13,10 @@
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
         public const string UnicodePattern = @"[^\u0000-\u007F]";
         public const string DiscordLink = "https://discord.gg/NqshYve";
-        public const string BlockExplorerLinkFormat = "http://explorer.libplanet.io/9c-alpha/account/?{0}";
+
+        public const string BlockExplorerLinkFormat =
+            "http://explorer.libplanet.io/9c-alpha/account/?{0}";
+
         public const float PlayerSpeechBreakTime = 2f;
 
         //TODO 온체인으로 옮겨야함.
@@ -29,25 +32,17 @@
         public const string DefaultPlayerEyeOpenResource = "eye_red_open";
         public const string DefaultPlayerEyeHalfResource = "eye_red_half";
         public const string DefaultPlayerTailResource = "tail_0001";
-        public const int ActionPointMax = 200;
+        public const int ActionPointMax = 120;
 
         public const int DailyRewardInterval = 2300;
         public const int DailyArenaInterval = 500;
         public const int WeeklyArenaInterval = 8000 * 7;
-        public const int BaseVictoryPoint = 20;
-        public const int BaseDefeatPoint = -15;
 
-        public const int CombineConsumableCostAP = 5;
+        //TODO 안쓰는 프리팹과 함께 삭제해야함
         public const int CombineEquipmentCostAP = 5;
         public const int CombineEquipmentCostNCG = 10;
         public const int EnhanceEquipmentCostAP = 5;
         public const int EnhanceEquipmentCostNCG = 10;
-        public const decimal CombinationValueP1 = 3m; // 30f;
-        public const decimal CombinationValueP2 = 1m; // 1.2f;
-        public const decimal CombinationValueL1 = 10m;
-        public const decimal CombinationValueL2 = 1m;
-        public const decimal CombinationValueR1 = 1.5m; // 2f;
-        public const int CombinationDefaultFoodId = 200000;
 
         public const int RankingRewardFirst = 50;
         public const int RankingRewardSecond = 30;
@@ -73,8 +68,18 @@
             public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 50;
 
             #endregion
+
+            #region character consumable slot
+
+            public const int CharacterConsumableSlot1 = 1;
+            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 2;
+            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 3;
+            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 4;
+            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 5;
+
+            #endregion
         }
-        
+
         public static class RequireClearedStageLevel
         {
             #region action

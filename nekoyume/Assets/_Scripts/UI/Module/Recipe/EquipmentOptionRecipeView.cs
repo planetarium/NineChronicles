@@ -53,11 +53,16 @@ namespace Nekoyume.UI.Module
             OnClick.Dispose();
         }
 
-        public void Show(string recipeName, int subRecipeId, EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo)
+        public void Show(
+            string recipeName,
+            int subRecipeId,
+            EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo,
+            bool checkInventory = true
+        )
         {
             if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId, out _rowData))
             {
-                requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials);
+                requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials, checkInventory);
             }
             else
             {

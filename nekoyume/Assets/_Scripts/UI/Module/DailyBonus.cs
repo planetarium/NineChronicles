@@ -23,16 +23,13 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI text = null;
 
         [SerializeField]
-        private Button additiveGroupButton = null;
-
-        [SerializeField]
-        private CanvasGroup additiveGroupCanvas = null;
-
-        [SerializeField]
         private RectTransform tooltipArea = null;
 
         [SerializeField]
         private Transform boxImageTransform = null;
+
+        [SerializeField]
+        private Image[] additiveImages = null;
 
         [SerializeField]
         private Animator animator = null;
@@ -44,7 +41,7 @@ namespace Nekoyume.UI.Module
         private long _currentBlockIndex;
         private long _rewardReceivedBlockIndex;
         private bool _isFull;
-        
+
         // NOTE: CoGetDailyRewardAnimation() 연출 로직이 모두 흐르지 않았을 경우를 대비해서 연출 단계를 저장하는 필드.
         private int _coGetDailyRewardAnimationStep = 0;
 
@@ -58,14 +55,13 @@ namespace Nekoyume.UI.Module
             sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
             sliderAnimator.SetMaxValue(GameConfig.DailyRewardInterval);
             sliderAnimator.SetValue(0f, false);
-
-            additiveGroupButton.OnClickAsObservable().Subscribe(_ => GetDailyReward()).AddTo(gameObject);
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
-            additiveGroupCanvas.alpha = 0f;
+
+            OnSliderChange();
 
             if (!(States.Instance.CurrentAvatarState is null))
             {
@@ -138,13 +134,12 @@ namespace Nekoyume.UI.Module
         {
             text.text = $"{(int) sliderAnimator.Value} / {sliderAnimator.MaxValue}";
 
-            if (_isFull == sliderAnimator.IsFull)
-                return;
-
             _isFull = sliderAnimator.IsFull;
-            additiveGroupCanvas.alpha = _isFull ? 1f : 0f;
-            additiveGroupCanvas.interactable = _isFull;
-            additiveGroupButton.interactable = _isFull;
+            foreach (var additiveImage in additiveImages)
+            {
+                additiveImage.enabled = _isFull;
+            }
+
             animator.SetBool(IsFull, _isFull);
         }
 
@@ -159,8 +154,13 @@ namespace Nekoyume.UI.Module
             Widget.Find<VanilaTooltip>().Close();
         }
 
-        private void GetDailyReward()
+        public void GetDailyReward()
         {
+            if (!_isFull)
+            {
+                return;
+            }
+
             Notification.Push(Nekoyume.Model.Mail.MailType.System,
                 LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 

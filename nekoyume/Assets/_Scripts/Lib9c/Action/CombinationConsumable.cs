@@ -30,6 +30,9 @@ namespace Nekoyume.Action
             public Guid id;
             public decimal gold;
             public int actionPoint;
+            public int recipeId;
+            public int? subRecipeId;
+            public ItemType itemType;
 
             protected override string TypeId => "combination.result-model";
 
@@ -43,6 +46,9 @@ namespace Nekoyume.Action
                 id = serialized["id"].ToGuid();
                 gold = serialized["gold"].ToDecimal();
                 actionPoint = serialized["actionPoint"].ToInteger();
+                recipeId = serialized["recipeId"].ToInteger();
+                subRecipeId = serialized["subRecipeId"].ToNullableInteger();
+                itemType = itemUsable.Data.ItemType;
             }
 
             public override IValue Serialize() =>
@@ -52,12 +58,13 @@ namespace Nekoyume.Action
                     [(Text) "id"] = id.Serialize(),
                     [(Text) "gold"] = gold.Serialize(),
                     [(Text) "actionPoint"] = actionPoint.Serialize(),
+                    [(Text) "recipeId"] = recipeId.Serialize(),
+                    [(Text) "subRecipeId"] = subRecipeId.Serialize(),
                 }.Union((Dictionary) base.Serialize()));
         }
 
         public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
-        public List<int> completedQuestIds;
         public int slotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -151,7 +158,9 @@ namespace Nekoyume.Action
 
             var result = new ResultModel
             {
-                materials = Materials
+                materials = Materials,
+                itemType = ItemType.Consumable,
+
             };
 
             var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
@@ -159,11 +168,17 @@ namespace Nekoyume.Action
             var consumableItemSheet = tableSheets.ConsumableItemSheet;
             var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
             var foodCount = materialRows.Min(pair => pair.Value);
-            var costAP = foodCount * GameConfig.CombineConsumableCostAP;
+
+            if (!consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow))
+            {
+                return states;
+            }
+
             sw.Stop();
             Log.Debug($"Combination Get Food Material rows: {sw.Elapsed}");
             sw.Restart();
 
+            var costAP = recipeRow.RequiredActionPoint * foodCount;
             if (avatarState.actionPoint < costAP)
             {
                 // ap 부족 에러.
@@ -174,13 +189,11 @@ namespace Nekoyume.Action
             avatarState.actionPoint -= costAP;
             result.actionPoint = costAP;
 
-            // 재료가 레시피에 맞지 않다면 200000(맛 없는 요리).
-            var resultConsumableItemId = !consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow)
-                ? GameConfig.CombinationDefaultFoodId
-                : recipeRow.ResultConsumableItemId;
+            var resultConsumableItemId = recipeRow.ResultConsumableItemId;
             sw.Stop();
             Log.Debug($"Combination Get Food id: {sw.Elapsed}");
             sw.Restart();
+            result.recipeId = recipeRow.Id;
 
             if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
             {
@@ -189,13 +202,19 @@ namespace Nekoyume.Action
             }
 
             // 조합 결과 획득.
+            var requiredBlockIndex = ctx.BlockIndex + recipeRow.RequiredBlockIndex;
             for (var i = 0; i < foodCount; i++)
             {
                 var itemId = ctx.Random.GenerateRandomGuid();
-                var itemUsable = GetFood(consumableItemRow, itemId, ctx.BlockIndex);
+                var itemUsable = GetFood(consumableItemRow, itemId, requiredBlockIndex);
                 // 액션 결과
                 result.itemUsable = itemUsable;
-                var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
+                var mail = new CombinationMail(
+                    result,
+                    ctx.BlockIndex,
+                    ctx.Random.GenerateRandomGuid(),
+                    requiredBlockIndex
+                );
                 result.id = mail.id;
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(itemUsable);
@@ -218,12 +237,12 @@ namespace Nekoyume.Action
 #endif
             }
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
+            avatarState.UpdateQuestRewards(ctx);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;
             states = states.SetState(AvatarAddress, avatarState.Serialize());
-            slotState.Update(result, ctx.BlockIndex);
+            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
             sw.Stop();
             Log.Debug($"Combination Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;

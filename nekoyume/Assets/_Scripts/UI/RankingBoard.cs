@@ -98,7 +98,7 @@ namespace Nekoyume.UI
                     //     -GameConfig.ArenaActivationCostNCG);
                     // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 골드를 더하지 못함.
                     // LocalStateModifier.ModifyWeeklyArenaGold(GameConfig.ArenaActivationCostNCG);
-                    LocalStateModifier.AddWeeklyArenaInfoActivator();
+                    LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets.CharacterSheet);
                 }).AddTo(gameObject);
 
             CloseWidget = null;
@@ -131,7 +131,7 @@ namespace Nekoyume.UI
             _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
-            
+
             // 구독.
             ReactiveAgentState.Gold.Subscribe(gold =>
                     arenaActivationButton.SetSubmittable(gold >= GameConfig.ArenaActivationCostNCG))
@@ -144,7 +144,7 @@ namespace Nekoyume.UI
         {
             // 구독 취소.
             _disposablesAtClose.DisposeAllAndClear();
-            
+
             Find<BottomMenu>()?.Close();
 
             _arenaAvatarStates = null;
@@ -176,7 +176,8 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOff();
                     filteredButton.SetToggledOn();
                     overallButton.SetToggledOff();
-                    rankingRewards.Show();
+                    arenaActivationButton.Hide();
+                    rankingRewards.Hide();
                     arenaPendingNCG.Hide();
                     currentAvatarCellView.Hide();
                     arenaRecordContainer.SetActive(false);
@@ -188,7 +189,8 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOff();
                     filteredButton.SetToggledOff();
                     overallButton.SetToggledOn();
-                    rankingRewards.Show();
+                    arenaActivationButton.Hide();
+                    rankingRewards.Hide();
                     arenaPendingNCG.Hide();
                     currentAvatarCellView.Hide();
                     arenaRecordContainer.SetActive(false);

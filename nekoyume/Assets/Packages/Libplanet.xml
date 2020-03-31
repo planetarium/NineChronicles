@@ -1539,7 +1539,7 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.Int32,System.Int64,System.Int32,System.Predicate{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/> in milliseconds,
@@ -1556,8 +1556,11 @@
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>. 1024 by default.</param>
             <param name="difficultyBoundDivisor">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>. 128 by default.</param>
+            <param name="doesTransactionFollowPolicy">
+            A predicate that determines if the transaction follows the block policy.
+            </param>
         </member>
-        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32)">
+        <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.#ctor(Libplanet.Action.IAction,System.TimeSpan,System.Int64,System.Int32,System.Predicate{Libplanet.Tx.Transaction{`0}})">
             <summary>
             Creates a <see cref="T:Libplanet.Blockchain.Policies.BlockPolicy`1"/> with configuring
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockInterval"/>, <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/> and
@@ -1571,6 +1574,9 @@
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.MinimumDifficulty"/>.</param>
             <param name="difficultyBoundDivisor">Configures
             <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.DifficultyBoundDivisor"/>.</param>
+            <param name="doesTransactionFollowPolicy">
+            A predicate that determines if the transaction follows the block policy.
+            </param>
         </member>
         <member name="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction">
             <inheritdoc/>
@@ -1604,6 +1610,14 @@
             <summary>
             A block action to execute and be rendered for every block.
             </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.DoesTransactionFollowsPolicy(Libplanet.Tx.Transaction{`0})">
+            <summary>
+            A predicate that determines if the transaction follows the block policy.
+            </summary>
+            <param name="transaction">A <see cref="T:Libplanet.Tx.Transaction`1"/> to determine.</param>
+            <returns><c>true</c> if <paramref name="transaction"/>is valid; otherwise, <c>false</c>.
+            </returns>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.IBlockPolicy`1.ValidateNextBlock(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0})">
             <summary>
@@ -2604,6 +2618,52 @@
             <returns>A unique identifier of the cipher algorithm.  This is going to be the
             <c>crypto.cipher</c> field in the key JSON file.</returns>
         </member>
+        <member name="T:Libplanet.KeyStore.IKeyStore">
+            <summary>
+            The interface to store <see cref="T:Libplanet.KeyStore.ProtectedPrivateKey"/>s.  An appropriate implementation
+            should be used according to a running platform.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.IKeyStore.ListIds">
+            <summary>
+            Lists all keys IDs in the key store.
+            </summary>
+            <returns>All keys IDs in the key store.  The order is undefined and not deterministic.
+            </returns>
+        </member>
+        <member name="M:Libplanet.KeyStore.IKeyStore.List">
+            <summary>
+            Lists all keys in the key store.
+            </summary>
+            <returns>All keys in the key store.  The order is undefined and not deterministic.
+            </returns>
+        </member>
+        <member name="M:Libplanet.KeyStore.IKeyStore.Get(System.Guid)">
+            <summary>
+            Looks for a key having the requested <paramref name="id"/> in the key store.
+            </summary>
+            <param name="id">The key ID to look for.</param>
+            <returns>The found key.</returns>
+            <exception cref="T:Libplanet.KeyStore.NoKeyException">Thrown when there are no key of the given
+            <paramref name="id"/>.</exception>
+        </member>
+        <member name="M:Libplanet.KeyStore.IKeyStore.Add(Libplanet.KeyStore.ProtectedPrivateKey)">
+            <summary>
+            Adds a new <paramref name="key"/> into the key store.
+            </summary>
+            <param name="key">A key to add.</param>
+            <returns>The id of the added <paramref name="key"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> is passed to
+            <paramref name="key"/>.</exception>
+        </member>
+        <member name="M:Libplanet.KeyStore.IKeyStore.Remove(System.Guid)">
+            <summary>
+            Removes a key having the given <pramref name="id"/> from the key store.
+            </summary>
+            <param name="id">The key ID to remove.</param>
+            <exception cref="T:Libplanet.KeyStore.NoKeyException">Thrown when there is no key having
+            the given <paramref name="id"/>.</exception>
+        </member>
         <member name="T:Libplanet.KeyStore.IncorrectPassphraseException">
             <summary>
             The exception that is thrown when a user input passphrase (i.e., password) is incorrect.
@@ -2787,6 +2847,19 @@
             </summary>
             <param name="message">A detailed exception message.</param>
         </member>
+        <member name="T:Libplanet.KeyStore.KeyStoreException">
+            <summary>
+            Serves as the base class for exceptions thrown by <see cref="T:Libplanet.KeyStore.IKeyStore"/>
+            implementations.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.KeyStoreException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance with the given <paramref name="message"/>.
+            </summary>
+            <param name="message">A descriptive error message for programmers.
+            Goes to <see cref="P:System.Exception.Message"/>.</param>
+        </member>
         <member name="T:Libplanet.KeyStore.MismatchedAddressException">
             <summary>
             The exception that is thrown when an unprotected private key's actual address does
@@ -2812,6 +2885,28 @@
         <member name="P:Libplanet.KeyStore.MismatchedAddressException.ActualAddress">
             <summary>
             The actual address of the unprotected private key.
+            </summary>
+        </member>
+        <member name="T:Libplanet.KeyStore.NoKeyException">
+            <summary>
+            The exception that is thrown when there is no <see cref="T:Libplanet.KeyStore.ProtectedPrivateKey"/>
+            with a given key ID in an <see cref="T:Libplanet.KeyStore.IKeyStore"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.NoKeyException.#ctor(System.Guid,System.String)">
+            <summary>
+            Instantiates a new exception object with proper metadata.
+            </summary>
+            <param name="keyId">The key ID tried to look for.
+            It is automatically included to the <see cref="P:System.Exception.Message"/>
+            string.
+            </param>
+            <param name="message">A descriptive error message for programmers.
+            Goes to <see cref="P:System.Exception.Message"/>.</param>
+        </member>
+        <member name="P:Libplanet.KeyStore.NoKeyException.KeyId">
+            <summary>
+            The key ID tried to look for.
             </summary>
         </member>
         <member name="T:Libplanet.KeyStore.ProtectedPrivateKey">
@@ -2934,6 +3029,68 @@
             </summary>
             <param name="message">A detailed exception message.</param>
         </member>
+        <member name="T:Libplanet.KeyStore.Web3KeyStore">
+            <summary>
+            <a href="https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition">Web3 Secret
+            Storage</a> (i.e., Ethereum-style key store) compliant <see cref="T:Libplanet.KeyStore.IKeyStore"/>
+            implementation.  Key files are placed in a directory of the <see cref="P:Libplanet.KeyStore.Web3KeyStore.Path"/>.
+            <para>Use <see cref="P:Libplanet.KeyStore.Web3KeyStore.DefaultKeyStore"/> property to get an instance.</para>
+            <para>In order to get an instance with a customized directory,
+            use the <see cref="M:Libplanet.KeyStore.Web3KeyStore.#ctor(System.String)"/> constructor.</para>
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Web3KeyStore.#ctor(System.String)">
+            <summary>
+            Creates a <see cref="T:Libplanet.KeyStore.Web3KeyStore"/> instance with a custom directory
+            <paramref name="path"/>.
+            </summary>
+            <param name="path">A path of the directory to store key files.  A new directory is
+            created if not exists.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> is passed to
+            <paramref name="path"/>.</exception>
+            <seealso cref="P:Libplanet.KeyStore.Web3KeyStore.DefaultKeyStore"/>
+        </member>
+        <member name="P:Libplanet.KeyStore.Web3KeyStore.DefaultKeyStore">
+            <summary>
+            A default <see cref="T:Libplanet.KeyStore.Web3KeyStore"/> instance which refers to a user-local directory.
+            The <see cref="P:Libplanet.KeyStore.Web3KeyStore.Path"/> differs on the platform:
+            <list type="table">
+            <listheader>
+            <term>OS</term>
+            <description>Directory path</description>
+            </listheader>
+            <item>
+            <term>Linux/macOS</term>
+            <description><var>$HOME</var>/.config/planetarium/keystore</description>
+            </item>
+            <item>
+            <term>Windows</term>
+            <description><var>%AppData%</var>\planetarium\keystore</description>
+            </item>
+            </list>
+            </summary>
+            <seealso cref="M:Libplanet.KeyStore.Web3KeyStore.#ctor(System.String)"/>
+        </member>
+        <member name="P:Libplanet.KeyStore.Web3KeyStore.Path">
+            <summary>
+            The path of the directory key files are placed.
+            </summary>
+        </member>
+        <member name="M:Libplanet.KeyStore.Web3KeyStore.List">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.KeyStore.Web3KeyStore.ListIds">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.KeyStore.Web3KeyStore.Get(System.Guid)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.KeyStore.Web3KeyStore.Add(Libplanet.KeyStore.ProtectedPrivateKey)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.KeyStore.Web3KeyStore.Remove(System.Guid)">
+            <inheritdoc/>
+        </member>
         <member name="T:Libplanet.Net.ActionExecutionState">
             <summary>
             Indicates a progress of executing block actions.
@@ -2964,7 +3121,7 @@
             As every peer can change its software by itself, this <see cref="T:Libplanet.Net.AppProtocolVersion"/>
             is theoretically arbitrary, hence a &#x201c;claim.&#x201d; (i.e., no authority).</para>
             <para>In order to verify who claimed a version, every <see cref="T:Libplanet.Net.AppProtocolVersion"/>
-            has its <see cref="F:Libplanet.Net.AppProtocolVersion.Signature"/> which is made by its <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.
+            has its <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/> which is made by its <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.
             <see cref="M:Libplanet.Net.AppProtocolVersion.Verify(Libplanet.Crypto.PublicKey)"/> method purposes to determine whether an information
             is claimed by its corresponding <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/> in fact.</para>
             </summary>
@@ -2981,11 +3138,6 @@
             by apps, such as a URL to download the software.
             </summary>
         </member>
-        <member name="F:Libplanet.Net.AppProtocolVersion.Signature">
-            <summary>
-            A signature which verifies <seealso cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s claim of a version.
-            </summary>
-        </member>
         <member name="F:Libplanet.Net.AppProtocolVersion.Signer">
             <summary>
             A signer who claims presence of a version.
@@ -2997,8 +3149,13 @@
             </summary>
             <param name="version">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Version"/>.</param>
             <param name="extra">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Extra"/>.</param>
-            <param name="signature">Sets the <see cref="F:Libplanet.Net.AppProtocolVersion.Signature"/>.</param>
+            <param name="signature">Sets the <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/>.</param>
             <param name="signer">Gets the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</param>
+        </member>
+        <member name="P:Libplanet.Net.AppProtocolVersion.Signature">
+            <summary>
+            A signature which verifies <seealso cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s claim of a version.
+            </summary>
         </member>
         <member name="P:Libplanet.Net.AppProtocolVersion.Token">
             <summary>
@@ -3028,6 +3185,8 @@
             </summary>
             <param name="token">A <see cref="P:Libplanet.Net.AppProtocolVersion.Token"/> string.</param>
             <returns>A deserialized <see cref="T:Libplanet.Net.AppProtocolVersion"/> object.</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <c>null</c> is passed to
+            <paramref name="token"/>.</exception>
             <exception cref="T:System.FormatException">Thrown when the given <paramref name="token"/>'s
             format is invalid.  The detailed reason is in the message.</exception>
             <seealso cref="P:Libplanet.Net.AppProtocolVersion.Token"/>
@@ -3038,7 +3197,7 @@
             </summary>
             <param name="publicKey">A public key of the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</param>
             <returns><c>true</c> if and only if the given <paramref name="publicKey"/> is
-            <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s and the <see cref="F:Libplanet.Net.AppProtocolVersion.Signature"/> is certainly signed by
+            <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>'s and the <see cref="P:Libplanet.Net.AppProtocolVersion.Signature"/> is certainly signed by
             the <see cref="F:Libplanet.Net.AppProtocolVersion.Signer"/>.</returns>
         </member>
         <member name="M:Libplanet.Net.AppProtocolVersion.Equals(Libplanet.Net.AppProtocolVersion)">
@@ -4854,6 +5013,22 @@
         </member>
         <member name="M:Libplanet.Tx.TxId.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <inheritdoc />
+        </member>
+        <member name="T:Libplanet.Tx.TxViolatingBlockPolicyException">
+            <summary>
+            The exception that is thrown when a <see cref="T:Libplanet.Tx.Transaction`1"/> does not follow the
+            block policy.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.TxViolatingBlockPolicyException.#ctor(Libplanet.Tx.TxId,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Tx.TxViolatingBlockPolicyException"/> object.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.TxId"/>.
+            It is automatically included to the <see cref="P:System.Exception.Message"/>
+            string.</param>
+            <param name="message">Specifies an <see cref="P:System.Exception.Message"/>.
+            </param>
         </member>
     </members>
 </doc>

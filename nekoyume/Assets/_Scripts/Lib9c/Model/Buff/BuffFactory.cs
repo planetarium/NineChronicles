@@ -20,7 +20,7 @@ namespace Nekoyume.Model.Buff
                 case StatType.CRI:
                     return new CriticalBuff(row);
                 case StatType.HIT:
-                    return new DodgeBuff(row);
+                    return new HitBuff(row);
                 case StatType.SPD:
                     return new SpeedBuff(row);
                 default:

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
@@ -18,7 +19,7 @@ namespace Nekoyume.State
         public RankingState RankingState { get; private set; }
 
         public ShopState ShopState { get; private set; }
-        
+
         public WeeklyArenaState WeeklyArenaState { get; private set; }
 
         public AgentState AgentState { get; private set; }
@@ -30,6 +31,8 @@ namespace Nekoyume.State
 
         public AvatarState CurrentAvatarState { get; private set; }
 
+        public readonly Dictionary<int, CombinationSlotState> CombinationSlotStates =
+            new Dictionary<int, CombinationSlotState>();
         public States()
         {
             DeselectAvatar();
@@ -187,6 +190,13 @@ namespace Nekoyume.State
 
             CurrentAvatarKey = index;
             UpdateCurrentAvatarState(_avatarStates[CurrentAvatarKey], initializeReactiveState);
+            for (var i = 0; i < CurrentAvatarState.combinationSlotAddresses.Count; i++)
+            {
+                var slotAddress = CurrentAvatarState.combinationSlotAddresses[i];
+                CombinationSlotStates[i] = new CombinationSlotState(
+                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
+            }
+
             return CurrentAvatarState;
         }
 
@@ -210,7 +220,7 @@ namespace Nekoyume.State
 
             if (!initializeReactiveState)
                 return;
-            
+
             ReactiveAvatarState.Initialize(CurrentAvatarState);
         }
     }

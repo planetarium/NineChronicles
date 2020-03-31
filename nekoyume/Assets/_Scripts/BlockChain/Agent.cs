@@ -29,6 +29,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI;
 using NetMQ;
 using Serilog;
@@ -150,6 +151,7 @@ namespace Nekoyume.BlockChain
             bool development,
             AppProtocolVersion appProtocolVersion,
             IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
+            int minimumDifficulty,
             string storageType = null)
         {
             InitializeLogger(consoleSink, development);
@@ -173,7 +175,11 @@ namespace Nekoyume.BlockChain
                 appProtocolVersion.Token
             );
 
-            var policy = BlockPolicy.GetPolicy();
+            Debug.Log($"minimumDifficulty: {minimumDifficulty}");
+
+            var policy = BlockPolicy.GetPolicy(
+                    minimumDifficulty,
+                    getWhiteListSheet: GetWhiteListSheet);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
             store.UnstageTransactionIds(
@@ -277,6 +283,18 @@ namespace Nekoyume.BlockChain
 
         #endregion
 
+        private WhiteListSheet GetWhiteListSheet()
+        {
+            var state = blocks?.GetState(TableSheetsState.Address);
+            if (state is null)
+            {
+                return null;
+            }
+
+            var tableSheetsState = new TableSheetsState((Dictionary)state);
+            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
+        }
+
         private void InitAgent(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
         {
             var peers = options.Peers.Select(LoadPeer);
@@ -293,11 +311,14 @@ namespace Nekoyume.BlockChain
             var port = options.Port;
             var consoleSink = options.ConsoleSink;
             var storagePath = options.StoragePath ?? DefaultStoragePath;
-            var storageType = options.storageType;
+            var storageType = options.StorageType;
             var development = options.Development;
-            var appProtocolVersion = AppProtocolVersion.FromToken(options.AppProtocolVersion);
+            var appProtocolVersion = options.AppProtocolVersion is null
+                ? default
+                : AppProtocolVersion.FromToken(options.AppProtocolVersion);
             var trustedAppProtocolVersionSigners = options.TrustedAppProtocolVersionSigners
                 .Select(s => new PublicKey(ByteUtil.ParseHex(s)));
+            var minimumDifficulty = options.MinimumDifficulty;
             Init(
                 privateKey,
                 storagePath,
@@ -309,6 +330,7 @@ namespace Nekoyume.BlockChain
                 development,
                 appProtocolVersion,
                 trustedAppProtocolVersionSigners,
+                minimumDifficulty,
                 storageType
             );
 
@@ -320,33 +342,7 @@ namespace Nekoyume.BlockChain
             {
                 if (loadingScreen)
                 {
-                    string text;
-                    string format;
-
-                    switch (state)
-                    {
-                        case BlockDownloadState blockDownloadState:
-                            format = LocalizationManager.Localize("UI_LOADING_BLOCK_DOWNLOAD");
-                            text = string.Format(format, blockDownloadState.ReceivedBlockCount,
-                                blockDownloadState.TotalBlockCount);
-                            break;
-
-                        case StateDownloadState stateReferenceDownloadState:
-                            format = LocalizationManager.Localize("UI_LOADING_STATE_REFERENCE_DOWNLOAD");
-                            text = string.Format(format, stateReferenceDownloadState.ReceivedIterationCount,
-                                stateReferenceDownloadState.TotalIterationCount);
-                            break;
-
-                        case ActionExecutionState actionExecutionState:
-                            text =
-                                $"{actionExecutionState.ExecutedBlockCount} / {actionExecutionState.TotalBlockCount}";
-                            break;
-
-                        default:
-                            throw new Exception("Unknown state was reported during preload.");
-                    }
-
-                    loadingScreen.Message = $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
+                    loadingScreen.Message = GetLoadingScreenMessage(state);
                 }
             };
             PreloadEnded += (_, __) =>
@@ -421,7 +417,7 @@ namespace Nekoyume.BlockChain
 
         private static string GetHost(CommandLineOptions options)
         {
-            return string.IsNullOrEmpty(options.host) ? null : options.Host;
+            return string.IsNullOrEmpty(options.Host) ? null : options.Host;
         }
 
         private static BoundPeer LoadPeer(string peerInfo)
@@ -882,25 +878,25 @@ namespace Nekoyume.BlockChain
             var hasOwnTx = false;
             while (true)
             {
-                var txs = store.IterateStagedTransactionIds()
-                    .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
-                    .Where(tx => tx.Signer.Equals(Address))
-                    .ToList();
+                // 프레임 저하를 막기 위해 별도 스레드로 처리합니다.
+                Task<List<Transaction<PolymorphicAction<ActionBase>>>> getOwnTxs =
+                    Task.Run(
+                        () => store.IterateStagedTransactionIds()
+                            .Select(id => store.GetTransaction<PolymorphicAction<ActionBase>>(id))
+                            .Where(tx => tx.Signer.Equals(Address))
+                            .ToList()
+                    );
 
-                if (hasOwnTx)
+                yield return new WaitUntil(() => getOwnTxs.IsCompleted);
+
+                if (!getOwnTxs.IsFaulted)
                 {
-                    if (txs.Count == 0)
+                    List<Transaction<PolymorphicAction<ActionBase>>> txs = getOwnTxs.Result;
+                    var next = txs.Any();
+                    if (next != hasOwnTx)
                     {
-                        hasOwnTx = false;
-                        OnHasOwnTx?.Invoke(false);
-                    }
-                }
-                else
-                {
-                    if (txs.Count > 0)
-                    {
-                        hasOwnTx = true;
-                        OnHasOwnTx?.Invoke(true);
+                        hasOwnTx = next;
+                        OnHasOwnTx?.Invoke(hasOwnTx);
                     }
                 }
 
@@ -912,6 +908,53 @@ namespace Nekoyume.BlockChain
         {
             SyncSucceed = false;
             BlockDownloadFailed = true;
+        }
+
+        private string GetLoadingScreenMessage(PreloadState state)
+        {
+            string localizationKey;
+            long count;
+            long totalCount;
+
+            switch (state)
+            {
+                case BlockHashDownloadState blockHashDownloadState:
+                    localizationKey = "UI_LOADING_BLOCK_HASH_DOWNLOAD";
+                    count = blockHashDownloadState.ReceivedBlockHashCount;
+                    totalCount = blockHashDownloadState.EstimatedTotalBlockHashCount;
+                    break;
+
+                case BlockDownloadState blockDownloadState:
+                    localizationKey = "UI_LOADING_BLOCK_DOWNLOAD";
+                    count = blockDownloadState.ReceivedBlockCount;
+                    totalCount = blockDownloadState.TotalBlockCount;
+                    break;
+
+                case BlockVerificationState blockVerificationState:
+                    localizationKey = "UI_LOADING_BLOCK_VERIFICATION";
+                    count = blockVerificationState.VerifiedBlockCount;
+                    totalCount = blockVerificationState.TotalBlockCount;
+                    break;
+
+                case StateDownloadState stateReferenceDownloadState:
+                    localizationKey = "UI_LOADING_STATE_REFERENCE_DOWNLOAD";
+                    count = stateReferenceDownloadState.ReceivedIterationCount;
+                    totalCount = stateReferenceDownloadState.TotalIterationCount;
+                    break;
+
+                case ActionExecutionState actionExecutionState:
+                    localizationKey = "UI_LOADING_ACTION_EXECUTE";
+                    count = actionExecutionState.ExecutedBlockCount;
+                    totalCount = actionExecutionState.TotalBlockCount;
+                    break;
+
+                default:
+                    throw new Exception("Unknown state was reported during preload.");
+            }
+
+            string format = LocalizationManager.Localize(localizationKey);
+            string text = string.Format(format, count, totalCount);
+            return $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
         }
     }
 }

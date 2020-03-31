@@ -123,7 +123,7 @@ namespace Nekoyume.UI
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainShop);
         }
 
-        public void CombinationClick()
+        public void CombinationClick(int slotIndex = -1)
         {
             if (!btnCombination.IsUnlocked)
             {
@@ -139,7 +139,7 @@ namespace Nekoyume.UI
             }
 
             Close();
-            Find<Combination>().Show();
+            Find<Combination>().Show(slotIndex);
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }

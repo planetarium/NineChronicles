@@ -72,6 +72,11 @@ namespace Nekoyume.Model.Item
                    + BuffSkills.Count;
         }
 
+        public void Update(long blockIndex)
+        {
+            RequiredBlockIndex = blockIndex;
+        }
+
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {

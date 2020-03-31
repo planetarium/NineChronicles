@@ -49,7 +49,6 @@ namespace Nekoyume.UI
         private const int LensCount = 6;
         private const int EarCount = 10;
         private const int TailCount = 10;
-        
 
         protected override void Awake()
         {
@@ -93,9 +92,9 @@ namespace Nekoyume.UI
                 {
                     var avatarState = States.Instance.SelectAvatar(_selectedIndex);
                     StartCoroutine(CreateAndLoginAnimation(avatarState));
-                    ActionRenderHandler.Instance.RenderQuest(avatarState.address, eval.Action.completedQuestIds);
+                    ActionRenderHandler.Instance.RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
                 }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
-            AudioController.PlayClick();    
+            AudioController.PlayClick();
         }
 
         private IEnumerator CreateAndLoginAnimation(AvatarState state)
@@ -158,7 +157,7 @@ namespace Nekoyume.UI
             // 프로필 사진의 용도가 정리되지 않아서 주석 처리함.
             // profileImage.SetActive(!isCreateMode);
             btnLogin.SetActive(!_isCreateMode);
-            
+
             SetInformation(player);
 
             if (_isCreateMode)
@@ -228,7 +227,7 @@ namespace Nekoyume.UI
                 return;
 
             _hair = hair;
-            
+
             paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair + 1}";
         }
 
@@ -241,15 +240,15 @@ namespace Nekoyume.UI
 
             if (lens == _lens)
                 return;
-            
+
             _lens = lens;
-            
+
             paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens + 1}";
-            
+
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
                 throw new NullReferenceException(nameof(player));
-            
+
             player.UpdateEye(_lens);
         }
 
@@ -261,16 +260,16 @@ namespace Nekoyume.UI
             else if (ear >= EarCount) ear = 0;
 
             if (ear == _ear)
-                return; 
-            
+                return;
+
             _ear = ear;
-            
+
             paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear + 1}";
-            
+
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
                 throw new NullReferenceException(nameof(player));
-            
+
             player.UpdateEar(_ear);
         }
 
@@ -283,15 +282,15 @@ namespace Nekoyume.UI
 
             if (tail == _tail)
                 return;
-            
+
             _tail = tail;
-            
+
             paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
-            
+
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
                 throw new NullReferenceException(nameof(player));
-            
+
             player.UpdateTail(_tail);
         }
 
@@ -304,10 +303,10 @@ namespace Nekoyume.UI
         {
             if (_isCreateMode)
                 Close();
-            
+
             EnterRoom();
         }
-        
+
         private void EnterRoom()
         {
             Close();

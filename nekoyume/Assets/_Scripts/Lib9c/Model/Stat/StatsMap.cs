@@ -336,38 +336,5 @@ namespace Nekoyume.Model.Stat
             if (HasAdditionalSPD)
                 yield return _statMaps[StatType.SPD];
         }
-
-        public void ClearAdditionalStats()
-        {
-            if (HasAdditionalHP)
-            {
-                SetStatAdditionalValue(StatType.HP, 0);
-            }
-
-            if (HasAdditionalATK)
-            {
-                SetStatAdditionalValue(StatType.ATK, 0);
-            }
-
-            if (HasAdditionalCRI)
-            {
-                SetStatAdditionalValue(StatType.CRI, 0);
-            }
-
-            if (HasAdditionalDEF)
-            {
-                SetStatAdditionalValue(StatType.DEF, 0);
-            }
-
-            if (HasAdditionalHIT)
-            {
-                SetStatAdditionalValue(StatType.HIT, 0);
-            }
-
-            if (HasAdditionalSPD)
-            {
-                SetStatAdditionalValue(StatType.SPD, 0);
-            }
-        }
     }
 }

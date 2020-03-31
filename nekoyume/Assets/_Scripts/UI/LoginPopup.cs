@@ -33,6 +33,8 @@ namespace Nekoyume.UI
             CreatePassword,
         }
 
+        public IKeyStore KeyStore = Web3KeyStore.DefaultKeyStore;
+
         public override WidgetType WidgetType => WidgetType.SystemInfo;
         public InputField passPhraseField;
         public InputField retypeField;
@@ -72,11 +74,9 @@ namespace Nekoyume.UI
         public Image accountImage;
         public readonly ReactiveProperty<States> State = new ReactiveProperty<States>();
         public bool Login { get; private set; }
-        private string _keyStorePath;
         private string _privateKeyString;
         private PrivateKey _privateKey;
         private States _prevState;
-        private Dictionary<string, ProtectedPrivateKey> _protectedPrivateKeys = new Dictionary<string, ProtectedPrivateKey>();
         public Blur blur;
 
         protected override void Awake()
@@ -237,7 +237,7 @@ namespace Nekoyume.UI
         {
             try
             {
-                _privateKey = CheckPrivateKey(GetProtectedPrivateKeys(), loginField.text);
+                _privateKey = CheckPrivateKey(KeyStore, loginField.text);
             }
             catch (Exception)
             {
@@ -329,7 +329,7 @@ namespace Nekoyume.UI
             base.Show();
             blur?.Show();
 
-            _keyStorePath = path;
+            KeyStore = path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
             _privateKeyString = privateKeyString;
             //Auto login for miner, seed
             if (!string.IsNullOrEmpty(_privateKeyString) || Application.isBatchMode)
@@ -340,11 +340,18 @@ namespace Nekoyume.UI
             }
             else
             {
-                var state = GetProtectedPrivateKeys().Any() ? States.Login : States.Show;
+                var state = KeyStore.ListIds().Any() ? States.Login : States.Show;
                 SetState(state);
                 Login = false;
+
+                if (state == States.Login)
+                {
+                    // 키 고르는 게 따로 없으니 갖고 있는 키 중에서 아무거나 보여줘야 함...
+                    // FIXME: 역시 키 고르는 단계가 있어야 할 것 같음
+                    SetImage(KeyStore.List().First().Item2.Address);
+                }
             }
-            
+
             switch (State.Value)
             {
                 case States.CreateAccount:
@@ -381,8 +388,7 @@ namespace Nekoyume.UI
 
             if (string.IsNullOrEmpty(_privateKeyString))
             {
-                var protectedPrivateKeys = GetProtectedPrivateKeys();
-                privateKey = CheckPrivateKey(protectedPrivateKeys, passPhraseField.text);
+                privateKey = CheckPrivateKey(KeyStore, passPhraseField.text);
             }
             else
             {
@@ -403,78 +409,32 @@ namespace Nekoyume.UI
             _privateKey = privateKey;
         }
 
-        private Dictionary<string, ProtectedPrivateKey> GetProtectedPrivateKeys()
+        private static PrivateKey CheckPrivateKey(IKeyStore keyStore, string passphrase)
         {
-            if (_protectedPrivateKeys.Any())
-            {
-                return _protectedPrivateKeys;
-            }
-
-            if (!Directory.Exists(_keyStorePath))
-            {
-                Directory.CreateDirectory(_keyStorePath);
-            }
-
-            var keyPaths = Directory.EnumerateFiles(_keyStorePath);
-
-            var protectedPrivateKeys = new Dictionary<string, ProtectedPrivateKey>();
-            foreach (var keyPath in keyPaths)
-            {
-                if (Path.GetFileName(keyPath) is string f && f.StartsWith("."))
-                {
-                    continue;
-                }
-
-                using (Stream stream = new FileStream(keyPath, FileMode.Open))
-                using (var reader = new StreamReader(stream))
-                {
-                    try
-                    {
-                        protectedPrivateKeys[keyPath] = ProtectedPrivateKey.FromJson(reader.ReadToEnd());
-                        SetImage(protectedPrivateKeys[keyPath].Address);
-                    }
-                    catch (Exception e)
-                    {
-                        Debug.LogWarningFormat("The key file {0} is invalid: {1}", keyPath, e);
-                    }
-                }
-            }
-
-            Debug.LogFormat(
-                "Loaded {0} protected keys in the keystore:\n{1}",
-                protectedPrivateKeys.Count,
-                string.Join("\n", protectedPrivateKeys.Select(kv => $"- {kv.Value}: {kv.Key}"))
-            );
-
-            // FIXME: 키가 여러 개 있을 수 있으므로 UI에서 목록으로 표시하고 유저가 선택하게 해야 함.
-            _protectedPrivateKeys = protectedPrivateKeys;
-            return protectedPrivateKeys;
-        }
-
-        private static PrivateKey CheckPrivateKey(Dictionary<string, ProtectedPrivateKey> protectedPrivateKeys,
-            string passphrase)
-        {
+            // 현재는 시스템에 키가 딱 하나만 있을 거라고 가정하고 있음.
+            // UI에서도 여러 키 중 하나를 고르는 게 없기 때문에, 만약 여러 키가 있으면 입력 받은 패스프레이즈를
+            // 가진 모든 키에 대해 시도함. 따라서 둘 이상의 다른 키를 같은 패스프레이즈로 잠궈둔 경우, 그 중에서
+            // 뭐가 선택될 지는 알 수 없음. 대부분의 사람들이 패스프레이즈로 같은 단어만 거듭 활용하는 경향이 있기 때문에
+            // 그런 케이스에서 이용자에게는 버그처럼 여겨지는 동작일지도.
+            // FIXME: 따라서 UI에서 키 여러 개 중 뭘 쓸지 선택하는 걸 두는 게 좋을 듯.
             PrivateKey privateKey = null;
-            foreach (var kv in protectedPrivateKeys)
+            foreach (var pair in keyStore.List())
             {
+                pair.Deconstruct(out Guid keyId, out ProtectedPrivateKey ppk);
                 try
                 {
-                    privateKey = kv.Value.Unprotect(passphrase: passphrase);
-                    // FIXME: passphrase 제대로 UI 통해서 입력 받아야 함 -^
+                    privateKey = ppk.Unprotect(passphrase: passphrase);
                 }
                 catch (IncorrectPassphraseException)
                 {
                     Debug.LogWarningFormat(
-                        "The key file {0} is protected with a passphrase; failed to load: {1}",
-                        kv.Value.Address,
-                        kv.Key
+                        "The key {0} is protected with a passphrase; failed to load: {1}",
+                        ppk.Address,
+                        keyId
                     );
                 }
 
-                Debug.LogFormat(
-                    "The key file {0} was successfully loaded using passphrase: {1}",
-                    kv.Value.Address, kv.Key
-                );
+                Debug.LogFormat("The key {0} was successfully loaded using passphrase: {1}", ppk.Address, keyId);
                 break;
             }
 
@@ -495,11 +455,11 @@ namespace Nekoyume.UI
                     submitButton.SetSubmittable(!(string.IsNullOrEmpty(passPhraseField.text) ||
                                                   string.IsNullOrEmpty(retypeField.text)));
                     break;
-                
+
                 case States.Login:
                     submitButton.SetSubmittable(!string.IsNullOrEmpty(loginField.text));
                     break;
-                
+
                 case States.FindPassphrase:
                     submitButton.SetSubmittable(!string.IsNullOrEmpty(findPassphraseField.text));
                     break;
@@ -515,7 +475,7 @@ namespace Nekoyume.UI
         protected override void Update()
         {
             base.Update();
-            
+
             if (Input.GetKeyUp(KeyCode.Tab))
             {
                 switch (State.Value)
@@ -557,9 +517,8 @@ namespace Nekoyume.UI
             try
             {
                 var pk = new PrivateKey(ByteUtil.ParseHex(hex));
-                return GetProtectedPrivateKeys().Select(kv => kv.Value)
-                    .Any(ppk => ppk.Address == pk.PublicKey.ToAddress());
-
+                Address address = pk.ToAddress();
+                return KeyStore.List().Any(pair => pair.Item2.Address == address);
             }
             catch (Exception)
             {
@@ -569,41 +528,37 @@ namespace Nekoyume.UI
 
         private void ResetPassphrase()
         {
+            // 이름은 reset이라곤 하지만, 그냥 raw private key 가져오는 기능임.
+            // FIXME: 전부터 이름 바꿔야 한다는 얘기가 줄곧 나왔음... ("reset passphrase"가 아니라 "import private key"로)
             var hex = findPassphraseField.text;
             var pk = new PrivateKey(ByteUtil.ParseHex(hex));
-            var protectedPrivateKeys = GetProtectedPrivateKeys();
-            var protectedPrivateKey = protectedPrivateKeys.First(i => i.Value.Address == pk.PublicKey.ToAddress());
-            var path = Path.Combine(_keyStorePath, protectedPrivateKey.Key);
-            if (File.Exists(path))
+
+            // 가져온 비밀키를 키스토어에 넣기 전에, 혹시 같은 주소에 대한 키를 지운다.  (아무튼 기능명이 "reset"이라...)
+            // 참고로 본 함수 호출되기 전에 CheckPassphrase()에서 먼저 같은 키의 비밀키가 있는지 확인한다. "찾기"가 아니라 "추가"니까, 없으면 오류가 먼저 나게 되어 있음.
+            Address address = pk.ToAddress();
+            Guid[] keyIdsToRemove = KeyStore.List().
+                Where(pair => pair.Item2.Address.Equals(address))
+                .Select(pair => pair.Item1).ToArray();
+            foreach (Guid keyIdToRemove in keyIdsToRemove)
             {
-                File.Delete(path);
-                _protectedPrivateKeys.Remove(protectedPrivateKey.Key);
+                try
+                {
+                    KeyStore.Remove(keyIdToRemove);
+                }
+                catch (NoKeyException e)
+                {
+                    Debug.LogWarning(e);
+                }
             }
 
+            // 새로 가져온 비밀키 추가
             CreateProtectedPrivateKey(pk);
         }
 
         private void CreateProtectedPrivateKey(PrivateKey privateKey)
         {
             var ppk = ProtectedPrivateKey.Protect(privateKey, passPhraseField.text);
-            // FIXME: passphrase 제대로 UI 통해서 입력 받아야 함. --------------------^
-
-            var keyId = Guid.NewGuid();
-            var now = DateTimeOffset.UtcNow;
-            var keyPath = Path.Combine(
-                _keyStorePath,
-                $"UTC--{now:yyyy-MM-dd}T{now:HH-mm-ss}Z--{keyId:D}"
-            );
-            using (Stream f = new FileStream(keyPath, FileMode.CreateNew))
-            {
-                ppk.WriteJson(f, keyId);
-            }
-
-            Debug.LogFormat(
-                "As there hadn't been any key file, a new key file was created ({0}): {1}",
-                ppk.Address,
-                keyPath
-            );
+            KeyStore.Add(ppk);
             _privateKey = privateKey;
 
 #if UNITY_EDITOR || UNITY_STANDALONE

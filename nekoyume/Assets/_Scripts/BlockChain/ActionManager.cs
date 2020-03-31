@@ -21,7 +21,7 @@ namespace Nekoyume.BlockChain
         private readonly IAgent _agent;
 
         private readonly ActionRenderer _renderer;
-        
+
         private void ProcessAction(GameAction gameAction)
         {
             _agent.EnqueueAction(gameAction);
@@ -84,7 +84,7 @@ namespace Nekoyume.BlockChain
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
-            
+
             var action = new HackAndSlash
             {
                 equipments = equipments,
@@ -199,7 +199,7 @@ namespace Nekoyume.BlockChain
             // var avatarAddress = States.Instance.CurrentAvatarState.address;
             // LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
             // LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
-            
+
             var action = new DailyReward
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
@@ -255,7 +255,7 @@ namespace Nekoyume.BlockChain
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
-            
+
             var action = new RankingBattle
             {
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
@@ -299,7 +299,8 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(int recipeId, int? subRecipeId = null)
+        public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
+            int recipeId, int slotIndex, int? subRecipeId = null)
         {
             // 결과 주소도 고정되게 바꿔야함
             var action = new CombinationEquipment
@@ -307,10 +308,28 @@ namespace Nekoyume.BlockChain
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 RecipeId = recipeId,
                 SubRecipeId = subRecipeId,
+                SlotIndex = slotIndex,
             };
             ProcessAction(action);
 
             return _renderer.EveryRender<CombinationEquipment>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<RapidCombination>> RapidCombination(int slotIndex)
+        {
+            var action = new RapidCombination
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                slotIndex = slotIndex
+            };
+            ProcessAction(action);
+
+            return _renderer.EveryRender<RapidCombination>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

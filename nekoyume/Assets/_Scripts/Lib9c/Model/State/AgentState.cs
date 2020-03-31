@@ -13,9 +13,10 @@ namespace Nekoyume.Model.State
     public class AgentState : State, ICloneable
     {
         //F&F 테스트용 노마이너 기본 소지 골드
-        public decimal gold = 1000;
+        public decimal gold = 1500;
         public readonly Dictionary<int, Address> avatarAddresses;
         public HashSet<int> unlockedOptions;
+        public decimal modifiedGold;
 
         public AgentState(Address address) : base(address)
         {
@@ -36,11 +37,23 @@ namespace Nekoyume.Model.State
             unlockedOptions = serialized.ContainsKey((Text) "unlockedOptions")
                 ? serialized["unlockedOptions"].ToHashSet(StateExtensions.ToInteger)
                 : new HashSet<int>();
+            modifiedGold = serialized["modifiedGold"].ToDecimal();
         }
 
         public object Clone()
         {
             return MemberwiseClone();
+        }
+
+        public bool PurchaseGold(decimal cost)
+        {
+            if (gold - cost < 0)
+            {
+                return false;
+            }
+            gold -= cost;
+            modifiedGold = cost;
+            return true;
         }
 
         public override IValue Serialize() =>
@@ -56,6 +69,7 @@ namespace Nekoyume.Model.State
                 ),
                 [(Text)"gold"] = gold.Serialize(),
                 [(Text)"unlockedOptions"] = unlockedOptions.Select(i => i.Serialize()).Serialize(),
+                [(Text) "modifiedGold"] = modifiedGold.Serialize(),
             }.Union((Dictionary)base.Serialize()));
     }
 }

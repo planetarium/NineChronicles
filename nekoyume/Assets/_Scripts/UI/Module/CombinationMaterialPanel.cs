@@ -25,7 +25,11 @@ namespace Nekoyume.UI.Module
             materialText.text = LocalizationManager.Localize("UI_MATERIALS");
         }
 
-        public virtual void SetData(EquipmentItemRecipeSheet.Row row, int? subRecipeId)
+        public virtual void SetData(
+            EquipmentItemRecipeSheet.Row row,
+            int? subRecipeId,
+            bool checkInventory = true
+        )
         {
             MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
             costNcg = 0m;
@@ -53,6 +57,48 @@ namespace Nekoyume.UI.Module
             }
 
             var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
+            IsCraftable = Widget.Find<Combination>().selectedIndex >= 0;
+
+            for (var index = 0; index < materialViews.Length; index++)
+            {
+                var view = materialViews[index];
+                view.gameObject.SetActive(false);
+                if (index < MaterialList.Count)
+                {
+                    var (material, requiredCount) = MaterialList[index];
+                    var itemCount = requiredCount;
+                    if (checkInventory)
+                    {
+                        itemCount = inventory.TryGetFungibleItem(material, out var inventoryItem)
+                            ? inventoryItem.count
+                            : 0;
+                    }
+                    var item = new CountableItem(material, itemCount);
+                    view.SetData(item, requiredCount);
+                    view.gameObject.SetActive(true);
+
+                    if (item.Count.Value < requiredCount)
+                        IsCraftable = false;
+                }
+            }
+        }
+
+        // FIXME 현재는 결과창에서만 사용중. 조합쪽에서도 쓸 수 있게 고쳐야함
+        public void SetData(ConsumableItemRecipeSheet.Row row)
+        {
+            MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
+            costNcg = 0m;
+            costAp = 0;
+            var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            foreach (var materialId in row.MaterialItemIds)
+            {
+                var materialRow = materialSheet.Values.First(i => i.Id == materialId);
+                var baseMaterial = ItemFactory.CreateMaterial(materialRow);
+                MaterialList.Add((baseMaterial, 1));
+                costNcg += row.RequiredGold;
+                costAp += row.RequiredActionPoint;
+            }
+
             IsCraftable = true;
 
             for (var index = 0; index < materialViews.Length; index++)
@@ -62,13 +108,10 @@ namespace Nekoyume.UI.Module
                 if (index < MaterialList.Count)
                 {
                     var (material, requiredCount) = MaterialList[index];
-                    inventory.TryGetFungibleItem(material, out var inventoryItem);
-                    var item = new CountableItem(material, inventoryItem?.count ?? 0);
+                    var itemCount = requiredCount;
+                    var item = new CountableItem(material, itemCount);
                     view.SetData(item, requiredCount);
                     view.gameObject.SetActive(true);
-
-                    if (item.Count.Value < requiredCount)
-                        IsCraftable = false;
                 }
             }
         }

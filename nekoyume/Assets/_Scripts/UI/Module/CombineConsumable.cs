@@ -28,12 +28,15 @@ namespace Nekoyume.UI.Module
 
         public Button recipeButton;
 
+        private int _requiredActionPoint;
+
         public override bool IsSubmittable =>
             !(States.Instance.AgentState is null) &&
             States.Instance.AgentState.gold >= CostNCG &&
             !(States.Instance.CurrentAvatarState is null) &&
             States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
-            otherMaterials.Count(e => !e.IsLocked && !e.IsEmpty) >= 2;
+            otherMaterials.Count(e => !e.IsLocked && !e.IsEmpty) >= 2 &&
+            Widget.Find<Combination>().selectedIndex >= 0;
 
         private readonly ReactiveProperty<int> _count = new ReactiveProperty<int>();
 
@@ -91,11 +94,9 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostAP()
         {
-            return otherMaterials.Any(e => !e.IsEmpty)
-                ? GameConfig.CombineConsumableCostAP * _count.Value
-                : 0;
+            return _requiredActionPoint * _count.Value;
         }
-        
+
         protected override bool TryAddOtherMaterial(InventoryItem viewModel, int count, out CombinationMaterialView materialView)
         {
             if (viewModel is null ||
@@ -110,7 +111,7 @@ namespace Nekoyume.UI.Module
 
             if (!base.TryAddOtherMaterial(viewModel, count, out materialView))
                 return false;
-            
+
             materialView.TryIncreaseCount(_count.Value - materialView.Model.Count.Value);
 
             UpdateResultItem();
@@ -124,12 +125,12 @@ namespace Nekoyume.UI.Module
         {
             if (!base.TryRemoveOtherMaterial(view, out materialView))
                 return false;
-            
+
             if (otherMaterials.Where(e => !e.IsLocked).All(e => e.IsEmpty))
             {
                 ResetCount();
             }
-            
+
             UpdateResultItem();
             UpdateCountButtons();
 
@@ -155,12 +156,12 @@ namespace Nekoyume.UI.Module
             {
                 resultItemView.gameObject.SetActive(true);
                 TableSheets tableSheets = Game.Game.instance.TableSheets;
-                
+
                 if (tableSheets.ConsumableItemRecipeSheet.TryGetValue(ids, out var recipeRow))
                 {
                     tableSheets.ConsumableItemSheet.TryGetValue(
                         recipeRow.ResultConsumableItemId,
-                        out var itemRow, 
+                        out var itemRow,
                         true
                     );
                     var itemBase = ItemFactory.CreateItemUsable(itemRow, Guid.NewGuid(), default);
@@ -168,6 +169,7 @@ namespace Nekoyume.UI.Module
                     resultItemNameText.gameObject.SetActive(true);
                     resultItemNameText.text = itemRow.GetLocalizedName();
                     resultItemNameText.color = Color.white;
+                    _requiredActionPoint = recipeRow.RequiredActionPoint;
                 }
                 else
                 {

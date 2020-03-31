@@ -25,7 +25,6 @@ namespace Nekoyume.Action
         public Guid itemId;
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
-        public List<int> completedQuestIds;
         public int slotIndex;
 
         [Serializable]
@@ -155,7 +154,7 @@ namespace Nekoyume.Action
                     // 인벤토리에 재료로 등록한 장비가 없는 에러.
                     return states;
                 }
-                
+
                 if (materialItem.RequiredBlockIndex > context.BlockIndex)
                 {
                     // 필요 블럭 인덱스 불충분 에러.
@@ -230,9 +229,9 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
 
-            completedQuestIds = avatarState.UpdateQuestRewards(ctx);
+            avatarState.UpdateQuestRewards(ctx);
 
-            slotState.Update(result, ctx.BlockIndex);
+            slotState.Update(result, ctx.BlockIndex, ctx.BlockIndex);
 
             sw.Stop();
             Log.Debug($"ItemEnhancement Update AvatarState: {sw.Elapsed}");
@@ -285,6 +284,7 @@ namespace Nekoyume.Action
 
         public static decimal GetRequiredGold(Equipment enhancementEquipment)
         {
+            return 0;
             return Math.Max(GameConfig.EnhanceEquipmentCostNCG,
                 GameConfig.EnhanceEquipmentCostNCG * enhancementEquipment.Data.Grade);
         }

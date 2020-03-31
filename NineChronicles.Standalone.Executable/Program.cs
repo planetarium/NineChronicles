@@ -30,6 +30,8 @@ namespace NineChronicles.Standalone.Executable
             string host = null,
             [Option('P')]
             ushort? port = null,
+            [Option('D')]
+            int minimumDifficulty = 5000000,
             [Option("private-key")]
             string privateKeyString = null,
             string storeType = null,
@@ -67,8 +69,8 @@ namespace NineChronicles.Standalone.Executable
                 Port = port,
                 AppProtocolVersion = AppProtocolVersion.FromToken(appProtocolVersionToken),
                 TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners
-                    .Select(s => new PublicKey(ByteUtil.ParseHex(s)))
-                    .ToHashSet(),
+                    ?.Select(s => new PublicKey(ByteUtil.ParseHex(s)))
+                    ?.ToHashSet(),
                 GenesisBlockPath = genesisBlockPath,
                 NoMiner = noMiner,
                 PrivateKey = privateKey,
@@ -76,6 +78,7 @@ namespace NineChronicles.Standalone.Executable
                 Peers = peers,
                 StoreType = storeType,
                 StorePath = storePath,
+                MinimumDifficulty = minimumDifficulty,
             };
 
             var rpcProperties = new RpcNodeServiceProperties
