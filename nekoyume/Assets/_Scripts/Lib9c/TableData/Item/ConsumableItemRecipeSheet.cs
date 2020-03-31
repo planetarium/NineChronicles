@@ -1,36 +1,41 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class ConsumableItemRecipeSheet : Sheet<int, ConsumableItemRecipeSheet.Row> 
+    public class ConsumableItemRecipeSheet : Sheet<int, ConsumableItemRecipeSheet.Row>
     {
         [Serializable]
         public class Row : SheetRow<int>
         {
             public override int Key => Id;
             public int Id { get; private set; }
+            public long RequiredBlockIndex { get; private set; }
+            public int RequiredActionPoint { get; private set; }
+            public decimal RequiredGold { get; private set; }
             public List<int> MaterialItemIds { get; private set; }
             public int ResultConsumableItemId { get; private set; }
-            
+
             public override void Set(IReadOnlyList<string> fields)
             {
-                Id = int.Parse(fields[0], CultureInfo.InvariantCulture);
+                Id = ParseInt(fields[0]);
+                RequiredBlockIndex = ParseLong(fields[1]);
+                RequiredActionPoint = ParseInt(fields[2]);
+                RequiredGold = ParseDecimal(fields[3]);
                 MaterialItemIds = new List<int>();
-                for (var i = 1; i < 5; i++)
+                for (var i = 4; i < 8; i++)
                 {
                     if (string.IsNullOrEmpty(fields[i]))
                         break;
-                    
+
                     MaterialItemIds.Add(ParseInt(fields[i]));
                 }
                 MaterialItemIds.Sort((left, right) => left - right);
-                
-                ResultConsumableItemId = ParseInt(fields[5]);
+
+                ResultConsumableItemId = ParseInt(fields[8]);
             }
 
             public bool IsMatch(IEnumerable<int> materialItemIds)

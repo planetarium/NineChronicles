@@ -28,6 +28,8 @@ namespace Nekoyume.UI.Module
 
         public Button recipeButton;
 
+        private int _requiredActionPoint;
+
         public override bool IsSubmittable =>
             !(States.Instance.AgentState is null) &&
             States.Instance.AgentState.gold >= CostNCG &&
@@ -92,9 +94,7 @@ namespace Nekoyume.UI.Module
 
         protected override int GetCostAP()
         {
-            return otherMaterials.Any(e => !e.IsEmpty)
-                ? GameConfig.CombineConsumableCostAP * _count.Value
-                : 0;
+            return _requiredActionPoint * _count.Value;
         }
 
         protected override bool TryAddOtherMaterial(InventoryItem viewModel, int count, out CombinationMaterialView materialView)
@@ -169,6 +169,7 @@ namespace Nekoyume.UI.Module
                     resultItemNameText.gameObject.SetActive(true);
                     resultItemNameText.text = itemRow.GetLocalizedName();
                     resultItemNameText.color = Color.white;
+                    _requiredActionPoint = recipeRow.RequiredActionPoint;
                 }
                 else
                 {
