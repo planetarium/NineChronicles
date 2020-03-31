@@ -68,7 +68,8 @@ namespace Libplanet.Standalone.Hosting
                 trustedAppProtocolVersionSigners: _properties.TrustedAppProtocolVersionSigners,
                 host: _properties.Host,
                 listenPort: _properties.Port,
-                iceServers: iceServers);
+                iceServers: iceServers,
+                differentAppProtocolVersionEncountered: _properties.DifferentAppProtocolVersionEncountered);
 
             PreloadEnded = new AsyncAutoResetEvent();
             BootstrapEnded = new AsyncAutoResetEvent();

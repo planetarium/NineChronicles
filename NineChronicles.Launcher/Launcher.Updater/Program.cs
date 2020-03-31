@@ -15,29 +15,32 @@ namespace Launcher.Updater
 {
     class Program
     {
+        const string MacOSLatestBinaryUrl = "https://download.nine-chronicles.com/latest/macOS.tar.gz";
+        const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.tar.gz";
+
         static async Task Main(string[] args)
         {
-            var settings = Configuration.LoadSettings();
-            var s3Storage = new S3Storage();
             var cts = new CancellationTokenSource();
-            var currentVersionDescriptor = await VersionHelper.CurrentVersionAsync(s3Storage, settings.DeployBranch, cts.Token);
+            string binaryUrl;
 
-            var version = currentVersionDescriptor.Version;
-
-            if (!Configuration.LocalCurrentVersion.Equals(currentVersionDescriptor))
+            if (args.Length > 0)
             {
-                Console.Error.WriteLine($"New update released! {version}");
+                // 업데이트 모드
+                binaryUrl = args[0];
+            }
+            else
+            {
+                // 인스톨러 모드
+                binaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                    ? MacOSLatestBinaryUrl
+                    : WindowsLatestBinaryUrl;
+            }
 
-                if (Directory.Exists(CurrentPlatform.BinariesPath))
-                {
-                    Directory.Delete(CurrentPlatform.BinariesPath, true);
-                }
-
+            if (binaryUrl is string u)
+            {
                 try
                 {
-                    await DownloadBinariesAsync(s3Storage, settings.DeployBranch, version,
-                        cts.Token);
-                    Configuration.LocalCurrentVersion = currentVersionDescriptor;
+                    await DownloadBinariesAsync(u, cts.Token);
                 }
                 catch (OperationCanceledException)
                 {
@@ -48,38 +51,61 @@ namespace Launcher.Updater
             Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
         }
 
-        private static async Task DownloadBinariesAsync(S3Storage storage, string deployBranch, string version, CancellationToken cancellationToken)
+        private static async Task DownloadBinariesAsync(
+            string gameBinaryDownloadUri,
+            CancellationToken cancellationToken
+        )
         {
             var tempFilePath = Path.GetTempFileName();
-            using var httpClient = new HttpClient();
-            httpClient.Timeout = Timeout.InfiniteTimeSpan;
 
-            var gameBinaryDownloadUri = storage.GameBinaryDownloadUri(deployBranch, version);
             Console.Error.WriteLine($"Start download game binary from '{gameBinaryDownloadUri}' to {tempFilePath}.");
-            var responseMessage = await httpClient.GetAsync(gameBinaryDownloadUri, cancellationToken);
-            if (File.Exists(tempFilePath))
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                File.Delete(tempFilePath);
+                Process.Start(
+                    "curl",
+                    $"-o {EscapeShellArgument(tempFilePath)} {EscapeShellArgument(gameBinaryDownloadUri)}"
+                ).WaitForExit();
             }
-            using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write))
+            else
             {
-                await responseMessage.Content.CopyToAsync(fileStream);
-                Console.Error.WriteLine($"Finished download from '{gameBinaryDownloadUri}'!");
+                using var httpClient = new HttpClient();
+                httpClient.Timeout = Timeout.InfiniteTimeSpan;
+                var responseMessage = await httpClient.GetAsync(gameBinaryDownloadUri, cancellationToken);
+                if (File.Exists(tempFilePath))
+                {
+                    File.Delete(tempFilePath);
+                }
+                using (var fileStream = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write))
+                {
+                    await responseMessage.Content.CopyToAsync(fileStream);
+                }
             }
+            Console.Error.WriteLine($"Finished download from '{gameBinaryDownloadUri}'!");
 
-            // Extract binary.
             // TODO: implement a function to extract with file extension.
             Console.Error.WriteLine("Start to extract game binary.");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                var process = Process.Start("tar", $"-zxvf {tempFilePath} -C {CurrentPlatform.CurrentWorkingDirectory}");
+                var process = Process.Start(
+                    "tar",
+                    $"-zxvf {EscapeShellArgument(tempFilePath)} " +
+                    $"-C {EscapeShellArgument(CurrentPlatform.CurrentWorkingDirectory)}"
+                );
                 process.WaitForExit();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 ZipFile.ExtractToDirectory(tempFilePath, CurrentPlatform.CurrentWorkingDirectory);
             }
+            else
+            {
+                throw new Exception("Unsupported platform.");
+            }
+
             Console.Error.WriteLine("Finished to extract game binary.");
         }
+
+        private static string EscapeShellArgument(string value) =>
+            "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
     }
 }

@@ -28,33 +28,6 @@ namespace Launcher.Common
             }
         }
 
-        public static VersionDescriptor? LocalCurrentVersion
-        {
-            get
-            {
-                try
-                {
-                    var raw = File.ReadAllText(LocalCurrentVersionPath);
-                    return JsonSerializer.Deserialize<VersionDescriptor>(
-                        raw,
-                        new JsonSerializerOptions
-                        {
-                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                        });
-                }
-                catch (Exception e)
-                {
-                    Log.Error(e, $"Unexpected exception occurred: {e.Message}");
-                    return null;
-                }
-            }
-            set => File.WriteAllText(LocalCurrentVersionPath, JsonSerializer.Serialize((VersionDescriptor) value,
-                new JsonSerializerOptions
-                {
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                }));
-        }
-
         public static string LoadKeyStorePath(LauncherSettings settings)
         {
             if (string.IsNullOrEmpty(settings.KeyStorePath))
@@ -85,7 +58,5 @@ namespace Launcher.Common
         private static string LocalApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
         private static string ApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-
-        private static string LocalCurrentVersionPath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "9c-current-version.json");
     }
 }

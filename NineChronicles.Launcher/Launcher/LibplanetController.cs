@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using Launcher.Common;
 using Launcher.Common.Storage;
 using Libplanet;
@@ -71,9 +72,7 @@ namespace Launcher
                     try
                     {
                         var settings = LoadSettings();
-                        await Task.WhenAll(
-                            UpdateCheckTask(settings, cancellationToken),
-                            SyncTask(settings, cancellationToken));
+                        await SyncTask(settings, cancellationToken);
                     }
                     catch (TimeoutException e)
                     {
@@ -115,16 +114,18 @@ namespace Launcher
             }
         }
 
-        private async Task UpdateCheckTask(LauncherSettings settings, CancellationToken cancellationToken)
+        private bool NewAppProtocolVersionEncountered(
+            Peer peer,
+            AppProtocolVersion peerVersion,
+            AppProtocolVersion localVersion)
         {
-            // TODO: save current version in local file and load, and use it.
-            var updateWatcher = new UpdateWatcher(Storage, settings.DeployBranch, LocalCurrentVersion ?? default);
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            updateWatcher.VersionUpdated += async (sender, e) =>
-            {
-                Restart();
-            };
-            await updateWatcher.StartAsync(TimeSpan.FromSeconds(3), cancellationToken);
+            // FIXME: It should notice game will be shut down!
+            // It assumes another like updater, will run this, Launcher.
+            // FIXME: determine updater path.
+            Log.Information("A new version is available: {Version}", peerVersion);
+            var extra = new Nekoyume.AppProtocolVersionExtra((Bencodex.Types.Dictionary) peerVersion.Extra);
+            RestartToUpdate(extra);
+            return false;
         }
 
         private async Task SyncTask(LauncherSettings settings, CancellationToken cancellationToken)
@@ -151,6 +152,7 @@ namespace Launcher
                 StoreType = settings.StoreType,
                 MinimumDifficulty = settings.MinimumDifficulty,
                 TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners,
+                DifferentAppProtocolVersionEncountered = NewAppProtocolVersionEncountered,
             };
 
             var rpcProperties = new RpcNodeServiceProperties
@@ -168,7 +170,9 @@ namespace Launcher
                     Task.Run(async () =>
                     {
                         await service.BootstrapEnded.WaitAsync(cancellationToken);
+                        Console.WriteLine("Bootstrap Ended");
                         await service.PreloadEnded.WaitAsync(cancellationToken);
+                        Console.WriteLine("Preload Ended");
 
                         Preprocessing = false;
                         this.ActivateProperty(ctrl => ctrl.Preprocessing);
@@ -177,13 +181,6 @@ namespace Launcher
             catch (OperationCanceledException e)
             {
                 Log.Warning(e, "Background sync task was cancelled.");
-            }
-            catch (DifferentAppProtocolVersionException)
-            {
-                // FIXME: It should notice game will be shut down!
-                // It assumes another like updater, will run this, Launcher.
-                // FIXME: determine updater path.
-                Restart();
             }
             catch (Exception e)
             {
@@ -244,14 +241,17 @@ namespace Launcher
             return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
         }
 
-        private void Restart()
+        private void RestartToUpdate(Nekoyume.AppProtocolVersionExtra extra)
         {
             // TODO: It should notice it will be shut down because of updates.
+            string binaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                ? extra.MacOSBinaryUrl
+                : extra.WindowsBinaryUrl;
             const string updaterFilename = "Launcher.Updater";
             string updaterPath =
                 Path.Combine(CurrentPlatform.CurrentWorkingDirectory, updaterFilename);
             GameProcess?.Kill();
-            Process.Start(updaterPath);
+            Process.Start(updaterPath, binaryUrl);
             Environment.Exit(0);
         }
 
