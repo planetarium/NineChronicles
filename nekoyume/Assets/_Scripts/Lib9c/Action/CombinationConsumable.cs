@@ -69,6 +69,7 @@ namespace Nekoyume.Action
             {
                 ["Materials"] = Materials.Serialize(),
                 ["avatarAddress"] = AvatarAddress.Serialize(),
+                ["slotIndex"] = slotIndex.Serialize(),
             }.ToImmutableDictionary();
 
         public CombinationConsumable()
@@ -80,6 +81,10 @@ namespace Nekoyume.Action
         {
             Materials = plainValue["Materials"].ToDictionary_Material_int();
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
+            if (plainValue.TryGetValue((Text) "slotIndex", out var value))
+            {
+                slotIndex = value.ToInteger();
+            }
         }
 
         public override IAccountStateDelta Execute(IActionContext context)

@@ -248,6 +248,7 @@ namespace Nekoyume.Action
             ["itemId"] = itemId.Serialize(),
             ["materialIds"] = materialIds.Select(g => g.Serialize()).Serialize(),
             ["avatarAddress"] = avatarAddress.Serialize(),
+            ["slotIndex"] = slotIndex.Serialize(),
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -255,6 +256,10 @@ namespace Nekoyume.Action
             itemId = plainValue["itemId"].ToGuid();
             materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
+            if (plainValue.TryGetValue((Text) "slotIndex", out var value))
+            {
+                slotIndex = value.ToInteger();
+            }
         }
 
         private static Equipment UpgradeEquipment(Equipment equipment)
