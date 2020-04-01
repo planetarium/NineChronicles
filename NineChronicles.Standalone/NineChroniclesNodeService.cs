@@ -74,10 +74,10 @@ namespace NineChronicles.Standalone
                 minerLoopAction
             );
 
-            if (BlockPolicy.WhiteListSet is null)
+            if (BlockPolicy.ActivationSet is null)
             {
                 var tableSheetState = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
-                BlockPolicy.UpdateWhiteListSet(tableSheetState);
+                BlockPolicy.UpdateActivationSet(tableSheetState);
             }
         }
 

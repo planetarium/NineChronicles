@@ -128,14 +128,14 @@ docker-compose up --build
 
 ### 화이트 리스트
 
-`nekoyume/Assets/AddressableAssets/TableCSV/Account/WhiteListSheet.csv` 를 통해 아래와 같이 화이트 리스트를 관리할 수 있습니다.
+`nekoyume/Assets/AddressableAssets/TableCSV/Account/ActivationSheet.csv` 를 통해 아래와 같이 화이트 리스트를 관리할 수 있습니다.
 
 ```
 id,public_key
 1,029d256bc6943cd9d18712b1fe1fdd061705d2ffa644a7705b3cf90f408d1ee278
 ```
 
-`WhiteListSheet.csv` 파일에 PublicKey가 등록된 경우, 해당 PublicKey를 생성한 PrivateKey로 서명한
+`ActivationSheet.csv` 파일에 PublicKey가 등록된 경우, 해당 PublicKey를 생성한 PrivateKey로 서명한
 트랜잭션만 마이닝 될 수 있습니다.
 
-`WhiteListSheet.csv` 파일에 등록된 PublicKey가 없을 경우 화이트리스트 기능이 동작하지 않습니다.
+`ActivationSheet.csv` 파일에 등록된 PublicKey가 없을 경우 화이트리스트 기능이 동작하지 않습니다.

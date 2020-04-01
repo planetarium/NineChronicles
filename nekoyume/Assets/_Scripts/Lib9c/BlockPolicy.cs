@@ -29,13 +29,13 @@ namespace Nekoyume.BlockChain
             ActionBase.UnrenderSubject
         );
 
-        public static ImmutableHashSet<PublicKey> WhiteListSet { get; private set; }
+        public static ImmutableHashSet<PublicKey> ActivationSet { get; private set; }
 
-        public static void UpdateWhiteListSet(IValue state)
+        public static void UpdateActivationSet(IValue state)
         {
-            var whiteListSheet = GetWhiteListSheet(state);
+            var activationSheet = GetActivationSheet(state);
 
-            WhiteListSet = whiteListSheet?.Values
+            ActivationSet = activationSheet?.Values
                 .Select(row => row.PublicKey)
                 .ToImmutableHashSet();
         }
@@ -48,11 +48,11 @@ namespace Nekoyume.BlockChain
 #else
             ActionRenderer
                 .EveryRender(TableSheetsState.Address)
-                .Subscribe(UpdateWhiteListSet);
+                .Subscribe(UpdateActivationSet);
 
             ActionRenderer
                 .EveryUnrender(TableSheetsState.Address)
-                .Subscribe(UpdateWhiteListSet);
+                .Subscribe(UpdateActivationSet);
 
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
                 new RewardGold { Gold = 1 },
@@ -64,7 +64,7 @@ namespace Nekoyume.BlockChain
 #endif
         }
 
-        private static WhiteListSheet GetWhiteListSheet(IValue state)
+        private static ActivationSheet GetActivationSheet(IValue state)
         {
             if (state is null)
             {
@@ -72,22 +72,22 @@ namespace Nekoyume.BlockChain
             }
 
             var tableSheetsState = new TableSheetsState((Dictionary)state);
-            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
+            return TableSheets.FromTableSheetsState(tableSheetsState).ActivationSheet;
         }
 
         private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
             var signerPublicKey = transaction.PublicKey;
 
-            return WhiteListSet is null
-                   || WhiteListSet.Count == 0
-                   || WhiteListSet.Contains(signerPublicKey);
+            return ActivationSet is null
+                   || ActivationSet.Count == 0
+                   || ActivationSet.Contains(signerPublicKey);
         }
 
-        private static void UpdateWhiteListSet(ActionBase.ActionEvaluation<ActionBase> evaluation)
+        private static void UpdateActivationSet(ActionBase.ActionEvaluation<ActionBase> evaluation)
         {
             var state = evaluation.OutputStates.GetState(TableSheetsState.Address);
-            UpdateWhiteListSet(state);
+            UpdateActivationSet(state);
         }
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>

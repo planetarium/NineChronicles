@@ -187,10 +187,10 @@ namespace Nekoyume.BlockChain
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
 
-            if (BlockPolicy.WhiteListSet is null)
+            if (BlockPolicy.ActivationSet is null)
             {
                 var tableSheetState = blocks?.GetState(TableSheetsState.Address);
-                BlockPolicy.UpdateWhiteListSet(tableSheetState);
+                BlockPolicy.UpdateActivationSet(tableSheetState);
             }
 
 #if BLOCK_LOG_USE

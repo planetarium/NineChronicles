@@ -17,7 +17,7 @@ namespace Nekoyume.TableData
 
         #region sheets
 
-        public WhiteListSheet WhiteListSheet { get; private set; }
+        public ActivationSheet ActivationSheet { get; private set; }
         public WorldSheet WorldSheet { get; private set; }
         public StageWaveSheet StageWaveSheet { get; private set; }
         public StageSheet StageSheet { get; private set; }
