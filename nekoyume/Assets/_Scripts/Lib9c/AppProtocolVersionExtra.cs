@@ -4,66 +4,39 @@ using Bencodex.Types;
 
 namespace Nekoyume
 {
-    public struct AppProtocolVersionExtra
+    public readonly struct AppProtocolVersionExtra
     {
-        private readonly struct DownloadUrls
-        {
-            private const string MacOSBinaryUrlKey = "macOS";
+        private const string MacOSBinaryUrlKey = "macOSBinaryUrl";
 
-            private const string WindowsBinaryUrlKey = "Windows";
-
-            public readonly string MacOSBinaryUrl;
-
-            public readonly string WindowsBinaryUrl;
-
-            public DownloadUrls(string macOsBinaryUrl, string windowsBinaryUrl)
-            {
-                MacOSBinaryUrl = macOsBinaryUrl;
-                WindowsBinaryUrl = windowsBinaryUrl;
-            }
-
-            public DownloadUrls(Bencodex.Types.Dictionary dictionary)
-            {
-                MacOSBinaryUrl = (Text) dictionary[MacOSBinaryUrlKey];
-                WindowsBinaryUrl = (Text) dictionary[WindowsBinaryUrlKey];
-            }
-
-            public IValue Serialize()
-            {
-                return Bencodex.Types.Dictionary.Empty
-                    .Add(MacOSBinaryUrlKey, MacOSBinaryUrl)
-                    .Add(WindowsBinaryUrlKey, WindowsBinaryUrl);
-            }
-        }
-
-        private const string DownloadUrlsKey = "downloadUrls";
+        private const string WindowsBinaryUrlKey = "WindowsBinaryUrl";
 
         private const string TimestampKey = "timestamp";
 
-        private readonly DownloadUrls _downloadUrls;
+        public readonly string MacOSBinaryUrl;
 
-        public string MacOSBinaryUrl => _downloadUrls.MacOSBinaryUrl;
-
-        public string WindowsBinaryUrl => _downloadUrls.WindowsBinaryUrl;
+        public readonly string WindowsBinaryUrl;
 
         public readonly DateTimeOffset Timestamp;
 
-        public AppProtocolVersionExtra(string macOsBinaryUrl, string windowsBinaryUrl, DateTimeOffset timestamp)
+        public AppProtocolVersionExtra(string macOSBinaryUrl, string windowsBinaryUrl, DateTimeOffset timestamp)
         {
-            _downloadUrls = new DownloadUrls(macOsBinaryUrl, windowsBinaryUrl);
+            MacOSBinaryUrl = macOSBinaryUrl;
+            WindowsBinaryUrl = windowsBinaryUrl;
             Timestamp = timestamp;
         }
 
         public AppProtocolVersionExtra(Bencodex.Types.Dictionary dictionary)
         {
-            _downloadUrls = new DownloadUrls((Bencodex.Types.Dictionary) dictionary[DownloadUrlsKey]);
+            MacOSBinaryUrl = (Text) dictionary[MacOSBinaryUrlKey];
+            WindowsBinaryUrl = (Text) dictionary[WindowsBinaryUrlKey];
             Timestamp = DateTimeOffset.Parse((Text) dictionary[TimestampKey], CultureInfo.InvariantCulture);
         }
 
         public IValue Serialize()
         {
             return Bencodex.Types.Dictionary.Empty
-                .Add(DownloadUrlsKey, _downloadUrls.Serialize())
+                .Add(MacOSBinaryUrlKey, MacOSBinaryUrl)
+                .Add(WindowsBinaryUrlKey, WindowsBinaryUrl)
                 .Add(TimestampKey, Timestamp.ToString(CultureInfo.InvariantCulture));;
         }
     }
