@@ -71,13 +71,11 @@ namespace Nekoyume.UI
         public Transform npcPosition02;
         public CanvasGroup canvasGroup;
         public ModuleBlur blur;
+        public Animator equipmentRecipeAnimator;
 
         private NPC _npc01;
         private NPC _npc02;
         public int selectedIndex;
-
-        public DOTweenGroupAlpha categoryTabAlphaTweener;
-        public AnchoredPositionYTweener categoryTabPositionTweener;
 
         #region Override
 
@@ -351,10 +349,10 @@ namespace Nekoyume.UI
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
                     categoryTabArea.SetActive(true);
-                    categoryTabAlphaTweener.Play();
-                    categoryTabPositionTweener.StartTween();
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(true);
+                    equipmentRecipe.ShowCellViews();
+                    equipmentRecipeAnimator.Play("Show");
                     break;
                 case StateType.CombineConsumable:
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
@@ -402,9 +400,9 @@ namespace Nekoyume.UI
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
-                    categoryTabArea.SetActive(false);
                     inventory.gameObject.SetActive(false);
-                    equipmentRecipe.gameObject.SetActive(false);
+                    equipmentRecipeAnimator.Play("Hide");
+                    equipmentRecipe.HideCellviews();
 
                     var selectedRecipe = equipmentRecipe.SelectedRecipe;
                     var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
@@ -412,10 +410,12 @@ namespace Nekoyume.UI
                     if (isElemental)
                     {
                         equipmentCombinationPanel.Hide();
+                        elementalCombinationPanel.TweenCellViewInOption(selectedRecipe);
                         elementalCombinationPanel.SetData(selectedRecipe.RowData);
                     }
                     else
                     {
+                        equipmentCombinationPanel.TweenCellView(selectedRecipe);
                         equipmentCombinationPanel.SetData(selectedRecipe.RowData);
                         elementalCombinationPanel.Hide();
                     }
@@ -424,6 +424,12 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
+        }
+
+        private void OnRecipeHide()
+        {
+            categoryTabArea.SetActive(false);
+            equipmentRecipe.gameObject.SetActive(false);
         }
 
         private void ShowTooltip(InventoryItemView view)

@@ -9,6 +9,9 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionYTweener : MonoBehaviour
     {
+        public TweenCallback OnComplete = null;
+        public TweenCallback OnReverseComplete = null;
+
         [SerializeField] private float startDelay = 0f;
         [SerializeField] private float end = 0f;
         [SerializeField] private float duration = 1f;
@@ -49,6 +52,31 @@ namespace Nekoyume.UI.Tween
                     .SetEase(showEase);
             }
 
+            _tween.onComplete = OnComplete;
+            return _tween;
+        }
+
+        public Tweener PlayReverse()
+        {
+            _rectTransform.anchoredPosition = new Vector2(
+                originAnchoredPosition.x,
+                originAnchoredPosition.y + end);
+
+            if (isFrom)
+            {
+                _tween = _rectTransform.DOAnchorPosY(originAnchoredPosition.y, duration, snapping)
+                    .SetDelay(startDelay)
+                    .SetEase(showEase)
+                    .From();
+            }
+            else
+            {
+                _tween = _rectTransform.DOAnchorPosY(originAnchoredPosition.y, duration, snapping)
+                    .SetDelay(startDelay)
+                    .SetEase(showEase);
+            }
+
+            _tween.onComplete = OnReverseComplete;
             return _tween;
         }
 

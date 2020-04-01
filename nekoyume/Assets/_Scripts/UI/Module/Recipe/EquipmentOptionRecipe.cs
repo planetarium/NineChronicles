@@ -1,6 +1,7 @@
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
+using Nekoyume.UI.Tween;
 using UniRx;
 using UnityEngine;
 

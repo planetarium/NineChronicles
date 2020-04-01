@@ -1,4 +1,5 @@
 using Nekoyume.TableData;
+using Nekoyume.UI.Tween;
 using UnityEngine;
 
 namespace Nekoyume.UI.Module
@@ -6,7 +7,23 @@ namespace Nekoyume.UI.Module
     public class ElementalCombinationMaterialPanel : CombinationMaterialPanel
     {
         [SerializeField]
-        private EquipmentOptionView optionView;
+        private EquipmentOptionView optionView = null;
+
+        [SerializeField]
+        private DOTweenRectTransformMoveTo panelTweener = null;
+
+        [SerializeField]
+        private Animator animator = null;
+
+        public void TweenPanel(EquipmentOptionRecipeView view)
+        {
+            var rect = view.transform as RectTransform;
+
+            panelTweener.SetBeginRect(rect);
+            panelTweener.Play();
+            animator.Play("Show");
+            animator.speed = 0f;
+        }
 
         public override void SetData(
             EquipmentItemRecipeSheet.Row row,
@@ -30,8 +47,12 @@ namespace Nekoyume.UI.Module
             {
                 optionView.Hide();
             }
-
             base.SetData(row, subRecipeId, checkInventory);
+        }
+
+        public void OnTweenCompleted()
+        {
+            animator.speed = 1f;
         }
     }
 }

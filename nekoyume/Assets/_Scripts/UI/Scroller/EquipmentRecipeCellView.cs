@@ -11,7 +11,6 @@ using TMPro;
 using Nekoyume.TableData;
 using UnityEngine.UI;
 using UniRx;
-using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -50,7 +49,7 @@ namespace Nekoyume.UI.Scroller
         private TextMeshProUGUI unlockConditionText;
 
         [SerializeField]
-        private DOTweenRectTransformMoveTo tweener;
+        private CanvasGroup canvasGroup;
 
         public readonly Subject<EquipmentRecipeCellView> OnClick =
             new Subject<EquipmentRecipeCellView>();
@@ -82,19 +81,24 @@ namespace Nekoyume.UI.Scroller
 
         public void Show()
         {
+            canvasGroup.alpha = 1f;
             gameObject.SetActive(true);
         }
 
-        public void Hide()
+        /// <summary>
+        /// 오브젝트 비활성화
+        /// </summary>
+        public void Disable()
         {
             gameObject.SetActive(false);
         }
 
-        public void TweenFrom(EquipmentRecipeCellView view)
+        /// <summary>
+        /// 오브젝트 숨기기 (레이아웃 유지)
+        /// </summary>
+        public void Hide()
         {
-            tweener.
-
-
+            canvasGroup.alpha = 0f;
         }
 
         public void Set(EquipmentItemRecipeSheet.Row recipeRow)
@@ -199,6 +203,11 @@ namespace Nekoyume.UI.Scroller
             {
                 SetDimmed(true);
             }
+        }
+
+        public void SetInteractable(bool value)
+        {
+            button.interactable = value;
         }
 
         private void SetLocked(bool value)

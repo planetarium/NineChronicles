@@ -7,6 +7,8 @@ using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
+using System.Collections;
+using DG.Tweening;
 
 namespace Nekoyume.UI.Module
 {
@@ -40,8 +42,6 @@ namespace Nekoyume.UI.Module
         
         public EquipmentRecipeCellView SelectedRecipe { get; private set; }
 
-        public DOTweenGroupAlpha tabAlphaTweener;
-        public AnchoredPositionYTweener tabPositionTweener;
         public DOTweenGroupAlpha scrollAlphaTweener;
         public AnchoredPositionYTweener scrollPositionTweener;
 
@@ -63,11 +63,6 @@ namespace Nekoyume.UI.Module
             if (States.Instance.CurrentAvatarState is null)
                 return;
 
-            tabAlphaTweener.Play();
-            tabPositionTweener.StartTween();
-            scrollAlphaTweener.Play();
-            scrollPositionTweener.StartTween();
-
             UpdateRecipes();
         }
 
@@ -75,6 +70,29 @@ namespace Nekoyume.UI.Module
         {
             _filterType.Dispose();
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
+        }
+
+        public void ShowCellViews()
+        {
+            SelectedRecipe?.Show();
+            scrollAlphaTweener.Play();
+            scrollPositionTweener.StartTween();
+
+            foreach (var view in cellViews)
+            {
+                view.SetInteractable(true);
+            }
+        }
+
+        public void HideCellviews()
+        {
+            SelectedRecipe.Hide();
+            scrollAlphaTweener.PlayReverse();
+            scrollPositionTweener.PlayReverse();
+            foreach (var view in cellViews)
+            {
+                view.SetInteractable(false);
+            }
         }
 
         private void LoadRecipes()
@@ -123,7 +141,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    cellView.Hide();
+                    cellView.Disable();
                 }
             }
 
