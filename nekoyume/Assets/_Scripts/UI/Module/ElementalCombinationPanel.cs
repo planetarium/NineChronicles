@@ -51,8 +51,8 @@ namespace Nekoyume.UI.Module
             SetData(recipeView.RowData, SelectedSubRecipeId);
             confirmArea.SetActive(true);
             TweenCellView(recipeView);
-            var panel = (materialPanel as ElementalCombinationMaterialPanel);
-            if (!(panel is null))
+
+            if (materialPanel is ElementalCombinationMaterialPanel panel)
             {
                 panel.TweenPanel(optionRecipeView);
             }

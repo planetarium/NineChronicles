@@ -58,6 +58,8 @@ namespace Nekoyume.UI.Tween
 
         public Tweener PlayReverse()
         {
+            RefreshTween();
+
             _rectTransform.anchoredPosition = new Vector2(
                 originAnchoredPosition.x,
                 originAnchoredPosition.y + end);

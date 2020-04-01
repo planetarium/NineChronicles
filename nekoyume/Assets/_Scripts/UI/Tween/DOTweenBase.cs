@@ -37,11 +37,13 @@ namespace Nekoyume.UI.Tween
             onStop.Subscribe(_ => OnStopTweening()).AddTo(gameObject);
         }
 
-        protected virtual void Start()
+        protected IEnumerator Start()
         {
+            yield return null;
             if (StartWithPlay)
             {
-                PlayDelayed(StartDelay);
+                yield return new WaitForSeconds(StartDelay);
+                Play();
             }
         }
 
