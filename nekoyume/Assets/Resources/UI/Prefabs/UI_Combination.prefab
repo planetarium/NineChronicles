@@ -59,12 +59,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 468d698ce881479fbaf3e4357c70106f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  selectionArea:
+    root: {fileID: 2036063377912945187}
+    combineEquipmentButton: {fileID: 5382005960082308756}
+    combineConsumableButton: {fileID: 9061042500521327790}
+    enhanceEquipmentButton: {fileID: 3536011958114258198}
   combineEquipmentCategoryButton: {fileID: 5382005960082308756}
   combineConsumableCategoryButton: {fileID: 9061042500521327790}
   enhanceEquipmentCategoryButton: {fileID: 3536011958114258198}
   leftArea: {fileID: 3159805348121446376}
   categoryTabArea: {fileID: 6543030855288118442}
-  selectionArea: {fileID: 2036063377912945187}
   equipmentRecipe: {fileID: 3791866361479546293}
   inventory: {fileID: 2655890694203687574}
   combineEquipment: {fileID: 3448378027587356461}
