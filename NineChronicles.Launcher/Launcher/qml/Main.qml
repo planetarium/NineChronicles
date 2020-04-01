@@ -7,6 +7,18 @@ import Qt.labs.platform 1.1
 import LibplanetLauncher 1.0
 
 Item {
+    function login() {
+        const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
+        if (success) {
+            passphraseWindow.hide()
+            ctrl.startSync();
+        }
+        else {
+            passphraseWindow.height = 160
+            loginFailMessage.visible = true
+        }
+    }
+
     Timer {
         interval: 500
         running: true
@@ -97,20 +109,12 @@ Item {
                     id: passphraseInput
                     echoMode: TextInput.Password
                     placeholderText: "Input passphrase"
+                    onAccepted: login()
                 }
+
                 Button {
                     text: "login"
-                    onClicked: {
-                        const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
-                        if (success) {
-                            passphraseWindow.hide()
-                            ctrl.startSync();
-                        }
-                        else {
-                            passphraseWindow.height = 160
-                            loginFailMessage.visible = true
-                        }
-                    }
+                    onClicked: login()
                 }
             }
 
