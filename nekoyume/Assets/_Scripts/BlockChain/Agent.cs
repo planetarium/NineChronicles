@@ -156,12 +156,7 @@ namespace Nekoyume.BlockChain
         {
             InitializeLogger(consoleSink, development);
 
-#if UNITY_EDITOR
-            var genesisBlockPath = BlockHelper.GenesisBlockPathDev;
-#else
-            var genesisBlockPath = BlockHelper.GenesisBlockPathProd;
-#endif
-            var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
+            var genesisBlock = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPath);
             if (genesisBlock is null)
             {
                 Debug.LogError("There is no genesis block.");
