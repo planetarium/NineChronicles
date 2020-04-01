@@ -29,6 +29,17 @@ namespace Nekoyume.BlockChain
             ActionBase.UnrenderSubject
         );
 
+        static BlockPolicy()
+        {
+            ActionRenderer
+                .EveryRender(TableSheetsState.Address)
+                .Subscribe(UpdateActivationSet);
+
+            ActionRenderer
+                .EveryUnrender(TableSheetsState.Address)
+                .Subscribe(UpdateActivationSet);
+        }
+
         public static ImmutableHashSet<PublicKey> ActivationSet { get; private set; }
 
         public static void UpdateActivationSet(IValue state)
@@ -46,14 +57,6 @@ namespace Nekoyume.BlockChain
 #if UNITY_EDITOR
             return new DebugPolicy();
 #else
-            ActionRenderer
-                .EveryRender(TableSheetsState.Address)
-                .Subscribe(UpdateActivationSet);
-
-            ActionRenderer
-                .EveryUnrender(TableSheetsState.Address)
-                .Subscribe(UpdateActivationSet);
-
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
                 new RewardGold { Gold = 1 },
                 BlockInterval,
