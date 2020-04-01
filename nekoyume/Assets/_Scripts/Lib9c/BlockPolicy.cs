@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
+using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
@@ -18,7 +20,7 @@ using System.Reactive.Linq;
 
 namespace Nekoyume.BlockChain
 {
-    public class BlockPolicy
+    public static class BlockPolicy
     {
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
 
@@ -27,17 +29,15 @@ namespace Nekoyume.BlockChain
             ActionBase.UnrenderSubject
         );
 
-        public static WhiteListSheet WhiteListSheet { get; set; }
+        public static ImmutableHashSet<PublicKey> WhiteListSet { get; private set; }
 
-        public static WhiteListSheet GetWhiteListSheet(IValue state)
+        public static void UpdateWhiteListSet(IValue state)
         {
-            if (state is null)
-            {
-                return null;
-            }
+            var whiteListSheet = GetWhiteListSheet(state);
 
-            var tableSheetsState = new TableSheetsState((Dictionary)state);
-            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
+            WhiteListSet = whiteListSheet?.Values
+                .Select(row => row.PublicKey)
+                .ToImmutableHashSet();
         }
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
@@ -48,11 +48,11 @@ namespace Nekoyume.BlockChain
 #else
             ActionRenderer
                 .EveryRender(TableSheetsState.Address)
-                .Subscribe(UpdateWhiteListSheet);
+                .Subscribe(UpdateWhiteListSet);
 
             ActionRenderer
                 .EveryUnrender(TableSheetsState.Address)
-                .Subscribe(UpdateWhiteListSheet);
+                .Subscribe(UpdateWhiteListSet);
 
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
                 new RewardGold { Gold = 1 },
@@ -64,19 +64,30 @@ namespace Nekoyume.BlockChain
 #endif
         }
 
+        private static WhiteListSheet GetWhiteListSheet(IValue state)
+        {
+            if (state is null)
+            {
+                return null;
+            }
+
+            var tableSheetsState = new TableSheetsState((Dictionary)state);
+            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
+        }
+
         private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
             var signerPublicKey = transaction.PublicKey;
 
-            return WhiteListSheet is null
-                   || WhiteListSheet.Count == 0
-                   || WhiteListSheet.Values.Any(row => signerPublicKey.Equals(row.PublicKey));
+            return WhiteListSet is null
+                   || WhiteListSet.Count == 0
+                   || WhiteListSet.Contains(signerPublicKey);
         }
 
-        private static void UpdateWhiteListSheet(ActionBase.ActionEvaluation<ActionBase> evaluation)
+        private static void UpdateWhiteListSet(ActionBase.ActionEvaluation<ActionBase> evaluation)
         {
             var state = evaluation.OutputStates.GetState(TableSheetsState.Address);
-            WhiteListSheet = GetWhiteListSheet(state);
+            UpdateWhiteListSet(state);
         }
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>

@@ -74,8 +74,11 @@ namespace NineChronicles.Standalone
                 minerLoopAction
             );
 
-            var tableSheetState = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
-            BlockPolicy.WhiteListSheet = BlockPolicy.GetWhiteListSheet(tableSheetState);
+            if (BlockPolicy.WhiteListSet is null)
+            {
+                var tableSheetState = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
+                BlockPolicy.UpdateWhiteListSet(tableSheetState);
+            }
         }
 
         public async Task Run(CancellationToken cancellationToken = default)
