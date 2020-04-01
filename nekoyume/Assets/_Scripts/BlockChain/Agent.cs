@@ -29,7 +29,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI;
 using NetMQ;
 using Serilog;
@@ -172,9 +171,7 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
-            var policy = BlockPolicy.GetPolicy(
-                    minimumDifficulty,
-                    getWhiteListSheet: GetWhiteListSheet);
+            var policy = BlockPolicy.GetPolicy(minimumDifficulty);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
             store.UnstageTransactionIds(
@@ -189,6 +186,9 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
+
+            var tableSheetState = blocks?.GetState(TableSheetsState.Address);
+            BlockPolicy.WhiteListSheet = BlockPolicy.GetWhiteListSheet(tableSheetState);
 
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
@@ -277,18 +277,6 @@ namespace Nekoyume.BlockChain
         }
 
         #endregion
-
-        private WhiteListSheet GetWhiteListSheet()
-        {
-            var state = blocks?.GetState(TableSheetsState.Address);
-            if (state is null)
-            {
-                return null;
-            }
-
-            var tableSheetsState = new TableSheetsState((Dictionary)state);
-            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
-        }
 
         private void InitAgent(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
         {

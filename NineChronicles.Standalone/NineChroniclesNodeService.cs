@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Bencodex.Types;
 using Grpc.Core;
 using Libplanet.Action;
 using Libplanet.Blockchain;
@@ -18,7 +17,6 @@ using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using Nito.AsyncEx;
 using Serilog;
 
@@ -47,8 +45,7 @@ namespace NineChronicles.Standalone
 
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(
-                properties.MinimumDifficulty,
-                GetWhiteListSheet
+                properties.MinimumDifficulty
             );
             async Task minerLoopAction(
                 BlockChain<NineChroniclesActionType> chain,
@@ -77,6 +74,8 @@ namespace NineChronicles.Standalone
                 minerLoopAction
             );
 
+            var tableSheetState = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
+            BlockPolicy.WhiteListSheet = BlockPolicy.GetWhiteListSheet(tableSheetState);
         }
 
         public async Task Run(CancellationToken cancellationToken = default)
@@ -104,18 +103,5 @@ namespace NineChronicles.Standalone
                 services.AddSingleton(provider => NodeService.BlockChain);
             }).RunConsoleAsync(cancellationToken);
         }
-
-        private WhiteListSheet GetWhiteListSheet()
-        {
-            var state = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
-            if (state is null)
-            {
-                return null;
-            }
-
-            var tableSheetsState = new TableSheetsState((Dictionary)state);
-            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
-        }
-
     }
 }
