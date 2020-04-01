@@ -41,6 +41,7 @@ namespace Nekoyume.UI
         public List<WorldMapWorld> worlds = new List<WorldMapWorld>();
 
         public GameObject worldMapRoot;
+        public Button yggdrasilButton;
         public Button alfheimButton;
         public Button svartalfheimButton;
         public Button asgardButton;
@@ -131,23 +132,29 @@ namespace Nekoyume.UI
             stageInformation.rewardsAreaText.text = LocalizationManager.Localize("UI_REWARDS");
             submitButton.SetSubmitText(LocalizationManager.Localize("UI_WORLD_MAP_ENTER"));
 
-            alfheimButton.OnClickAsObservable()
+            yggdrasilButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     ShowWorld(1);
                 }).AddTo(gameObject);
-            svartalfheimButton.OnClickAsObservable()
+            alfheimButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     ShowWorld(2);
                 }).AddTo(gameObject);
-            asgardButton.OnClickAsObservable()
+            svartalfheimButton.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
                     ShowWorld(3);
+                }).AddTo(gameObject);
+            asgardButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    ShowWorld(4);
                 }).AddTo(gameObject);
             challengeModeButton.OnClickAsObservable()
                 .Subscribe(_ =>
