@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Nekoyume.UI.Scroller;
 using Nekoyume.Model.Item;
@@ -6,6 +6,9 @@ using UniRx;
 using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
+using Nekoyume.UI.Tween;
+using System.Collections;
+using DG.Tweening;
 
 namespace Nekoyume.UI.Module
 {
@@ -39,6 +42,9 @@ namespace Nekoyume.UI.Module
         
         public EquipmentRecipeCellView SelectedRecipe { get; private set; }
 
+        public DOTweenGroupAlpha scrollAlphaTweener;
+        public AnchoredPositionYTweener scrollPositionTweener;
+
         private void Awake()
         {
             _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
@@ -64,6 +70,29 @@ namespace Nekoyume.UI.Module
         {
             _filterType.Dispose();
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
+        }
+
+        public void ShowCellViews()
+        {
+            SelectedRecipe?.Show();
+            scrollAlphaTweener.Play();
+            scrollPositionTweener.StartTween();
+
+            foreach (var view in cellViews)
+            {
+                view.SetInteractable(true);
+            }
+        }
+
+        public void HideCellviews()
+        {
+            SelectedRecipe.Visible = true;
+            scrollAlphaTweener.PlayReverse();
+            scrollPositionTweener.PlayReverse();
+            foreach (var view in cellViews)
+            {
+                view.SetInteractable(false);
+            }
         }
 
         private void LoadRecipes()

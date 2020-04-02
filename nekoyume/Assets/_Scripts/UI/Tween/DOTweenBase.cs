@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using DG.Tweening;
 using System.Collections;
 using UniRx;
@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Tween
             onStop.Subscribe(_ => OnStopTweening()).AddTo(gameObject);
         }
 
-        protected virtual IEnumerator Start()
+        protected IEnumerator Start()
         {
             yield return null;
             if (StartWithPlay)
@@ -50,6 +50,12 @@ namespace Nekoyume.UI.Tween
         public virtual void Play()
         {
             Invoke($"Play{TweenType_.ToString()}", 0.0f);
+        }
+
+        public virtual void PlayDelayed(float delay)
+        {
+            if (gameObject.activeInHierarchy)
+                StartCoroutine(CPlayDelayed(delay));
         }
 
         public virtual void Stop()
@@ -106,6 +112,12 @@ namespace Nekoyume.UI.Tween
             var components = Target.GetComponents<Component>();
             var methodInfo = components[ComponentIndex].GetType().GetMethod(CompleteMethod);
             methodInfo.Invoke(components[ComponentIndex], new object[]{});
+        }
+
+        protected virtual IEnumerator CPlayDelayed(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            Play();
         }
     }
 }

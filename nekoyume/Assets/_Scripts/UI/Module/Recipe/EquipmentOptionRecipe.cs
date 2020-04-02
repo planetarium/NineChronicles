@@ -54,7 +54,6 @@ namespace Nekoyume.UI.Module
             for (var i = 0; i < equipmentOptionRecipeViews.Length; ++i)
             {
                 var optionRecipeView = equipmentOptionRecipeViews[i];
-
                 if (i >= recipeRow.SubRecipeIds.Count)
                 {
                     optionRecipeView.ShowLocked();
