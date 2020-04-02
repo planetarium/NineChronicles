@@ -61,7 +61,7 @@ namespace Nekoyume.UI.Scroller
 
         public bool Visible
         {
-            get => canvasGroup.alpha > 0.999999f;
+            get => Mathf.Approximately(canvasGroup.alpha, 1f);
             set => canvasGroup.alpha = value ? 1f : 0f;
         }
 
