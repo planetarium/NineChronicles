@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
@@ -14,6 +14,17 @@ namespace Nekoyume.UI.Tween
         {
             base.Awake();
             _transform = GetComponent<RectTransform>();
+        }
+
+        public void SetBeginRect(RectTransform rect)
+        {
+            var corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+
+            var beginPos = (corners[0] + corners[2]) / 2;
+            BeginValue = beginPos;
+            EndValue = transform.position;
+            transform.position = beginPos;
         }
 
         public override void PlayForward()

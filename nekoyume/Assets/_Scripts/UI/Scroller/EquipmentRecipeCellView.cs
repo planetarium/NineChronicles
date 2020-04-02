@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
@@ -48,6 +48,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI unlockConditionText;
 
+        [SerializeField]
+        private CanvasGroup canvasGroup;
+
         public readonly Subject<EquipmentRecipeCellView> OnClick =
             new Subject<EquipmentRecipeCellView>();
 
@@ -55,6 +58,12 @@ namespace Nekoyume.UI.Scroller
         public EquipmentItemRecipeSheet.Row RowData { get; private set; }
         public ItemSubType ItemSubType { get; private set; }
         public ElementalType ElementalType { get; private set; }
+
+        public bool Visible
+        {
+            get => Mathf.Approximately(canvasGroup.alpha, 1f);
+            set => canvasGroup.alpha = value ? 1f : 0f;
+        }
 
         private void Awake()
         {
@@ -78,6 +87,7 @@ namespace Nekoyume.UI.Scroller
 
         public void Show()
         {
+            Visible = true;
             gameObject.SetActive(true);
         }
 
@@ -188,6 +198,11 @@ namespace Nekoyume.UI.Scroller
             {
                 SetDimmed(true);
             }
+        }
+
+        public void SetInteractable(bool value)
+        {
+            button.interactable = value;
         }
 
         private void SetLocked(bool value)

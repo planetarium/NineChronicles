@@ -38,6 +38,11 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<CreateAvatar>> CreateAvatar(Address avatarAddress, int index,
             string nickName, int hair = 0, int lens = 0, int ear = 0, int tail = 0)
         {
+            if (States.Instance.AvatarStates.ContainsKey(index))
+            {
+                throw new Exception($"Already contains {index} in {States.Instance.AvatarStates}");
+            }
+
             var action = new CreateAvatar
             {
                 avatarAddress = avatarAddress,
@@ -60,6 +65,11 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<DeleteAvatar>> DeleteAvatar(int index)
         {
+            if (!States.Instance.AvatarStates.ContainsKey(index))
+            {
+                throw new KeyNotFoundException($"Not found {index} in {States.Instance.AvatarStates}");
+            }
+
             var avatarAddress = States.Instance.AvatarStates[index].address;
             var action = new DeleteAvatar
             {

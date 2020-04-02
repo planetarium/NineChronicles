@@ -17,6 +17,7 @@ using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
+using Nekoyume.UI.Tween;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 
 namespace Nekoyume.UI
@@ -26,10 +27,9 @@ namespace Nekoyume.UI
         public enum StateType
         {
             SelectMenu,
-            NewCombineEquipment,
+            CombineEquipment,
             CombineConsumable,
             EnhanceEquipment,
-            CombineEquipment,
             CombinationConfirm,
         }
 
@@ -71,11 +71,11 @@ namespace Nekoyume.UI
         public Transform npcPosition02;
         public CanvasGroup canvasGroup;
         public ModuleBlur blur;
+        public Animator equipmentRecipeAnimator;
 
         private NPC _npc01;
         private NPC _npc02;
         public int selectedIndex;
-
 
         #region Override
 
@@ -338,7 +338,7 @@ namespace Nekoyume.UI
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(false);
                     break;
-                case StateType.NewCombineEquipment:
+                case StateType.CombineEquipment:
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
 
                     combineEquipment.Hide();
@@ -351,25 +351,8 @@ namespace Nekoyume.UI
                     categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(true);
-                    break;
-                case StateType.CombineEquipment:
-                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
-
-                    inventory.SharedModel.DeselectItemView();
-                    inventory.SharedModel.State.Value = ItemType.Material;
-                    inventory.SharedModel.DimmedFunc.Value = combineEquipment.DimFunc;
-                    inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
-
-                    combineEquipment.Show(true);
-                    combineConsumable.Hide();
-                    enhanceEquipment.Hide();
-                    equipmentCombinationPanel.Hide();
-                    elementalCombinationPanel.Hide();
-                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
-
-                    categoryTabArea.SetActive(true);
-                    inventory.gameObject.SetActive(true);
-                    equipmentRecipe.gameObject.SetActive(false);
+                    equipmentRecipe.ShowCellViews();
+                    equipmentRecipeAnimator.Play("Show");
                     break;
                 case StateType.CombineConsumable:
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
@@ -417,9 +400,9 @@ namespace Nekoyume.UI
                     enhanceEquipment.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
-                    categoryTabArea.SetActive(false);
                     inventory.gameObject.SetActive(false);
-                    equipmentRecipe.gameObject.SetActive(false);
+                    equipmentRecipeAnimator.Play("Hide");
+                    equipmentRecipe.HideCellviews();
 
                     var selectedRecipe = equipmentRecipe.SelectedRecipe;
                     var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
@@ -427,10 +410,12 @@ namespace Nekoyume.UI
                     if (isElemental)
                     {
                         equipmentCombinationPanel.Hide();
+                        elementalCombinationPanel.TweenCellViewInOption(selectedRecipe);
                         elementalCombinationPanel.SetData(selectedRecipe.RowData);
                     }
                     else
                     {
+                        equipmentCombinationPanel.TweenCellView(selectedRecipe);
                         equipmentCombinationPanel.SetData(selectedRecipe.RowData);
                         elementalCombinationPanel.Hide();
                     }
@@ -439,6 +424,12 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
+        }
+
+        private void OnRecipeHide()
+        {
+            categoryTabArea.SetActive(false);
+            equipmentRecipe.gameObject.SetActive(false);
         }
 
         private void ShowTooltip(InventoryItemView view)
@@ -498,7 +489,7 @@ namespace Nekoyume.UI
             }
             else if (toggleable.Name.Equals(combineEquipmentCategoryButton.Name))
             {
-                State.Value = StateType.NewCombineEquipment;
+                State.Value = StateType.CombineEquipment;
             }
             else if (toggleable.Name.Equals(enhanceEquipmentCategoryButton.Name))
             {
@@ -520,7 +511,7 @@ namespace Nekoyume.UI
             }
             else if (State.Value == StateType.CombinationConfirm)
             {
-                State.SetValueAndForceNotify(StateType.NewCombineEquipment);
+                State.SetValueAndForceNotify(StateType.CombineEquipment);
             }
             else
             {
