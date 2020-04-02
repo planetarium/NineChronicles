@@ -190,12 +190,6 @@ namespace Nekoyume.State
 
             CurrentAvatarKey = index;
             UpdateCurrentAvatarState(_avatarStates[CurrentAvatarKey], initializeReactiveState);
-            for (var i = 0; i < CurrentAvatarState.combinationSlotAddresses.Count; i++)
-            {
-                var slotAddress = CurrentAvatarState.combinationSlotAddresses[i];
-                CombinationSlotStates[i] = new CombinationSlotState(
-                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress));
-            }
 
             return CurrentAvatarState;
         }
@@ -207,6 +201,22 @@ namespace Nekoyume.State
         {
             CurrentAvatarKey = -1;
             UpdateCurrentAvatarState(null);
+        }
+
+        public void SetCombinationSlotStates(AvatarState avatarState)
+        {
+            for (var i = 0; i < avatarState.combinationSlotAddresses.Count; i++)
+            {
+                var slotAddress = avatarState.combinationSlotAddresses[i];
+                SetCombinationSlotState(new CombinationSlotState(
+                    (Dictionary) Game.Game.instance.Agent.GetState(slotAddress)), i);
+            }
+        }
+
+        public void SetCombinationSlotState(CombinationSlotState state, int index)
+        {
+            CombinationSlotStates[index] = state;
+            CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
         }
 
         #endregion
