@@ -122,6 +122,7 @@ namespace Nekoyume.UI.Module
 
         private void SetLocked(bool value)
         {
+            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
             if (value)
             {
                 unlockConditionText.enabled = true;
