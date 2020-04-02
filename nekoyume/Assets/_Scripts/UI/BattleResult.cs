@@ -178,21 +178,6 @@ namespace Nekoyume.UI
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
             stageProgressBar.Show();
 
-            if (SharedModel.ActionPointNotEnough || SharedModel.ShouldExit)
-            {
-                submitButton.gameObject.SetActive(false);
-                SubmitWidget = closeButton.onClick.Invoke;
-            }
-            else
-            {
-                submitButton.interactable = true;
-                SubmitWidget = submitButton.onClick.Invoke;
-                submitButtonText.text = SharedModel.ShouldRepeat
-                    ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
-                    : LocalizationManager.Localize("UI_NEXT_STAGE");
-                submitButton.gameObject.SetActive(true);
-            }
-
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
             yield return StartCoroutine(CoUpdateRewards());
         }
@@ -248,6 +233,7 @@ namespace Nekoyume.UI
             closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
             submitButtonText.text = LocalizationManager.Localize("UI_BATTLE_AGAIN");
 
+            _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
             StartCoroutine(CoUpdateRewards());
         }
 
@@ -293,6 +279,8 @@ namespace Nekoyume.UI
         {
             var secondsFormat = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
             string fullFormat;
+            submitButton.gameObject.SetActive(false);
+            SubmitWidget = closeButton.onClick.Invoke;
             if (SharedModel.ActionPointNotEnough)
             {
                 fullFormat =
@@ -307,6 +295,12 @@ namespace Nekoyume.UI
                 fullFormat = SharedModel.ShouldRepeat
                     ? LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
                     : LocalizationManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
+                submitButton.interactable = true;
+                SubmitWidget = submitButton.onClick.Invoke;
+                submitButtonText.text = SharedModel.ShouldRepeat
+                    ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
+                    : LocalizationManager.Localize("UI_NEXT_STAGE");
+                submitButton.gameObject.SetActive(true);
             }
 
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
