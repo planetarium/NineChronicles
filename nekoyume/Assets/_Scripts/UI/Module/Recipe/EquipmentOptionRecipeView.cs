@@ -1,5 +1,7 @@
+using System;
 using Assets.SimpleLocalization;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
 using UniRx;
@@ -30,7 +32,8 @@ namespace Nekoyume.UI.Module
 
         private EquipmentItemSubRecipeSheet.Row _rowData;
 
-        public readonly Subject<EquipmentOptionRecipeView> OnClick = new Subject<EquipmentOptionRecipeView>();
+        public readonly Subject<EquipmentOptionRecipeView> OnClick =
+            new Subject<EquipmentOptionRecipeView>();
 
         private bool IsLocked => lockParent.activeSelf;
         private bool NotEnoughMaterials { get; set; } = true;
@@ -60,9 +63,11 @@ namespace Nekoyume.UI.Module
             bool checkInventory = true
         )
         {
-            if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId, out _rowData))
+            if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId,
+                out _rowData))
             {
-                requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials, checkInventory);
+                requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials,
+                    checkInventory);
             }
             else
             {
@@ -117,14 +122,47 @@ namespace Nekoyume.UI.Module
 
         private void SetLocked(bool value)
         {
-            lockParent.SetActive(value);
-            unlockConditionText.text = value
-                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                    _rowData.UnlockStage > 50
-                        ? "???"
-                        : _rowData.UnlockStage.ToString())
-                : string.Empty;
+            if (value)
+            {
+                unlockConditionText.enabled = true;
 
+                if (_rowData is null)
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+
+                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var stageId))
+                {
+                    var diff = _rowData.UnlockStage - stageId;
+                    if (diff > 50)
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            "???");
+                    }
+                    else
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            _rowData.UnlockStage.ToString());
+                    }
+                }
+                else
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+            }
+            else
+            {
+                unlockConditionText.enabled = false;
+            }
+
+            lockParent.SetActive(value);
             header.SetActive(!value);
             options.SetActive(!value);
             requiredItemRecipeView.gameObject.SetActive(!value);
