@@ -134,6 +134,7 @@ namespace Nekoyume.Model.State
             lens = avatarState.lens;
             ear = avatarState.ear;
             tail = avatarState.tail;
+            combinationSlotAddresses = avatarState.combinationSlotAddresses;
 
             PostConstructor();
         }
