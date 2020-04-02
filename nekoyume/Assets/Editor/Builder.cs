@@ -190,8 +190,12 @@ namespace Editor
             {
                 case BuildTarget.StandaloneOSX:
                     libDir = Path.Combine(libDir, "osx-x64", "native");
+                    if (!destLibPath.EndsWith(".app"))
+                    {
+                        destLibPath += ".app";
+                    }
                     destLibPath = Path.Combine(
-                        destLibPath + ".app", "Contents/Resources/Data/Managed/", libDir);
+                        destLibPath, "Contents/Resources/Data/Managed/", libDir);
                     break;
                 case BuildTarget.StandaloneWindows64:
                     libDir = Path.Combine(libDir, "win-x64", "native");
