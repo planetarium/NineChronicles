@@ -86,7 +86,7 @@ namespace Nekoyume.UI.Module
 
         public void HideCellviews()
         {
-            SelectedRecipe.Hide();
+            SelectedRecipe.Visible = true;
             scrollAlphaTweener.PlayReverse();
             scrollPositionTweener.PlayReverse();
             foreach (var view in cellViews)
@@ -141,7 +141,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    cellView.Disable();
+                    cellView.Hide();
                 }
             }
 

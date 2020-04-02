@@ -1,7 +1,6 @@
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
-using Nekoyume.UI.Tween;
 using UniRx;
 using UnityEngine;
 
@@ -55,7 +54,6 @@ namespace Nekoyume.UI.Module
             for (var i = 0; i < equipmentOptionRecipeViews.Length; ++i)
             {
                 var optionRecipeView = equipmentOptionRecipeViews[i];
-                
                 if (i >= recipeRow.SubRecipeIds.Count)
                 {
                     optionRecipeView.ShowLocked();

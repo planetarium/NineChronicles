@@ -59,6 +59,12 @@ namespace Nekoyume.UI.Scroller
         public ItemSubType ItemSubType { get; private set; }
         public ElementalType ElementalType { get; private set; }
 
+        public bool Visible
+        {
+            get => canvasGroup.alpha > 0.999999f;
+            set => canvasGroup.alpha = value ? 1f : 0f;
+        }
+
         private void Awake()
         {
             button.OnClickAsObservable()
@@ -81,24 +87,13 @@ namespace Nekoyume.UI.Scroller
 
         public void Show()
         {
-            canvasGroup.alpha = 1f;
+            Visible = true;
             gameObject.SetActive(true);
         }
 
-        /// <summary>
-        /// 오브젝트 비활성화
-        /// </summary>
-        public void Disable()
-        {
-            gameObject.SetActive(false);
-        }
-
-        /// <summary>
-        /// 오브젝트 숨기기 (레이아웃 유지)
-        /// </summary>
         public void Hide()
         {
-            canvasGroup.alpha = 0f;
+            gameObject.SetActive(false);
         }
 
         public void Set(EquipmentItemRecipeSheet.Row recipeRow)
