@@ -78,6 +78,9 @@ namespace Nekoyume.UI
         private NPC _npc01;
         private NPC _npc02;
         public int selectedIndex;
+        private bool _lockSlotIndex;
+        private long _blockIndex;
+        private Dictionary<int, CombinationSlotState> _states;
 
         #region Override
 
@@ -178,7 +181,9 @@ namespace Nekoyume.UI
 
             blur.gameObject.SetActive(false);
 
-            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(ResetSelectedIndex)
+            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SubscribeSlotStates)
+                .AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
         }
 
@@ -221,6 +226,7 @@ namespace Nekoyume.UI
         public void Show(int slotIndex)
         {
             selectedIndex = slotIndex;
+            _lockSlotIndex = true;
             Show();
         }
 
@@ -239,6 +245,8 @@ namespace Nekoyume.UI
             {
                 _npc02.gameObject.SetActive(false);
             }
+
+            _lockSlotIndex = false;
 
             base.Close(ignoreCloseAnimation);
         }
@@ -519,6 +527,18 @@ namespace Nekoyume.UI
             }
         }
 
+        private void SubscribeSlotStates(Dictionary<int, CombinationSlotState> states)
+        {
+            _states = states;
+            ResetSelectedIndex();
+        }
+
+        private void SubscribeBlockIndex(long blockIndex)
+        {
+            _blockIndex = blockIndex;
+            ResetSelectedIndex();
+        }
+
         #region Action
 
         private void ActionCombineConsumable()
@@ -669,16 +689,19 @@ namespace Nekoyume.UI
             StartCoroutine(speechBubble.CoShowText());
         }
 
-        private void ResetSelectedIndex(Dictionary<int, CombinationSlotState> states)
+        private void ResetSelectedIndex()
         {
-            var pair = states
-                .FirstOrDefault(i =>
-                    i.Value.Validate(
-                        States.Instance.CurrentAvatarState,
-                        Game.Game.instance.Agent.BlockIndex
-                    ));
-            var idx = pair.Value is null ? -1 : pair.Key;
-            selectedIndex = idx;
+            if (!_lockSlotIndex)
+            {
+                var pair = _states
+                    .FirstOrDefault(i =>
+                        i.Value.Validate(
+                            States.Instance.CurrentAvatarState,
+                            _blockIndex
+                        ));
+                var idx = pair.Value is null ? -1 : pair.Key;
+                selectedIndex = idx;
+            }
         }
 
         private IEnumerator CoCombineNPCAnimation()
@@ -707,6 +730,7 @@ namespace Nekoyume.UI
             Find<BottomMenu>().SetIntractable(true);
             blur.gameObject.SetActive(false);
             Pop();
+            _lockSlotIndex = false;
         }
     }
 }
