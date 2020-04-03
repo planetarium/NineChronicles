@@ -2,9 +2,9 @@
 
 set -e
 
-SCRIPT_DIR=$(dirname "${BASH_SOURCE[0]}")
+SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
 cd "$SCRIPT_DIR"
-SCRIPT_DIR=$(pwd)
+SCRIPT_DIR="$(pwd)"
 PAYLOAD_DIR="$SCRIPT_DIR/payload"
 
 pkgbuild \
