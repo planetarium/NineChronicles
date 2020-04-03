@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image nameImage;
 
-        [SerializeField, Tooltip("대기 상태일 때 월드 이름이 스케일 되는 크기")]
+        [SerializeField, Header("Direction"), Tooltip("대기 상태일 때 월드 이름이 스케일 되는 크기")]
         private float idleNameScaleTo = 1.1f;
 
         [SerializeField, Tooltip("대기 상태일 때 월드 이름이 스케일 되는 속도")]
