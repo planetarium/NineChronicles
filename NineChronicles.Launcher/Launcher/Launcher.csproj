@@ -41,7 +41,7 @@
     <UsingTask TaskName="NSubsys.Tasks.NSubsys" AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll" />
 
     <Target Condition="'$(RuntimeIdentifier)' == 'win-x64'" Name="Bundle Windows Application" AfterTargets="Publish">
-      <Message Importance="high" Text="'Bundle MacOS Application' Called." />
+      <Message Importance="high" Text="'Bundle Windows Application' Called." />
       <NSubsys TargetFile="$(ProjectDir)\$(PublishDir)\$(ProjectName).exe" />
     </Target>
 
