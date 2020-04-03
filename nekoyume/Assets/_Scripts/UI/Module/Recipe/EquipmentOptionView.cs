@@ -41,6 +41,16 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected Image innerPanel;
 
+        [SerializeField]
+        protected readonly Color[] optionColors =
+        {
+            Color.white,
+            Color.white,
+            Color.green,
+            //purple
+            ColorHelper.HexToColorRGB("ba00ff")
+        };
+
         public int SubRecipeId { get; private set; }
 
         public void Show()
@@ -70,6 +80,7 @@ namespace Nekoyume.UI.Module
 
             var optionSheet = Game.Game.instance.TableSheets.EquipmentItemOptionSheet;
             var skillSheet = Game.Game.instance.TableSheets.SkillSheet;
+            var hasThreeOptions = subRecipeRow.Options.Count == 3;
 
             for (var i = 0; i < optionTexts.Length; ++i)
             {
@@ -89,6 +100,8 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
+                var optionColor = optionColors[hasThreeOptions ? i + 1 : i];
+
                 if (optionRow.StatType != StatType.NONE)
                 {
                     var statMin = optionRow.StatType == StatType.SPD
@@ -100,12 +113,12 @@ namespace Nekoyume.UI.Module
                         : optionRow.StatMax.ToString();
 
                     var description = $"{optionRow.StatType} +({statMin}~{statMax})";
-                    SetOptionText(optionTexts[i], optionInfo.Ratio, description);
+                    SetOptionText(optionTexts[i], optionInfo.Ratio, description, optionColor);
                 }
                 else
                 {
                     skillSheet.TryGetValue(optionRow.SkillId, out var skillRow);
-                    SetOptionText(optionTexts[i], optionInfo.Ratio, skillRow.GetLocalizedName());
+                    SetOptionText(optionTexts[i], optionInfo.Ratio, skillRow.GetLocalizedName(), optionColor);
                 }
             }
 
@@ -134,8 +147,12 @@ namespace Nekoyume.UI.Module
 
             foreach (var option in optionTexts)
             {
+                var descriptionColor = value ?
+                    option.descriptionText.color * DimmedColor :
+                    option.descriptionText.color;
+
                 option.percentageText.color = value ? DimmedColor : Color.white;
-                option.descriptionText.color = value ? DimmedColor : Color.white;
+                option.descriptionText.color = descriptionColor;
             }
 
             SetPanelDimmed(value);
@@ -148,10 +165,11 @@ namespace Nekoyume.UI.Module
             innerPanel.color = isDimmed ? DimmedColor : Color.white;
         }
 
-        protected static void SetOptionText(OptionText optionText, decimal percentage, string description)
+        protected static void SetOptionText(OptionText optionText, decimal percentage, string description, Color color)
         {
             optionText.percentageText.text = percentage.ToString("0%");
             optionText.descriptionText.text = description;
+            optionText.descriptionText.color = color;
         }
     }
 }
