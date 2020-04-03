@@ -12,7 +12,6 @@
 
     <ItemGroup Label="Resources">
         <Content Include="qml/**/*" CopyToOutputDirectory="Always" />
-        <Content Include="qt-runtime/**/*" CopyToOutputDirectory="Always" />
         <Content Include="../resources/**/*" CopyToOutputDirectory="Always" />
     </ItemGroup>
 
@@ -34,18 +33,6 @@
         <ProjectReference Include="..\Launcher.Common\Launcher.Common.csproj" />
     </ItemGroup>
 
-    <ItemGroup Label="Variables">
-        <_QtRuntime_Files Include="qt-runtimes\$(RuntimeIdentifier)\**\*" />
-        <_TempQtRuntime_Files Include="qt-runtime" />
-        <_QtRuntime_Directory Include="qt-runtimes\$(RuntimeIdentifier)" />
-    </ItemGroup>
-
-    <Target Name="Prepare QtRunitme" BeforeTargets="Build">
-        <Exec Condition="!Exists('@(_QtRuntime_Directory)')" Command="scripts\install-qt-runtime.sh $(RuntimeIdentifier)" />
-        <RemoveDir Directories="@(_TempQtRuntime_Files)" />
-        <Copy SourceFiles="@(_QtRuntime_Files)" DestinationFolder="qt-runtime\%(RecursiveDir)" />
-    </Target>
-
     <Target Condition="'$(RuntimeIdentifier)' == 'osx-x64'" Name="Bundle MacOS Application" AfterTargets="Publish">
       <Message Importance="high" Text="'Bundle MacOS Application' Called." />
       <CallTarget Targets="BundleApp" />
@@ -57,4 +44,9 @@
       <Message Importance="high" Text="'Bundle MacOS Application' Called." />
       <NSubsys TargetFile="$(ProjectDir)\$(PublishDir)\$(ProjectName).exe" />
     </Target>
+
+    <Target Name="Prepare QtRunitme" AfterTargets="Publish">
+      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier)" />
+    </Target>
+
 </Project>
