@@ -139,7 +139,14 @@ namespace Nekoyume.UI
             }
 
             Close();
-            Find<Combination>().Show(slotIndex);
+            if (slotIndex >= 0)
+            {
+                Find<Combination>().Show(slotIndex);
+            }
+            else
+            {
+                Find<Combination>().Show();
+            }
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }

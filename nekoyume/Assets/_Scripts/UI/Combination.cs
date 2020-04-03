@@ -9,7 +9,9 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -76,6 +78,9 @@ namespace Nekoyume.UI
         private NPC _npc01;
         private NPC _npc02;
         public int selectedIndex;
+        private bool _lockSlotIndex;
+        private long _blockIndex;
+        private Dictionary<int, CombinationSlotState> _states;
 
         #region Override
 
@@ -175,6 +180,11 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
 
             blur.gameObject.SetActive(false);
+
+            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SubscribeSlotStates)
+                .AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+                .AddTo(gameObject);
         }
 
         public override void Show()
@@ -203,26 +213,25 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Combination
             );
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
-            _npc01 = go.GetComponent<NPC>();
+            if (_npc01 is null)
+            {
+                var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
+                _npc01 = go.GetComponent<NPC>();
+            }
 
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
-            if (selectedIndex == -1)
-            {
-                ResetSelectedIndex();
-            }
         }
 
         public void Show(int slotIndex)
         {
             selectedIndex = slotIndex;
+            _lockSlotIndex = true;
             Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            selectedIndex = -1;
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             combineEquipment.RemoveMaterialsAll();
@@ -230,15 +239,14 @@ namespace Nekoyume.UI
             enhanceEquipment.RemoveMaterialsAll();
             speechBubble.gameObject.SetActive(false);
 
-            if (_npc01)
-            {
-                _npc01.gameObject.SetActive(false);
-            }
+            _npc01 = null;
 
             if (_npc02)
             {
                 _npc02.gameObject.SetActive(false);
             }
+
+            _lockSlotIndex = false;
 
             base.Close(ignoreCloseAnimation);
         }
@@ -519,6 +527,18 @@ namespace Nekoyume.UI
             }
         }
 
+        private void SubscribeSlotStates(Dictionary<int, CombinationSlotState> states)
+        {
+            _states = states;
+            ResetSelectedIndex();
+        }
+
+        private void SubscribeBlockIndex(long blockIndex)
+        {
+            _blockIndex = blockIndex;
+            ResetSelectedIndex();
+        }
+
         #region Action
 
         private void ActionCombineConsumable()
@@ -625,7 +645,6 @@ namespace Nekoyume.UI
             Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
                 .Subscribe(_ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
-            ResetSelectedIndex();
         }
 
         private void CreateItemEnhancementAction(Guid baseItemGuid,
@@ -642,7 +661,6 @@ namespace Nekoyume.UI
                 .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
                 .Subscribe(_ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
-            ResetSelectedIndex();
         }
 
         private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId,
@@ -653,7 +671,6 @@ namespace Nekoyume.UI
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
-            ResetSelectedIndex();
         }
 
         #endregion
@@ -674,14 +691,17 @@ namespace Nekoyume.UI
 
         private void ResetSelectedIndex()
         {
-            var pair = States.Instance.CombinationSlotStates
-                .FirstOrDefault(i =>
-                    i.Value.Validate(
-                        States.Instance.CurrentAvatarState,
-                        Game.Game.instance.Agent.BlockIndex
-                    ));
-            var idx = pair.Value is null ? -1 : pair.Key;
-            selectedIndex = idx;
+            if (!_lockSlotIndex)
+            {
+                var pair = _states
+                    .FirstOrDefault(i =>
+                        i.Value.Validate(
+                            States.Instance.CurrentAvatarState,
+                            _blockIndex
+                        ));
+                var idx = pair.Value is null ? -1 : pair.Key;
+                selectedIndex = idx;
+            }
         }
 
         private IEnumerator CoCombineNPCAnimation()
@@ -710,6 +730,7 @@ namespace Nekoyume.UI
             Find<BottomMenu>().SetIntractable(true);
             blur.gameObject.SetActive(false);
             Pop();
+            _lockSlotIndex = false;
         }
     }
 }

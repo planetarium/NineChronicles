@@ -99,6 +99,11 @@ namespace Nekoyume.BlockChain
             States.Instance.AddOrReplaceAvatarState(avatarState, index);
         }
 
+        protected static void UpdateCombinationSlotState(CombinationSlotState state, int index)
+        {
+            States.Instance.SetCombinationSlotState(state, index);
+        }
+
         public void UpdateCurrentAvatarState(AvatarState avatarState)
         {
             if (Pending)
