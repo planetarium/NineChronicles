@@ -151,6 +151,8 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
+            SetLocked(false);
+
             // 메인 재료 검사.
             var inventory = avatarState.inventory;
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
