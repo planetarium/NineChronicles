@@ -16,58 +16,5 @@ namespace Nekoyume.UI.Model
             State.Dispose();
             ItemCountAndPricePopup.DisposeAll();
         }
-
-        public void ShowItemPopup(CountableItem viewModel)
-        {
-            switch (viewModel)
-            {
-                case null:
-                    return;
-                case InventoryItem _:
-                {
-                    if (State.Value == UI.Shop.StateType.Sell)
-                    {
-                        // 판매하겠습니까?
-                        ItemCountAndPricePopup.Value.TitleText.Value = LocalizationManager.Localize("UI_SELL");
-                        ItemCountAndPricePopup.Value.InfoText.Value = LocalizationManager.Localize("UI_SELL_INFO");
-                        ItemCountAndPricePopup.Value.CountEnabled.Value = true;
-                        ItemCountAndPricePopup.Value.PriceInteractable.Value = true;
-                        ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
-                            viewModel.ItemBase.Value,
-                            1,
-                            1,
-                            viewModel.Count.Value);   
-                    }
-                    
-                    return;
-                }
-                case ShopItem shopItem:
-                {
-                    if (State.Value == UI.Shop.StateType.Buy)
-                    {
-                        // 구매하겠습니까?
-                        ItemCountAndPricePopup.Value.TitleText.Value = LocalizationManager.Localize("UI_BUY");
-                        ItemCountAndPricePopup.Value.InfoText.Value = LocalizationManager.Localize("UI_BUY_INFO");
-                    }
-                    else
-                    {
-                        // 판매 취소하겠습니까?
-                        ItemCountAndPricePopup.Value.TitleText.Value = LocalizationManager.Localize("UI_RETRIEVE");
-                        ItemCountAndPricePopup.Value.InfoText.Value = LocalizationManager.Localize("UI_RETRIEVE_INFO");
-                    }
-
-                    ItemCountAndPricePopup.Value.CountEnabled.Value = false;
-                    ItemCountAndPricePopup.Value.Price.Value = shopItem.Price.Value;
-                    ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
-                    ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
-                        viewModel.ItemBase.Value,
-                        shopItem.Count.Value,
-                        shopItem.Count.Value,
-                        shopItem.Count.Value);
-
-                    return;
-                }
-            }
-        }
     }
 }

@@ -7,7 +7,7 @@ using static Nekoyume.TableData.TableExtensions;
 namespace Nekoyume.TableData
 {
     [Serializable]
-    public class WhiteListSheet : Sheet<int, WhiteListSheet.Row>
+    public class ActivationSheet : Sheet<int, ActivationSheet.Row>
     {
         [Serializable]
         public class Row : SheetRow<int>
@@ -25,7 +25,7 @@ namespace Nekoyume.TableData
             }
         }
 
-        public WhiteListSheet() : base(nameof(WhiteListSheet))
+        public ActivationSheet() : base(nameof(ActivationSheet))
         {
         }
     }
