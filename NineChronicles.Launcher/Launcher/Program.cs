@@ -3,6 +3,7 @@ using System.IO;
 using Qml.Net;
 using Qml.Net.Runtimes;
 using Serilog;
+using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
 namespace Launcher
 {
@@ -17,8 +18,8 @@ namespace Launcher
             // Set current directory to executable path.
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]));
 
-            // Configure Qt Runtime directory to bundled. 
-            RuntimeManager.ConfigureRuntimeDirectory("qt-runtime");
+            // Configure Qt Runtime directory to bundled.
+            RuntimeManager.ConfigureRuntimeDirectory(Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "qt-runtime"));
 
             QmlNetConfig.ShouldEnsureUIThread = false;
 
