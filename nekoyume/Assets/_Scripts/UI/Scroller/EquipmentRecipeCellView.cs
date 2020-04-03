@@ -4,6 +4,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -207,14 +208,48 @@ namespace Nekoyume.UI.Scroller
 
         private void SetLocked(bool value)
         {
-            lockParent.SetActive(value);
-            unlockConditionText.text = value
-                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                    RowData.UnlockStage > 50
-                        ? "???"
-                        : RowData.UnlockStage.ToString())
-                : string.Empty;
+            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
+            if (value)
+            {
+                unlockConditionText.enabled = true;
 
+                if (RowData is null)
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+
+                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var stageId))
+                {
+                    var diff = RowData.UnlockStage - stageId;
+                    if (diff > 50)
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            "???");
+                    }
+                    else
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            RowData.UnlockStage.ToString());
+                    }
+                }
+                else
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+            }
+            else
+            {
+                unlockConditionText.enabled = false;
+            }
+
+            lockParent.SetActive(value);
             itemView.gameObject.SetActive(!value);
             titleText.enabled = !value;
             optionText.enabled = !value;
