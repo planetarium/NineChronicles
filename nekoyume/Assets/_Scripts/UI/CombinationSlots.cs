@@ -38,7 +38,12 @@ namespace _Scripts.UI
 
         private void UpdateSlots()
         {
-            foreach (var pair in _states.Where(pair => !(pair.Value is null)))
+            if (_states is null)
+            {
+                return;
+            }
+
+            foreach (var pair in _states?.Where(pair => !(pair.Value is null)))
             {
                 slots[pair.Key].SetData(pair.Value, _blockIndex, pair.Key);
             }

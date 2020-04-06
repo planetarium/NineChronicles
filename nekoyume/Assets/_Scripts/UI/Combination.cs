@@ -691,7 +691,7 @@ namespace Nekoyume.UI
 
         private void ResetSelectedIndex()
         {
-            if (!_lockSlotIndex)
+            if (!_lockSlotIndex && !(_states is null))
             {
                 var pair = _states
                     .FirstOrDefault(i =>
