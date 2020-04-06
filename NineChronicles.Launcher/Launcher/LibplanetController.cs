@@ -25,6 +25,7 @@ namespace Launcher
     // FIXME: Memory leak.
     public class LibplanetController
     {
+        private const string DefaultTooltipText = "Libplanet Launcher";
         private CancellationTokenSource _cancellationTokenSource;
 
         private S3Storage Storage { get; }
@@ -46,6 +47,9 @@ namespace Launcher
         [NotifySignal]
         public PrivateKey PrivateKey { get; set; }
 
+        [NotifySignal]
+        public string TooltipText { get; private set; }
+
         private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
 
         public KeyStore KeyStore => new KeyStore(LoadKeyStorePath(LoadSettings()));
@@ -53,6 +57,7 @@ namespace Launcher
         public LibplanetController()
         {
             Storage = new S3Storage();
+            TooltipText = DefaultTooltipText;
         }
 
         public void StartSync()
@@ -162,7 +167,15 @@ namespace Launcher
                 RpcListenPort = RpcListenPort,
             };
 
-            var service = new NineChroniclesNodeService(properties, rpcProperties);
+            var service = new NineChroniclesNodeService(
+                properties,
+                rpcProperties,
+                new Progress<PreloadState>(preloadState =>
+                {
+                    TooltipText = CreatePreloadStateDescription(preloadState);
+                    this.ActivateProperty(ctrl => ctrl.TooltipText);
+                })
+            );
             try
             {
                 await Task.WhenAll(
@@ -176,6 +189,9 @@ namespace Launcher
 
                         Preprocessing = false;
                         this.ActivateProperty(ctrl => ctrl.Preprocessing);
+
+                        TooltipText = DefaultTooltipText;
+                        this.ActivateProperty(ctrl => ctrl.TooltipText);
                     }));
             }
             catch (OperationCanceledException e)
@@ -253,6 +269,52 @@ namespace Launcher
             GameProcess?.Kill();
             Process.Start(updaterPath, binaryUrl);
             Environment.Exit(0);
+        }
+
+        private string CreatePreloadStateDescription(PreloadState state)
+        {
+            // FIXME 메시지 국제화 해야합니다.
+            string descripiton;
+            long count;
+            long totalCount;
+
+            switch (state)
+            {
+                case BlockHashDownloadState blockHashDownloadState:
+                    descripiton = "Downloading block hashes...";
+                    count = blockHashDownloadState.ReceivedBlockHashCount;
+                    totalCount = blockHashDownloadState.EstimatedTotalBlockHashCount;
+                    break;
+
+                case BlockDownloadState blockDownloadState:
+                    descripiton = "Downloading blocks...";
+                    count = blockDownloadState.ReceivedBlockCount;
+                    totalCount = blockDownloadState.TotalBlockCount;
+                    break;
+
+                case BlockVerificationState blockVerificationState:
+                    descripiton = "Verifying blocks...";
+                    count = blockVerificationState.VerifiedBlockCount;
+                    totalCount = blockVerificationState.TotalBlockCount;
+                    break;
+
+                case StateDownloadState stateReferenceDownloadState:
+                    descripiton = "Downloading states...";
+                    count = stateReferenceDownloadState.ReceivedIterationCount;
+                    totalCount = stateReferenceDownloadState.TotalIterationCount;
+                    break;
+
+                case ActionExecutionState actionExecutionState:
+                    descripiton = "Executing actions...";
+                    count = actionExecutionState.ExecutedBlockCount;
+                    totalCount = actionExecutionState.TotalBlockCount;
+                    break;
+
+                default:
+                    throw new Exception("Unknown state was reported during preload.");
+            }
+
+            return $"{descripiton} {count} / {totalCount} ({state.CurrentPhase} / {PreloadState.TotalPhase})";
         }
 
         private readonly string RpcServerHost = IPAddress.Loopback.ToString();
