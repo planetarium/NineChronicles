@@ -37,7 +37,7 @@ Item {
     SystemTrayIcon {
         id: systemTrayIcon
         visible: true
-        tooltip: "Libplanet Launcher, Not Flash (LLNF)"
+        tooltip: ctrl.tooltipText
 
         menu: Menu {
             MenuItem {
@@ -79,43 +79,54 @@ Item {
     Window {
         id: passphraseWindow
         title: "Input passphrase"
-        width: 320
+        width: 640
         height: 130
-        flags: Qt.FramelessWindowHint
+        minimumWidth: 640
+        minimumHeight: 240
+        maximumWidth: 640
+        maximumHeight: 240
+        flags: Qt.Tool
 
         Column {
-            padding: 10
-            spacing: 5
-            Label {
-                 text: "Login is needed to continue launcher"
-            }
+            anchors.fill: parent
+            anchors.margins: 20
+            spacing: 10
 
-            Row {
+            GridLayout
+            {
+                id: grid
+                columns: 2
+                width: parent.width
+
                 Label {
-                    text: "Select Address"
-                    font.pixelSize: 12
-                    rightPadding: 10
+                    text: "Address"
+                    Layout.preferredWidth: 180
                 }
 
                 ComboBox {
                     id: addressComboBox
-                    width: 200
                     model: Net.toListModel(ctrl.keyStore.addresses)
+                    Layout.fillWidth: true
                 }
-            }
 
-            Row {
+                Label {
+                    text: "Passphrase"
+                    Layout.preferredWidth: 180
+                }
+                
                 TextField {
                     id: passphraseInput
                     echoMode: TextInput.Password
                     placeholderText: "Input passphrase"
                     onAccepted: login()
+                    Layout.fillWidth: true
                 }
+            }
 
-                Button {
-                    text: "login"
-                    onClicked: login()
-                }
+            Button {
+                text: "Login"
+                onClicked: login()
+                width: parent.width;
             }
 
             Label {

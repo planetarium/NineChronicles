@@ -10,7 +10,6 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
-using Libplanet.Tx;
 using MagicOnion.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -38,7 +37,9 @@ namespace NineChronicles.Standalone
 
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties properties,
-            RpcNodeServiceProperties rpcNodeServiceProperties)
+            RpcNodeServiceProperties rpcNodeServiceProperties,
+            Progress<PreloadState> preloadProgress = null
+        )
         {
             Properties = properties;
             RpcProperties = rpcNodeServiceProperties;
@@ -71,7 +72,8 @@ namespace NineChronicles.Standalone
             NodeService = new LibplanetNodeService<NineChroniclesActionType>(
                 Properties,
                 blockPolicy,
-                minerLoopAction
+                minerLoopAction,
+                preloadProgress
             );
 
             if (BlockPolicy.ActivationSet is null)

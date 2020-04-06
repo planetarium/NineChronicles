@@ -3710,6 +3710,33 @@
         <member name="P:Libplanet.Net.StateDownloadState.CurrentPhase">
             <inheritdoc />
         </member>
+        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Collections.Generic.IEnumerable{Libplanet.Crypto.PublicKey})">
+            <summary>
+            Creates a <see cref="T:Libplanet.Net.Swarm`1"/>.  This constructor in only itself does not start
+            any communication with the network.
+            </summary>
+            <param name="blockChain">A blockchain to publicize on the network.</param>
+            <param name="privateKey">A private key to sign messages.  The public part of
+            this key become a part of its end address for being pointed by peers.</param>
+            <param name="appProtocolVersion">An app protocol to comply.</param>
+            <param name="workers">The number of background workers (i.e., threads).</param>
+            <param name="host">A hostname to be a part of a public endpoint, that peers use when
+            they connect to this node.  Note that this is not a hostname to listen to;
+            <see cref="T:Libplanet.Net.Swarm`1"/> always listens to 0.0.0.0 &amp; ::/0.</param>
+            <param name="listenPort">A port number to listen to.</param>
+            <param name="iceServers">
+            <a href="https://en.wikipedia.org/wiki/Interactive_Connectivity_Establishment">ICE</a>
+            servers to use for TURN/STUN.  Purposes to traverse NAT.</param>
+            <param name="differentAppProtocolVersionEncountered">A delegate called back when a peer
+            with one different from <paramref name="appProtocolVersion"/>, and their version is
+            signed by a trusted party (i.e., <paramref name="trustedAppProtocolVersionSigners"/>).
+            If this callback returns <c>false</c> an encountered peer is ignored.  If this callback
+            is omitted all peers with different <see cref="T:Libplanet.Net.AppProtocolVersion"/>s are ignored.
+            </param>
+            <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
+            to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
+            <c>null</c>, which is default.</param>
+        </member>
         <member name="P:Libplanet.Net.Swarm`1.BlockChain">
             <summary>
             The <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance this <see cref="T:Libplanet.Net.Swarm`1"/> instance
