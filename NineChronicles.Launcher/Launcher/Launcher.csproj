@@ -45,7 +45,9 @@
       <CallTarget Targets="BundleApp" />
     </Target>
 
-    <UsingTask TaskName="NSubsys.Tasks.NSubsys" AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll" />
+    <UsingTask TaskName="NSubsys.Tasks.NSubsys"
+      AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll"
+      Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
 
     <Target Condition="'$(RuntimeIdentifier)' == 'win-x64'" Name="Bundle Windows Application" AfterTargets="Publish">
       <Message Importance="high" Text="'Bundle Windows Application' Called." />
