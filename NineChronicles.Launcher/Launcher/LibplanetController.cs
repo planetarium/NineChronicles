@@ -32,7 +32,7 @@ namespace Launcher
 
         // It used in qml/Main.qml to hide and turn on some menus.
         [NotifySignal]
-        public bool GameRunning => GameProcess?.HasExited ?? false;
+        public bool GameRunning => !(GameProcess?.HasExited ?? true);
 
         [NotifySignal]
         public bool Updating { get; private set; }
