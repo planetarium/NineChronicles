@@ -37,7 +37,7 @@ Item {
     SystemTrayIcon {
         id: systemTrayIcon
         visible: true
-        tooltip: "Libplanet Launcher, Not Flash (LLNF)"
+        tooltip: ctrl.tooltipText
 
         menu: Menu {
             MenuItem {
