@@ -41,11 +41,11 @@ namespace Nekoyume.UI
         public List<WorldMapWorld> worlds = new List<WorldMapWorld>();
 
         public GameObject worldMapRoot;
-        public Button yggdrasilButton;
-        public Button alfheimButton;
-        public Button svartalfheimButton;
-        public Button asgardButton;
-        public Button challengeModeButton;
+        public WorldButton yggdrasilButton;
+        public WorldButton alfheimButton;
+        public WorldButton svartalfheimButton;
+        public WorldButton asgardButton;
+        public WorldButton hardModeButton;
 
         public GameObject stage;
         public StageInformation stageInformation;
@@ -85,13 +85,12 @@ namespace Nekoyume.UI
             var firstStageId = Game.Game.instance.TableSheets.StageWaveSheet.First?.StageId ?? 1;
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
-            // �ʱ� �� ���� 1ȸ ����
             SharedViewModel.IsWorldShown.Skip(1).Subscribe(UpdateWorld).AddTo(gameObject);
             SharedViewModel.SelectedStageId.Subscribe(stageId =>
             {
-                UpdateStageInformation(stageId, States.Instance.CurrentAvatarState is null
-                    ? 1
-                    : States.Instance.CurrentAvatarState.level);
+                UpdateStageInformation(
+                    stageId,
+                    States.Instance.CurrentAvatarState?.level ?? 1);
             }).AddTo(gameObject);
 
             var tooltip = Find<ItemInformationTooltip>();
@@ -102,7 +101,8 @@ namespace Nekoyume.UI
                 {
                     AudioController.PlayClick();
                     var model = new Model.CountableItem(
-                        new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row), 1);
+                        new Nekoyume.Model.Item.Material(view.Data as MaterialItemSheet.Row),
+                        1);
                     tooltip.Show(view.RectTransform, model);
                     tooltip.itemInformation.iconArea.itemView.countText.enabled = false;
                 }).AddTo(view);
@@ -121,10 +121,10 @@ namespace Nekoyume.UI
                 foreach (var stage in world.pages.SelectMany(page => page.stages))
                 {
                     stage.onClick.Subscribe(worldMapStage =>
-                        {
-                            SharedViewModel.SelectedStageId.Value = worldMapStage.SharedViewModel.stageId;
-                        })
-                        .AddTo(gameObject);
+                    {
+                        SharedViewModel.SelectedStageId.Value =
+                            worldMapStage.SharedViewModel.stageId;
+                    }).AddTo(gameObject);
                 }
             }
 
@@ -132,42 +132,24 @@ namespace Nekoyume.UI
             stageInformation.rewardsAreaText.text = LocalizationManager.Localize("UI_REWARDS");
             submitButton.SetSubmitText(LocalizationManager.Localize("UI_WORLD_MAP_ENTER"));
 
-            yggdrasilButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    ShowWorld(1);
-                }).AddTo(gameObject);
-            alfheimButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    ShowWorld(2);
-                }).AddTo(gameObject);
-            svartalfheimButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    ShowWorld(3);
-                }).AddTo(gameObject);
-            asgardButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    ShowWorld(4);
-                }).AddTo(gameObject);
-            challengeModeButton.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    ShowWorld(101);
-                }).AddTo(gameObject);
+            yggdrasilButton.OnClickSubject
+                .Subscribe(_ => ShowWorld(1))
+                .AddTo(gameObject);
+            alfheimButton.OnClickSubject
+                .Subscribe(_ => ShowWorld(2))
+                .AddTo(gameObject);
+            svartalfheimButton.OnClickSubject
+                .Subscribe(_ => ShowWorld(3))
+                .AddTo(gameObject);
+            asgardButton.OnClickSubject
+                .Subscribe(_ => ShowWorld(4))
+                .AddTo(gameObject);
+            hardModeButton.OnClickSubject
+                .Subscribe(_ => ShowWorld(101))
+                .AddTo(gameObject);
             submitButton.OnSubmitClick
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    GoToQuestPreparation();
-                }).AddTo(gameObject);
+                .Subscribe(_ => GoToQuestPreparation())
+                .AddTo(gameObject);
         }
 
         #endregion
@@ -193,7 +175,8 @@ namespace Nekoyume.UI
 
                 if (worldModel.IsUnlocked)
                 {
-                    UnlockWorld(world,
+                    UnlockWorld(
+                        world,
                         worldModel.GetNextStageIdForPlay(),
                         worldModel.GetNextStageId());
                 }
@@ -204,7 +187,9 @@ namespace Nekoyume.UI
             }
 
             if (!worldInformation.TryGetFirstWorld(out var firstWorld))
+            {
                 throw new Exception("worldInformation.TryGetFirstWorld() failed!");
+            }
 
             Show(firstWorld.Id, firstWorld.GetNextStageId(), true, true);
         }
@@ -238,13 +223,13 @@ namespace Nekoyume.UI
         private static void LockWorld(WorldMapWorld world)
         {
             world.Set(-1, world.SharedViewModel.RowData.StageBegin);
-            world.worldButton.SetActive(false);
+            world.worldButton.Lock();
         }
 
         private static void UnlockWorld(WorldMapWorld world, int openedStageId = -1, int selectedStageId = -1)
         {
             world.Set(openedStageId, selectedStageId);
-            world.worldButton.SetActive(true);
+            world.worldButton.Unlock();
         }
 
         private void ShowWorld(int worldId)

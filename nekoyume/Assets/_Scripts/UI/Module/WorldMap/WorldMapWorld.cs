@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public GameObject worldButton;
+        public WorldButton worldButton;
         public string worldName;
         public TextMeshProUGUI stagePageText;
         public HorizontalScrollSnap horizontalScrollSnap;

@@ -3,13 +3,13 @@ DIALOG_1_1_0,[npc:09]Welcome[comma] cat. You're new[comma] aren't you?[newline]I
 DIALOG_1_1_1,Oh[comma] who am I? [shake_vertical:20|1|2][newline] A Very Important Cat that can connect you with the Godness?,"아, 난 누구냐고? .. [shake_vertical:20|1|2]나로 말할 것 같으면.[newline]여신님과 너를 잇는 역할을 하는 아주 중요한 몸이랄까?"
 DIALOG_1_1_2,And who's the Goddess?[newline]Oh my…,여신님은 또 누구냐고?[newline]이런이런.. 한꺼번에 다 설명하려면 너무 복잡하다고.
 DIALOG_1_1_3,Let's do some work before we get to the Goddess.[newline]Try climbing onto the platform below me.,일단 다른 설명을 듣기 전에 잠깐 몸을 풀고 와볼까?[newline]내 아래쪽에 있는 단상에 올라가면 다른 세계로 이동할 수 있다옹
-DIALOG_1_1_4,Go to Alfheim and clear some monsters before coming back![newline]I just don't have time for everyone right now.,알프헤임에 가서 골치 아픈 녀석들을 몇 마리만 잡고 있어보라옹.[newline]너같은 애들이 지금 너무 많아서 조금 있다 다시 와서 설명해줄게
+DIALOG_1_1_4,Go to Yggdrasil and clear some monsters before coming back![newline]I just don't have time for everyone right now.,이그드라실에 가서 골치 아픈 녀석들을 몇 마리만 잡고 있어보라옹.[newline]너같은 애들이 지금 너무 많아서 조금 있다 다시 와서 설명해줄게
 DIALOG_1_1_5,(The cat disappeared.),(하얀 고양이는 어디론가 사라졌다)
 DIALOG_2_1_0,[npc:09]Whew… Was that all?,[npc:09]휴 당장은 좀 사그러든건가...
 DIALOG_2_1_1,Those ones came out of Yggdrasill.[newline]They're quite vicious.,네가 조금 전에 없앤 녀석들은 세계수[comma] 이그드라실에서 떨어져나온 생명체들이야. [newline]악랄한 녀석들이지.
 DIALOG_2_1_2,If you don't do something about them[comma][newline]they'll multiply and take over this world.,가만히 놔두면 점점 자라서 온 세계를 헤집어다닐 녀석들이야.
-DIALOG_2_1_3,These days I can't even find space for my feet!,알프헤임에는 이 녀석들이 너무 창궐해서 도저히 발을 디딜 수가 없을 정도라고.
-DIALOG_2_1_4,Go deeper into Alfheim to find out more about them!,아무래도 이런 속도로 늘어나는 것을 보니[comma] 증식을 위한 다른 방법을 쓰고 있는 것 같아.[newline]좀 더 알프헤임 깊숙히 들어가서 원인을 찾아봐줘!
+DIALOG_2_1_3,These days I can't even find space for my feet!,이 녀석들이 너무 창궐해서 도저히 발을 디딜 수가 없을 정도라고.
+DIALOG_2_1_4,Go deeper into Yggdrasil to find out more about them!,아무래도 이런 속도로 늘어나는 것을 보니[comma] 증식을 위한 다른 방법을 쓰고 있는 것 같아.[newline]좀 더 이그드라실 깊숙히 들어가서 원인을 찾아봐줘!
 DIALOG_2_1_5,(The cat disappeared.),(하얀 고양이는 어디론가 사라졌다)
 DIALOG_3_1_0,[npc:07](A voice comes from far away.),[npc:07](허공 먼 곳에서 목소리가 들려온다.)
 DIALOG_3_1_1,I congratulate you on arriving in this world.[newline]This is Asgard- a world of Gods connected to nine different realms.,무사히 이 세계에 안착한 것을 축하합니다.[newline]여기는 아스가르드. 9개의 세계로 자유로이 드나들 수 있는[comma] 신들의 세계입니다.
@@ -61,7 +61,7 @@ DIALOG_13_1_1,Come to me if you're interested.[newline]I'll make it as delicious
 DIALOG_14_1_0,[npc:05]Maybe[comma] do you think the battle is getting a little bit harder?[newline]I’ll teach you how to enhance your equipment.,[npc:05]자네[comma] 전투가 조금씩 어려워지고 있다고 느껴지지 않나?[newline]장비를 강화할 수 있는 법을 알려주지..
 DIALOG_14_1_1,You can combine two equipments of the same grade and the same level.[newline]Enhancing the equipment raises the basic stat of the equipment.,같은 등급과 같은 강화도를 가진 장비를 하나로 합칠 수 있다네. 그러면 장비의 기본 능력치가 향상되지.
 DIALOG_14_1_2,Come to me if you're interested.,관심이 있으면 내게로 오게나.
-DIALOG_15_1_0,[npc:10]You're the one who's been running around in Alfheim.,[npc:10]알프헤임을 휘젓고 다닌다는 녀석이 네놈이었군..[newline]우리 땅에서는 더이상 네놈이 활개치지 못하도록 해주겠다!!!!!!!!!!
+DIALOG_15_1_0,[npc:10]You're the one who's been running around in the world.,[npc:10]이 세계를 휘젓고 다닌다는 녀석이 네놈이었군..[newline]우리 땅에서는 더이상 네놈이 활개치지 못하도록 해주겠다!!!!!!!!!!
 DIALOG_15_1_1,I won't let you walk on our land!!!!!!!!!!!!!!!!!!![newline]Don't even look inside Svartalfheim!!,스바르트알프헤임에는 얼씬도 하지 마라!
 DIALOG_16_1_0,[npc:11]You're an extraordinary cat…[newline]Rumors about you have circulated and reached my ears.,[npc:11]범상치 않은 고양이로구나…[newline]너에 대한 소문이 돌고 돌아 내 귀에까지 들려왔다.
 DIALOG_16_1_1,Why are you disturbing the balance of this world? You must stop here.[newline]If you come to Asgard[comma] you won't get out alive.,왜 이 세계를 이리 어지럽히고 있는 것이냐? 여기서 멈춰라.[newline]아스가르드에 오면 너는 살아서 나가지 못할 것이다.
