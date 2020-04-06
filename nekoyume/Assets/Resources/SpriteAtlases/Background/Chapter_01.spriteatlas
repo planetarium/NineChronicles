@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Chapter_01
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 19f002c5a47f147b2ba738e797f8080c, type: 3}
+    - {fileID: 2800000, guid: 7adeb38df71024690848309ddb35d9e0, type: 3}
+    - {fileID: 2800000, guid: e81184ce3e54c4567bfef5d8b30c0f05, type: 3}
+    - {fileID: 2800000, guid: c2357582164204c2799929d7f0691475, type: 3}
+    - {fileID: 2800000, guid: 9ed2b6732524a4e46845ac3b6de4c6b0, type: 3}
+    - {fileID: 2800000, guid: a4c4dab3fa00046f3b54e884377ad2a8, type: 3}
+    - {fileID: 2800000, guid: 851853540b7c0460ab7297732e0dafe5, type: 3}
+    - {fileID: 2800000, guid: 06c64d311e14842dd8493d0dc0b8a216, type: 3}
+    - {fileID: 2800000, guid: f5e90da0336624aff8a4d91877fa14b5, type: 3}
+    totalSpriteSurfaceArea: 3989712
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: f5e90da0336624aff8a4d91877fa14b5, type: 3}
+  - {fileID: 21300000, guid: 06c64d311e14842dd8493d0dc0b8a216, type: 3}
+  - {fileID: 21300000, guid: c2357582164204c2799929d7f0691475, type: 3}
+  - {fileID: 21300000, guid: 9ed2b6732524a4e46845ac3b6de4c6b0, type: 3}
+  - {fileID: 21300000, guid: a4c4dab3fa00046f3b54e884377ad2a8, type: 3}
+  - {fileID: 21300000, guid: 851853540b7c0460ab7297732e0dafe5, type: 3}
+  - {fileID: 21300000, guid: 19f002c5a47f147b2ba738e797f8080c, type: 3}
+  - {fileID: 21300000, guid: 7adeb38df71024690848309ddb35d9e0, type: 3}
+  - {fileID: 21300000, guid: e81184ce3e54c4567bfef5d8b30c0f05, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - chapter_01_03_02
+  - chapter_01_03_01
+  - chapter_01_01_01
+  - chapter_01_01_02
+  - chapter_01_02_01
+  - chapter_01_02_02
+  - bg_chapter01_01_01
+  - bg_chapter01_01_02
+  - bg_chapter01_01_03
+  m_Tag: Chapter_01
+  m_IsVariant: 0

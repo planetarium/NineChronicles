@@ -19,16 +19,16 @@ namespace Nekoyume.UI
         public float beginningPoint;
         public float endPoint;
 
-        public RectTransform RectTransform { get; private set; }
+        protected RectTransform RectTransform { get; private set; }
 
         protected void Awake()
         {
             RectTransform = GetComponent<RectTransform>();
         }
-        
+
         protected void OnEnable()
         {
-            if (Math.Abs(speed) < 0.000001f)
+            if (Mathf.Approximately(speed, 0f))
             {
                 return;
             }
@@ -53,7 +53,7 @@ namespace Nekoyume.UI
             RectTransform = GetComponent<RectTransform>();
 
             var parent = RectTransform.parent;
-            if (!parent)
+            if (parent is null)
             {
                 beginningPoint = -RectTransform.GetPivotPositionFromAnchor(PivotPresetType.TopLeft).x;
                 endPoint = -RectTransform.GetPivotPositionFromAnchor(PivotPresetType.TopRight).x;
@@ -62,7 +62,7 @@ namespace Nekoyume.UI
             }
 
             var parentRectTransform = parent.GetComponent<RectTransform>();
-            if (!parentRectTransform)
+            if (parentRectTransform is null)
             {
                 beginningPoint = -RectTransform.GetPivotPositionFromAnchor(PivotPresetType.TopLeft).x;
                 endPoint = -RectTransform.GetPivotPositionFromAnchor(PivotPresetType.TopRight).x;
