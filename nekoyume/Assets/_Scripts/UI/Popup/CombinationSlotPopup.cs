@@ -11,6 +11,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
 
@@ -18,8 +19,7 @@ namespace Nekoyume.UI
 {
     public class CombinationSlotPopup : PopupWidget
     {
-        public TextMeshProUGUI itemNameText;
-        public CombinationItemInformation itemInformation;
+        public EquipmentRecipeCellView cellView;
         public CombinationMaterialPanel materialPanel;
         public EquipmentOptionRecipeView optionView;
         public SubmitWithCostButton submitButton;
@@ -59,8 +59,6 @@ namespace Nekoyume.UI
         {
             _slotIndex = slotIndex;
             var result = (CombinationConsumable.ResultModel) state.Result;
-            var resultItem = new CountableItem(result.itemUsable, 1);
-            itemInformation.SetData(new Model.ItemInformation(resultItem));
             var subRecipeEnabled = result.subRecipeId.HasValue;
             materialPanel.gameObject.SetActive(false);
             optionView.gameObject.SetActive(false);
@@ -71,6 +69,7 @@ namespace Nekoyume.UI
                     var recipeRow =
                         Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
+                    cellView.Set(recipeRow);
                     if (subRecipeEnabled)
                     {
                         optionView.Show(
@@ -98,9 +97,6 @@ namespace Nekoyume.UI
                 }
             }
 
-            itemInformation.statsArea.root.gameObject.SetActive(false);
-            itemInformation.skillsArea.root.gameObject.SetActive(false);
-            itemNameText.text = result.itemUsable.GetLocalizedName();
             submitButton.HideAP();
             submitButton.SetSubmittable(result.id != default);
             var cost = result.itemUsable.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
