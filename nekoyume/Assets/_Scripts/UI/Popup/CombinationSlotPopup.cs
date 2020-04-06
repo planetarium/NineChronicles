@@ -91,6 +91,7 @@ namespace Nekoyume.UI
                     var recipeRow =
                         Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
+                    cellView.Set(recipeRow);
                     materialPanel.SetData(recipeRow);
                     materialPanel.gameObject.SetActive(true);
                     break;
