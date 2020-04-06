@@ -182,6 +182,9 @@ namespace Launcher
                     service.Run(cancellationToken),
                     Task.Run(async () =>
                     {
+                        TooltipText = "Connecting to the network...";
+                        this.ActivateProperty(ctrl => ctrl.TooltipText);
+
                         await service.BootstrapEnded.WaitAsync(cancellationToken);
                         Console.WriteLine("Bootstrap Ended");
                         await service.PreloadEnded.WaitAsync(cancellationToken);
