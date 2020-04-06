@@ -81,6 +81,10 @@ Item {
 
     LibplanetController {
         id: ctrl
+
+        Component.onDestruction: {
+            ctrl.stopGameProcess()
+        }
     }
 
     Window {

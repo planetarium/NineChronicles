@@ -230,7 +230,7 @@ namespace Launcher
             GameProcess.EnableRaisingEvents = true;
         }
 
-        private void StopGameProcess(CancellationToken cancellationToken)
+        public void StopGameProcess()
         {
             GameProcess?.Kill(true);
         }
