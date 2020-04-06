@@ -231,7 +231,14 @@ namespace Nekoyume.BlockChain
         {
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
+            Task.Run(async () =>
+                {
+                    await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger));
+
+                    // 프리로드 중일 경우 StopAsync 에서 딜레이가 없을 수 있어서 딜레이를 추가 합니다.
+                    // FIXME: Swarm<T>에 프리로딩을 기다리는 API가 생길 때까지만 이렇게 해둡니다.
+                    await Task.Delay(SwarmLinger);
+                })
                 .ContinueWith(_ =>
                 {
                     try
