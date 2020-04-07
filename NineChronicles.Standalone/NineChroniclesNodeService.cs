@@ -105,6 +105,7 @@ namespace NineChronicles.Standalone
             await hostBuilder.ConfigureServices((ctx, services) =>
             {
                 services.AddHostedService(provider => NodeService);
+                services.AddSingleton(provider => NodeService.Swarm);
                 services.AddSingleton(provider => NodeService.BlockChain);
             }).RunConsoleAsync(cancellationToken);
         }

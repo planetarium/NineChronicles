@@ -23,5 +23,8 @@ namespace Launcher.Common.RuntimePlatform
 
         public string ExecutableGameBinaryPath =>
             Path.Combine(CurrentWorkingDirectory, GameBinaryFilename);
+
+        public string LogFilePath =>
+            Path.Combine(CurrentWorkingDirectory, "Logs", "launcher.log");
     }
 }

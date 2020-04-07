@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 
@@ -35,5 +36,13 @@ namespace Launcher.Common.RuntimePlatform
 
         public string ExecutableGameBinaryPath
             => Path.Combine(CurrentWorkingDirectory, GameBinaryFilename, "Contents", "MacOS", "Nine Chronicles");
+
+        public string LogFilePath
+            => Path.Combine(
+                Environment.GetEnvironmentVariable("HOME"),
+                "Library",
+                "Logs",
+                "Planetarium",
+                "launcher.log");
     }
 }

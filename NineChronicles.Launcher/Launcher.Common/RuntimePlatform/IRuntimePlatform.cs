@@ -10,5 +10,6 @@ namespace Launcher.Common.RuntimePlatform
         string BinariesPath { get; }
         string ExecutableLauncherBinaryPath { get; }
         string ExecutableGameBinaryPath { get; }
+        string LogFilePath { get; }
     }
 }
