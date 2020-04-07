@@ -20,6 +20,7 @@ using UniRx;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI
 {
@@ -71,8 +72,10 @@ namespace Nekoyume.UI
         public Transform npcPosition01;
         public Transform npcPosition02;
         public CanvasGroup canvasGroup;
-        public ModuleBlur blur;
         public Animator equipmentRecipeAnimator;
+        public ModuleBlur blur;
+
+        public RecipeClickVFX recipeClickVFX;
 
         private NPC _npc01;
         private NPC _npc02;
