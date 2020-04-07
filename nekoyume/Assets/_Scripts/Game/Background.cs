@@ -5,81 +5,100 @@ namespace Nekoyume.Game
 {
     public class Background : MonoBehaviour
     {
-        public bool autoParallaxSize = true;
-        public float parallaxSize = 0.0f;
-        public float parallaxSpeed = 0.0f;
-        private Transform cameraTransform;
-        
-        private Transform[] images;
+        // FIXME: parallaxSize를 자동으로 구해주는 로직이 SpriteAtlas를 사용하는 케이스를 커버해주지 못해고 있습니다.
+        // 스프라이트의 사이즈가 이를 포함하는 텍스쳐의 사이즈와 다르기 때문입니다.
+        // 지금은 임시로 스프라이트를 포함하는 트랜스폼의 스케일이 기본값이라는 가정하에 렉트를 사용하도록 수정합니다.
+        [SerializeField]
+        private bool autoParallaxSize = true;
 
-        private float lastCameraX;
-        private int leftIndex = 0;
-        private int rightIndex = 0;
+        [SerializeField]
+        private float parallaxSize = 0.0f;
 
-        private void Start ()
+        [SerializeField]
+        private float parallaxSpeed = 0.0f;
+
+        private Transform _cameraTransform;
+        private Transform[] _images;
+        private float _lastCameraX;
+        private int _leftIndex;
+        private int _rightIndex;
+
+        private void Awake ()
         {
-            cameraTransform = Camera.main.transform;
+            _cameraTransform = ActionCamera.instance.transform;
 
-            images = new Transform[transform.childCount];
-            for (int i = 0; i < transform.childCount; ++i)
+            _images = new Transform[transform.childCount];
+            for (var i = 0; i < transform.childCount; ++i)
             {
-                images[i] = transform.GetChild(i);
-                if (autoParallaxSize && i == 0)
+                _images[i] = transform.GetChild(i);
+                if (i == 0 &&
+                    autoParallaxSize)
                 {
-                    SpriteRenderer spriteRenderer = images[i].GetComponent<SpriteRenderer>();
-                    if (spriteRenderer.sprite != null)
+                    var sprite = _images[i].GetComponent<SpriteRenderer>()?.sprite;
+                    if (!(sprite is null))
                     {
-                        parallaxSize = spriteRenderer.sprite.texture.width / spriteRenderer.sprite.pixelsPerUnit;
+                        parallaxSize = sprite.rect.width / sprite.pixelsPerUnit;
                     }
                 }
-                images[i].position = new Vector3(parallaxSize * i, images[i].position.y, images[i].position.z);
+                _images[i].position = new Vector3(parallaxSize * i, _images[i].position.y, _images[i].position.z);
             }
 
-            lastCameraX = cameraTransform.position.x;
-            leftIndex = 0;
-            rightIndex = images.Length - 1;
+            _lastCameraX = _cameraTransform.position.x;
+            _leftIndex = 0;
+            _rightIndex = _images.Length - 1;
         }
 
         private void Update()
         {
-            if (parallaxSpeed != 0.0f)
+            var camPosX = _cameraTransform.position.x;
+
+            if (!Mathf.Approximately(parallaxSpeed, 0.0f))
             {
-                float deltaX = cameraTransform.position.x - lastCameraX;
-                float tempSpeedMultiplier = 3.0f; // Use temp value before adjusting in detail
-                transform.position += Vector3.right * (deltaX * parallaxSpeed * tempSpeedMultiplier);
-                lastCameraX = cameraTransform.position.x;
+                var deltaX = camPosX - _lastCameraX;
+                transform.position += Vector3.right * (deltaX * parallaxSpeed * 3f);
+                _lastCameraX = camPosX;
             }
 
-            if (images.Length > 1)
+            if (_images.Length <= 1)
             {
-                if (cameraTransform.position.x < (images[leftIndex].transform.position.x))
-                    MoveLeft();
+                return;
+            }
 
-                if (cameraTransform.position.x > (images[rightIndex].transform.position.x))
-                    MoveRight();
+            if (camPosX < _images[_leftIndex].transform.position.x)
+            {
+                MoveLeft();
+            }
+
+            if (camPosX > _images[_rightIndex].transform.position.x)
+            {
+                MoveRight();
             }
         }
 
         private void MoveLeft()
         {
-            Vector3 position = Vector3.right * (images[leftIndex].position.x - parallaxSize);
-            position.y = images[rightIndex].position.y;
-            images[rightIndex].position = position;
-            leftIndex = rightIndex;
-            rightIndex--;
-            if (rightIndex < 0)
-                rightIndex = images.Length - 1;
+            var position = Vector3.right * (_images[_leftIndex].position.x - parallaxSize);
+            position.y = _images[_rightIndex].position.y;
+            _images[_rightIndex].position = position;
+            _leftIndex = _rightIndex;
+            _rightIndex--;
+            if (_rightIndex < 0)
+            {
+                _rightIndex = _images.Length - 1;
+            }
         }
 
         private void MoveRight()
         {
-            Vector3 position = Vector3.right * (images[rightIndex].position.x + parallaxSize);
-            position.y = images[leftIndex].position.y;
-            images[leftIndex].position = position;
-            rightIndex = leftIndex;
-            leftIndex++;
-            if (leftIndex == images.Length)
-                leftIndex = 0;
+            var position = Vector3.right * (_images[_rightIndex].position.x + parallaxSize);
+            position.y = _images[_leftIndex].position.y;
+            _images[_leftIndex].position = position;
+            _rightIndex = _leftIndex;
+            _leftIndex++;
+            if (_leftIndex == _images.Length)
+            {
+                _leftIndex = 0;
+            }
         }
     }
 }
