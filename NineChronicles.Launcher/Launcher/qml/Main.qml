@@ -85,9 +85,16 @@ Item {
         }
 
         onActivated: {
-            if (reason == SystemTrayIcon.DoubleClick && Qt.platform.os == "windows" && runMenu.visible)
+            if (reason == SystemTrayIcon.DoubleClick)
             {
-                ctrl.runGameProcess()
+                if (Qt.platform.os == "windows" && runMenu.visible)
+                {
+                    ctrl.runGameProcess()
+                }
+                else if (passphraseWindow.visible)
+                {
+                    passphraseWindow.requestActivate()
+                }
             }
         }
     }
