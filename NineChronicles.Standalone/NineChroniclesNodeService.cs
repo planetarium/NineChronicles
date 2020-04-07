@@ -35,6 +35,8 @@ namespace NineChronicles.Standalone
 
         public AsyncAutoResetEvent PreloadEnded => NodeService.PreloadEnded;
 
+        public Swarm<NineChroniclesActionType> Swarm => NodeService?.Swarm;
+
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties properties,
             RpcNodeServiceProperties rpcNodeServiceProperties,

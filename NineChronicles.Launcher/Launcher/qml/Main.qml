@@ -41,6 +41,19 @@ Item {
 
         menu: Menu {
             MenuItem {
+                id: peerAddress
+                visible: (ctrl.privateKey != null &&
+                          !ctrl.gameRunning &&
+                          !ctrl.updating &&
+                          !ctrl.preprocessing &&
+                          ctrl.currentNodeAddress != null)
+                text: "My node: " + ctrl.currentNodeAddress
+                // FIXME: 누르면 클립보드에 주소 복사하게...
+            }
+
+            MenuSeparator { }
+
+            MenuItem {
                 id: runMenu
                 text: "Run"
                 visible: ctrl.privateKey != null && !ctrl.gameRunning && !ctrl.updating && !ctrl.preprocessing
