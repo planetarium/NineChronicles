@@ -25,7 +25,7 @@ namespace Launcher
     // FIXME: Memory leak.
     public class LibplanetController
     {
-        private const string DefaultTooltipText = "Libplanet Launcher";
+        private const string DefaultTooltipText = "Nine Chronicles";
         private CancellationTokenSource _cancellationTokenSource;
 
         private S3Storage Storage { get; }
