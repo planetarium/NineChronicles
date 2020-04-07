@@ -100,7 +100,7 @@ namespace Nekoyume.UI
             // itemInformation UI의 모든 요소에 적절한 값이 들어가야 레이아웃 정리가 유효함.
             itemInformation.SetData(Model.ItemInformation);
 
-            Model.TitleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
+            Model.TitleText.SubscribeTo(titleText).AddTo(_disposablesForModel);
             Model.PriceEnabled.Subscribe(priceContainer.SetActive).AddTo(_disposablesForModel);
             Model.PriceEnabled.SubscribeTo(priceText).AddTo(_disposablesForModel);
             Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
