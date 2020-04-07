@@ -3,11 +3,12 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Launcher</RootNamespace>
-        <OutputType>exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
         <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup Label="Resources">
