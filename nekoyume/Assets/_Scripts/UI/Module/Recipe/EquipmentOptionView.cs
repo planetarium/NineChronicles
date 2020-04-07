@@ -41,8 +41,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected Image innerPanel;
 
-        [SerializeField]
-        protected readonly Color[] optionColors =
+        protected static Color[] optionColors =
         {
             Color.white,
             Color.white,
