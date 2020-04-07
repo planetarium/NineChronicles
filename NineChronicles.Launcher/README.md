@@ -13,8 +13,8 @@ A system tray application to sync chain with network in background.
 ```/bin/bash
 # dotnet publish -r <rid> -p:PublishSingleFile=true
 # rid = osx-x64 | win-x64
-$ dotnet publish -r osx-x64 -p:PublishSingleFile=true  # out/osx-x64/Launcher.app
-$ dotnet publish -r win-x64 -p:PublishSingleFile=true  # out/win-x64/Launcher.exe
+$ dotnet publish -r osx-x64 -p:PublishSingleFile=true  # out/osx-x64/Nine Chronicles.app
+$ dotnet publish -r win-x64 -p:PublishSingleFile=true  # out/win-x64/Nine Chronicles.exe
 ```
 
 

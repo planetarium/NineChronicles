@@ -1,2 +1,2 @@
 .\NineChroniclesSnapshot.exe
-.\NineChronicles.exe
+.\9c.exe
