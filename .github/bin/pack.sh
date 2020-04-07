@@ -1,10 +1,10 @@
 #!/bin/bash
 set -evx
 
-if [[ "$#" != "5" ]]; then
+if [[ "$#" != "6" ]]; then
   {
     echo "error: too few arguments"
-    echo "usage: $0 OUT-DIR PLATFORM GAME-DIR LAUNCHER-DIR PRIVATE-KEY"
+    echo "usage: $0 OUT-DIR PLATFORM GAME-DIR LAUNCHER-DIR PRIVATE-KEY TIMESTAMP"
   } > /dev/stderr
   exit 1
 fi
@@ -20,6 +20,7 @@ platform="$(echo "$2" | tr '[:upper:]' '[:lower:]')"
 game_binary_dir="$3"
 launcher_dir="$4"
 private_key="$5"
+timestamp="$6"
 
 temp_dir="$(mktemp -d)"
 
@@ -77,6 +78,7 @@ public_key="$(
 apv=$(
   planet apv sign \
     --passphrase "$passphrase" \
+    --extra timestamp="$timestamp" \
     --extra macOSBinaryUrl="$macos_url" \
     --extra WindowsBinaryUrl="$windows_url" \
     "$key_id" \

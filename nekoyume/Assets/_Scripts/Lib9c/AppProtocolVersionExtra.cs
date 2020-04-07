@@ -37,7 +37,7 @@ namespace Nekoyume
             return Bencodex.Types.Dictionary.Empty
                 .Add(MacOSBinaryUrlKey, MacOSBinaryUrl)
                 .Add(WindowsBinaryUrlKey, WindowsBinaryUrl)
-                .Add(TimestampKey, Timestamp.ToString(CultureInfo.InvariantCulture));;
+                .Add(TimestampKey, Timestamp.ToString("O", CultureInfo.InvariantCulture));;
         }
     }
 }
