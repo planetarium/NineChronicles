@@ -32,7 +32,7 @@ namespace Launcher
 
         // It used in qml/Main.qml to hide and turn on some menus.
         [NotifySignal]
-        public bool GameRunning => GameProcess?.HasExited ?? false;
+        public bool GameRunning => !(GameProcess?.HasExited ?? true);
 
         [NotifySignal]
         public bool Updating { get; private set; }
@@ -182,6 +182,9 @@ namespace Launcher
                     service.Run(cancellationToken),
                     Task.Run(async () =>
                     {
+                        TooltipText = "Connecting to the network...";
+                        this.ActivateProperty(ctrl => ctrl.TooltipText);
+
                         await service.BootstrapEnded.WaitAsync(cancellationToken);
                         Console.WriteLine("Bootstrap Ended");
                         await service.PreloadEnded.WaitAsync(cancellationToken);
@@ -227,7 +230,7 @@ namespace Launcher
             GameProcess.EnableRaisingEvents = true;
         }
 
-        private void StopGameProcess(CancellationToken cancellationToken)
+        public void StopGameProcess()
         {
             GameProcess?.Kill(true);
         }
