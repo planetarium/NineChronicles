@@ -51,11 +51,11 @@
 
     <Target Condition="'$(RuntimeIdentifier)' == 'win-x64'" Name="Bundle Windows Application" AfterTargets="Publish">
       <Message Importance="high" Text="'Bundle Windows Application' Called." />
-      <NSubsys TargetFile="$(ProjectDir)\$(PublishDir)\$(AssemblyName).exe" />
+      <NSubsys TargetFile="$(PublishDir)\$(AssemblyName).exe" />
     </Target>
 
     <Target Name="Prepare QtRunitme" AfterTargets="Publish">
-      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier)" />
+      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) $(PublishDir)\qt-runtime" />
     </Target>
 
 </Project>
