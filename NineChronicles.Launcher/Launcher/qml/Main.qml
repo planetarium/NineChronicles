@@ -63,9 +63,22 @@ Item {
             }
 
             MenuItem {
-                text: "Reload"
-                visible: !ctrl.gameRunning
-                onTriggered:{
+                id: loginMenu
+                text: "Login"
+                visible: ctrl.privateKey === null 
+
+                onTriggered: {
+                    passphraseWindow.show()
+                    passphraseWindow.requestActivate()
+                }
+            }
+
+            MenuItem {
+                id: logoutMenu
+                text: "Logout"
+                visible: ctrl.privateKey !== null && !ctrl.gameRunning
+
+                onTriggered: {
                     ctrl.privateKey = null  // expect to login again
                     ctrl.stopSync()
                     passphraseWindow.show()
@@ -109,7 +122,7 @@ Item {
 
     Window {
         id: passphraseWindow
-        title: "Input passphrase"
+        title: "Type your passphrase"
         width: 640
         height: 130
         minimumWidth: 640
