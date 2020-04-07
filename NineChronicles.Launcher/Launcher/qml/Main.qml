@@ -70,10 +70,21 @@ Item {
                 onTriggered: Qt.quit()
             }
         }
+
+        onActivated: {
+            if (reason == SystemTrayIcon.DoubleClick && Qt.platform.os == "windows" && runMenu.visible)
+            {
+                ctrl.runGameProcess()
+            }
+        }
     }
 
     LibplanetController {
         id: ctrl
+
+        Component.onDestruction: {
+            ctrl.stopGameProcess()
+        }
     }
 
     Window {
