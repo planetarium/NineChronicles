@@ -7,9 +7,9 @@ namespace Launcher.Common.RuntimePlatform
     {
         public string GameBinaryDownloadFilename => "win.zip";
 
-        public string GameBinaryFilename => "Nine Chronicles.exe";
+        public string GameBinaryFilename => "9c.exe";
 
-        public string LauncherFilename => "Launcher.exe";
+        public string LauncherFilename => "Nine Chronicles.exe";
 
         public string OpenCommand => "notepad.exe";
 

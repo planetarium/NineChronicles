@@ -3,11 +3,17 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Launcher</RootNamespace>
-        <OutputType>exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
         <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
         <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
+        <Authors>Planetarium</Authors>
+        <Company>Planetarium</Company>
+        <Product>Nine Chronicles Launcher</Product>
+        <PackageId>Nine Chronicles Launcher</PackageId>
+        <AssemblyName>Nine Chronicles</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup Label="Resources">
@@ -43,7 +49,7 @@
 
     <Target Condition="'$(RuntimeIdentifier)' == 'win-x64'" Name="Bundle Windows Application" AfterTargets="Publish">
       <Message Importance="high" Text="'Bundle Windows Application' Called." />
-      <NSubsys TargetFile="$(ProjectDir)\$(PublishDir)\$(ProjectName).exe" />
+      <NSubsys TargetFile="$(ProjectDir)\$(PublishDir)\$(AssemblyName).exe" />
     </Target>
 
     <Target Name="Prepare QtRunitme" AfterTargets="Publish">

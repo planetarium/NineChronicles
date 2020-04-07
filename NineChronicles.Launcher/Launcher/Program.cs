@@ -23,6 +23,7 @@ namespace Launcher
             RuntimeManager.ConfigureRuntimeDirectory(Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "qt-runtime"));
 
             QmlNetConfig.ShouldEnsureUIThread = false;
+            QCoreApplication.SetAttribute(ApplicationAttribute.EnableHighDpiScaling, true);
 
             using var application = new QGuiApplication(args);
             using var qmlEngine = new QQmlApplicationEngine();
