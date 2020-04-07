@@ -13,6 +13,7 @@ namespace Launcher
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
+                .WriteTo.File(CurrentPlatform.LogFilePath, rollingInterval: RollingInterval.Day)
                 .MinimumLevel.Debug().CreateLogger();
 
             // Set current directory to executable path.
