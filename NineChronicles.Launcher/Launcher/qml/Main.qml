@@ -137,7 +137,7 @@ Item {
         minimumHeight: 240
         maximumWidth: 480
         maximumHeight: 240
-        flags: Qt.Tool
+        flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
 
         Column {
             anchors.fill: parent
@@ -211,7 +211,7 @@ Item {
         minimumWidth: 480
         maximumHeight: 100
         maximumWidth: 480
-        flags: Qt.Tool
+        flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
 
         Label {
             anchors.margins: 10
