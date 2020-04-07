@@ -232,27 +232,33 @@ namespace Launcher
             }
         }
 
-        public void RunGameProcess()
+        public bool RunGameProcess()
         {
             string commandArguments =
                 $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort} --private-key {PrivateKeyHex}";
+
+            // QML에서 호출되는 함수이므로 예외처리를 안에서 합니다.
             try
             {
                 GameProcess =
                     Process.Start(CurrentPlatform.ExecutableGameBinaryPath, commandArguments);
+                GameProcess.OutputDataReceived += (sender, args) => { Console.WriteLine(args.Data); };
+
+                this.ActivateProperty(ctrl => ctrl.GameRunning);
+
+                GameProcess.Exited += (sender, args) => {
+                    this.ActivateProperty(ctrl => ctrl.GameRunning);
+                };
+                GameProcess.EnableRaisingEvents = true;
+
+                return true;
             }
             catch (Exception e)
             {
                 Log.Error(e, "Unexpected exception: {msg}", e.Message);
+
+                return false;
             }
-            GameProcess.OutputDataReceived += (sender, args) => { Console.WriteLine(args.Data); };
-
-            this.ActivateProperty(ctrl => ctrl.GameRunning);
-
-            GameProcess.Exited += (sender, args) => {
-                this.ActivateProperty(ctrl => ctrl.GameRunning);
-            };
-            GameProcess.EnableRaisingEvents = true;
         }
 
         public void StopGameProcess()
