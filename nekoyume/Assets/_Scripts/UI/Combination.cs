@@ -686,7 +686,7 @@ namespace Nekoyume.UI
                 : NPCAnimation.Type.Emotion_01);
 
             speechBubble.SetKey(key);
-            StartCoroutine(speechBubble.CoShowText());
+            StartCoroutine(speechBubble.CoShowText(true));
         }
 
         private void ResetSelectedIndex()

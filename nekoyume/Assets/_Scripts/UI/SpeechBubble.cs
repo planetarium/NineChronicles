@@ -93,7 +93,7 @@ namespace Nekoyume.UI
             gameObject.SetActive(true);
         }
 
-        public IEnumerator CoShowText()
+        public IEnumerator CoShowText(bool instant = false)
         {
             if (!enable || SpeechCount == 0)
             {
@@ -101,7 +101,18 @@ namespace Nekoyume.UI
             }
             BeforeSpeech();
             var speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
-            _coroutine = StartCoroutine(ShowText(speech));
+            _coroutine = StartCoroutine(ShowText(speech, instant));
+            yield return _coroutine;
+        }
+
+        public IEnumerator CoShowText(string speech, bool instant = false)
+        {
+            if (!enable || SpeechCount == 0)
+            {
+                yield break;
+            }
+            BeforeSpeech();
+            _coroutine = StartCoroutine(ShowText(speech, instant));
             yield return _coroutine;
         }
 
