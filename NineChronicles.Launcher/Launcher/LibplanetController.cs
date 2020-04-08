@@ -25,7 +25,6 @@ namespace Launcher
     // FIXME: Memory leak.
     public class LibplanetController
     {
-        private const string DefaultTooltipText = "Nine Chronicles";
         private CancellationTokenSource _cancellationTokenSource;
 
         private S3Storage Storage { get; }
@@ -56,7 +55,7 @@ namespace Launcher
             : null;
 
         [NotifySignal]
-        public string TooltipText { get; private set; }
+        public string PreloadStatus { get; private set; }
 
         private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
 
@@ -65,7 +64,6 @@ namespace Launcher
         public LibplanetController()
         {
             Storage = new S3Storage();
-            TooltipText = DefaultTooltipText;
         }
 
         public void StartSync()
@@ -180,8 +178,8 @@ namespace Launcher
                 rpcProperties,
                 new Progress<PreloadState>(preloadState =>
                 {
-                    TooltipText = CreatePreloadStateDescription(preloadState);
-                    this.ActivateProperty(ctrl => ctrl.TooltipText);
+                    PreloadStatus = CreatePreloadStateDescription(preloadState);
+                    this.ActivateProperty(ctrl => ctrl.PreloadStatus);
                 })
             );
             try
@@ -190,8 +188,8 @@ namespace Launcher
                     service.Run(cancellationToken),
                     Task.Run(async () =>
                     {
-                        TooltipText = "Connecting to the network...";
-                        this.ActivateProperty(ctrl => ctrl.TooltipText);
+                        PreloadStatus = "Connecting to the network...";
+                        this.ActivateProperty(ctrl => ctrl.PreloadStatus);
 
                         if (properties.Peers.Any())
                         {
@@ -204,9 +202,6 @@ namespace Launcher
 
                         Preprocessing = false;
                         this.ActivateProperty(ctrl => ctrl.Preprocessing);
-
-                        TooltipText = DefaultTooltipText;
-                        this.ActivateProperty(ctrl => ctrl.TooltipText);
 
                         Peer currentNode = null;
                         do
