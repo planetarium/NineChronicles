@@ -1,12 +1,14 @@
 #!/bin/bash
+set -evx
 
-if [ $# -ne 1 ]; then
-    echo "$0 <runtime>"
+if [ $# -ne 2 ]; then
+    echo "$0 <runtime> <qt-dir>"
     echo "- runtime: runtime identifier (e.g., linux-x64, osx-x64, win-x64)"
     exit
 fi
 
 rid="$1"
+qt_dir="$2"
 
 # Download Qt Runtime.
 if [ ! -d "qt-runtimes/$rid" ]; then
@@ -22,4 +24,4 @@ if [ ! -d "qt-runtimes/$rid" ]; then
 fi
 
 # Place Qt Runtime.
-cp -r "qt-runtimes/$rid/" "../out/$rid/qt-runtime"
+cp -r "qt-runtimes/$rid/" "$qt_dir"

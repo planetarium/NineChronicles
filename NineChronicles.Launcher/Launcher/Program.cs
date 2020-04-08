@@ -17,10 +17,12 @@ namespace Launcher
                 .MinimumLevel.Debug().CreateLogger();
 
             // Set current directory to executable path.
+            Log.Logger.Debug("Current working directory: {0}", CurrentPlatform.CurrentWorkingDirectory);
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]));
 
             // Configure Qt Runtime directory to bundled.
-            RuntimeManager.ConfigureRuntimeDirectory(Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "qt-runtime"));
+            Log.Logger.Debug("Find Qt runtime from: {0}", CurrentPlatform.QtRuntimeDirectory);
+            RuntimeManager.ConfigureRuntimeDirectory(CurrentPlatform.QtRuntimeDirectory);
 
             QmlNetConfig.ShouldEnsureUIThread = false;
             QCoreApplication.SetAttribute(ApplicationAttribute.EnableHighDpiScaling, true);
