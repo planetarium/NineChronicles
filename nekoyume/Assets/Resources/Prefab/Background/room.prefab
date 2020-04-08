@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4744473251210888}
   - component: {fileID: 9162679699939111259}
   m_Layer: 0
-  m_Name: room
+  m_Name: Room
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1192,6 +1192,11 @@ PrefabInstance:
     - target: {fileID: 5820521211838624888, guid: 75875f77466b065489f94ef3745e1641,
         type: 3}
       propertyPath: _resetTargetOnStart
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5820521211838624888, guid: 75875f77466b065489f94ef3745e1641,
+        type: 3}
+      propertyPath: resetTargetOnStart
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
