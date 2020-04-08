@@ -65,11 +65,6 @@ namespace Nekoyume.Game.Character
 
         private void UpdateAnimatorTarget()
         {
-            if (!(Animator.Target is null))
-            {
-                return;
-            }
-
             var target = GetComponentInChildren<NPCSpineController>();
             if (target is null)
             {
