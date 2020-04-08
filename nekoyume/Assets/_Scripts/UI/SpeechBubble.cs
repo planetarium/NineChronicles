@@ -29,6 +29,7 @@ namespace Nekoyume.UI
         public float speechBreakTime;
         public float destroyTime = 4.0f;
         public bool enable;
+        public bool onGoing;
 
         public int SpeechCount { get; private set; }
         private Coroutine _coroutine;
@@ -178,6 +179,7 @@ namespace Nekoyume.UI
                 }
 
                 yield return new WaitForSeconds(speechWaitTime);
+                yield return new WaitWhile(() => onGoing);
 
                 text.text = "";
                 textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);

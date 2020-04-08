@@ -168,11 +168,17 @@ namespace Nekoyume.UI
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
 
+            equipmentCombinationPanel.RequiredBlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(ShowBlockIndex).AddTo(gameObject);
+
             elementalCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 ActionEnhancedCombinationEquipment(elementalCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
+
+            elementalCombinationPanel.RequiredBlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(ShowBlockIndex).AddTo(gameObject);
 
             recipe.RegisterListener(this);
             recipe.closeButton.OnClickAsObservable()
@@ -291,6 +297,7 @@ namespace Nekoyume.UI
             }
 
             combineConsumable.submitButton.gameObject.SetActive(true);
+            ShowBlockIndex(recipeCellView.Model.Row.RequiredBlockIndex);
         }
 
         private void CheckLockOfCategoryButtons()
@@ -406,7 +413,6 @@ namespace Nekoyume.UI
                     combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
-                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
                     inventory.gameObject.SetActive(false);
                     equipmentRecipeAnimator.Play("Hide");
@@ -689,6 +695,19 @@ namespace Nekoyume.UI
             StartCoroutine(speechBubble.CoShowText(true));
         }
 
+        private void ShowBlockIndex(long requiredBlockIndex)
+        {
+            if (!_npc01)
+                return;
+
+            _npc01.PlayAnimation(NPCAnimation.Type.Emotion_01);
+
+            var cost = string.Format(LocalizationManager.Localize("UI_COST_BLOCK"),
+                requiredBlockIndex);
+            speechBubble.onGoing = true;
+            StartCoroutine(speechBubble.CoShowText(cost, true));
+        }
+
         private void ResetSelectedIndex()
         {
             if (!_lockSlotIndex && !(_states is null))
@@ -731,6 +750,7 @@ namespace Nekoyume.UI
             blur.gameObject.SetActive(false);
             Pop();
             _lockSlotIndex = false;
+            speechBubble.onGoing = false;
         }
     }
 }
