@@ -470,6 +470,11 @@ namespace Nekoyume.UI.Module
 
         private bool ShowCombinationButton()
         {
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
+                .RequireClearedStageLevel.CombinationEquipmentAction))
+            {
+                return false;
+            }
             combinationButton.Show();
             return true;
         }
