@@ -10,8 +10,9 @@ Item {
     function login() {
         const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
         if (success) {
+            ctrl.startSync()
             passphraseWindow.hide()
-            ctrl.startSync();
+            preloadProgress.show()
         }
         else {
             passphraseWindow.height = passphraseWindow.minimumHeight = passphraseWindow.maximumHeight = 200
@@ -49,7 +50,7 @@ Item {
     SystemTrayIcon {
         id: systemTrayIcon
         visible: true
-        tooltip: ctrl.tooltipText
+        tooltip: ctrl.preprocessing ? ctrl.preloadStatus : "Nine Chronicles"
 
         menu: Menu {
             MenuItem {
@@ -118,6 +119,10 @@ Item {
                 {
                     passphraseWindow.requestActivate()
                 }
+                else if (ctrl.preprocessing)
+                {
+                    preloadProgress.show()
+                }
             }
         }
     }
@@ -127,6 +132,54 @@ Item {
 
         Component.onDestruction: {
             ctrl.stopGameProcess()
+        }
+    }
+
+    Window {
+        id: preloadProgress
+        title: "Nine Chronicles"
+        width: 240
+        height: 40
+        minimumWidth: width
+        minimumHeight: height
+        maximumWidth: width
+        maximumHeight: height
+        flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
+        visible: false
+
+        onClosing: {
+            // https://doc.qt.io/qt-5/qguiapplication.html#quitOnLastWindowClosed-prop 를 설정할 방법이 없어
+            // 가려만 둡니다.
+            close.accepted = false
+            preloadProgress.hide()
+        }
+        ColumnLayout{
+            spacing: 1
+            anchors.fill: parent
+            anchors.margins: 10
+
+            ProgressBar {
+                indeterminate: true
+                Layout.preferredWidth: parent.width
+                visible: ctrl.preprocessing
+            }
+            
+            Label {
+                text: ctrl.preprocessing ? ctrl.preloadStatus : "Done!"
+                Layout.preferredWidth: parent.width
+                visible: ctrl.preprocessing
+            }
+
+            Button {
+                text: "Play Nine Chronicles"
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: 20
+                visible: !ctrl.preprocessing
+                onClicked: {
+                    preloadProgress.hide()
+                    runGame()
+                }
+            }
         }
     }
 
