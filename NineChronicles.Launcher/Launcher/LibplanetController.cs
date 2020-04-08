@@ -25,7 +25,7 @@ namespace Launcher
     // FIXME: Memory leak.
     public class LibplanetController
     {
-        private const string DefaultTooltipText = "Libplanet Launcher";
+        private const string DefaultTooltipText = "Nine Chronicles";
         private CancellationTokenSource _cancellationTokenSource;
 
         private S3Storage Storage { get; }
@@ -46,6 +46,14 @@ namespace Launcher
 
         [NotifySignal]
         public PrivateKey PrivateKey { get; set; }
+
+        [NotifySignal]
+        public Peer CurrentNode { get; set; }
+
+        [NotifySignal]
+        public string CurrentNodeAddress => CurrentNode is BoundPeer p && p.EndPoint is DnsEndPoint e
+            ? $"{ByteUtil.Hex(p.PublicKey.Format(true))},{e.Host},{e.Port}"
+            : null;
 
         [NotifySignal]
         public string TooltipText { get; private set; }
@@ -151,7 +159,7 @@ namespace Launcher
                 NoMiner = settings.NoMiner,
                 PrivateKey = PrivateKey ?? new PrivateKey(),
                 IceServers = new[] {settings.IceServer}.Select(LoadIceServer),
-                Peers = new[] {settings.Seed}.Select(LoadPeer),
+                Peers = new[] {settings.Seed}.Where(a => a is string).Select(LoadPeer),
                 // FIXME: how can we validate it to use right store type?
                 StorePath = storePath,
                 StoreType = settings.StoreType,
@@ -185,16 +193,33 @@ namespace Launcher
                         TooltipText = "Connecting to the network...";
                         this.ActivateProperty(ctrl => ctrl.TooltipText);
 
-                        await service.BootstrapEnded.WaitAsync(cancellationToken);
-                        Console.WriteLine("Bootstrap Ended");
-                        await service.PreloadEnded.WaitAsync(cancellationToken);
-                        Console.WriteLine("Preload Ended");
+                        if (properties.Peers.Any())
+                        {
+                            await service.BootstrapEnded.WaitAsync(cancellationToken);
+                            Log.Information("Bootstrap Ended");
+
+                            await service.PreloadEnded.WaitAsync(cancellationToken);
+                            Log.Information("Preload Ended");
+                        }
 
                         Preprocessing = false;
                         this.ActivateProperty(ctrl => ctrl.Preprocessing);
 
                         TooltipText = DefaultTooltipText;
                         this.ActivateProperty(ctrl => ctrl.TooltipText);
+
+                        Peer currentNode = null;
+                        do
+                        {
+                            await Task.Delay(1000);
+                            currentNode = service.Swarm.AsPeer;
+                        }
+                        while (currentNode is null);
+
+                        CurrentNode = currentNode;
+                        Log.Information("Current node address: {0}", CurrentNodeAddress);
+                        this.ActivateProperty(ctrl => ctrl.CurrentNode);
+                        this.ActivateProperty(ctrl => ctrl.CurrentNodeAddress);
                     }));
             }
             catch (OperationCanceledException e)
@@ -207,27 +232,33 @@ namespace Launcher
             }
         }
 
-        public void RunGameProcess()
+        public bool RunGameProcess()
         {
             string commandArguments =
                 $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort} --private-key {PrivateKeyHex}";
+
+            // QML에서 호출되는 함수이므로 예외처리를 안에서 합니다.
             try
             {
                 GameProcess =
                     Process.Start(CurrentPlatform.ExecutableGameBinaryPath, commandArguments);
+                GameProcess.OutputDataReceived += (sender, args) => { Console.WriteLine(args.Data); };
+
+                this.ActivateProperty(ctrl => ctrl.GameRunning);
+
+                GameProcess.Exited += (sender, args) => {
+                    this.ActivateProperty(ctrl => ctrl.GameRunning);
+                };
+                GameProcess.EnableRaisingEvents = true;
+
+                return true;
             }
             catch (Exception e)
             {
                 Log.Error(e, "Unexpected exception: {msg}", e.Message);
+
+                return false;
             }
-            GameProcess.OutputDataReceived += (sender, args) => { Console.WriteLine(args.Data); };
-
-            this.ActivateProperty(ctrl => ctrl.GameRunning);
-
-            GameProcess.Exited += (sender, args) => {
-                this.ActivateProperty(ctrl => ctrl.GameRunning);
-            };
-            GameProcess.EnableRaisingEvents = true;
         }
 
         public void StopGameProcess()

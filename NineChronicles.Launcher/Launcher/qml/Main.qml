@@ -19,6 +19,18 @@ Item {
         }
     }
 
+    function runGame()
+    {
+        const succeed = ctrl.runGameProcess();
+        if (!succeed)
+        {
+            showMessage("Failed to launch game.\nPlease re-install Nine Chronciles.");
+            messageBox.onDestruction.connect(function() {
+                Qt.Quit()
+            })
+        }
+    }
+
     Timer {
         interval: 500
         running: true
@@ -41,18 +53,42 @@ Item {
 
         menu: Menu {
             MenuItem {
+                id: peerAddress
+                visible: (ctrl.privateKey != null &&
+                          !ctrl.gameRunning &&
+                          !ctrl.updating &&
+                          !ctrl.preprocessing &&
+                          ctrl.currentNodeAddress != null)
+                text: "My node: " + ctrl.currentNodeAddress
+                // FIXME: 누르면 클립보드에 주소 복사하게...
+            }
+
+            MenuSeparator { }
+
+            MenuItem {
                 id: runMenu
                 text: "Run"
                 visible: ctrl.privateKey != null && !ctrl.gameRunning && !ctrl.updating && !ctrl.preprocessing
+                onTriggered: runGame()
+            }
+
+            MenuItem {
+                id: loginMenu
+                text: "Login"
+                visible: ctrl.privateKey === null 
+
                 onTriggered: {
-                    ctrl.runGameProcess()
+                    passphraseWindow.show()
+                    passphraseWindow.requestActivate()
                 }
             }
 
             MenuItem {
-                text: "Reload"
-                visible: !ctrl.gameRunning
-                onTriggered:{
+                id: logoutMenu
+                text: "Logout"
+                visible: ctrl.privateKey !== null && !ctrl.gameRunning
+
+                onTriggered: {
                     ctrl.privateKey = null  // expect to login again
                     ctrl.stopSync()
                     passphraseWindow.show()
@@ -72,9 +108,16 @@ Item {
         }
 
         onActivated: {
-            if (reason == SystemTrayIcon.DoubleClick && Qt.platform.os == "windows" && runMenu.visible)
+            if (reason == SystemTrayIcon.DoubleClick)
             {
-                ctrl.runGameProcess()
+                if (Qt.platform.os == "windows" && runMenu.visible)
+                {
+                    runGame()
+                }
+                else if (passphraseWindow.visible)
+                {
+                    passphraseWindow.requestActivate()
+                }
             }
         }
     }
@@ -89,14 +132,12 @@ Item {
 
     Window {
         id: passphraseWindow
-        title: "Input passphrase"
-        width: 640
-        height: 130
-        minimumWidth: 640
+        title: "Type your passphrase"
+        minimumWidth: 480
         minimumHeight: 240
-        maximumWidth: 640
+        maximumWidth: 480
         maximumHeight: 240
-        flags: Qt.Tool
+        flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
 
         Column {
             anchors.fill: parent
@@ -112,17 +153,20 @@ Item {
                 Label {
                     text: "Address"
                     Layout.preferredWidth: 180
+                    font.pointSize: 14
                 }
 
                 ComboBox {
                     id: addressComboBox
                     model: Net.toListModel(ctrl.keyStore.addresses)
                     Layout.fillWidth: true
+                    font.pointSize: 14
                 }
 
                 Label {
                     text: "Passphrase"
                     Layout.preferredWidth: 180
+                    font.pointSize: 14
                 }
                 
                 TextField {
@@ -131,6 +175,7 @@ Item {
                     placeholderText: "Input passphrase"
                     onAccepted: login()
                     Layout.fillWidth: true
+                    font.pointSize: 14
                 }
             }
 
@@ -138,6 +183,7 @@ Item {
                 text: "Login"
                 onClicked: login()
                 width: parent.width;
+                font.pointSize: 14
             }
 
             Label {
@@ -145,7 +191,35 @@ Item {
                 visible: false
                 text: "Passphrase seems wrong, try again."
                 color: "red"
+                font.pointSize: 14
             }
+        }
+    }
+    function showMessage(text)
+    {
+        messageBox.text = text;
+        messageBox.visible = true;
+    }
+
+    Window {
+        id: messageBox
+        modality: Qt.ApplicationModal
+        title: "Nine Chronicles Launcher"
+        visible: false
+        property alias text: messageBoxLabel.text
+        minimumHeight: 100
+        minimumWidth: 480
+        maximumHeight: 100
+        maximumWidth: 480
+        flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
+
+        Label {
+            anchors.margins: 10
+            anchors.fill: parent
+            wrapMode: Text.WordWrap
+            id: messageBoxLabel
+            text: ""
+            font.pointSize: 12
         }
     }
 

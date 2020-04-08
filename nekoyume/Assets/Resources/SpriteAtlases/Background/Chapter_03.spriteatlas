@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Chapter_03
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 96782f43f89a2ef4db7c876be9cb6d23, type: 3}
+    - {fileID: 2800000, guid: 997538cdbb058f246b1441f4525cd15f, type: 3}
+    - {fileID: 2800000, guid: a6072ac21b365724ab658888c6443144, type: 3}
+    - {fileID: 2800000, guid: 166e7d88db0a84840804be0e46331574, type: 3}
+    - {fileID: 2800000, guid: 6dd14127ca4597b4c9fb9932e689a816, type: 3}
+    - {fileID: 2800000, guid: 465613b7b2b836c479265c738ce4e21a, type: 3}
+    - {fileID: 2800000, guid: a6dbf73dc0c2bc3459d5a995c885e9e0, type: 3}
+    - {fileID: 2800000, guid: 8f8efa7ebeea45349b8368523bcaaa54, type: 3}
+    - {fileID: 2800000, guid: 69dfd1540e4230147ad1a61eee79c4b7, type: 3}
+    - {fileID: 2800000, guid: 58bb622fb1cc7c84ba0368f707caa181, type: 3}
+    - {fileID: 2800000, guid: 3db72f34e5a47334bb06e55028bfc8e8, type: 3}
+    - {fileID: 2800000, guid: 8b533405b2271944b96cb77d7921078c, type: 3}
+    - {fileID: 2800000, guid: 96e35830086fa354e8032579d551f0a9, type: 3}
+    - {fileID: 2800000, guid: 7f79dd44a4338eb41b72791358c58a51, type: 3}
+    - {fileID: 2800000, guid: 070b3bb1048e40a478cd779d1b40c0f4, type: 3}
+    - {fileID: 2800000, guid: e7681197899df429ebee40fd16549baa, type: 3}
+    - {fileID: 2800000, guid: 4aa8ab02f242c4ecaa294480a73839d6, type: 3}
+    - {fileID: 2800000, guid: c45553fb9bbab4109998f708f8ce85f6, type: 3}
+    - {fileID: 2800000, guid: a29752865b7b349c7bb28734a477bfac, type: 3}
+    - {fileID: 2800000, guid: fa3cb33bdf2cd439b92b87c316bc91de, type: 3}
+    - {fileID: 2800000, guid: 40ff231299f13409484cb237d9b3060c, type: 3}
+    totalSpriteSurfaceArea: 9564426
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 96e35830086fa354e8032579d551f0a9, type: 3}
+  - {fileID: 21300000, guid: 070b3bb1048e40a478cd779d1b40c0f4, type: 3}
+  - {fileID: 21300000, guid: 4aa8ab02f242c4ecaa294480a73839d6, type: 3}
+  - {fileID: 21300000, guid: 40ff231299f13409484cb237d9b3060c, type: 3}
+  - {fileID: 21300000, guid: a6072ac21b365724ab658888c6443144, type: 3}
+  - {fileID: 21300000, guid: 96782f43f89a2ef4db7c876be9cb6d23, type: 3}
+  - {fileID: 21300000, guid: 3db72f34e5a47334bb06e55028bfc8e8, type: 3}
+  - {fileID: 21300000, guid: 7f79dd44a4338eb41b72791358c58a51, type: 3}
+  - {fileID: 21300000, guid: 69dfd1540e4230147ad1a61eee79c4b7, type: 3}
+  - {fileID: 21300000, guid: 8b533405b2271944b96cb77d7921078c, type: 3}
+  - {fileID: 21300000, guid: a29752865b7b349c7bb28734a477bfac, type: 3}
+  - {fileID: 21300000, guid: 6dd14127ca4597b4c9fb9932e689a816, type: 3}
+  - {fileID: 21300000, guid: e7681197899df429ebee40fd16549baa, type: 3}
+  - {fileID: 21300000, guid: 465613b7b2b836c479265c738ce4e21a, type: 3}
+  - {fileID: 21300000, guid: 166e7d88db0a84840804be0e46331574, type: 3}
+  - {fileID: 21300000, guid: fa3cb33bdf2cd439b92b87c316bc91de, type: 3}
+  - {fileID: 21300000, guid: c45553fb9bbab4109998f708f8ce85f6, type: 3}
+  - {fileID: 21300000, guid: a6dbf73dc0c2bc3459d5a995c885e9e0, type: 3}
+  - {fileID: 21300000, guid: 997538cdbb058f246b1441f4525cd15f, type: 3}
+  - {fileID: 21300000, guid: 8f8efa7ebeea45349b8368523bcaaa54, type: 3}
+  - {fileID: 21300000, guid: 58bb622fb1cc7c84ba0368f707caa181, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - bg_chapter03_03_03
+  - bg_chapter03_03_05
+  - chapter_03_01_02
+  - chapter_03_03_02
+  - bg_chapter03_01_03
+  - bg_chapter03_01_01
+  - bg_chapter03_03_01
+  - bg_chapter03_03_04
+  - bg_chapter03_02_04
+  - bg_chapter03_03_02
+  - chapter_03_02_02
+  - bg_chapter03_01_05
+  - chapter_03_01_01
+  - bg_chapter03_02_01
+  - bg_chapter03_01_04
+  - chapter_03_03_01
+  - chapter_03_02_01
+  - bg_chapter03_02_02
+  - bg_chapter03_01_02
+  - bg_chapter03_02_03
+  - bg_chapter03_02_05
+  m_Tag: Chapter_03
+  m_IsVariant: 0

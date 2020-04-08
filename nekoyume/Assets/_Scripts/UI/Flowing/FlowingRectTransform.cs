@@ -22,7 +22,7 @@ namespace Nekoyume.UI
         public float beginningPoint;
         public float endPoint;
 
-        public RectTransform RectTransform { get; private set; }
+        protected RectTransform RectTransform { get; private set; }
 
         protected void Awake()
         {
@@ -31,7 +31,7 @@ namespace Nekoyume.UI
 
         protected void OnEnable()
         {
-            if (Math.Abs(speed) < 0.000001f)
+            if (Mathf.Approximately(speed, 0f))
             {
                 return;
             }
