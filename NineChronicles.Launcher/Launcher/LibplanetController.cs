@@ -23,6 +23,7 @@ using static Launcher.Common.Configuration;
 namespace Launcher
 {
     // FIXME: Memory leak.
+    [Signal("quit")]
     public class LibplanetController
     {
         private CancellationTokenSource _cancellationTokenSource;
@@ -295,9 +296,9 @@ namespace Launcher
             const string updaterFilename = "Launcher.Updater";
             string updaterPath =
                 Path.Combine(CurrentPlatform.CurrentWorkingDirectory, updaterFilename);
-            GameProcess?.Kill();
             Process.Start(updaterPath, binaryUrl);
-            Environment.Exit(0);
+            // NOTE: Environment.Exit(int)에 Qt Thread가 반응하지 않아 Qt 쪽에서 프로세스 종료를 처리하게 합니다.
+            this.ActivateSignal("quit");
         }
 
         private string CreatePreloadStateDescription(PreloadState state)
