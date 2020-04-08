@@ -10,6 +10,7 @@ if [[ "$#" != "6" ]]; then
 fi
 
 if ! command -v realpath > /dev/null; then
+  # macOS does not have realpath(1)
   realpath() {
     python2.7 -c 'import os.path, sys; print os.path.abspath(sys.argv[1]),' "$@"
   }
@@ -29,7 +30,7 @@ temp_dir="$(mktemp -d)"
   echo "out_dir=$out_dir"
   echo "platform=$platform"
   echo "game_binary_dir=$game_binary_dir"
-  echo "launcher_dir=$luancher_dir"
+  echo "launcher_dir=$launcher_dir"
   echo "temp_dir=$temp_dir"
 } > /dev/stderr
 
@@ -95,8 +96,8 @@ if ! command -v sponge > /dev/null; then
   }
 fi
 
-clo_json="$(find "$temp_dir" -type d -name StreamingAssets | head -n 1)/clo.json"
 launcher_json="$temp_dir/launcher.json"
+clo_json="$(find "$temp_dir" -type d -name StreamingAssets | head -n 1)/clo.json"
 
 cp NineChronicles.Launcher/resources/launcher.json "$launcher_json"
 cp "$(dirname "$0")/clo.json.template" "$clo_json"

@@ -20,7 +20,7 @@ namespace Launcher.Common.RuntimePlatform
             {
                 string bundlePath =
                     $"{LauncherFilename}/Contents/MacOS/{Path.GetFileNameWithoutExtension(LauncherFilename)}";
-                var executablePath = Process.GetCurrentProcess().MainModule.FileName;
+                string executablePath = ExecutableLauncherBinaryPath;
                 var parentDirectory = new FileInfo(executablePath).Directory;
                 if (executablePath.EndsWith(bundlePath))
                 {
@@ -30,16 +30,11 @@ namespace Launcher.Common.RuntimePlatform
             }
         }
 
-        public string BinariesPath => Path.Combine(CurrentWorkingDirectory, "Binaries");
+        public string QtRuntimeDirectory =>
+            Path.Combine(Path.GetDirectoryName(ExecutableLauncherBinaryPath), "qt-runtime");
 
         public string ExecutableLauncherBinaryPath =>
-            Path.Combine(
-                CurrentWorkingDirectory,
-                LauncherFilename,
-                "Contents",
-                "MacOS",
-                Path.GetFileNameWithoutExtension(LauncherFilename)
-            );
+            Process.GetCurrentProcess().MainModule.FileName;
 
         public string ExecutableGameBinaryPath =>
             Path.Combine(
