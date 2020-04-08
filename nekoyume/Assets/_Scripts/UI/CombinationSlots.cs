@@ -26,6 +26,7 @@ namespace _Scripts.UI
             Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
             headerText.text = LocalizationManager.Localize("UI_COMBINATION");
+            _blockIndex = Game.instance.Agent.BlockIndex;
         }
 
         private void SetSlots(Dictionary<int, CombinationSlotState> states)
