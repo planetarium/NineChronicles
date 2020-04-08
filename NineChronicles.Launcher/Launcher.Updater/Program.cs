@@ -16,7 +16,7 @@ namespace Launcher.Updater
     class Program
     {
         const string MacOSLatestBinaryUrl = "https://download.nine-chronicles.com/latest/macOS.tar.gz";
-        const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.tar.gz";
+        const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.zip";
 
         static async Task Main(string[] args)
         {
