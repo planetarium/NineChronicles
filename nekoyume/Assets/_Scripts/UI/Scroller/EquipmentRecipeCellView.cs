@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
@@ -109,16 +110,34 @@ namespace Nekoyume.UI.Scroller
             RowData = recipeRow;
 
             var equipment = (Equipment) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
-            ItemSubType = row.ItemSubType;
-            ElementalType = row.ElementalType;
+            Set(equipment);
+        }
 
-            titleText.text = equipment.GetLocalizedNonColoredName();
+        public void Set(ConsumableItemRecipeSheet.Row recipeRow)
+        {
+            if (recipeRow is null)
+                return;
 
-            var item = new CountableItem(equipment, 1);
+            var sheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
+            if (!sheet.TryGetValue(recipeRow.ResultConsumableItemId, out var row))
+                return;
+
+            var consumable = (Consumable) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
+            Set(consumable);
+        }
+
+        private void Set(ItemUsable itemUsable)
+        {
+            ItemSubType = itemUsable.Data.ItemSubType;
+            ElementalType = itemUsable.Data.ElementalType;
+
+            titleText.text = itemUsable.GetLocalizedNonColoredName();
+
+            var item = new CountableItem(itemUsable, 1);
             itemView.SetData(item);
 
-            var sprite = row.ElementalType.GetSprite();
-            var grade = row.Grade;
+            var sprite = ElementalType.GetSprite();
+            var grade = itemUsable.Data.Grade;
 
             for (var i = 0; i < elementalTypeImages.Length; ++i)
             {
@@ -132,8 +151,25 @@ namespace Nekoyume.UI.Scroller
                 elementalTypeImages[i].gameObject.SetActive(true);
             }
 
-            var text = $"{row.Stat.Type} +{row.Stat.Value}";
-            optionText.text = text;
+            switch (itemUsable)
+            {
+                case Equipment equipment:
+                {
+                    var text = $"{equipment.Data.Stat.Type} +{equipment.Data.Stat.Value}";
+                    optionText.text = text;
+                    break;
+                }
+                case Consumable consumable:
+                {
+                    var sb = new StringBuilder();
+                    foreach (var stat in consumable.Data.Stats)
+                    {
+                        sb.AppendLine($"{stat.StatType} +{stat.Value}");
+                    }
+                    optionText.text = sb.ToString();
+                    break;
+                }
+            }
 
             SetLocked(false);
             SetDimmed(false);
