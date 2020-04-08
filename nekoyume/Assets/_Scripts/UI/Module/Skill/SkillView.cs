@@ -12,7 +12,7 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI nameText;
         public TextMeshProUGUI powerText;
         public TextMeshProUGUI chanceText;
-        
+
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         public Model.SkillView Model { get; private set; }
@@ -22,15 +22,15 @@ namespace Nekoyume.UI.Module
             if (model is null)
             {
                 Hide();
-                
+
                 return;
             }
 
             _disposablesForModel.DisposeAllAndClear();
             Model = model;
-            Model.name.SubscribeToText(nameText).AddTo(_disposablesForModel);
-            Model.power.SubscribeToText(powerText).AddTo(_disposablesForModel);
-            Model.chance.SubscribeToText(chanceText).AddTo(_disposablesForModel);
+            Model.name.SubscribeTo(nameText).AddTo(_disposablesForModel);
+            Model.power.SubscribeTo(powerText).AddTo(_disposablesForModel);
+            Model.chance.SubscribeTo(chanceText).AddTo(_disposablesForModel);
 
             base.SetData(model.iconSprite.Value);
         }
