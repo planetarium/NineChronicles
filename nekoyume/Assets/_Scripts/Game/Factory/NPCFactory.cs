@@ -26,7 +26,7 @@ namespace Nekoyume.Game.Factory
 
             var origin = Resources.Load<GameObject>($"Character/NPC/{id}");
             var go = Instantiate(origin, npc.transform);
-            npc.ResetTarget(go);
+            npc.ResetAnimatorTarget(go);
             return npc.gameObject;
         }
     }
