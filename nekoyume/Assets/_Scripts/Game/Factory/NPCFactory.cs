@@ -24,9 +24,8 @@ namespace Nekoyume.Game.Factory
                 Destroy(prevAnim.gameObject);
             }
 
-            var origin = Resources.Load<GameObject>($"Character/NPC/{id}");
-            var go = Instantiate(origin, npc.transform);
-            npc.ResetAnimatorTarget(go);
+            var prefab = Resources.Load<GameObject>($"Character/NPC/{id}");
+            Instantiate(prefab, npc.transform);
             return npc.gameObject;
         }
     }
