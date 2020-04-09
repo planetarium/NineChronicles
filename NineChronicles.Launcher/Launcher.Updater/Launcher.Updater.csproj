@@ -7,6 +7,10 @@
     <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
     <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
+    <AssemblyName>Nine Chronicles Updater</AssemblyName>
+    <Authors>Planetarium</Authors>
+    <Company>Planetarium</Company>
+    <Product>Nine Chronicles Updater</Product>
   </PropertyGroup>
 
   <ItemGroup Label="Resources">

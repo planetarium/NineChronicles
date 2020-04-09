@@ -133,6 +133,14 @@ Item {
         Component.onDestruction: {
             ctrl.stopGameProcess()
         }
+
+        Component.onCompleted: {
+            ctrl.quit.connect(function() {
+                ctrl.stopGameProcess()
+                ctrl.stopSync()
+                Qt.quit()
+            })
+        }
     }
 
     Window {
