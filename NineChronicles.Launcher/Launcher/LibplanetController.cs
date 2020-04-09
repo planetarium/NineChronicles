@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using Launcher.Common;
 using Launcher.Common.Storage;
 using Libplanet;
+using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Libplanet.Net;
@@ -24,6 +25,7 @@ namespace Launcher
 {
     // FIXME: Memory leak.
     [Signal("quit")]
+    [Signal("fatalError", NetVariantType.String)]
     public class LibplanetController
     {
         private CancellationTokenSource _cancellationTokenSource;
@@ -86,14 +88,20 @@ namespace Launcher
                         var settings = LoadSettings();
                         await SyncTask(settings, cancellationToken);
                     }
+                    catch (InvalidGenesisBlockException e)
+                    {
+                        FatalError(e, "The network to connect and this game app do not have the same genesis block.");
+                        return;
+                    }
                     catch (TimeoutException e)
                     {
-                        Log.Error(e, "timeout occurred.");
+                        FatalError(e, "Timed out to connect to the network.");
+                        return;
                     }
                     catch (Exception e)
                     {
-                        Log.Error(e, "Unexpected exception occurred.");
-                        throw;
+                        FatalError(e, "Unexpected exception occurred during trying to connect to the network.");
+                        return;
                     }
                 }
             }, cancellationToken);
@@ -285,6 +293,12 @@ namespace Launcher
             var port = int.Parse(tokens[2]);
 
             return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
+        }
+
+        private void FatalError(Exception exception, string message)
+        {
+            this.ActivateSignal("fatalError", message);
+            Log.Error(exception, message);
         }
 
         private void RestartToUpdate(Nekoyume.AppProtocolVersionExtra extra)
