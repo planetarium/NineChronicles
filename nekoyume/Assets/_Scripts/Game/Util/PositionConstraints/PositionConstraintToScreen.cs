@@ -79,7 +79,6 @@ namespace Nekoyume.Game.Util
 
         protected virtual Vector3 GetWorldPosition()
         {
-            Debug.LogWarning(nameof(PositionConstraintToScreen));
             return ActionCamera.instance.GetWorldPosition(
                 transform,
                 screenPivot);

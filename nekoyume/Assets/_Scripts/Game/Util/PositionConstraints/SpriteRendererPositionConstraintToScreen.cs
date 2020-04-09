@@ -17,7 +17,6 @@ namespace Nekoyume.Game.Util
 
         protected override Vector3 GetWorldPosition()
         {
-            Debug.LogWarning(nameof(SpriteRendererPositionConstraintToScreen));
             return ActionCamera.instance.GetWorldPosition(
                 transform,
                 ScreenPivot,

@@ -110,6 +110,8 @@ namespace Nekoyume.Game
         protected override void OnDestroy()
         {
             _fsm.Kill();
+
+            OnScreenResolutionChange.Dispose();
         }
 
         #endregion
