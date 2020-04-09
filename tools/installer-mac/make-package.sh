@@ -12,6 +12,6 @@ pkgbuild \
     --identifier com.ninechronicles.pkg.NineChroniclesInstaller \
     --version 0.0.1 \
     --scripts Scripts \
-    --install-location /Applications \
+    --install-location /Applications/NineChronicles \
     --root "$PAYLOAD_DIR" \
     NineChronicles.pkg
