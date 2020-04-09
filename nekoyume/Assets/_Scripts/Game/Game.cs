@@ -48,14 +48,6 @@ namespace Nekoyume.Game
 
         private CommandLineOptions _options;
 
-#if UNITY_EDITOR
-        private static readonly string WebCommandLineOptionsPathInit = string.Empty;
-        private static readonly string WebCommandLineOptionsPathLogin = string.Empty;
-#else
-        private const string WebCommandLineOptionsPathInit = "https://planetarium.dev/9c-alpha-clo.json";
-        private const string WebCommandLineOptionsPathLogin = "https://planetarium.dev/9c-alpha-clo.json";
-#endif
-
         private static readonly string CommandLineOptionsJsonPath =
             Path.Combine(Application.streamingAssetsPath, "clo.json");
 
@@ -66,8 +58,7 @@ namespace Nekoyume.Game
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
             _options = CommandLineOptions.Load(
-               CommandLineOptionsJsonPath,
-               WebCommandLineOptionsPathInit
+               CommandLineOptionsJsonPath
             );
 
             if (_options.RpcClient)

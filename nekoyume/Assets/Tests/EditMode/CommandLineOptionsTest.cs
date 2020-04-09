@@ -11,7 +11,7 @@ namespace Tests.EditMode
         [Test]
         public void EmptyJson()
         {
-            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_empty.json"), string.Empty);
+            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_empty.json"));
             Assert.Null(opt.Port);
             Assert.Null(opt.Host);
             Assert.IsFalse(opt.NoMiner);
@@ -23,7 +23,7 @@ namespace Tests.EditMode
         [Test]
         public void P2PSeed() 
         {
-            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_seed.json"), string.Empty);
+            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_seed.json"));
             Assert.AreEqual(5555, opt.Port);
             Assert.AreEqual("test.planetariumhq.com", opt.Host);
             Assert.IsFalse(opt.NoMiner);
@@ -35,7 +35,7 @@ namespace Tests.EditMode
         [Test]
         public void P2PNoMiner()
         {
-            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_nominer.json"), string.Empty);
+            var opt = CommandLineOptions.Load(Path.Combine(jsonFixturePath, "clo_nominer.json"));
             Assert.Null(opt.Port);
             Assert.Null(opt.Host);
             Assert.IsTrue(opt.NoMiner);
