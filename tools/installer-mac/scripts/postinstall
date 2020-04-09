@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-INSTALL_DIR="$2/NineChronicles/"
+INSTALL_DIR="$2"
 
-"$INSTALL_DIR"/Launcher.Updater
+"$INSTALL_DIR/Nine Chronicles Updater"
