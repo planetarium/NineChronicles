@@ -62,7 +62,7 @@ namespace Launcher.Updater
             {
                 File.Delete(tempFilePath);
             }
-            Console.Error.WriteLine($"Start download game binary from '{gameBinaryDownloadUri}' to {tempFilePath}.");
+            Console.Error.WriteLine($"Start download game from '{gameBinaryDownloadUri}' to {tempFilePath}.");
             
             using var httpClient = new HttpClient();
             httpClient.Timeout = Timeout.InfiniteTimeSpan;
@@ -82,12 +82,13 @@ namespace Launcher.Updater
             // FIXME: 표준 출력(stdout)으로 출력하고 있기 때문에, 커맨드라인 인자등을 추가해서 출력을 제어해야합니다.
             using var progressBar = new ProgressBar(
                 (int)(contentLength / 1024L),
-                "Downloading...",
+                $"Downloading from {gameBinaryDownloadUri}...",
                 new ProgressBarOptions
                 {
                     ProgressCharacter = '-',
                     BackgroundCharacter = '-',
-                    ProgressBarOnBottom = false,
+                    CollapseWhenFinished = true,
+                    ProgressBarOnBottom = true,
                     DisplayTimeInRealTime = false,
                 }
             );
@@ -97,7 +98,7 @@ namespace Launcher.Updater
                 await dest.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
                 totalRead += bytesRead;
                 progressBar.Tick((int)(totalRead / 1024L));
-                progressBar.Message = $"Downloading... ({(int)(totalRead / 1024L)}KB/{(int)(contentLength / 1024L)}KB)";
+                progressBar.Message = $"Downloading from {gameBinaryDownloadUri}... ({(int)(totalRead / 1024L)}KB/{(int)(contentLength / 1024L)}KB)";
             }
             
             Console.Error.WriteLine($"Finished download from '{gameBinaryDownloadUri}'!");
@@ -107,7 +108,7 @@ namespace Launcher.Updater
         private static void ExtractBinaries(string path)
         {
             // TODO: implement a function to extract with file extension.
-            Console.Error.WriteLine("Start to extract game binary.");
+            Console.Error.WriteLine("Extracting downloaded game data...");
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 var process = Process.Start(
