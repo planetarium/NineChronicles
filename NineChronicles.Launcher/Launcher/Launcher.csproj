@@ -46,12 +46,9 @@
             AfterTargets="Publish">
       <Message Importance="high" Text="'BundleMacOSApp' Called." />
       <CallTarget Targets="BundleApp" />
-    </Target>
-
-    <Target Name="CleanupMacOSBundle"
-            Condition="'$(RuntimeIdentifier)' == 'osx-x64'"
-            AfterTargets="BundleMacOSApp">
+      <Message Importance="high" Text="Bundled: $(PublishDir)/$(AssemblyName).app" />
       <Exec Command="scripts\cleanup-macos-bundle.sh '$(PublishDir)' '$(PublishDir)/$(AssemblyName).app'" />
+      <Message Importance="high" Text="Cleaned up temporary assets from: $(PublishDir)/" />
     </Target>
 
     <UsingTask TaskName="NSubsys.Tasks.NSubsys"
