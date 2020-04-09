@@ -43,7 +43,7 @@
 
     <Target Name="BundleMacOSApp"
             Condition="'$(RuntimeIdentifier)' == 'osx-x64'"
-            DependsOnTargets="QtRuntime"
+            DependsOnTargets="BundleQtRuntime"
             AfterTargets="Publish">
       <Message Importance="high" Text="'BundleMacOSApp' Called." />
       <Copy SourceFiles="$(CFBundleIconFile)" DestinationFiles="$(OutputPath)/$(CFBundleIconFile)" />
@@ -60,13 +60,17 @@
 
     <Target Name="BundleWindowsExe"
             Condition="'$(RuntimeIdentifier)' == 'win-x64'"
-            DependsOnTargets="QtRuntime"
+            DependsOnTargets="BundleQtRuntime"
             AfterTargets="Publish">
       <Message Importance="high" Text="'BundleWindowsExeApplication' Called." />
       <NSubsys TargetFile="$(PublishDir)\$(AssemblyName).exe" />
     </Target>
 
-    <Target Name="QtRuntime" AfterTargets="Publish">
+    <Target Name="QtRuntime" AfterTargets="AfterBuild">
+      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(OutputPath)/qt-runtime'" />
+    </Target>
+
+    <Target Name="BundleQtRuntime">
       <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(PublishDir)/qt-runtime'" />
     </Target>
 
