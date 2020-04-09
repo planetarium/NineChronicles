@@ -701,6 +701,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoCombineNPCAnimation()
         {
+            Find<CombinationLoadingScreen>().Show();
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
             Find<BottomMenu>().SetIntractable(false);
@@ -727,6 +728,7 @@ namespace Nekoyume.UI
             Pop();
             _lockSlotIndex = false;
             _selectedSpeechBubble.onGoing = false;
+            Find<CombinationLoadingScreen>().Close();
         }
     }
 }
