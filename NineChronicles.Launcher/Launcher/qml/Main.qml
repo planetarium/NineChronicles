@@ -140,6 +140,12 @@ Item {
                 ctrl.stopSync()
                 Qt.quit()
             })
+
+            ctrl.fatalError.connect((message) => {
+                showMessage(message, () => {
+                    ctrl.quit()
+                })
+            })
         }
     }
 
@@ -257,10 +263,13 @@ Item {
             }
         }
     }
-    function showMessage(text)
+    function showMessage(text, onClosing)
     {
         messageBox.text = text;
         messageBox.visible = true;
+        if (typeof onClosing !== 'undefined') {
+            messageBox.onClosing.connect(() => onClosing())
+        }
     }
 
     Window {
@@ -275,13 +284,27 @@ Item {
         maximumWidth: 480
         flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
 
-        Label {
-            anchors.margins: 10
+        ColumnLayout{
+            spacing: 1
             anchors.fill: parent
-            wrapMode: Text.WordWrap
-            id: messageBoxLabel
-            text: ""
-            font.pointSize: 12
+            anchors.margins: 10
+
+            Label {
+                Layout.preferredWidth: parent.width
+                wrapMode: Text.WordWrap
+                id: messageBoxLabel
+                text: ""
+                font.pointSize: 12
+            }
+
+            Button {
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: 20
+                text: "Close"
+                onClicked: {
+                    messageBox.close()
+                }
+            }
         }
     }
 
