@@ -40,20 +40,34 @@
         <ProjectReference Include="..\Launcher.Common\Launcher.Common.csproj" />
     </ItemGroup>
 
-    <Target Condition="'$(RuntimeIdentifier)' == 'osx-x64'" Name="Bundle MacOS Application" AfterTargets="Publish">
+    <Target Name="Bundle MacOS Application"
+            Condition="'$(RuntimeIdentifier)' == 'osx-x64'"
+            DependsOnTargets="Prepare QtRuntime"
+            AfterTargets="Publish">
       <Message Importance="high" Text="'Bundle MacOS Application' Called." />
       <CallTarget Targets="BundleApp" />
     </Target>
 
-    <UsingTask TaskName="NSubsys.Tasks.NSubsys" AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll" />
-
-    <Target Condition="'$(RuntimeIdentifier)' == 'win-x64'" Name="Bundle Windows Application" AfterTargets="Publish">
-      <Message Importance="high" Text="'Bundle Windows Application' Called." />
-      <NSubsys TargetFile="$(ProjectDir)\$(PublishDir)\$(AssemblyName).exe" />
+    <Target Name="CleanupMacOSBundle"
+            Condition="'$(RuntimeIdentifier)' == 'osx-x64'"
+            AfterTargets="Bundle MacOS Application">
+      <Exec Command="scripts\cleanup-macos-bundle.sh '$(PublishDir)' '$(PublishDir)/$(AssemblyName).app'" />
     </Target>
 
-    <Target Name="Prepare QtRunitme" AfterTargets="Publish">
-      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier)" />
+    <UsingTask TaskName="NSubsys.Tasks.NSubsys"
+      AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll"
+      Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
+
+    <Target Name="Bundle Windows Application"
+            Condition="'$(RuntimeIdentifier)' == 'win-x64'"
+            DependsOnTargets="Prepare QtRuntime"
+            AfterTargets="Publish">
+      <Message Importance="high" Text="'Bundle Windows Application' Called." />
+      <NSubsys TargetFile="$(PublishDir)\$(AssemblyName).exe" />
+    </Target>
+
+    <Target Name="Prepare QtRuntime" AfterTargets="Publish">
+      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(PublishDir)/qt-runtime'" />
     </Target>
 
 </Project>

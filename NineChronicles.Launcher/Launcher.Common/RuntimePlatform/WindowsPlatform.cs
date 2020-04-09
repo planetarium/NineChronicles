@@ -16,7 +16,8 @@ namespace Launcher.Common.RuntimePlatform
         public string CurrentWorkingDirectory =>
             new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
 
-        public string BinariesPath => Path.Combine(CurrentWorkingDirectory, "Binaries");
+        public string QtRuntimeDirectory =>
+            Path.Combine(CurrentWorkingDirectory, "qt-runtime");
 
         public string ExecutableLauncherBinaryPath =>
             Path.Combine(CurrentWorkingDirectory, LauncherFilename);

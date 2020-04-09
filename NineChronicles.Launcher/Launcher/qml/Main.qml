@@ -10,11 +10,12 @@ Item {
     function login() {
         const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
         if (success) {
+            ctrl.startSync()
             passphraseWindow.hide()
-            ctrl.startSync();
+            preloadProgress.show()
         }
         else {
-            passphraseWindow.height = 160
+            passphraseWindow.height = passphraseWindow.minimumHeight = passphraseWindow.maximumHeight = 200
             loginFailMessage.visible = true
         }
     }
@@ -24,7 +25,7 @@ Item {
         const succeed = ctrl.runGameProcess();
         if (!succeed)
         {
-            showMessage("Failed to launch game.\nPlease re-install Nine Chronciles.");
+            showMessage("Failed to launch game.\nPlease re-install Nine Chronicles.");
             messageBox.onDestruction.connect(function() {
                 Qt.Quit()
             })
@@ -49,7 +50,7 @@ Item {
     SystemTrayIcon {
         id: systemTrayIcon
         visible: true
-        tooltip: ctrl.tooltipText
+        tooltip: ctrl.preprocessing ? ctrl.preloadStatus : "Nine Chronicles"
 
         menu: Menu {
             MenuItem {
@@ -118,6 +119,10 @@ Item {
                 {
                     passphraseWindow.requestActivate()
                 }
+                else if (ctrl.preprocessing)
+                {
+                    preloadProgress.show()
+                }
             }
         }
     }
@@ -131,42 +136,91 @@ Item {
     }
 
     Window {
+        id: preloadProgress
+        title: "Nine Chronicles"
+        width: 240
+        height: 40
+        minimumWidth: width
+        minimumHeight: height
+        maximumWidth: width
+        maximumHeight: height
+        flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
+        visible: false
+
+        onClosing: {
+            // https://doc.qt.io/qt-5/qguiapplication.html#quitOnLastWindowClosed-prop 를 설정할 방법이 없어
+            // 가려만 둡니다.
+            close.accepted = false
+            preloadProgress.hide()
+        }
+        ColumnLayout{
+            spacing: 1
+            anchors.fill: parent
+            anchors.margins: 10
+
+            ProgressBar {
+                indeterminate: true
+                Layout.preferredWidth: parent.width
+                visible: ctrl.preprocessing
+            }
+            
+            Label {
+                text: ctrl.preprocessing ? ctrl.preloadStatus : "Done!"
+                Layout.preferredWidth: parent.width
+                visible: ctrl.preprocessing
+            }
+
+            Button {
+                text: "Play Nine Chronicles"
+                Layout.preferredWidth: parent.width
+                Layout.preferredHeight: 20
+                visible: !ctrl.preprocessing
+                onClicked: {
+                    preloadProgress.hide()
+                    runGame()
+                }
+            }
+        }
+    }
+
+    Window {
         id: passphraseWindow
         title: "Type your passphrase"
-        minimumWidth: 480
-        minimumHeight: 240
-        maximumWidth: 480
-        maximumHeight: 240
+        width: 360
+        height: 160
+        minimumWidth: width
+        minimumHeight: height
+        maximumWidth: width
+        maximumHeight: height
         flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
 
         Column {
             anchors.fill: parent
-            anchors.margins: 20
+            anchors.margins: 10
             spacing: 10
 
             GridLayout
             {
-                id: grid
                 columns: 2
                 width: parent.width
 
                 Label {
                     text: "Address"
-                    Layout.preferredWidth: 180
-                    font.pointSize: 14
+                    Layout.preferredWidth: 120
+                    font.pointSize: 12
                 }
 
                 ComboBox {
                     id: addressComboBox
                     model: Net.toListModel(ctrl.keyStore.addresses)
                     Layout.fillWidth: true
-                    font.pointSize: 14
+                    font.pointSize: 12
                 }
 
                 Label {
                     text: "Passphrase"
-                    Layout.preferredWidth: 180
-                    font.pointSize: 14
+                    Layout.preferredWidth: 120
+                    font.pointSize: 12
                 }
                 
                 TextField {
@@ -175,7 +229,7 @@ Item {
                     placeholderText: "Input passphrase"
                     onAccepted: login()
                     Layout.fillWidth: true
-                    font.pointSize: 14
+                    font.pointSize: 12
                 }
             }
 
@@ -183,7 +237,7 @@ Item {
                 text: "Login"
                 onClicked: login()
                 width: parent.width;
-                font.pointSize: 14
+                font.pointSize: 12
             }
 
             Label {
@@ -191,7 +245,7 @@ Item {
                 visible: false
                 text: "Passphrase seems wrong, try again."
                 color: "red"
-                font.pointSize: 14
+                font.pointSize: 12
             }
         }
     }
