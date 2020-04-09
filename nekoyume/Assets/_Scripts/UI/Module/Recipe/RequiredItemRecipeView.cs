@@ -68,6 +68,10 @@ namespace Nekoyume.UI.Module
             }
             var countableItem = new CountableItem(item, itemCount);
             view.SetData(countableItem, requiredCount);
+            if (!checkInventory)
+            {
+                view.SetRequiredText();
+            }
         }
     }
 }

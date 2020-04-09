@@ -1,9 +1,13 @@
-﻿using Nekoyume.UI.Model;
+﻿using System.Globalization;
+using Nekoyume.UI.Model;
+using TMPro;
 
 namespace Nekoyume.UI.Module
 {
     public class RequiredItemView : SimpleCountableItemView
     {
+        public TextMeshProUGUI requiredText;
+
         protected const string CountTextFormatEnough = "{0}/{1}";
         protected const string CountTextFormatNotEnough = "<color=red>{0}</color>/{1}";
 
@@ -25,6 +29,15 @@ namespace Nekoyume.UI.Module
                 Model.Count.Value, RequiredCount);
 
             SetDim(!isEnough);
+            countText.gameObject.SetActive(true);
+            requiredText.gameObject.SetActive(false);
+        }
+
+        public void SetRequiredText()
+        {
+            requiredText.text = RequiredCount.ToString(CultureInfo.InvariantCulture);
+            requiredText.gameObject.SetActive(true);
+            countText.gameObject.SetActive(false);
         }
     }
 }
