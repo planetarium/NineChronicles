@@ -12,7 +12,10 @@ namespace Nekoyume.UI
     public class Menu : Widget
     {
         private const string FirstOpenShopKeyFormat = "Nekoyume.UI.Menu.FirstOpenShopKey_{0}";
-        private const string FirstOpenCombinationKeyFormat = "Nekoyume.UI.Menu.FirstOpenCombinationKey_{0}";
+
+        private const string FirstOpenCombinationKeyFormat =
+            "Nekoyume.UI.Menu.FirstOpenCombinationKey_{0}";
+
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
 
@@ -57,13 +60,17 @@ namespace Nekoyume.UI
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
             combinationExclamationMark.gameObject.SetActive(
-                btnCombination.IsUnlocked && PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
-            shopExclamationMark.gameObject.SetActive(btnShop.IsUnlocked &&
-                                                     PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
-            rankingExclamationMark.gameObject.SetActive(btnRanking.IsUnlocked &&
-                                                        PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
-            questExclamationMark.gameObject.SetActive(btnRanking.IsUnlocked &&
-                                                      PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
+                btnCombination.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
+            shopExclamationMark.gameObject.SetActive(
+                btnShop.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
+            rankingExclamationMark.gameObject.SetActive(
+                btnRanking.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
+            questExclamationMark.gameObject.SetActive(
+                btnQuest.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
         }
 
         private void HideButtons()
@@ -147,6 +154,7 @@ namespace Nekoyume.UI
             {
                 Find<Combination>().Show();
             }
+
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
         }
