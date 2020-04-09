@@ -39,7 +39,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Layer1
+    path: Layer10
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -64,7 +64,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Layer2
+    path: Layer20
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -114,7 +114,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Layer5
+    path: Layer50
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -139,7 +139,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Layer6
+    path: Layer90
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -164,7 +164,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Layer3
+    path: Layer40
   m_ScaleCurves: []
   m_FloatCurves:
   - curve:
@@ -192,7 +192,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: bg_main_water_01
+    path: Layer50/bg_main_water_01
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -220,7 +220,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: bg_main_cavewaterdrop
+    path: Layer90/bg_main_cavewaterdrop
     classID: 1
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -232,14 +232,14 @@ AnimationClip:
   m_ClipBindingConstant:
     genericBindings:
     - serializedVersion: 2
-      path: 2046216410
+      path: 2460226083
       attribute: 1
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3774847328
+      path: 3112780256
       attribute: 1
       script: {fileID: 0}
       typeID: 4
@@ -253,35 +253,35 @@ AnimationClip:
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2124090563
+      path: 4140357415
       attribute: 1
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3885129081
+      path: 1518180395
       attribute: 1
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 2549656054
+      path: 4023641702
       attribute: 1
       script: {fileID: 0}
       typeID: 4
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 737477084
+      path: 1539799327
       attribute: 2086281974
       script: {fileID: 0}
       typeID: 1
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 4110306789
+      path: 1193000308
       attribute: 2086281974
       script: {fileID: 0}
       typeID: 1
@@ -334,7 +334,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Layer1
+    path: Layer10
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -362,7 +362,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Layer2
+    path: Layer20
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -418,7 +418,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Layer5
+    path: Layer50
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -446,7 +446,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Layer6
+    path: Layer90
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -474,7 +474,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Layer3
+    path: Layer40
     classID: 4
     script: {fileID: 0}
   - curve:
@@ -502,7 +502,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: bg_main_water_01
+    path: Layer50/bg_main_water_01
     classID: 1
     script: {fileID: 0}
   - curve:
@@ -530,7 +530,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_IsActive
-    path: bg_main_cavewaterdrop
+    path: Layer90/bg_main_cavewaterdrop
     classID: 1
     script: {fileID: 0}
   m_EulerEditorCurves: []
