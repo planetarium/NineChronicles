@@ -382,7 +382,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.70007324, y: -0.7000122}
+  m_AnchoredPosition: {x: 0.7001953, y: -0.7001953}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &937548770
@@ -638,6 +638,7 @@ MonoBehaviour:
   repeatStage: 0
   isExitReserved: 0
   zone: 
+  showLoadingScreen: 0
 --- !u!4 &1333831683
 Transform:
   m_ObjectHideFlags: 0
@@ -809,6 +810,10 @@ MonoBehaviour:
     InitCount: 1
     AddCount: 1
   - Prefab: {fileID: 2010068977434347807, guid: d429155b2e4810b46ae860ceeb562815,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 5416401612893247566, guid: 9edbb293d512b154bbde37d21102b9ea,
       type: 3}
     InitCount: 1
     AddCount: 1
@@ -1053,6 +1058,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78734f88311b444e29ca92aa6b70be08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  screenWidth: 1136
+  screenHeight: 640
+  maintainWidth: 1
+  adaptPosition: 0
   chaseData:
     offsetX: 1.5
     smoothSpeed: 2

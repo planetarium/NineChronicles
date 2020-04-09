@@ -4677,8 +4677,9 @@ GameObject:
   - component: {fileID: 7375134413169257101}
   - component: {fileID: 8062655056689459988}
   - component: {fileID: 4856032042301190025}
+  - component: {fileID: 2683432190230620985}
   m_Layer: 5
-  m_Name: UI_combination_select_small_front
+  m_Name: CombinationSelectSmallFrontVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9420,6 +9421,18 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &2683432190230620985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5416401612893247566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3770af553d4ebf64f9d8073d4602a7eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5665323624464088261
 GameObject:
   m_ObjectHideFlags: 0

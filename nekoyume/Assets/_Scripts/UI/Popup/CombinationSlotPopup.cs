@@ -4,16 +4,16 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
-using TMPro;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -27,6 +27,7 @@ namespace Nekoyume.UI
 
         private int _slotIndex;
         private decimal _cost;
+        private CombinationSelectSmallFrontVFX _frontVFX;
 
         protected override void Awake()
         {
@@ -53,6 +54,23 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
 
             CloseWidget = null;
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            if (_frontVFX)
+            {
+                _frontVFX.Stop();
+            }
+        }
+
+        protected override void OnCompleteOfShowAnimation()
+        {
+            base.OnCompleteOfShowAnimation();
+            _frontVFX =
+                VFXController.instance.Create<CombinationSelectSmallFrontVFX>(cellView.transform,
+                    new Vector3(0.53f, -0.5f));
         }
 
         public void Pop(CombinationSlotState state, int slotIndex)
