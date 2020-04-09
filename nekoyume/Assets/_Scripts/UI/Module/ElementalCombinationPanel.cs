@@ -1,4 +1,4 @@
-using Nekoyume.TableData;
+﻿using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using UniRx;
