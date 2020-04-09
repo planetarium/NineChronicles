@@ -9,6 +9,7 @@
         <SelfContained>true</SelfContained>
         <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
         <ApplicationIcon>icon.ico</ApplicationIcon>
+        <CFBundleIconFile>AppIcon.icns</CFBundleIconFile>
         <Authors>Planetarium</Authors>
         <Company>Planetarium</Company>
         <Product>Nine Chronicles Launcher</Product>
@@ -40,33 +41,32 @@
         <ProjectReference Include="..\Launcher.Common\Launcher.Common.csproj" />
     </ItemGroup>
 
-    <Target Name="Bundle MacOS Application"
+    <Target Name="BundleMacOSApp"
             Condition="'$(RuntimeIdentifier)' == 'osx-x64'"
-            DependsOnTargets="Prepare QtRuntime"
+            DependsOnTargets="QtRuntime"
             AfterTargets="Publish">
-      <Message Importance="high" Text="'Bundle MacOS Application' Called." />
+      <Message Importance="high" Text="'BundleMacOSApp' Called." />
+      <Copy SourceFiles="$(CFBundleIconFile)" DestinationFiles="$(OutputPath)/$(CFBundleIconFile)" />
+      <Message Importance="high" Text="Copied icon: $(OutputPath)/$(CFBundleIconFile)" />
       <CallTarget Targets="BundleApp" />
-    </Target>
-
-    <Target Name="CleanupMacOSBundle"
-            Condition="'$(RuntimeIdentifier)' == 'osx-x64'"
-            AfterTargets="Bundle MacOS Application">
+      <Message Importance="high" Text="Bundled: $(PublishDir)/$(AssemblyName).app" />
       <Exec Command="scripts\cleanup-macos-bundle.sh '$(PublishDir)' '$(PublishDir)/$(AssemblyName).app'" />
+      <Message Importance="high" Text="Cleaned up temporary assets from: $(PublishDir)/" />
     </Target>
 
     <UsingTask TaskName="NSubsys.Tasks.NSubsys"
       AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll"
       Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
 
-    <Target Name="Bundle Windows Application"
+    <Target Name="BundleWindowsExe"
             Condition="'$(RuntimeIdentifier)' == 'win-x64'"
-            DependsOnTargets="Prepare QtRuntime"
+            DependsOnTargets="QtRuntime"
             AfterTargets="Publish">
-      <Message Importance="high" Text="'Bundle Windows Application' Called." />
+      <Message Importance="high" Text="'BundleWindowsExeApplication' Called." />
       <NSubsys TargetFile="$(PublishDir)\$(AssemblyName).exe" />
     </Target>
 
-    <Target Name="Prepare QtRuntime" AfterTargets="Publish">
+    <Target Name="QtRuntime" AfterTargets="Publish">
       <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(PublishDir)/qt-runtime'" />
     </Target>
 
