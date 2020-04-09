@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Util;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -8,16 +8,6 @@ namespace Nekoyume
 {
     public static class RectTransformExtensions
     {
-        public static readonly float2 ZeroZeroFloat2 = new float2(0f, 0f);
-        public static readonly float2 ZeroHalfFloat2 = new float2(0f, 0.5f);
-        public static readonly float2 ZeroOneFloat2 = new float2(0f, 1f);
-        public static readonly float2 HalfZeroFloat2 = new float2(0.5f, 0f);
-        public static readonly float2 HalfHalfFloat2 = new float2(0.5f, 0.5f);
-        public static readonly float2 HalfOneFloat2 = new float2(0.5f, 1f);
-        public static readonly float2 OneZeroFloat2 = new float2(1f, 0f);
-        public static readonly float2 OneHalfFloat2 = new float2(1f, 0.5f);
-        public static readonly float2 OneOneFloat2 = new float2(1f, 1f);
-        
         public static void SetAnchor(this RectTransform rectTransform, AnchorPresetType anchorPresetType,
             int offsetX = 0, int offsetY = 0)
         {
@@ -26,68 +16,68 @@ namespace Nekoyume
             switch (anchorPresetType)
             {
                 case AnchorPresetType.TopLeft:
-                    rectTransform.anchorMin = ZeroOneFloat2;
-                    rectTransform.anchorMax = ZeroOneFloat2;
+                    rectTransform.anchorMin = Float2.ZeroOne;
+                    rectTransform.anchorMax = Float2.ZeroOne;
                     break;
                 case AnchorPresetType.TopCenter:
-                    rectTransform.anchorMin = HalfOneFloat2;
-                    rectTransform.anchorMax = HalfOneFloat2;
+                    rectTransform.anchorMin = Float2.HalfOne;
+                    rectTransform.anchorMax = Float2.HalfOne;
                     break;
                 case AnchorPresetType.TopRight:
-                    rectTransform.anchorMin = OneOneFloat2;
-                    rectTransform.anchorMax = OneOneFloat2;
+                    rectTransform.anchorMin = Float2.OneOne;
+                    rectTransform.anchorMax = Float2.OneOne;
                     break;
                 case AnchorPresetType.MiddleLeft:
-                    rectTransform.anchorMin = ZeroHalfFloat2;
-                    rectTransform.anchorMax = ZeroHalfFloat2;
+                    rectTransform.anchorMin = Float2.ZeroHalf;
+                    rectTransform.anchorMax = Float2.ZeroHalf;
                     break;
                 case AnchorPresetType.MiddleCenter:
-                    rectTransform.anchorMin = HalfHalfFloat2;
-                    rectTransform.anchorMax = HalfHalfFloat2;
+                    rectTransform.anchorMin = Float2.HalfHalf;
+                    rectTransform.anchorMax = Float2.HalfHalf;
                     break;
                 case AnchorPresetType.MiddleRight:
-                    rectTransform.anchorMin = OneHalfFloat2;
-                    rectTransform.anchorMax = OneHalfFloat2;
+                    rectTransform.anchorMin = Float2.OneHalf;
+                    rectTransform.anchorMax = Float2.OneHalf;
                     break;
                 case AnchorPresetType.BottomLeft:
-                    rectTransform.anchorMin = ZeroZeroFloat2;
-                    rectTransform.anchorMax = ZeroZeroFloat2;
+                    rectTransform.anchorMin = Float2.ZeroZero;
+                    rectTransform.anchorMax = Float2.ZeroZero;
                     break;
                 case AnchorPresetType.BottomCenter:
-                    rectTransform.anchorMin = HalfZeroFloat2;
-                    rectTransform.anchorMax = HalfZeroFloat2;
+                    rectTransform.anchorMin = Float2.HalfZero;
+                    rectTransform.anchorMax = Float2.HalfZero;
                     break;
                 case AnchorPresetType.BottomRight:
-                    rectTransform.anchorMin = OneZeroFloat2;
-                    rectTransform.anchorMax = OneZeroFloat2;
+                    rectTransform.anchorMin = Float2.OneZero;
+                    rectTransform.anchorMax = Float2.OneZero;
                     break;
                 case AnchorPresetType.HorStretchTop:
-                    rectTransform.anchorMin = ZeroOneFloat2;
-                    rectTransform.anchorMax = OneOneFloat2;
+                    rectTransform.anchorMin = Float2.ZeroOne;
+                    rectTransform.anchorMax = Float2.OneOne;
                     break;
                 case AnchorPresetType.HorStretchMiddle:
-                    rectTransform.anchorMin = ZeroHalfFloat2;
-                    rectTransform.anchorMax = OneHalfFloat2;
+                    rectTransform.anchorMin = Float2.ZeroHalf;
+                    rectTransform.anchorMax = Float2.OneHalf;
                     break;
                 case AnchorPresetType.HorStretchBottom:
-                    rectTransform.anchorMin = ZeroZeroFloat2;
-                    rectTransform.anchorMax = OneZeroFloat2;
+                    rectTransform.anchorMin = Float2.ZeroZero;
+                    rectTransform.anchorMax = Float2.OneZero;
                     break;
                 case AnchorPresetType.VertStretchLeft:
-                    rectTransform.anchorMin = ZeroZeroFloat2;
-                    rectTransform.anchorMax = ZeroOneFloat2;
+                    rectTransform.anchorMin = Float2.ZeroZero;
+                    rectTransform.anchorMax = Float2.ZeroOne;
                     break;
                 case AnchorPresetType.VertStretchCenter:
-                    rectTransform.anchorMin = HalfZeroFloat2;
-                    rectTransform.anchorMax = HalfOneFloat2;
+                    rectTransform.anchorMin = Float2.HalfZero;
+                    rectTransform.anchorMax = Float2.HalfOne;
                     break;
                 case AnchorPresetType.VertStretchRight:
-                    rectTransform.anchorMin = OneZeroFloat2;
-                    rectTransform.anchorMax = OneOneFloat2;
+                    rectTransform.anchorMin = Float2.OneZero;
+                    rectTransform.anchorMax = Float2.OneOne;
                     break;
                 case AnchorPresetType.StretchAll:
-                    rectTransform.anchorMin = ZeroZeroFloat2;
-                    rectTransform.anchorMax = OneOneFloat2;
+                    rectTransform.anchorMin = Float2.ZeroZero;
+                    rectTransform.anchorMax = Float2.OneOne;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(anchorPresetType), anchorPresetType, null);
@@ -99,31 +89,31 @@ namespace Nekoyume
             switch (pivotPresetType)
             {
                 case PivotPresetType.TopLeft:
-                    rectTransform.pivot = ZeroOneFloat2;
+                    rectTransform.pivot = Float2.ZeroOne;
                     break;
                 case PivotPresetType.TopCenter:
-                    rectTransform.pivot = HalfOneFloat2;
+                    rectTransform.pivot = Float2.HalfOne;
                     break;
                 case PivotPresetType.TopRight:
-                    rectTransform.pivot = OneOneFloat2;
+                    rectTransform.pivot = Float2.OneOne;
                     break;
                 case PivotPresetType.MiddleLeft:
-                    rectTransform.pivot = ZeroHalfFloat2;
+                    rectTransform.pivot = Float2.ZeroHalf;
                     break;
                 case PivotPresetType.MiddleCenter:
-                    rectTransform.pivot = HalfHalfFloat2;
+                    rectTransform.pivot = Float2.HalfHalf;
                     break;
                 case PivotPresetType.MiddleRight:
-                    rectTransform.pivot = OneHalfFloat2;
+                    rectTransform.pivot = Float2.OneHalf;
                     break;
                 case PivotPresetType.BottomLeft:
-                    rectTransform.pivot = ZeroZeroFloat2;
+                    rectTransform.pivot = Float2.ZeroZero;
                     break;
                 case PivotPresetType.BottomCenter:
-                    rectTransform.pivot = HalfZeroFloat2;
+                    rectTransform.pivot = Float2.HalfZero;
                     break;
                 case PivotPresetType.BottomRight:
-                    rectTransform.pivot = OneZeroFloat2;
+                    rectTransform.pivot = Float2.OneZero;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pivotPresetType), pivotPresetType, null);
@@ -178,7 +168,7 @@ namespace Nekoyume
             var anchoredPosition = new float2();
             var pivot = rectTransform.pivot;
             var size = rectTransform.rect.size * rectTransform.transform.localScale;
-            
+
             switch (pivotPresetType)
             {
                 case PivotPresetType.TopLeft:
@@ -223,7 +213,7 @@ namespace Nekoyume
 
             return anchoredPosition;
         }
-        
+
         public static float2 GetAnchoredPositionOfPivot(this RectTransform rectTransform, PivotPresetType pivotPresetType)
         {
             float2 anchoredPosition = rectTransform.anchoredPosition;
@@ -237,7 +227,7 @@ namespace Nekoyume
             bottomLeftOffset = new float2(-size.x * pivot.x, -size.y * pivot.y);
             topRightOffset = new float2(size.x * (1 - pivot.x), size.y * (1 - pivot.y));
         }
-        
+
         public static void MoveToRelatedPosition(this RectTransform rectTransform, RectTransform target, PivotPresetType pivotPresetType,
              float2 offset)
         {
@@ -252,10 +242,10 @@ namespace Nekoyume
             anchoredPosition += target.GetPivotPositionFromAnchor(pivotPresetType) + offset;
             rectTransform.anchoredPosition = anchoredPosition;
         }
-        
+
         public static void MoveInsideOfParent(this RectTransform rectTransform)
         {
-            MoveInsideOfParent(rectTransform, ZeroZeroFloat2);
+            MoveInsideOfParent(rectTransform, Float2.ZeroZero);
         }
 
         public static void MoveInsideOfParent(this RectTransform rectTransform, float2 margin)
@@ -277,21 +267,21 @@ namespace Nekoyume
             {
                 anchoredPosition.y += value;
             }
-            
+
             // Top.
             value = topRightOffset.y - margin.y - anchoredPositionTopRight.y;
             if (value < 0f)
             {
                 anchoredPosition.y += value;
             }
-            
+
             // Right.
             value = topRightOffset.x - margin.x - anchoredPositionTopRight.x;
             if (value < 0f)
             {
                 anchoredPosition.x += value;
             }
-            
+
             // Left.
             value = bottomLeftOffset.x + margin.x - anchoredPositionBottomLeft.x;
             if (value > 0f)

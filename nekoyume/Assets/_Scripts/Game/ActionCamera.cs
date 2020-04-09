@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Util;
 using Nekoyume.Pattern;
 using UniRx;
+using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 
 namespace Nekoyume.Game
 {
-    [DefaultExecutionOrder(300)]
+    // NOTE: ActionCamera는 처음에 카메라 연출을 위해 작성했는데, 이제는 게임의 메인 카메라 역할을 하고 있다.
+    // 이번에는 스크린 해상도 코드가 추가됐는데, 이들을 적절히 분리하는 구조를 고민해보면 좋겠다.
     [RequireComponent(typeof(Camera))]
     public class ActionCamera : MonoSingleton<ActionCamera>
     {
@@ -36,16 +39,17 @@ namespace Nekoyume.Game
         }
 
         [Header("Screen Resolution")]
-        [SerializeField]
-        private int screenWidth = 1136;
+        [SerializeField,
+         Tooltip("기준이 될 스크린 해상도를 설정한다.(`CanvasScaler`의 `ReferenceResolution`과 같은 개념)")]
+        private int2 referenceResolution = new int2(1136, 640);
 
-        [SerializeField]
-        private int screenHeight = 640;
-
-        [SerializeField]
+        [SerializeField,
+         Tooltip(
+             "해상도를 조절할 때 가로와 세로 중 어느 쪽을 유지시킬 것인지를 설정한다. 값이 `true`일 때는 가로를, `false`일 때는 세로를 유지한다.(`CanvasScaler`의 `ScreenMathMode`와 `Match`값을 조절하는 것과 같은 개념)")]
         private bool maintainWidth = true;
 
-        [SerializeField, Range(-1f, 1f)]
+        [SerializeField, Range(-1f, 1f),
+         Tooltip("카메라의 위치를 보정한다. `maintainWidth`가 `true`일 때는 Y축을, `false`일 때는 X축을 보정한다.")]
         private float adaptPosition = 0f;
 
         [Header("Direction")]
@@ -66,7 +70,7 @@ namespace Nekoyume.Game
         private Transform _targetTemp;
         private float _shakeDuration;
 
-        public readonly Subject<Resolution> OnResolutionChange = new Subject<Resolution>();
+        public readonly Subject<Resolution> OnScreenResolutionChange = new Subject<Resolution>();
 
         private Transform Transform { get; set; }
         public Camera Cam { get; private set; }
@@ -76,7 +80,8 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             // NOTE: 화면과 카메라가 밀접한 관계에 있고, 카메라 스크립트는 게임 초기화 스크립트인 `Game.Game`과 같은 프레임에 활성화 되니 이곳에서 설정해 본다.
-            Screen.SetResolution(screenWidth, screenHeight, FullScreenMode.FullScreenWindow);
+            Screen.SetResolution(referenceResolution.x, referenceResolution.y,
+                FullScreenMode.FullScreenWindow);
 
             base.Awake();
 
@@ -135,7 +140,7 @@ namespace Nekoyume.Game
         {
             while (true)
             {
-                if (!ReferenceEquals(_target, null))
+                if (_target)
                 {
                     _fsm.next = State.ChaseX;
                     break;
@@ -153,12 +158,14 @@ namespace Nekoyume.Game
 
         private IEnumerator CoChaseX()
         {
-            while (_target != null &&
+            while (_target &&
                    _target.gameObject.activeSelf)
             {
                 var pos = Transform.position;
                 var desiredPosX = _target.position.x + chaseData.offsetX;
-                var smoothedPosX = Mathf.Lerp(pos.x, desiredPosX,
+                var smoothedPosX = Mathf.Lerp(
+                    pos.x,
+                    desiredPosX,
                     chaseData.smoothSpeed * Time.deltaTime);
                 pos.x = smoothedPosX;
                 Transform.position = pos;
@@ -166,7 +173,9 @@ namespace Nekoyume.Game
                 yield return null;
             }
 
-            _fsm.next = _shakeDuration > 0f ? State.Shake : State.Idle;
+            _fsm.next = _shakeDuration > 0f
+                ? State.Shake
+                : State.Idle;
         }
 
         private IEnumerator CoShake()
@@ -187,11 +196,11 @@ namespace Nekoyume.Game
 
             Transform.position = pos;
 
-            if (!ReferenceEquals(_target, null))
+            if (_target)
             {
                 _fsm.next = State.ChaseX;
             }
-            else if (!ReferenceEquals(_targetTemp, null))
+            else if (_targetTemp)
             {
                 _target = _targetTemp;
                 _targetTemp = null;
@@ -204,6 +213,8 @@ namespace Nekoyume.Game
         }
 
         #endregion
+
+        #region Position
 
         public void SetPosition(float x, float y)
         {
@@ -228,42 +239,45 @@ namespace Nekoyume.Game
                 throw new ArgumentNullException(nameof(targetTransform));
             }
 
-            Vector3 screenPoint;
+            float2 viewport2;
             switch (screenPivot)
             {
                 case PivotPresetType.TopLeft:
-                    screenPoint = new Vector3(0f, 1f);
+                    viewport2 = Float2.ZeroOne;
                     break;
                 case PivotPresetType.TopCenter:
-                    screenPoint = new Vector3(0.5f, 1f);
+                    viewport2 = Float2.HalfOne;
                     break;
                 case PivotPresetType.TopRight:
-                    screenPoint = new Vector3(1f, 1f);
+                    viewport2 = Float2.OneOne;
                     break;
                 case PivotPresetType.MiddleLeft:
-                    screenPoint = new Vector3(0f, 0.5f);
+                    viewport2 = Float2.ZeroHalf;
                     break;
                 case PivotPresetType.MiddleCenter:
-                    screenPoint = new Vector3(0.5f, 0.5f);
+                    viewport2 = Float2.HalfHalf;
                     break;
                 case PivotPresetType.MiddleRight:
-                    screenPoint = new Vector3(1f, 0.5f);
+                    viewport2 = Float2.OneHalf;
                     break;
                 case PivotPresetType.BottomLeft:
-                    screenPoint = new Vector3(0f, 0f);
+                    viewport2 = Float2.ZeroZero;
                     break;
                 case PivotPresetType.BottomCenter:
-                    screenPoint = new Vector3(0.5f, 0f);
+                    viewport2 = Float2.HalfZero;
                     break;
                 case PivotPresetType.BottomRight:
-                    screenPoint = new Vector3(1f, 0f);
+                    viewport2 = Float2.OneZero;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(screenPivot), screenPivot, null);
             }
 
-            screenPoint.z = (targetTransform.position - Transform.position).magnitude;
-            return Cam.ViewportToWorldPoint(screenPoint);
+            var viewport3 = new float3(
+                viewport2.x,
+                viewport2.y,
+                (targetTransform.position - Transform.position).magnitude);
+            return Cam.ViewportToWorldPoint(viewport3);
         }
 
         /// <summary>
@@ -334,15 +348,19 @@ namespace Nekoyume.Game
             return position - spritePivotPosition;
         }
 
+        #endregion
+
+        #region Screen Resolution
+
         private void InitScreenResolution()
         {
-            _defaultAspect = (float) screenWidth / screenHeight;
+            _defaultAspect = (float) referenceResolution.x / referenceResolution.y;
             _defaultOrthographicSize = Cam.orthographicSize;
-            _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetAspect();
+            _defaultOrthographicSizeTimesAspect = _defaultOrthographicSize * GetCameraAspect();
             UpdateScreenResolution();
         }
 
-        private float GetAspect()
+        private float GetCameraAspect()
         {
             return maintainWidth
                 ? Math.Min(Cam.aspect, _defaultAspect)
@@ -357,27 +375,32 @@ namespace Nekoyume.Game
             }
 
             _resolution = Screen.currentResolution;
-            OnResolutionChange.OnNext(_resolution);
 
             if (maintainWidth)
             {
-                Cam.orthographicSize = _defaultOrthographicSizeTimesAspect / GetAspect();
+                Cam.orthographicSize = _defaultOrthographicSizeTimesAspect / GetCameraAspect();
 
                 var position = Transform.position;
+                var y = (_defaultOrthographicSize - Cam.orthographicSize) * adaptPosition;
                 Transform.position = new Vector3(
                     position.x,
-                    adaptPosition * (_defaultOrthographicSize - Cam.orthographicSize),
+                    y,
                     position.z);
             }
             else
             {
                 var position = Transform.position;
+                var x = (_defaultOrthographicSizeTimesAspect -
+                         Cam.orthographicSize * GetCameraAspect()) * adaptPosition;
                 Transform.position = new Vector3(
-                    adaptPosition * (_defaultOrthographicSizeTimesAspect -
-                                     Cam.orthographicSize * GetAspect()),
+                    x,
                     position.y,
                     position.z);
             }
+
+            OnScreenResolutionChange.OnNext(_resolution);
         }
+
+        #endregion
     }
 }
