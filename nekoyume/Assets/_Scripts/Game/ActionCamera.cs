@@ -59,6 +59,9 @@ namespace Nekoyume.Game
         [SerializeField]
         private ShakeData shakeData;
 
+        private Transform _transform;
+        private Camera _cam;
+
         private float _defaultAspect;
         private float _defaultOrthographicSizeTimesAspect;
         private float _defaultOrthographicSize;
@@ -72,8 +75,13 @@ namespace Nekoyume.Game
 
         public readonly Subject<Resolution> OnScreenResolutionChange = new Subject<Resolution>();
 
-        private Transform Transform { get; set; }
-        public Camera Cam { get; private set; }
+        private Transform Transform => _transform
+            ? _transform
+            : _transform = GetComponent<Transform>();
+
+        public Camera Cam => _cam
+            ? _cam
+            : _cam = GetComponent<Camera>();
 
         #region Mono
 
@@ -84,9 +92,6 @@ namespace Nekoyume.Game
                 FullScreenMode.FullScreenWindow);
 
             base.Awake();
-
-            Transform = transform;
-            Cam = GetComponent<Camera>();
 
             InitScreenResolution();
 

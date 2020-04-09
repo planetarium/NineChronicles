@@ -502,7 +502,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1225477247220128}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.42499995, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4329538094391556}
@@ -760,7 +760,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1339211220161574}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.42499995, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4329538094391556}
@@ -1835,10 +1835,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 276155728023524057, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
+    - target: {fileID: 103231418968682941, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
         type: 3}
-      propertyPath: m_Layer
-      value: 11
+      propertyPath: moveWithTransform
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 77774332240579537, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
         type: 3}
@@ -1855,10 +1855,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 103231418968682941, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
+    - target: {fileID: 276155728023524057, guid: e41d7c32ecdeb7e4c99142781c2bda8d,
         type: 3}
-      propertyPath: moveWithTransform
-      value: 1
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e41d7c32ecdeb7e4c99142781c2bda8d, type: 3}
@@ -1881,6 +1881,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4656877397846236}
     m_Modifications:
+    - target: {fileID: 5823628257645165622, guid: 67266cdf7b9116c468ead34ead4a70dd,
+        type: 3}
+      propertyPath: m_Name
+      value: bgvfx_1_green02
+      objectReference: {fileID: 0}
+    - target: {fileID: 5823628257645165622, guid: 67266cdf7b9116c468ead34ead4a70dd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2967419227127574027, guid: 67266cdf7b9116c468ead34ead4a70dd,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1936,16 +1946,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5823628257645165622, guid: 67266cdf7b9116c468ead34ead4a70dd,
-        type: 3}
-      propertyPath: m_Name
-      value: bgvfx_1_green02
-      objectReference: {fileID: 0}
-    - target: {fileID: 5823628257645165622, guid: 67266cdf7b9116c468ead34ead4a70dd,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 67266cdf7b9116c468ead34ead4a70dd, type: 3}
 --- !u!4 &1809743442188872364 stripped
@@ -1961,6 +1961,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4656877397846236}
     m_Modifications:
+    - target: {fileID: 8155152790470762829, guid: 62f1f8e8b5ba3bd40b9840876b39cf2a,
+        type: 3}
+      propertyPath: m_Name
+      value: bgvfx_1_green01
+      objectReference: {fileID: 0}
+    - target: {fileID: 8155152790470762829, guid: 62f1f8e8b5ba3bd40b9840876b39cf2a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2604185040768541766, guid: 62f1f8e8b5ba3bd40b9840876b39cf2a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2014,16 +2024,6 @@ PrefabInstance:
     - target: {fileID: 2604185040768541766, guid: 62f1f8e8b5ba3bd40b9840876b39cf2a,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8155152790470762829, guid: 62f1f8e8b5ba3bd40b9840876b39cf2a,
-        type: 3}
-      propertyPath: m_Name
-      value: bgvfx_1_green01
-      objectReference: {fileID: 0}
-    - target: {fileID: 8155152790470762829, guid: 62f1f8e8b5ba3bd40b9840876b39cf2a,
-        type: 3}
-      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
