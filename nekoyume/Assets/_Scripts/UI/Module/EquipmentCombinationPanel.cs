@@ -14,6 +14,7 @@ namespace Nekoyume.UI.Module
     {
         public int CostNCG { get; private set; }
         public int CostAP { get; private set; }
+        public Subject<long> RequiredBlockIndexSubject { get; } = new Subject<long>();
 
         public EquipmentRecipeCellView recipeCellView;
         public CombinationMaterialPanel materialPanel;
@@ -75,6 +76,7 @@ namespace Nekoyume.UI.Module
                 submitButton.HideNCG();
             }
             submitButton.SetSubmittable(materialPanel.IsCraftable);
+            RequiredBlockIndexSubject.OnNext(recipeRow.RequiredBlockIndex);
         }
 
         public void Hide()

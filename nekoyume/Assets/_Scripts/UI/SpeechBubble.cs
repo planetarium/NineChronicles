@@ -29,6 +29,7 @@ namespace Nekoyume.UI
         public float speechBreakTime;
         public float destroyTime = 4.0f;
         public bool enable;
+        public bool onGoing;
 
         public int SpeechCount { get; private set; }
         private Coroutine _coroutine;
@@ -93,7 +94,7 @@ namespace Nekoyume.UI
             gameObject.SetActive(true);
         }
 
-        public IEnumerator CoShowText()
+        public IEnumerator CoShowText(bool instant = false)
         {
             if (!enable || SpeechCount == 0)
             {
@@ -101,7 +102,18 @@ namespace Nekoyume.UI
             }
             BeforeSpeech();
             var speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
-            _coroutine = StartCoroutine(ShowText(speech));
+            _coroutine = StartCoroutine(ShowText(speech, instant));
+            yield return _coroutine;
+        }
+
+        public IEnumerator CoShowText(string speech, bool instant = false)
+        {
+            if (!enable || SpeechCount == 0)
+            {
+                yield break;
+            }
+            BeforeSpeech();
+            _coroutine = StartCoroutine(ShowText(speech, instant));
             yield return _coroutine;
         }
 
@@ -167,6 +179,7 @@ namespace Nekoyume.UI
                 }
 
                 yield return new WaitForSeconds(speechWaitTime);
+                yield return new WaitWhile(() => onGoing);
 
                 text.text = "";
                 textSize.rectTransform.DOScale(0.0f, bubbleTweenTime).SetEase(Ease.InBack);
