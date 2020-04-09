@@ -43,7 +43,7 @@ namespace Nekoyume.Game.Entrance
             status.UpdatePlayer(player);
             status.Close(true);
 
-            ActionCamera.instance.SetPoint(0f, 0f);
+            ActionCamera.instance.SetPosition(0f, 0f);
             ActionCamera.instance.Idle();
 
             yield return new WaitForSeconds(1.0f);
