@@ -53,7 +53,7 @@ namespace Nekoyume.UI
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
         private CharacterStats _tempStats;
-        private bool _reset;
+        private bool _reset = true;
 
         [Header("ItemMoveAnimation")]
         [SerializeField]
@@ -99,25 +99,7 @@ namespace Nekoyume.UI
                     Equip(itemView.Model);
                 })
                 .AddTo(gameObject);
-            inventory.OnResetItems.Subscribe(_ =>
-            {
-                foreach (var inventoryItem in inventory.SharedModel.Equipments)
-                {
-                    switch (inventoryItem.ItemBase.Value.Data.ItemType)
-                    {
-                        case ItemType.Consumable:
-                        case ItemType.Equipment:
-                            inventoryItem.EquippedEnabled.Value =
-                                TryToFindSlotAlreadyEquip((ItemUsable) inventoryItem.ItemBase.Value,
-                                    out var _);
-                            break;
-                        case ItemType.Material:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-            }).AddTo(gameObject);
+            inventory.OnResetItems.Subscribe(SubscribeInventoryResetItems).AddTo(gameObject);
 
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
@@ -128,7 +110,6 @@ namespace Nekoyume.UI
         public override void Show()
         {
             base.Show();
-
             inventory.SharedModel.State.Value = ItemType.Equipment;
 
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
@@ -138,10 +119,14 @@ namespace Nekoyume.UI
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
             if (_player is null)
+            {
                 throw new NotFoundComponentException<Game.Character.Player>();
+            }
 
             if (_reset)
             {
+                _reset = false;
+
                 _player.UpdateEquipments(_player.Model.armor, _player.Model.weapon);
                 _player.UpdateCustomize();
                 // stop run immediately.
@@ -167,6 +152,11 @@ namespace Nekoyume.UI
                 _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
             }
 
+            // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
+            // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
+            // 따라서 강제로 상태를 설정한다.
+            SubscribeInventoryResetItems(inventory);
+
             var worldMap = Find<WorldMap>();
             _worldId = worldMap.SelectedWorldId;
             _stageId.Value = worldMap.SelectedStageId;
@@ -183,7 +173,6 @@ namespace Nekoyume.UI
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             questButton.gameObject.SetActive(true);
-            _reset = false;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -249,6 +238,31 @@ namespace Nekoyume.UI
         #endregion
 
         #region Subscribe
+
+        private void SubscribeInventoryResetItems(Module.Inventory value)
+        {
+            if (_reset)
+            {
+                return;
+            }
+
+            foreach (var inventoryItem in value.SharedModel.Equipments)
+            {
+                switch (inventoryItem.ItemBase.Value.Data.ItemType)
+                {
+                    case ItemType.Consumable:
+                    case ItemType.Equipment:
+                        inventoryItem.EquippedEnabled.Value =
+                            TryToFindSlotAlreadyEquip((ItemUsable) inventoryItem.ItemBase.Value,
+                                out var _);
+                        break;
+                    case ItemType.Material:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
         {

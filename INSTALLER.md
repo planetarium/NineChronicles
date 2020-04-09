@@ -14,7 +14,7 @@
 ## Windows
 
 1. [게임 빌드 방법](./README.md)을 참고하여 윈도우 빌드를 만듭니다.
-2. [론처 빌드 방법](./NineChronicles.Launcher/README.md)을 참고하여 론처 빌드를 만듭니다.
+2. [론처 빌드 방법](./NineChronicles.Launcher/README.md)을 참고하여 Launcher.Updater 프로젝트를 빌드합니다.
 3. 다음 커맨드를 실행합니다.
     ```pwsh
     > iscc .\tools\installer\installer.iss
