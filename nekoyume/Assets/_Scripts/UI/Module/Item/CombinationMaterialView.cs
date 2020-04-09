@@ -14,7 +14,7 @@ namespace Nekoyume.UI.Module
         public bool IsLocked => !itemButton.interactable;
 
         public InventoryItem InventoryItemViewModel { get; private set; }
-        
+
         private bool _isUnlockedAsNCG;
         private bool _isTwinkledOn;
         private Tweener _twinkleTweener;
@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Module
                 Clear();
                 return;
             }
-            
+
             var model = new CombinationMaterial(
                 inventoryItemViewModel.ItemBase.Value,
                 count,
@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
             SetTwinkled(_isTwinkledOn);
             SetEnableEffectImages(true);
             InventoryItemViewModel = inventoryItemViewModel;
-            
+
             _setTweener?.Kill();
             var origin = iconImage.transform.localScale;
             iconImage.transform.localScale = Vector3.zero;
@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module
         public override void Clear()
         {
             _setTweener?.Kill();
-            
+
             InventoryItemViewModel = null;
             ncgEffectImage.enabled = _isUnlockedAsNCG;
             effectImage.enabled = false;
@@ -66,7 +66,7 @@ namespace Nekoyume.UI.Module
             base.Clear();
         }
 
-        public void Lock(bool withCountEditButtons = true)
+        public void Lock(bool withCountEditButtons = false)
         {
             Clear();
             itemButton.interactable = false;
@@ -83,15 +83,15 @@ namespace Nekoyume.UI.Module
 
             SetTwinkled(false);
         }
-        
-        public void Unlock(bool withCountEditButtons = true)
+
+        public void Unlock(bool withCountEditButtons = false)
         {
             _isUnlockedAsNCG = false;
             itemButton.interactable = true;
             backgroundImage.overrideSprite = Resources.Load<Sprite>("UI/Textures/ui_box_Inventory_02");
             backgroundImage.SetNativeSize();
             ncgEffectImage.enabled = false;
-            
+
             if (withCountEditButtons)
             {
                 minusButton.gameObject.SetActive(true);
@@ -117,7 +117,7 @@ namespace Nekoyume.UI.Module
         {
             _twinkleTweener?.Kill();
             var color = effectImage.color;
-            
+
             if (isOn)
             {
                 color.a = .2f;
@@ -130,7 +130,7 @@ namespace Nekoyume.UI.Module
                 color.a = 1f;
                 effectImage.color = color;
             }
-            
+
             effectImage.enabled = isOn;
             _isTwinkledOn = isOn;
         }
