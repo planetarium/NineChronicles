@@ -21,11 +21,6 @@ namespace Nekoyume.UI.Module
     {
         public SimpleItemView resultItemView;
         public TextMeshProUGUI resultItemNameText;
-
-        public Button countMinusButton;
-        public Button countPlusButton;
-        public TextMeshProUGUI countText;
-
         public Button recipeButton;
 
         private int _requiredActionPoint;
@@ -46,12 +41,7 @@ namespace Nekoyume.UI.Module
 
             submitButton.SetSubmitText(LocalizationManager.Localize("UI_COMBINATION_ITEM"));
 
-            countMinusButton.OnClickAsObservable().Subscribe(SubscribeCountMinusClick).AddTo(gameObject);
-            countPlusButton.OnClickAsObservable().Subscribe(SubscribeCountPlusClick).AddTo(gameObject);
-
             recipeButton.OnClickAsObservable().Subscribe(_ => AudioController.PlayClick()).AddTo(gameObject);
-
-            _count.SubscribeTo(countText).AddTo(gameObject);
         }
 
         public void ResetCount()
@@ -71,7 +61,6 @@ namespace Nekoyume.UI.Module
 
             ResetCount();
             UpdateResultItem();
-            UpdateCountButtons();
             return true;
         }
 
@@ -115,7 +104,6 @@ namespace Nekoyume.UI.Module
             materialView.TryIncreaseCount(_count.Value - materialView.Model.Count.Value);
 
             UpdateResultItem();
-            UpdateCountButtons();
 
             return true;
         }
@@ -132,7 +120,6 @@ namespace Nekoyume.UI.Module
             }
 
             UpdateResultItem();
-            UpdateCountButtons();
 
             return true;
         }
@@ -143,7 +130,6 @@ namespace Nekoyume.UI.Module
 
             _count.SetValueAndForceNotify(1);
             UpdateResultItem();
-            UpdateCountButtons();
         }
 
         private void UpdateResultItem()
@@ -184,41 +170,6 @@ namespace Nekoyume.UI.Module
                 resultItemNameText.text = LocalizationManager.Localize("UI_ENHANCEMENT_REGISTER_THE_MATERIAL");
                 resultItemNameText.color = ColorHelper.HexToColorRGB("81564C");
             }
-        }
-
-        private void UpdateCountButtons()
-        {
-            if (otherMaterials.Where(e => !e.IsLocked).All(e => e.IsEmpty))
-            {
-                countMinusButton.interactable = false;
-                countPlusButton.interactable = false;
-                return;
-            }
-
-            countMinusButton.interactable = !otherMaterials.Any(e => !e.IsEmpty && e.IsMinCount);
-            countPlusButton.interactable = !otherMaterials.Any(e => !e.IsEmpty && e.IsMaxCount);
-        }
-
-        private void SubscribeCountMinusClick(Unit unit)
-        {
-            AudioController.PlayClick();
-            _count.Value--;
-            foreach (var otherMaterial in otherMaterials)
-            {
-                otherMaterial.TryDecreaseCount();
-            }
-            UpdateCountButtons();
-        }
-
-        private void SubscribeCountPlusClick(Unit unit)
-        {
-            AudioController.PlayClick();
-            _count.Value++;
-            foreach (var otherMaterial in otherMaterials)
-            {
-                otherMaterial.TryIncreaseCount();
-            }
-            UpdateCountButtons();
         }
     }
 }
