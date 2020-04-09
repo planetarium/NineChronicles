@@ -60,11 +60,11 @@
         {
             #region character equipment slot
 
-            public const int CharacterEquipmentSlotWeapon = IsEditor ? 1 : 5;
-            public const int CharacterEquipmentSlotArmor = IsEditor ? 1 : 10;
-            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 15;
-            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 20;
-            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 30;
+            public const int CharacterEquipmentSlotWeapon = 1;
+            public const int CharacterEquipmentSlotArmor = IsEditor ? 1 : 5;
+            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 9;
+            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 15;
+            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 20;
             public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 50;
 
             #endregion
@@ -72,10 +72,10 @@
             #region character consumable slot
 
             public const int CharacterConsumableSlot1 = 1;
-            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 2;
-            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 3;
-            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 4;
-            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 5;
+            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 10;
+            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 20;
+            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 50;
+            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 100;
 
             #endregion
         }
