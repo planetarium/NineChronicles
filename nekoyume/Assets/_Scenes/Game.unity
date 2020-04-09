@@ -638,6 +638,7 @@ MonoBehaviour:
   repeatStage: 0
   isExitReserved: 0
   zone: 
+  showLoadingScreen: 0
 --- !u!4 &1333831683
 Transform:
   m_ObjectHideFlags: 0
@@ -809,6 +810,10 @@ MonoBehaviour:
     InitCount: 1
     AddCount: 1
   - Prefab: {fileID: 2010068977434347807, guid: d429155b2e4810b46ae860ceeb562815,
+      type: 3}
+    InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 5416401612893247566, guid: 9edbb293d512b154bbde37d21102b9ea,
       type: 3}
     InitCount: 1
     AddCount: 1
