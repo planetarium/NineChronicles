@@ -9,6 +9,7 @@
         <SelfContained>true</SelfContained>
         <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
         <ApplicationIcon>icon.ico</ApplicationIcon>
+        <CFBundleIconFile>AppIcon.icns</CFBundleIconFile>
         <Authors>Planetarium</Authors>
         <Company>Planetarium</Company>
         <Product>Nine Chronicles Launcher</Product>
@@ -45,6 +46,8 @@
             DependsOnTargets="QtRuntime"
             AfterTargets="Publish">
       <Message Importance="high" Text="'BundleMacOSApp' Called." />
+      <Copy SourceFiles="$(CFBundleIconFile)" DestinationFiles="$(OutputPath)/$(CFBundleIconFile)" />
+      <Message Importance="high" Text="Copied icon: $(OutputPath)/$(CFBundleIconFile)" />
       <CallTarget Targets="BundleApp" />
       <Message Importance="high" Text="Bundled: $(PublishDir)/$(AssemblyName).app" />
       <Exec Command="scripts\cleanup-macos-bundle.sh '$(PublishDir)' '$(PublishDir)/$(AssemblyName).app'" />
