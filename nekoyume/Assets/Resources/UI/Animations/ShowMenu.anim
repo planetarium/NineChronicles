@@ -126,7 +126,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Layer1
+    path: Layer70
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -154,7 +154,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Layer2
+    path: Layer60
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -182,7 +182,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Layer0
+    path: Layer30
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -210,7 +210,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Layer3
+    path: Layer80
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -247,7 +247,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: Layer2/ShopExclamationMark
+    path: Layer60/ShopExclamationMark
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -284,7 +284,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: Layer0/RankingExclamationMark
+    path: Layer30/RankingExclamationMark
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -321,7 +321,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: Layer3/QuestExclamationMark
+    path: Layer80/QuestExclamationMark
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -358,7 +358,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: Layer2/CombinationExclamationMark
+    path: Layer60/CombinationExclamationMark
     classID: 225
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -577,7 +577,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Layer1
+    path: Layer70
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -605,7 +605,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Layer2
+    path: Layer60
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -633,7 +633,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Layer0
+    path: Layer30
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -661,7 +661,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: Layer3
+    path: Layer80
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -698,7 +698,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: Layer2/ShopExclamationMark
+    path: Layer60/ShopExclamationMark
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -735,7 +735,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: Layer0/RankingExclamationMark
+    path: Layer30/RankingExclamationMark
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -772,7 +772,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: Layer3/QuestExclamationMark
+    path: Layer80/QuestExclamationMark
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -809,7 +809,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: Layer2/CombinationExclamationMark
+    path: Layer60/CombinationExclamationMark
     classID: 225
     script: {fileID: 0}
   m_EulerEditorCurves: []
