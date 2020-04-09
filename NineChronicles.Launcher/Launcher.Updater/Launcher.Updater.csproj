@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="ShellProgressBar" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
