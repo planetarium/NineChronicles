@@ -146,7 +146,7 @@ Item {
     Window {
         id: preloadProgress
         title: "Nine Chronicles"
-        width: 240
+        width: 300
         height: 40
         minimumWidth: width
         minimumHeight: height
