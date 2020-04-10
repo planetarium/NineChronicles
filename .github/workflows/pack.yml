@@ -2,6 +2,8 @@ on:
   push:
     branches:
       - master
+      - 9c-alpha-*
+      - 9c-beta-*
     tags:
       - '*'
 
