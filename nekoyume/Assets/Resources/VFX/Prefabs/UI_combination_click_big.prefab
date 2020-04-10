@@ -4640,8 +4640,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -9230,8 +9230,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -9267,7 +9267,7 @@ GameObject:
   - component: {fileID: 5835667545151429103}
   - component: {fileID: 8139817926272178937}
   - component: {fileID: 5440992624419942270}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13991,8 +13991,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -18725,8 +18725,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -18762,6 +18762,7 @@ GameObject:
   - component: {fileID: 4614668414586147167}
   - component: {fileID: 8722680168831659401}
   - component: {fileID: 861355441432796171}
+  - component: {fileID: 5008737689125915267}
   m_Layer: 5
   m_Name: UI_combination_click_big
   m_TagString: Untagged
@@ -18803,7 +18804,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -23481,8 +23482,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -23507,3 +23508,15 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &5008737689125915267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6562393212283967070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 445a206a4c308804b89057a6cb501dd3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
