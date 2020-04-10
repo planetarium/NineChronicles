@@ -3,7 +3,8 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Util
 {
-    [CustomEditor(typeof(PositionConstraintToScreen))]
+    [CanEditMultipleObjects,
+     CustomEditor(typeof(PositionConstraintToScreen))]
     public class PositionConstraintToScreenEditor : Editor
     {
         public override void OnInspectorGUI()
