@@ -34,7 +34,7 @@ Item {
 
     Timer {
         interval: 500
-        running: true
+        running: ctrl.preprocessing
         repeat: true
 
         property string logoPathTemplate: "../images/logo-%1.png"
@@ -152,7 +152,7 @@ Item {
     Window {
         id: preloadProgress
         title: "Nine Chronicles"
-        width: 300
+        width: 480
         height: 40
         minimumWidth: width
         minimumHeight: height
@@ -221,20 +221,17 @@ Item {
                 Label {
                     text: "Address"
                     Layout.preferredWidth: 120
-                    font.pointSize: 12
                 }
 
                 ComboBox {
                     id: addressComboBox
                     model: Net.toListModel(ctrl.keyStore.addresses)
                     Layout.fillWidth: true
-                    font.pointSize: 12
                 }
 
                 Label {
                     text: "Passphrase"
                     Layout.preferredWidth: 120
-                    font.pointSize: 12
                 }
                 
                 TextField {
@@ -243,7 +240,6 @@ Item {
                     placeholderText: "Input passphrase"
                     onAccepted: login()
                     Layout.fillWidth: true
-                    font.pointSize: 12
                 }
             }
 
@@ -251,7 +247,6 @@ Item {
                 text: "Login"
                 onClicked: login()
                 width: parent.width;
-                font.pointSize: 12
             }
 
             Label {
@@ -259,7 +254,6 @@ Item {
                 visible: false
                 text: "Passphrase seems wrong, try again."
                 color: "red"
-                font.pointSize: 12
             }
         }
     }
@@ -294,7 +288,6 @@ Item {
                 wrapMode: Text.WordWrap
                 id: messageBoxLabel
                 text: ""
-                font.pointSize: 12
             }
 
             Button {

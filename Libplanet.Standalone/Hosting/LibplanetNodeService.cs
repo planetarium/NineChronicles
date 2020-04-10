@@ -73,7 +73,9 @@ namespace Libplanet.Standalone.Hosting
                 host: _properties.Host,
                 listenPort: _properties.Port,
                 iceServers: iceServers,
-                differentAppProtocolVersionEncountered: _properties.DifferentAppProtocolVersionEncountered);
+                workers: 50,
+                differentAppProtocolVersionEncountered: _properties.DifferentAppProtocolVersionEncountered
+            );
 
             PreloadEnded = new AsyncAutoResetEvent();
             BootstrapEnded = new AsyncAutoResetEvent();
