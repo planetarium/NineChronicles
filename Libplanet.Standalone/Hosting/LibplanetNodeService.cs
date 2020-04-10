@@ -87,11 +87,16 @@ namespace Libplanet.Standalone.Hosting
             if (peers.Any())
             {
                 var trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
-                await Swarm.BootstrapAsync(peers, null, null, cancellationToken: cancellationToken);
+                await Swarm.BootstrapAsync(
+                    peers,
+                    TimeSpan.FromSeconds(5),
+                    TimeSpan.FromSeconds(5),
+                    depth: 1,
+                    cancellationToken: cancellationToken);
                 BootstrapEnded.Set();
 
                 await Swarm.PreloadAsync(
-                    null,
+                    TimeSpan.FromSeconds(5),
                     _preloadProgress,
                     trustedStateValidators, 
                     cancellationToken: cancellationToken
