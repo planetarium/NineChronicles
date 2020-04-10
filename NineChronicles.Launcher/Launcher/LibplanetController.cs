@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using Launcher.Common;
-using Launcher.Common.Storage;
 using Libplanet;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
@@ -30,8 +29,6 @@ namespace Launcher
     public class LibplanetController
     {
         private CancellationTokenSource _cancellationTokenSource;
-
-        private S3Storage Storage { get; }
 
         // It used in qml/Main.qml to hide and turn on some menus.
         [NotifySignal]
@@ -67,7 +64,6 @@ namespace Launcher
 
         public LibplanetController()
         {
-            Storage = new S3Storage();
         }
 
         public void StartSync()

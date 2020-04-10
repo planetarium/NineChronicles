@@ -6,8 +6,6 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Launcher.Common;
-using Launcher.Common.Storage;
 using ShellProgressBar;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
