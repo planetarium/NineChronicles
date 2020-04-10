@@ -20,9 +20,9 @@ TagManager:
   - VFX
   - InGameBackground
   - InGameForeground
-  - InGameVFXForeground
-  - InGameVFXBackground
-  - 
+  - InGameForegroundVFX
+  - InGameBackgroundVFX
+  - CharacterVFX
   - 
   - 
   - 
@@ -47,17 +47,20 @@ TagManager:
   - name: InGameBackground
     uniqueID: 573067601
     locked: 0
-  - name: InGameVFXBackground
+  - name: InGameBackgroundVFX
     uniqueID: 2704171349
     locked: 0
   - name: Character
     uniqueID: 3909689525
     locked: 0
-  - name: InGameVFXForeground
-    uniqueID: 3977676121
+  - name: CharacterVFX
+    uniqueID: 3029468793
     locked: 0
   - name: InGameForeground
     uniqueID: 2862456707
+    locked: 0
+  - name: InGameForegroundVFX
+    uniqueID: 3977676121
     locked: 0
   - name: UI
     uniqueID: 555532309

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4651480244848036}
   - component: {fileID: 198908810809764366}
   - component: {fileID: 199268237001873286}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: attack_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4793,7 +4793,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 1
@@ -4830,7 +4830,7 @@ GameObject:
   - component: {fileID: 4831563627697390}
   - component: {fileID: 198573736047323360}
   - component: {fileID: 199058088004645776}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: attack_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9513,7 +9513,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 0
@@ -9550,7 +9550,7 @@ GameObject:
   - component: {fileID: 4535335913186608}
   - component: {fileID: 198237463905243722}
   - component: {fileID: 199741674351030956}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: dust_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14071,7 +14071,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 0
@@ -14108,7 +14108,7 @@ GameObject:
   - component: {fileID: 4583529532688234}
   - component: {fileID: 198698596429306798}
   - component: {fileID: 199534569254892568}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: glow_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18872,7 +18872,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 0
@@ -18910,7 +18910,7 @@ GameObject:
   - component: {fileID: 198985415118394178}
   - component: {fileID: 199361075430162418}
   - component: {fileID: 114164716237331494}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: BattleDamage01VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18951,7 +18951,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -23633,7 +23633,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 0
