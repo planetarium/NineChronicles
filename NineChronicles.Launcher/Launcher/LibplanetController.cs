@@ -20,6 +20,7 @@ using Qml.Net;
 using Serilog;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using static Launcher.Common.Configuration;
+using Nekoyume;
 
 namespace Launcher
 {
@@ -270,11 +271,33 @@ namespace Launcher
             GameProcess?.Kill(true);
         }
 
-        // NOTE: called by *settings* menu
+        // Advanced → Settings 메뉴가 호출
         public void OpenSettingFile()
         {
             InitializeSettingFile();
             Process.Start(CurrentPlatform.OpenCommand, SettingFilePath);
+        }
+
+        // Advanced → Clear cache 메뉴가 호출
+        public void ClearStore()
+        {
+            LauncherSettings settings = LoadSettings();
+            string storePath = string.IsNullOrEmpty(settings?.StorePath) ? DefaultStorePath : settings.StorePath;
+
+            StopGameProcess();
+            StopSync();
+            Log.Information("Try to clear store: {0}", storePath);
+
+            try
+            {
+                StoreUtils.ResetStore(storePath);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, "Unexpected exception happened during clearing store.");
+            }
+
+            this.ActivateSignal("quit");
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)

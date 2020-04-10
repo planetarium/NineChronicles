@@ -96,10 +96,19 @@ Item {
                 }
             }
 
-            MenuItem {
-                text: "Settings"
+            Menu {
+                title: "Advanced…"
                 visible: !ctrl.gameRunning
-                onTriggered: ctrl.openSettingFile()
+
+                MenuItem {
+                    text: "Settings"
+                    onTriggered: ctrl.openSettingFile()
+                }
+
+                MenuItem {
+                    text: "Clear cache"
+                    onTriggered: ctrl.clearStore()
+                }
             }
 
             MenuItem {
