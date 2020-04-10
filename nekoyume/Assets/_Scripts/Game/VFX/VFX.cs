@@ -18,6 +18,8 @@ namespace Nekoyume.Game.VFX
         protected ParticleSystem _particlesRoot = null;
         protected virtual float EmitDuration => 1f;
 
+        public System.Action OnFinished = null;
+
         #region Mono
 
         public virtual void Awake()
@@ -95,6 +97,7 @@ namespace Nekoyume.Game.VFX
                 yield return null;
             }
 
+            OnFinished?.Invoke();
             LazyStop();
         }
 
