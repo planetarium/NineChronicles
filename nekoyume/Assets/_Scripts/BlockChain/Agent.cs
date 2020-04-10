@@ -49,8 +49,6 @@ namespace Nekoyume.BlockChain
 
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
-        public static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
-
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         private static IEnumerator _miner;
@@ -273,9 +271,10 @@ namespace Nekoyume.BlockChain
         private void Awake()
         {
             ForceDotNet.Force();
-            if (!Directory.Exists(PrevStorageDirectoryPath))
+            string parentDir = Path.GetDirectoryName(DefaultStoragePath);
+            if (!Directory.Exists(parentDir))
             {
-                Directory.CreateDirectory(PrevStorageDirectoryPath);
+                Directory.CreateDirectory(parentDir);
             }
             DeletePreviousStore();
         }
@@ -859,11 +858,11 @@ namespace Nekoyume.BlockChain
 
         private static void DeletePreviousStore()
         {
-            var dirs = Directory.GetDirectories(PrevStorageDirectoryPath).ToList();
-            foreach (var dir in dirs)
+            // 백업 저장소 지우는 데에 시간이 꽤 걸리기 때문에 백그라운드 잡으로 스폰
+            Task.Run(() =>
             {
-                Task.Run(() => { Directory.Delete(dir, true); });
-            }
+                StoreUtils.ClearBackupStores(DefaultStoragePath);
+            });
         }
 
         private IEnumerator CoCheckStagedTxs()
