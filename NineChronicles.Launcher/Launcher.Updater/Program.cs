@@ -20,6 +20,8 @@ namespace Launcher.Updater
     {
         const string MacOSLatestBinaryUrl = "https://download.nine-chronicles.com/latest/macOS.tar.gz";
         const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.zip";
+        private const string SnapshotUrl =
+            "https://download.nine-chronicles.com/latest/snapshot.zip";
 
         static async Task Main(string[] args)
         {
@@ -58,6 +60,24 @@ namespace Launcher.Updater
                 {
                     string tempPath = await DownloadBinariesAsync(u, cts.Token);
                     ExtractBinaries(tempPath);
+
+                    if (args.Length == 0)
+                    {
+                        // 인스톨러 모드 - 스냅샷 다운로드
+                        Console.Error.WriteLine("Start download snapshot");
+                        tempPath = await DownloadBinariesAsync(SnapshotUrl, cts.Token);
+                        string storePath = Path.Combine(
+                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                            "planetarium",
+                            "9c"
+                        );
+                        if (Directory.Exists(storePath))
+                        {
+                            Directory.Delete(storePath, recursive: true);
+                        }
+
+                        ZipFile.ExtractToDirectory(tempPath, storePath);
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -93,8 +113,9 @@ namespace Launcher.Updater
             {
                 File.Delete(tempFilePath);
             }
+
             Log.Information(
-                "Start download game from {DownloadUri} to {TempFilePath}.",
+                "Start download from {DownloadUri} to {TempFilePath}.",
                 gameBinaryDownloadUri,
                 tempFilePath
             );
