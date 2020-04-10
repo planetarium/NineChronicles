@@ -34,7 +34,7 @@ Item {
 
     Timer {
         interval: 500
-        running: true
+        running: ctrl.preprocessing
         repeat: true
 
         property string logoPathTemplate: "../images/logo-%1.png"
