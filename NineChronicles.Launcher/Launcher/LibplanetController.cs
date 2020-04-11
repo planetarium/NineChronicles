@@ -122,6 +122,7 @@ namespace Launcher
             {
                 PrivateKey = protectedPrivateKey.Unprotect(passphrase);
                 this.ActivateProperty(ctrl => ctrl.PrivateKey);
+
                 return true;
             }
             catch (Exception e) when (e is IncorrectPassphraseException ||
@@ -192,6 +193,21 @@ namespace Launcher
             {
                 await Task.WhenAll(
                     service.Run(cancellationToken),
+                    Task.Run(async () =>
+                    {
+                        while (true)
+                        {
+                            await Task.Delay(100);
+                            if (File.Exists(CurrentPlatform.RunCommandFilePath))
+                            {
+                                if (!GameRunning)
+                                {
+                                    RunGameProcess();
+                                }
+                                File.Delete(CurrentPlatform.RunCommandFilePath);
+                            }
+                        }
+                    }),
                     Task.Run(async () =>
                     {
                         PreloadStatus = "Connecting to the network...";
