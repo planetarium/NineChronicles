@@ -1,5 +1,7 @@
-﻿using System;
+using System;
+using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using Qml.Net;
 using Qml.Net.Runtimes;
 using Serilog;
@@ -11,6 +13,18 @@ namespace Launcher
     {
         public static int Main(string[] args)
         {
+            string procName = Process.GetCurrentProcess().ProcessName;
+            Process[] ps = Process.GetProcessesByName(procName);
+            if (ps.Length > 1)
+            {
+                File.WriteAllText(CurrentPlatform.RunCommandFilePath, string.Empty);
+                return 0;
+            }
+            else if (File.Exists(CurrentPlatform.RunCommandFilePath))
+            {
+                File.Delete(CurrentPlatform.RunCommandFilePath);
+            }
+
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .WriteTo.File(CurrentPlatform.LogFilePath, rollingInterval: RollingInterval.Day)
