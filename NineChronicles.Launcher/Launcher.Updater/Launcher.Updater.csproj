@@ -24,6 +24,7 @@
   <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="ShellProgressBar" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
 
 </Project>
