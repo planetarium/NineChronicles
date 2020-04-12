@@ -115,6 +115,7 @@ namespace Launcher.Updater
             {
                 File.Copy(Configuration.SettingFilePath, prevSettingPath);
             }
+
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 var process = Process.Start(
@@ -135,13 +136,13 @@ namespace Launcher.Updater
 
             if (File.Exists(prevSettingPath))
             {
-                using var prev = JsonDocument.Parse(File.ReadAllText(prevSettingPath));
-                using var current = JsonDocument.Parse(File.ReadAllText(Configuration.SettingFilePath));
-                using var output = File.OpenWrite(Configuration.SettingFilePath);
+                using JsonDocument prev = JsonDocument.Parse(File.ReadAllText(prevSettingPath));
+                using JsonDocument current = JsonDocument.Parse(File.ReadAllText(Configuration.SettingFilePath));
+                using FileStream output = File.OpenWrite(Configuration.SettingFilePath);
                 using var writer = new Utf8JsonWriter(output, new JsonWriterOptions { Indented = true });
 
                 writer.WriteStartObject();
-                foreach (var prop in prev.RootElement.EnumerateObject())
+                foreach (JsonProperty prop in prev.RootElement.EnumerateObject())
                 {
                     if (current.RootElement.TryGetProperty(prop.Name, out var currentProp))
                     {
