@@ -118,7 +118,7 @@ namespace Launcher.Updater
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                ZipFile.ExtractToDirectory(path, CurrentPlatform.CurrentWorkingDirectory);
+                ZipFile.ExtractToDirectory(path, CurrentPlatform.CurrentWorkingDirectory, true);
             }
             else
             {
