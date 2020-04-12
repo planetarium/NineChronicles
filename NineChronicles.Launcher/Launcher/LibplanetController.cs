@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
@@ -173,11 +174,12 @@ namespace Launcher
                 DifferentAppProtocolVersionEncountered = NewAppProtocolVersionEncountered,
             };
 
+            RpcServerPort = GetFreeTcpPort();
             var rpcProperties = new RpcNodeServiceProperties
             {
                 RpcServer = true,
                 RpcListenHost = RpcListenHost,
-                RpcListenPort = RpcListenPort,
+                RpcListenPort = RpcServerPort
             };
 
             var service = new NineChroniclesNodeService(
@@ -246,6 +248,20 @@ namespace Launcher
             catch (Exception e)
             {
                 Log.Error(e, "Unexpected exception occurred: {errorMessage}", e.Message);
+            }
+        }
+
+        private int GetFreeTcpPort()
+        {
+            var l = new TcpListener(IPAddress.Loopback, 0);
+            try
+            {
+                l.Start();
+                return ((IPEndPoint) l.LocalEndpoint).Port;
+            }
+            finally
+            {
+                l.Stop();
             }
         }
 
@@ -398,10 +414,8 @@ namespace Launcher
 
         private readonly string RpcServerHost = IPAddress.Loopback.ToString();
 
-        private const int RpcServerPort = 30000;
-
         private const string RpcListenHost = "0.0.0.0";
 
-        private const int RpcListenPort = RpcServerPort;
+        private int RpcServerPort;
     }
 }
