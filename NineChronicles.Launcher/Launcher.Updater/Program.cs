@@ -4,8 +4,10 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Launcher.Common;
 using ShellProgressBar;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
@@ -107,6 +109,12 @@ namespace Launcher.Updater
         {
             // TODO: implement a function to extract with file extension.
             Console.Error.WriteLine("Extracting downloaded game data...");
+
+            string prevSettingPath = Configuration.SettingFilePath + ".prev";
+            if (File.Exists(Configuration.SettingFilePath))
+            {
+                File.Copy(Configuration.SettingFilePath, prevSettingPath);
+            }
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 var process = Process.Start(
@@ -123,6 +131,32 @@ namespace Launcher.Updater
             else
             {
                 throw new Exception("Unsupported platform.");
+            }
+
+            if (File.Exists(prevSettingPath))
+            {
+                using var prev = JsonDocument.Parse(File.ReadAllText(prevSettingPath));
+                using var current = JsonDocument.Parse(File.ReadAllText(Configuration.SettingFilePath));
+                using var output = File.OpenWrite(Configuration.SettingFilePath);
+                using var writer = new Utf8JsonWriter(output, new JsonWriterOptions { Indented = true });
+
+                writer.WriteStartObject();
+                foreach (var prop in prev.RootElement.EnumerateObject())
+                {
+                    if (current.RootElement.TryGetProperty(prop.Name, out var currentProp))
+                    {
+                        writer.WritePropertyName(prop.Name);
+                        currentProp.WriteTo(writer);
+                    }
+                    else
+                    {
+                        prop.WriteTo(writer);
+
+                    }
+                }
+                writer.WriteEndObject();
+
+                File.Delete(prevSettingPath);
             }
 
             Console.Error.WriteLine("Finished to extract game binary.");
