@@ -293,14 +293,12 @@ Item {
                     placeholderText: ctrl.keyStoreEmpty ? "New passphrase" : "Your passphrase"
                     onAccepted: login()
                     Layout.fillWidth: true
-                    font.pointSize: 12
                 }
 
                 Label {
                     visible: ctrl.keyStoreEmpty
                     text: "Retype Passphrase"
                     Layout.preferredWidth: 120
-                    font.pointSize: 12
                 }
 
                 TextField {
