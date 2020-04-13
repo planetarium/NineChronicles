@@ -117,6 +117,13 @@ namespace Launcher
 
         public bool Login(string addressHex, string passphrase)
         {
+            // FIXME 로그인에서 계정 생성 단계를 분리하는 게 좋을 것 같습니다.
+            if (string.IsNullOrEmpty(addressHex))
+            {
+                KeyStore.CreateKey(passphrase);
+                return true;
+            }
+
             var address = new Address(addressHex);
             var protectedPrivateKey = KeyStore.ProtectedPrivateKeys[address];
             try
