@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 198748990015511626}
   - component: {fileID: 199520775856533684}
   - component: {fileID: 114114711471428684}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: BattleHeal01VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 0
   useRigidbodyForVelocity: 1
@@ -4825,7 +4825,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 0
@@ -4874,7 +4874,7 @@ GameObject:
   - component: {fileID: 4827363645441330}
   - component: {fileID: 198892420602204324}
   - component: {fileID: 199306473834306086}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: glow_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9638,7 +9638,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 0
@@ -9675,7 +9675,7 @@ GameObject:
   - component: {fileID: 4416999262054528}
   - component: {fileID: 198352197491741168}
   - component: {fileID: 199570569107180832}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: star_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14435,7 +14435,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 0
@@ -14472,7 +14472,7 @@ GameObject:
   - component: {fileID: 4782203743089226}
   - component: {fileID: 198777541139241816}
   - component: {fileID: 199060592266901436}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: star_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19196,7 +19196,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 8
   m_RenderMode: 0

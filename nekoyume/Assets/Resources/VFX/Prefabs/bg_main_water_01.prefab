@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6582201392553809964}
   - component: {fileID: 7769050613840838365}
   m_Layer: 0
-  m_Name: water_02
+  m_Name: bg_main_water_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -48,7 +48,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1

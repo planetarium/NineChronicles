@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4967090255612364076}
   - component: {fileID: 6936913729130268357}
   - component: {fileID: 7750380997354172676}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: glow_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4726,8 +4726,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -4763,7 +4763,7 @@ GameObject:
   - component: {fileID: 1752493046324758794}
   - component: {fileID: 7200627022440566334}
   - component: {fileID: 905553079569251059}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: flash_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9500,8 +9500,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
@@ -9539,7 +9539,7 @@ GameObject:
   - component: {fileID: 5013400868225075657}
   - component: {fileID: 63701741626625551}
   - component: {fileID: -1333498079048039748}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: BattleBossTitleVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9586,7 +9586,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -14286,7 +14286,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 20
   m_RenderMode: 0
@@ -14347,7 +14347,7 @@ GameObject:
   - component: {fileID: 3002844020190983318}
   - component: {fileID: 2334209217158018710}
   - component: {fileID: 6917645534396084332}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: flash_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19084,8 +19084,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
@@ -19121,7 +19121,7 @@ GameObject:
   - component: {fileID: 3338942499571505694}
   - component: {fileID: 2084033611808513726}
   - component: {fileID: 2876794182759495960}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: effect_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23629,8 +23629,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 1
@@ -23666,7 +23666,7 @@ GameObject:
   - component: {fileID: 6985743034941321412}
   - component: {fileID: 3135959552614399317}
   - component: {fileID: 3847209534038411456}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: glow_03_backline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28381,8 +28381,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -28418,7 +28418,7 @@ GameObject:
   - component: {fileID: 2787727766749522103}
   - component: {fileID: 3549779868159171857}
   - component: {fileID: 957815237212101732}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: glow_03_backline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33133,8 +33133,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -33170,7 +33170,7 @@ GameObject:
   - component: {fileID: 4806227472199157629}
   - component: {fileID: 7236726900425252932}
   - component: {fileID: 3148928093563002118}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: boss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37912,8 +37912,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -37949,7 +37949,7 @@ GameObject:
   - component: {fileID: 5849746294807024118}
   - component: {fileID: 5689303453796324216}
   - component: {fileID: 7502137398467749419}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: glow_03_backline_blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42664,8 +42664,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -42701,7 +42701,7 @@ GameObject:
   - component: {fileID: 7495363652967064090}
   - component: {fileID: 1635609873296220678}
   - component: {fileID: 216744486695209654}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: magiccircle_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47420,8 +47420,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 0
   m_RenderMode: 1
   m_SortMode: 0
@@ -47457,7 +47457,7 @@ GameObject:
   - component: {fileID: 8447427560935678277}
   - component: {fileID: 8447427560916280325}
   - component: {fileID: 8447427560916376997}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: effect_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -51965,8 +51965,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -317291175
+  m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 1
