@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.IO;
@@ -36,6 +37,13 @@ namespace Launcher
         public bool GameRunning => !(GameProcess?.HasExited ?? true);
 
         [NotifySignal]
+        public bool KeyStoreEmpty => !KeyStore.ListIds().Any();
+
+        [NotifySignal]
+        public List<string> KeyStoreOptions =>
+            KeyStore.List().Select(pair => pair.Item2.Address.ToHex()).ToList();
+
+        [NotifySignal]
         public bool Updating { get; private set; }
 
         [NotifySignal]
@@ -61,7 +69,16 @@ namespace Launcher
 
         private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
 
-        public KeyStore KeyStore => new KeyStore(LoadKeyStorePath(LoadSettings()));
+        public IKeyStore KeyStore
+        {
+            get
+            {
+                LauncherSettings settings = LoadSettings();
+                return string.IsNullOrEmpty(settings.KeyStorePath)
+                    ? Web3KeyStore.DefaultKeyStore
+                    : new Web3KeyStore(settings.KeyStorePath);
+            }
+        }
 
         public LibplanetController()
         {
@@ -117,15 +134,10 @@ namespace Launcher
 
         public bool Login(string addressHex, string passphrase)
         {
-            // FIXME 로그인에서 계정 생성 단계를 분리하는 게 좋을 것 같습니다.
-            if (string.IsNullOrEmpty(addressHex))
-            {
-                KeyStore.CreateKey(passphrase);
-                return true;
-            }
-
             var address = new Address(addressHex);
-            var protectedPrivateKey = KeyStore.ProtectedPrivateKeys[address];
+            ProtectedPrivateKey protectedPrivateKey = KeyStore.List()
+                .Select(pair => pair.Item2)
+                .First(ppk => ppk.Address.Equals(address));
             try
             {
                 PrivateKey = protectedPrivateKey.Unprotect(passphrase);
@@ -317,7 +329,9 @@ namespace Launcher
         public void ClearStore()
         {
             LauncherSettings settings = LoadSettings();
-            string storePath = string.IsNullOrEmpty(settings?.StorePath) ? DefaultStorePath : settings.StorePath;
+            string storePath = string.IsNullOrEmpty(settings?.StorePath)
+                ? DefaultStorePath
+                : settings.StorePath;
 
             StopGameProcess();
             StopSync();
@@ -333,6 +347,14 @@ namespace Launcher
             }
 
             this.ActivateSignal("quit");
+        }
+
+        public void CreatePrivateKey(string passphrase)
+        {
+            PrivateKey = new PrivateKey();
+            ProtectedPrivateKey ppk = ProtectedPrivateKey.Protect(PrivateKey, passphrase);
+            KeyStore.Add(ppk);
+            this.ActivateProperty(ctrl => ctrl.PrivateKey);
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)

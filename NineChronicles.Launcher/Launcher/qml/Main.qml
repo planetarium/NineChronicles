@@ -8,15 +8,43 @@ import LibplanetLauncher 1.0
 
 Item {
     function login() {
-        const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
-        if (success) {
-            ctrl.startSync()
-            passphraseWindow.hide()
-            preloadProgress.show()
+        const showError = (message) => {
+            if (!loginFailMessage.visible) {
+                passphraseWindow.height += 30
+                loginFailMessage.visible = true
+            }
+            loginFailMessage.text = message
+        }
+
+        let success = false;
+        if (ctrl.keyStoreEmpty) {
+            if (passphraseInput.text == '') {
+                showError("New passphrase is empty.");
+            }
+            else if (passphraseInputRetype.text == '') {
+                showError("Please retype passphrase.")
+            }
+            else if (passphraseInput.text != passphraseInputRetype.text) {
+                showError("Two passphrases do not match.");
+            }
+            else {
+                // TODO: passphrase strength 검사해야 함
+                ctrl.createPrivateKey(passphraseInput.text);
+                success = true;
+                ctrl.startSync()
+                passphraseWindow.hide()
+                preloadProgress.show()
+            }
         }
         else {
-            passphraseWindow.height = passphraseWindow.minimumHeight = passphraseWindow.maximumHeight = 200
-            loginFailMessage.visible = true
+            const success = ctrl.login(addressComboBox.currentText, passphraseInput.text)
+            if (!success) {
+                showError("Passphrase seems wrong, try again.")
+            } else {
+                ctrl.startSync()
+                passphraseWindow.hide()
+                preloadProgress.show()
+            }
         }
     }
 
@@ -76,7 +104,7 @@ Item {
             MenuItem {
                 id: loginMenu
                 text: "Login"
-                visible: ctrl.privateKey === null 
+                visible: ctrl.privateKey === null
 
                 onTriggered: {
                     passphraseWindow.show()
@@ -186,7 +214,7 @@ Item {
                 Layout.preferredWidth: parent.width
                 visible: ctrl.preprocessing
             }
-            
+
             Label {
                 text: ctrl.preprocessing ? ctrl.preloadStatus : "Done!"
                 Layout.preferredWidth: parent.width
@@ -208,9 +236,9 @@ Item {
 
     Window {
         id: passphraseWindow
-        title: "Type your passphrase"
+        title: "Sign in"
         width: 360
-        height: 160
+        height: ctrl.keyStoreEmpty ? 210 : 155
         minimumWidth: width
         minimumHeight: height
         maximumWidth: width
@@ -222,19 +250,35 @@ Item {
             anchors.margins: 10
             spacing: 10
 
+            Row {
+                visible: ctrl.keyStoreEmpty
+                Label {
+                    text: "There are no key in the key store."
+                }
+            }
+
+            Row {
+                visible: ctrl.keyStoreEmpty
+                Label {
+                    text: "Create a new private key first:"
+                }
+            }
+
             GridLayout
             {
                 columns: 2
                 width: parent.width
 
                 Label {
+                    visible: !ctrl.keyStoreEmpty
                     text: "Address"
                     Layout.preferredWidth: 120
                 }
 
                 ComboBox {
+                    visible: !ctrl.keyStoreEmpty
                     id: addressComboBox
-                    model: Net.toListModel(ctrl.keyStore.addresses)
+                    model: Net.toListModel(ctrl.keyStoreOptions)
                     Layout.fillWidth: true
                 }
 
@@ -242,18 +286,33 @@ Item {
                     text: "Passphrase"
                     Layout.preferredWidth: 120
                 }
-                
+
                 TextField {
                     id: passphraseInput
                     echoMode: TextInput.Password
-                    placeholderText: "Input passphrase"
+                    placeholderText: ctrl.keyStoreEmpty ? "New passphrase" : "Your passphrase"
+                    onAccepted: login()
+                    Layout.fillWidth: true
+                }
+
+                Label {
+                    visible: ctrl.keyStoreEmpty
+                    text: "Retype Passphrase"
+                    Layout.preferredWidth: 120
+                }
+
+                TextField {
+                    visible: ctrl.keyStoreEmpty
+                    id: passphraseInputRetype
+                    echoMode: TextInput.Password
+                    placeholderText: "Retype passphrase"
                     onAccepted: login()
                     Layout.fillWidth: true
                 }
             }
 
             Button {
-                text: "Login"
+                text: ctrl.keyStoreEmpty ? "Create && &Sign in" : "&Sign in"
                 onClicked: login()
                 width: parent.width;
             }
@@ -266,6 +325,7 @@ Item {
             }
         }
     }
+
     function showMessage(text, onClosing)
     {
         messageBox.text = text;
