@@ -21,7 +21,10 @@ namespace Nekoyume.Game.Character
         {
             _sortingGroup = GetComponent<SortingGroup>();
             _touchHandler = GetComponentInChildren<TouchHandler>();
+
             _touchHandler.OnClick
+                .Merge(_touchHandler.OnDoubleClick)
+                .Merge(_touchHandler.OnMultipleClick)
                 .Subscribe(_ => PlayAnimation(NPCAnimation.Type.Touch_01))
                 .AddTo(gameObject);
 
