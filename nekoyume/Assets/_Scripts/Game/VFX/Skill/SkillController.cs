@@ -24,11 +24,14 @@ namespace Nekoyume.Game.VFX.Skill
             }
         }
 
-        public T Get<T>(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skillInfo) where T : SkillVFX
+        public T Get<T>(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skillInfo)
+            where T : SkillVFX
         {
             if (target is null)
+            {
                 return null;
-            
+            }
+
             var position = target.transform.position;
             var size = target.SizeType == SizeType.XS ? SizeType.S : SizeType.M;
             var elemental = skillInfo.ElementalType;
@@ -43,6 +46,7 @@ namespace Nekoyume.Game.VFX.Skill
                 position.x = pos.x + 0.5f;
                 position.y = Stage.StageStartPosition;
             }
+
             var skillName = $"{skillInfo.SkillCategory}_{size}_{elemental}".ToLower();
             if (skillInfo.SkillCategory == SkillCategory.BlowAttack &&
                 skillInfo.SkillTargetType == SkillTargetType.Enemies)
@@ -54,16 +58,16 @@ namespace Nekoyume.Game.VFX.Skill
                 position.x -= 0.2f;
                 position.y += 0.32f;
             }
-            var go = _pool.Get(skillName, false, position);
-            if (go == null)
-            {
-                go = _pool.Get(skillName, true, position);
-            }
+
+            var go = _pool.Get(skillName, false, position) ??
+                     _pool.Get(skillName, true, position);
+
             var effect = go.GetComponent<T>();
-            if (effect == null)
+            if (effect is null)
             {
-                Debug.LogError(skillName);
+                throw new NotFoundComponentException<T>(skillName);
             }
+
             effect.target = target;
             effect.Stop();
             return effect;
@@ -73,25 +77,34 @@ namespace Nekoyume.Game.VFX.Skill
         {
             var elemental = skillInfo.ElementalType;
             var skillName = $"casting_{elemental}".ToLower();
-            var go = _pool.Get(skillName, false, position);
+            var go = _pool.Get(skillName, false, position) ??
+                     _pool.Get(skillName, true, position);
+
             var effect = go.GetComponent<SkillCastingVFX>();
+            if (effect is null)
+            {
+                throw new NotFoundComponentException<SkillCastingVFX>(skillName);
+            }
+
             effect.Stop();
             return effect;
         }
 
-        public SkillCastingVFX GetBlowCasting(Vector3 position, Model.BattleStatus.Skill.SkillInfo skillInfo)
+        public SkillCastingVFX GetBlowCasting(
+            Vector3 position,
+            Model.BattleStatus.Skill.SkillInfo skillInfo)
         {
-            var skillName = $"casting_{skillInfo.SkillCategory}_{skillInfo.ElementalType}".ToLower();
-            var go = _pool.Get(skillName, false, position);
-            if (go == null)
-            {
-                go = _pool.Get(skillName, true, position);
-            }
+            var skillName =
+                $"casting_{skillInfo.SkillCategory}_{skillInfo.ElementalType}".ToLower();
+            var go = _pool.Get(skillName, false, position) ??
+                     _pool.Get(skillName, true, position);
+
             var effect = go.GetComponent<SkillCastingVFX>();
-            if (effect == null)
+            if (effect is null)
             {
-                Debug.LogError(skillName);
+                throw new NotFoundComponentException<SkillCastingVFX>(skillName);
             }
+
             effect.Stop();
             return effect;
         }
