@@ -82,38 +82,50 @@ namespace Nekoyume.Action
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
-                return states;
+                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
             }
             sw.Stop();
-            Log.Debug($"ItemEnhancement Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug("ItemEnhancement Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable enhancementItem))
             {
                 // 강화 장비가 없는 에러.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the NonFungibleItem ({ItemId}) was failed to load from avatar's inventory.",
+                    itemId
+                );
             }
 
             if (enhancementItem.RequiredBlockIndex > context.BlockIndex)
             {
-                // 필요 블럭 인덱스 불충분 에러.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the equipment to enhance ({ItemId}) is not available yet; it will be available at the block #{RequiredBlockIndex}.",
+                    itemId,
+                    enhancementItem.RequiredBlockIndex
+                );
             }
 
             if (!(enhancementItem is Equipment enhancementEquipment))
             {
                 // 캐스팅 버그. 예외상황.
-                return states;
+                return LogError(
+                    context,
+                    $"Aborted as the item is not a {nameof(Equipment)}, but {{ItemType}}.",
+                    enhancementItem.GetType().Name
+                );
             }
 
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
             if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
             {
-                return states;
+                return LogError(context, "Aborted as the slot state was failed to load or invalid.");
             }
 
             sw.Stop();
-            Log.Debug($"ItemEnhancement Get Equipment: {sw.Elapsed}");
+            Log.Debug("ItemEnhancement Get Equipment: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             var result = new ResultModel
@@ -126,7 +138,12 @@ namespace Nekoyume.Action
             if (avatarState.actionPoint < requiredAP)
             {
                 // AP 부족 에러.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted due to insufficient action point: {ActionPointBalance} < {ActionCost}",
+                    avatarState.actionPoint,
+                    requiredAP
+                );
             }
 
             avatarState.actionPoint -= requiredAP;
@@ -136,12 +153,17 @@ namespace Nekoyume.Action
             if (agentState.gold < requiredNCG)
             {
                 // NCG 부족 에러.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted due to insufficient gold: {Balance} < {Cost}",
+                    agentState.gold,
+                    requiredNCG
+                );
             }
 
             var tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
-            Log.Debug($"ItemEnhancement Get TableSheets: {sw.Elapsed}");
+            Log.Debug("ItemEnhancement Get TableSheets: {Elapsed}", sw.Elapsed);
             sw.Restart();
             var materials = new List<Equipment>();
             foreach (var materialId in materialIds)
@@ -149,54 +171,86 @@ namespace Nekoyume.Action
                 if (!avatarState.inventory.TryGetNonFungibleItem(materialId, out ItemUsable materialItem))
                 {
                     // 인벤토리에 재료로 등록한 장비가 없는 에러.
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as the the signer does not have a necessary material ({MaterialId}).",
+                        materialId
+                    );
                 }
 
                 if (materialItem.RequiredBlockIndex > context.BlockIndex)
                 {
-                    // 필요 블럭 인덱스 불충분 에러.
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as the material ({MaterialId}) is not available yet; it will be available at the block #{RequiredBlockIndex}.",
+                        materialId,
+                        materialItem.RequiredBlockIndex
+                    );
                 }
 
                 if (!(materialItem is Equipment materialEquipment))
                 {
-                    return states;
+                    return LogError(
+                        context,
+                        $"Aborted as the material item is not a {nameof(Equipment)}, but {{ItemType}}.",
+                        materialItem.GetType().Name
+                    );
                 }
 
                 if (materials.Contains(materialEquipment))
                 {
                     // 같은 guid의 아이템이 중복해서 등록된 에러.
-                    Log.Warning($"Duplicate materials found. {materialEquipment}");
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as the same material was used more than once: {Material}",
+                        materialEquipment
+                    );
                 }
 
                 if (enhancementEquipment.ItemId == materialId)
                 {
                     // 강화 장비와 재료로 등록한 장비가 같은 에러.
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as an equipment to enhance ({ItemId}) was used as a material too.",
+                        materialId
+                    );
                 }
 
                 if (materialEquipment.Data.ItemSubType != enhancementEquipment.Data.ItemSubType)
                 {
                     // 서브 타입이 다른 에러.
-                    Log.Warning($"Expected ItemSubType is {enhancementEquipment.Data.ItemSubType}. " +
-                                "but Material SubType is {material.Data.ItemSubType}");
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as the material item is not a {ExpectedItemSubType}, but {MaterialSubType}.",
+                        enhancementEquipment.Data.ItemSubType,
+                        materialEquipment.Data.ItemSubType
+                    );
                 }
 
                 if (materialEquipment.Data.Grade != enhancementEquipment.Data.Grade)
                 {
                     // 등급이 다른 에러.
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as grades of the equipment to enhance ({EquipmentGrade}) and a material ({MaterialGrade}) do not match.",
+                        enhancementEquipment.Data.Grade,
+                        materialEquipment.Data.Grade
+                    );
                 }
 
                 if (materialEquipment.level != enhancementEquipment.level)
                 {
                     // 강화도가 다른 에러.
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as levels of the equipment to enhance ({EquipmentLevel}) and a material ({MaterialLevel}) do not match.",
+                        enhancementEquipment.level,
+                        materialEquipment.level
+                    );
                 }
                 sw.Stop();
-                Log.Debug($"ItemEnhancement Get Material: {sw.Elapsed}");
+                Log.Debug("ItemEnhancement Get Material: {Elapsed}", sw.Elapsed);
                 sw.Restart();
                 materialEquipment.Unequip();
                 materials.Add(materialEquipment);
@@ -206,7 +260,7 @@ namespace Nekoyume.Action
 
             enhancementEquipment = UpgradeEquipment(enhancementEquipment);
             sw.Stop();
-            Log.Debug($"ItemEnhancement Upgrade Equipment: {sw.Elapsed}");
+            Log.Debug("ItemEnhancement Upgrade Equipment: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             agentState.gold -= requiredNCG;
@@ -217,7 +271,7 @@ namespace Nekoyume.Action
                 avatarState.inventory.RemoveNonFungibleItem(material);
             }
             sw.Stop();
-            Log.Debug($"ItemEnhancement Remove Materials: {sw.Elapsed}");
+            Log.Debug("ItemEnhancement Remove Materials: {Elapsed}", sw.Elapsed);
             sw.Restart();
             var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
             result.id = mail.id;
@@ -231,13 +285,13 @@ namespace Nekoyume.Action
             slotState.Update(result, ctx.BlockIndex, ctx.BlockIndex);
 
             sw.Stop();
-            Log.Debug($"ItemEnhancement Update AvatarState: {sw.Elapsed}");
+            Log.Debug("ItemEnhancement Update AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
             states = states.SetState(avatarAddress, avatarState.Serialize());
             sw.Stop();
-            Log.Debug($"ItemEnhancement Set AvatarState: {sw.Elapsed}");
+            Log.Debug("ItemEnhancement Set AvatarState: {Elapsed}", sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug($"ItemEnhancement Total Executed Time: {ended - started}");
+            Log.Debug("ItemEnhancement Total Executed Time: {Elapsed}", ended - started);
             return states
                 .SetState(slotAddress, slotState.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());
