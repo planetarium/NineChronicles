@@ -387,7 +387,13 @@ namespace Launcher
             string binaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
                 ? extra.MacOSBinaryUrl
                 : extra.WindowsBinaryUrl;
-            Process.Start(CurrentPlatform.ExecutableUpdaterBinaryPath, binaryUrl);
+            var procInfo = new ProcessStartInfo(CurrentPlatform.ExecutableUpdaterBinaryPath)
+            {
+                Arguments = binaryUrl,
+                UseShellExecute = true,
+            };
+
+            Process.Start(procInfo);
             // NOTE: Environment.Exit(int)에 Qt Thread가 반응하지 않아 Qt 쪽에서 프로세스 종료를 처리하게 합니다.
             this.ActivateSignal("quit");
         }

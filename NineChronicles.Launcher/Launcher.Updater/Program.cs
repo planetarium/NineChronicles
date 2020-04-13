@@ -113,7 +113,7 @@ namespace Launcher.Updater
             string prevSettingPath = Configuration.SettingFilePath + ".prev";
             if (File.Exists(Configuration.SettingFilePath))
             {
-                File.Copy(Configuration.SettingFilePath, prevSettingPath);
+                File.Copy(Configuration.SettingFilePath, prevSettingPath, true);
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
