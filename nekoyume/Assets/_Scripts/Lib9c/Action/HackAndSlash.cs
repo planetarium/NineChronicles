@@ -100,6 +100,9 @@ namespace Nekoyume.Action
             sw.Restart();
 
             // 장비가 유효한지 검사한다.
+            // FIXME: 이하의 코드 블록이 상당부분 RankingBattle.Execute()에도 중복되어 들어있습니다.
+            // 한 쪽 로직만 수정하는 실수가 일어나기 쉬우니 로직을 하나로 합쳐서 양쪽에서 공통 로직을 가져다 쓰게 하는 게
+            // 좋을 듯합니다.
             {
                 var level = avatarState.level;
                 var ringCount = 0;
