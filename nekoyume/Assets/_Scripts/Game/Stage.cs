@@ -86,14 +86,19 @@ namespace Nekoyume.Game
                 throw new NullReferenceException("`Dummy` can't be null.");
             }
 
-            SkillController = new SkillController(objectPool);
-            BuffController = new BuffController(objectPool);
-
             Event.OnNestEnter.AddListener(OnNestEnter);
             Event.OnLoginDetail.AddListener(OnLoginDetail);
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageStart.AddListener(OnStageStart);
             Event.OnRankingBattleStart.AddListener(OnRankingBattleStart);
+        }
+
+        public void Initialize()
+        {
+            objectPool.Initialize();
+            dropItemFactory.Initialize();
+            SkillController = new SkillController(objectPool);
+            BuffController = new BuffController(objectPool);
         }
 
         private void OnStageStart(BattleLog log)
