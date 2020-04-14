@@ -1,69 +1,61 @@
-using System.Collections.Generic;
-using System.Linq;
+using System;
+using Nekoyume.Game.Util;
 using Nekoyume.Game.VFX.Skill;
-using Nekoyume.Helper;
-using Nekoyume.TableData;
+using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Skill;
 using NUnit.Framework;
 using UnityEngine;
 
 namespace Tests.EditMode.VFX
 {
-    // NOTE: 각 API 테스트를 위한 준비물이 많아서 아직 모든 API에 대해서 해당 API를 직접 사용하는 테스트를 작성하지는 못했어요.
-    public class SkillsControllerTest
+    public class SkillControllerTest
     {
-        private TableSheets _tableSheets;
-        private SkillVFX[] _skills;
+        private GameObject _gameObject;
+        private ObjectPool.Impl _objectPool;
+        private SkillController _skillController;
 
         [SetUp]
         public void SetUp()
         {
-            _tableSheets = TableSheetsHelper.MakeTableSheets();
-            _skills = Resources.LoadAll<SkillVFX>("VFX/Skills");
+            _gameObject = new GameObject();
+            _objectPool = new ObjectPool.Impl(_gameObject.transform, null);
+            _skillController = new SkillController(_objectPool);
         }
 
-        [TearDown]
-        public void TearDown()
-        {
-            _tableSheets = null;
-        }
-
-        // SkillCastingVFX Get(Vector3 position, Model.BattleStatus.Skill.SkillInfo skillInfo)
         [Test]
-        public void CheckSkillVFXPrefabs([Values(17)] int endStageId)
+        public void GetSkillCastingVFXTest()
         {
-            var monsterIds = _tableSheets.StageWaveSheet.OrderedList
-                .Where(item => item.Key <= endStageId)
-                .SelectMany(item => item.Waves)
-                .SelectMany(wave => wave.Monsters)
-                .Select(monsterData => monsterData.CharacterId)
-                .Distinct()
-                .ToList();
-
-            var skillIds = new List<int>();
-            foreach (var monsterId in monsterIds)
+            foreach (var elementalType in (ElementalType[]) Enum.GetValues(typeof(ElementalType)))
             {
-                skillIds.AddRange(
-                    _tableSheets.EnemySkillSheet.OrderedList
-                        .Where(item => item.characterId.Equals(monsterId))
-                        .Select(item => item.skillId));
+                var vfx = _skillController.Get(Vector3.zero, elementalType);
+                Assert.IsNotNull(vfx);
             }
+        }
 
-            skillIds = skillIds
-                .Distinct()
-                .ToList();
-
-            var skillRows = new List<SkillSheet.Row>();
-            foreach (var skillId in skillIds)
+        [Test]
+        public void GetBlowCastingVFXTest()
+        {
+            foreach (var skillCategory in (SkillCategory[]) Enum.GetValues(typeof(SkillCategory)))
             {
-                Assert.IsTrue(_tableSheets.SkillSheet.TryGetValue(skillId, out var row));
-                skillRows.Add(row);
-            }
+                if (skillCategory != SkillCategory.BlowAttack)
+                {
+                    continue;
+                }
 
-            foreach (var skillRow in skillRows)
-            {
-                var elemental = skillRow.ElementalType;
-                var skillName = $"casting_{elemental}".ToLower();
-                Assert.IsTrue(_skills.Any(skill => skill.name.Equals(skillName)));
+                foreach (var elementalType in
+                    (ElementalType[]) Enum.GetValues(typeof(ElementalType)))
+                {
+                    if (elementalType == ElementalType.Normal)
+                    {
+                        continue;
+                    }
+
+                    var vfx = _skillController.GetBlowCasting(
+                        Vector3.zero,
+                        skillCategory,
+                        elementalType);
+                    Assert.IsNotNull(vfx);
+                }
             }
         }
     }
