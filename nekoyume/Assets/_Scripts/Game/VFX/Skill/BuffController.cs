@@ -5,17 +5,16 @@ using UnityEngine;
 
 namespace Nekoyume.Game.VFX.Skill
 {
-    public class BuffController : MonoBehaviour
+    public class BuffController
     {
         private const int InitCount = 5;
 
-        public BuffVFX[] buffs;
-        private ObjectPool _pool;
+        private readonly ObjectPool _pool;
 
-        private void Awake()
+        public BuffController(ObjectPool objectPool)
         {
-            _pool = FindObjectOfType<ObjectPool>();
-            buffs = Resources.LoadAll<BuffVFX>("VFX/Prefabs");
+            _pool = objectPool;
+            var buffs = Resources.LoadAll<BuffVFX>("VFX/Prefabs");
             foreach (var buff in buffs)
             {
                 _pool.Add(buff.gameObject, InitCount);
@@ -24,23 +23,19 @@ namespace Nekoyume.Game.VFX.Skill
 
         public T Get<T>(CharacterBase target, Buff buff) where T : BuffVFX
         {
+            if (target is null)
+            {
+                return null;
+            }
+
             var position = target.transform.position;
             position.y += 0.55f;
             var resource = buff.RowData.IconResource;
             var resourceName = resource.Replace("icon_", "");
-            var go = _pool.Get(resourceName, false, position);
-            if (go == null)
-            {
-                go = _pool.Get(resourceName, true, position);
-            }
-            var effect = go.GetComponent<T>();
-            if (effect == null)
-            {
-                Debug.LogError(resourceName);
-            }
-            effect.target = target;
-            effect.Stop();
-            return effect;
+            var go = _pool.Get(resourceName, false, position) ??
+                     _pool.Get(resourceName, true, position);
+
+            return GetEffect<T>(go, target);
         }
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
@@ -52,15 +47,34 @@ namespace Nekoyume.Game.VFX.Skill
             }
             else
             {
-                buffName = buff.RowData.StatModifier.Value > 0 ? "buff_plus_casting" : "buff_minus_casting";
+                buffName = buff.RowData.StatModifier.Value > 0
+                    ? "buff_plus_casting"
+                    : "buff_minus_casting";
             }
 
             position.y += 0.55f;
-            var go = _pool.Get(buffName, false, position);
-            var effect = go.GetComponent<BuffCastingVFX>();
+            var go = _pool.Get(buffName, false, position) ??
+                     _pool.Get(buffName, true, position);
+
+            return GetEffect<BuffCastingVFX>(go);
+        }
+
+        private static T GetEffect<T>(GameObject go, CharacterBase target = null)
+            where T : BuffVFX
+        {
+            var effect = go.GetComponent<T>();
+            if (effect is null)
+            {
+                throw new NotFoundComponentException<T>(go.name);
+            }
+
+            if (!(target is null))
+            {
+                effect.target = target;
+            }
+
             effect.Stop();
             return effect;
         }
-
     }
 }
