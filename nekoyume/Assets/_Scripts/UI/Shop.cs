@@ -40,12 +40,12 @@ namespace Nekoyume.UI
 
         public CanvasGroup canvasGroup;
         public RectTransform bg1;
-        
+
         // 토글 그룹과 카테고리 버튼들.
         private ToggleGroup _toggleGroup;
         public CategoryButton buyButton;
         public CategoryButton sellButton;
-        
+
         public RectTransform right;
 
         public Module.Inventory inventory;
@@ -59,8 +59,6 @@ namespace Nekoyume.UI
         public CanvasGroup rightCanvasGroup;
 
         public Model.Shop SharedModel { get; private set; }
-
-        public ItemCountAndPricePopup ItemCountAndPricePopup { get; private set; }
 
         #region Mono
 
@@ -83,29 +81,32 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            
+
             _toggleGroup = new ToggleGroup();
             _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
             _toggleGroup.RegisterToggleable(buyButton);
             _toggleGroup.RegisterToggleable(sellButton);
 
-            ItemCountAndPricePopup = Find<ItemCountAndPricePopup>();
-
             inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            inventory.SharedModel.OnDoubleClickItemView.Subscribe(view => ShowTooltipForAction(view.Model))
+            inventory.SharedModel.OnDoubleClickItemView
+                .Subscribe(view => ShowActionPopup(view.Model))
                 .AddTo(gameObject);
             shopItems.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            shopItems.SharedModel.OnDoubleClickItemView.Subscribe(view => ShowTooltipForAction(view.Model))
+            shopItems.SharedModel.OnDoubleClickItemView
+                .Subscribe(view => ShowActionPopup(view.Model))
                 .AddTo(gameObject);
 
             SharedModel.State.Value = StateType.Show;
             SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.Item.Subscribe(SubscribeItemPopup).AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.OnClickSubmit.Subscribe(SubscribeItemPopupSubmit)
+            SharedModel.ItemCountAndPricePopup.Value.Item.Subscribe(SubscribeItemPopup)
                 .AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.OnClickCancel.Subscribe(SubscribeItemPopupCancel)
+            SharedModel.ItemCountAndPricePopup.Value.OnClickSubmit
+                .Subscribe(SubscribeItemPopupSubmit)
+                .AddTo(gameObject);
+            SharedModel.ItemCountAndPricePopup.Value.OnClickCancel
+                .Subscribe(SubscribeItemPopupCancel)
                 .AddTo(gameObject);
         }
 
@@ -142,18 +143,19 @@ namespace Nekoyume.UI
             base.OnCompleteOfShowAnimation();
             canvasGroup.interactable = true;
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
-
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            ItemCountAndPricePopup.Close();
+            Find<ItemCountAndPricePopup>().Close();
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             _sequenceOfShopItems?.Kill();
             _sequenceOfShopItems = null;
-            bg1.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
-            right.anchoredPosition = new Vector2(_defaultAnchoredPositionXOfRight, right.anchoredPosition.y);
+            bg1.anchoredPosition =
+                new Vector2(_defaultAnchoredPositionXOfBg1, bg1.anchoredPosition.y);
+            right.anchoredPosition =
+                new Vector2(_defaultAnchoredPositionXOfRight, right.anchoredPosition.y);
             speechBubble.gameObject.SetActive(false);
 
             base.Close(ignoreCloseAnimation);
@@ -172,8 +174,8 @@ namespace Nekoyume.UI
             inventory.Tooltip.Close();
             inventory.SharedModel.DeselectItemView();
             shopItems.SharedModel.DeselectItemView();
-            buyButton.button.interactable = false;
-            sellButton.button.interactable = false;
+            buyButton.SetInteractable(false, true);
+            sellButton.SetInteractable(false, true);
             switch (stateType)
             {
                 case StateType.Show:
@@ -201,7 +203,8 @@ namespace Nekoyume.UI
             {
                 _sequenceOfShopItems = DOTween.Sequence();
                 SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
-                _sequenceOfShopItems.AppendCallback(() => shopItems.SharedModel.State.Value = stateType);
+                _sequenceOfShopItems.AppendCallback(() =>
+                    shopItems.SharedModel.State.Value = stateType);
                 SetSequenceOfShopItems(false, ref _sequenceOfShopItems);
                 _sequenceOfShopItems.OnComplete(() =>
                 {
@@ -209,8 +212,8 @@ namespace Nekoyume.UI
                     {
                         canvasGroup.interactable = true;
                         _sequenceOfShopItems = null;
-                        buyButton.button.interactable = stateType == StateType.Sell;
-                        sellButton.button.interactable = stateType == StateType.Buy;
+                        buyButton.SetInteractable(stateType == StateType.Sell, true);
+                        sellButton.SetInteractable(stateType == StateType.Buy, true);
                     });
                 });
             }
@@ -237,9 +240,10 @@ namespace Nekoyume.UI
                 inventory.Tooltip.Show(
                     view.RectTransform,
                     view.Model,
-                    value => !DimmedFuncForSell(view.Model),
+                    value => !DimmedFuncForSell(value as InventoryItem),
                     LocalizationManager.Localize("UI_SELL"),
-                    tooltip => ShowTooltipForAction(tooltip.itemInformation.Model.item.Value),
+                    tooltip =>
+                        ShowSellPopup(tooltip.itemInformation.Model.item.Value as InventoryItem),
                     tooltip => inventory.SharedModel.DeselectItemView());
             }
         }
@@ -260,48 +264,134 @@ namespace Nekoyume.UI
                 inventory.Tooltip.Show(
                     view.RectTransform,
                     view.Model,
-                    value => ButtonEnabledFuncForBuy(view.Model),
+                    ButtonEnabledFuncForBuy,
                     LocalizationManager.Localize("UI_BUY"),
-                    tooltip => ShowTooltipForAction(tooltip.itemInformation.Model.item.Value),
-                    tooltip => { shopItems.SharedModel.DeselectItemView(); });
+                    tooltip => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
+                    tooltip => shopItems.SharedModel.DeselectItemView());
             }
             else
             {
                 inventory.Tooltip.Show(
                     view.RectTransform,
                     view.Model,
-                    value => ButtonEnabledFuncForSell(view.Model),
+                    ButtonEnabledFuncForSell,
                     LocalizationManager.Localize("UI_RETRIEVE"),
                     tooltip =>
-                    {
-                        ShowTooltipForAction(tooltip.itemInformation.Model.item.Value);
-                        inventory.Tooltip.Close();
-                    },
-                    tooltip => { shopItems.SharedModel.DeselectItemView(); },
-                    true);
+                        ShowRetrievePopup(tooltip.itemInformation.Model.item.Value as ShopItem),
+                    tooltip => shopItems.SharedModel.DeselectItemView());
             }
         }
 
-        private void ShowTooltipForAction(CountableItem viewModel)
+        private void ShowSellPopup(InventoryItem inventoryItem)
         {
-            if (viewModel.Dimmed.Value)
+            if (inventoryItem is null ||
+                inventoryItem.Dimmed.Value)
+            {
+                return;
+            }
+
+            SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
+                LocalizationManager.Localize("UI_SELL");
+            SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
+                LocalizationManager.Localize("UI_SELL_INFO");
+            SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = true;
+            SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
+                !DimmedFuncForSell(inventoryItem);
+            SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = true;
+            SharedModel.ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
+                inventoryItem.ItemBase.Value,
+                1,
+                1,
+                inventoryItem.Count.Value);
+        }
+
+        private void ShowBuyPopup(ShopItem shopItem)
+        {
+            if (shopItem is null ||
+                shopItem.Dimmed.Value)
+            {
+                return;
+            }
+
+            SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
+                LocalizationManager.Localize("UI_BUY");
+            SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
+                LocalizationManager.Localize("UI_BUY_INFO");
+            SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = false;
+            SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
+                ButtonEnabledFuncForBuy(shopItem);
+            SharedModel.ItemCountAndPricePopup.Value.Price.Value = shopItem.Price.Value;
+            SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
+            SharedModel.ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
+                shopItem.ItemBase.Value,
+                shopItem.Count.Value,
+                shopItem.Count.Value,
+                shopItem.Count.Value);
+        }
+
+        private void ShowRetrievePopup(ShopItem shopItem)
+        {
+            if (shopItem is null ||
+                shopItem.Dimmed.Value)
+            {
+                return;
+            }
+
+            SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
+                LocalizationManager.Localize("UI_RETRIEVE");
+            SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
+                LocalizationManager.Localize("UI_RETRIEVE_INFO");
+            SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = false;
+            SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
+                ButtonEnabledFuncForSell(shopItem);
+            SharedModel.ItemCountAndPricePopup.Value.Price.Value = shopItem.Price.Value;
+            SharedModel.ItemCountAndPricePopup.Value.PriceInteractable.Value = false;
+            SharedModel.ItemCountAndPricePopup.Value.Item.Value = new CountEditableItem(
+                shopItem.ItemBase.Value,
+                shopItem.Count.Value,
+                shopItem.Count.Value,
+                shopItem.Count.Value);
+        }
+
+        private void ShowActionPopup(CountableItem viewModel)
+        {
+            if (viewModel is null ||
+                viewModel.Dimmed.Value)
                 return;
 
-            SharedModel.ShowItemPopup(viewModel);
+            switch (viewModel)
+            {
+                case InventoryItem inventoryItem:
+                    if (SharedModel.State.Value == StateType.Sell)
+                    {
+                        ShowSellPopup(inventoryItem);
+                    }
+
+                    break;
+                case ShopItem shopItem:
+
+                    if (SharedModel.State.Value == StateType.Buy)
+                    {
+                        ShowBuyPopup(shopItem);
+                    }
+                    else
+                    {
+                        ShowRetrievePopup(shopItem);
+                    }
+
+                    break;
+            }
         }
 
         private void SubscribeItemPopup(CountableItem data)
         {
             if (data is null)
             {
-                ItemCountAndPricePopup.Close();
+                Find<ItemCountAndPricePopup>().Close();
                 return;
             }
 
-            if (SharedModel.State.Value == StateType.Buy && !ButtonEnabledFuncForBuy(data))
-                return;
-
-            ItemCountAndPricePopup.Pop(SharedModel.ItemCountAndPricePopup.Value);
+            Find<ItemCountAndPricePopup>().Pop(SharedModel.ItemCountAndPricePopup.Value);
         }
 
         private void SubscribeItemPopupSubmit(Model.ItemCountAndPricePopup data)
@@ -323,12 +413,14 @@ namespace Nekoyume.UI
                     .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                 {
-                    Game.Game.instance.ActionManager.Sell((ItemUsable) data.Item.Value.ItemBase.Value, data.Price.Value);
+                    Game.Game.instance.ActionManager.Sell(
+                        (ItemUsable) data.Item.Value.ItemBase.Value, data.Price.Value);
                     ResponseSell();
                     return;
                 }
 
-                Game.Game.instance.ActionManager.SellCancellation(shopItem.SellerAvatarAddress.Value, shopItem.ProductId.Value);
+                Game.Game.instance.ActionManager.SellCancellation(
+                    shopItem.SellerAvatarAddress.Value, shopItem.ProductId.Value);
                 ResponseSellCancellation(shopItem);
             }
         }
@@ -336,7 +428,7 @@ namespace Nekoyume.UI
         private void SubscribeItemPopupCancel(Model.ItemCountAndPricePopup data)
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
-            ItemCountAndPricePopup.Close();
+            Find<ItemCountAndPricePopup>().Close();
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
@@ -344,7 +436,7 @@ namespace Nekoyume.UI
             Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
         }
-        
+
         private void SubscribeOnToggledOn(IToggleable toggleable)
         {
             // NPC Greeting, Emotion 구분을 위해 SubscribeState 외부에서 처리
@@ -359,7 +451,7 @@ namespace Nekoyume.UI
                 ShowSpeech("SPEECH_SHOP_SELL_");
             }
         }
-        
+
         #endregion
 
         #region Private Static Methods
@@ -417,7 +509,8 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_START");
-            Notification.Push(MailType.Auction, string.Format(format, item.ItemBase.Value.GetLocalizedName()));
+            Notification.Push(MailType.Auction,
+                string.Format(format, item.ItemBase.Value.GetLocalizedName()));
         }
 
         private void ResponseSellCancellation(ShopItem shopItem)
@@ -432,7 +525,8 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_START");
-            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+            Notification.Push(MailType.Auction,
+                string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
         private void ResponseBuy(ShopItem shopItem)
@@ -449,7 +543,8 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             var format = LocalizationManager.Localize("NOTIFICATION_BUY_START");
-            Notification.Push(MailType.Auction, string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
+            Notification.Push(MailType.Auction,
+                string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
 
         #endregion
@@ -468,16 +563,21 @@ namespace Nekoyume.UI
                         if (!isGoOut)
                         {
                             buyImage.gameObject.SetActive(SharedModel.State.Value == StateType.Buy);
-                            sellImage.gameObject.SetActive(SharedModel.State.Value == StateType.Sell);
+                            sellImage.gameObject.SetActive(
+                                SharedModel.State.Value == StateType.Sell);
                         }
                     },
                     isGoOut
                         ? _defaultAnchoredPositionXOfBg1 + GoOutTweenX
                         : _defaultAnchoredPositionXOfBg1,
                     isGoOut
-                        ? Math.Abs(goOutTweenXAbs - Math.Abs(bg1.anchoredPosition.x - _defaultAnchoredPositionXOfBg1)) /
+                        ? Math.Abs(goOutTweenXAbs -
+                                   Math.Abs(bg1.anchoredPosition.x -
+                                            _defaultAnchoredPositionXOfBg1)) /
                           goOutTweenXAbs
-                        : Math.Abs(goOutTweenXAbs - Math.Abs(_defaultAnchoredPositionXOfBg1 - bg1.anchoredPosition.x)) /
+                        : Math.Abs(goOutTweenXAbs -
+                                   Math.Abs(_defaultAnchoredPositionXOfBg1 -
+                                            bg1.anchoredPosition.x)) /
                           goOutTweenXAbs)
                 .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
             sequence.Join(DOTween
@@ -494,15 +594,18 @@ namespace Nekoyume.UI
                         : _defaultAnchoredPositionXOfRight,
                     isGoOut
                         ? Math.Abs(goOutTweenXAbs -
-                                   Math.Abs(right.anchoredPosition.x - _defaultAnchoredPositionXOfRight)) /
+                                   Math.Abs(right.anchoredPosition.x -
+                                            _defaultAnchoredPositionXOfRight)) /
                           goOutTweenXAbs
                         : Math.Abs(goOutTweenXAbs -
-                                   Math.Abs(_defaultAnchoredPositionXOfRight - right.anchoredPosition.x)) /
+                                   Math.Abs(_defaultAnchoredPositionXOfRight -
+                                            right.anchoredPosition.x)) /
                           goOutTweenXAbs)
                 .SetEase(isGoOut ? Ease.InQuint : Ease.OutQuint));
         }
 
-        private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
+        private void ShowSpeech(string key,
+            CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
             if (type == CharacterAnimation.Type.Greeting)
             {
@@ -512,6 +615,7 @@ namespace Nekoyume.UI
             {
                 _npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
             }
+
             speechBubble.SetKey(key);
             StartCoroutine(speechBubble.CoShowText());
         }

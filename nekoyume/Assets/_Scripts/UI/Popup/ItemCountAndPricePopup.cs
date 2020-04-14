@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Globalization;
 using TMPro;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class ItemCountAndPricePopup : ItemCountPopup<Model.ItemCountAndPricePopup>
     {
-        public TMP_InputField priceInputField;
+        [SerializeField]
+        private TMP_InputField priceInputField = null;
 
-        private Model.ItemCountAndPricePopup _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
         private readonly List<IDisposable> _disposablesForSetData = new List<IDisposable>();
 
@@ -23,12 +24,14 @@ namespace Nekoyume.UI
             priceInputField.onValueChanged.AsObservable()
                 .Subscribe(_ =>
                 {
-                    var priceString = _.Replace(",", "");
-                    if (!int.TryParse(priceString, out var price) || price < 0)
+                    if (!int.TryParse(priceInputField.text, NumberStyles.Number,
+                        new NumberFormatInfo(),
+                        out var price))
                     {
                         price = 0;
                     }
-                    _data.Price.Value = price;
+
+                    _data.Price.Value = Math.Max(0, price);
                 }).AddTo(_disposablesForAwake);
         }
 
@@ -42,19 +45,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public override void Pop(Model.ItemCountAndPricePopup data)
-        {
-            base.Pop(data);
-
-            if (ReferenceEquals(data, null))
-            {
-                return;
-            }
-
-            SetData(data);
-        }
-
-        private void SetData(Model.ItemCountAndPricePopup data)
+        protected override void SetData(Model.ItemCountAndPricePopup data)
         {
             if (ReferenceEquals(data, null))
             {
@@ -63,37 +54,18 @@ namespace Nekoyume.UI
             }
 
             _disposablesForSetData.DisposeAllAndClear();
-            _data = data;
-            _data.PriceInteractable.Subscribe(interactable => priceInputField.interactable = interactable)
+            base.SetData(data);
+            _data.Price.Subscribe(value => priceInputField.text = value.ToString("N0"))
                 .AddTo(_disposablesForSetData);
-
-            UpdateView();
-        }
-
-        private void Clear()
-        {
-            _disposablesForSetData.DisposeAllAndClear();
-            _data = null;
-
-            UpdateView();
-        }
-
-        private void UpdateView()
-        {
-            if (ReferenceEquals(_data, null))
-            {
-                return;
-            }
-
-            priceInputField.text = _data.Price.Value.ToString("N0");
-            priceInputField.interactable = _data.PriceInteractable.Value;
+            _data.PriceInteractable.Subscribe(value => priceInputField.interactable = value)
+                .AddTo(_disposablesForSetData);
             priceInputField.Select();
         }
 
-        public void OnValueChanged()
+        protected override void Clear()
         {
-            int.TryParse(priceInputField.text, NumberStyles.Number, new NumberFormatInfo(), out var price);
-            priceInputField.text = price.ToString("N0");
+            _disposablesForSetData.DisposeAllAndClear();
+            base.Clear();
         }
     }
 }

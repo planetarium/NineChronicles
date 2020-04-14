@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6832371903899336822}
   - component: {fileID: 6054820230100019487}
   - component: {fileID: 199643945207484752}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: buff_plus_speed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,7 +55,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -4719,8 +4719,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -4769,7 +4769,7 @@ GameObject:
   - component: {fileID: 8307552896808177693}
   - component: {fileID: 7932506400431754377}
   - component: {fileID: 2417948446520246105}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Nova
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9434,8 +9434,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -9471,7 +9471,7 @@ GameObject:
   - component: {fileID: 7900190201745226282}
   - component: {fileID: 5238216871179554874}
   - component: {fileID: 4765610968548700521}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: MagicDust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14190,8 +14190,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -14227,7 +14227,7 @@ GameObject:
   - component: {fileID: 2932996325302157144}
   - component: {fileID: 3820475180061080487}
   - component: {fileID: 3802203869482520185}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: heal_up_blue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18947,8 +18947,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -18984,7 +18984,7 @@ GameObject:
   - component: {fileID: 8472644643231056853}
   - component: {fileID: 256510397119347076}
   - component: {fileID: 1095242136318314291}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23712,8 +23712,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -23749,7 +23749,7 @@ GameObject:
   - component: {fileID: 572194396620822147}
   - component: {fileID: 4389882530574406077}
   - component: {fileID: 2980016902130567091}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: heal_ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28407,8 +28407,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -28444,7 +28444,7 @@ GameObject:
   - component: {fileID: 1149182512409617421}
   - component: {fileID: 7499949121682043666}
   - component: {fileID: 5012443055681238678}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: MagicEnchantGreen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33105,8 +33105,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -33142,7 +33142,7 @@ GameObject:
   - component: {fileID: 3425480640294817360}
   - component: {fileID: 8375133771427661831}
   - component: {fileID: 5888848229311070890}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Waves
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37821,8 +37821,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 4
   m_SortMode: 0
@@ -37858,7 +37858,7 @@ GameObject:
   - component: {fileID: 9109852146798145446}
   - component: {fileID: 6535509673358817055}
   - component: {fileID: 4704907746485399994}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: MagicChargeOrbs
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42537,8 +42537,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -42574,7 +42574,7 @@ GameObject:
   - component: {fileID: 6611813358741172006}
   - component: {fileID: 8947536384758862687}
   - component: {fileID: 4644241234094208508}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: casting_none_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47255,8 +47255,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -47292,7 +47292,7 @@ GameObject:
   - component: {fileID: 5259612673824467629}
   - component: {fileID: 1081816237010256522}
   - component: {fileID: 6938864727829488722}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: NovaCloud
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -51939,8 +51939,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -51976,7 +51976,7 @@ GameObject:
   - component: {fileID: 9121993221570946435}
   - component: {fileID: 1472061434500308427}
   - component: {fileID: 721345360857873142}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: ray
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56682,8 +56682,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -56719,7 +56719,7 @@ GameObject:
   - component: {fileID: 5536638102584615731}
   - component: {fileID: 3898049992557745871}
   - component: {fileID: 4543040854069745727}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: magiccircle_04_water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61448,8 +61448,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0

@@ -91,6 +91,7 @@ namespace Nekoyume.UI
                 .Subscribe(eval =>
                 {
                     var avatarState = States.Instance.SelectAvatar(_selectedIndex);
+                    States.Instance.SetCombinationSlotStates(avatarState);
                     StartCoroutine(CreateAndLoginAnimation(avatarState));
                     ActionRenderHandler.Instance.RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
                 }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
@@ -111,6 +112,7 @@ namespace Nekoyume.UI
         {
             btnLogin.SetActive(false);
             var avatarState = States.Instance.SelectAvatar(_selectedIndex);
+            States.Instance.SetCombinationSlotStates(avatarState);
             OnDidAvatarStateLoaded(avatarState);
             AudioController.PlayClick();
         }

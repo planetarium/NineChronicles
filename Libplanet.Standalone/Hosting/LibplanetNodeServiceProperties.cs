@@ -30,5 +30,7 @@ namespace Libplanet.Standalone.Hosting
         public ISet<PublicKey> TrustedAppProtocolVersionSigners { get; set; }
 
         public int MinimumDifficulty { get; set; }
+
+        public DifferentAppProtocolVersionEncountered DifferentAppProtocolVersionEncountered { get; set; }
     }
 }

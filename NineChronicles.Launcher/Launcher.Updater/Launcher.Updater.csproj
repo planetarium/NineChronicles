@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Launcher.Updater</RootNamespace>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
+    <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <AssemblyName>Nine Chronicles Updater</AssemblyName>
+    <Authors>Planetarium</Authors>
+    <Company>Planetarium</Company>
+    <Product>Nine Chronicles Updater</Product>
+  </PropertyGroup>
+
+  <ItemGroup Label="Resources">
+    <Content Include="../resources/launcher.json" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Launcher.Common\Launcher.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpZipLib" Version="1.2.0" />
+    <PackageReference Include="ShellProgressBar" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>

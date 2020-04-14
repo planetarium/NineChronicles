@@ -11,7 +11,6 @@
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
         public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
-        public const string UnicodePattern = @"[^\u0000-\u007F]";
         public const string DiscordLink = "https://discord.gg/NqshYve";
 
         public const string BlockExplorerLinkFormat =
@@ -60,11 +59,11 @@
         {
             #region character equipment slot
 
-            public const int CharacterEquipmentSlotWeapon = IsEditor ? 1 : 5;
-            public const int CharacterEquipmentSlotArmor = IsEditor ? 1 : 10;
-            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 15;
-            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 20;
-            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 30;
+            public const int CharacterEquipmentSlotWeapon = 1;
+            public const int CharacterEquipmentSlotArmor = IsEditor ? 1 : 5;
+            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 9;
+            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 15;
+            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 20;
             public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 50;
 
             #endregion
@@ -72,10 +71,10 @@
             #region character consumable slot
 
             public const int CharacterConsumableSlot1 = 1;
-            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 2;
-            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 3;
-            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 4;
-            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 5;
+            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 10;
+            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 20;
+            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 50;
+            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 100;
 
             #endregion
         }
@@ -84,7 +83,9 @@
         {
             #region action
 
-            public const int ActionsInCombination = IsEditor ? 1 : 3;
+            public const int CombinationEquipmentAction = IsEditor ? 1 : 3;
+            public const int CombinationConsumableAction = IsEditor ? 1 : 6;
+            public const int ItemEnhancementAction = IsEditor ? 1 : 9;
             public const int ActionsInShop = IsEditor ? 1 : 17;
             public const int ActionsInRankingBoard = IsEditor ? 1 : 25;
 
@@ -93,7 +94,7 @@
             #region ui
 
             public const int UIMainMenuStage = 0;
-            public const int UIMainMenuCombination = ActionsInCombination;
+            public const int UIMainMenuCombination = CombinationEquipmentAction;
             public const int UIMainMenuShop = ActionsInShop;
             public const int UIMainMenuRankingBoard = ActionsInRankingBoard;
 

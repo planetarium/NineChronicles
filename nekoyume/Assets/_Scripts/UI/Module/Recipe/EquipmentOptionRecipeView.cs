@@ -1,5 +1,8 @@
+using System;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.TableData;
 using TMPro;
 using UniRx;
@@ -28,15 +31,20 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject options = null;
 
+        [SerializeField]
+        protected RecipeClickVFX recipeClickVFX = null;
+
         private EquipmentItemSubRecipeSheet.Row _rowData;
 
-        public readonly Subject<EquipmentOptionRecipeView> OnClick = new Subject<EquipmentOptionRecipeView>();
+        public readonly Subject<EquipmentOptionRecipeView> OnClick =
+            new Subject<EquipmentOptionRecipeView>();
 
         private bool IsLocked => lockParent.activeSelf;
         private bool NotEnoughMaterials { get; set; } = true;
 
         private void Awake()
         {
+            recipeClickVFX.OnFinished = () => OnClick.OnNext(this);
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 if (IsLocked || NotEnoughMaterials)
@@ -44,8 +52,13 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                OnClick.OnNext(this);
+                recipeClickVFX.Play();
             }).AddTo(gameObject);
+        }
+
+        private void OnDisable()
+        {
+            recipeClickVFX.Stop();
         }
 
         private void OnDestroy()
@@ -60,9 +73,11 @@ namespace Nekoyume.UI.Module
             bool checkInventory = true
         )
         {
-            if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId, out _rowData))
+            if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId,
+                out _rowData))
             {
-                requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials, checkInventory);
+                requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials,
+                    checkInventory);
             }
             else
             {
@@ -117,14 +132,48 @@ namespace Nekoyume.UI.Module
 
         private void SetLocked(bool value)
         {
-            lockParent.SetActive(value);
-            unlockConditionText.text = value
-                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                    _rowData.UnlockStage > 50
-                        ? "???"
-                        : _rowData.UnlockStage.ToString())
-                : string.Empty;
+            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
+            if (value)
+            {
+                unlockConditionText.enabled = true;
 
+                if (_rowData is null)
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+
+                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var stageId))
+                {
+                    var diff = _rowData.UnlockStage - stageId;
+                    if (diff > 50)
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            "???");
+                    }
+                    else
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            _rowData.UnlockStage.ToString());
+                    }
+                }
+                else
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+            }
+            else
+            {
+                unlockConditionText.enabled = false;
+            }
+
+            lockParent.SetActive(value);
             header.SetActive(!value);
             options.SetActive(!value);
             requiredItemRecipeView.gameObject.SetActive(!value);

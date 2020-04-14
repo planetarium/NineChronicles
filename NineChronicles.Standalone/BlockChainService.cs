@@ -1,9 +1,9 @@
-﻿using System.Collections.Immutable;
 using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
+using Libplanet.Net;
 using Libplanet.Tx;
 using MagicOnion;
 using MagicOnion.Server;
@@ -17,10 +17,15 @@ namespace NineChronicles.Standalone
     public class BlockChainService : ServiceBase<IBlockChainService>, IBlockChainService
     {
         private BlockChain<NineChroniclesActionType> _blockChain;
+        private Swarm<NineChroniclesActionType> _swarm;
 
-        public BlockChainService(BlockChain<NineChroniclesActionType> blockChain)
+        public BlockChainService(
+            BlockChain<NineChroniclesActionType> blockChain,
+            Swarm<NineChroniclesActionType> swarm
+        )
         {
             _blockChain = blockChain;
+            _swarm = swarm;
         }
 
         public UnaryResult<bool> PutTransaction(byte[] txBytes)
@@ -32,6 +37,7 @@ namespace NineChronicles.Standalone
             {
                 tx.Validate();
                 _blockChain.StageTransaction(tx);
+                _swarm.BroadcastTxs(new[] { tx });
 
                 return UnaryResult(true);
             }

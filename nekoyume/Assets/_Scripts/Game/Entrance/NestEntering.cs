@@ -74,7 +74,7 @@ namespace Nekoyume.Game.Entrance
                 yield return new WaitForSeconds(0.2f);
             }
 
-            ActionCamera.instance.SetPoint(0f, 0f);
+            ActionCamera.instance.SetPosition(0f, 0f);
 
             yield return new WaitForSeconds(1.0f);
 

@@ -41,10 +41,14 @@ namespace Libplanet.Standalone.Hosting
 
         private LibplanetNodeServiceProperties _properties;
 
+        private Progress<PreloadState> _preloadProgress;
+
         public LibplanetNodeService(
             LibplanetNodeServiceProperties properties,
             IBlockPolicy<T> blockPolicy,
-            Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> minerLoopAction)
+            Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> minerLoopAction,
+            Progress<PreloadState> preloadProgress
+        )
         {
             _properties = properties;
 
@@ -68,10 +72,13 @@ namespace Libplanet.Standalone.Hosting
                 trustedAppProtocolVersionSigners: _properties.TrustedAppProtocolVersionSigners,
                 host: _properties.Host,
                 listenPort: _properties.Port,
-                iceServers: iceServers);
+                iceServers: iceServers,
+                differentAppProtocolVersionEncountered: _properties.DifferentAppProtocolVersionEncountered);
 
             PreloadEnded = new AsyncAutoResetEvent();
             BootstrapEnded = new AsyncAutoResetEvent();
+
+            _preloadProgress = preloadProgress;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -84,8 +91,8 @@ namespace Libplanet.Standalone.Hosting
                 BootstrapEnded.Set();
 
                 await Swarm.PreloadAsync(
-                    null, 
-                    new Progress<PreloadState>((state) => Log.Debug("{@state}", state)),
+                    null,
+                    _preloadProgress,
                     trustedStateValidators, 
                     cancellationToken: cancellationToken
                 );

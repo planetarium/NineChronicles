@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8175576951849562871}
   - component: {fileID: 4835353987859932171}
   - component: {fileID: 9165026756819609458}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: grab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,7 +48,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -4712,8 +4712,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -4749,7 +4749,7 @@ GameObject:
   - component: {fileID: 473274264078063037}
   - component: {fileID: 533964709602999677}
   - component: {fileID: 7443373200780970619}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4786,7 +4786,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -9428,8 +9428,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -9465,7 +9465,7 @@ GameObject:
   - component: {fileID: 333082112243905875}
   - component: {fileID: 570463050233857882}
   - component: {fileID: 4064012529304346368}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: grow_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9502,7 +9502,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -14144,8 +14144,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -14181,7 +14181,7 @@ GameObject:
   - component: {fileID: 1479949574284197994}
   - component: {fileID: 164868370942715591}
   - component: {fileID: 6500274422499682742}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14218,7 +14218,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -18860,8 +18860,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -18898,7 +18898,7 @@ GameObject:
   - component: {fileID: 3161780828067165674}
   - component: {fileID: 8953725171699167138}
   - component: {fileID: -2735069281706056238}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: buff_minus_casting
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18942,7 +18942,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -23606,8 +23606,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -23656,7 +23656,7 @@ GameObject:
   - component: {fileID: 8301453034850431151}
   - component: {fileID: 3820209419952171239}
   - component: {fileID: 1814933498124462091}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: ray_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23693,7 +23693,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -28429,8 +28429,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -28466,7 +28466,7 @@ GameObject:
   - component: {fileID: 6776719719460953385}
   - component: {fileID: 7127417503827858521}
   - component: {fileID: 7969814125412242296}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28503,7 +28503,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -33127,8 +33127,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -33164,7 +33164,7 @@ GameObject:
   - component: {fileID: 1201793635995613040}
   - component: {fileID: 4715920550218142170}
   - component: {fileID: 3533290123898144300}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: ring_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33201,7 +33201,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -37789,8 +37789,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1265498503
+  m_SortingLayer: 4
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0

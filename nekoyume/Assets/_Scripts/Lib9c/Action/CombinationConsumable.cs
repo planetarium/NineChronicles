@@ -67,12 +67,25 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public int slotIndex;
 
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            new Dictionary<string, IValue>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal
+        {
+            get
             {
-                ["Materials"] = Materials.Serialize(),
-                ["avatarAddress"] = AvatarAddress.Serialize(),
-            }.ToImmutableDictionary();
+                var dict = new Dictionary<string, IValue>
+                {
+                    ["Materials"] = Materials.Serialize(),
+                    ["avatarAddress"] = AvatarAddress.Serialize(),
+                };
+
+                // slotIndex가 포함되지 않은채 나간 버전과 호환을 위해, 0번째 슬롯을 쓰는 경우엔 보내지 않습니다. 
+                if (slotIndex != 0)
+                {
+                    dict["slotIndex"] = slotIndex.Serialize();
+                }
+
+                return dict.ToImmutableDictionary();
+            }
+        }
 
         public CombinationConsumable()
         {
@@ -83,6 +96,10 @@ namespace Nekoyume.Action
         {
             Materials = plainValue["Materials"].ToDictionary_Material_int();
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
+            if (plainValue.TryGetValue((Text) "slotIndex", out var value))
+            {
+                slotIndex = value.ToInteger();
+            }
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -123,7 +140,7 @@ namespace Nekoyume.Action
                 out var world))
                 return states;
 
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInCombination)
+            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
                 // 스테이지 클리어 부족 에러.
                 return states;

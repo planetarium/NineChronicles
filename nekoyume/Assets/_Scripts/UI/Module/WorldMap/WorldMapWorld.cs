@@ -16,7 +16,6 @@ namespace Nekoyume.UI.Module
         public class ViewModel : IDisposable
         {
             public readonly WorldSheet.Row RowData;
-            public readonly string WorldName;
             public readonly ReactiveProperty<int> StageIdToShow = new ReactiveProperty<int>(0);
             public readonly ReactiveProperty<int> PageCount = new ReactiveProperty<int>(0);
             public readonly ReactiveProperty<int> CurrentPageNumber = new ReactiveProperty<int>(0);
@@ -24,7 +23,6 @@ namespace Nekoyume.UI.Module
             public ViewModel(WorldSheet.Row rowData)
             {
                 RowData = rowData;
-                WorldName = RowData.GetLocalizedName();
             }
 
             public void Dispose()
@@ -33,9 +31,8 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public GameObject worldButton;
+        public WorldButton worldButton;
         public string worldName;
-        public TextMeshProUGUI stageNameText;
         public TextMeshProUGUI stagePageText;
         public HorizontalScrollSnap horizontalScrollSnap;
         public List<WorldMapPage> pages;
@@ -153,8 +150,6 @@ namespace Nekoyume.UI.Module
                         currentPageNumber != SharedViewModel.PageCount.Value);
                 })
                 .AddTo(_disposablesForModel);
-
-            stageNameText.text = SharedViewModel.WorldName;
 
             horizontalScrollSnap.ChangePage(SharedViewModel.CurrentPageNumber.Value - 1);
         }

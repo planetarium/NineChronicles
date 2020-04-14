@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections;
 
 namespace Nekoyume.UI.Tween
 {
@@ -24,27 +24,27 @@ namespace Nekoyume.UI.Tween
             _group.DOFade(BeginValue, 0.0f);
             if (TweenType.Repeat == TweenType_)
             {
-                _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = PlayForward;
+                currentTween = _group.DOFade(EndValue, Duration)
+                    .SetEase(Ease_);
+                currentTween.onComplete = PlayForward;
             }
             else if (TweenType.PingPongOnce == TweenType_)
             {
-                _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = PlayReverse;
+                currentTween = _group.DOFade(EndValue, Duration)
+                    .SetEase(Ease_);
+                currentTween.onComplete = PlayReverse;
             }
             else if (TweenType.PingPongRepeat == TweenType_)
             {
-                _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = PlayReverse;
+                currentTween = _group.DOFade(EndValue, Duration)
+                    .SetEase(Ease_);
+                currentTween.onComplete = PlayReverse;
             }
             else
             {
-                _group.DOFade(EndValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = OnComplete;
+                currentTween = _group.DOFade(EndValue, Duration)
+                    .SetEase(Ease_);
+                currentTween.onComplete = OnComplete;
             }
         }
         
@@ -53,21 +53,21 @@ namespace Nekoyume.UI.Tween
             _group.DOFade(EndValue, 0.0f);
             if (TweenType.PingPongOnce == TweenType_)
             {
-                _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = OnComplete;
+                currentTween = _group.DOFade(BeginValue, Duration)
+                    .SetEase(Ease_);
+                currentTween.onComplete = OnComplete;
             }
             else if (TweenType.PingPongRepeat == TweenType_)
             {
-                _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = PlayForward;
+                currentTween = _group.DOFade(BeginValue, Duration)
+                    .SetEase(Ease_);
+                currentTween.onComplete = PlayForward;
             }
             else
             {
-                _group.DOFade(BeginValue, Duration)
-                    .SetEase(Ease_)
-                    .onComplete = OnComplete;
+                currentTween = _group.DOFade(BeginValue, Duration)
+                    .SetEase(Ease_);
+                currentTween.onComplete = OnComplete;
             }
         }
 
@@ -81,10 +81,16 @@ namespace Nekoyume.UI.Tween
             PlayForward();
         }
 
-
         public override void PlayPingPongRepeat()
         {
             PlayForward();
+        }
+
+        protected override IEnumerator CPlayDelayed(float delay)
+        {
+            _group.DOFade(BeginValue, 0.0f);
+            yield return new WaitForSeconds(delay);
+            Play();
         }
     }
 }

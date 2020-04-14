@@ -149,6 +149,50 @@ namespace Nekoyume.Model
             }
         }
 
+        public WorldInformation(long blockIndex, WorldSheet worldSheet, int clearStageId = 0)
+        {
+            if (worldSheet is null)
+                return;
+
+            var orderedSheet = worldSheet.OrderedList;
+
+            if (clearStageId > 0)
+            {
+                foreach (var row in orderedSheet)
+                {
+                    if (row.StageBegin > clearStageId)
+                    {
+                        _worlds.Add(row.Id, new World(row));
+                    }
+                    else if (row.StageEnd > clearStageId)
+                    {
+                        _worlds.Add(row.Id, new World(row, blockIndex, blockIndex, clearStageId));
+                    }
+                    else
+                    {
+                        _worlds.Add(row.Id, new World(row, blockIndex, blockIndex, row.StageEnd));
+                    }
+                }
+            }
+            else
+            {
+                var isFirst = true;
+                foreach (var row in orderedSheet)
+                {
+                    var worldId = row.Id;
+                    if (isFirst)
+                    {
+                        isFirst = false;
+                        _worlds.Add(worldId, new World(row, blockIndex));
+                    }
+                    else
+                    {
+                        _worlds.Add(worldId, new World(row));
+                    }
+                }
+            }
+        }
+
         public WorldInformation(Bencodex.Types.Dictionary serialized)
         {
             _worlds = serialized.ToDictionary(

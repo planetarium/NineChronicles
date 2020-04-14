@@ -29,7 +29,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
 using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI;
 using NetMQ;
 using Serilog;
@@ -156,12 +155,7 @@ namespace Nekoyume.BlockChain
         {
             InitializeLogger(consoleSink, development);
 
-#if UNITY_EDITOR
-            var genesisBlockPath = BlockHelper.GenesisBlockPathDev;
-#else
-            var genesisBlockPath = BlockHelper.GenesisBlockPathProd;
-#endif
-            var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath);
+            var genesisBlock = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPath);
             if (genesisBlock is null)
             {
                 Debug.LogError("There is no genesis block.");
@@ -177,9 +171,7 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
-            var policy = BlockPolicy.GetPolicy(
-                    minimumDifficulty,
-                    getWhiteListSheet: GetWhiteListSheet);
+            var policy = BlockPolicy.GetPolicy(minimumDifficulty);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
             store.UnstageTransactionIds(
@@ -193,6 +185,12 @@ namespace Nekoyume.BlockChain
             catch (InvalidGenesisBlockException)
             {
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
+            }
+
+            if (BlockPolicy.ActivationSet is null)
+            {
+                var tableSheetState = blocks?.GetState(TableSheetsState.Address);
+                BlockPolicy.UpdateActivationSet(tableSheetState);
             }
 
 #if BLOCK_LOG_USE
@@ -233,7 +231,14 @@ namespace Nekoyume.BlockChain
         {
             _cancellationTokenSource?.Cancel();
             // `_swarm`의 내부 큐가 비워진 다음 완전히 종료할 때까지 더 기다립니다.
-            Task.Run(async () => { await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger)); })
+            Task.Run(async () =>
+                {
+                    await _swarm?.StopAsync(TimeSpan.FromMilliseconds(SwarmLinger));
+
+                    // 프리로드 중일 경우 StopAsync 에서 딜레이가 없을 수 있어서 딜레이를 추가 합니다.
+                    // FIXME: Swarm<T>에 프리로딩을 기다리는 API가 생길 때까지만 이렇게 해둡니다.
+                    await Task.Delay(SwarmLinger);
+                })
                 .ContinueWith(_ =>
                 {
                     try
@@ -282,18 +287,6 @@ namespace Nekoyume.BlockChain
         }
 
         #endregion
-
-        private WhiteListSheet GetWhiteListSheet()
-        {
-            var state = blocks?.GetState(TableSheetsState.Address);
-            if (state is null)
-            {
-                return null;
-            }
-
-            var tableSheetsState = new TableSheetsState((Dictionary)state);
-            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
-        }
 
         private void InitAgent(Action<bool> callback, PrivateKey privateKey, CommandLineOptions options)
         {

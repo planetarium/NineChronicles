@@ -257,18 +257,36 @@ namespace Nekoyume.Action
                 .SetState(ctx.Signer, agentState.Serialize());
         }
 
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal
         {
-            ["itemId"] = itemId.Serialize(),
-            ["materialIds"] = materialIds.Select(g => g.Serialize()).Serialize(),
-            ["avatarAddress"] = avatarAddress.Serialize(),
-        }.ToImmutableDictionary();
+            get
+            {
+                var dict = new Dictionary<string, IValue>
+                {
+                    ["itemId"] = itemId.Serialize(),
+                    ["materialIds"] = materialIds.Select(g => g.Serialize()).Serialize(),
+                    ["avatarAddress"] = avatarAddress.Serialize(),
+                };
+
+                // slotIndex가 포함되지 않은채 나간 버전과 호환을 위해, 0번째 슬롯을 쓰는 경우엔 보내지 않습니다. 
+                if (slotIndex != 0)
+                {
+                    dict["slotIndex"] = slotIndex.Serialize();
+                }
+
+                return dict.ToImmutableDictionary();
+            }
+        }
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             itemId = plainValue["itemId"].ToGuid();
             materialIds = plainValue["materialIds"].ToList(StateExtensions.ToGuid);
             avatarAddress = plainValue["avatarAddress"].ToAddress();
+            if (plainValue.TryGetValue((Text) "slotIndex", out var value))
+            {
+                slotIndex = value.ToInteger();
+            }
         }
 
         private static Equipment UpgradeEquipment(Equipment equipment)

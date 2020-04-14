@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Nekoyume.EnumType;
@@ -24,7 +24,7 @@ namespace Nekoyume.UI
         public SubmitButton submitButtonForRetrieve;
         public GameObject priceContainer;
         public TextMeshProUGUI priceText;
-        
+
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
         public new Model.ItemInformationTooltip Model { get; private set; }
@@ -44,6 +44,7 @@ namespace Nekoyume.UI
                 Model.OnSubmitClick.OnNext(this);
                 Close();
             }).AddTo(gameObject);
+
             submitButtonForRetrieve.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -61,7 +62,6 @@ namespace Nekoyume.UI
             {
                 if (!submitButton.IsSubmittable && !submitButtonForRetrieve.IsSubmittable)
                     return;
-                
                 AudioController.PlayClick();
                 Model.OnSubmitClick.OnNext(this);
                 Close();
@@ -92,18 +92,19 @@ namespace Nekoyume.UI
             _disposablesForModel.DisposeAllAndClear();
             Model.target.Value = target;
             Model.ItemInformation.item.Value = item;
-            Model.SubmitButtonEnabledFunc.Value = submitEnabledFunc;
+            Model.SubmitButtonEnabledFunc.SetValueAndForceNotify(submitEnabledFunc);
             Model.SubmitButtonText.Value = submitText;
 
             // Show(Model)을 먼저 호출함으로써 Widget.Show()가 호출되고, 게임 오브젝트가 활성화 됨. 그래야 레이아웃 정리가 가능함.
             Show(Model);
             // itemInformation UI의 모든 요소에 적절한 값이 들어가야 레이아웃 정리가 유효함.
             itemInformation.SetData(Model.ItemInformation);
-            
-            Model.TitleText.SubscribeToText(titleText).AddTo(_disposablesForModel);
+
+            Model.TitleText.SubscribeTo(titleText).AddTo(_disposablesForModel);
             Model.PriceEnabled.Subscribe(priceContainer.SetActive).AddTo(_disposablesForModel);
             Model.PriceEnabled.SubscribeTo(priceText).AddTo(_disposablesForModel);
             Model.Price.SubscribeToPrice(priceText).AddTo(_disposablesForModel);
+
             if (retrieve)
             {
                 Model.SubmitButtonText.SubscribeTo(submitButtonForRetrieve).AddTo(_disposablesForModel);
@@ -116,6 +117,9 @@ namespace Nekoyume.UI
             }
             submitGameObject.SetActive(!retrieve);
             submitGameObjectForRetrieve.SetActive(retrieve);
+
+            Model.SubmitButtonText.SubscribeTo(submitButton).AddTo(_disposablesForModel);
+            Model.SubmitButtonEnabled.Subscribe(submitButton.SetSubmittable).AddTo(_disposablesForModel);
             Model.OnSubmitClick.Subscribe(onSubmit).AddTo(_disposablesForModel);
             if (onClose != null)
             {
@@ -136,7 +140,7 @@ namespace Nekoyume.UI
             Model.ItemInformation.item.Value = null;
             base.Close(ignoreCloseAnimation);
         }
-        
+
         protected override void SubscribeTarget(RectTransform target)
         {
             // 아무 것도 하지 않도록 한다.
@@ -159,7 +163,7 @@ namespace Nekoyume.UI
         private IEnumerator CoUpdate()
         {
             var temp = EventSystem.current.currentSelectedGameObject;
-            
+
             while (enabled)
             {
                 if (EventSystem.current.currentSelectedGameObject != temp)

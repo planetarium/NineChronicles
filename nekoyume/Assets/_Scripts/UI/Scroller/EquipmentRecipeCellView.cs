@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Linq;
+using System.Text;
 using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -48,6 +50,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI unlockConditionText;
 
+        [SerializeField]
+        private CanvasGroup canvasGroup;
+
         public readonly Subject<EquipmentRecipeCellView> OnClick =
             new Subject<EquipmentRecipeCellView>();
 
@@ -55,6 +60,12 @@ namespace Nekoyume.UI.Scroller
         public EquipmentItemRecipeSheet.Row RowData { get; private set; }
         public ItemSubType ItemSubType { get; private set; }
         public ElementalType ElementalType { get; private set; }
+
+        public bool Visible
+        {
+            get => Mathf.Approximately(canvasGroup.alpha, 1f);
+            set => canvasGroup.alpha = value ? 1f : 0f;
+        }
 
         private void Awake()
         {
@@ -78,6 +89,7 @@ namespace Nekoyume.UI.Scroller
 
         public void Show()
         {
+            Visible = true;
             gameObject.SetActive(true);
         }
 
@@ -98,16 +110,34 @@ namespace Nekoyume.UI.Scroller
             RowData = recipeRow;
 
             var equipment = (Equipment) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
-            ItemSubType = row.ItemSubType;
-            ElementalType = row.ElementalType;
+            Set(equipment);
+        }
 
-            titleText.text = equipment.GetLocalizedNonColoredName();
+        public void Set(ConsumableItemRecipeSheet.Row recipeRow)
+        {
+            if (recipeRow is null)
+                return;
 
-            var item = new CountableItem(equipment, 1);
+            var sheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
+            if (!sheet.TryGetValue(recipeRow.ResultConsumableItemId, out var row))
+                return;
+
+            var consumable = (Consumable) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
+            Set(consumable);
+        }
+
+        private void Set(ItemUsable itemUsable)
+        {
+            ItemSubType = itemUsable.Data.ItemSubType;
+            ElementalType = itemUsable.Data.ElementalType;
+
+            titleText.text = itemUsable.GetLocalizedNonColoredName();
+
+            var item = new CountableItem(itemUsable, 1);
             itemView.SetData(item);
 
-            var sprite = row.ElementalType.GetSprite();
-            var grade = row.Grade;
+            var sprite = ElementalType.GetSprite();
+            var grade = itemUsable.Data.Grade;
 
             for (var i = 0; i < elementalTypeImages.Length; ++i)
             {
@@ -121,8 +151,25 @@ namespace Nekoyume.UI.Scroller
                 elementalTypeImages[i].gameObject.SetActive(true);
             }
 
-            var text = $"{row.Stat.Type} +{row.Stat.Value}";
-            optionText.text = text;
+            switch (itemUsable)
+            {
+                case Equipment equipment:
+                {
+                    var text = $"{equipment.Data.Stat.Type} +{equipment.Data.Stat.Value}";
+                    optionText.text = text;
+                    break;
+                }
+                case Consumable consumable:
+                {
+                    var sb = new StringBuilder();
+                    foreach (var stat in consumable.Data.Stats)
+                    {
+                        sb.AppendLine($"{stat.StatType} +{stat.Value}");
+                    }
+                    optionText.text = sb.ToString();
+                    break;
+                }
+            }
 
             SetLocked(false);
             SetDimmed(false);
@@ -139,6 +186,8 @@ namespace Nekoyume.UI.Scroller
                 SetLocked(true);
                 return;
             }
+
+            SetLocked(false);
 
             // 메인 재료 검사.
             var inventory = avatarState.inventory;
@@ -190,16 +239,55 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
+        public void SetInteractable(bool value)
+        {
+            button.interactable = value;
+        }
+
         private void SetLocked(bool value)
         {
-            lockParent.SetActive(value);
-            unlockConditionText.text = value
-                ? string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                    RowData.UnlockStage > 50
-                        ? "???"
-                        : RowData.UnlockStage.ToString())
-                : string.Empty;
+            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
+            if (value)
+            {
+                unlockConditionText.enabled = true;
 
+                if (RowData is null)
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+
+                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var stageId))
+                {
+                    var diff = RowData.UnlockStage - stageId;
+                    if (diff > 50)
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            "???");
+                    }
+                    else
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            RowData.UnlockStage.ToString());
+                    }
+                }
+                else
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+            }
+            else
+            {
+                unlockConditionText.enabled = false;
+            }
+
+            lockParent.SetActive(value);
             itemView.gameObject.SetActive(!value);
             titleText.enabled = !value;
             optionText.enabled = !value;

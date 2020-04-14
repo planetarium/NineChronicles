@@ -1,0 +1,77 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>Launcher</RootNamespace>
+        <OutputType>WinExe</OutputType>
+        <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
+        <CFBundleIconFile>AppIcon.icns</CFBundleIconFile>
+        <Authors>Planetarium</Authors>
+        <Company>Planetarium</Company>
+        <Product>Nine Chronicles Launcher</Product>
+        <PackageId>Nine Chronicles Launcher</PackageId>
+        <AssemblyName>Nine Chronicles</AssemblyName>
+    </PropertyGroup>
+
+    <ItemGroup Label="Resources">
+        <Content Include="qml/**/*" CopyToOutputDirectory="Always" />
+        <Content Include="../resources/**/*" CopyToOutputDirectory="Always" />
+    </ItemGroup>
+
+    <ItemGroup Label="Package References">
+        <PackageReference Include="Qml.Net" Version="0.10.1" />
+        <PackageReference Include="Qml.Net.OSXBinaries" Version="0.10.1" />
+        <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
+        <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
+        <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
+    </ItemGroup>
+
+    <ItemGroup Label="Package References (Publish Helper)">
+        <PackageReference Include="Dotnet.Bundle" Version="0.9.12" Condition="'$(RuntimeIdentifier)' == 'osx-x64'" />
+        <PackageReference Include="NSubsys" Version="1.0.0" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
+    </ItemGroup>
+
+    <ItemGroup Label="Project References">
+        <ProjectReference Include="..\..\NineChronicles.Standalone\NineChronicles.Standalone.csproj" />
+        <ProjectReference Include="..\Launcher.Common\Launcher.Common.csproj" />
+    </ItemGroup>
+
+    <Target Name="BundleMacOSApp"
+            Condition="'$(RuntimeIdentifier)' == 'osx-x64'"
+            DependsOnTargets="BundleQtRuntime"
+            AfterTargets="Publish">
+      <Message Importance="high" Text="'BundleMacOSApp' Called." />
+      <Copy SourceFiles="$(CFBundleIconFile)" DestinationFiles="$(OutputPath)/$(CFBundleIconFile)" />
+      <Message Importance="high" Text="Copied icon: $(OutputPath)/$(CFBundleIconFile)" />
+      <CallTarget Targets="BundleApp" />
+      <Message Importance="high" Text="Bundled: $(PublishDir)/$(AssemblyName).app" />
+      <Exec Command="scripts\cleanup-macos-bundle.sh '$(PublishDir)' '$(PublishDir)/$(AssemblyName).app'" />
+      <Message Importance="high" Text="Cleaned up temporary assets from: $(PublishDir)/" />
+    </Target>
+
+    <UsingTask TaskName="NSubsys.Tasks.NSubsys"
+      AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll"
+      Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
+
+    <Target Name="BundleWindowsExe"
+            Condition="'$(RuntimeIdentifier)' == 'win-x64'"
+            DependsOnTargets="BundleQtRuntime"
+            AfterTargets="Publish">
+      <Message Importance="high" Text="'BundleWindowsExeApplication' Called." />
+      <NSubsys TargetFile="$(PublishDir)\$(AssemblyName).exe" />
+    </Target>
+
+    <Target Name="QtRuntime" AfterTargets="AfterBuild">
+      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(OutputPath)/qt-runtime'" />
+    </Target>
+
+    <Target Name="BundleQtRuntime">
+      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(PublishDir)/qt-runtime'" />
+    </Target>
+
+</Project>

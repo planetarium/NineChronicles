@@ -1,24 +1,57 @@
+using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using Nekoyume.Game;
-using Nekoyume.State;
+using Nekoyume.Model.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
+using TMPro;
+using UniRx;
 
 namespace _Scripts.UI
 {
     public class CombinationSlots : XTweenWidget
     {
         public CombinationSlot[] slots;
+        public TextMeshProUGUI headerText;
+        private long _blockIndex;
+        private Dictionary<int, CombinationSlotState> _states;
 
-        public override void Show()
+        protected override void Awake()
         {
-            var blockIndex = Game.instance.Agent.BlockIndex;
-            foreach (var pair in States.Instance.CombinationSlotStates
-                .Where(pair => !(pair.Value is null)))
+            base.Awake();
+            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SetSlots)
+                .AddTo(gameObject);
+            Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+                .AddTo(gameObject);
+            headerText.text = LocalizationManager.Localize("UI_COMBINATION");
+            _blockIndex = Game.instance.Agent.BlockIndex;
+        }
+
+        private void SetSlots(Dictionary<int, CombinationSlotState> states)
+        {
+            _states = states;
+            UpdateSlots();
+        }
+
+        private void SubscribeBlockIndex(long blockIndex)
+        {
+            _blockIndex = blockIndex;
+            UpdateSlots();
+        }
+
+        private void UpdateSlots()
+        {
+            if (_states is null)
             {
-                slots[pair.Key].SetData(pair.Value, blockIndex, pair.Key);
+                return;
             }
-            base.Show();
+
+            foreach (var pair in _states?.Where(pair => !(pair.Value is null)))
+            {
+                slots[pair.Key].SetData(pair.Value, _blockIndex, pair.Key);
+            }
         }
     }
 }

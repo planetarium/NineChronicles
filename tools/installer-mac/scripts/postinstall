@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+INSTALL_DIR="$2"
+
+"$INSTALL_DIR/Nine Chronicles Updater"

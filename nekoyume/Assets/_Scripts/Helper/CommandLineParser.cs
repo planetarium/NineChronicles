@@ -292,7 +292,7 @@ namespace Nekoyume.Helper
             }
         }
 
-        public static CommandLineOptions Load(string localPath, string onlinePath)
+        public static CommandLineOptions Load(string localPath)
         {
             var options = CommnadLineParser.GetCommandLineOptions();
             if (!options.Empty)
@@ -313,26 +313,6 @@ namespace Nekoyume.Helper
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 ReadCommentHandling = JsonCommentHandling.Skip,
             };
-
-            try
-            {
-                var webResponse = WebRequest.Create(onlinePath).GetResponse();
-                using (var stream = webResponse.GetResponseStream())
-                {
-                    if (!(stream is null))
-                    {
-                        byte[] data = new byte[stream.Length];
-                        stream.Read(data, 0, data.Length);
-                        string jsonData = Encoding.UTF8.GetString(data);
-                        Debug.Log($"Get options from web: {onlinePath}");
-                        return JsonSerializer.Deserialize<CommandLineOptions>(jsonData, jsonOptions);
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(e);
-            }
 
             if (File.Exists(localPath))
             {

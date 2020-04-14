@@ -3,7 +3,7 @@ namespace Nekoyume.UI.Module
     public interface IToggleable
     {
         string Name { get; }
-        bool IsToggleable { get; set; }
+        bool Toggleable { get; set; }
         bool IsToggledOn { get; }
         int GetInstanceID();
         void SetToggleListener(IToggleListener toggleListener);

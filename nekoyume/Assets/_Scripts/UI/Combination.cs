@@ -9,7 +9,9 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -17,6 +19,8 @@ using Nekoyume.UI.Scroller;
 using UniRx;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
+using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI
 {
@@ -25,17 +29,27 @@ namespace Nekoyume.UI
         public enum StateType
         {
             SelectMenu,
-            NewCombineEquipment,
+            CombineEquipment,
             CombineConsumable,
             EnhanceEquipment,
-            CombineEquipment,
             CombinationConfirm,
+        }
+
+        [Serializable]
+        public struct SelectionArea
+        {
+            public GameObject root;
+            public CategoryButton combineEquipmentButton;
+            public CategoryButton combineConsumableButton;
+            public CategoryButton enhanceEquipmentButton;
         }
 
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.SelectMenu);
 
         private const int NPCId = 300001;
+
+        public SelectionArea selectionArea;
 
         private ToggleGroup _toggleGroup;
         public CategoryButton combineEquipmentCategoryButton;
@@ -44,27 +58,32 @@ namespace Nekoyume.UI
 
         public GameObject leftArea;
         public GameObject categoryTabArea;
-        public GameObject selectionArea;
         public EquipmentRecipe equipmentRecipe;
 
         public Module.Inventory inventory;
 
-        public CombineEquipment combineEquipment;
         public CombineConsumable combineConsumable;
         public EnhanceEquipment enhanceEquipment;
         public EquipmentCombinationPanel equipmentCombinationPanel;
         public ElementalCombinationPanel elementalCombinationPanel;
         public Recipe recipe;
-        public SpeechBubble speechBubble;
+        public SpeechBubble speechBubbleForEquipment;
+        public SpeechBubble speechBubbleForUpgrade;
         public Transform npcPosition01;
         public Transform npcPosition02;
         public CanvasGroup canvasGroup;
+        public Animator equipmentRecipeAnimator;
         public ModuleBlur blur;
+
+        public RecipeClickVFX recipeClickVFX;
 
         private NPC _npc01;
         private NPC _npc02;
         public int selectedIndex;
-
+        private bool _lockSlotIndex;
+        private long _blockIndex;
+        private Dictionary<int, CombinationSlotState> _states;
+        private SpeechBubble _selectedSpeechBubble;
 
         #region Override
 
@@ -79,27 +98,44 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            selectionArea.combineEquipmentButton.OnClick
+                .Subscribe(_ => State.SetValueAndForceNotify(StateType.CombineEquipment))
+                .AddTo(gameObject);
+            selectionArea.combineConsumableButton.OnClick
+                .Subscribe(_ => State.SetValueAndForceNotify(StateType.CombineConsumable))
+                .AddTo(gameObject);
+            selectionArea.enhanceEquipmentButton.OnClick
+                .Subscribe(_ => State.SetValueAndForceNotify(StateType.EnhanceEquipment))
+                .AddTo(gameObject);
+
+            selectionArea.combineEquipmentButton.SetLockCondition(GameConfig
+                .RequireClearedStageLevel.CombinationEquipmentAction);
+            selectionArea.combineConsumableButton.SetLockCondition(GameConfig
+                .RequireClearedStageLevel.CombinationConsumableAction);
+            selectionArea.enhanceEquipmentButton.SetLockCondition(GameConfig
+                .RequireClearedStageLevel.ItemEnhancementAction);
+
             _toggleGroup = new ToggleGroup();
             _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
             _toggleGroup.RegisterToggleable(combineEquipmentCategoryButton);
             _toggleGroup.RegisterToggleable(combineConsumableCategoryButton);
             _toggleGroup.RegisterToggleable(enhanceEquipmentCategoryButton);
 
+            combineEquipmentCategoryButton.SetLockCondition(GameConfig.RequireClearedStageLevel
+                .CombinationEquipmentAction);
+            combineConsumableCategoryButton.SetLockCondition(GameConfig.RequireClearedStageLevel
+                .CombinationConsumableAction);
+            enhanceEquipmentCategoryButton.SetLockCondition(GameConfig.RequireClearedStageLevel
+                .ItemEnhancementAction);
+
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
             inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip).AddTo(gameObject);
             inventory.SharedModel.OnDoubleClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
 
-            combineEquipment.RemoveMaterialsAll();
-            combineEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
-            combineEquipment.submitButton.OnSubmitClick.Subscribe(_ =>
-            {
-                ActionCombineEquipment();
-                StartCoroutine(CoCombineNPCAnimation());
-            }).AddTo(gameObject);
-
             combineConsumable.RemoveMaterialsAll();
-            combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
+            combineConsumable.OnMaterialChange.Subscribe(SubscribeOnMaterialChange)
+                .AddTo(gameObject);
             combineConsumable.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 ActionCombineConsumable();
@@ -112,7 +148,8 @@ namespace Nekoyume.UI
             }).AddTo(gameObject);
 
             enhanceEquipment.RemoveMaterialsAll();
-            enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange).AddTo(gameObject);
+            enhanceEquipment.OnMaterialChange.Subscribe(SubscribeOnMaterialChange)
+                .AddTo(gameObject);
             enhanceEquipment.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 ActionEnhanceEquipment();
@@ -125,50 +162,36 @@ namespace Nekoyume.UI
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
 
+            equipmentCombinationPanel.RequiredBlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(ShowBlockIndex).AddTo(gameObject);
+
             elementalCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 ActionEnhancedCombinationEquipment(elementalCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
 
+            elementalCombinationPanel.RequiredBlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(ShowBlockIndex).AddTo(gameObject);
+
             recipe.RegisterListener(this);
             recipe.closeButton.OnClickAsObservable()
-                .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true)).AddTo(gameObject);
+                .Subscribe(_ => combineConsumable.submitButton.gameObject.SetActive(true))
+                .AddTo(gameObject);
 
             blur.gameObject.SetActive(false);
-        }
 
-        private IEnumerator CoCombineNPCAnimation()
-        {
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
-            Find<BottomMenu>().SetIntractable(false);
-            blur.gameObject.SetActive(true);
-            _npc01.SpineController.Disappear();
-            Push();
-            yield return new WaitForSeconds(.5f);
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
-            _npc02 = go.GetComponent<NPC>();
-            _npc02.SetSortingLayer(LayerType.UI);
-            _npc02.SpineController.Appear(.3f);
-            _npc02.PlayAnimation(NPCAnimation.Type.Appear_02);
-            yield return new WaitForSeconds(5f);
-            _npc02.SpineController.Disappear(.3f);
-            _npc02.PlayAnimation(NPCAnimation.Type.Disappear_02);
-            yield return new WaitForSeconds(.5f);
-            _npc02.gameObject.SetActive(false);
-            _npc01.SpineController.Appear();
-            yield return new WaitForSeconds(1f);
-            canvasGroup.interactable = true;
-            canvasGroup.blocksRaycasts = true;
-            Find<BottomMenu>().SetIntractable(true);
-            blur.gameObject.SetActive(false);
-            Pop();
+            CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SubscribeSlotStates)
+                .AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+                .AddTo(gameObject);
         }
 
         public override void Show()
         {
             base.Show();
+
+            CheckLockOfCategoryButtons();
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("combination");
@@ -190,37 +213,40 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Combination
             );
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
-            _npc01 = go.GetComponent<NPC>();
+            if (_npc01 is null)
+            {
+                var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
+                _npc01 = go.GetComponent<NPC>();
+            }
 
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
-            if (selectedIndex == -1)
-            {
-                ResetSelectedIndex();
-            }
+        }
 
+        public void Show(int slotIndex)
+        {
+            selectedIndex = slotIndex;
+            _lockSlotIndex = true;
+            Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            selectedIndex = -1;
             Find<BottomMenu>().Close(ignoreCloseAnimation);
 
-            combineEquipment.RemoveMaterialsAll();
             combineConsumable.RemoveMaterialsAll();
             enhanceEquipment.RemoveMaterialsAll();
-            speechBubble.gameObject.SetActive(false);
+            speechBubbleForEquipment.gameObject.SetActive(false);
+            speechBubbleForUpgrade.gameObject.SetActive(false);
 
-            if (_npc01)
-            {
-                _npc01.gameObject.SetActive(false);
-            }
+            _npc01 = null;
 
             if (_npc02)
             {
                 _npc02.gameObject.SetActive(false);
             }
+
+            _lockSlotIndex = false;
 
             base.Close(ignoreCloseAnimation);
         }
@@ -265,12 +291,37 @@ namespace Nekoyume.UI
             }
 
             combineConsumable.submitButton.gameObject.SetActive(true);
+            ShowBlockIndex(recipeCellView.Model.Row.RequiredBlockIndex);
         }
 
-        public void Show(int slotIndex)
+        private void CheckLockOfCategoryButtons()
         {
-            selectedIndex = slotIndex;
-            Show();
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            var worldInformation = States.Instance.CurrentAvatarState.worldInformation;
+            if (!worldInformation.TryGetLastClearedStageId(out var stageId))
+            {
+                selectionArea.combineEquipmentButton.SetLockVariable(0);
+                selectionArea.combineConsumableButton.SetLockVariable(0);
+                selectionArea.enhanceEquipmentButton.SetLockVariable(0);
+
+                combineEquipmentCategoryButton.SetLockVariable(0);
+                combineConsumableCategoryButton.SetLockVariable(0);
+                enhanceEquipmentCategoryButton.SetLockVariable(0);
+
+                return;
+            }
+
+            selectionArea.combineEquipmentButton.SetLockVariable(stageId);
+            selectionArea.combineConsumableButton.SetLockVariable(stageId);
+            selectionArea.enhanceEquipmentButton.SetLockVariable(stageId);
+
+            combineEquipmentCategoryButton.SetLockVariable(stageId);
+            combineConsumableCategoryButton.SetLockVariable(stageId);
+            enhanceEquipmentCategoryButton.SetLockVariable(stageId);
         }
 
         private void SubscribeState(StateType value)
@@ -278,15 +329,16 @@ namespace Nekoyume.UI
             inventory.Tooltip.Close();
             recipe.Hide();
 
-            selectionArea.SetActive(value == StateType.SelectMenu);
+            selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
 
             switch (value)
             {
                 case StateType.SelectMenu:
+                    _selectedSpeechBubble = speechBubbleForEquipment;
+                    speechBubbleForUpgrade.gameObject.SetActive(false);
                     _toggleGroup.SetToggledOffAll();
 
-                    combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -296,10 +348,11 @@ namespace Nekoyume.UI
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(false);
                     break;
-                case StateType.NewCombineEquipment:
+                case StateType.CombineEquipment:
+                    _selectedSpeechBubble = speechBubbleForEquipment;
+                    speechBubbleForUpgrade.gameObject.SetActive(false);
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
 
-                    combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -309,27 +362,12 @@ namespace Nekoyume.UI
                     categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(true);
-                    break;
-                case StateType.CombineEquipment:
-                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
-
-                    inventory.SharedModel.DeselectItemView();
-                    inventory.SharedModel.State.Value = ItemType.Material;
-                    inventory.SharedModel.DimmedFunc.Value = combineEquipment.DimFunc;
-                    inventory.SharedModel.EffectEnabledFunc.Value = combineEquipment.Contains;
-
-                    combineEquipment.Show(true);
-                    combineConsumable.Hide();
-                    enhanceEquipment.Hide();
-                    equipmentCombinationPanel.Hide();
-                    elementalCombinationPanel.Hide();
-                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
-
-                    categoryTabArea.SetActive(true);
-                    inventory.gameObject.SetActive(true);
-                    equipmentRecipe.gameObject.SetActive(false);
+                    equipmentRecipe.ShowCellViews();
+                    equipmentRecipeAnimator.Play("Show");
                     break;
                 case StateType.CombineConsumable:
+                    _selectedSpeechBubble = speechBubbleForUpgrade;
+                    speechBubbleForEquipment.gameObject.SetActive(false);
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
 
                     inventory.SharedModel.DeselectItemView();
@@ -337,7 +375,6 @@ namespace Nekoyume.UI
                     inventory.SharedModel.DimmedFunc.Value = combineConsumable.DimFunc;
                     inventory.SharedModel.EffectEnabledFunc.Value = combineConsumable.Contains;
 
-                    combineEquipment.Hide();
                     combineConsumable.Show(true);
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -349,6 +386,8 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.EnhanceEquipment:
+                    _selectedSpeechBubble = speechBubbleForUpgrade;
+                    speechBubbleForEquipment.gameObject.SetActive(false);
                     _toggleGroup.SetToggledOn(enhanceEquipmentCategoryButton);
 
                     inventory.SharedModel.DeselectItemView();
@@ -356,7 +395,6 @@ namespace Nekoyume.UI
                     inventory.SharedModel.DimmedFunc.Value = enhanceEquipment.DimFunc;
                     inventory.SharedModel.EffectEnabledFunc.Value = enhanceEquipment.Contains;
 
-                    combineEquipment.Hide();
                     combineConsumable.Hide();
                     enhanceEquipment.Show(true);
                     equipmentCombinationPanel.Hide();
@@ -369,34 +407,51 @@ namespace Nekoyume.UI
                     break;
                 case StateType.CombinationConfirm:
                     _toggleGroup.SetToggledOffAll();
-
-                    combineEquipment.Hide();
-                    combineConsumable.Hide();
-                    enhanceEquipment.Hide();
-                    ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
-
-                    categoryTabArea.SetActive(false);
-                    inventory.gameObject.SetActive(false);
-                    equipmentRecipe.gameObject.SetActive(false);
-
                     var selectedRecipe = equipmentRecipe.SelectedRecipe;
                     var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
 
-                    if (isElemental)
-                    {
-                        equipmentCombinationPanel.Hide();
-                        elementalCombinationPanel.SetData(selectedRecipe.RowData);
-                    }
-                    else
-                    {
-                        equipmentCombinationPanel.SetData(selectedRecipe.RowData);
-                        elementalCombinationPanel.Hide();
-                    }
-
+                    var rectTransform = selectedRecipe.transform as RectTransform;
+                    recipeClickVFX.transform.position = rectTransform.TransformPoint(rectTransform.rect.center);
+                    recipeClickVFX.OnFinished = () => OnClickRecipe(isElemental);
+                    recipeClickVFX.Play();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
+        }
+
+        private void OnClickRecipe(bool isElemental)
+        {
+            _toggleGroup.SetToggledOffAll();
+
+            combineConsumable.Hide();
+            enhanceEquipment.Hide();
+            ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
+
+            inventory.gameObject.SetActive(false);
+            equipmentRecipeAnimator.Play("Hide");
+            equipmentRecipe.HideCellviews();
+
+            var selectedRecipe = equipmentRecipe.SelectedRecipe;
+
+            if (isElemental)
+            {
+                equipmentCombinationPanel.Hide();
+                elementalCombinationPanel.TweenCellViewInOption(selectedRecipe);
+                elementalCombinationPanel.SetData(selectedRecipe.RowData);
+            }
+            else
+            {
+                equipmentCombinationPanel.TweenCellView(selectedRecipe);
+                equipmentCombinationPanel.SetData(selectedRecipe.RowData);
+                elementalCombinationPanel.Hide();
+            }
+        }
+
+        private void OnRecipeHide()
+        {
+            categoryTabArea.SetActive(false);
+            equipmentRecipe.gameObject.SetActive(false);
         }
 
         private void ShowTooltip(InventoryItemView view)
@@ -424,9 +479,6 @@ namespace Nekoyume.UI
             {
                 case StateType.CombineConsumable:
                     combineConsumable.TryAddMaterial(itemView);
-                    break;
-                case StateType.CombineEquipment:
-                    combineEquipment.TryAddMaterial(itemView);
                     break;
                 case StateType.EnhanceEquipment:
                     enhanceEquipment.TryAddMaterial(itemView);
@@ -456,7 +508,7 @@ namespace Nekoyume.UI
             }
             else if (toggleable.Name.Equals(combineEquipmentCategoryButton.Name))
             {
-                State.Value = StateType.NewCombineEquipment;
+                State.Value = StateType.CombineEquipment;
             }
             else if (toggleable.Name.Equals(enhanceEquipmentCategoryButton.Name))
             {
@@ -478,12 +530,24 @@ namespace Nekoyume.UI
             }
             else if (State.Value == StateType.CombinationConfirm)
             {
-                State.SetValueAndForceNotify(StateType.NewCombineEquipment);
+                State.SetValueAndForceNotify(StateType.CombineEquipment);
             }
             else
             {
                 State.SetValueAndForceNotify(StateType.SelectMenu);
             }
+        }
+
+        private void SubscribeSlotStates(Dictionary<int, CombinationSlotState> states)
+        {
+            _states = states;
+            ResetSelectedIndex();
+        }
+
+        private void SubscribeBlockIndex(long blockIndex)
+        {
+            _blockIndex = blockIndex;
+            ResetSelectedIndex();
         }
 
         #region Action
@@ -500,24 +564,10 @@ namespace Nekoyume.UI
             combineConsumable.RemoveMaterialsAll();
         }
 
-        private void ActionCombineEquipment()
-        {
-            var materialInfoList = new List<(Material material, int value)>();
-            materialInfoList.Add((
-                (Material) combineEquipment.baseMaterial.Model.ItemBase.Value,
-                combineEquipment.baseMaterial.Model.Count.Value));
-            materialInfoList.AddRange(combineEquipment.otherMaterials
-                .Where(e => !(e is null) && !(e.Model is null))
-                .Select(e => ((Material) e.Model.ItemBase.Value, e.Model.Count.Value)));
-
-            UpdateCurrentAvatarState(combineEquipment, materialInfoList);
-            CreateCombinationAction(materialInfoList, selectedIndex);
-            combineEquipment.RemoveMaterialsAll();
-        }
-
         private void ActionEnhanceEquipment()
         {
-            var baseEquipmentGuid = ((Equipment) enhanceEquipment.baseMaterial.Model.ItemBase.Value).ItemId;
+            var baseEquipmentGuid =
+                ((Equipment) enhanceEquipment.baseMaterial.Model.ItemBase.Value).ItemId;
             var otherEquipmentGuidList = enhanceEquipment.otherMaterials
                 .Select(e => ((Equipment) e.Model.ItemBase.Value).ItemId)
                 .ToList();
@@ -559,7 +609,8 @@ namespace Nekoyume.UI
             }
         }
 
-        private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel, Guid baseItemGuid,
+        private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
+            Guid baseItemGuid,
             IEnumerable<Guid> otherItemGuidList)
         {
             var agentAddress = States.Instance.AgentState.address;
@@ -576,7 +627,8 @@ namespace Nekoyume.UI
         }
 
 
-        private void CreateCombinationAction(List<(Material material, int count)> materialInfoList, int slotIndex)
+        private void CreateCombinationAction(List<(Material material, int count)> materialInfoList,
+            int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotConsumable(
                 Game.Game.instance.TableSheets,
@@ -587,11 +639,12 @@ namespace Nekoyume.UI
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
-                .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
-            ResetSelectedIndex();
+                .Subscribe(_ => { },
+                    _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
 
-        private void CreateItemEnhancementAction(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList, int slotIndex)
+        private void CreateItemEnhancementAction(Guid baseItemGuid,
+            IEnumerable<Guid> otherItemGuidList, int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotItemEnhancement(
                 enhanceEquipment,
@@ -600,9 +653,10 @@ namespace Nekoyume.UI
             );
             var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
-                .Subscribe(_ => { }, _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
-            ResetSelectedIndex();
+            Game.Game.instance.ActionManager
+                .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
+                .Subscribe(_ => { },
+                    _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
         }
 
         private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId,
@@ -613,12 +667,12 @@ namespace Nekoyume.UI
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
-            ResetSelectedIndex();
         }
 
         #endregion
 
-        private void ShowSpeech(string key, CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
+        private void ShowSpeech(string key,
+            CharacterAnimation.Type type = CharacterAnimation.Type.Emotion)
         {
             if (!_npc01)
                 return;
@@ -627,20 +681,68 @@ namespace Nekoyume.UI
                 ? NPCAnimation.Type.Greeting_01
                 : NPCAnimation.Type.Emotion_01);
 
-            speechBubble.SetKey(key);
-            StartCoroutine(speechBubble.CoShowText());
+            _selectedSpeechBubble.SetKey(key);
+            StartCoroutine(_selectedSpeechBubble.CoShowText(true));
+        }
+
+        private void ShowBlockIndex(long requiredBlockIndex)
+        {
+            if (!_npc01)
+                return;
+
+            _npc01.PlayAnimation(NPCAnimation.Type.Emotion_01);
+
+            var cost = string.Format(LocalizationManager.Localize("UI_COST_BLOCK"),
+                requiredBlockIndex);
+            _selectedSpeechBubble.onGoing = true;
+            StartCoroutine(_selectedSpeechBubble.CoShowText(cost, true));
         }
 
         private void ResetSelectedIndex()
         {
-            var pair = States.Instance.CombinationSlotStates
-                .FirstOrDefault(i =>
-                    i.Value.Validate(
-                        States.Instance.CurrentAvatarState,
-                        Game.Game.instance.Agent.BlockIndex
-                    ));
-            var idx = pair.Value is null ? -1 : pair.Key;
-            selectedIndex = idx;
+            if (!_lockSlotIndex && !(_states is null))
+            {
+                var pair = _states
+                    .FirstOrDefault(i =>
+                        i.Value.Validate(
+                            States.Instance.CurrentAvatarState,
+                            _blockIndex
+                        ));
+                var idx = pair.Value is null ? -1 : pair.Key;
+                selectedIndex = idx;
+            }
+        }
+
+        private IEnumerator CoCombineNPCAnimation()
+        {
+            Find<CombinationLoadingScreen>().Show();
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+            Find<BottomMenu>().SetIntractable(false);
+            blur.gameObject.SetActive(true);
+            _npc01.SpineController.Disappear();
+            Push();
+            yield return new WaitForSeconds(.5f);
+            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
+            _npc02 = go.GetComponent<NPC>();
+            _npc02.SetSortingLayer(LayerType.UI);
+            _npc02.SpineController.Appear(.3f);
+            _npc02.PlayAnimation(NPCAnimation.Type.Appear_02);
+            yield return new WaitForSeconds(5f);
+            _npc02.SpineController.Disappear(.3f);
+            _npc02.PlayAnimation(NPCAnimation.Type.Disappear_02);
+            yield return new WaitForSeconds(.5f);
+            _npc02.gameObject.SetActive(false);
+            _npc01.SpineController.Appear();
+            yield return new WaitForSeconds(1f);
+            canvasGroup.interactable = true;
+            canvasGroup.blocksRaycasts = true;
+            Find<BottomMenu>().SetIntractable(true);
+            blur.gameObject.SetActive(false);
+            Pop();
+            _lockSlotIndex = false;
+            _selectedSpeechBubble.onGoing = false;
+            Find<CombinationLoadingScreen>().Close();
         }
     }
 }

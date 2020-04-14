@@ -13,7 +13,7 @@ namespace Nekoyume.Game.Character
         private static readonly int FillPhase = Shader.PropertyToID("_FillPhase");
 
         private Sequence _colorTweenSequence;
-        
+
         private Vector3 HUDPosition { get; set; }
 
         protected CharacterAnimator(CharacterBase root) : base(root.gameObject)
@@ -23,27 +23,34 @@ namespace Nekoyume.Game.Character
         public override void ResetTarget(GameObject value)
         {
             base.ResetTarget(value);
-            
+
             var hud = Skeleton.skeleton.FindBone(StringHUD);
             if (hud is null)
+            {
                 throw new SpineBoneNotFoundException(StringHUD);
+            }
+
             HUDPosition = hud.GetWorldPosition(Target.transform) - Root.transform.position;
         }
-        
+
         public Vector3 GetHUDPosition()
         {
             return HUDPosition;
         }
-        
+
         #region Animation
 
         public void Standing()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             if (Animator.GetBool(nameof(CharacterAnimation.Type.Standing)))
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Standing), BaseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), true);
@@ -52,7 +59,9 @@ namespace Nekoyume.Game.Character
         public void StandingToIdle()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), false);
         }
@@ -60,7 +69,9 @@ namespace Nekoyume.Game.Character
         public void Idle()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Idle), BaseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Standing), false);
@@ -70,10 +81,9 @@ namespace Nekoyume.Game.Character
         public void Touch()
         {
             if (!ValidateAnimator())
+            {
                 return;
-
-            if (Animator.GetBool(nameof(CharacterAnimation.Type.Touch)))
-                return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Touch), BaseLayerIndex, 0f);
         }
@@ -81,10 +91,14 @@ namespace Nekoyume.Game.Character
         public void Run()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             if (Animator.GetBool(nameof(CharacterAnimation.Type.Run)))
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Run), BaseLayerIndex, 0f);
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), true);
@@ -93,7 +107,9 @@ namespace Nekoyume.Game.Character
         public void StopRun()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.SetBool(nameof(CharacterAnimation.Type.Run), false);
         }
@@ -101,7 +117,9 @@ namespace Nekoyume.Game.Character
         public void Attack()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Attack), BaseLayerIndex, 0f);
         }
@@ -109,7 +127,9 @@ namespace Nekoyume.Game.Character
         public void Cast()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Casting), BaseLayerIndex, 0f);
         }
@@ -117,7 +137,9 @@ namespace Nekoyume.Game.Character
         public void CastAttack()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.CastingAttack), BaseLayerIndex, 0f);
         }
@@ -125,16 +147,21 @@ namespace Nekoyume.Game.Character
         public void CriticalAttack()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.CriticalAttack), BaseLayerIndex, 0f);
         }
 
         public void Hit()
         {
-            if (!ValidateAnimator() || !Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex)
+            if (!ValidateAnimator() ||
+                !Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex)
                     .IsName(nameof(CharacterAnimation.Type.Idle)))
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Hit), BaseLayerIndex, 0f);
         }
@@ -142,7 +169,9 @@ namespace Nekoyume.Game.Character
         public void Win()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Win), BaseLayerIndex, 0f);
             ColorTween();
@@ -151,7 +180,9 @@ namespace Nekoyume.Game.Character
         public void Die()
         {
             if (!ValidateAnimator())
+            {
                 return;
+            }
 
             Animator.Play(nameof(CharacterAnimation.Type.Die), BaseLayerIndex, 0f);
             ColorTween();
@@ -166,10 +197,16 @@ namespace Nekoyume.Game.Character
             _colorTweenSequence?.Kill();
 
             _colorTweenSequence = DOTween.Sequence();
-            _colorTweenSequence.Append(DOTween.To(() => ColorTweenFrom, value => mat.SetFloat(FillPhase, value),
-                ColorTweenTo, ColorTweenDuration));
-            _colorTweenSequence.Append(DOTween.To(() => ColorTweenTo, value => mat.SetFloat(FillPhase, value),
-                ColorTweenFrom, ColorTweenDuration));
+            _colorTweenSequence.Append(DOTween.To(
+                () => ColorTweenFrom,
+                value => mat.SetFloat(FillPhase, value),
+                ColorTweenTo,
+                ColorTweenDuration));
+            _colorTweenSequence.Append(DOTween.To(
+                () => ColorTweenTo,
+                value => mat.SetFloat(FillPhase, value),
+                ColorTweenFrom,
+                ColorTweenDuration));
             _colorTweenSequence.Play().OnComplete(() => _colorTweenSequence = null);
         }
     }

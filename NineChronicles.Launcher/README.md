@@ -11,24 +11,12 @@ A system tray application to sync chain with network in background.
 ## Build
 
 ```/bin/bash
-# dotnet publish -r <rid> --self-contained
+# dotnet publish -r <rid> -p:PublishSingleFile=true
 # rid = osx-x64 | win-x64
-$ dotnet publish -r osx-x64 --self-contained  # out/osx-x64/Launcher.app
-$ dotnet publish -r win-x64 --self-contained  # out/win-x64/Launcher.exe
+$ dotnet publish -r osx-x64 -p:PublishSingleFile=true  # out/osx-x64/Nine Chronicles.app
+$ dotnet publish -r win-x64 -p:PublishSingleFile=true  # out/win-x64/Nine Chronicles.exe
 ```
 
-### Trouble shooting
-
-#### Unhandled exception. System.Exception: The directory doesn't exist.
-
-```
-Unhandled exception. System.Exception: The directory doesn't exist.
-   at Qml.Net.Runtimes.RuntimeManager.ConfigureRuntimeDirectory(String directory)
-   at Launcher.Program.Main(String[] args) in /Users/moreal/github/planetarium/nekoyume-unity/tools/launcher/Program.cs:line 21
-```
-
-*MSBuild Target*으로 전처리 과정을 이전 하면서 빌드를 할 때 제대로 qt runtime이 복사되어 들어가지 않는 문제가 있습니다.
-차후 해결해야 할 문제지만 일단은 실행했던 명령어(`dotnet run`, `dotnet publish`)를 한 번 더 실행하여 정상적으로 빌드를 할 수 있습니다.
 
 ## Set up launcher
 
@@ -49,3 +37,44 @@ There is [*launcher.json*][launcher-json] like below.
 
 
 [launcher-json]: ./resources/launcher.json
+
+
+## 배포 디렉토리 구조
+
+### MacOS
+
+```text
+# 배포 시
+/
+├── Launcher.Updater
+└── launcher.json
+
+# Launcher.Updater가 구성하는 디렉터리 구조
+/
+├── Launcher.Updater
+└── launcher.json
+├── Launcher.app/
+└── Nine Chronicles.app/
+```
+
+
+### Windows
+
+```text
+# 배포 시
+/
+├── Launcher.Updater.exe
+└── launcher.json
+
+# Launcher.Updater가 구성하는 디렉터리 구조
+/
+├── Launcher.Updater.exe
+└── launcher.json
+├── Launcher.exe
+├── Nine Chronicles.exe
+├── Nine Chronicles_Data/
+├──── ...
+├── MonoBleedingEdge/
+├──── ...
+└── ...
+```

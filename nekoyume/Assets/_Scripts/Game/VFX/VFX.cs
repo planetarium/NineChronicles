@@ -18,6 +18,17 @@ namespace Nekoyume.Game.VFX
         protected ParticleSystem _particlesRoot = null;
         protected virtual float EmitDuration => 1f;
 
+        private bool _isPlaying = false;
+
+        /// <summary>
+        /// VFX 재생이 성공적으로 완료되었을 때 호출되는 콜백
+        /// </summary>
+        public System.Action OnFinished = null;
+        /// <summary>
+        /// VFX 재생 도중 비활성화되었을 때 호출되는 콜백
+        /// </summary>
+        public System.Action OnInterrupted = null;
+
         #region Mono
 
         public virtual void Awake()
@@ -61,6 +72,12 @@ namespace Nekoyume.Game.VFX
             }
         }
 
+        protected virtual void OnDisable()
+        {
+            if (_isPlaying)
+                OnInterrupted?.Invoke();
+        }
+
         #endregion
 
         public void LazyStop()
@@ -77,10 +94,12 @@ namespace Nekoyume.Game.VFX
         public virtual void Stop()
         {
             gameObject.SetActive(false);
+            _isPlaying = false;
         }
 
         private IEnumerator CoAutoInactive()
         {
+            _isPlaying = true;
             var duration = 0f;
 
             while (duration < EmitDuration)
@@ -95,6 +114,7 @@ namespace Nekoyume.Game.VFX
                 yield return null;
             }
 
+            OnFinished?.Invoke();
             LazyStop();
         }
 

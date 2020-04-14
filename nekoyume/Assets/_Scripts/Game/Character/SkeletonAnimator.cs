@@ -26,17 +26,23 @@ namespace Nekoyume.Game.Character
 
             MeshRenderer = value.GetComponent<MeshRenderer>();
             if (MeshRenderer is null)
+            {
                 throw new NotFoundComponentException<MeshRenderer>();
+            }
 
             Skeleton = value.GetComponent<SkeletonAnimation>();
             if (Skeleton is null)
+            {
                 throw new NotFoundComponentException<SkeletonAnimation>();
+            }
 
             Skeleton.timeScale = TimeScale;
-            
+
             if (Skeleton.AnimationState is null)
+            {
                 throw new NullReferenceException(nameof(Skeleton.AnimationState));
-                
+            }
+
             Skeleton.AnimationState.Event += RaiseEvent;
         }
 

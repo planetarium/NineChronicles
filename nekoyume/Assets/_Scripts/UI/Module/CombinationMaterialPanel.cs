@@ -75,6 +75,10 @@ namespace Nekoyume.UI.Module
                     }
                     var item = new CountableItem(material, itemCount);
                     view.SetData(item, requiredCount);
+                    if (!checkInventory)
+                    {
+                        view.SetRequiredText();
+                    }
                     view.gameObject.SetActive(true);
 
                     if (item.Count.Value < requiredCount)
@@ -111,6 +115,7 @@ namespace Nekoyume.UI.Module
                     var itemCount = requiredCount;
                     var item = new CountableItem(material, itemCount);
                     view.SetData(item, requiredCount);
+                    view.SetRequiredText();
                     view.gameObject.SetActive(true);
                 }
             }

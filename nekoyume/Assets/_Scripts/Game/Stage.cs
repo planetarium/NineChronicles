@@ -404,9 +404,10 @@ namespace Nekoyume.Game
                         .address));
             _battleResultModel.State = log.result;
             var stage = Game.instance.TableSheets.StageSheet.Values.First(i => i.Id == stageId);
-            _battleResultModel.ActionPointNotEnough = avatarState.actionPoint < stage.CostAP;
-            _battleResultModel.ShouldExit = isExitReserved;
-            _battleResultModel.ShouldRepeat = repeatStage || failed;
+            var apNotEnough = avatarState.actionPoint < stage.CostAP;
+            _battleResultModel.ActionPointNotEnough = apNotEnough;
+            _battleResultModel.ShouldExit = apNotEnough || isExitReserved;
+            _battleResultModel.ShouldRepeat = !apNotEnough && (repeatStage || failed);
 
             if (!_battleResultModel.ShouldRepeat)
             {

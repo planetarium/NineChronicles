@@ -2,15 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.U2D;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class StageLoadingScreen : ScreenWidget
     {
-        private const string Bg1Format = "images/{0}_1";
-        private const string Bg2Format = "images/{0}_2";
-        private const string DefaultBgString = "chapter_1_1";
+        private const string SpriteAtlasPathFormat = "SpriteAtlases/Background/{0}";
+        private const string SpriteNameFormat01 = "{0}_01";
+        private const string SpriteNameFormat02 = "{0}_02";
         private const float ImageMargin = 700f;
 
         public List<Image> images;
@@ -19,19 +20,37 @@ namespace Nekoyume.UI
         private bool _shouldClose;
         private List<RectTransform> _rects;
 
-        private static Sprite Load(string format, string background)
+        private static Sprite GetSprite(string background, string spriteNameFormat)
         {
-            var path = string.Format(format, background);
-            var sprite = Resources.Load<Sprite>(path);
-            if (ReferenceEquals(sprite, null))
+            var spriteAtlas = GetSpriteAtlas(background);
+            if (spriteAtlas is null)
             {
-                path = string.Format(format, DefaultBgString);
-                sprite = Resources.Load<Sprite>(path);
+                return null;
+            }
+
+            var spriteName = string.Format(spriteNameFormat, background.ToLower());
+            var sprite = spriteAtlas.GetSprite(spriteName);
+            if (sprite is null)
+            {
+                Debug.LogError($"Failed to get sprite in \"{spriteAtlas.name}\" by {spriteName}");
             }
 
             return sprite;
         }
-        
+
+        private static SpriteAtlas GetSpriteAtlas(string background)
+        {
+            var chapter = background.Substring(0, background.Length - 3);
+            var spriteAtlasPath = string.Format(SpriteAtlasPathFormat, chapter);
+            var spriteAtlas = Resources.Load<SpriteAtlas>(spriteAtlasPath);
+            if (spriteAtlas is null)
+            {
+                Debug.LogError($"Failed to load SpriteAtlas in \"Assets/Resources/{spriteAtlasPath}\"");
+            }
+
+            return spriteAtlas;
+        }
+
         public void Show(string background)
         {
             _shouldClose = false;
@@ -40,8 +59,8 @@ namespace Nekoyume.UI
             for (var index = 0; index < images.Count; index++)
             {
                 var image = images[index];
-                var format = index % 2 == 0 ? Bg1Format : Bg2Format;
-                var sprite = Load(format, background);
+                var format = index % 2 == 0 ? SpriteNameFormat01 : SpriteNameFormat02;
+                var sprite = GetSprite(background, format);
                 image.gameObject.SetActive(true);
                 image.overrideSprite = sprite;
                 image.SetNativeSize();
@@ -54,14 +73,14 @@ namespace Nekoyume.UI
             base.Show();
             StartCoroutine(CoRun());
         }
-        
+
         public override IEnumerator CoClose()
         {
             _shouldClose = true;
             yield return new WaitUntil(() => closeEnd);
             gameObject.SetActive(false);
         }
-        
+
         private IEnumerator CoRun()
         {
             var delta = _rects.Average(r => r.rect.width);

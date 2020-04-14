@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Bencodex.Types;
 using Grpc.Core;
 using Libplanet.Action;
 using Libplanet.Blockchain;
@@ -11,14 +10,12 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
-using Libplanet.Tx;
 using MagicOnion.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using Nito.AsyncEx;
 using Serilog;
 
@@ -38,17 +35,20 @@ namespace NineChronicles.Standalone
 
         public AsyncAutoResetEvent PreloadEnded => NodeService.PreloadEnded;
 
+        public Swarm<NineChroniclesActionType> Swarm => NodeService?.Swarm;
+
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties properties,
-            RpcNodeServiceProperties rpcNodeServiceProperties)
+            RpcNodeServiceProperties rpcNodeServiceProperties,
+            Progress<PreloadState> preloadProgress = null
+        )
         {
             Properties = properties;
             RpcProperties = rpcNodeServiceProperties;
 
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(
-                properties.MinimumDifficulty,
-                GetWhiteListSheet
+                properties.MinimumDifficulty
             );
             async Task minerLoopAction(
                 BlockChain<NineChroniclesActionType> chain,
@@ -74,9 +74,15 @@ namespace NineChronicles.Standalone
             NodeService = new LibplanetNodeService<NineChroniclesActionType>(
                 Properties,
                 blockPolicy,
-                minerLoopAction
+                minerLoopAction,
+                preloadProgress
             );
 
+            if (BlockPolicy.ActivationSet is null)
+            {
+                var tableSheetState = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
+                BlockPolicy.UpdateActivationSet(tableSheetState);
+            }
         }
 
         public async Task Run(CancellationToken cancellationToken = default)
@@ -101,21 +107,9 @@ namespace NineChronicles.Standalone
             await hostBuilder.ConfigureServices((ctx, services) =>
             {
                 services.AddHostedService(provider => NodeService);
+                services.AddSingleton(provider => NodeService.Swarm);
                 services.AddSingleton(provider => NodeService.BlockChain);
             }).RunConsoleAsync(cancellationToken);
         }
-
-        private WhiteListSheet GetWhiteListSheet()
-        {
-            var state = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
-            if (state is null)
-            {
-                return null;
-            }
-
-            var tableSheetsState = new TableSheetsState((Dictionary)state);
-            return TableSheets.FromTableSheetsState(tableSheetsState).WhiteListSheet;
-        }
-
     }
 }

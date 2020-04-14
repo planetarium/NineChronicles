@@ -4,22 +4,22 @@ using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using TMPro;
+using Nekoyume.UI.Scroller;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
     public class CombinationSlotPopup : PopupWidget
     {
-        public TextMeshProUGUI itemNameText;
-        public CombinationItemInformation itemInformation;
+        public EquipmentRecipeCellView cellView;
         public CombinationMaterialPanel materialPanel;
         public EquipmentOptionRecipeView optionView;
         public SubmitWithCostButton submitButton;
@@ -27,6 +27,7 @@ namespace Nekoyume.UI
 
         private int _slotIndex;
         private decimal _cost;
+        private CombinationSelectSmallFrontVFX _frontVFX;
 
         protected override void Awake()
         {
@@ -55,12 +56,27 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+            if (_frontVFX)
+            {
+                _frontVFX.Stop();
+            }
+        }
+
+        protected override void OnCompleteOfShowAnimation()
+        {
+            base.OnCompleteOfShowAnimation();
+            _frontVFX =
+                VFXController.instance.Create<CombinationSelectSmallFrontVFX>(cellView.transform,
+                    new Vector3(0.53f, -0.5f));
+        }
+
         public void Pop(CombinationSlotState state, int slotIndex)
         {
             _slotIndex = slotIndex;
             var result = (CombinationConsumable.ResultModel) state.Result;
-            var resultItem = new CountableItem(result.itemUsable, 1);
-            itemInformation.SetData(new Model.ItemInformation(resultItem));
             var subRecipeEnabled = result.subRecipeId.HasValue;
             materialPanel.gameObject.SetActive(false);
             optionView.gameObject.SetActive(false);
@@ -71,6 +87,7 @@ namespace Nekoyume.UI
                     var recipeRow =
                         Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
+                    cellView.Set(recipeRow);
                     if (subRecipeEnabled)
                     {
                         optionView.Show(
@@ -92,15 +109,13 @@ namespace Nekoyume.UI
                     var recipeRow =
                         Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
+                    cellView.Set(recipeRow);
                     materialPanel.SetData(recipeRow);
                     materialPanel.gameObject.SetActive(true);
                     break;
                 }
             }
 
-            itemInformation.statsArea.root.gameObject.SetActive(false);
-            itemInformation.skillsArea.root.gameObject.SetActive(false);
-            itemNameText.text = result.itemUsable.GetLocalizedName();
             submitButton.HideAP();
             submitButton.SetSubmittable(result.id != default);
             var cost = result.itemUsable.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;

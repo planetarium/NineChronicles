@@ -54,7 +54,10 @@ namespace Nekoyume.Game.Character
 
             Inventory = new Model.Item.Inventory();
 
-            touchHandler.OnClick.Subscribe(_ =>
+            touchHandler.OnClick
+                .Merge(touchHandler.OnDoubleClick)
+                .Merge(touchHandler.OnMultipleClick)
+                .Subscribe(_ =>
                 {
                     if (Game.instance.Stage.IsInStage)
                         return;
@@ -108,7 +111,7 @@ namespace Nekoyume.Game.Character
             {
                 SpeechBubble.Clear();
             }
-            
+
             ShowSpeech("PLAYER_LOSE");
 
             yield return StartCoroutine(base.Dying());
@@ -124,19 +127,19 @@ namespace Nekoyume.Game.Character
         {
             return SpineController.BoxCollider;
         }
-        
+
         #region AttackPoint & HitPoint
 
         protected override void UpdateHitPoint()
         {
             base.UpdateHitPoint();
-            
+
             var center = HitPointBoxCollider.center;
             var size = HitPointBoxCollider.size;
             HitPointLocalOffset = new Vector3(center.x + size.x / 2, center.y - size.y / 2);
             attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
         }
-        
+
         #endregion
 
         #region Equipments & Customize

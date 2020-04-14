@@ -9,6 +9,10 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionXTweener : MonoBehaviour
     {
+        public TweenCallback OnComplete = null;
+        public TweenCallback OnReverseComplete = null;
+
+        [SerializeField] private float startDelay = 0f;
         [SerializeField] private float end = 0f;
         [SerializeField] private float duration = 1f;
         [SerializeField] private bool snapping = false;
@@ -37,22 +41,51 @@ namespace Nekoyume.UI.Tween
             if (isFrom)
             {
                 _tween = _rectTransform.DOAnchorPosX(end, duration, snapping)
+                    .SetDelay(startDelay)
                     .SetEase(showEase)
                     .From();
             }
             else
             {
                 _tween = _rectTransform.DOAnchorPosX(end, duration, snapping)
+                    .SetDelay(startDelay)
                     .SetEase(showEase);
             }
 
+            _tween.onComplete = OnComplete;
+            return _tween;
+        }
+
+        public Tweener PlayReverse()
+        {
+            RefreshTween();
+
+            _rectTransform.anchoredPosition = new Vector2(
+                originAnchoredPosition.x + end,
+                originAnchoredPosition.y);
+
+            if (isFrom)
+            {
+                _tween = _rectTransform.DOAnchorPosX(originAnchoredPosition.x, duration, snapping)
+                    .SetDelay(startDelay)
+                    .SetEase(showEase)
+                    .From();
+            }
+            else
+            {
+                _tween = _rectTransform.DOAnchorPosX(originAnchoredPosition.x, duration, snapping)
+                    .SetDelay(startDelay)
+                    .SetEase(showEase);
+            }
+
+            _tween.onComplete = OnReverseComplete;
             return _tween;
         }
 
         public Tweener StopTween()
         {
             RefreshTween();
-            if(isFrom)
+            if (isFrom)
             {
                 _tween = _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase);
             }

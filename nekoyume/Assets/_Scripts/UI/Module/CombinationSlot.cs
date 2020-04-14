@@ -8,18 +8,20 @@ using Nekoyume.UI.Model;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
     public class CombinationSlot : MonoBehaviour
     {
-        public UnityEngine.UI.Slider progressBar;
+        public Slider progressBar;
         public SimpleItemView resultView;
         public TextMeshProUGUI unlockText;
         public TextMeshProUGUI progressText;
         public TextMeshProUGUI lockText;
         public TextMeshProUGUI sliderText;
         public TouchHandler touchHandler;
+        public Image lockImage;
 
         private CombinationSlotState _data;
         private int _slotIndex;
@@ -44,15 +46,21 @@ namespace Nekoyume.UI.Module
             _slotIndex = slotIndex;
             var unlock = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(state.UnlockStage);
             lockText.gameObject.SetActive(!unlock);
-            resultView.gameObject.SetActive(false);
+            lockImage.gameObject.SetActive(!unlock);
+            unlockText.gameObject.SetActive(false);
+            progressText.gameObject.SetActive(false);
+            progressBar.gameObject.SetActive(false);
             if (unlock)
             {
+                resultView.Clear();
                 var canUse = state.Validate(States.Instance.CurrentAvatarState, blockIndex);
                 if (!(state.Result is null))
                 {
                     canUse = canUse && state.Result.itemUsable.RequiredBlockIndex <= blockIndex;
-                    resultView.SetData(new Item(state.Result.itemUsable));
-                    resultView.gameObject.SetActive(!canUse);
+                    if (!canUse)
+                    {
+                        resultView.SetData(new Item(state.Result.itemUsable));
+                    }
                     progressText.text =
                         string.Format(LocalizationManager.Localize("UI_COMBINATION_SLOT_CRAFT"),
                             state.Result.itemUsable.GetLocalizedName());
