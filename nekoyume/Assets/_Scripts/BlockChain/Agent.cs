@@ -529,6 +529,9 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion localVersion
         )
         {
+            // TODO: 론처 쪽 코드의 LibplanetController.NewAppProtocolVersionEncountered() 메서드와 기본적인
+            // 로직은 같지만 구체적으로 취해야 할 액션이 크게 달라서 코드 공유를 하지 못하고 있음. 판단 로직과 판단에 따른
+            // 행동 로직을 분리해서 판단 부분은 코드를 공유할 필요가 있음.
             Debug.LogWarningFormat(
                 "Different Version Encountered; expected (local): {0}; actual ({1}): {2}",
                 localVersion, peer, peerVersion

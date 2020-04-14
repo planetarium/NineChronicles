@@ -158,9 +158,17 @@ namespace Launcher
             AppProtocolVersion peerVersion,
             AppProtocolVersion localVersion)
         {
+            if (localVersion.Version >= peerVersion.Version)
+            {
+                // 상대 버전이 같거나 더 낮으면 그냥 무시.
+                // TODO: 게임 쪽 코드의 Agent.DifferentAppProtocolVersionEncountered() 메서드와 기본적인
+                // 로직은 같지만 구체적으로 취해야 할 액션이 크게 달라서 코드 공유를 하지 못하고 있음. 판단 로직과 판단에 따른
+                // 행동 로직을 분리해서 판단 부분은 코드를 공유할 필요가 있음.
+                return localVersion.Version > peerVersion.Version;
+            }
+
             // FIXME: It should notice game will be shut down!
             // It assumes another like updater, will run this, Launcher.
-            // FIXME: determine updater path.
             Log.Information("A new version is available: {Version}", peerVersion);
             var extra = new Nekoyume.AppProtocolVersionExtra((Bencodex.Types.Dictionary) peerVersion.Extra);
             RestartToUpdate(extra);
