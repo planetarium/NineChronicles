@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Launcher.Common;
 using ShellProgressBar;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
+using static Launcher.Common.Utils;
 
 namespace Launcher.Updater
 {
@@ -162,8 +163,5 @@ namespace Launcher.Updater
 
             Console.Error.WriteLine("Finished to extract game binary.");
         }
-
-        private static string EscapeShellArgument(string value) =>
-            "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
     }
 }

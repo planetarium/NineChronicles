@@ -21,6 +21,7 @@ using Qml.Net;
 using Serilog;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using static Launcher.Common.Configuration;
+using static Launcher.Common.Utils;
 using Nekoyume;
 
 namespace Launcher
@@ -322,7 +323,7 @@ namespace Launcher
         public void OpenSettingFile()
         {
             InitializeSettingFile();
-            Process.Start(CurrentPlatform.OpenCommand, SettingFilePath);
+            Process.Start(CurrentPlatform.OpenCommand, EscapeShellArgument(SettingFilePath));
         }
 
         // Advanced → Clear cache 메뉴가 호출
