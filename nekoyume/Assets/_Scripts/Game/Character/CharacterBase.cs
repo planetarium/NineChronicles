@@ -523,7 +523,10 @@ namespace Nekoyume.Game.Character
 
             var pos = transform.position;
             yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
-            var effect = Game.instance.Stage.SkillController.GetBlowCasting(pos, info);
+            var effect = Game.instance.Stage.SkillController.GetBlowCasting(
+                pos,
+                info.SkillCategory,
+                info.ElementalType);
             effect.Play();
             yield return new WaitForSeconds(0.2f);
 
@@ -538,7 +541,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Stage.SkillController.Get(pos, info);
+            var effect = Game.instance.Stage.SkillController.Get(pos, info.ElementalType);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 

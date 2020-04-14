@@ -11,9 +11,9 @@ namespace Nekoyume.Game.VFX.Skill
     {
         private const int InitCount = 5;
 
-        private readonly ObjectPool _pool;
+        private readonly IObjectPool _pool;
 
-        public SkillController(ObjectPool objectPool)
+        public SkillController(IObjectPool objectPool)
         {
             _pool = objectPool;
             var skills = Resources.LoadAll<SkillVFX>("VFX/Skills");
@@ -64,10 +64,9 @@ namespace Nekoyume.Game.VFX.Skill
             return GetEffect<T>(go, target);
         }
 
-        public SkillCastingVFX Get(Vector3 position, Model.BattleStatus.Skill.SkillInfo skillInfo)
+        public SkillCastingVFX Get(Vector3 position, ElementalType elementalType)
         {
-            var elemental = skillInfo.ElementalType;
-            var skillName = $"casting_{elemental}".ToLower();
+            var skillName = $"casting_{elementalType}".ToLower();
             var go = _pool.Get(skillName, false, position) ??
                      _pool.Get(skillName, true, position);
 
@@ -76,10 +75,11 @@ namespace Nekoyume.Game.VFX.Skill
 
         public SkillCastingVFX GetBlowCasting(
             Vector3 position,
-            Model.BattleStatus.Skill.SkillInfo skillInfo)
+            SkillCategory skillCategory,
+            ElementalType elementalType)
         {
             var skillName =
-                $"casting_{skillInfo.SkillCategory}_{skillInfo.ElementalType}".ToLower();
+                $"casting_{skillCategory}_{elementalType}".ToLower();
             var go = _pool.Get(skillName, false, position) ??
                      _pool.Get(skillName, true, position);
 
