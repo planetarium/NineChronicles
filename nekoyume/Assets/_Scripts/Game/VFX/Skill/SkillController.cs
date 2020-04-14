@@ -7,17 +7,16 @@ using UnityEngine;
 
 namespace Nekoyume.Game.VFX.Skill
 {
-    public class SkillController : MonoBehaviour
+    public class SkillController
     {
         private const int InitCount = 5;
 
-        public SkillVFX[] skills;
-        private ObjectPool _pool;
+        private readonly ObjectPool _pool;
 
-        private void Awake()
+        public SkillController(ObjectPool objectPool)
         {
-            _pool = FindObjectOfType<ObjectPool>();
-            skills = Resources.LoadAll<SkillVFX>("VFX/Skills");
+            _pool = objectPool;
+            var skills = Resources.LoadAll<SkillVFX>("VFX/Skills");
             foreach (var skill in skills)
             {
                 _pool.Add(skill.gameObject, InitCount);
@@ -62,15 +61,7 @@ namespace Nekoyume.Game.VFX.Skill
             var go = _pool.Get(skillName, false, position) ??
                      _pool.Get(skillName, true, position);
 
-            var effect = go.GetComponent<T>();
-            if (effect is null)
-            {
-                throw new NotFoundComponentException<T>(skillName);
-            }
-
-            effect.target = target;
-            effect.Stop();
-            return effect;
+            return GetEffect<T>(go, target);
         }
 
         public SkillCastingVFX Get(Vector3 position, Model.BattleStatus.Skill.SkillInfo skillInfo)
@@ -80,14 +71,7 @@ namespace Nekoyume.Game.VFX.Skill
             var go = _pool.Get(skillName, false, position) ??
                      _pool.Get(skillName, true, position);
 
-            var effect = go.GetComponent<SkillCastingVFX>();
-            if (effect is null)
-            {
-                throw new NotFoundComponentException<SkillCastingVFX>(skillName);
-            }
-
-            effect.Stop();
-            return effect;
+            return GetEffect<SkillCastingVFX>(go);
         }
 
         public SkillCastingVFX GetBlowCasting(
@@ -99,10 +83,21 @@ namespace Nekoyume.Game.VFX.Skill
             var go = _pool.Get(skillName, false, position) ??
                      _pool.Get(skillName, true, position);
 
-            var effect = go.GetComponent<SkillCastingVFX>();
+            return GetEffect<SkillCastingVFX>(go);
+        }
+
+        private static T GetEffect<T>(GameObject go, CharacterBase target = null)
+            where T : SkillVFX
+        {
+            var effect = go.GetComponent<T>();
             if (effect is null)
             {
-                throw new NotFoundComponentException<SkillCastingVFX>(skillName);
+                throw new NotFoundComponentException<T>(go.name);
+            }
+
+            if (!(target is null))
+            {
+                effect.target = target;
             }
 
             effect.Stop();
