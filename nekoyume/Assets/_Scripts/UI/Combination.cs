@@ -20,6 +20,7 @@ using UniRx;
 using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI
 {
@@ -71,8 +72,10 @@ namespace Nekoyume.UI
         public Transform npcPosition01;
         public Transform npcPosition02;
         public CanvasGroup canvasGroup;
-        public ModuleBlur blur;
         public Animator equipmentRecipeAnimator;
+        public ModuleBlur blur;
+
+        public RecipeClickVFX recipeClickVFX;
 
         private NPC _npc01;
         private NPC _npc02;
@@ -404,33 +407,44 @@ namespace Nekoyume.UI
                     break;
                 case StateType.CombinationConfirm:
                     _toggleGroup.SetToggledOffAll();
-
-                    combineConsumable.Hide();
-                    enhanceEquipment.Hide();
-
-                    inventory.gameObject.SetActive(false);
-                    equipmentRecipeAnimator.Play("Hide");
-                    equipmentRecipe.HideCellviews();
-
                     var selectedRecipe = equipmentRecipe.SelectedRecipe;
                     var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
 
-                    if (isElemental)
-                    {
-                        equipmentCombinationPanel.Hide();
-                        elementalCombinationPanel.TweenCellViewInOption(selectedRecipe);
-                        elementalCombinationPanel.SetData(selectedRecipe.RowData);
-                    }
-                    else
-                    {
-                        equipmentCombinationPanel.TweenCellView(selectedRecipe);
-                        equipmentCombinationPanel.SetData(selectedRecipe.RowData);
-                        elementalCombinationPanel.Hide();
-                    }
-
+                    var rectTransform = selectedRecipe.transform as RectTransform;
+                    recipeClickVFX.transform.position = rectTransform.TransformPoint(rectTransform.rect.center);
+                    recipeClickVFX.OnFinished = () => OnClickRecipe(isElemental);
+                    recipeClickVFX.Play();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
+            }
+        }
+
+        private void OnClickRecipe(bool isElemental)
+        {
+            _toggleGroup.SetToggledOffAll();
+
+            combineConsumable.Hide();
+            enhanceEquipment.Hide();
+            ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
+
+            inventory.gameObject.SetActive(false);
+            equipmentRecipeAnimator.Play("Hide");
+            equipmentRecipe.HideCellviews();
+
+            var selectedRecipe = equipmentRecipe.SelectedRecipe;
+
+            if (isElemental)
+            {
+                equipmentCombinationPanel.Hide();
+                elementalCombinationPanel.TweenCellViewInOption(selectedRecipe);
+                elementalCombinationPanel.SetData(selectedRecipe.RowData);
+            }
+            else
+            {
+                equipmentCombinationPanel.TweenCellView(selectedRecipe);
+                equipmentCombinationPanel.SetData(selectedRecipe.RowData);
+                elementalCombinationPanel.Hide();
             }
         }
 

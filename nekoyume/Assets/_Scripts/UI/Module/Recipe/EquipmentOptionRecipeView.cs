@@ -1,5 +1,6 @@
 using System;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -30,6 +31,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject options = null;
 
+        [SerializeField]
+        protected RecipeClickVFX recipeClickVFX = null;
+
         private EquipmentItemSubRecipeSheet.Row _rowData;
 
         public readonly Subject<EquipmentOptionRecipeView> OnClick =
@@ -40,6 +44,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
+            recipeClickVFX.OnFinished = () => OnClick.OnNext(this);
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 if (IsLocked || NotEnoughMaterials)
@@ -47,8 +52,13 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
-                OnClick.OnNext(this);
+                recipeClickVFX.Play();
             }).AddTo(gameObject);
+        }
+
+        private void OnDisable()
+        {
+            recipeClickVFX.Stop();
         }
 
         private void OnDestroy()

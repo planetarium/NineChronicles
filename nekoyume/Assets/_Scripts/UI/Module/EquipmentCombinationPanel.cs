@@ -24,6 +24,12 @@ namespace Nekoyume.UI.Module
         public SubmitWithCostButton submitButton;
 
         [SerializeField]
+        protected GameObject cellViewFrontVfx = null;
+
+        [SerializeField]
+        protected GameObject cellViewBackVfx = null;
+
+        [SerializeField]
         protected DOTweenRectTransformMoveTo cellViewTweener = null;
 
         [SerializeField]
@@ -37,6 +43,13 @@ namespace Nekoyume.UI.Module
             cancelButton.OnClickAsObservable().Subscribe(_ => SubscribeOnClickCancel()).AddTo(gameObject);
             submitButton.OnSubmitClick.Subscribe(_ => SubscribeOnClickSubmit()).AddTo(gameObject);
             cancelButtonText.text = LocalizationManager.Localize("UI_CANCEL");
+        }
+
+        protected virtual void OnDisable()
+        {
+            cellViewFrontVfx.SetActive(false);
+            cellViewBackVfx.SetActive(false);
+            confirmAreaYTweener.OnComplete = null;
         }
 
         public void TweenCellView(EquipmentRecipeCellView view)
@@ -53,6 +66,7 @@ namespace Nekoyume.UI.Module
             materialPanel.SetData(recipeRow, subRecipeId);
 
             gameObject.SetActive(true);
+            confirmAreaYTweener.OnComplete = OnTweenCompleted;
             confirmAreaYTweener.StartTween();
             confirmAreaAlphaTweener.PlayDelayed(0.2f);
 
@@ -102,6 +116,12 @@ namespace Nekoyume.UI.Module
         private static void SubscribeOnClickSubmit()
         {
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
+        }
+
+        private void OnTweenCompleted()
+        {
+            cellViewFrontVfx.SetActive(true);
+            cellViewBackVfx.SetActive(true);
         }
     }
 }
