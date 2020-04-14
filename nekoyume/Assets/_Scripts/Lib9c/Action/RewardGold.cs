@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Model.State;
-#if UNITY_EDITOR || UNITY_STANDALONE
-using TentuPlay.Api;
-#endif
+
 
 namespace Nekoyume.Action
 {
@@ -55,16 +53,7 @@ namespace Nekoyume.Action
                 states = states.SetState(weekly.address, weekly.Serialize());
             }
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-            int r = new TPStashEvent().CurrencyGet(
-                player_uuid: agentState.address.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)Gold,
-                currency_total_quantity: (float)agentState.gold,
-                reference_entity: "bonuses",
-                reference_category_slug: "reward_gold",
-                reference_slug: "RewardGold");
-#endif
+
             return states.SetState(ctx.Miner, agentState.Serialize());
         }
     }

@@ -12,6 +12,8 @@ using UniRx;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 
+using TentuPlay.Api;
+
 namespace Nekoyume.BlockChain
 {
     /// <summary>
@@ -81,7 +83,22 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<RewardGold>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateAgentState).AddTo(_disposables);
+                .Subscribe(eval =>
+                {
+                    ///[TentuPlay] RewardGold 기록
+                    
+                    new TPStashEvent().CurrencyGet(
+                        player_uuid: States.Instance.AgentState.address.ToHex(),
+                        currency_slug: "gold",
+                        currency_quantity: (float)eval.Action.Gold,
+                        currency_total_quantity: (float)States.Instance.AgentState.gold,
+                        reference_entity: "bonuses",
+                        reference_category_slug: "reward_gold",
+                        reference_slug: "RewardGold");
+
+                    UpdateAgentState(eval);
+
+                }).AddTo(_disposables);
         }
 
         private void CreateAvatar()
@@ -153,7 +170,61 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<RankingReward>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateAgentState).AddTo(_disposables);
+                .Subscribe(eval =>
+                {
+
+                    ///[TentuPlay] RankingReward 기록
+                    ///내 agent만 기록하기 위해..
+                    Address[] agentAddresses = eval.Action.agentAddresses;
+                    for (var index = 0; index < agentAddresses.Length; index++)
+                    {
+                        Address thisAddress = agentAddresses[index];
+
+                        if (thisAddress == States.Instance.AgentState.address)  // 내꺼일때만
+                        {
+                            if(index < 3) // index 는 3보다 작아야 => 0,1,2 만가능
+                            {
+                                try
+                                {
+                                    float gold = 0.0F;
+
+                                    // 길어서 죄송합니다
+
+                                    if (index == 0)
+                                    {
+                                        gold = (float) eval.Action.gold1;
+                                    }
+                                    else if (index == 1)
+                                    {
+                                        gold = (float)eval.Action.gold2;
+                                    }
+                                    else
+                                    {
+                                        gold = (float)eval.Action.gold3;
+                                    }
+                                    new TPStashEvent().CurrencyGet(
+                                        player_uuid: States.Instance.AgentState.address.ToHex(),
+                                        currency_slug: "gold",
+                                        currency_quantity: gold,
+                                        currency_total_quantity: (float)States.Instance.AgentState.gold,
+                                        reference_entity: "bonuses",
+                                        reference_category_slug: "arena",
+                                        reference_slug: "RankingRewardIndex" + index.ToString()
+                                        );                                    
+                                }
+                                catch
+                                {
+                                    // 혹시몰라서 게임엔 지장 없게
+                                }
+                            }
+
+                        }                    
+                                                                     
+                    }
+
+                    UpdateAgentState(eval);
+
+                }).AddTo(_disposables);
         }
 
         private void ItemEnhancement()
@@ -263,6 +334,21 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
+
+
+            ///[TentuPlay] Equipment 합성에 사용한 골드 기록
+            if (agentAddress == States.Instance.AgentState.address) /// 확실히 본인일때만..
+            {
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: States.Instance.AgentState.address.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float)result.gold,
+                    currency_total_quantity: (float)States.Instance.AgentState.gold,
+                    reference_entity: "equipments",
+                    reference_category_slug: "equipments_combination",
+                    reference_slug: result.itemUsable.Data.Id.ToString());
+            }
+
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
@@ -290,6 +376,20 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.slotIndex);
+
+            ///[TentuPlay] Consumable 합성에 사용한 골드 기록
+            if (agentAddress == States.Instance.AgentState.address) /// 확실히 본인일때만..
+            {
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: States.Instance.AgentState.address.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float)result.gold,
+                    currency_total_quantity: (float)States.Instance.AgentState.gold,
+                    reference_entity: "consumables",
+                    reference_category_slug: "consumables_combination",
+                    reference_slug: result.itemUsable.Data.Id.ToString());
+            }
+
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
@@ -334,6 +434,18 @@ namespace Nekoyume.BlockChain
                 RenderQuest(buyerAvatarAddress, buyerAvatar.questList.completedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
+
+                ///[TentuPlay] 아이템 구입, 골드 사용
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: States.Instance.AgentState.address.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float) price,
+                    currency_total_quantity: (float)States.Instance.AgentState.gold,
+                    reference_entity: "trades",
+                    reference_category_slug: "buy",
+                    reference_slug: result.itemUsable.Data.Id.ToString()  /// 아이템 품목/품번/SKU이 필요. itemId 는 GUID 라서 instance id 인것 같다
+                    );
+
             }
             else
             {
@@ -353,6 +465,22 @@ namespace Nekoyume.BlockChain
                             (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
                         .NameWithHash;
                 UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, result.itemUsable.GetLocalizedName()));
+
+                ///[TentuPlay] 아이템 판매완료, 골드 증가
+                ///확실히 Seller 가 나일때만
+                if (sellerAgentAddress == States.Instance.AgentState.address)
+                {
+                    new TPStashEvent().CurrencyGet(
+                        player_uuid: States.Instance.AgentState.address.ToHex(), // seller 가 나(게임플레이어)
+                        currency_slug: "gold",
+                        currency_quantity: (float)gold, // 부호 모르겠다 -_-;; 어쨌든 이 메소드는 양수를 받아야 한다 (골드 획득량)
+                        currency_total_quantity: (float)States.Instance.AgentState.gold,
+                        reference_entity: "trades",
+                        reference_category_slug: "sell",
+                        reference_slug: result.itemUsable.Data.Id.ToString() /// 아이템 품목/품번/SKU이 필요. itemId 는 GUID 라서 instance id 인것 같다
+                    );
+                }
+
             }
 
             UpdateAgentState(eval);
@@ -389,6 +517,7 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<BattleResult>().NextStage(eval);
             }
+
         }
 
         private void ResponseQuestReward(ActionBase.ActionEvaluation<QuestReward> eval)
@@ -423,6 +552,19 @@ namespace Nekoyume.BlockChain
                 string.Format(format, result.itemUsable.Data.GetLocalizedName()));
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+            if (agentAddress == States.Instance.AgentState.address) /// 확실히 본인일때만..
+            {
+                new TPStashEvent().CurrencyUse(
+                player_uuid: agentAddress.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)result.gold,
+                currency_total_quantity: (float)States.Instance.AgentState.gold,
+                reference_entity: "equipments",     //강화가 가능하므로 장비로 봐야..
+                reference_category_slug: "item_enhancement",
+                reference_slug: itemUsable.Data.Id.ToString());
+            }
+                
+
         }
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
@@ -440,6 +582,19 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
             UpdateWeeklyArenaState(eval);
 
+
+            ///[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
+            new TPStashEvent().CurrencyUse(
+                player_uuid: States.Instance.AgentState.address.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float) GameConfig.ArenaActivationCostNCG,
+                currency_total_quantity: (float)States.Instance.AgentState.gold,
+                reference_entity: "stage_pvp",
+                reference_category_slug: "arena",
+                reference_slug: "WeeklyArenaEntryFee"
+                );
+            
+
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
             actionFailPopup.Close();
@@ -455,6 +610,15 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             Widget.Find<LoadingScreen>().Close();
             UI.Notification.Push(MailType.System, $"Get Arena Reward: {gold}");
+            ///[TentuPlay] ArenaReward 기록
+            new TPStashEvent().CurrencyGet(
+                player_uuid: States.Instance.AgentState.address.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)gold,
+                currency_total_quantity: (float)agentState.gold,
+                reference_entity: "stage_pvp",
+                reference_category_slug: "arena",
+                reference_slug: "WeeklyArenaReward");
         }
 
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

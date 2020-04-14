@@ -11,9 +11,7 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
-#if UNITY_EDITOR || UNITY_STANDALONE
-using TentuPlay.Api;
-#endif
+
 
 namespace Nekoyume.Action
 {
@@ -176,19 +174,6 @@ namespace Nekoyume.Action
 
             Result = simulator.Log;
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-            //TentuPlay
-            TPStashEvent MyStashEvent = new TPStashEvent();
-            MyStashEvent.CurrencyUse(
-                player_uuid: agentState.address.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)100,
-                currency_total_quantity: (float)agentState.gold,
-                reference_entity: "stage_pvp",
-                reference_category_slug: "arena",
-                reference_slug: "WeeklyArena"
-                );
-#endif
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(WeeklyArenaAddress, weeklyArenaState.Serialize())

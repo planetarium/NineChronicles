@@ -5,9 +5,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
-#if UNITY_EDITOR || UNITY_STANDALONE
-using TentuPlay.Api;
-#endif
+
 
 namespace Nekoyume.Action
 {
@@ -56,16 +54,6 @@ namespace Nekoyume.Action
 
             agentState.gold += gold;
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-            new TPStashEvent().CurrencyGet(
-                player_uuid: agentState.address.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)gold,
-                currency_total_quantity: (float)agentState.gold,
-                reference_entity: "stage_pvp",
-                reference_category_slug: "arena",
-                reference_slug: "WeeklyArenaReward");
-#endif
             return states.SetState(ctx.Signer, agentState.Serialize());
         }
 

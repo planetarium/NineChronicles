@@ -11,9 +11,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Serilog;
-#if UNITY_EDITOR || UNITY_STANDALONE
-using TentuPlay.Api;
-#endif
 
 namespace Nekoyume.Action
 {
@@ -236,27 +233,7 @@ namespace Nekoyume.Action
             Log.Debug($"Buy Set ShopState: {sw.Elapsed}");
             Log.Debug($"Buy Total Executed Time: {ended - started}");
 
-#if UNITY_EDITOR || UNITY_STANDALONE
-            TPStashEvent MyStashEvent = new TPStashEvent();
-            // 구매자 골드 감소
-            MyStashEvent.CurrencyUse(
-                player_uuid: buyerAgentState.address.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)outPair.Value.Price,
-                currency_total_quantity: (float)buyerAgentState.gold,
-                reference_entity: "trades",
-                reference_category_slug: "buy",
-                reference_slug: sellerAgentState.address.ToHex());
-            // 판매자 골드 증가
-            MyStashEvent.CurrencyGet(
-                player_uuid: sellerAgentState.address.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)taxedPrice,
-                currency_total_quantity: (float)sellerAgentState.gold,
-                reference_entity: "trades",
-                reference_category_slug: "buy",
-                reference_slug: buyerAgentState.address.ToHex());
-#endif
+
 
             return states
                 .SetState(ctx.Signer, buyerAgentState.Serialize())
