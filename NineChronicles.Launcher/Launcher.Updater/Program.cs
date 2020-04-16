@@ -50,7 +50,22 @@ namespace Launcher.Updater
                 }
             }
 
-            Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                var launcherFileName = CurrentPlatform.LauncherFilename;
+                var cwd = new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
+                var launcherBinaryPath = Path.Combine(
+                    cwd,
+                    launcherFileName,
+                    "Contents",
+                    "MacOS",
+                    Path.GetFileNameWithoutExtension(launcherFileName));
+                Process.Start(launcherBinaryPath);
+            }
+            else
+            {
+                Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
+            }
         }
 
         private static async Task<string> DownloadBinariesAsync(
@@ -64,7 +79,7 @@ namespace Launcher.Updater
                 File.Delete(tempFilePath);
             }
             Console.Error.WriteLine($"Start download game from '{gameBinaryDownloadUri}' to {tempFilePath}.");
-            
+
             using var httpClient = new HttpClient();
             httpClient.Timeout = Timeout.InfiniteTimeSpan;
             using var dest = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
@@ -101,7 +116,7 @@ namespace Launcher.Updater
                 progressBar.Tick((int)(totalRead / 1024L));
                 progressBar.Message = $"Downloading from {gameBinaryDownloadUri}... ({(int)(totalRead / 1024L)}KB/{(int)(contentLength / 1024L)}KB)";
             }
-            
+
             Console.Error.WriteLine($"Finished download from '{gameBinaryDownloadUri}'!");
             return tempFilePath;
         }
@@ -111,10 +126,13 @@ namespace Launcher.Updater
             // TODO: implement a function to extract with file extension.
             Console.Error.WriteLine("Extracting downloaded game data...");
 
-            string prevSettingPath = Configuration.SettingFilePath + ".prev";
-            if (File.Exists(Configuration.SettingFilePath))
+            var cwd = new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
+
+            string settingPath = Path.Combine(cwd, Configuration.SettingFileName);
+            string prevSettingPath = settingPath + ".prev";
+            if (File.Exists(settingPath))
             {
-                File.Copy(Configuration.SettingFilePath, prevSettingPath, true);
+                File.Copy(settingPath, prevSettingPath, true);
             }
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -122,13 +140,13 @@ namespace Launcher.Updater
                 var process = Process.Start(
                     "tar",
                     $"-zxvf {EscapeShellArgument(path)} " +
-                    $"-C {EscapeShellArgument(CurrentPlatform.CurrentWorkingDirectory)}"
+                    $"-C {EscapeShellArgument(cwd)}"
                 );
                 process.WaitForExit();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                ZipFile.ExtractToDirectory(path, CurrentPlatform.CurrentWorkingDirectory, true);
+                ZipFile.ExtractToDirectory(path, cwd, true);
             }
             else
             {
@@ -138,8 +156,8 @@ namespace Launcher.Updater
             if (File.Exists(prevSettingPath))
             {
                 using JsonDocument prev = JsonDocument.Parse(File.ReadAllText(prevSettingPath));
-                using JsonDocument current = JsonDocument.Parse(File.ReadAllText(Configuration.SettingFilePath));
-                using FileStream output = File.OpenWrite(Configuration.SettingFilePath);
+                using JsonDocument current = JsonDocument.Parse(File.ReadAllText(settingPath));
+                using FileStream output = File.OpenWrite(settingPath);
                 using var writer = new Utf8JsonWriter(output, new JsonWriterOptions { Indented = true });
 
                 writer.WriteStartObject();

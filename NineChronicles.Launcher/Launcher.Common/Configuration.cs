@@ -40,7 +40,7 @@ namespace Launcher.Common
             }
         }
 
-        private const string SettingFileName = "launcher.json";
+        public const string SettingFileName = "launcher.json";
 
         public static string DefaultStorePath => Path.Combine(PlanetariumLocalApplicationPath, "9c");
 
