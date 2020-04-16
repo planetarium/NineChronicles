@@ -103,9 +103,7 @@ namespace Nekoyume.Game
             yield return new WaitUntil(() => agentInitialized);
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
-            Stage.objectPool.Initialize();
-            yield return null;
-            Stage.dropItemFactory.Initialize();
+            Stage.Initialize();
             yield return null;
 
             Observable.EveryUpdate()

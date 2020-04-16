@@ -596,8 +596,6 @@ GameObject:
   - component: {fileID: 1333831687}
   - component: {fileID: 1333831685}
   - component: {fileID: 1333831686}
-  - component: {fileID: 1333831688}
-  - component: {fileID: 1333831689}
   - component: {fileID: 1333831690}
   m_Layer: 0
   m_Name: Stage
@@ -621,8 +619,6 @@ MonoBehaviour:
   objectPool: {fileID: 1333831684}
   npcFactory: {fileID: 1333831690}
   dropItemFactory: {fileID: 1333831686}
-  skillController: {fileID: 1333831688}
-  buffController: {fileID: 1333831689}
   spawner: {fileID: 157041507}
   background: {fileID: 0}
   dummy: {fileID: 282372974}
@@ -853,32 +849,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7178cbccce1e6b84a935da57b2ad1039, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1333831688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333831681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 597902ba423844228c065355e009dce1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  skills: []
---- !u!114 &1333831689
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333831681}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c442313ba3114c33bfba88b928bd8075, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buffs: []
 --- !u!114 &1333831690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1058,8 +1028,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78734f88311b444e29ca92aa6b70be08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  screenWidth: 1136
-  screenHeight: 640
+  referenceResolution:
+    x: 1136
+    y: 640
   maintainWidth: 1
   adaptPosition: 0
   chaseData:

@@ -433,7 +433,7 @@ namespace Nekoyume.Game.Character
                 var position = transform.TransformPoint(0f, 1.7f, 0f);
                 var force = new Vector3(-0.1f, 0.5f);
                 var buff = info.Buff;
-                var effect = Game.instance.Stage.buffController.Get<BuffVFX>(target, buff);
+                var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target, buff);
                 effect.Play();
                 target.UpdateHpBar();
 //                Debug.LogWarning($"{Animator.Target.name}'s {nameof(ProcessBuff)} called: {CurrentHP}({Model.Stats.CurrentHP}) / {HP}({Model.Stats.LevelStats.HP}+{Model.Stats.BuffStats.HP})");
@@ -523,7 +523,10 @@ namespace Nekoyume.Game.Character
 
             var pos = transform.position;
             yield return CoAnimationCastAttack(infos.Any(skillInfo => skillInfo.Critical));
-            var effect = Game.instance.Stage.skillController.GetBlowCasting(pos, info);
+            var effect = Game.instance.Stage.SkillController.GetBlowCasting(
+                pos,
+                info.SkillCategory,
+                info.ElementalType);
             effect.Play();
             yield return new WaitForSeconds(0.2f);
 
@@ -538,7 +541,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Stage.skillController.Get(pos, info);
+            var effect = Game.instance.Stage.SkillController.Get(pos, info.ElementalType);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
@@ -553,7 +556,7 @@ namespace Nekoyume.Game.Character
             AudioController.instance.PlaySfx(sfxCode);
             Animator.Cast();
             var pos = transform.position;
-            var effect = Game.instance.Stage.buffController.Get(pos, info.Buff);
+            var effect = Game.instance.Stage.BuffController.Get(pos, info.Buff);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
 
@@ -618,7 +621,7 @@ namespace Nekoyume.Game.Character
                 if (target is null)
                     continue;
 
-                var effect = Game.instance.Stage.skillController.Get<SkillBlowVFX>(target, info);
+                var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, info);
                 if (effect is null)
                     continue;
 
@@ -643,7 +646,7 @@ namespace Nekoyume.Game.Character
                     continue;
 
                 var first = skillInfosFirst == info;
-                var effect = Game.instance.Stage.skillController.Get<SkillDoubleVFX>(target, info);
+                var effect = Game.instance.Stage.SkillController.Get<SkillDoubleVFX>(target, info);
                 if (effect is null)
                     continue;
 
@@ -676,7 +679,7 @@ namespace Nekoyume.Game.Character
             if (effectTarget is null)
                 yield break;
 
-            var effect = Game.instance.Stage.skillController.Get<SkillAreaVFX>(effectTarget, skillInfosFirst);
+            var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(effectTarget, skillInfosFirst);
             if (effect is null)
                 yield break;
 
