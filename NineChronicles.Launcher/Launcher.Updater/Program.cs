@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.Json;
@@ -20,9 +22,14 @@ namespace Launcher.Updater
     {
         const string MacOSLatestBinaryUrl = "https://download.nine-chronicles.com/latest/macOS.tar.gz";
         const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.zip";
+
         // NOTE: 9c-beta의 제네시스 해시을 하드코딩 해놓았습니다.
         private const string SnapshotUrl =
             "https://download.nine-chronicles.com/latest/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot.zip";
+
+        const string MacOSUpdaterLatestBinaryUrl = "https://9c-test.s3.ap-northeast-2.amazonaws.com/latest/Nine+Chronicles+Updater";
+        const string WindowsUpdaterLatestBinaryUrl = "https://9c-test.s3.ap-northeast-2.amazonaws.com/latest/Nine+Chronicles+Updater.exe";
+
 
         static async Task Main(string[] args)
         {
@@ -41,6 +48,8 @@ namespace Launcher.Updater
 
             var cts = new CancellationTokenSource();
             string binaryUrl;
+
+            await CheckUpdaterUpdate(cts.Token);
 
             if (args.Length > 0)
             {
@@ -101,6 +110,52 @@ namespace Launcher.Updater
             else
             {
                 Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
+            }
+        }
+
+        private static async Task CheckUpdaterUpdate(CancellationToken cancellationToken)
+        {
+            var localUpdaterPath = Process.GetCurrentProcess().MainModule.FileName;
+            var localUpdaterLastWriteTime = new FileInfo(localUpdaterPath).LastWriteTime.ToUniversalTime();
+            var client = new HttpClient();
+
+            const string dateTimeFormat = "yyyy-MM-dd-HH-mm-ss";
+            const string mtimeMetadataKey = "x-amz-meta-mtime";
+            var updaterBinaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                ? MacOSUpdaterLatestBinaryUrl
+                : WindowsUpdaterLatestBinaryUrl;
+            var resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
+            string mtimeMetadata = resp.Headers.GetValues(mtimeMetadataKey).First();
+            var latestUpdaterLastWriteTime = DateTime.ParseExact(
+                mtimeMetadata,
+                dateTimeFormat,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None);
+            if (latestUpdaterLastWriteTime > localUpdaterLastWriteTime)
+            {
+                Console.Error.WriteLine("It needs to update.");
+                // Download latest updater binary.
+                string tempFileName = Path.GetTempFileName();
+                await using var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write);
+                await resp.Content.CopyToAsync(fileStream);
+
+                // Replace updater and run.
+                string downloadedUpdaterPath = tempFileName;
+                string command =
+                    "sleep 3; " +
+                    $"mv {EscapeShellArgument(downloadedUpdaterPath)} {EscapeShellArgument(localUpdaterPath)}; " +
+                    $"chmod +x {EscapeShellArgument(localUpdaterPath)}; " +
+                    $"{EscapeShellArgument(localUpdaterPath)}";
+
+                ProcessStartInfo processStartInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    FileName = "/bin/bash",
+                    Arguments = $"-c {EscapeShellArgument(command)}"
+                };
+
+                Process.Start(processStartInfo);
+                Environment.Exit(0);
             }
         }
 
