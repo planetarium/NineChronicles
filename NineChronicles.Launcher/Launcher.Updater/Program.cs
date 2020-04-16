@@ -8,6 +8,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Launcher.Common;
+using Serilog;
+using Serilog.Events;
 using ShellProgressBar;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using static Launcher.Common.Utils;
@@ -21,6 +23,19 @@ namespace Launcher.Updater
 
         static async Task Main(string[] args)
         {
+            AppDomain.CurrentDomain.ProcessExit += FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.UnhandledException += FlushApplicationInsightLog;
+
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File(CurrentPlatform.UpdaterLogFilePath, fileSizeLimitBytes: 1024 * 1024)
+                .WriteTo.ApplicationInsights(
+                    Configuration.TelemetryClient,
+                    TelemetryConverter.Traces,
+                    LogEventLevel.Information)
+                .MinimumLevel.Debug()
+                .CreateLogger();
+
             var cts = new CancellationTokenSource();
             string binaryUrl;
 
@@ -46,7 +61,7 @@ namespace Launcher.Updater
                 }
                 catch (OperationCanceledException)
                 {
-                    Console.Error.WriteLine("task was cancelled.");
+                    Log.Information("task was cancelled.");
                 }
             }
 
@@ -78,7 +93,7 @@ namespace Launcher.Updater
             {
                 File.Delete(tempFilePath);
             }
-            Console.Error.WriteLine($"Start download game from '{gameBinaryDownloadUri}' to {tempFilePath}.");
+            Log.Information($"Start download game from '{gameBinaryDownloadUri}' to {tempFilePath}.");
 
             using var httpClient = new HttpClient();
             httpClient.Timeout = Timeout.InfiniteTimeSpan;
@@ -117,14 +132,14 @@ namespace Launcher.Updater
                 progressBar.Message = $"Downloading from {gameBinaryDownloadUri}... ({(int)(totalRead / 1024L)}KB/{(int)(contentLength / 1024L)}KB)";
             }
 
-            Console.Error.WriteLine($"Finished download from '{gameBinaryDownloadUri}'!");
+            Log.Information($"Finished download from '{gameBinaryDownloadUri}'!");
             return tempFilePath;
         }
 
         private static void ExtractBinaries(string path)
         {
             // TODO: implement a function to extract with file extension.
-            Console.Error.WriteLine("Extracting downloaded game data...");
+            Log.Information("Extracting downloaded game data...");
 
             var cwd = new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
 
@@ -179,7 +194,13 @@ namespace Launcher.Updater
                 File.Delete(prevSettingPath);
             }
 
-            Console.Error.WriteLine("Finished to extract game binary.");
+            Log.Information("Finished to extract game binary.");
+        }
+
+        private static void FlushApplicationInsightLog(object sender, EventArgs e)
+        {
+            Configuration.TelemetryClient?.Flush();
+            Thread.Sleep(1000);
         }
     }
 }

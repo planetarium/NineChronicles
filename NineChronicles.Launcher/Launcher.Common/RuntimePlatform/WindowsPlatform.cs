@@ -27,5 +27,8 @@ namespace Launcher.Common.RuntimePlatform
 
         public string LogFilePath =>
             Path.Combine(CurrentWorkingDirectory, "Logs", "launcher.log");
+
+        public string UpdaterLogFilePath =>
+            Path.Combine(CurrentWorkingDirectory, "Logs", "updater.log");
     }
 }

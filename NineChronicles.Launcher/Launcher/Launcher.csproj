@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -27,8 +27,6 @@
         <PackageReference Include="Qml.Net.OSXBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.0-dev-00839" />
-        <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     </ItemGroup>
 
     <ItemGroup Label="Package References (Publish Helper)">
@@ -41,10 +39,7 @@
         <ProjectReference Include="..\Launcher.Common\Launcher.Common.csproj" />
     </ItemGroup>
 
-    <Target Name="BundleMacOSApp"
-            Condition="'$(RuntimeIdentifier)' == 'osx-x64'"
-            DependsOnTargets="BundleQtRuntime"
-            AfterTargets="Publish">
+    <Target Name="BundleMacOSApp" Condition="'$(RuntimeIdentifier)' == 'osx-x64'" DependsOnTargets="BundleQtRuntime" AfterTargets="Publish">
       <Message Importance="high" Text="'BundleMacOSApp' Called." />
       <Copy SourceFiles="$(CFBundleIconFile)" DestinationFiles="$(OutputPath)/$(CFBundleIconFile)" />
       <Message Importance="high" Text="Copied icon: $(OutputPath)/$(CFBundleIconFile)" />
@@ -54,14 +49,9 @@
       <Message Importance="high" Text="Cleaned up temporary assets from: $(PublishDir)/" />
     </Target>
 
-    <UsingTask TaskName="NSubsys.Tasks.NSubsys"
-      AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll"
-      Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
+    <UsingTask TaskName="NSubsys.Tasks.NSubsys" AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
 
-    <Target Name="BundleWindowsExe"
-            Condition="'$(RuntimeIdentifier)' == 'win-x64'"
-            DependsOnTargets="BundleQtRuntime"
-            AfterTargets="Publish">
+    <Target Name="BundleWindowsExe" Condition="'$(RuntimeIdentifier)' == 'win-x64'" DependsOnTargets="BundleQtRuntime" AfterTargets="Publish">
       <Message Importance="high" Text="'BundleWindowsExeApplication' Called." />
       <NSubsys TargetFile="$(PublishDir)\$(AssemblyName).exe" />
     </Target>

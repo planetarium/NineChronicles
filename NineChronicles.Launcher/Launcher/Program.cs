@@ -1,10 +1,12 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading.Tasks;
+using System.Threading;
 using Qml.Net;
 using Qml.Net.Runtimes;
 using Serilog;
+using Serilog.Events;
+using Launcher.Common;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
 namespace Launcher
@@ -13,6 +15,9 @@ namespace Launcher
     {
         public static int Main(string[] args)
         {
+            AppDomain.CurrentDomain.ProcessExit += FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.UnhandledException += FlushApplicationInsightLog;
+
             string procName = Process.GetCurrentProcess().ProcessName;
             Process[] ps = Process.GetProcessesByName(procName);
             if (ps.Length > 1)
@@ -25,10 +30,17 @@ namespace Launcher
                 File.Delete(CurrentPlatform.RunCommandFilePath);
             }
 
+            Configuration.TelemetryClient.Context.Session.Id = Guid.NewGuid().ToString();
+
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.File(CurrentPlatform.LogFilePath, rollingInterval: RollingInterval.Day)
-                .MinimumLevel.Debug().CreateLogger();
+                .WriteTo.File(CurrentPlatform.LogFilePath, fileSizeLimitBytes: 20 * 1024 * 1024)
+                .WriteTo.ApplicationInsights(
+                    Configuration.TelemetryClient,
+                    TelemetryConverter.Traces,
+                    LogEventLevel.Information)
+                .MinimumLevel.Debug()
+                .CreateLogger();
 
             // Set current directory to executable path.
             Log.Logger.Debug("Current working directory: {0}", CurrentPlatform.CurrentWorkingDirectory);
@@ -46,6 +58,12 @@ namespace Launcher
             Qml.Net.Qml.RegisterType<LibplanetController>("LibplanetLauncher");
             qmlEngine.Load("qml/Main.qml");
             return application.Exec();
+        }
+
+        private static void FlushApplicationInsightLog(object sender, EventArgs e)
+        {
+            Configuration.TelemetryClient?.Flush();
+            Thread.Sleep(1000);
         }
     }
 }

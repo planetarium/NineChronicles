@@ -1,7 +1,8 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using Serilog;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
@@ -9,6 +10,11 @@ namespace Launcher.Common
 {
     public static class Configuration
     {
+        private static readonly string InstrumentationKey = "953da29a-95f7-4f04-9efe-d48c42a1b53a";
+
+        public static readonly TelemetryClient TelemetryClient =
+            new TelemetryClient(new TelemetryConfiguration(InstrumentationKey));
+
         public static LauncherSettings LoadSettings()
         {
             InitializeSettingFile();
