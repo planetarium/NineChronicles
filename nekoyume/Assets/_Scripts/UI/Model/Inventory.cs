@@ -12,16 +12,20 @@ namespace Nekoyume.UI.Model
 {
     public class Inventory : IDisposable
     {
-        public readonly ReactiveProperty<ItemType> State = new ReactiveProperty<ItemType>(ItemType.Equipment);
-        public readonly ReactiveCollection<InventoryItem> Consumables = new ReactiveCollection<InventoryItem>();
-        public readonly ReactiveCollection<InventoryItem> Equipments = new ReactiveCollection<InventoryItem>();
-        public readonly ReactiveCollection<InventoryItem> Materials = new ReactiveCollection<InventoryItem>();
+        public readonly ReactiveProperty<ItemType> State =
+            new ReactiveProperty<ItemType>(ItemType.Equipment);
+
+        public readonly ReactiveCollection<InventoryItem> Consumables =
+            new ReactiveCollection<InventoryItem>();
+
+        public readonly ReactiveCollection<InventoryItem> Equipments =
+            new ReactiveCollection<InventoryItem>();
+
+        public readonly ReactiveCollection<InventoryItem> Materials =
+            new ReactiveCollection<InventoryItem>();
 
         public readonly ReactiveProperty<InventoryItemView> SelectedItemView =
             new ReactiveProperty<InventoryItemView>();
-
-        public readonly ReactiveProperty<InventoryItem> SelectedItemViewModel =
-            new ReactiveProperty<InventoryItem>();
 
         public readonly ReactiveProperty<Func<InventoryItem, bool>> DimmedFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
@@ -32,7 +36,8 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
-        public readonly Subject<InventoryItemView> OnDoubleClickItemView = new Subject<InventoryItemView>();
+        public readonly Subject<InventoryItemView> OnDoubleClickItemView =
+            new Subject<InventoryItemView>();
 
         public Inventory(ItemType stateType = ItemType.Equipment)
         {
@@ -52,7 +57,6 @@ namespace Nekoyume.UI.Model
             Equipments.Dispose();
             Materials.Dispose();
             SelectedItemView.Dispose();
-            SelectedItemViewModel.Dispose();
             DimmedFunc.Dispose();
             EquippedEnabledFunc.Dispose();
             OnDoubleClickItemView.Dispose();
@@ -63,7 +67,9 @@ namespace Nekoyume.UI.Model
             RemoveItemsAll();
 
             if (inventory is null)
+            {
                 return;
+            }
 
             foreach (var item in inventory.Items)
             {
@@ -82,14 +88,18 @@ namespace Nekoyume.UI.Model
             item.OnClick.Subscribe(model =>
             {
                 if (!(model is InventoryItem inventoryItem))
+                {
                     return;
+                }
 
                 SubscribeItemOnClick(inventoryItem.View);
             });
             item.OnDoubleClick.Subscribe(model =>
             {
                 if (!(model is InventoryItem inventoryItem))
+                {
                     return;
+                }
 
                 DeselectItemView();
                 OnDoubleClickItemView.OnNext(inventoryItem.View);
@@ -111,7 +121,9 @@ namespace Nekoyume.UI.Model
                 case ItemType.Consumable:
                     var consumable = (Consumable) itemBase;
                     if (consumable.RequiredBlockIndex > blockIndex)
+                    {
                         break;
+                    }
 
                     inventoryItem = CreateInventoryItem(consumable, count);
                     Consumables.Add(inventoryItem);
@@ -119,7 +131,9 @@ namespace Nekoyume.UI.Model
                 case ItemType.Equipment:
                     var equipment = (Equipment) itemBase;
                     if (equipment.RequiredBlockIndex > blockIndex)
+                    {
                         break;
+                    }
 
                     inventoryItem = CreateInventoryItem(equipment, count);
                     inventoryItem.EquippedEnabled.Value = equipment.equipped;
@@ -152,23 +166,31 @@ namespace Nekoyume.UI.Model
             {
                 case ItemType.Consumable:
                     if (!TryGetConsumable((ItemUsable) itemBase, out inventoryItem))
+                    {
                         break;
+                    }
 
                     Consumables.Remove(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     if (!TryGetEquipment((ItemUsable) itemBase, out inventoryItem))
+                    {
                         break;
+                    }
 
                     Equipments.Remove(inventoryItem);
                     break;
                 case ItemType.Material:
                     if (!TryGetMaterial((Material) itemBase, out inventoryItem))
+                    {
                         break;
+                    }
 
                     inventoryItem.Count.Value -= count;
                     if (inventoryItem.Count.Value > 0)
+                    {
                         break;
+                    }
 
                     Materials.Remove(inventoryItem);
                     break;
@@ -182,7 +204,9 @@ namespace Nekoyume.UI.Model
             foreach (var countEditableItem in collection)
             {
                 if (countEditableItem is null)
+                {
                     continue;
+                }
 
                 RemoveItem(countEditableItem.ItemBase.Value, countEditableItem.Count.Value);
             }
@@ -326,28 +350,34 @@ namespace Nekoyume.UI.Model
 
         public void SelectItemView(InventoryItemView view)
         {
-            if (view is null ||
-                view.Model is null)
+            if (view is null)
+            {
                 return;
+            }
 
             DeselectItemView();
 
+            if (!(view.Model is null))
+            {
+                view.Model.Selected.Value = true;
+            }
+
             SelectedItemView.Value = view;
-            SelectedItemViewModel.Value = view.Model;
-            SelectedItemViewModel.Value.Selected.Value = true;
             SetGlowedAll(false);
         }
 
         public void DeselectItemView()
         {
-            if (SelectedItemView.Value is null ||
-                SelectedItemViewModel.Value is null)
+            if (SelectedItemView.Value is null)
             {
                 return;
             }
 
-            SelectedItemViewModel.Value.Selected.Value = false;
-            SelectedItemViewModel.Value = null;
+            if (!(SelectedItemView.Value.Model is null))
+            {
+                SelectedItemView.Value.Model.Selected.Value = false;
+            }
+
             SelectedItemView.Value = null;
         }
 
