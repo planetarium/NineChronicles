@@ -24,9 +24,8 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Spine.Unity;
 using UnityEngine;
-#if UNITY_EDITOR || UNITY_STANDALONE
 using TentuPlay.Api;
-#endif
+
 namespace Nekoyume.Game
 {
     public class Stage : MonoBehaviour, IStage
@@ -253,8 +252,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayStage(BattleLog log)
         {
-
-#if UNITY_EDITOR || UNITY_STANDALONE
+            //[TentuPlay] PlayStage 시작 기록
             new TPStashEvent().PlayerStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "HackAndSlash",
@@ -263,7 +261,7 @@ namespace Nekoyume.Game
                 stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
                 is_autocombat_committed: true
                 );
-#endif
+
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
@@ -277,7 +275,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayRankingBattle(BattleLog log)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE
+            //[TentuPlay] RankingBattle 시작 기록
             new TPStashEvent().PlayerStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "RankingBattle",
@@ -286,8 +284,6 @@ namespace Nekoyume.Game
                 stage_level: null,
                 is_autocombat_committed: true
                 );
-#endif
-
 
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
@@ -422,7 +418,8 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().Show(_battleResultModel);
             yield return null;
 
-#if UNITY_EDITOR || UNITY_STANDALONE
+
+            //[TentuPlay] PlayStage 끝 기록
             string stage_status = null;
             switch (log.result)
             {
@@ -447,8 +444,6 @@ namespace Nekoyume.Game
                 is_autocombat_committed: true
                 );
             new TPUploadData().UploadData();
-
-# endif
 
         }
 
@@ -481,7 +476,7 @@ namespace Nekoyume.Game
             Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
             yield return null;
 
-#if UNITY_EDITOR || UNITY_STANDALONE
+            //[TentuPlay] RankingBattle 끝 기록
             string stage_status = null;
             switch (log.result)
             {
@@ -506,8 +501,6 @@ namespace Nekoyume.Game
                 is_autocombat_committed: true
                 );
             new TPUploadData().UploadData();
-
-#endif
         }
 
         public IEnumerator CoSpawnPlayer(Player character)

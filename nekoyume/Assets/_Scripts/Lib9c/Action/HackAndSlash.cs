@@ -13,9 +13,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
-#if UNITY_EDITOR || UNITY_STANDALONE
-using TentuPlay.Api;
-# endif
 
 namespace Nekoyume.Action
 {

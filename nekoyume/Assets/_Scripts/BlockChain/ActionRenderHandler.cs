@@ -11,7 +11,6 @@ using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
-
 using TentuPlay.Api;
 
 namespace Nekoyume.BlockChain
@@ -85,12 +84,12 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-                    ///[TentuPlay] RewardGold 기록
+                    //[TentuPlay] RewardGold 기록
                     new TPStashEvent().CurrencyGet(
                         player_uuid: States.Instance.AgentState.address.ToHex(),
                         currency_slug: "gold",
                         currency_quantity: (float)eval.Action.Gold,
-                        currency_total_quantity: (float)(States.Instance.AgentState.gold + eval.Action.Gold), // 일관성 유지를 위해 일부러 UpdateAgent 호출전에 더해서 기록
+                        currency_total_quantity: (float)(States.Instance.AgentState.gold + eval.Action.Gold),
                         reference_entity: "bonuses",
                         reference_category_slug: "reward_gold",
                         reference_slug: "RewardGold");
@@ -171,53 +170,47 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
-
-                    ///[TentuPlay] RankingReward 기록
-                    ///내 agent만 기록하기 위해..
+                    //[TentuPlay] RankingReward 기록
                     Address[] agentAddresses = eval.Action.agentAddresses;
                     for (var index = 0; index < agentAddresses.Length; index++)
                     {
                         Address thisAddress = agentAddresses[index];
-
-                        if (thisAddress == States.Instance.AgentState.address)  // 내꺼일때만
+                        
+                        if(index < 3) // index 는 3보다 작아야 => 0,1,2 만가능
                         {
-                            if(index < 3) // index 는 3보다 작아야 => 0,1,2 만가능
+                            try
                             {
-                                try
-                                {
-                                    float gold = 0.0F;
+                                float gold = 0.0F;
 
-                                    // 길어서 죄송합니다
-
-                                    if (index == 0)
-                                    {
-                                        gold = (float) eval.Action.gold1;
-                                    }
-                                    else if (index == 1)
-                                    {
-                                        gold = (float)eval.Action.gold2;
-                                    }
-                                    else
-                                    {
-                                        gold = (float)eval.Action.gold3;
-                                    }
-                                    new TPStashEvent().CurrencyGet(
-                                        player_uuid: States.Instance.AgentState.address.ToHex(),
-                                        currency_slug: "gold",
-                                        currency_quantity: gold,
-                                        currency_total_quantity: (float)(States.Instance.AgentState.gold) + gold, // UpdateAgentState 가 아직 호출 안된 상황이라, 현재값(이전값)에 더한 값으로 기록
-                                        reference_entity: "quests",
-                                        reference_category_slug: "arena",
-                                        reference_slug: "RankingRewardIndex" + index.ToString()
-                                        );                                    
-                                }
-                                catch
+                                if (index == 0)
                                 {
-                                    // 혹시몰라서 게임엔 지장 없게
+                                    gold = (float) eval.Action.gold1;
                                 }
+                                else if (index == 1)
+                                {
+                                    gold = (float)eval.Action.gold2;
+                                }
+                                else
+                                {
+                                    gold = (float)eval.Action.gold3;
+                                }
+                                new TPStashEvent().CurrencyGet(
+                                    player_uuid: States.Instance.AgentState.address.ToHex(),
+                                    currency_slug: "gold",
+                                    currency_quantity: gold,
+                                    currency_total_quantity: (float)(States.Instance.AgentState.gold) + gold,
+                                    reference_entity: "quests",
+                                    reference_category_slug: "arena",
+                                    reference_slug: "RankingRewardIndex" + index.ToString()
+                                    );                                    
                             }
+                            catch
+                            {
+                                // TentuPlay 실행 시 혹시 에러가 나더라도 넘어가도록.
+                            }
+                        }
 
-                        }                    
+                                           
                                                                      
                     }
 
@@ -300,18 +293,15 @@ namespace Nekoyume.BlockChain
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
-            ///[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
-            if (agentAddress == States.Instance.AgentState.address) /// 확실히 본인일때만..
-            {
-                new TPStashEvent().CurrencyUse(
-                    player_uuid: States.Instance.AgentState.address.ToHex(),
-                    currency_slug: "gold",
-                    currency_quantity: (float)agentState.modifiedGold,
-                    currency_total_quantity: (float)(States.Instance.AgentState.gold - agentState.modifiedGold), // 일관성 유지를 위해 UpdateAgetnState 이전에 호출하고 뺀 값을 기록
-                    reference_entity: "items_consumables",
-                    reference_category_slug: "consumables_rapid_combination",
-                    reference_slug: slot.Result.itemUsable.Data.Id.ToString());
-            }
+            //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
+            new TPStashEvent().CurrencyUse(
+                player_uuid: States.Instance.AgentState.address.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)agentState.modifiedGold,
+                currency_total_quantity: (float)(States.Instance.AgentState.gold - agentState.modifiedGold),
+                reference_entity: "items_consumables",
+                reference_category_slug: "consumables_rapid_combination",
+                reference_slug: slot.Result.itemUsable.Data.Id.ToString());
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -345,18 +335,15 @@ namespace Nekoyume.BlockChain
             );
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
-            ///[TentuPlay] Equipment 합성에 사용한 골드 기록
-            if (agentAddress == States.Instance.AgentState.address) /// 확실히 본인일때만..
-            {
-                new TPStashEvent().CurrencyUse(
-                    player_uuid: States.Instance.AgentState.address.ToHex(),
-                    currency_slug: "gold",
-                    currency_quantity: (float)result.gold,
-                    currency_total_quantity: (float)(States.Instance.AgentState.gold - result.gold), // 일관성 유지를 위해 UpdateAgentState 이전에 호출하고 뺀 값을 기록
-                    reference_entity: "items_equipments",
-                    reference_category_slug: "equipments_combination",
-                    reference_slug: result.itemUsable.Data.Id.ToString());
-            }
+            //[TentuPlay] Equipment 합성에 사용한 골드 기록
+            new TPStashEvent().CurrencyUse(
+                player_uuid: States.Instance.AgentState.address.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)result.gold,
+                currency_total_quantity: (float)(States.Instance.AgentState.gold - result.gold),
+                reference_entity: "items_equipments",
+                reference_category_slug: "equipments_combination",
+                reference_slug: result.itemUsable.Data.Id.ToString());
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -390,18 +377,15 @@ namespace Nekoyume.BlockChain
             UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
-            ///[TentuPlay] Consumable 합성에 사용한 골드 기록
-            if (agentAddress == States.Instance.AgentState.address) /// 확실히 본인일때만..
-            {
-                new TPStashEvent().CurrencyUse(
-                    player_uuid: States.Instance.AgentState.address.ToHex(),
-                    currency_slug: "gold",
-                    currency_quantity: (float)result.gold,
-                    currency_total_quantity: (float)(States.Instance.AgentState.gold - result.gold), // 일관성 유지를 위해 UpdateAgentState 이전에 호출하고 뺀 값을 기록
-                    reference_entity: "items_consumables",
-                    reference_category_slug: "consumables_combination",
-                    reference_slug: result.itemUsable.Data.Id.ToString());
-            }
+            //[TentuPlay] Consumable 합성에 사용한 골드 기록
+            new TPStashEvent().CurrencyUse(
+                player_uuid: States.Instance.AgentState.address.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)result.gold,
+                currency_total_quantity: (float)(States.Instance.AgentState.gold - result.gold),
+                reference_entity: "items_consumables",
+                reference_category_slug: "consumables_combination",
+                reference_slug: result.itemUsable.Data.Id.ToString());
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -454,17 +438,15 @@ namespace Nekoyume.BlockChain
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
 
-                ///[TentuPlay] 아이템 구입, 골드 사용
+                //[TentuPlay] 아이템 구입, 골드 사용
                 new TPStashEvent().CurrencyUse(
                     player_uuid: States.Instance.AgentState.address.ToHex(),
                     currency_slug: "gold",
                     currency_quantity: (float) price,
-                    currency_total_quantity: (float) (States.Instance.AgentState.gold - price),  // 이 시점에서는 States.Instance.AgentState.gold 에 아직 반영이 안되었다고 함. 그래서 뺀 값으로 기록
-                                                                                                 // 그런데 위의 LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price); 를 보면 구매한 사람에게 Price 골드가 더해지는것 같다..
-                                                                                                 // 돈주고 샀으니깐 감소해야 하는것 아닐까?
+                    currency_total_quantity: (float) (States.Instance.AgentState.gold - price),
                     reference_entity: "trades",
                     reference_category_slug: "buy",
-                    reference_slug: result.itemUsable.Data.Id.ToString()  /// 아이템 품목/품번/SKU이 필요. itemId 는 GUID 라서 instance id 인것 같다
+                    reference_slug: result.itemUsable.Data.Id.ToString()  // 아이템 품목/품번/SKU이 필요. itemId 는 GUID 라서 instance id 인것 같다
                     );
 
             }
@@ -487,22 +469,16 @@ namespace Nekoyume.BlockChain
                         .NameWithHash;
                 UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, result.itemUsable.GetLocalizedName()));
 
-                ///[TentuPlay] 아이템 판매완료, 골드 증가
-                ///확실히 Seller 가 나일때만
-                if (sellerAgentAddress == States.Instance.AgentState.address)
-                {
-                    new TPStashEvent().CurrencyGet(
-                        player_uuid: States.Instance.AgentState.address.ToHex(), // seller 가 나(게임플레이어)
-                        currency_slug: "gold",
-                        currency_quantity: (float)gold, // 부호 모르겠다 -_-;; 어쨌든 이 메소드는 양수를 받아야 한다 (골드 획득량)
-                        currency_total_quantity: (float)(States.Instance.AgentState.gold + gold), // 이 시점에서는 States.Instance.AgentState.gold 에 아직 반영이 안되었다고 함. 그래서 더한 값으로 기록
-                                                                                                  //그런데 위의 LocalStateModifier.ModifyAgentGold(sellerAgentAddress, -gold); 여기서는 판매자의골드르 감소시키는 것으로 보인다
-                                                                                                  // 팔았으니깐 돈을 받아야 하는것 아닐까? 위의 구매자 케이스와 반대다.. 부호가 반대인걸까?
-                        reference_entity: "trades",
-                        reference_category_slug: "sell",
-                        reference_slug: result.itemUsable.Data.Id.ToString() /// 아이템 품목/품번/SKU이 필요. itemId 는 GUID 라서 instance id 인것 같다
-                    );
-                }
+                //[TentuPlay] 아이템 판매완료, 골드 증가
+                new TPStashEvent().CurrencyGet(
+                    player_uuid: States.Instance.AgentState.address.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float)gold, //gold의 부호 확인 필요.
+                    currency_total_quantity: (float)(States.Instance.AgentState.gold + gold),
+                    reference_entity: "trades",
+                    reference_category_slug: "sell",
+                    reference_slug: result.itemUsable.Data.Id.ToString() // 아이템 품목/품번/SKU이 필요. itemId 는 GUID 라서 instance id 인것 같다
+                );
 
             }
 
@@ -574,17 +550,14 @@ namespace Nekoyume.BlockChain
             UI.Notification.Push(MailType.Workshop,
                 string.Format(format, result.itemUsable.Data.GetLocalizedName()));
 
-            if (agentAddress == States.Instance.AgentState.address) /// 확실히 본인일때만..
-            {
-                new TPStashEvent().CurrencyUse(
+            new TPStashEvent().CurrencyUse(
                 player_uuid: agentAddress.ToHex(),
                 currency_slug: "gold",
                 currency_quantity: (float)result.gold,
-                currency_total_quantity: (float)(States.Instance.AgentState.gold - result.gold), // 일관성 유지를 위해 뺀 겂으로
-                reference_entity: "items_equipments",     //강화가 가능하므로 장비로 봐야..
+                currency_total_quantity: (float)(States.Instance.AgentState.gold - result.gold),
+                reference_entity: "items_equipments",     //강화가 가능하므로 장비
                 reference_category_slug: "item_enhancement",
                 reference_slug: itemUsable.Data.Id.ToString());
-            }
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);                
@@ -602,12 +575,12 @@ namespace Nekoyume.BlockChain
             // LocalStateModifier.ModifyWeeklyArenaGold(-GameConfig.ArenaActivationCostNCG);
             LocalStateModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
 
-            ///[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
+            //[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
             new TPStashEvent().CurrencyUse(
                 player_uuid: States.Instance.AgentState.address.ToHex(),
                 currency_slug: "gold",
                 currency_quantity: (float)GameConfig.ArenaActivationCostNCG,
-                currency_total_quantity: (float) (States.Instance.AgentState.gold - GameConfig.ArenaActivationCostNCG), // UpdateAgentState 전이므로 뺀 값으로 기록..
+                currency_total_quantity: (float) (States.Instance.AgentState.gold - GameConfig.ArenaActivationCostNCG),
                 reference_entity: "quests",
                 reference_category_slug: "arena",
                 reference_slug: "WeeklyArenaEntryFee"
@@ -636,12 +609,12 @@ namespace Nekoyume.BlockChain
             var gold = agentState.gold - currentAgentState.gold;
 
 
-            ///[TentuPlay] ArenaReward 기록
+            //[TentuPlay] ArenaReward 기록
             new TPStashEvent().CurrencyGet(
                 player_uuid: States.Instance.AgentState.address.ToHex(),
                 currency_slug: "gold",
                 currency_quantity: (float)gold,
-                currency_total_quantity: (float) (currentAgentState.gold + gold), // 일관성 유지를 위해 일부러 UpdateAgentState 이전에 호출, 더한 값으로 기록
+                currency_total_quantity: (float) (currentAgentState.gold + gold),
                 reference_entity: "quests",
                 reference_category_slug: "arena",
                 reference_slug: "WeeklyArenaReward");
