@@ -35,27 +35,18 @@ namespace Tests.EditMode.VFX
         [Test]
         public void GetBlowCastingVFXTest()
         {
-            foreach (var skillCategory in (SkillCategory[]) Enum.GetValues(typeof(SkillCategory)))
+            foreach (var elementalType in (ElementalType[]) Enum.GetValues(typeof(ElementalType)))
             {
-                if (skillCategory != SkillCategory.BlowAttack)
+                if (elementalType == ElementalType.Normal)
                 {
                     continue;
                 }
 
-                foreach (var elementalType in
-                    (ElementalType[]) Enum.GetValues(typeof(ElementalType)))
-                {
-                    if (elementalType == ElementalType.Normal)
-                    {
-                        continue;
-                    }
-
-                    var vfx = _skillController.GetBlowCasting(
-                        Vector3.zero,
-                        skillCategory,
-                        elementalType);
-                    Assert.IsNotNull(vfx);
-                }
+                var vfx = _skillController.GetBlowCasting(
+                    Vector3.zero,
+                    SkillCategory.BlowAttack,
+                    elementalType);
+                Assert.IsNotNull(vfx);
             }
         }
     }
