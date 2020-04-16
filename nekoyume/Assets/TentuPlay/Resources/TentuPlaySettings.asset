@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71ae708af686af44888b2d00efe2de6e, type: 3}
+  m_Script: {fileID: -1011055993, guid: 5beca40043f4a26408a3e0f1b215c12e, type: 3}
   m_Name: TentuPlaySettings
   m_EditorClassIdentifier: 
-  restBaseUrl: https://api.tentuplay.io/v1/unity
+  restBaseUrl: https://api.tentuplay.io/v2/unity
   apiKey: 
   secret: 
   debug: 0
   authMode: api_key_plain
   useStaticTP: 1
   usePersistDBConn: 0
-  autoUpload: 1
+  autoUpload: 0
   deferredSendIntervalSec: 1200
