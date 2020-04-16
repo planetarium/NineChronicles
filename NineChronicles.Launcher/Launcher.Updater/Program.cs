@@ -93,7 +93,11 @@ namespace Launcher.Updater
             {
                 File.Delete(tempFilePath);
             }
-            Log.Information($"Start download game from '{gameBinaryDownloadUri}' to {tempFilePath}.");
+            Log.Information(
+                "Start download game from {DownloadUri} to {TempFilePath}.",
+                gameBinaryDownloadUri,
+                tempFilePath
+            );
 
             using var httpClient = new HttpClient();
             httpClient.Timeout = Timeout.InfiniteTimeSpan;
@@ -132,7 +136,7 @@ namespace Launcher.Updater
                 progressBar.Message = $"Downloading from {gameBinaryDownloadUri}... ({(int)(totalRead / 1024L)}KB/{(int)(contentLength / 1024L)}KB)";
             }
 
-            Log.Information($"Finished download from '{gameBinaryDownloadUri}'!");
+            Log.Information("Finished download from {DownloadUri}!", gameBinaryDownloadUri);
             return tempFilePath;
         }
 
