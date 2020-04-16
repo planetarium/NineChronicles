@@ -64,6 +64,7 @@ namespace Nekoyume.UI.Model
 
         public void ResetItems(Nekoyume.Model.Item.Inventory inventory)
         {
+            DeselectItemView();
             RemoveItemsAll();
 
             if (inventory is null)
