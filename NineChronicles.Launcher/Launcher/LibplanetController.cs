@@ -135,10 +135,7 @@ namespace Launcher
 
         public bool Login(string addressHex, string passphrase)
         {
-            var address = new Address(addressHex);
-            ProtectedPrivateKey protectedPrivateKey = KeyStore.List()
-                .Select(pair => pair.Item2)
-                .First(ppk => ppk.Address.Equals(address));
+            (_, ProtectedPrivateKey protectedPrivateKey) = FindKey(addressHex);
             try
             {
                 PrivateKey = protectedPrivateKey.Unprotect(passphrase);
@@ -151,6 +148,27 @@ namespace Launcher
             {
                 return false;
             }
+        }
+
+        public void RevokeKey(string addressHex)
+        {
+            (Guid keyId, _) = FindKey(addressHex);
+            KeyStore.Remove(keyId);
+            this.ActivateProperty(ctrl => ctrl.KeyStoreOptions);
+        }
+
+        private (Guid, ProtectedPrivateKey) FindKey(string addressHex)
+        {
+            var address = new Address(addressHex);
+            foreach (Tuple<Guid, ProtectedPrivateKey> pair in KeyStore.List())
+            {
+                if (pair.Item2.Address.Equals(address))
+                {
+                    return pair.ToValueTuple();
+                }
+            }
+
+            throw new KeyNotFoundException("No key of such address: " + addressHex);
         }
 
         private bool NewAppProtocolVersionEncountered(

@@ -137,6 +137,30 @@ Item {
                     text: "Clear cache"
                     onTriggered: ctrl.clearStore()
                 }
+
+                Menu {
+                    id: keyRevokationMenu
+                    title: "Revoke key…"
+                    visible: !ctrl.gameRunning && !ctrl.keyStoreEmpty
+
+                    Instantiator {
+                        model: Net.toListModel(ctrl.keyStoreOptions)
+
+                        MenuItem {
+                            text: modelData
+                            onTriggered: {
+                                const addressHex = text
+                                showMessage(
+                                    `Revokes the private key corresponding to the address ${addressHex}.`,
+                                    () => ctrl.revokeKey(addressHex)
+                                )
+                            }
+                        }
+
+                        onObjectAdded: keyRevokationMenu.insertItem(index, object)
+                        onObjectRemoved: keyRevokationMenu.removeItem(object)
+                    }
+                }
             }
 
             MenuItem {
