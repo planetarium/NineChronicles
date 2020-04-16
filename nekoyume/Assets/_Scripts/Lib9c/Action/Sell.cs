@@ -51,53 +51,68 @@ namespace Nekoyume.Action
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug($"Sell exec started.");
+            Log.Debug("Sell exec started.");
 
 
             if (price < 0)
             {
-                return states;
+                return LogError(context, "Aborted as the price is less than zero: {Price}.", price);
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, sellerAvatarAddress, out AgentState agentState, out AvatarState avatarState))
             {
-                return states;
+                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
             }
             sw.Stop();
-            Log.Debug($"Sell Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug("Sell Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
             
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                out var world))
-                return states;
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+            {
+                return LogError(context, "Aborted as the WorldInformation was failed to load.");
+            }
 
             if (world.StageClearedId < GameConfig.RequireClearedStageLevel.ActionsInShop)
             {
                 // 스테이지 클리어 부족 에러.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the signer is not cleared the minimum stage level required to sell items yet: {ClearedLevel} < {RequiredLevel}.",
+                    world.StageClearedId,
+                    GameConfig.RequireClearedStageLevel.ActionsInShop
+                );
             }
 
             if (!states.TryGetState(ShopState.Address, out Bencodex.Types.Dictionary d))
             {
-                return states;
+                return LogError(context, "Aborted as the shop state was failed to load.");
             }
             var shopState = new ShopState(d);
             sw.Stop();
-            Log.Debug($"Sell Get ShopState: {sw.Elapsed}");
+            Log.Debug("Sell Get ShopState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            Log.Debug($"Execute Sell. seller : `{sellerAvatarAddress}`");
+            Log.Debug("Execute Sell; seller: {SellerAvatarAddress}", sellerAvatarAddress);
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
             if (!avatarState.inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable nonFungibleItem))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the NonFungibleItem ({@Item}) was failed to load from avatar's inventory.",
+                    itemUsable
+                );
             }
             
             if (nonFungibleItem.RequiredBlockIndex > context.BlockIndex)
             {
                 // 필요 블럭 인덱스 불충분 에러.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the equipment to enhance ({@Item}) is not available yet; it will be available at the block #{RequiredBlockIndex}.",
+                    itemUsable,
+                    nonFungibleItem.RequiredBlockIndex
+                );
             }
 
             avatarState.inventory.RemoveNonFungibleItem(nonFungibleItem);
@@ -114,7 +129,7 @@ namespace Nekoyume.Action
                 price
             ));
             sw.Stop();
-            Log.Debug($"Sell Get Register Item: {sw.Elapsed}");
+            Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
@@ -122,14 +137,14 @@ namespace Nekoyume.Action
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());
             sw.Stop();
-            Log.Debug($"Sell Set AvatarState: {sw.Elapsed}");
+            Log.Debug("Sell Set AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             states = states.SetState(ShopState.Address, shopState.Serialize());
             sw.Stop();
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug($"Sell Set ShopState: {sw.Elapsed}");
-            Log.Debug($"Sell Total Executed Time: {ended - started}");
+            Log.Debug("Sell Set ShopState: {Elapsed}", sw.Elapsed);
+            Log.Debug("Sell Total Executed Time: {Elapsed}", ended - started);
 
             return states;
         }

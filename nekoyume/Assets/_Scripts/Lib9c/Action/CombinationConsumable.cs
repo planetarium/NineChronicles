@@ -126,35 +126,46 @@ namespace Nekoyume.Action
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
-                return states;
+                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
             }
 
             sw.Stop();
-            Log.Debug($"Combination Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug("Combination Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                out var world))
-                return states;
+            if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
+            {
+                return LogError(context, "Aborted as the WorldInformation was failed to load.");
+            }
 
             if (world.StageClearedId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
                 // 스테이지 클리어 부족 에러.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the signer is not cleared the minimum stage level required to combine consumables yet: {ClearedLevel} < {RequiredLevel}.",
+                    world.StageClearedId,
+                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction
+                );
             }
 
             var slotState = states.GetCombinationSlotState(AvatarAddress, slotIndex);
             if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the slot state is failed to load or invalid: {@SlotState} @ {SlotIndex}",
+                    slotState,
+                    slotIndex
+                );
             }
 
             var tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
-            Log.Debug($"Combination Get TableSheetsState: {sw.Elapsed}");
+            Log.Debug("Combination Get TableSheetsState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            Log.Debug($"Execute Combination. player : `{AvatarAddress}`");
+            Log.Debug("Execute Combination; player: {Player}", AvatarAddress);
 
             // 사용한 재료를 인벤토리에서 제거.
             foreach (var pair in Materials)
@@ -162,12 +173,17 @@ namespace Nekoyume.Action
                 if (!avatarState.inventory.RemoveFungibleItem(pair.Key, pair.Value))
                 {
                     // 재료 부족 에러.
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as the player has no enough material ({Material} * {Quantity})",
+                        pair.Key,
+                        pair.Value
+                    );
                 }
             }
 
             sw.Stop();
-            Log.Debug($"Combination Remove Materials: {sw.Elapsed}");
+            Log.Debug("Combination Remove Materials: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             var result = new ResultModel
@@ -185,18 +201,23 @@ namespace Nekoyume.Action
 
             if (!consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow))
             {
-                return states;
+                return LogError(context, "Aborted as the recipe was failed to load.");
             }
 
             sw.Stop();
-            Log.Debug($"Combination Get Food Material rows: {sw.Elapsed}");
+            Log.Debug("Combination Get Food Material rows: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             var costAP = recipeRow.RequiredActionPoint * foodCount;
             if (avatarState.actionPoint < costAP)
             {
                 // ap 부족 에러.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted due to insufficient action point: {ActionPointBalance} < {ActionCost}",
+                    avatarState.actionPoint,
+                    costAP
+                );
             }
 
             // ap 차감.
@@ -205,14 +226,18 @@ namespace Nekoyume.Action
 
             var resultConsumableItemId = recipeRow.ResultConsumableItemId;
             sw.Stop();
-            Log.Debug($"Combination Get Food id: {sw.Elapsed}");
+            Log.Debug("Combination Get Food id: {Elapsed}", sw.Elapsed);
             sw.Restart();
             result.recipeId = recipeRow.Id;
 
             if (!consumableItemSheet.TryGetValue(resultConsumableItemId, out var consumableItemRow))
             {
                 // 소모품 테이블 값 가져오기 실패.
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the consumable item ({ItemId} was failed to load from the data table.",
+                    resultConsumableItemId
+                );
             }
 
             // 조합 결과 획득.
@@ -233,7 +258,7 @@ namespace Nekoyume.Action
                 avatarState.Update(mail);
                 avatarState.UpdateFromCombination(itemUsable);
                 sw.Stop();
-                Log.Debug($"Combination Update AvatarState: {sw.Elapsed}");
+                Log.Debug("Combination Update AvatarState: {Elapsed}", sw.Elapsed);
                 sw.Restart();
             }
 
@@ -244,9 +269,9 @@ namespace Nekoyume.Action
             states = states.SetState(AvatarAddress, avatarState.Serialize());
             slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
             sw.Stop();
-            Log.Debug($"Combination Set AvatarState: {sw.Elapsed}");
+            Log.Debug("Combination Set AvatarState: {Elapsed}", sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug($"Combination Total Executed Time: {ended - started}");
+            Log.Debug("Combination Total Executed Time: {Elapsed}", ended - started);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(slotAddress, slotState.Serialize());

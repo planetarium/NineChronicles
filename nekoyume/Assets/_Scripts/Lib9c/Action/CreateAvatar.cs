@@ -72,29 +72,33 @@ namespace Nekoyume.Action
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the input name {@Name} does not follow the allowed name pattern.",
+                    name
+                );
             }
 
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
-            Log.Debug($"CreateAvatar exec started.");
+            Log.Debug("CreateAvatar exec started.");
             var agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);
             var avatarState = states.GetAvatarState(avatarAddress);
             if (!(avatarState is null))
             {
-                return states;
+                return LogError(context, "Aborted as there is already an avatar at {Address}.", avatarAddress);
             }
 
             if (agentState.avatarAddresses.ContainsKey(index))
             {
-                return states;
+                return LogError(context, "Aborted as the signer already has an avatar at index #{Index}.", index);
             }
             sw.Stop();
-            Log.Debug($"CreateAvatar Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug("CreateAvatar Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            Log.Debug($"Execute CreateAvatar. player : `{avatarAddress}`");
+            Log.Debug("Execute CreateAvatar; player: {AvatarAddress}", avatarAddress);
 
             agentState.avatarAddresses.Add(index, avatarAddress);
 
@@ -118,9 +122,9 @@ namespace Nekoyume.Action
             avatarState.UpdateQuestRewards(ctx);
 
             sw.Stop();
-            Log.Debug($"CreateAvatar CreateAvatarState: {sw.Elapsed}");
+            Log.Debug("CreateAvatar CreateAvatarState: {Elapsed}", sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug($"CreateAvatar Total Executed Time: {ended - started}");
+            Log.Debug("CreateAvatar Total Executed Time: {Elapsed}", ended - started);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize());
