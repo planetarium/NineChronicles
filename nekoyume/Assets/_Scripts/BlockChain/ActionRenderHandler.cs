@@ -207,7 +207,7 @@ namespace Nekoyume.BlockChain
                                         currency_slug: "gold",
                                         currency_quantity: gold,
                                         currency_total_quantity: (float)States.Instance.AgentState.gold,
-                                        reference_entity: "bonuses",
+                                        reference_entity: "quests",
                                         reference_category_slug: "arena",
                                         reference_slug: "RankingRewardIndex" + index.ToString()
                                         );                                    
@@ -303,6 +303,19 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.slotIndex);
+
+            ///[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
+            if (agentAddress == States.Instance.AgentState.address) /// 확실히 본인일때만..
+            {
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: States.Instance.AgentState.address.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float)agentState.modifiedGold,
+                    currency_total_quantity: (float)States.Instance.AgentState.gold,
+                    reference_entity: "items_consumables",
+                    reference_category_slug: "consumables_rapid_combination",
+                    reference_slug: slot.Result.itemUsable.Data.Id.ToString());
+            }
         }
 
         private void ResponseCombinationEquipment(ActionBase.ActionEvaluation<CombinationEquipment> eval)
@@ -344,7 +357,7 @@ namespace Nekoyume.BlockChain
                     currency_slug: "gold",
                     currency_quantity: (float)result.gold,
                     currency_total_quantity: (float)States.Instance.AgentState.gold,
-                    reference_entity: "equipments",
+                    reference_entity: "items_equipments",
                     reference_category_slug: "equipments_combination",
                     reference_slug: result.itemUsable.Data.Id.ToString());
             }
@@ -385,7 +398,7 @@ namespace Nekoyume.BlockChain
                     currency_slug: "gold",
                     currency_quantity: (float)result.gold,
                     currency_total_quantity: (float)States.Instance.AgentState.gold,
-                    reference_entity: "consumables",
+                    reference_entity: "items_consumables",
                     reference_category_slug: "consumables_combination",
                     reference_slug: result.itemUsable.Data.Id.ToString());
             }
@@ -559,7 +572,7 @@ namespace Nekoyume.BlockChain
                 currency_slug: "gold",
                 currency_quantity: (float)result.gold,
                 currency_total_quantity: (float)States.Instance.AgentState.gold,
-                reference_entity: "equipments",     //강화가 가능하므로 장비로 봐야..
+                reference_entity: "items_equipments",     //강화가 가능하므로 장비로 봐야..
                 reference_category_slug: "item_enhancement",
                 reference_slug: itemUsable.Data.Id.ToString());
             }
@@ -589,7 +602,7 @@ namespace Nekoyume.BlockChain
                 currency_slug: "gold",
                 currency_quantity: (float) GameConfig.ArenaActivationCostNCG,
                 currency_total_quantity: (float)States.Instance.AgentState.gold,
-                reference_entity: "stage_pvp",
+                reference_entity: "quests",
                 reference_category_slug: "arena",
                 reference_slug: "WeeklyArenaEntryFee"
                 );
@@ -616,7 +629,7 @@ namespace Nekoyume.BlockChain
                 currency_slug: "gold",
                 currency_quantity: (float)gold,
                 currency_total_quantity: (float)agentState.gold,
-                reference_entity: "stage_pvp",
+                reference_entity: "quests",
                 reference_category_slug: "arena",
                 reference_slug: "WeeklyArenaReward");
         }
