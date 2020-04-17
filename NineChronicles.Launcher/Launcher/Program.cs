@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using Qml.Net;
 using Qml.Net.Runtimes;
 using Serilog;
@@ -15,8 +14,8 @@ namespace Launcher
     {
         public static int Main(string[] args)
         {
-            AppDomain.CurrentDomain.ProcessExit += FlushApplicationInsightLog;
-            AppDomain.CurrentDomain.UnhandledException += FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.ProcessExit += Configuration.FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.UnhandledException += Configuration.FlushApplicationInsightLog;
 
             string procName = Process.GetCurrentProcess().ProcessName;
             Process[] ps = Process.GetProcessesByName(procName);
@@ -58,12 +57,6 @@ namespace Launcher
             Qml.Net.Qml.RegisterType<LibplanetController>("LibplanetLauncher");
             qmlEngine.Load("qml/Main.qml");
             return application.Exec();
-        }
-
-        private static void FlushApplicationInsightLog(object sender, EventArgs e)
-        {
-            Configuration.TelemetryClient?.Flush();
-            Thread.Sleep(1000);
         }
     }
 }

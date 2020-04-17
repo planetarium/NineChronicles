@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using System.Threading;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 
@@ -14,6 +15,12 @@ namespace Launcher.Common
 
         public static readonly TelemetryClient TelemetryClient =
             new TelemetryClient(new TelemetryConfiguration(InstrumentationKey));
+
+        public static void FlushApplicationInsightLog(object sender, EventArgs e)
+        {
+            TelemetryClient?.Flush();
+            Thread.Sleep(1000);
+        }
 
         public static LauncherSettings LoadSettings()
         {

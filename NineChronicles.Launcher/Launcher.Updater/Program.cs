@@ -23,8 +23,8 @@ namespace Launcher.Updater
 
         static async Task Main(string[] args)
         {
-            AppDomain.CurrentDomain.ProcessExit += FlushApplicationInsightLog;
-            AppDomain.CurrentDomain.UnhandledException += FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.ProcessExit += Configuration.FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.UnhandledException += Configuration.FlushApplicationInsightLog;
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
@@ -199,12 +199,6 @@ namespace Launcher.Updater
             }
 
             Log.Information("Finished to extract game binary.");
-        }
-
-        private static void FlushApplicationInsightLog(object sender, EventArgs e)
-        {
-            Configuration.TelemetryClient?.Flush();
-            Thread.Sleep(1000);
         }
     }
 }
