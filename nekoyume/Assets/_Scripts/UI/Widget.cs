@@ -53,7 +53,9 @@ namespace Nekoyume.UI
 
         public IObservable<Widget> OnDisableObservable => _onDisableSubject;
 
-        protected virtual bool CanClose => _animationState == AnimationState.Shown;
+        protected virtual bool CanHandleInputEvent => _animationState == AnimationState.Shown;
+
+        protected bool CanClose => CanHandleInputEvent;
 
         #region Mono
 
@@ -311,7 +313,7 @@ namespace Nekoyume.UI
 
         private void CheckInput()
         {
-            if (!CanClose)
+            if (!CanHandleInputEvent)
             {
                 return;
             }

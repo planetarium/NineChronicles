@@ -73,8 +73,8 @@ namespace Nekoyume.UI
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
-        protected override bool CanClose =>
-            base.CanClose &&
+        protected override bool CanHandleInputEvent =>
+            base.CanHandleInputEvent &&
             !_questButtonClicked;
 
         #region override
