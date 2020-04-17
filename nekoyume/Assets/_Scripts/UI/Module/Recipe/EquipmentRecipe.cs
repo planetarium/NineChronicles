@@ -37,7 +37,7 @@ namespace Nekoyume.UI.Module
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
 
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
-        
+
         public EquipmentRecipeCellView SelectedRecipe { get; private set; }
 
         public DOTweenGroupAlpha scrollAlphaTweener;
@@ -62,6 +62,11 @@ namespace Nekoyume.UI.Module
                 return;
 
             UpdateRecipes();
+        }
+
+        private void OnDisable()
+        {
+            SelectedRecipe = null;
         }
 
         private void OnDestroy()
@@ -110,7 +115,7 @@ namespace Nekoyume.UI.Module
                 cellViews[idx] = cellView;
                 ++idx;
             }
-            
+
             UpdateRecipes();
         }
 
@@ -119,7 +124,7 @@ namespace Nekoyume.UI.Module
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
                 return;
-            
+
             foreach (var cellView in cellViews)
             {
                 cellView.Set(avatarState);
