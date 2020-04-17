@@ -50,8 +50,6 @@ namespace Launcher.Updater
             var cts = new CancellationTokenSource();
             string binaryUrl;
 
-            await CheckUpdaterUpdate(cts.Token);
-
             if (args.Length > 0)
             {
                 // 업데이트 모드
@@ -64,6 +62,8 @@ namespace Launcher.Updater
                     ? MacOSLatestBinaryUrl
                     : WindowsLatestBinaryUrl;
             }
+
+            await CheckUpdaterUpdate(binaryUrl, cts.Token);
 
             if (binaryUrl is string u)
             {
@@ -114,7 +114,7 @@ namespace Launcher.Updater
             }
         }
 
-        private static async Task CheckUpdaterUpdate(CancellationToken cancellationToken)
+        private static async Task CheckUpdaterUpdate(string argument, CancellationToken cancellationToken)
         {
             var localUpdaterPath = Process.GetCurrentProcess().MainModule.FileName;
             var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
@@ -137,16 +137,32 @@ namespace Launcher.Updater
 
                 // Replace updater and run.
                 string downloadedUpdaterPath = tempFileName;
-                string command =
-                    "sleep 3; " +
-                    $"mv {EscapeShellArgument(downloadedUpdaterPath)} {EscapeShellArgument(localUpdaterPath)}; " +
-                    $"chmod +x {EscapeShellArgument(localUpdaterPath)}; " +
-                    $"{EscapeShellArgument(localUpdaterPath)}";
+                string shell;
+                string command;
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    shell = "bash";
+                    command = "sleep 3; " +
+                              $"mv {EscapeShellArgument(downloadedUpdaterPath)} {EscapeShellArgument(localUpdaterPath)}; " +
+                              $"chmod +x {EscapeShellArgument(localUpdaterPath)}; " +
+                              $"{EscapeShellArgument(localUpdaterPath)} {EscapeShellArgument(argument)}";
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    shell = "powershell";
+                    command = "Start-Sleep 3; " +
+                              $"Move-Item {EscapeShellArgument(downloadedUpdaterPath)} {EscapeShellArgument(localUpdaterPath)}; " +
+                              $"{EscapeShellArgument(localUpdaterPath)} {EscapeShellArgument(argument)}";
+                }
+                else
+                {
+                    throw new NotSupportedException("Not supported platform.");
+                }
 
                 ProcessStartInfo processStartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName = "/bin/bash",
+                    FileName = shell,
                     Arguments = $"-c {EscapeShellArgument(command)}"
                 };
 
