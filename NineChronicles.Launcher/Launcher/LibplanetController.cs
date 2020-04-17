@@ -237,6 +237,9 @@ namespace Launcher
                     this.ActivateProperty(ctrl => ctrl.PreloadStatus);
                 })
             );
+
+            TelemetryClient.Context.User.AuthenticatedUserId = service.Swarm.Address.ToHex();
+
             try
             {
                 await Task.WhenAll(
@@ -279,7 +282,7 @@ namespace Launcher
                             await Task.Delay(1000);
                             currentNode = service.Swarm.AsPeer;
                         }
-                        while (currentNode is null);
+                        while (!(currentNode is BoundPeer));
 
                         CurrentNode = currentNode;
                         Log.Information("Current node address: {0}", CurrentNodeAddress);

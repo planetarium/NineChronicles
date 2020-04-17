@@ -52,5 +52,13 @@ namespace Launcher.Common.RuntimePlatform
                 "Logs",
                 "Planetarium",
                 "launcher.log");
+
+        public string UpdaterLogFilePath
+            => Path.Combine(
+                Environment.GetEnvironmentVariable("HOME"),
+                "Library",
+                "Logs",
+                "Planetarium",
+                "updater.log");
     }
 }
