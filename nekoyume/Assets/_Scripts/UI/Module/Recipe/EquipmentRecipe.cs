@@ -7,8 +7,6 @@ using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
-using System.Collections;
-using DG.Tweening;
 
 namespace Nekoyume.UI.Module
 {
@@ -84,7 +82,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void HideCellviews()
+        public void HideCellViews()
         {
             SelectedRecipe.Visible = true;
             scrollAlphaTweener.PlayReverse();
