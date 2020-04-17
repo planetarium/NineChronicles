@@ -213,6 +213,7 @@ namespace Nekoyume.UI.Module
             base.Show(animateAlpha);
             if(animateAlpha)
             {
+                // FIXME: Widget의 연출 주기 캡슐화가 깨지는 부분이에요.
                 _animationState = AnimationState.Showing;
                 var pos = _buttons.position;
                 pos.y = _buttonsPositionY;
