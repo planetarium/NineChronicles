@@ -106,10 +106,9 @@ namespace Nekoyume.UI
             SubmitWidget = null;
         }
 
-        protected override void OnCompleteOfShowAnimation()
+        protected override void OnCompleteOfShowAnimationInternal()
         {
-            base.OnCompleteOfShowAnimation();
-
+            base.OnCompleteOfShowAnimationInternal();
             _npc.gameObject.SetActive(true);
             _npc.SpineController.Appear();
             ShowSpeech("SPEECH_RANKING_BOARD_GREETING_", CharacterAnimation.Type.Greeting);

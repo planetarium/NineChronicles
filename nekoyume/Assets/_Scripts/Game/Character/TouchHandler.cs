@@ -27,26 +27,21 @@ namespace Nekoyume.Game.Character
                     switch (eventData.clickCount)
                     {
                         case 1:
-                            Debug.LogWarning("_onClick");
                             _onClick.OnNext(eventData);
                             break;
                         case 2:
-                            Debug.LogWarning("_onDoubleClick");
                             _onDoubleClick.OnNext(eventData);
                             break;
                         default:
-                            Debug.LogWarning("_onMultipleClick");
                             _onMultipleClick.OnNext(eventData);
                             break;
                     }
 
                     break;
                 case PointerEventData.InputButton.Middle:
-                    Debug.LogWarning("_onMiddleClick");
                     _onMiddleClick.OnNext(eventData);
                     break;
                 case PointerEventData.InputButton.Right:
-                    Debug.LogWarning("_onRightClick");
                     _onRightClick.OnNext(eventData);
                     break;
                 default:
