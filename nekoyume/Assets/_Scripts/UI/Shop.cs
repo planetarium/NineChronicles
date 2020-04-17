@@ -110,11 +110,11 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
             Game.Game.instance.Stage.GetPlayer().gameObject.SetActive(false);
 
-            base.Show();
+            base.Show(ignoreShowAnimation);
 
             inventory.SharedModel.State.Value = ItemType.Equipment;
             shopItems.SharedModel.State.Value = StateType.Buy;
@@ -433,6 +433,11 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
         }

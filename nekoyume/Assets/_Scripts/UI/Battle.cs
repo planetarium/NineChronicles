@@ -65,6 +65,11 @@ namespace Nekoyume.UI
 
         public void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             var stage = Game.Game.instance.Stage;
             if (stage.isExitReserved)
             {

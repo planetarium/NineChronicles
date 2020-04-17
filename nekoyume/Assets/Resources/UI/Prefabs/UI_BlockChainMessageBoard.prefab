@@ -139,7 +139,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1689287913065897726}
   - component: {fileID: 7334633152303172465}
-  - component: {fileID: 6888282635814415448}
+  - component: {fileID: 3778910376242442617}
   m_Layer: 5
   m_Name: Panel
   m_TagString: Untagged
@@ -194,7 +194,7 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
---- !u!95 &6888282635814415448
+--- !u!95 &3778910376242442617
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 0
@@ -204,7 +204,7 @@ Animator:
   m_GameObject: {fileID: 5763454461570389767}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: fa9c395da1442f241a1d7061bc726c1b, type: 2}
+  m_Controller: {fileID: 9100000, guid: 6467ef742f12140759bdce61d221f830, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

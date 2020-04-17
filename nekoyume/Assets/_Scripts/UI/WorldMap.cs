@@ -367,6 +367,11 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             SharedViewModel.IsWorldShown.SetValueAndForceNotify(false);
             Close();
             Game.Event.OnRoomEnter.Invoke(true);

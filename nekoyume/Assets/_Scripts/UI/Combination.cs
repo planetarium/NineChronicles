@@ -187,9 +187,9 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show();
+            base.Show(ignoreShowAnimation);
 
             CheckLockOfCategoryButtons();
 
@@ -523,6 +523,11 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             if (State.Value == StateType.SelectMenu)
             {
                 Close();
