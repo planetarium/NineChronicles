@@ -117,6 +117,11 @@ namespace Launcher.Updater
         private static async Task CheckUpdaterUpdate(string argument, CancellationToken cancellationToken)
         {
             var localUpdaterPath = Process.GetCurrentProcess().MainModule.FileName;
+            if (File.Exists(localUpdaterPath + ".back"))
+            {
+                File.Delete(localUpdaterPath + ".back");
+            }
+
             var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
             var client = new HttpClient();
 
@@ -126,8 +131,8 @@ namespace Launcher.Updater
                 : WindowsUpdaterLatestBinaryUrl;
             var resp = await client.GetAsync(updaterBinaryUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             // If there is no metadata, it will not do update.
-            if (resp.Headers.TryGetValues(md5ChecksumMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums)
-                && latestUpdaterMD5Checksums.First().ToUpperInvariant() != localUpdaterMD5Checksum.ToUpperInvariant())
+            if (resp.Headers.TryGetValues(md5ChecksumMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums) &&
+                !string.Equals(latestUpdaterMD5Checksums.First(), localUpdaterMD5Checksum, StringComparison.InvariantCultureIgnoreCase))
             {
                 Console.Error.WriteLine("It needs to update.");
                 // Download latest updater binary.
@@ -137,35 +142,25 @@ namespace Launcher.Updater
 
                 // Replace updater and run.
                 string downloadedUpdaterPath = tempFileName;
-                string shell;
-                string command;
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX) || RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+
+                File.Move(localUpdaterPath, localUpdaterPath + ".back");
+                File.Move(downloadedUpdaterPath, localUpdaterPath);
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
+                    RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    shell = "bash";
-                    command = "sleep 3; " +
-                              $"mv {EscapeShellArgument(downloadedUpdaterPath)} {EscapeShellArgument(localUpdaterPath)}; " +
-                              $"chmod +x {EscapeShellArgument(localUpdaterPath)}; " +
-                              $"{EscapeShellArgument(localUpdaterPath)} {EscapeShellArgument(argument)}";
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    shell = "powershell";
-                    command = "Start-Sleep 3; " +
-                              $"Move-Item {EscapeShellArgument(downloadedUpdaterPath)} {EscapeShellArgument(localUpdaterPath)}; " +
-                              $"{EscapeShellArgument(localUpdaterPath)} {EscapeShellArgument(argument)}";
-                }
-                else
-                {
-                    throw new NotSupportedException("Not supported platform.");
+                    Process.Start("chmod", $"+x {EscapeShellArgument(localUpdaterPath)}")
+                        .WaitForExit();
                 }
 
                 ProcessStartInfo processStartInfo = new ProcessStartInfo
                 {
                     UseShellExecute = true,
-                    FileName = shell,
-                    Arguments = $"-c {EscapeShellArgument(command)}"
+                    FileName = localUpdaterPath,
+                    Arguments = argument
                 };
 
+                Console.Error.WriteLine("Restart.");
                 Process.Start(processStartInfo);
                 Environment.Exit(0);
             }
