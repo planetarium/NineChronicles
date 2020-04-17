@@ -215,8 +215,6 @@ namespace Nekoyume.UI
             _disposablesAtShow.DisposeAllAndClear();
             Find<BottomMenu>().Close(true);
             stage.SetActive(false);
-            worldMapRoot.SetActive(true);
-            worldMapAnimator.Play("Close");
             base.Close(ignoreCloseAnimation);
         }
 

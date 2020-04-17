@@ -469,6 +469,12 @@ namespace Nekoyume.State
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
+            if (subRecipeId.HasValue)
+            {
+                var subRow =
+                    tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
+                requiredBlockIndex += subRow.RequiredBlockIndex;
+            }
             var equipRow =
                 tableSheets.EquipmentItemSheet.Values.First(i => i.Id == row.ResultEquipmentId);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.Empty, requiredBlockIndex);

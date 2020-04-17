@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
         public void SetProfile(int level, string name, Sprite sprite = null)
         {
             infoText.text = $"<color=#B38271>Lv.{level}</color> {name}";
-            portrait.overrideSprite = sprite; 
+            portrait.overrideSprite = sprite;
         }
 
         public void SetBuff(Dictionary<int, Buff> modelBuffs)
@@ -52,15 +52,15 @@ namespace Nekoyume.UI.Module
             buffLayout.SetBuff(modelBuffs);
         }
 
-        public void OnShowComplete()
+        public void OnCompleteOfShowAnimation()
         {
             animator.enabled = false;
         }
 
-        public void OnCloseComplete()
+        public void OnCompleteOfCloseAnimation()
         {
             animator.enabled = false;
-            
+
             gameObject.SetActive(false);
         }
     }

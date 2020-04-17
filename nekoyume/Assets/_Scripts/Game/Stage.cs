@@ -35,8 +35,6 @@ namespace Nekoyume.Game
         public ObjectPool objectPool;
         public NPCFactory npcFactory;
         public DropItemFactory dropItemFactory;
-        public SkillController skillController;
-        public BuffController buffController;
 
         public MonsterSpawner spawner;
 
@@ -66,6 +64,8 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
 
+        public SkillController SkillController { get; private set; }
+        public BuffController BuffController { get; private set; }
         public bool IsInStage { get; private set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
@@ -76,13 +76,13 @@ namespace Nekoyume.Game
 
         protected void Awake()
         {
-            _camera = Camera.main;
-            if (ReferenceEquals(_camera, null))
+            _camera = ActionCamera.instance.Cam;
+            if (_camera is null)
             {
                 throw new NullReferenceException("`Camera.main` can't be null.");
             }
 
-            if (ReferenceEquals(dummy, null))
+            if (dummy is null)
             {
                 throw new NullReferenceException("`Dummy` can't be null.");
             }
@@ -92,6 +92,14 @@ namespace Nekoyume.Game
             Event.OnRoomEnter.AddListener(OnRoomEnter);
             Event.OnStageStart.AddListener(OnStageStart);
             Event.OnRankingBattleStart.AddListener(OnRankingBattleStart);
+        }
+
+        public void Initialize()
+        {
+            objectPool.Initialize();
+            dropItemFactory.Initialize();
+            SkillController = new SkillController(objectPool);
+            BuffController = new BuffController(objectPool);
         }
 
         private void OnStageStart(BattleLog log)

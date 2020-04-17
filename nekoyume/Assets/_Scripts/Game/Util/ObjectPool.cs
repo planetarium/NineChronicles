@@ -6,6 +6,19 @@ using UnityEngine;
 
 namespace Nekoyume.Game.Util
 {
+    public interface IObjectPool
+    {
+        GameObject Add(GameObject prefab, int count);
+
+        T Get<T>(Vector3 position) where T : MonoBehaviour;
+
+        bool Remove<T>(GameObject go);
+
+        void ReleaseAll();
+
+        GameObject Get(string objName, bool create, Vector3 position = default);
+    }
+
     [Serializable]
     public struct PoolData
     {
@@ -14,146 +27,190 @@ namespace Nekoyume.Game.Util
         public int AddCount;
     }
 
-    public class ObjectPool : MonoBehaviour
+    public class ObjectPool : MonoBehaviour, IObjectPool
     {
-        public List<PoolData> list = new List<PoolData>();
-
-        public Dictionary<string, List<GameObject>> objects = new Dictionary<string, List<GameObject>>();
-        private Dictionary<string, PoolData> dicts = new Dictionary<string, PoolData>();
-
-        public void Initialize()
+        public class Impl : IObjectPool
         {
-            foreach (var poolData in list)
-            {
-                dicts.Add(poolData.Prefab.name, poolData);
-                Add(poolData.Prefab, poolData.InitCount);
-            }
-        }
+            private Transform _parent;
 
-        public GameObject Add(GameObject prefab, int count)
-        {
-            GameObject first = null;
-            for (int i = 0; i < count; ++i)
+            private readonly Dictionary<string, PoolData> _dict =
+                new Dictionary<string, PoolData>();
+
+            private readonly Dictionary<string, List<GameObject>> _objects =
+                new Dictionary<string, List<GameObject>>();
+
+            public Impl(Transform parent, IEnumerable<PoolData> list)
             {
-                GameObject go = Instantiate(prefab, transform);
-                if (first == null)
+                if (parent is null)
                 {
-                    first = go;
-                }
-                go.name = prefab.name;
-                go.SetActive(false);
-                if (!objects.TryGetValue(go.name, out var list))
-                {
-                    list = new List<GameObject>();
-                    objects.Add(go.name, list);
+                    throw new ArgumentNullException(nameof(parent));
                 }
 
-                list.Add(go);
+                _parent = parent;
+
+                if (list is null)
+                {
+                    return;
+                }
+
+                foreach (var poolData in list)
+                {
+                    _dict.Add(poolData.Prefab.name, poolData);
+                    Add(poolData.Prefab, poolData.InitCount);
+                }
             }
 
-            return first;
-        }
-
-        public T Get<T>() where T : MonoBehaviour
-        {
-            return Get<T>(Vector3.zero);
-        }
-
-        public T Get<T>(Vector3 position) where T : MonoBehaviour
-        {
-            string name = typeof(T).Name;
-            List<GameObject> list;
-            if (objects.TryGetValue(name, out list))
+            public GameObject Add(GameObject prefab, int count)
             {
-                foreach (GameObject go in list)
+                GameObject first = null;
+                for (int i = 0; i < count; ++i)
                 {
-                    if (go.activeSelf)
-                        continue;
+                    var go = Instantiate(prefab, _parent);
+                    if (!first)
+                    {
+                        first = go;
+                    }
 
+                    go.name = prefab.name;
+                    go.SetActive(false);
+                    if (!_objects.TryGetValue(go.name, out var list))
+                    {
+                        list = new List<GameObject>();
+                        _objects.Add(go.name, list);
+                    }
+
+                    list.Add(go);
+                }
+
+                return first;
+            }
+
+            public T Get<T>(Vector3 position) where T : MonoBehaviour
+            {
+                var name = typeof(T).Name;
+                if (_objects.TryGetValue(name, out var list))
+                {
+                    foreach (var go in list.Where(go => !go.activeSelf))
+                    {
+                        go.transform.position = position;
+                        go.SetActive(true);
+                        return go.GetComponent<T>();
+                    }
+                }
+
+                if (_dict.TryGetValue(name, out var poolData))
+                {
+                    var go = Add(poolData.Prefab, poolData.AddCount);
                     go.transform.position = position;
                     go.SetActive(true);
                     return go.GetComponent<T>();
                 }
-            }
-            PoolData poolData;
-            if (dicts.TryGetValue(name, out poolData))
-            {
-                GameObject go = Add(poolData.Prefab, poolData.AddCount);
-                go.transform.position = position;
-                go.SetActive(true);
-                return go.GetComponent<T>();
-            }
-            return null;
-        }
 
-        public bool Remove<T>(GameObject go)
-        {
-            var key = typeof(T).Name;
-            if (objects.TryGetValue(key, out var gameObjects))
+                return null;
+            }
+
+            public bool Remove<T>(GameObject go)
             {
+                var key = typeof(T).Name;
+                if (!_objects.TryGetValue(key, out var gameObjects))
+                {
+                    return false;
+                }
+
                 Destroy(go);
                 return gameObjects.Remove(go);
             }
-            return false;
-        }
 
-        public void ReleaseAll()
-        {
-            foreach (var go in objects.Select(pair => pair.Value).SelectMany(l => l.Where(go => go != null)))
+            public void ReleaseAll()
             {
-                go.SetActive(false);
-            }
-        }
-
-        public GameObject Get(string objName, bool create, Vector3 position = default(Vector3))
-        {
-            List<GameObject> gameObjects;
-            if (objects.TryGetValue(objName, out gameObjects))
-            {
-                foreach (var go in gameObjects)
+                foreach (var go in _objects
+                    .Select(pair => pair.Value)
+                    .SelectMany(l => l.Where(go => go != null)))
                 {
-                    if (go.activeSelf)
-                    {
-                        continue;
-                    }
-
-                    go.transform.position = position;
-                    go.SetActive(true);
-                    return go;
+                    go.SetActive(false);
                 }
             }
-            return create ? Create(objName, position) : null;
 
-        }
-
-        private GameObject Create(string objName, Vector3 position)
-        {
-            var go = dicts.TryGetValue(objName, out var poolData) ? Add(poolData.Prefab, poolData.AddCount)
-                : Add(objName);
-
-            if (go != null)
+            public GameObject Get(string objName, bool create, Vector3 position = default(Vector3))
             {
+                if (_objects.TryGetValue(objName, out var gameObjects))
+                {
+                    foreach (var go in gameObjects.Where(go => !go.activeSelf))
+                    {
+                        go.transform.position = position;
+                        go.SetActive(true);
+                        return go;
+                    }
+                }
+
+                return create
+                    ? Create(objName, position)
+                    : null;
+            }
+
+            private GameObject Create(string objName, Vector3 position)
+            {
+                var go = _dict.TryGetValue(objName, out var poolData)
+                    ? Add(poolData.Prefab, poolData.AddCount)
+                    : Add(objName);
+
+                if (!go)
+                {
+                    throw new NullReferenceException($"Set `{objName}` first in ObjectPool.");
+                }
+
                 go.transform.position = position;
                 go.SetActive(true);
                 return go;
             }
 
-            throw new NullReferenceException($"Set `{objName}` first in ObjectPool.");
-        }
-
-        private GameObject Add(string prefabName)
-        {
-            if (objects.TryGetValue(prefabName, out var objectsList))
+            private GameObject Add(string prefabName)
             {
-                var go = Instantiate(objectsList.First(), transform);
+                if (!_objects.TryGetValue(prefabName, out var objectsList))
+                {
+                    return null;
+                }
+
+                var go = Instantiate(objectsList.First(), _parent);
                 go.name = prefabName;
                 go.SetActive(false);
                 objectsList.Add(go);
                 return go;
             }
-
-            return null;
         }
 
+        private Impl _impl;
+
+        public List<PoolData> list = new List<PoolData>();
+
+        public void Initialize()
+        {
+            _impl = new Impl(transform, list);
+        }
+
+        public GameObject Add(GameObject prefab, int count)
+        {
+            return _impl.Add(prefab, count);
+        }
+
+        public T Get<T>(Vector3 position = default) where T : MonoBehaviour
+        {
+            return _impl.Get<T>(position);
+        }
+
+        public bool Remove<T>(GameObject go)
+        {
+            return _impl.Remove<T>(go);
+        }
+
+        public void ReleaseAll()
+        {
+            _impl.ReleaseAll();
+        }
+
+        public GameObject Get(string objName, bool create, Vector3 position = default)
+        {
+            return _impl.Get(objName, create, position);
+        }
     }
 }
