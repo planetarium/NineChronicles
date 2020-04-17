@@ -20,7 +20,6 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI costAPText;
         public TextMeshProUGUI costAPTextForSubmittable;
         public HorizontalLayoutGroup layoutGroup;
-        public Animator animator;
 
         public void ShowNCG(decimal ncg, bool isEnough)
         {
