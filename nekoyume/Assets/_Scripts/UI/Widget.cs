@@ -26,7 +26,7 @@ namespace Nekoyume.UI
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
         public bool IsCloseAnimationCompleted { get; private set; }
-        
+
         protected System.Action CloseWidget;
         protected System.Action SubmitWidget;
 
@@ -48,7 +48,7 @@ namespace Nekoyume.UI
         {
             if (WidgetStack.Count == 0 || WidgetStack.Peek() != gameObject)
                 return;
-            
+
             if(Input.GetKeyUp(KeyCode.Escape))
                 CloseWidget?.Invoke();
             if (Input.GetKeyUp(KeyCode.Return))
@@ -87,7 +87,7 @@ namespace Nekoyume.UI
             var res = Resources.Load<GameObject>(resName);
             if (res is null)
                 throw new FailedToLoadResourceException<GameObject>(resName);
-            
+
             if (Pool.ContainsKey(type))
             {
                 Debug.LogWarning($"Duplicated create widget: {type}");
@@ -134,12 +134,12 @@ namespace Nekoyume.UI
 
             return (T) model.widget;
         }
-        
+
         public virtual bool IsActive()
         {
             return gameObject.activeSelf;
         }
-        
+
         public void Toggle()
         {
             if (IsActive())
@@ -154,9 +154,13 @@ namespace Nekoyume.UI
 
         public virtual void Show()
         {
-            if(CloseWidget != null || SubmitWidget != null || WidgetType == WidgetType.Screen)
+            if (CloseWidget != null ||
+                SubmitWidget != null ||
+                WidgetType == WidgetType.Screen)
+            {
                 WidgetStack.Push(gameObject);
-            
+            }
+
             if (WidgetType == WidgetType.Screen)
             {
                 MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Popup);
@@ -167,25 +171,33 @@ namespace Nekoyume.UI
             }
 
             gameObject.SetActive(true);
-            if (Animator)
+
+            if (!Animator)
             {
-                Animator.enabled = true;
-                Animator.Play("Show");
+                return;
             }
+
+            Animator.enabled = true;
+            Animator.Play("Show");
         }
-        
+
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
-            if(WidgetStack.Count != 0 && WidgetStack.Peek() == gameObject) 
+            if (WidgetStack.Count != 0 &&
+                WidgetStack.Peek() == gameObject)
+            {
                 WidgetStack.Pop();
-            
-            StopAllCoroutines();
+            }
+
             if (!gameObject.activeSelf)
             {
                 return;
             }
 
-            if (ignoreCloseAnimation)
+            StopAllCoroutines();
+
+            if (!Animator ||
+                ignoreCloseAnimation)
             {
                 OnCompleteOfCloseAnimation();
                 gameObject.SetActive(false);
@@ -198,16 +210,23 @@ namespace Nekoyume.UI
 
         protected void Push()
         {
-            if(CloseWidget != null || SubmitWidget != null || WidgetType == WidgetType.Screen)
+            if (CloseWidget != null ||
+                SubmitWidget != null ||
+                WidgetType == WidgetType.Screen)
+            {
                 WidgetStack.Push(gameObject);
+            }
         }
 
         protected void Pop()
         {
-            if(WidgetStack.Count != 0 && WidgetStack.Peek() == gameObject) 
+            if (WidgetStack.Count != 0 &&
+                WidgetStack.Peek() == gameObject)
+            {
                 WidgetStack.Pop();
+            }
         }
-        
+
         public virtual IEnumerator CoClose()
         {
             if (Animator)
@@ -234,16 +253,24 @@ namespace Nekoyume.UI
 
         #region Call From Animation
 
-        protected virtual void OnCompleteOfShowAnimation()
+        protected void OnCompleteOfShowAnimation()
         {
             if (Animator)
             {
                 Animator.enabled = false;
             }
+
+            OnCompleteOfShowAnimationInternal();
         }
 
-        protected virtual void OnCompleteOfCloseAnimation()
+        protected virtual void OnCompleteOfShowAnimationInternal()
         {
+        }
+
+        protected void OnCompleteOfCloseAnimation()
+        {
+            OnCompleteOfCloseAnimationInternal();
+
             if (Animator)
             {
                 Animator.enabled = false;
@@ -251,7 +278,11 @@ namespace Nekoyume.UI
 
             IsCloseAnimationCompleted = true;
         }
-        
+
+        protected virtual void OnCompleteOfCloseAnimationInternal()
+        {
+        }
+
         #endregion
     }
 }

@@ -9,9 +9,13 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    [RequireComponent(typeof(Canvas))]
+    [RequireComponent(typeof(Canvas)),
+     RequireComponent(typeof(RectTransform))]
     public class MainCanvas : MonoSingleton<MainCanvas>
     {
+        [SerializeField]
+        private CanvasGroup canvasGroup = null;
+
         [SerializeField]
         private GameObject hudLayer = null;
 
@@ -39,8 +43,14 @@ namespace Nekoyume.UI
         private List<Widget> _firstWidgets;
         private List<Widget> _secondWidgets;
 
-        public Canvas Canvas { get; private set; }
         public RectTransform RectTransform { get; private set; }
+        public Canvas Canvas { get; private set; }
+
+        public bool Interactable
+        {
+            get => canvasGroup.interactable;
+            set => canvasGroup.interactable = value;
+        }
 
         public Transform GetTransform(WidgetType widgetType)
         {
@@ -71,8 +81,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            Canvas = GetComponent<Canvas>();
             RectTransform = GetComponent<RectTransform>();
+            Canvas = GetComponent<Canvas>();
         }
 
         public void InitializeFirst()
@@ -206,7 +216,7 @@ namespace Nekoyume.UI
 
         public void SetSiblingOrderNext(WidgetType fromWidgetType, WidgetType targetWidgetType)
         {
-            GameObject from = null;
+            GameObject from;
             switch (fromWidgetType)
             {
                 case WidgetType.Hud:
@@ -230,9 +240,14 @@ namespace Nekoyume.UI
                 case WidgetType.Development:
                     from = developmentLayer;
                     break;
+                case WidgetType.Animation:
+                    from = animationLayer;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(fromWidgetType), fromWidgetType, null);
             }
 
-            GameObject target = null;
+            GameObject target;
             switch (targetWidgetType)
             {
                 case WidgetType.Hud:
@@ -256,6 +271,11 @@ namespace Nekoyume.UI
                 case WidgetType.Development:
                     target = developmentLayer;
                     break;
+                case WidgetType.Animation:
+                    target = animationLayer;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(targetWidgetType), targetWidgetType, null);
             }
 
             var fromIndex = from.transform.GetSiblingIndex();
