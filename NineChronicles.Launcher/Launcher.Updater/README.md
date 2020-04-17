@@ -4,16 +4,26 @@
 
 ### 1. 업데이터 업데이트
 
-S3에 업로드 되어있는 업데이터의 metadata를 읽어 자신의 last modified time과 비교하여 S3가 더 최신이라면 해당 바이너리를 받아 교체한 후 재실행합니다.
+S3에 업로드 되어있는 업데이터의 metadata를 읽어 자신의 [MD5] checksum과 비교하여 상이하다면 해당 바이너리를 받아 교체한 후 재실행합니다.
 
-S3의 올릴때는 아래과 같이 AWS CLI를 사용하여 올리거나 Web 콘솔을 통해 올리는 경우 메타데이터로 mtime을 필히 넣어주어야 합니다.
+S3의 올릴때는 아래과 같이 AWS CLI를 사용하여 올리거나 Web 콘솔을 통해 올리는 경우 메타데이터로 [MD5] checksum을 필히 넣어주어야 합니다.
 
 ```/bin/bash
+# macOS
 aws s3 cp \
     'Nine Chronicles Updater' 's3://9c-test/latest/Nine Chronicles Updater' \
-    --acl public-read
-    --metadata mtime="$(date -d @`stat -c '%Y' 'Nine Chronicles Updater'` +%F-%H-%M-%S -u)"
+    --acl public-read \
+    --metadata md5-checksum="$(md5 -q 'Nine Chronicles Updater')"
+
+# Windows (Powershell)
+aws s3 cp \
+    'Nine Chronicles Updater' 's3://9c-test/latest/Nine Chronicles Updater' \
+    --acl public-read \
+    --metadata md5-checksum=(Get-FileHash /Users/moreal/.bashrc -Algorithm MD5).Hash)
 ```
+
+[MD5]: https://en.wikipedia.org/wiki/MD5
+
 
 ### 2-1. 인스톨러 모드 - 인자로 아무것도 주지 않았을 때
 

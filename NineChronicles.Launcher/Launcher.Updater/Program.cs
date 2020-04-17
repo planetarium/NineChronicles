@@ -1,11 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -116,22 +117,17 @@ namespace Launcher.Updater
         private static async Task CheckUpdaterUpdate(CancellationToken cancellationToken)
         {
             var localUpdaterPath = Process.GetCurrentProcess().MainModule.FileName;
-            var localUpdaterLastWriteTime = new FileInfo(localUpdaterPath).LastWriteTime.ToUniversalTime();
+            var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
             var client = new HttpClient();
 
-            const string dateTimeFormat = "yyyy-MM-dd-HH-mm-ss";
-            const string mtimeMetadataKey = "x-amz-meta-mtime";
+            const string md5ChecksumMetadataKey = "x-amz-meta-md5-checksum";
             var updaterBinaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
                 ? MacOSUpdaterLatestBinaryUrl
                 : WindowsUpdaterLatestBinaryUrl;
-            var resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
-            string mtimeMetadata = resp.Headers.GetValues(mtimeMetadataKey).First();
-            var latestUpdaterLastWriteTime = DateTime.ParseExact(
-                mtimeMetadata,
-                dateTimeFormat,
-                CultureInfo.InvariantCulture,
-                DateTimeStyles.None);
-            if (latestUpdaterLastWriteTime > localUpdaterLastWriteTime)
+            var resp = await client.GetAsync(updaterBinaryUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            // If there is no metadata, it will not do update.
+            if (resp.Headers.TryGetValues(md5ChecksumMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums)
+                && latestUpdaterMD5Checksums.First().ToUpperInvariant() != localUpdaterMD5Checksum.ToUpperInvariant())
             {
                 Console.Error.WriteLine("It needs to update.");
                 // Download latest updater binary.
@@ -157,6 +153,14 @@ namespace Launcher.Updater
                 Process.Start(processStartInfo);
                 Environment.Exit(0);
             }
+        }
+
+        private static string CalculateMD5File(string filename)
+        {
+            using var md5 = MD5.Create();
+            using var fileStream = File.OpenRead(filename);
+            var hashBytes = md5.ComputeHash(fileStream);
+            return BitConverter.ToString(hashBytes).Replace("-", string.Empty);
         }
 
         private static async Task<string> DownloadBinariesAsync(
