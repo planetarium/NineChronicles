@@ -138,9 +138,9 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
         }
 
-        protected override void OnCompleteOfShowAnimation()
+        protected override void OnCompleteOfShowAnimationInternal()
         {
-            base.OnCompleteOfShowAnimation();
+            base.OnCompleteOfShowAnimationInternal();
             canvasGroup.interactable = true;
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
         }

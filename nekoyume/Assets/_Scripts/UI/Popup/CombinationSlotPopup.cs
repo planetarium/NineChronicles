@@ -65,9 +65,9 @@ namespace Nekoyume.UI
             }
         }
 
-        protected override void OnCompleteOfShowAnimation()
+        protected override void OnCompleteOfShowAnimationInternal()
         {
-            base.OnCompleteOfShowAnimation();
+            base.OnCompleteOfShowAnimationInternal();
             _frontVFX =
                 VFXController.instance.Create<CombinationSelectSmallFrontVFX>(cellView.transform,
                     new Vector3(0.53f, -0.5f));
