@@ -20,8 +20,9 @@ namespace Launcher.Updater
     {
         const string MacOSLatestBinaryUrl = "https://download.nine-chronicles.com/latest/macOS.tar.gz";
         const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.zip";
+        // NOTE: 9c-beta의 제네시스 해시을 하드코딩 해놓았습니다.
         private const string SnapshotUrl =
-            "https://download.nine-chronicles.com/latest/snapshot.zip";
+            "https://download.nine-chronicles.com/latest/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot.zip";
 
         static async Task Main(string[] args)
         {
