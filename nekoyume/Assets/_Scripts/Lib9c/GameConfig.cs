@@ -14,7 +14,7 @@
         public const string DiscordLink = "https://discord.gg/NqshYve";
 
         public const string BlockExplorerLinkFormat =
-            "http://explorer.libplanet.io/9c-alpha/account/?{0}";
+            "http://explorer.libplanet.io/9c-beta/account/?{0}";
 
         public const float PlayerSpeechBreakTime = 2f;
 
