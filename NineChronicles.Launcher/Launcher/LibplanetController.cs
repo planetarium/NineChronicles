@@ -155,6 +155,7 @@ namespace Launcher
             (Guid keyId, _) = FindKey(addressHex);
             KeyStore.Remove(keyId);
             this.ActivateProperty(ctrl => ctrl.KeyStoreOptions);
+            this.ActivateProperty(ctrl => ctrl.KeyStoreEmpty);
         }
 
         private (Guid, ProtectedPrivateKey) FindKey(string addressHex)
