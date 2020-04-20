@@ -79,6 +79,7 @@ Item {
         id: systemTrayIcon
         visible: true
         tooltip: ctrl.preprocessing ? ctrl.preloadStatus : "Nine Chronicles"
+        icon.source: Qt.resolvedUrl("../images/logo-0.png")
 
         menu: Menu {
             MenuItem {
