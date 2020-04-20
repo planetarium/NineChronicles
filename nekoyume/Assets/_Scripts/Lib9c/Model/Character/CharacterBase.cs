@@ -327,7 +327,9 @@ namespace Nekoyume.Model
         protected virtual void SetSkill()
         {
             if (!Simulator.TableSheets.SkillSheet.TryGetValue(100000, out var skillRow))
+            {
                 throw new KeyNotFoundException("100000");
+            }
 
             var attack = SkillFactory.Get(skillRow, 0, 100);
             Skills.Add(attack);
