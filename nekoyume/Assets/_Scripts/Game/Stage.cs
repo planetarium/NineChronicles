@@ -443,7 +443,6 @@ namespace Nekoyume.Game
                 stage_playtime: null,
                 is_autocombat_committed: true
                 );
-            new TPUploadData().UploadData();
 
         }
 
@@ -500,7 +499,6 @@ namespace Nekoyume.Game
                 stage_playtime: null,
                 is_autocombat_committed: true
                 );
-            new TPUploadData().UploadData();
         }
 
         public IEnumerator CoSpawnPlayer(Player character)

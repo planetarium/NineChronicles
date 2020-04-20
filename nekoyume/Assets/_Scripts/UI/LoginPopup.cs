@@ -249,7 +249,6 @@ namespace Nekoyume.UI
 
                 //[TentuPlay] 로그인 기록
                 new TPStashEvent().Login(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
-                new TPUploadData().UploadData();
             }
             else
             {
@@ -562,7 +561,6 @@ namespace Nekoyume.UI
             TPStashEvent MyStashEvent = new TPStashEvent();
             MyStashEvent.Join(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
             MyStashEvent.Login(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
-            new TPUploadData().UploadData();
         }
 
         private void SetState(States states)
