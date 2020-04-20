@@ -123,7 +123,7 @@ namespace Launcher.Updater
             }
 
             var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
-            var client = new HttpClient();
+            using var client = new HttpClient();
 
             const string md5ChecksumMetadataKey = "x-amz-meta-md5-checksum";
             var updaterBinaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
@@ -138,18 +138,18 @@ namespace Launcher.Updater
                 // Download latest updater binary.
                 string tempFileName = Path.GetTempFileName();
                 await using var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write);
+                resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
                 await resp.Content.CopyToAsync(fileStream);
 
                 // Replace updater and run.
                 string downloadedUpdaterPath = tempFileName;
-
                 File.Move(localUpdaterPath, localUpdaterPath + ".back");
                 File.Move(downloadedUpdaterPath, localUpdaterPath);
 
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
                     RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
-                    Process.Start("chmod", $"+x {EscapeShellArgument(localUpdaterPath)}")
+                    Process.Start("chmod", $"+rx {EscapeShellArgument(localUpdaterPath)}")
                         .WaitForExit();
                 }
 
@@ -162,6 +162,7 @@ namespace Launcher.Updater
 
                 Console.Error.WriteLine("Restart.");
                 Process.Start(processStartInfo);
+                Console.Clear();
                 Environment.Exit(0);
             }
         }
