@@ -11,13 +11,13 @@ S3의 올릴때는 아래과 같이 AWS CLI를 사용하여 올리거나 Web 콘
 ```/bin/bash
 # macOS
 aws s3 cp \
-    'Nine Chronicles Updater' 's3://9c-test/latest/Nine Chronicles Updater' \
+    'Nine Chronicles Updater' 's3://9c-test/latest/NineChroniclesUpdater' \
     --acl public-read \
     --metadata md5-checksum="$(md5 -q 'Nine Chronicles Updater')"
 
 # Windows (Powershell)
 aws s3 cp \
-    'Nine Chronicles Updater' 's3://9c-test/latest/Nine Chronicles Updater' \
+    'Nine Chronicles Updater.exe' 's3://9c-test/latest/NineChroniclesUpdater.exe' \
     --acl public-read \
     --metadata md5-checksum=(Get-FileHash /Users/moreal/.bashrc -Algorithm MD5).Hash)
 ```

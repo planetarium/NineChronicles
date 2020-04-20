@@ -28,8 +28,8 @@ namespace Launcher.Updater
         private const string SnapshotUrl =
             "https://download.nine-chronicles.com/latest/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot.zip";
 
-        const string MacOSUpdaterLatestBinaryUrl = "https://9c-test.s3.ap-northeast-2.amazonaws.com/latest/Nine+Chronicles+Updater";
-        const string WindowsUpdaterLatestBinaryUrl = "https://9c-test.s3.ap-northeast-2.amazonaws.com/latest/Nine+Chronicles+Updater.exe";
+        const string MacOSUpdaterLatestBinaryUrl = "https://9c-test.s3.ap-northeast-2.amazonaws.com/latest/NineChroniclesUpdater";
+        const string WindowsUpdaterLatestBinaryUrl = "https://9c-test.s3.ap-northeast-2.amazonaws.com/latest/NineChroniclesUpdater.exe";
 
 
         static async Task Main(string[] args)
