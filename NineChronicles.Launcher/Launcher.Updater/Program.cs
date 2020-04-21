@@ -134,7 +134,7 @@ namespace Launcher.Updater
             if (resp.Headers.TryGetValues(md5ChecksumMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums) &&
                 !string.Equals(latestUpdaterMD5Checksums.First(), localUpdaterMD5Checksum, StringComparison.InvariantCultureIgnoreCase))
             {
-                Console.Error.WriteLine("It needs to update.");
+                Log.Debug("It needs to update.");
                 // Download latest updater binary.
                 string tempFileName = Path.GetTempFileName();
                 await using var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write);
@@ -160,7 +160,7 @@ namespace Launcher.Updater
                     Arguments = argument
                 };
 
-                Console.Error.WriteLine("Restart.");
+                Log.Debug("Restart.");
                 Process.Start(processStartInfo);
                 Console.Clear();
                 Environment.Exit(0);
