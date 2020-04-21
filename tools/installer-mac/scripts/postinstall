@@ -2,7 +2,7 @@
 
 INSTALL_DIR="$2"
 UPDATER="$INSTALL_DIR/Nine Chronicles Updater"
-FILE_OWNER=$(stat -f '%Su' "$UPDATER")
+FILE_OWNER="$(stat -f '%Su' "$UPDATER")"
 
 "$UPDATER"
 SNAPSHOT_PATH="/Users/$FILE_OWNER/.local/share/planetarium/9c"
