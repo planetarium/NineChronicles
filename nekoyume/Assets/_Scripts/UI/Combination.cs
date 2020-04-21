@@ -410,7 +410,7 @@ namespace Nekoyume.UI
 
                     inventory.gameObject.SetActive(false);
                     equipmentRecipeAnimator.Play("Hide");
-                    equipmentRecipe.HideCellviews();
+                    equipmentRecipe.HideCellViews();
 
                     var selectedRecipe = equipmentRecipe.SelectedRecipe;
                     var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
