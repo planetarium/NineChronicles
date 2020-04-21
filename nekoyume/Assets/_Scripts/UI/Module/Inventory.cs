@@ -46,9 +46,6 @@ namespace Nekoyume.UI.Module
         private Sprite _materialsButtonIconSpriteBlack;
         private Sprite _materialsButtonIconSpriteHighlighted;
 
-        // todo: 분리..
-        private ItemInformationTooltip _tooltip;
-
         private readonly Dictionary<ItemType, RectTransform> _switchButtonTransforms =
             new Dictionary<ItemType, RectTransform>(ItemTypeComparer.Instance);
 
@@ -56,13 +53,8 @@ namespace Nekoyume.UI.Module
 
         public RectTransform RectTransform { get; private set; }
 
-        // todo: 분리..
-        public ItemInformationTooltip Tooltip => _tooltip
-            ? _tooltip
-            : _tooltip = Widget.Find<ItemInformationTooltip>();
-
         public Model.Inventory SharedModel { get; private set; }
-        
+
         public readonly Subject<Inventory> OnResetItems = new Subject<Inventory>();
 
         #region Mono
@@ -94,7 +86,7 @@ namespace Nekoyume.UI.Module
             SharedModel = new Model.Inventory();
             SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
             SharedModel.SelectedItemView.Subscribe(SubscribeSelectedItemView).AddTo(gameObject);
-            
+
             equipmentsButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
@@ -126,7 +118,7 @@ namespace Nekoyume.UI.Module
         private void OnDisable()
         {
             _disposablesAtOnEnable.DisposeAllAndClear();
-            Tooltip.Close();
+            Widget.Find<ItemInformationTooltip>().Close();
         }
 
         private void OnDestroy()
@@ -137,7 +129,7 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-        
+
         #region Subscribe
 
         private void SubscribeState(ItemType stateType)
@@ -208,7 +200,7 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            Tooltip.Close();
+            Widget.Find<ItemInformationTooltip>().Close();
         }
 
         private void SubscribeSelectedItemView(InventoryItemView view)
@@ -218,7 +210,7 @@ namespace Nekoyume.UI.Module
 
             AdjustmentScrollPosition(view);
         }
-        
+
         #endregion
 
         private void AdjustmentScrollPosition(InventoryItemView view)
