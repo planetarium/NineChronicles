@@ -122,6 +122,7 @@ namespace Nekoyume.Model.Item
                 case ItemSubType.FoodMaterial:
                 case ItemSubType.MonsterPart:
                 case ItemSubType.NormalMaterial:
+                case ItemSubType.Hourglass:
                     return new MaterialItemSheet.Row(serialized);
                 default:
                     throw new ArgumentOutOfRangeException();

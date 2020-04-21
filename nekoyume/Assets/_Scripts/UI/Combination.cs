@@ -326,7 +326,7 @@ namespace Nekoyume.UI
 
         private void SubscribeState(StateType value)
         {
-            inventory.Tooltip.Close();
+            Find<ItemInformationTooltip>().Close();
             recipe.Hide();
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
@@ -456,20 +456,21 @@ namespace Nekoyume.UI
 
         private void ShowTooltip(InventoryItemView view)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
+                view.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
                 return;
             }
 
-            inventory.Tooltip.Show(
+            tooltip.Show(
                 view.RectTransform,
                 view.Model,
                 value => !view.Model?.Dimmed.Value ?? false,
                 LocalizationManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
-                tooltip => StageMaterial(view),
-                tooltip => inventory.SharedModel.DeselectItemView());
+                _ => StageMaterial(view),
+                _ => inventory.SharedModel.DeselectItemView());
         }
 
         private void StageMaterial(InventoryItemView itemView)
