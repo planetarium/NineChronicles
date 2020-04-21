@@ -177,7 +177,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Animator.enabled = true;
             Animator.Play("Show");
         }
 
@@ -232,7 +231,6 @@ namespace Nekoyume.UI
             if (Animator)
             {
                 IsCloseAnimationCompleted = false;
-                Animator.enabled = true;
                 Animator.Play("Close");
                 var coroutine = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
@@ -255,11 +253,6 @@ namespace Nekoyume.UI
 
         protected void OnCompleteOfShowAnimation()
         {
-            if (Animator)
-            {
-                Animator.enabled = false;
-            }
-
             OnCompleteOfShowAnimationInternal();
         }
 
@@ -270,11 +263,6 @@ namespace Nekoyume.UI
         protected void OnCompleteOfCloseAnimation()
         {
             OnCompleteOfCloseAnimationInternal();
-
-            if (Animator)
-            {
-                Animator.enabled = false;
-            }
 
             IsCloseAnimationCompleted = true;
         }
