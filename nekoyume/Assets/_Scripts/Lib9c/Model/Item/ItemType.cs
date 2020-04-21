@@ -14,7 +14,7 @@ namespace Nekoyume.Model.Item
         // todo: Consumable or Consumable Material
         // Consumable
         Food,
-        
+
         // todo: Equipment or Equipment Material
         // Equipment
         Weapon,
@@ -29,13 +29,14 @@ namespace Nekoyume.Model.Item
         EquipmentMaterial,
         FoodMaterial,
         MonsterPart,
-        NormalMaterial
+        NormalMaterial,
+        Hourglass,
     }
-    
+
     public class ItemTypeComparer : IEqualityComparer<ItemType>
     {
         public static readonly ItemTypeComparer Instance = new ItemTypeComparer();
-        
+
         public bool Equals(ItemType x, ItemType y)
         {
             return x == y;
@@ -46,11 +47,11 @@ namespace Nekoyume.Model.Item
             return (int) obj;
         }
     }
-    
+
     public class ItemSubTypeComparer : IEqualityComparer<ItemSubType>
     {
         public static readonly ItemSubTypeComparer Instance = new ItemSubTypeComparer();
-        
+
         public bool Equals(ItemSubType x, ItemSubType y)
         {
             return x == y;
