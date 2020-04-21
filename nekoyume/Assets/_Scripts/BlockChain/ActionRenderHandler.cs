@@ -446,7 +446,7 @@ namespace Nekoyume.BlockChain
                     currency_total_quantity: (float) (States.Instance.AgentState.gold - price),
                     reference_entity: "trades",
                     reference_category_slug: "buy",
-                    reference_slug: result.itemUsable.Data.Id.ToString()  // 아이템 품목/품번/SKU이 필요. itemId 는 GUID 라서 instance id 인것 같다
+                    reference_slug: result.itemUsable.Data.Id.ToString() //아이템 품번
                     );
 
             }
@@ -473,11 +473,11 @@ namespace Nekoyume.BlockChain
                 new TPStashEvent().CurrencyGet(
                     player_uuid: States.Instance.AgentState.address.ToHex(),
                     currency_slug: "gold",
-                    currency_quantity: (float)gold, //gold의 부호 확인 필요.
+                    currency_quantity: (float)gold,
                     currency_total_quantity: (float)(States.Instance.AgentState.gold + gold),
                     reference_entity: "trades",
                     reference_category_slug: "sell",
-                    reference_slug: result.itemUsable.Data.Id.ToString() // 아이템 품목/품번/SKU이 필요. itemId 는 GUID 라서 instance id 인것 같다
+                    reference_slug: result.itemUsable.Data.Id.ToString() //아이템 품번
                 );
 
             }
