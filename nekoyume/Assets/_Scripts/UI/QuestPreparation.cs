@@ -72,6 +72,7 @@ namespace Nekoyume.UI
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
+        // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
         protected override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
             questButton.interactable;
