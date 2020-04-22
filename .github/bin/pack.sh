@@ -1,5 +1,29 @@
 #!/bin/bash
-set -evx
+set -e
+
+if [[ "$CI" = true || "$DEBUG" != "" ]]; then
+  set -vx
+fi
+
+if ! command -v aws > /dev/null; then
+  {
+    echo "error: aws command, a prerequisite, is not installed on the system."
+    echo "see also: https://aws.amazon.com/cli/"
+  } > /dev/stderr
+  exit 1
+elif ! command -v planet > /dev/null; then
+  {
+    echo "error: planet command, a prerequisite, is not installed on the system."
+    echo "see also: https://git.io/JfTPm"
+  } > /dev/stderr
+  exit 1
+elif ! command -v jq > /dev/null; then
+  {
+    echo "error: jq command, a prerequisite, is not installed on the system."
+    echo "see also: https://stedolan.github.io/jq/"
+  } > /dev/stderr
+  exit 1
+fi
 
 if [[ "$#" != "6" ]]; then
   {
@@ -32,6 +56,7 @@ temp_dir="$(mktemp -d)"
   echo "game_binary_dir=$game_binary_dir"
   echo "launcher_dir=$launcher_dir"
   echo "temp_dir=$temp_dir"
+  echo "timestamp=$timestamp"
 } > /dev/stderr
 
 mkdir -p "$out_dir/"
@@ -51,6 +76,13 @@ case "$platform" in
     echo "Unsupported platform: $platform" > /dev/stderr
     exit 1
 esac
+
+if ! command -v "$archive" > /dev/null; then
+  echo \
+    "error: $archive command, a prerequisite, is not installed on the system." \
+  > /dev/stderr
+  exit 1
+fi
 
 cp -r "$launcher_dir/"* "$temp_dir"
 cp -r "$game_binary_dir/"* "$temp_dir"
