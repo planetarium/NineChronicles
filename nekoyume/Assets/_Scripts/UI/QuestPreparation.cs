@@ -54,7 +54,6 @@ namespace Nekoyume.UI
 
         private CharacterStats _tempStats;
         private bool _reset = true;
-        private bool _questButtonClicked = false;
 
         [Header("ItemMoveAnimation")]
         [SerializeField]
@@ -75,7 +74,7 @@ namespace Nekoyume.UI
 
         protected override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            !_questButtonClicked;
+            questButton.interactable;
 
         #region override
 
@@ -180,7 +179,6 @@ namespace Nekoyume.UI
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
             questButton.gameObject.SetActive(true);
-            _questButtonClicked = false;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -340,7 +338,6 @@ namespace Nekoyume.UI
         public void QuestClick(bool repeat)
         {
             questButton.interactable = false;
-            _questButtonClicked = true;
             StartCoroutine(CoQuestClick(repeat));
         }
 
