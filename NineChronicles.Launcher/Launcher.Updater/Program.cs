@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net.Http;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,9 +23,14 @@ namespace Launcher.Updater
     {
         const string MacOSLatestBinaryUrl = "https://download.nine-chronicles.com/latest/macOS.tar.gz";
         const string WindowsLatestBinaryUrl = "https://download.nine-chronicles.com/latest/Windows.zip";
+
         // NOTE: 9c-beta의 제네시스 해시을 하드코딩 해놓았습니다.
         private const string SnapshotUrl =
             "https://download.nine-chronicles.com/latest/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot.zip";
+
+        const string MacOSUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater";
+        const string WindowsUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater.exe";
+
 
         static async Task Main(string[] args)
         {
@@ -54,6 +62,8 @@ namespace Launcher.Updater
                     ? MacOSLatestBinaryUrl
                     : WindowsLatestBinaryUrl;
             }
+
+            await CheckUpdaterUpdate(binaryUrl, cts.Token);
 
             if (binaryUrl is string u)
             {
@@ -102,6 +112,67 @@ namespace Launcher.Updater
             {
                 Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
             }
+        }
+
+        private static async Task CheckUpdaterUpdate(string argument, CancellationToken cancellationToken)
+        {
+            var localUpdaterPath = Process.GetCurrentProcess().MainModule.FileName;
+            if (File.Exists(localUpdaterPath + ".back"))
+            {
+                File.Delete(localUpdaterPath + ".back");
+            }
+
+            var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
+            using var client = new HttpClient();
+
+            const string md5ChecksumMetadataKey = "x-amz-meta-md5-checksum";
+            var updaterBinaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                ? MacOSUpdaterLatestBinaryUrl
+                : WindowsUpdaterLatestBinaryUrl;
+            var resp = await client.GetAsync(updaterBinaryUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            // If there is no metadata, it will not do update.
+            if (resp.Headers.TryGetValues(md5ChecksumMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums) &&
+                !string.Equals(latestUpdaterMD5Checksums.First(), localUpdaterMD5Checksum, StringComparison.InvariantCultureIgnoreCase))
+            {
+                Log.Debug("It needs to update.");
+                // Download latest updater binary.
+                string tempFileName = Path.GetTempFileName();
+                await using var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write);
+                resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
+                await resp.Content.CopyToAsync(fileStream);
+
+                // Replace updater and run.
+                string downloadedUpdaterPath = tempFileName;
+                File.Move(localUpdaterPath, localUpdaterPath + ".back");
+                File.Move(downloadedUpdaterPath, localUpdaterPath);
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
+                    RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("chmod", $"+rx {EscapeShellArgument(localUpdaterPath)}")
+                        .WaitForExit();
+                }
+
+                ProcessStartInfo processStartInfo = new ProcessStartInfo
+                {
+                    UseShellExecute = true,
+                    FileName = localUpdaterPath,
+                    Arguments = argument
+                };
+
+                Log.Debug("Restart.");
+                Process.Start(processStartInfo);
+                Console.Clear();
+                Environment.Exit(0);
+            }
+        }
+
+        private static string CalculateMD5File(string filename)
+        {
+            using var md5 = MD5.Create();
+            using var fileStream = File.OpenRead(filename);
+            var hashBytes = md5.ComputeHash(fileStream);
+            return BitConverter.ToString(hashBytes).Replace("-", string.Empty);
         }
 
         private static async Task<string> DownloadBinariesAsync(
