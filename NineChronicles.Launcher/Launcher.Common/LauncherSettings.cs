@@ -12,7 +12,7 @@ namespace Launcher.Common
 
         public string IceServer { get; set; }
 
-        public string Seed { get; set; }
+        public string[] Peers { get; set; }
 
         public bool NoMiner { get; set; }
 
