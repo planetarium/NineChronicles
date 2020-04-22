@@ -171,7 +171,7 @@ namespace Nekoyume.UI
 
         private void SubscribeState(StateType stateType)
         {
-            inventory.Tooltip.Close();
+            Find<ItemInformationTooltip>().Close();
             inventory.SharedModel.DeselectItemView();
             shopItems.SharedModel.DeselectItemView();
             buyButton.SetInteractable(false, true);
@@ -221,64 +221,67 @@ namespace Nekoyume.UI
 
         private void ShowTooltip(InventoryItemView view)
         {
+            var tooltip = Find<ItemInformationTooltip>();
+
             shopItems.SharedModel.DeselectItemView();
 
             if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
+                view.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
                 return;
             }
 
             if (SharedModel.State.Value == StateType.Buy)
             {
-                inventory.Tooltip.Show(view.RectTransform, view.Model);
+                tooltip.Show(view.RectTransform, view.Model);
             }
             else
             {
                 ShowSpeech("SPEECH_SHOP_REGISTER_ITEM_");
-                inventory.Tooltip.Show(
+                tooltip.Show(
                     view.RectTransform,
                     view.Model,
                     value => !DimmedFuncForSell(value as InventoryItem),
                     LocalizationManager.Localize("UI_SELL"),
-                    tooltip =>
+                    _ =>
                         ShowSellPopup(tooltip.itemInformation.Model.item.Value as InventoryItem),
-                    tooltip => inventory.SharedModel.DeselectItemView());
+                    _ => inventory.SharedModel.DeselectItemView());
             }
         }
 
         private void ShowTooltip(ShopItemView view)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             inventory.SharedModel.DeselectItemView();
 
             if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
+                view.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
                 return;
             }
 
             if (SharedModel.State.Value == StateType.Buy)
             {
-                inventory.Tooltip.Show(
+                tooltip.Show(
                     view.RectTransform,
                     view.Model,
                     ButtonEnabledFuncForBuy,
                     LocalizationManager.Localize("UI_BUY"),
-                    tooltip => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
-                    tooltip => shopItems.SharedModel.DeselectItemView());
+                    _ => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
+                    _ => shopItems.SharedModel.DeselectItemView());
             }
             else
             {
-                inventory.Tooltip.Show(
+                tooltip.Show(
                     view.RectTransform,
                     view.Model,
                     ButtonEnabledFuncForSell,
                     LocalizationManager.Localize("UI_RETRIEVE"),
-                    tooltip =>
+                    _ =>
                         ShowRetrievePopup(tooltip.itemInformation.Model.item.Value as ShopItem),
-                    tooltip => shopItems.SharedModel.DeselectItemView());
+                    _ => shopItems.SharedModel.DeselectItemView());
             }
         }
 

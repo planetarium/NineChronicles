@@ -140,6 +140,9 @@ namespace Nekoyume.UI
                 materialView.SetActive(true);
                 using (var e = Model.materialItems.GetEnumerator())
                 {
+                    var isLessThanTwo = materialItems.Count() < 2;
+                    materialPlusImage.gameObject.SetActive(isLessThanTwo);
+
                     foreach (var material in materialItems)
                     {
                         e.MoveNext();

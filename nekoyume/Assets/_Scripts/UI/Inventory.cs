@@ -66,18 +66,19 @@ namespace Nekoyume.UI
 
         private void SubscribeSelectedItemView(InventoryItemView view)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
+                view.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
 
                 return;
             }
 
-            inventory.Tooltip.Show(
+            tooltip.Show(
                 view.RectTransform,
                 view.Model,
-                tooltip => inventory.SharedModel.DeselectItemView());
+                _ => inventory.SharedModel.DeselectItemView());
         }
     }
 }

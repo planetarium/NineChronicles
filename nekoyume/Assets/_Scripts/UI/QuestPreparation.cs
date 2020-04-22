@@ -203,21 +203,24 @@ namespace Nekoyume.UI
 
         private void ShowTooltip(InventoryItemView view)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
+                view.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
 
                 return;
             }
 
-            inventory.Tooltip.Show(view.RectTransform, view.Model,
+            tooltip.Show(
+                view.RectTransform,
+                view.Model,
                 value => !view.Model.Dimmed.Value,
                 view.Model.EquippedEnabled.Value
                     ? LocalizationManager.Localize("UI_UNEQUIP")
                     : LocalizationManager.Localize("UI_EQUIP"),
-                tooltip => Equip(tooltip.itemInformation.Model.item.Value),
-                tooltip =>
+                _ => Equip(tooltip.itemInformation.Model.item.Value),
+                _ =>
                 {
                     equipSlotGlow.SetActive(false);
                     inventory.SharedModel.DeselectItemView();
@@ -226,10 +229,11 @@ namespace Nekoyume.UI
 
         private void ShowTooltip(EquipmentSlot slot)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             if (slot is null ||
-                slot.RectTransform == inventory.Tooltip.Target)
+                slot.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
 
                 return;
             }
@@ -237,8 +241,10 @@ namespace Nekoyume.UI
             if (inventory.SharedModel.TryGetEquipment(slot.Item, out var item) ||
                 inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out item))
             {
-                inventory.Tooltip.Show(slot.RectTransform, item,
-                    tooltip => inventory.SharedModel.DeselectItemView());
+                tooltip.Show(
+                    slot.RectTransform,
+                    item,
+                    _ => inventory.SharedModel.DeselectItemView());
             }
         }
 
@@ -422,7 +428,7 @@ namespace Nekoyume.UI
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
             UpdateStats();
-            inventory.Tooltip.Close();
+            Find<ItemInformationTooltip>().Close();
 
             if (slot.ItemSubType == ItemSubType.Armor)
             {

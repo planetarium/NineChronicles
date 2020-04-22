@@ -183,7 +183,8 @@ namespace Nekoyume.UI
 
             CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SubscribeSlotStates)
                 .AddTo(gameObject);
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
         }
 
@@ -249,6 +250,13 @@ namespace Nekoyume.UI
             _lockSlotIndex = false;
 
             base.Close(ignoreCloseAnimation);
+        }
+
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            categoryTabArea.SetActive(false);
+            equipmentRecipe.gameObject.SetActive(false);
+            base.OnCompleteOfCloseAnimationInternal();
         }
 
         #endregion
@@ -326,7 +334,7 @@ namespace Nekoyume.UI
 
         private void SubscribeState(StateType value)
         {
-            inventory.Tooltip.Close();
+            Find<ItemInformationTooltip>().Close();
             recipe.Hide();
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
@@ -411,7 +419,8 @@ namespace Nekoyume.UI
                     var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
 
                     var rectTransform = selectedRecipe.transform as RectTransform;
-                    recipeClickVFX.transform.position = rectTransform.TransformPoint(rectTransform.rect.center);
+                    recipeClickVFX.transform.position =
+                        rectTransform.TransformPoint(rectTransform.rect.center);
                     recipeClickVFX.OnFinished = () => OnClickRecipe(isElemental);
                     recipeClickVFX.Play();
                     break;
@@ -448,28 +457,23 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnRecipeHide()
-        {
-            categoryTabArea.SetActive(false);
-            equipmentRecipe.gameObject.SetActive(false);
-        }
-
         private void ShowTooltip(InventoryItemView view)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
+                view.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
                 return;
             }
 
-            inventory.Tooltip.Show(
+            tooltip.Show(
                 view.RectTransform,
                 view.Model,
                 value => !view.Model?.Dimmed.Value ?? false,
                 LocalizationManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
-                tooltip => StageMaterial(view),
-                tooltip => inventory.SharedModel.DeselectItemView());
+                _ => StageMaterial(view),
+                _ => inventory.SharedModel.DeselectItemView());
         }
 
         private void StageMaterial(InventoryItemView itemView)
