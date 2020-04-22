@@ -129,11 +129,13 @@ namespace Nekoyume.Action
         private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx)
         {
             var tableSheets = TableSheets.FromActionContext(ctx);
+            var gameConfigState = ctx.PreviousStates.GetGameConfigState();
             var avatarState = new AvatarState(
                 avatarAddress,
                 ctx.Signer,
                 ctx.BlockIndex,
                 tableSheets,
+                gameConfigState,
                 name
             );
 
