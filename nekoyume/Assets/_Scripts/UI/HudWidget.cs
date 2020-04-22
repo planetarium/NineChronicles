@@ -4,7 +4,7 @@ namespace Nekoyume.UI
 {
     public class HudWidget : Widget
     {
-        public override WidgetType WidgetType => WidgetType.Hud;
+        protected override WidgetType WidgetType => WidgetType.Hud;
 
         protected override void Awake()
         {

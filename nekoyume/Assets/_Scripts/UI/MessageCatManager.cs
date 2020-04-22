@@ -11,8 +11,8 @@ namespace Nekoyume.UI
         private readonly List<MessageCat> _pool = new List<MessageCat>();
 
         [SerializeField] private GameObject messageCatPrefab = null;
-        
-        public override WidgetType WidgetType => WidgetType.Tooltip;
+
+        protected override WidgetType WidgetType => WidgetType.Tooltip;
 
         protected override void Awake()
         {
