@@ -13,6 +13,7 @@ using TMPro;
 using Nekoyume.TableData;
 using UnityEngine.UI;
 using UniRx;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -60,6 +61,7 @@ namespace Nekoyume.UI.Scroller
         public EquipmentItemRecipeSheet.Row RowData { get; private set; }
         public ItemSubType ItemSubType { get; private set; }
         public ElementalType ElementalType { get; private set; }
+        public StatType StatType { get; private set; }
 
         public bool Visible
         {
@@ -155,12 +157,14 @@ namespace Nekoyume.UI.Scroller
             {
                 case Equipment equipment:
                 {
+                    StatType = equipment.UniqueStatType;
                     var text = $"{equipment.Data.Stat.Type} +{equipment.Data.Stat.Value}";
                     optionText.text = text;
                     break;
                 }
                 case Consumable consumable:
                 {
+                    StatType = consumable.MainStat;
                     var sb = new StringBuilder();
                     foreach (var stat in consumable.Data.Stats)
                     {

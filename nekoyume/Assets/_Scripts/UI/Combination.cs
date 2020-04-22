@@ -31,6 +31,7 @@ namespace Nekoyume.UI
             SelectMenu,
             CombineEquipment,
             CombineConsumable,
+            LegacyCombineConsumable,
             EnhanceEquipment,
             CombinationConfirm,
         }
@@ -59,6 +60,7 @@ namespace Nekoyume.UI
         public GameObject leftArea;
         public GameObject categoryTabArea;
         public EquipmentRecipe equipmentRecipe;
+        public ConsumableRecipe consumableRecipe;
 
         public Module.Inventory inventory;
 
@@ -72,7 +74,7 @@ namespace Nekoyume.UI
         public Transform npcPosition01;
         public Transform npcPosition02;
         public CanvasGroup canvasGroup;
-        public Animator equipmentRecipeAnimator;
+        public Animator recipeAnimator;
         public ModuleBlur blur;
 
         public RecipeClickVFX recipeClickVFX;
@@ -272,7 +274,7 @@ namespace Nekoyume.UI
         public void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView)
         {
             if (recipeCellView is null ||
-                State.Value != StateType.CombineConsumable)
+                State.Value != StateType.LegacyCombineConsumable)
                 return;
 
             Debug.LogWarning($"Recipe Submit Clicked. {recipeCellView.Model.Row.Id}");
@@ -355,6 +357,7 @@ namespace Nekoyume.UI
                     categoryTabArea.SetActive(false);
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(false);
+                    consumableRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombineEquipment:
                     _selectedSpeechBubble = speechBubbleForEquipment;
@@ -370,10 +373,29 @@ namespace Nekoyume.UI
                     categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(true);
+                    consumableRecipe.gameObject.SetActive(false);
                     equipmentRecipe.ShowCellViews();
-                    equipmentRecipeAnimator.Play("Show");
+                    recipeAnimator.Play("Show");
                     break;
                 case StateType.CombineConsumable:
+                    _selectedSpeechBubble = speechBubbleForEquipment;
+                    speechBubbleForUpgrade.gameObject.SetActive(false);
+                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
+
+                    combineConsumable.Hide();
+                    enhanceEquipment.Hide();
+                    equipmentCombinationPanel.Hide();
+                    elementalCombinationPanel.Hide();
+                    ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
+
+                    categoryTabArea.SetActive(true);
+                    inventory.gameObject.SetActive(false);
+                    equipmentRecipe.gameObject.SetActive(false);
+                    consumableRecipe.gameObject.SetActive(true);
+                    consumableRecipe.ShowCellViews();
+                    recipeAnimator.Play("Show");
+                    break;
+                case StateType.LegacyCombineConsumable:
                     _selectedSpeechBubble = speechBubbleForUpgrade;
                     speechBubbleForEquipment.gameObject.SetActive(false);
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
@@ -392,6 +414,7 @@ namespace Nekoyume.UI
                     categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(true);
                     equipmentRecipe.gameObject.SetActive(false);
+                    consumableRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.EnhanceEquipment:
                     _selectedSpeechBubble = speechBubbleForUpgrade;
@@ -412,17 +435,26 @@ namespace Nekoyume.UI
                     categoryTabArea.SetActive(true);
                     inventory.gameObject.SetActive(true);
                     equipmentRecipe.gameObject.SetActive(false);
+                    consumableRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombinationConfirm:
                     _toggleGroup.SetToggledOffAll();
                     equipmentRecipe.HideCellViews();
                     var selectedRecipe = equipmentRecipe.SelectedRecipe;
-                    var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
-
                     var rectTransform = selectedRecipe.transform as RectTransform;
-                    recipeClickVFX.transform.position =
-                        rectTransform.TransformPoint(rectTransform.rect.center);
-                    recipeClickVFX.OnFinished = () => OnClickRecipe(isElemental);
+
+                    if (selectedRecipe.ItemSubType == ItemSubType.Food)
+                    {
+
+                    }
+                    else
+                    {
+                        var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
+
+                        recipeClickVFX.transform.position = rectTransform
+                            .TransformPoint(rectTransform.rect.center);
+                        recipeClickVFX.OnFinished = () => OnClickRecipe(isElemental);
+                    }
                     recipeClickVFX.Play();
                     break;
                 default:
@@ -439,8 +471,8 @@ namespace Nekoyume.UI
             ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
             inventory.gameObject.SetActive(false);
-            equipmentRecipeAnimator.Play("Hide");
-            equipmentRecipe.HideCellViews();
+            recipeAnimator.Play("Hide");
+            equipmentRecipe.HideCellviews();
 
             var selectedRecipe = equipmentRecipe.SelectedRecipe;
 
@@ -482,7 +514,7 @@ namespace Nekoyume.UI
             ShowSpeech("SPEECH_COMBINE_STAGE_MATERIAL_");
             switch (State.Value)
             {
-                case StateType.CombineConsumable:
+                case StateType.LegacyCombineConsumable:
                     combineConsumable.TryAddMaterial(itemView);
                     break;
                 case StateType.EnhanceEquipment:
