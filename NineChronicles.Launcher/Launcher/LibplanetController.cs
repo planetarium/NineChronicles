@@ -252,7 +252,7 @@ namespace Launcher
                             await Task.Delay(100);
                             if (File.Exists(CurrentPlatform.RunCommandFilePath))
                             {
-                                if (!GameRunning)
+                                if (!GameRunning && !Preprocessing)
                                 {
                                     RunGameProcess();
                                 }
