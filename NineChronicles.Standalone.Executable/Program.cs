@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -12,7 +12,7 @@ using Serilog;
 
 namespace NineChronicles.Standalone.Executable
 {
-    public class Program
+    public class Program : CoconaLiteConsoleAppBase
     {
         static async Task Main(string[] args)
         {
@@ -110,7 +110,7 @@ namespace NineChronicles.Standalone.Executable
             }
 
             var service = new NineChroniclesNodeService(properties, rpcProperties);
-            await service.Run();
+            await service.Run(Context.CancellationToken);
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)
