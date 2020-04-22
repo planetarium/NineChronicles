@@ -34,7 +34,7 @@ namespace Nekoyume.Model.Item
         FoodMaterial,
         MonsterPart,
         NormalMaterial,
-        Hourglass
+        Hourglass,
     }
 
     public class ItemTypeComparer : IEqualityComparer<ItemType>
