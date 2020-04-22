@@ -5,17 +5,23 @@ namespace Nekoyume.Model.Item
     public enum ItemType
     {
         Consumable,
+        Costume,
         Equipment,
         Material
     }
 
     public enum ItemSubType
     {
-        // todo: Consumable or Consumable Material
         // Consumable
         Food,
 
-        // todo: Equipment or Equipment Material
+        // Costume
+        FullCostume,
+        HairCostume,
+        EarCostume,
+        EyeCostume,
+        TailCostume,
+
         // Equipment
         Weapon,
         Armor,
@@ -23,14 +29,12 @@ namespace Nekoyume.Model.Item
         Necklace,
         Ring,
 
-        // todo: Remove `EquipmentMaterial` and `FoodMaterial`
-        // todo: Material -> ETC
         // Material
         EquipmentMaterial,
         FoodMaterial,
         MonsterPart,
         NormalMaterial,
-        Hourglass,
+        Hourglass
     }
 
     public class ItemTypeComparer : IEqualityComparer<ItemType>
