@@ -59,6 +59,8 @@ namespace Nekoyume.UI.Module
                 InitMaterialView(otherMaterial);
             }
 
+            submitButton.HideHourglass();
+
             OnMaterialAdd
                 .Merge(OnMaterialRemove)
                 .Subscribe(_ => OnMaterialChange.OnNext(this))

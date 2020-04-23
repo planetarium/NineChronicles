@@ -117,16 +117,17 @@ namespace Nekoyume.UI
             }
 
             submitButton.HideAP();
+            submitButton.HideNCG();
             submitButton.SetSubmittable(result.id != default);
             var cost = result.itemUsable.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (cost < 0)
             {
-                submitButton.HideNCG();
+                submitButton.HideHourglass();
             }
             else
             {
                 _cost = Convert.ToDecimal(cost);
-                submitButton.ShowNCG(_cost, States.Instance.AgentState.gold >= _cost);
+                submitButton.ShowHourglass((int) cost, States.Instance.AgentState.gold >= _cost);
             }
 
             base.Show();
