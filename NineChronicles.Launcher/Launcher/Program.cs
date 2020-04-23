@@ -7,6 +7,7 @@ using Serilog;
 using Serilog.Events;
 using Launcher.Common;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
+using System.Net;
 
 namespace Launcher
 {
@@ -14,6 +15,19 @@ namespace Launcher
     {
         public static int Main(string[] args)
         {
+            // FIXME launcher.json 설정이 제대로 병합되지 않는 문제가 있어서 설정 파일을 강제로 받아옵니다.
+            // https://github.com/planetarium/nekoyume-unity/issues/2032
+            // 병합 문제가 해결되면 이 코드는 제거해야 합니다.
+            if (!File.Exists(Path.Combine(CurrentPlatform.CurrentWorkingDirectory, ".preserve-settings")))
+            {
+                using var wc = new WebClient();
+                wc.DownloadFile(
+                    // 9c-beta 클러스터 설정
+                    "https://download.nine-chronicles.com/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-launcher.json",
+                    Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "launcher.json")
+                );
+            }
+
             AppDomain.CurrentDomain.ProcessExit += Configuration.FlushApplicationInsightLog;
             AppDomain.CurrentDomain.UnhandledException += Configuration.FlushApplicationInsightLog;
 
