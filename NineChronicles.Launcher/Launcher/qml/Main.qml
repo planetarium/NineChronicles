@@ -10,6 +10,7 @@ Item {
     function login() {
         const showError = (message) => {
             if (!loginFailMessage.visible) {
+                passphraseWindow.maximumHeight += 30
                 passphraseWindow.height += 30
                 loginFailMessage.visible = true
             }
