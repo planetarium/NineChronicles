@@ -205,14 +205,25 @@ namespace Launcher
                 .Select(hex => new PublicKey(ByteUtil.ParseHex(hex)))
                 .ToImmutableHashSet();
 
+            var rng = new Random();
+            var peers = settings.Peers
+                .OfType<string>()
+                .OrderBy(_ => rng.Next())
+                .Select(LoadPeer)
+                .ToList();
+            var iceServers = settings.IceServers
+                .OfType<string>()
+                .OrderBy(_ => rng.Next())
+                .Select(LoadIceServer)
+                .ToList();
             LibplanetNodeServiceProperties properties = new LibplanetNodeServiceProperties
             {
                 AppProtocolVersion = appProtocolVersion,
                 GenesisBlockPath = settings.GenesisBlockPath,
                 NoMiner = settings.NoMiner,
                 PrivateKey = PrivateKey ?? new PrivateKey(),
-                IceServers = new[] {settings.IceServer}.Select(LoadIceServer),
-                Peers = new[] {settings.Seed}.Where(a => a is string).Select(LoadPeer),
+                IceServers = iceServers,
+                Peers = peers,
                 // FIXME: how can we validate it to use right store type?
                 StorePath = storePath,
                 StoreType = settings.StoreType,
