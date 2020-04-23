@@ -16,7 +16,8 @@ namespace Nekoyume.UI.Module
         public int CostAP { get; private set; }
         public Subject<long> RequiredBlockIndexSubject { get; } = new Subject<long>();
 
-        public RecipeCellView recipeCellView;
+        public EquipmentRecipeCellView equipmentRecipeCellView;
+        public ConsumableRecipeCellView consumableRecipeCellView;
         public CombinationMaterialPanel materialPanel;
 
         public Button cancelButton;
@@ -63,10 +64,7 @@ namespace Nekoyume.UI.Module
 
         public void SetData(EquipmentItemRecipeSheet.Row recipeRow, int? subRecipeId = null)
         {
-            if (!(recipeCellView is EquipmentRecipeCellView cellview))
-                return;
-
-            cellview.Set(recipeRow);
+            equipmentRecipeCellView.Set(recipeRow);
             materialPanel.SetData(recipeRow, subRecipeId);
 
             gameObject.SetActive(true);
@@ -109,10 +107,7 @@ namespace Nekoyume.UI.Module
 
         public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
         {
-            if (!(recipeCellView is ConsumableRecipeCellView cellview))
-                return;
-
-            cellview.Set(recipeRow);
+            consumableRecipeCellView.Set(recipeRow);
             materialPanel.SetData(recipeRow);
 
             CostNCG = (int) materialPanel.costNcg;

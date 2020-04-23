@@ -640,7 +640,7 @@ namespace Nekoyume.UI
 
         private void ActionEnhancedCombinationEquipment(EquipmentCombinationPanel combinationPanel)
         {
-            var cellview = combinationPanel.recipeCellView as EquipmentRecipeCellView;
+            var cellview = combinationPanel.equipmentRecipeCellView;
             var model = cellview.RowData;
             var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel)
                 ? elementalPanel.SelectedSubRecipeId
