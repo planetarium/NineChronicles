@@ -2,10 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Action
 {
@@ -13,6 +16,28 @@ namespace Nekoyume.Action
     [ActionType("rapid_combination")]
     public class RapidCombination : GameAction
     {
+        [Serializable]
+        public class ResultModel : CombinationConsumable.ResultModel
+        {
+            public Dictionary<Material, int> cost;
+
+            protected override string TypeId => "rapidCombination.result";
+
+            public ResultModel(Dictionary serialized) : base(serialized)
+            {
+                if (serialized.TryGetValue((Text) "cost", out var value))
+                {
+                    cost = value.ToDictionary_Material_int();
+                }
+            }
+
+            public override IValue Serialize() =>
+                new Dictionary(new Dictionary<IKey, IValue>
+                {
+                    [(Text) "cost"] = cost.Serialize(),
+                }.Union((Dictionary) base.Serialize()));
+        }
+
         public Address avatarAddress;
         public int slotIndex;
         public override IAccountStateDelta Execute(IActionContext context)
@@ -29,8 +54,7 @@ namespace Nekoyume.Action
             {
                 return states
                     .SetState(avatarAddress, MarkChanged)
-                    .SetState(slotAddress, MarkChanged)
-                    .SetState(context.Signer, MarkChanged);
+                    .SetState(slotAddress, MarkChanged);
             }
 
             if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress,
@@ -45,26 +69,35 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var cost = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;
-            if (cost < 0)
+            var gameConfigState = states.GetGameConfigState();
+            if (gameConfigState is null)
             {
                 return states;
             }
 
-            if (!agentState.PurchaseGold(cost))
+            var diff = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;
+            if (diff < 0)
             {
                 return states;
             }
 
-            slotState.Update(context.BlockIndex);
+            var count = CalculateHourglassCount(gameConfigState, diff);
+            var tableSheets = TableSheets.FromActionContext(context);
+            var row = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            var hourGlass = ItemFactory.CreateMaterial(row);
+            if (!avatarState.inventory.RemoveFungibleItem(hourGlass, count))
+            {
+                return states;
+            }
+
+            slotState.Update(context.BlockIndex, hourGlass, count);
             avatarState.UpdateFromRapidCombination(
                 ((CombinationConsumable.ResultModel) slotState.Result),
                 context.BlockIndex
             );
             return states
                 .SetState(avatarAddress, avatarState.Serialize())
-                .SetState(slotAddress, slotState.Serialize())
-                .SetState(context.Signer, agentState.Serialize());
+                .SetState(slotAddress, slotState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -78,6 +111,17 @@ namespace Nekoyume.Action
         {
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             slotIndex = plainValue["slotIndex"].ToInteger();
+        }
+
+        public static int CalculateHourglassCount(GameConfigState state, long diff)
+        {
+            if (diff <= 0)
+            {
+                return 0;
+            }
+
+            var cost = Math.Ceiling((decimal) diff / state.HourglassPerBlock);
+            return (int) cost;
         }
     }
 }

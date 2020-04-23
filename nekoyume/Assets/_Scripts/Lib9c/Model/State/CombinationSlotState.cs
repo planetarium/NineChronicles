@@ -3,6 +3,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.Model.Item;
 
 namespace Nekoyume.Model.State
 {
@@ -13,7 +14,7 @@ namespace Nekoyume.Model.State
         public int UnlockStage { get; private set; }
         public long StartBlockIndex { get; private set; }
         public AttachmentActionResult Result { get; private set; }
-        public long requiredBlockIndex => UnlockBlockIndex - StartBlockIndex;
+        public long RequiredBlockIndex => UnlockBlockIndex - StartBlockIndex;
 
         public CombinationSlotState(Address address, int unlockStage) : base(address)
         {
@@ -52,6 +53,16 @@ namespace Nekoyume.Model.State
         {
             UnlockBlockIndex = blockIndex;
             Result.itemUsable.Update(blockIndex);
+        }
+
+        public void Update(long blockIndex, Material material, int count)
+        {
+            Update(blockIndex);
+            var result = new RapidCombination.ResultModel((Dictionary) Result.Serialize())
+            {
+                cost = new Dictionary<Material, int> {[material] = count}
+            };
+            Result = result;
         }
 
         public override IValue Serialize()
