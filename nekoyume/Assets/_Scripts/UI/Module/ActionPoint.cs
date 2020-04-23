@@ -34,7 +34,8 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
-            GameConfigStateSubject.gameConfigState.Subscribe(
+            sliderAnimator.SetMaxValue(States.Instance.GameConfigState.ActionPointMax);
+            GameConfigStateSubject.GameConfigState.ObserveOnMainThread().Subscribe(
                 state => sliderAnimator.SetMaxValue(state.ActionPointMax)
             ).AddTo(gameObject);
             sliderAnimator.SetValue(0f, false);

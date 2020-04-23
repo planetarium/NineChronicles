@@ -4,14 +4,14 @@ using UniRx;
 
 namespace Nekoyume.State.Subjects
 {
-    public class GameConfigStateSubject
+    public static class GameConfigStateSubject
     {
-        public static readonly Subject<GameConfigState> gameConfigState =
+        public static readonly Subject<GameConfigState> GameConfigState =
             new Subject<GameConfigState>();
 
         public static void OnNext(GameConfigState state)
         {
-            gameConfigState.OnNext(state);
+            GameConfigState.OnNext(state);
         }
 
     }
