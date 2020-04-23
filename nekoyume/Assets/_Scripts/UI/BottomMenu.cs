@@ -91,7 +91,7 @@ namespace Nekoyume.UI.Module
         public readonly Subject<bool> HasNotificationInSettings = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInCombination = new Subject<bool>();
 
-        public override WidgetType WidgetType => WidgetType.Popup;
+        protected override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {
@@ -210,17 +210,23 @@ namespace Nekoyume.UI.Module
         {
             CloseWidget = () => navigationAction?.Invoke(this);
 
-            base.Show();
+            base.Show(animateAlpha);
             if(animateAlpha)
             {
+                // FIXME: Widget의 연출 주기 캡슐화가 깨지는 부분이에요.
+                _animationState = AnimationState.Showing;
                 var pos = _buttons.position;
                 pos.y = _buttonsPositionY;
                 _buttons.position = pos;
-                Animator.enabled = false;
 
-                canvasGroup.DOKill();
-                canvasGroup.alpha = 0;
-                canvasGroup.DOFade(1,  1.0f);
+                canvasGroup.alpha = 0f;
+                canvasGroup
+                    .DOFade(1f,  1f)
+                    .OnComplete(() => _animationState = AnimationState.Shown);
+            }
+            else
+            {
+                canvasGroup.alpha = 1f;
             }
 
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
@@ -239,6 +245,8 @@ namespace Nekoyume.UI.Module
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            canvasGroup.DOKill();
+
             foreach (var toggleable in _toggleGroup.Toggleables)
             {
                 if (!(toggleable is IWidgetControllable widgetControllable))

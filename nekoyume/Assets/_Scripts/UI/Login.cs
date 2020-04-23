@@ -56,10 +56,11 @@ namespace Nekoyume.UI
                 {
                     return;
                 }
-                
+
                 Find<GrayLoadingScreen>().Show();
 
                 Game.Game.instance.ActionManager.DeleteAvatar(index)
+                    .Take(1)
                     .Subscribe(eval =>
                     {
                         Game.Event.OnNestEnter.Invoke();
@@ -70,23 +71,20 @@ namespace Nekoyume.UI
                         var layout = slots[index].GetComponentInChildren<HorizontalLayoutGroup>();
                         layout.CalculateLayoutInputHorizontal();
                         layout.SetLayoutHorizontal();
-                    }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during DeleteAvatar."));
+                    }, e => Find<ActionFailPopup>().Show("Action timeout during DeleteAvatar."));
             };
 
             AudioController.PlayClick();
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show();
+            base.Show(ignoreShowAnimation);
 
-            var stage = Game.Game.instance.Stage;
             for (var i = 0; i < slots.Length; i++)
             {
                 var slot = slots[i];
                 var playerSlot = slot.GetComponent<LoginPlayerSlot>();
-                var targetPosition = stage.SelectPositionEnd(i);
-                targetPosition.y = 0.0f;
 
                 if (States.Instance.AvatarStates.TryGetValue(i, out var avatarState))
                 {

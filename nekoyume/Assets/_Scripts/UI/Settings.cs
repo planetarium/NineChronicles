@@ -33,14 +33,14 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            
+
             addressTitleText.text = LocalizationManager.Localize("UI_YOUR_ADDRESS");
             privateKeyTitleText.text = LocalizationManager.Localize("UI_YOUR_PRIVATE_KEY");
             warningText.text = LocalizationManager.Localize("UI_ACCOUNT_WARNING");
-            
+
             volumeMasterSlider.onValueChanged.AddListener(SetVolumeMaster);
             volumeMasterToggle.onValueChanged.AddListener(SetVolumeMasterMute);
-            
+
             resetStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
             resetKeyStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");
             confirmText.text = LocalizationManager.Localize("UI_CLOSE");
@@ -51,7 +51,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public override void Show()
+        public override void Show(bool ignoreStartAnimation = false)
         {
             if (Game.Game.instance.Agent.PrivateKey is null)
             {
@@ -63,7 +63,7 @@ namespace Nekoyume.UI
                 addressContentInputField.text = Game.Game.instance.Agent.Address.ToHex();
                 privateKeyContentInputField.text = ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
             }
-            
+
             var muteString = LocalizationManager.Localize("UI_MUTE_AUDIO");
             foreach (var text in muteTexts)
             {
@@ -76,8 +76,12 @@ namespace Nekoyume.UI
             volumeMasterSlider.value = settings.volumeMaster;
             volumeMasterToggle.isOn = settings.isVolumeMasterMuted;
 
-            base.Show();
-            blur?.Show();
+            base.Show(ignoreStartAnimation);
+
+            if (blur)
+            {
+                blur.Show();
+            }
         }
 
         public void ApplyCurrentSettings()
@@ -103,14 +107,14 @@ namespace Nekoyume.UI
         private void CopyAddressToClipboard()
         {
             ClipboardHelper.CopyToClipboard(addressContentInputField.text);
-            
+
             // todo: 복사되었습니다. 토스트.
         }
-        
+
         private void CopyPrivateKeyToClipboard()
         {
             ClipboardHelper.CopyToClipboard(privateKeyContentInputField.text);
-            
+
             // todo: 복사되었습니다. 토스트.
         }
 
@@ -161,7 +165,11 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            blur?.Close();
+            if (blur)
+            {
+                blur.Close();
+            }
+
             base.Close(ignoreCloseAnimation);
         }
     }

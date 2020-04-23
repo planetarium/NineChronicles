@@ -361,6 +361,11 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             Close(true);
             Game.Event.OnRoomEnter.Invoke(true);
         }
