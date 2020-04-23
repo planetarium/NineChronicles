@@ -39,7 +39,11 @@ namespace Launcher.Updater
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.File(CurrentPlatform.UpdaterLogFilePath, fileSizeLimitBytes: 1024 * 1024)
+                .WriteTo.File(
+                    CurrentPlatform.LogFilePath,
+                    fileSizeLimitBytes: 20 * 1024 * 1024,
+                    rollOnFileSizeLimit: true,
+                    retainedFileCountLimit: 5)
                 .WriteTo.ApplicationInsights(
                     Configuration.TelemetryClient,
                     TelemetryConverter.Traces,
