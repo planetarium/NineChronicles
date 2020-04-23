@@ -16,9 +16,9 @@ namespace Nekoyume.UI.Module
     public class ConsumableRecipe : MonoBehaviour
     {
         [SerializeField]
-        private EquipmentRecipeCellView cellViewPrefab;
+        private ConsumableRecipeCellView cellViewPrefab;
         [SerializeField]
-        private EquipmentRecipeCellView[] cellViews;
+        private ConsumableRecipeCellView[] cellViews;
         [SerializeField]
         private TabButton hpTabButton;
         [SerializeField]
@@ -40,8 +40,6 @@ namespace Nekoyume.UI.Module
             new ReactiveProperty<StatType>(StatType.HP);
 
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
-        
-        public EquipmentRecipeCellView SelectedRecipe { get; private set; }
 
         public DOTweenGroupAlpha scrollAlphaTweener;
         public AnchoredPositionYTweener scrollPositionTweener;
@@ -75,7 +73,6 @@ namespace Nekoyume.UI.Module
 
         public void ShowCellViews()
         {
-            SelectedRecipe?.Show();
             scrollAlphaTweener.Play();
             scrollPositionTweener.StartTween();
 
@@ -87,7 +84,6 @@ namespace Nekoyume.UI.Module
 
         public void HideCellviews()
         {
-            SelectedRecipe.Visible = true;
             scrollAlphaTweener.PlayReverse();
             scrollPositionTweener.PlayReverse();
             foreach (var view in cellViews)
@@ -102,7 +98,7 @@ namespace Nekoyume.UI.Module
 
             var recipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
             var totalCount = recipeSheet.Count;
-            cellViews = new EquipmentRecipeCellView[totalCount];
+            cellViews = new ConsumableRecipeCellView[totalCount];
 
             var idx = 0;
             foreach (var recipeRow in recipeSheet)
@@ -122,11 +118,12 @@ namespace Nekoyume.UI.Module
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
                 return;
-            
-            foreach (var cellView in cellViews)
-            {
-                cellView.Set(avatarState);
-            }
+
+            // FIXME : 소모품 해금도 대응시켜야 함.
+            //foreach (var cellView in cellViews)
+            //{
+            //    cellView.Set(avatarState);
+            //}
         }
 
         private void SubScribeFilterType(StatType statType)
@@ -190,10 +187,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SubscribeOnClickCellView(EquipmentRecipeCellView cellView)
+        private void SubscribeOnClickCellView(RecipeCellView cellView)
         {
-            SelectedRecipe = cellView;
-            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
+            var combination = Widget.Find<Combination>();
+            combination.selectedRecipe = cellView as ConsumableRecipeCellView;
+            combination.State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }
 }

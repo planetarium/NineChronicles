@@ -38,8 +38,6 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
 
-        public EquipmentRecipeCellView SelectedRecipe { get; private set; }
-
         public DOTweenGroupAlpha scrollAlphaTweener;
         public AnchoredPositionYTweener scrollPositionTweener;
 
@@ -77,7 +75,6 @@ namespace Nekoyume.UI.Module
 
         public void ShowCellViews()
         {
-            SelectedRecipe?.Show();
             scrollAlphaTweener.Play();
             scrollPositionTweener.StartTween();
 
@@ -89,7 +86,6 @@ namespace Nekoyume.UI.Module
 
         public void HideCellViews()
         {
-            SelectedRecipe.Visible = true;
             scrollAlphaTweener.PlayReverse();
             scrollPositionTweener.PlayReverse();
             foreach (var view in cellViews)
@@ -192,10 +188,11 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SubscribeOnClickCellView(EquipmentRecipeCellView cellView)
+        private void SubscribeOnClickCellView(RecipeCellView cellView)
         {
-            SelectedRecipe = cellView;
-            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
+            var combination = Widget.Find<Combination>();
+            combination.selectedRecipe = cellView as EquipmentRecipeCellView;
+            combination.State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }
 }

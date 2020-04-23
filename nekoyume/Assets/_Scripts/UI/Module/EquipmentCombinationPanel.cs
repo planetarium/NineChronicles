@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Module
         public int CostAP { get; private set; }
         public Subject<long> RequiredBlockIndexSubject { get; } = new Subject<long>();
 
-        public EquipmentRecipeCellView recipeCellView;
+        public RecipeCellView recipeCellView;
         public CombinationMaterialPanel materialPanel;
 
         public Button cancelButton;
@@ -53,7 +53,7 @@ namespace Nekoyume.UI.Module
             confirmAreaYTweener.OnComplete = null;
         }
 
-        public void TweenCellView(EquipmentRecipeCellView view)
+        public void TweenCellView(RecipeCellView view)
         {
             var rect = view.transform as RectTransform;
 
@@ -63,7 +63,10 @@ namespace Nekoyume.UI.Module
 
         public void SetData(EquipmentItemRecipeSheet.Row recipeRow, int? subRecipeId = null)
         {
-            recipeCellView.Set(recipeRow);
+            if (!(recipeCellView is EquipmentRecipeCellView cellview))
+                return;
+
+            cellview.Set(recipeRow);
             materialPanel.SetData(recipeRow, subRecipeId);
 
             gameObject.SetActive(true);
@@ -102,6 +105,37 @@ namespace Nekoyume.UI.Module
                 }
             }
             RequiredBlockIndexSubject.OnNext(requiredBlockIndex);
+        }
+
+        public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
+        {
+            if (!(recipeCellView is ConsumableRecipeCellView cellview))
+                return;
+
+            cellview.Set(recipeRow);
+            materialPanel.SetData(recipeRow);
+
+            CostNCG = (int) materialPanel.costNcg;
+            CostAP = materialPanel.costAp;
+
+            if (CostAP > 0)
+            {
+                submitButton.ShowAP(CostAP, States.Instance.CurrentAvatarState.actionPoint >= CostAP);
+            }
+            else
+            {
+                submitButton.HideAP();
+            }
+
+            if (CostNCG > 0)
+            {
+                submitButton.ShowNCG(CostNCG, States.Instance.AgentState.gold >= CostNCG);
+            }
+            else
+            {
+                submitButton.HideNCG();
+            }
+            submitButton.SetSubmittable(materialPanel.IsCraftable);
         }
 
         public void Hide()

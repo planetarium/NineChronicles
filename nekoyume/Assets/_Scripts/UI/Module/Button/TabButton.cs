@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Nekoyume.Game.Controller;
@@ -50,8 +50,11 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             button.onClick.AddListener(SubscribeOnClick);
-            enabledText.text = LocalizationManager.Localize(localizationKey);
-            disabledText.text = LocalizationManager.Localize(localizationKey);
+            if (!string.IsNullOrEmpty(localizationKey))
+            {
+                enabledText.text = LocalizationManager.Localize(localizationKey);
+                disabledText.text = LocalizationManager.Localize(localizationKey);
+            }
         }
 
         private void SubscribeOnClick()

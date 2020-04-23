@@ -8,15 +8,15 @@ using UniRx;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class RecipeScrollerController : MonoBehaviour, IEnhancedScrollerDelegate, RecipeCellView.IEventListener
+    public class RecipeScrollerController : MonoBehaviour, IEnhancedScrollerDelegate, LegacyRecipeCellView.IEventListener
     {
         public EnhancedScroller scroller;
-        public RecipeCellView cellViewPrefab;
+        public LegacyRecipeCellView cellViewPrefab;
 
         private List<RecipeInfo> _recipeList = new List<RecipeInfo>();
         private float _cellViewHeight = 90f;
         
-        [CanBeNull] private RecipeCellView.IEventListener _eventListener;
+        [CanBeNull] private LegacyRecipeCellView.IEventListener _eventListener;
 
         #region Mono
 
@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Scroller
 
         public EnhancedScrollerCellView GetCellView(EnhancedScroller scroller, int dataIndex, int cellIndex)
         {
-            var cellView = (RecipeCellView) scroller.GetCellView(cellViewPrefab);
+            var cellView = (LegacyRecipeCellView) scroller.GetCellView(cellViewPrefab);
             if (cellView is null)
                 throw new FailedToInstantiateGameObjectException(cellViewPrefab.name);
 
@@ -56,17 +56,17 @@ namespace Nekoyume.UI.Scroller
             scroller.ReloadData();
         }
         
-        public void RegisterListener(RecipeCellView.IEventListener eventListener)
+        public void RegisterListener(LegacyRecipeCellView.IEventListener eventListener)
         {
             _eventListener = eventListener;
         }
 
-        public void OnRecipeCellViewStarClick(RecipeCellView recipeCellView)
+        public void OnRecipeCellViewStarClick(LegacyRecipeCellView recipeCellView)
         {
             _eventListener?.OnRecipeCellViewStarClick(recipeCellView);
         }
 
-        public void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView)
+        public void OnRecipeCellViewSubmitClick(LegacyRecipeCellView recipeCellView)
         {
             _eventListener?.OnRecipeCellViewSubmitClick(recipeCellView);
         }

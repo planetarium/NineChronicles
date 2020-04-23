@@ -11,12 +11,12 @@ using Nekoyume.Model.State;
 
 namespace Nekoyume.UI.Module
 {
-    public class Recipe : MonoBehaviour, RecipeCellView.IEventListener
+    public class Recipe : MonoBehaviour, LegacyRecipeCellView.IEventListener
     {
         public RecipeScrollerController scrollerController;
         public Button closeButton;
         
-        [CanBeNull] private RecipeCellView.IEventListener _eventListener;
+        [CanBeNull] private LegacyRecipeCellView.IEventListener _eventListener;
 
         private void Awake()
         {
@@ -49,17 +49,17 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
         
-        public void RegisterListener(RecipeCellView.IEventListener eventListener)
+        public void RegisterListener(LegacyRecipeCellView.IEventListener eventListener)
         {
             _eventListener = eventListener;
         }
 
-        public void OnRecipeCellViewStarClick(RecipeCellView recipeCellView)
+        public void OnRecipeCellViewStarClick(LegacyRecipeCellView recipeCellView)
         {
             _eventListener?.OnRecipeCellViewStarClick(recipeCellView);
         }
 
-        public void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView)
+        public void OnRecipeCellViewSubmitClick(LegacyRecipeCellView recipeCellView)
         {
             _eventListener?.OnRecipeCellViewSubmitClick(recipeCellView);
         }

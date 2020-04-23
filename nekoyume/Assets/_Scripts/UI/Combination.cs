@@ -24,7 +24,7 @@ using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI
 {
-    public class Combination : Widget, RecipeCellView.IEventListener
+    public class Combination : Widget, LegacyRecipeCellView.IEventListener
     {
         public enum StateType
         {
@@ -47,7 +47,7 @@ namespace Nekoyume.UI
 
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.SelectMenu);
-
+        
         private const int NPCId = 300001;
 
         public SelectionArea selectionArea;
@@ -76,6 +76,7 @@ namespace Nekoyume.UI
         public CanvasGroup canvasGroup;
         public Animator recipeAnimator;
         public ModuleBlur blur;
+        public RecipeCellView selectedRecipe;
 
         public RecipeClickVFX recipeClickVFX;
 
@@ -263,7 +264,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void OnRecipeCellViewStarClick(RecipeCellView recipeCellView)
+        public void OnRecipeCellViewStarClick(LegacyRecipeCellView recipeCellView)
         {
             Debug.LogWarning($"Recipe Star Clicked. {recipeCellView.Model.Row.Id}");
             // 즐겨찾기 등록.
@@ -271,7 +272,7 @@ namespace Nekoyume.UI
             // 레시피 재정렬.
         }
 
-        public void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView)
+        public void OnRecipeCellViewSubmitClick(LegacyRecipeCellView recipeCellView)
         {
             if (recipeCellView is null ||
                 State.Value != StateType.LegacyCombineConsumable)
@@ -439,21 +440,19 @@ namespace Nekoyume.UI
                     break;
                 case StateType.CombinationConfirm:
                     _toggleGroup.SetToggledOffAll();
-                    equipmentRecipe.HideCellViews();
-                    var selectedRecipe = equipmentRecipe.SelectedRecipe;
+
                     var rectTransform = selectedRecipe.transform as RectTransform;
+                    recipeClickVFX.transform.position = rectTransform
+                        .TransformPoint(rectTransform.rect.center);
 
                     if (selectedRecipe.ItemSubType == ItemSubType.Food)
                     {
-
+                        recipeClickVFX.OnFinished = OnClickConsumableRecipe;
                     }
                     else
                     {
                         var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
-
-                        recipeClickVFX.transform.position = rectTransform
-                            .TransformPoint(rectTransform.rect.center);
-                        recipeClickVFX.OnFinished = () => OnClickRecipe(isElemental);
+                        recipeClickVFX.OnFinished = () => OnClickEquipmentRecipe(isElemental);
                     }
                     recipeClickVFX.Play();
                     break;
@@ -462,7 +461,24 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickRecipe(bool isElemental)
+        private void OnClickConsumableRecipe()
+        {
+            _toggleGroup.SetToggledOffAll();
+
+            combineConsumable.Hide();
+            enhanceEquipment.Hide();
+            ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
+
+            inventory.gameObject.SetActive(false);
+            recipeAnimator.Play("Close");
+            consumableRecipe.HideCellviews();
+
+            var recipeCellView = selectedRecipe as ConsumableRecipeCellView;
+            equipmentCombinationPanel.TweenCellView(recipeCellView);
+            equipmentCombinationPanel.SetData(recipeCellView.RowData);
+        }
+
+        private void OnClickEquipmentRecipe(bool isElemental)
         {
             _toggleGroup.SetToggledOffAll();
 
@@ -471,21 +487,21 @@ namespace Nekoyume.UI
             ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
             inventory.gameObject.SetActive(false);
-            recipeAnimator.Play("Hide");
+            recipeAnimator.Play("Close");
             equipmentRecipe.HideCellviews();
 
-            var selectedRecipe = equipmentRecipe.SelectedRecipe;
+            var recipeCellView = selectedRecipe as EquipmentRecipeCellView;
 
             if (isElemental)
             {
                 equipmentCombinationPanel.Hide();
-                elementalCombinationPanel.TweenCellViewInOption(selectedRecipe);
-                elementalCombinationPanel.SetData(selectedRecipe.RowData);
+                elementalCombinationPanel.TweenCellViewInOption(recipeCellView);
+                elementalCombinationPanel.SetData(recipeCellView.RowData);
             }
             else
             {
-                equipmentCombinationPanel.TweenCellView(selectedRecipe);
-                equipmentCombinationPanel.SetData(selectedRecipe.RowData);
+                equipmentCombinationPanel.TweenCellView(recipeCellView);
+                equipmentCombinationPanel.SetData(recipeCellView.RowData);
                 elementalCombinationPanel.Hide();
             }
         }
@@ -572,7 +588,10 @@ namespace Nekoyume.UI
             }
             else if (State.Value == StateType.CombinationConfirm)
             {
-                State.SetValueAndForceNotify(StateType.CombineEquipment);
+                if (selectedRecipe.ItemSubType == ItemSubType.Food)
+                    State.SetValueAndForceNotify(StateType.CombineConsumable);
+                else
+                    State.SetValueAndForceNotify(StateType.CombineEquipment);
             }
             else
             {
@@ -621,7 +640,8 @@ namespace Nekoyume.UI
 
         private void ActionEnhancedCombinationEquipment(EquipmentCombinationPanel combinationPanel)
         {
-            var model = combinationPanel.recipeCellView.RowData;
+            var cellview = combinationPanel.recipeCellView as EquipmentRecipeCellView;
+            var model = cellview.RowData;
             var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel)
                 ? elementalPanel.SelectedSubRecipeId
                 : (int?) null;
