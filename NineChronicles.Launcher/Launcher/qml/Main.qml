@@ -91,7 +91,7 @@ Item {
                           !ctrl.preprocessing &&
                           ctrl.currentNodeAddress != null)
                 text: "My node: " + ctrl.currentNodeAddress
-                // FIXME: 누르면 클립보드에 주소 복사하게...
+                onTriggered: ctrl.copyClipboard(ctrl.currentNodeAddress)
             }
 
             MenuSeparator { }
@@ -306,16 +306,6 @@ Item {
                     id: addressComboBox
                     model: Net.toListModel(ctrl.keyStoreOptions)
                     Layout.fillWidth: true
-                     popup: Popup {
-                         contentItem: ListView {
-                             clip: true
-                             implicitHeight: contentHeight
-                             model: Net.toListModel(ctrl.keyStoreOptions)
-                             currentIndex: addressComboBox.highlightedIndex
-
-                             ScrollIndicator.vertical: ScrollIndicator { }
-                         }
-                     }
                 }
 
                 Label {

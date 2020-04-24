@@ -23,6 +23,7 @@ using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using static Launcher.Common.Configuration;
 using static Launcher.Common.Utils;
 using Nekoyume;
+using TextCopy;
 
 namespace Launcher
 {
@@ -324,6 +325,11 @@ namespace Launcher
             {
                 l.Stop();
             }
+        }
+
+        public void CopyClipboard(string value)
+        {
+            Clipboard.SetText(value);
         }
 
         public bool RunGameProcess()
