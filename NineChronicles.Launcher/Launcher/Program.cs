@@ -8,6 +8,7 @@ using Serilog.Events;
 using Launcher.Common;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using System.Net;
+using System.Text.Json;
 
 namespace Launcher
 {
@@ -17,8 +18,8 @@ namespace Launcher
         {
             // FIXME launcher.json 설정이 제대로 병합되지 않는 문제가 있어서 설정 파일을 강제로 받아옵니다.
             // https://github.com/planetarium/nekoyume-unity/issues/2032
-            // 병합 문제가 해결되면 이 코드는 제거해야 합니다.
-            if (!File.Exists(Path.Combine(CurrentPlatform.CurrentWorkingDirectory, ".preserve-settings")))
+            // 업데이터에서 병합 문제가 해결되면 이 코드는 제거해야 합니다.
+            if (!CheckConfig())
             {
                 using var wc = new WebClient();
                 wc.DownloadFile(
@@ -75,6 +76,26 @@ namespace Launcher
             Qml.Net.Qml.RegisterType<LibplanetController>("LibplanetLauncher");
             qmlEngine.Load("qml/Main.qml");
             return application.Exec();
+        }
+
+        private static bool CheckConfig()
+        {
+            string configPath = Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "launcher.json");
+
+            if (File.Exists(configPath))
+            {
+                try
+                {
+                    _ = JsonDocument.Parse(File.ReadAllText(configPath));
+                    return true;
+                }
+                catch (JsonException)
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
     }
 }
