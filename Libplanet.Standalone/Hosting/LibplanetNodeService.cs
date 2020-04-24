@@ -11,6 +11,7 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
+using Libplanet.Net.Protocols;
 using Libplanet.Store;
 using Microsoft.Extensions.Hosting;
 using Nito.AsyncEx;
@@ -43,11 +44,14 @@ namespace Libplanet.Standalone.Hosting
 
         private Progress<PreloadState> _preloadProgress;
 
+        private bool _ignoreBootstrapFailure;
+
         public LibplanetNodeService(
             LibplanetNodeServiceProperties properties,
             IBlockPolicy<T> blockPolicy,
             Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> minerLoopAction,
-            Progress<PreloadState> preloadProgress
+            Progress<PreloadState> preloadProgress,
+            bool ignoreBootstrapFailure = false
         )
         {
             _properties = properties;
@@ -81,6 +85,7 @@ namespace Libplanet.Standalone.Hosting
             BootstrapEnded = new AsyncAutoResetEvent();
 
             _preloadProgress = preloadProgress;
+            _ignoreBootstrapFailure = ignoreBootstrapFailure;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
@@ -89,18 +94,32 @@ namespace Libplanet.Standalone.Hosting
             if (peers.Any())
             {
                 var trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
-                await Swarm.BootstrapAsync(
-                    peers,
-                    TimeSpan.FromSeconds(5),
-                    TimeSpan.FromSeconds(5),
-                    depth: 1,
-                    cancellationToken: cancellationToken);
-                BootstrapEnded.Set();
+
+                try
+                {
+                    await Swarm.BootstrapAsync(
+                        peers,
+                        TimeSpan.FromSeconds(5),
+                        TimeSpan.FromSeconds(5),
+                        depth: 1,
+                        cancellationToken: cancellationToken);
+                    BootstrapEnded.Set();
+                }
+                catch (PeerDiscoveryException e)
+                {
+                    Log.Error(e, "Bootstrap failed: {Exception}", e);
+
+                    if (!_ignoreBootstrapFailure)
+                    {
+                        throw;
+                    }
+                }
+
 
                 await Swarm.PreloadAsync(
                     TimeSpan.FromSeconds(5),
                     _preloadProgress,
-                    trustedStateValidators, 
+                    trustedStateValidators,
                     cancellationToken: cancellationToken
                 );
                 PreloadEnded.Set();

@@ -97,28 +97,22 @@ namespace Launcher
             var cancellationToken = _cancellationTokenSource.Token;
             Task.Run(async () =>
             {
-                while (!cancellationToken.IsCancellationRequested)
+                try
                 {
-                    try
-                    {
-                        var settings = LoadSettings();
-                        await SyncTask(settings, cancellationToken);
-                    }
-                    catch (InvalidGenesisBlockException e)
-                    {
-                        FatalError(e, "The network to connect and this game app do not have the same genesis block.");
-                        return;
-                    }
-                    catch (TimeoutException e)
-                    {
-                        FatalError(e, "Timed out to connect to the network.");
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        FatalError(e, "Unexpected exception occurred during trying to connect to the network.");
-                        return;
-                    }
+                    var settings = LoadSettings();
+                    await SyncTask(settings, cancellationToken);
+                }
+                catch (InvalidGenesisBlockException e)
+                {
+                    FatalError(e, "The network to connect and this game app do not have the same genesis block.");
+                }
+                catch (TimeoutException e)
+                {
+                    FatalError(e, "Timed out to connect to the network.");
+                }
+                catch (Exception e)
+                {
+                    FatalError(e, "Unexpected exception occurred during trying to connect to the network.");
                 }
             }, cancellationToken);
         }
@@ -252,64 +246,58 @@ namespace Launcher
 
             TelemetryClient.Context.User.AuthenticatedUserId = service.Swarm.Address.ToHex();
 
-            try
-            {
-                await Task.WhenAll(
-                    service.Run(cancellationToken),
-                    Task.Run(async () =>
+            Task.Run(
+                async () =>
+                {
+                    while (true)
                     {
-                        while (true)
+                        await Task.Delay(100, cancellationToken);
+                        if (File.Exists(CurrentPlatform.RunCommandFilePath))
                         {
-                            await Task.Delay(100);
-                            if (File.Exists(CurrentPlatform.RunCommandFilePath))
+                            if (!GameRunning && !Preprocessing)
                             {
-                                if (!GameRunning && !Preprocessing)
-                                {
-                                    RunGameProcess();
-                                }
-                                File.Delete(CurrentPlatform.RunCommandFilePath);
+                                RunGameProcess();
                             }
+                            File.Delete(CurrentPlatform.RunCommandFilePath);
                         }
-                    }),
-                    Task.Run(async () =>
+                    }
+                },
+                cancellationToken);
+
+            Task.Run(
+                async () =>
+                {
+                    PreloadStatus = "Connecting to the network...";
+                    this.ActivateProperty(ctrl => ctrl.PreloadStatus);
+
+                    if (properties.Peers.Any())
                     {
-                        PreloadStatus = "Connecting to the network...";
-                        this.ActivateProperty(ctrl => ctrl.PreloadStatus);
+                        await service.BootstrapEnded.WaitAsync(cancellationToken);
+                        Log.Information("Bootstrap Ended");
 
-                        if (properties.Peers.Any())
-                        {
-                            await service.BootstrapEnded.WaitAsync(cancellationToken);
-                            Log.Information("Bootstrap Ended");
+                        await service.PreloadEnded.WaitAsync(cancellationToken);
+                        Log.Information("Preload Ended");
+                    }
 
-                            await service.PreloadEnded.WaitAsync(cancellationToken);
-                            Log.Information("Preload Ended");
-                        }
+                    Preprocessing = false;
+                    this.ActivateProperty(ctrl => ctrl.Preprocessing);
 
-                        Preprocessing = false;
-                        this.ActivateProperty(ctrl => ctrl.Preprocessing);
+                    Peer currentNode = null;
+                    do
+                    {
+                        await Task.Delay(1000, cancellationToken);
+                        currentNode = service.Swarm.AsPeer;
+                    }
+                    while (!(currentNode is BoundPeer));
 
-                        Peer currentNode = null;
-                        do
-                        {
-                            await Task.Delay(1000);
-                            currentNode = service.Swarm.AsPeer;
-                        }
-                        while (!(currentNode is BoundPeer));
+                    CurrentNode = currentNode;
+                    Log.Information("Current node address: {0}", CurrentNodeAddress);
+                    this.ActivateProperty(ctrl => ctrl.CurrentNode);
+                    this.ActivateProperty(ctrl => ctrl.CurrentNodeAddress);
+                },
+                cancellationToken);
 
-                        CurrentNode = currentNode;
-                        Log.Information("Current node address: {0}", CurrentNodeAddress);
-                        this.ActivateProperty(ctrl => ctrl.CurrentNode);
-                        this.ActivateProperty(ctrl => ctrl.CurrentNodeAddress);
-                    }));
-            }
-            catch (OperationCanceledException e)
-            {
-                Log.Warning(e, "Background sync task was cancelled.");
-            }
-            catch (Exception e)
-            {
-                Log.Error(e, "Unexpected exception occurred: {errorMessage}", e.Message);
-            }
+            await service.Run(cancellationToken);
         }
 
         private int GetFreeTcpPort()
