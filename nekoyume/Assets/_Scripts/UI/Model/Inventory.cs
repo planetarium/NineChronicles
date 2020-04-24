@@ -30,9 +30,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<InventoryItemView> SelectedItemView =
             new ReactiveProperty<InventoryItemView>();
 
-        public readonly ReactiveProperty<InventoryItem> SelectedItemViewModel =
-            new ReactiveProperty<InventoryItem>();
-
         public readonly ReactiveProperty<Func<InventoryItem, bool>> DimmedFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
@@ -64,7 +61,6 @@ namespace Nekoyume.UI.Model
             Equipments.Dispose();
             Materials.Dispose();
             SelectedItemView.Dispose();
-            SelectedItemViewModel.Dispose();
             DimmedFunc.Dispose();
             EquippedEnabledFunc.Dispose();
             OnDoubleClickItemView.Dispose();
@@ -72,6 +68,7 @@ namespace Nekoyume.UI.Model
 
         public void ResetItems(Nekoyume.Model.Item.Inventory inventory)
         {
+            DeselectItemView();
             RemoveItemsAll();
 
             if (inventory is null)
@@ -433,30 +430,32 @@ namespace Nekoyume.UI.Model
 
         public void SelectItemView(InventoryItemView view)
         {
+            DeselectItemView();
+
             if (view is null ||
                 view.Model is null)
             {
                 return;
             }
 
-            DeselectItemView();
+            view.Model.Selected.Value = true;
 
             SelectedItemView.Value = view;
-            SelectedItemViewModel.Value = view.Model;
-            SelectedItemViewModel.Value.Selected.Value = true;
             SetGlowedAll(false);
         }
 
         public void DeselectItemView()
         {
-            if (SelectedItemView.Value is null ||
-                SelectedItemViewModel.Value is null)
+            if (SelectedItemView.Value is null)
             {
                 return;
             }
 
-            SelectedItemViewModel.Value.Selected.Value = false;
-            SelectedItemViewModel.Value = null;
+            if (!(SelectedItemView.Value.Model is null))
+            {
+                SelectedItemView.Value.Model.Selected.Value = false;
+            }
+
             SelectedItemView.Value = null;
         }
 

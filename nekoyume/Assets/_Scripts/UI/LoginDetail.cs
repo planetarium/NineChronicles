@@ -200,7 +200,7 @@ namespace Nekoyume.UI
                 Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
             warriorButton.gameObject.SetActive(_isCreateMode);
             archerButton.gameObject.SetActive(_isCreateMode);
@@ -215,7 +215,7 @@ namespace Nekoyume.UI
                 paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
             }
 
-            base.Show();
+            base.Show(ignoreShowAnimation);
         }
 
         public void ChangeHair(int offset)

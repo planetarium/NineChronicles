@@ -12,7 +12,7 @@ namespace Nekoyume.UI
     /// </summary>
     public class BlockChainMessageBoard : SystemInfoWidget
     {
-        private enum AnimationState
+        private enum PanelAnimationState
         {
             On,
             Off
@@ -25,8 +25,8 @@ namespace Nekoyume.UI
         public TextMeshProUGUI messageText;
         public TextMeshProUGUI animationText;
 
-        private AnimationState _currentAnimationState;
-        private AnimationState _nextAnimationState;
+        private PanelAnimationState _currentPanelAnimationState;
+        private PanelAnimationState _nextPanelAnimationState;
         private int _animationTextAtlasIndex;
         private Animator _panelAnimator;
 
@@ -43,24 +43,26 @@ namespace Nekoyume.UI
             panel.SetActive(false);
             messageText.text = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX");
 
-            _currentAnimationState = AnimationState.Off;
-            _nextAnimationState = AnimationState.Off;
+            _currentPanelAnimationState = PanelAnimationState.Off;
+            _nextPanelAnimationState = PanelAnimationState.Off;
             _animationTextAtlasIndex = 0;
 
-            Agent.OnEnqueueOwnGameAction += guid => _nextAnimationState = AnimationState.On;
-            Agent.OnHasOwnTx += has => _nextAnimationState = has
-                ? AnimationState.On
-                : AnimationState.Off;
+            Agent.OnEnqueueOwnGameAction += guid => _nextPanelAnimationState = PanelAnimationState.On;
+            Agent.OnHasOwnTx += has => _nextPanelAnimationState = has
+                ? PanelAnimationState.On
+                : PanelAnimationState.Off;
         }
 
         protected override void Update()
         {
-            if (_currentAnimationState == _nextAnimationState)
+            if (_currentPanelAnimationState == _nextPanelAnimationState)
+            {
                 return;
+            }
 
-            _currentAnimationState = _nextAnimationState;
+            _currentPanelAnimationState = _nextPanelAnimationState;
 
-            if (_currentAnimationState == AnimationState.On)
+            if (_currentPanelAnimationState == PanelAnimationState.On)
             {
                 if (!panel.activeSelf) panel.SetActive(true);
                 _panelAnimator.Play("Show");
@@ -75,7 +77,7 @@ namespace Nekoyume.UI
         private async void UpdateAnimation()
         {
             _animationTextAtlasIndex = 0;
-            while (_currentAnimationState == AnimationState.On)
+            while (_currentPanelAnimationState == PanelAnimationState.On)
             {
                 animationText.text = AnimationTextAtlas[_animationTextAtlasIndex];
                 await Task.Delay(300);

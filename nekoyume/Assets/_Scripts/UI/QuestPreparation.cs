@@ -72,6 +72,11 @@ namespace Nekoyume.UI
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
+        // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
+        protected override bool CanHandleInputEvent =>
+            base.CanHandleInputEvent &&
+            questButton.interactable;
+
         #region override
 
         protected override void Awake()
@@ -94,7 +99,9 @@ namespace Nekoyume.UI
             inventory.SharedModel.OnDoubleClickItemView.Subscribe(itemView =>
                 {
                     if (itemView.Model.Dimmed.Value)
+                    {
                         return;
+                    }
 
                     Equip(itemView.Model);
                 })
@@ -107,9 +114,9 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show();
+            base.Show(ignoreShowAnimation);
             inventory.SharedModel.State.Value = ItemType.Equipment;
 
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
@@ -291,6 +298,11 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             Find<WorldMap>().Show(_worldId, _stageId.Value, false);
             gameObject.SetActive(false);
         }
@@ -332,12 +344,12 @@ namespace Nekoyume.UI
 
         public void QuestClick(bool repeat)
         {
+            questButton.interactable = false;
             StartCoroutine(CoQuestClick(repeat));
         }
 
         private IEnumerator CoQuestClick(bool repeat)
         {
-            questButton.interactable = false;
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,

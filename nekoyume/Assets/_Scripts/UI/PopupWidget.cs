@@ -5,11 +5,11 @@ namespace Nekoyume.UI
 {
     public class PopupWidget : Widget
     {
-        public override WidgetType WidgetType => WidgetType.Popup;
-        
-        public override void Show()
+        protected override WidgetType WidgetType => WidgetType.Popup;
+
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show();
+            base.Show(ignoreShowAnimation);
             AudioController.PlayPopup();
         }
     }

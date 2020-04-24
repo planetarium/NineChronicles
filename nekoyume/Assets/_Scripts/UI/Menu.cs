@@ -179,7 +179,7 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
             if (!(_coLazyClose is null))
             {
@@ -187,7 +187,7 @@ namespace Nekoyume.UI
                 _coLazyClose = null;
             }
 
-            base.Show();
+            base.Show(ignoreShowAnimation);
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();

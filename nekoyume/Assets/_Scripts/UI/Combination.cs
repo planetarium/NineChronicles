@@ -183,13 +183,14 @@ namespace Nekoyume.UI
 
             CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SubscribeSlotStates)
                 .AddTo(gameObject);
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
+                .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show();
+            base.Show(ignoreShowAnimation);
 
             CheckLockOfCategoryButtons();
 
@@ -249,6 +250,13 @@ namespace Nekoyume.UI
             _lockSlotIndex = false;
 
             base.Close(ignoreCloseAnimation);
+        }
+
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            categoryTabArea.SetActive(false);
+            equipmentRecipe.gameObject.SetActive(false);
+            base.OnCompleteOfCloseAnimationInternal();
         }
 
         #endregion
@@ -411,7 +419,8 @@ namespace Nekoyume.UI
                     var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
 
                     var rectTransform = selectedRecipe.transform as RectTransform;
-                    recipeClickVFX.transform.position = rectTransform.TransformPoint(rectTransform.rect.center);
+                    recipeClickVFX.transform.position =
+                        rectTransform.TransformPoint(rectTransform.rect.center);
                     recipeClickVFX.OnFinished = () => OnClickRecipe(isElemental);
                     recipeClickVFX.Play();
                     break;
@@ -446,12 +455,6 @@ namespace Nekoyume.UI
                 equipmentCombinationPanel.SetData(selectedRecipe.RowData);
                 elementalCombinationPanel.Hide();
             }
-        }
-
-        private void OnRecipeHide()
-        {
-            categoryTabArea.SetActive(false);
-            equipmentRecipe.gameObject.SetActive(false);
         }
 
         private void ShowTooltip(InventoryItemView view)
@@ -524,6 +527,11 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             if (State.Value == StateType.SelectMenu)
             {
                 Close();
