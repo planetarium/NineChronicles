@@ -109,7 +109,10 @@ namespace NineChronicles.Standalone.Executable
                 }
             }
 
-            var service = new NineChroniclesNodeService(properties, rpcProperties);
+            var service = new NineChroniclesNodeService(
+                properties,
+                rpcProperties,
+                ignoreBootstrapFailure: true);
             await service.Run(Context.CancellationToken);
         }
 

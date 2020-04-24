@@ -40,7 +40,8 @@ namespace NineChronicles.Standalone
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties properties,
             RpcNodeServiceProperties rpcNodeServiceProperties,
-            Progress<PreloadState> preloadProgress = null
+            Progress<PreloadState> preloadProgress = null,
+            bool ignoreBootstrapFailure = false
         )
         {
             Properties = properties;
@@ -75,7 +76,8 @@ namespace NineChronicles.Standalone
                 Properties,
                 blockPolicy,
                 minerLoopAction,
-                preloadProgress
+                preloadProgress,
+                ignoreBootstrapFailure
             );
 
             if (BlockPolicy.ActivationSet is null)
