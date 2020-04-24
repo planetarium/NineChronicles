@@ -98,9 +98,13 @@ def main() -> None:
         return parser.exit(1, 'failed to find StreamingAssets directory')
 
     # launcher.json 서명 업데이트
-    with open(launcher_json) as f:
-        launcher_conf = load(f)
-        logging.debug('Deserialzed launcher.json: %r', launcher_conf)
+    try:
+        with open(launcher_json) as f:
+            launcher_conf = load(f)
+            logging.debug('Deserialzed launcher.json: %r', launcher_conf)
+    except FileNotFoundError:
+        launcher_conf = {}
+        logging.warning('No launcher.json; create an empty one')
     launcher_conf.update(
         appProtocolVersionToken=apv,
         trustedAppProtocolVersionSigners=[public_key],
@@ -110,9 +114,13 @@ def main() -> None:
         dump(launcher_conf, f, ensure_ascii=False, indent='  ')
 
     # clo.json 서명 업데이트
-    with open(clo_json) as f:
-        clo = load(f)
-        logging.debug('Deserialzed clo.json: %r', clo)
+    try:
+        with open(clo_json) as f:
+            clo = load(f)
+            logging.debug('Deserialzed clo.json: %r', clo)
+    except FileNotFoundError:
+        clo = {}
+        warning.debug('No clo.json; create an empty one')
     clo.update(
         appProtocolVersionToken=apv,
         trustedAppProtocolVersionSigners=[public_key],
@@ -123,23 +131,27 @@ def main() -> None:
 
     # 아카이브 생성 
     if args.platform.lower() == 'macos':
-        with tarfile.open(os.path.join(args.out_dir, 'macOS.tar.gz'),
-                          'w') as archive:
-            for name in os.listdir(temp_dir):
-                archive.add(os.path.join(temp_dir, name), arcname=name)
+        archive_path = os.path.join(args.out_dir, 'macOS.tar.gz')
+        with tarfile.open(archive_path, 'w') as archive:
+            for arcname in os.listdir(temp_dir):
+                name = os.path.join(temp_dir, arcname)
+                archive.add(name, arcname=arcname)
+                logging.info('Added: %s <- %s', arcname, name)
     elif args.platform.lower() == 'windows':
-        with zipfile.ZipFile(os.path.join(args.out_dir, 'Windows.zip'),
-                             'w') as archive:
+        archive_path = os.path.join(args.out_dir, 'Windows.zip')
+        with zipfile.ZipFile(archive_path, 'w') as archive:
             basepath = os.path.abspath(temp_dir) + os.sep
             for path, dirs, files in os.walk(temp_dir):
-                logging.debug('walk: %r, %r, %r', path, dirs, files)
+                logging.debug('Walk: %r, %r, %r', path, dirs, files)
                 for name in files + dirs:
                     fullname = os.path.abspath(os.path.join(path, name))
                     assert fullname.startswith(basepath)
                     relname = fullname[len(basepath):]
                     archive.write(fullname, relname)
+                    logging.info('Added: %s <- %s', relname, fullname)
     else:
         return parser.exit(1, f'unsupported platform: {args.platform}')
+    logging.info('Created an archive: %s', archive_path)
 
     shutil.rmtree(temp_dir)
 
