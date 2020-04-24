@@ -608,7 +608,7 @@ namespace Nekoyume.UI
         private void SubscribeBlockIndex(long blockIndex)
         {
             _blockIndex = blockIndex;
-            ResetSelectedIndex();
+            ResetSelectedIndex();   
         }
 
         #region Action
