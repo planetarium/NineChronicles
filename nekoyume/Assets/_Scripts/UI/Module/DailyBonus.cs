@@ -89,7 +89,7 @@ namespace Nekoyume.UI.Module
                         LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, true);
                         break;
                     case 2:
-                        LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
+                        LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
                         break;
                 }
 
@@ -193,7 +193,7 @@ namespace Nekoyume.UI.Module
                 0.8f);
 
             yield return new WaitForSeconds(1.5f);
-            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, GameConfig.ActionPointMax);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, States.Instance.GameConfigState.ActionPointMax);
             _coGetDailyRewardAnimationStep = 0;
         }
     }

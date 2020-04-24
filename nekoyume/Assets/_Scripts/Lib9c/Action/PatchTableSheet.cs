@@ -4,6 +4,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Action
@@ -21,6 +22,12 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
+            if (ctx.Rehearsal)
+            {
+                return states
+                    .SetState(TableSheetsState.Address, MarkChanged)
+                    .SetState(GameConfigState.Address, MarkChanged);
+            }
             var tableSheetsState = TableSheetsState.FromActionContext(ctx);
             Log.Debug($"[{ctx.BlockIndex}] {TableName} was patched by {ctx.Signer.ToHex()}\n" +
                       "before:\n" +
@@ -31,7 +38,15 @@ namespace Nekoyume.Action
             );
 
             TableSheetsState nextState = tableSheetsState.UpdateTableSheet(TableName, TableCsv);
-            return states.SetState(TableSheetsState.Address, nextState.Serialize());
+            states = states.SetState(TableSheetsState.Address, nextState.Serialize());
+
+            if (TableName == nameof(GameConfigSheet))
+            {
+                var gameConfigState = new GameConfigState(TableCsv);
+                states = states.SetState(GameConfigState.Address, gameConfigState.Serialize());
+            }
+
+            return states;
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
