@@ -130,6 +130,7 @@ def main() -> None:
         dump(clo, f, ensure_ascii=False, indent='  ')
 
     # 아카이브 생성 
+    os.makedirs(args.out_dir, exist_ok=True)
     if args.platform.lower() == 'macos':
         archive_path = os.path.join(args.out_dir, 'macOS.tar.gz')
         with tarfile.open(archive_path, 'w') as archive:
