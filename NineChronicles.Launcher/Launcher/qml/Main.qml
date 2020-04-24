@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.1
 import Qt.labs.platform 1.1
+import QtQuick.Controls.Styles 1.4
 
 import LibplanetLauncher 1.0
 
@@ -86,7 +87,6 @@ Item {
             MenuItem {
                 id: peerAddress
                 visible: (ctrl.privateKey != null &&
-                          !ctrl.gameRunning &&
                           !ctrl.updating &&
                           !ctrl.preprocessing &&
                           ctrl.currentNodeAddress != null)
@@ -306,6 +306,16 @@ Item {
                     id: addressComboBox
                     model: Net.toListModel(ctrl.keyStoreOptions)
                     Layout.fillWidth: true
+                     popup: Popup {
+                         contentItem: ListView {
+                             clip: true
+                             implicitHeight: contentHeight
+                             model: Net.toListModel(ctrl.keyStoreOptions)
+                             currentIndex: addressComboBox.highlightedIndex
+
+                             ScrollIndicator.vertical: ScrollIndicator { }
+                         }
+                     }
                 }
 
                 Label {
