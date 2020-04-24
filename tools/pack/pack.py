@@ -200,7 +200,8 @@ def which_planet() -> str:
             return r.stdout.rstrip().decode()
         raise NotImplementedError(f'unsupported platform: ({sys!r}, {mach!r})')
     dir_ = f'planet-0.9.0-{tag}'
-    bin_ = os.path.join(os.path.dirname(__file__), dir_, 'planet')
+    name = 'planet.exe' if sys == 'Windows' else 'planet'
+    bin_ = os.path.join(os.path.dirname(__file__), dir_, name)
     if os.path.isfile(bin_):
         return bin_
     raise NotImplementedError(
