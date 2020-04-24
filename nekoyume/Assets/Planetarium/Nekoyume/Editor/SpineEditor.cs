@@ -34,6 +34,9 @@ namespace Planetarium.Nekoyume.Editor
         private static readonly Vector3 Position = Vector3.zero;
         private static readonly Vector3 LocalScale = new Vector3(.64f, .64f, 1f);
 
+        /// <summary>
+        /// 헤어 스타일을 결정하는 정보를 스파인이 포함하지 않기 때문에 이곳에 하드코딩해서 구분해 준다.
+        /// </summary>
         private static readonly string[] HairType1Names =
         {
             "10230000", "10231000", "10232000", "10233000", "10234000", "10235000"
