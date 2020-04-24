@@ -55,6 +55,11 @@ namespace Nekoyume.Game.Character
 
         private const string TailSlot = "tail";
 
+        /// <summary>
+        /// 헤어 스타일은 리소스에서 부터 결정되는 것이라서 리소스 자체에 정보를 포함하는 것이 좋다고 생각한다.
+        /// 하지만 기본의 플레이어 스파인에서는 헤어 스타일을 구분할 수 있는 정보를 포함하고 있지 않기 때문에
+        /// 스파인 프리팹을 생성할 때 외부에서 그 정보를 결정해주고 직렬화될 수 있도록 한다.
+        /// </summary>
         public int hairTypeIndex = 0;
 
         private Skin _clonedSkin;
