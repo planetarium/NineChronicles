@@ -31,6 +31,8 @@ namespace Nekoyume.State
 
         public AvatarState CurrentAvatarState { get; private set; }
 
+        public GameConfigState GameConfigState { get; private set; }
+
         public readonly Dictionary<int, CombinationSlotState> CombinationSlotStates =
             new Dictionary<int, CombinationSlotState>();
         public States()
@@ -217,6 +219,12 @@ namespace Nekoyume.State
         {
             CombinationSlotStates[index] = state;
             CombinationSlotStatesSubject.OnNext(CombinationSlotStates);
+        }
+
+        public void SetGameConfigState(GameConfigState state)
+        {
+            GameConfigState = state;
+            GameConfigStateSubject.OnNext(state);
         }
 
         #endregion

@@ -153,6 +153,15 @@ namespace Nekoyume.BlockChain
             else
                 throw new FailedToInstantiateStateException<WeeklyArenaState>();
 
+            if (GetState(GameConfigState.Address) is Dictionary configDict)
+            {
+                States.Instance.SetGameConfigState(new GameConfigState(configDict));
+            }
+            else
+            {
+                throw new FailedToInstantiateStateException<GameConfigState>();
+            }
+
             // 에이전트의 상태를 한 번 동기화 한다.
             States.Instance.SetAgentState(
                 GetState(Address) is Bencodex.Types.Dictionary agentDict
