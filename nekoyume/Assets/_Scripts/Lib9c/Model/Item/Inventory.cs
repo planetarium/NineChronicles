@@ -96,6 +96,7 @@ namespace Nekoyume.Model.Item
                 case ItemType.Equipment:
                     AddNonFungibleItem((ItemUsable) itemBase);
                     break;
+                case ItemType.Costume:
                 case ItemType.Material:
                     AddFungibleItem(itemBase, count);
                     break;
@@ -104,7 +105,7 @@ namespace Nekoyume.Model.Item
             }
             return new KeyValuePair<int, int>(itemBase.Data.Id, count);
         }
-        
+
         private Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {
             if (TryGetFungibleItem(itemBase, out var fungibleItem))
@@ -153,7 +154,7 @@ namespace Nekoyume.Model.Item
         {
             return TryGetNonFungibleItem(itemUsable, out Item item) && _items.Remove(item);
         }
-        
+
         public bool RemoveNonFungibleItem(Guid itemGuid)
         {
             return TryGetNonFungibleItem(itemGuid, out Item item) && _items.Remove(item);
@@ -200,7 +201,7 @@ namespace Nekoyume.Model.Item
                 {
                     continue;
                 }
-                
+
                 outNonFungibleItem = nonFungibleItem;
                 return true;
             }
@@ -208,7 +209,7 @@ namespace Nekoyume.Model.Item
             outNonFungibleItem = null;
             return false;
         }
-        
+
         public bool TryGetNonFungibleItemFromLast(out ItemUsable outNonFungibleItem)
         {
             foreach (var item in Enumerable.Reverse(_items))
@@ -230,7 +231,7 @@ namespace Nekoyume.Model.Item
         {
             return TryGetNonFungibleItem(itemUsable.ItemId, out outNonFungibleItem);
         }
-        
+
         public bool TryGetNonFungibleItem(Guid itemGuid, out Item outNonFungibleItem)
         {
             foreach (var item in _items)
@@ -278,14 +279,14 @@ namespace Nekoyume.Model.Item
         {
             return _items.Exists(item => item.item.Data.Id == id && item.count >= count);
         }
-        
+
         public bool HasItem(HashDigest<SHA256> id, int count = 1)
         {
             return _items.Exists(item =>
             {
                 if (!(item.item is Material material))
                     return false;
-                
+
                 return material.Data.ItemId.Equals(id) && item.count >= count;
             });
         }

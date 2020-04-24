@@ -26,9 +26,10 @@ namespace Nekoyume.TableData
         public SkillSheet SkillSheet { get; private set; }
         public BuffSheet BuffSheet { get; private set; }
         public ItemSheet ItemSheet { get; private set; }
-        public MaterialItemSheet MaterialItemSheet { get; private set; }
-        public EquipmentItemSheet EquipmentItemSheet { get; private set; }
         public ConsumableItemSheet ConsumableItemSheet { get; private set; }
+        public CostumeItemSheet CostumeItemSheet { get; private set; }
+        public EquipmentItemSheet EquipmentItemSheet { get; private set; }
+        public MaterialItemSheet MaterialItemSheet { get; private set; }
         public QuestSheet QuestSheet { get; private set; }
         public WorldQuestSheet WorldQuestSheet { get; private set; }
         public CollectQuestSheet CollectQuestSheet { get; private set; }
@@ -121,6 +122,7 @@ namespace Nekoyume.TableData
         {
             ItemSheet = new ItemSheet();
             ItemSheet.Set(ConsumableItemSheet, false);
+            ItemSheet.Set(CostumeItemSheet, false);
             ItemSheet.Set(EquipmentItemSheet, false);
             ItemSheet.Set(MaterialItemSheet);
         }
