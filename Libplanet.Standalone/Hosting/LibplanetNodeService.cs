@@ -107,11 +107,9 @@ namespace Libplanet.Standalone.Hosting
                 }
                 catch (PeerDiscoveryException e)
                 {
-                    if (_ignoreBootstrapFailure)
-                    {
-                        Log.Error($"Bootstrap failed. {e}");
-                    }
-                    else
+                    Log.Error(e, "Bootstrap failed: {Exception}", e);
+
+                    if (!_ignoreBootstrapFailure)
                     {
                         throw;
                     }
