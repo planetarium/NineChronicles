@@ -26,7 +26,6 @@
         public const int DefaultAvatarCharacterId = 100010;
         public const int DefaultAvatarWeaponId = 10100000;
         public const int DefaultAvatarArmorId = 10200000;
-        public const int ActionPointMax = 120;
 
         public const int DailyRewardInterval = 2300;
         public const int DailyArenaInterval = 500;
