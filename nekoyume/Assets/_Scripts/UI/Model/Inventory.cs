@@ -18,6 +18,9 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveCollection<InventoryItem> Consumables =
             new ReactiveCollection<InventoryItem>();
 
+        public readonly ReactiveCollection<InventoryItem> Costumes =
+            new ReactiveCollection<InventoryItem>();
+
         public readonly ReactiveCollection<InventoryItem> Equipments =
             new ReactiveCollection<InventoryItem>();
 
@@ -54,6 +57,7 @@ namespace Nekoyume.UI.Model
         {
             State.Dispose();
             Consumables.Dispose();
+            Costumes.Dispose();
             Equipments.Dispose();
             Materials.Dispose();
             SelectedItemView.Dispose();
@@ -129,6 +133,17 @@ namespace Nekoyume.UI.Model
                     inventoryItem = CreateInventoryItem(consumable, count);
                     Consumables.Add(inventoryItem);
                     break;
+                case ItemType.Costume:
+                    var costume = (Costume) itemBase;
+                    if (TryGetCostume(costume, out inventoryItem))
+                    {
+                        inventoryItem.Count.Value += count;
+                        break;
+                    }
+
+                    inventoryItem = CreateInventoryItem(itemBase, count);
+                    Costumes.Add(inventoryItem);
+                    break;
                 case ItemType.Equipment:
                     var equipment = (Equipment) itemBase;
                     if (equipment.RequiredBlockIndex > blockIndex)
@@ -151,6 +166,7 @@ namespace Nekoyume.UI.Model
                     inventoryItem = CreateInventoryItem(itemBase, count);
                     Materials.Add(inventoryItem);
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -172,6 +188,20 @@ namespace Nekoyume.UI.Model
                     }
 
                     Consumables.Remove(inventoryItem);
+                    break;
+                case ItemType.Costume:
+                    if (!TryGetCostume((Costume) itemBase, out inventoryItem))
+                    {
+                        break;
+                    }
+
+                    inventoryItem.Count.Value -= count;
+                    if (inventoryItem.Count.Value > 0)
+                    {
+                        break;
+                    }
+
+                    Costumes.Remove(inventoryItem);
                     break;
                 case ItemType.Equipment:
                     if (!TryGetEquipment((ItemUsable) itemBase, out inventoryItem))
@@ -195,6 +225,7 @@ namespace Nekoyume.UI.Model
 
                     Materials.Remove(inventoryItem);
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -216,6 +247,7 @@ namespace Nekoyume.UI.Model
         public void RemoveItemsAll()
         {
             Consumables.DisposeAllAndClear();
+            Costumes.DisposeAllAndClear();
             Equipments.DisposeAllAndClear();
             Materials.DisposeAllAndClear();
         }
@@ -230,6 +262,8 @@ namespace Nekoyume.UI.Model
             {
                 case ItemType.Consumable:
                     return TryGetConsumable((ItemUsable) itemBase, out inventoryItem);
+                case ItemType.Costume:
+                    return TryGetCostume((ItemUsable) itemBase, out inventoryItem);
                 case ItemType.Equipment:
                     return TryGetEquipment((ItemUsable) itemBase, out inventoryItem);
                 case ItemType.Material:
@@ -237,34 +271,6 @@ namespace Nekoyume.UI.Model
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public bool TryGetEquipment(ItemUsable itemUsable, out InventoryItem inventoryItem)
-        {
-            if (itemUsable is null)
-            {
-                inventoryItem = null;
-                return false;
-            }
-
-            foreach (var item in Equipments)
-            {
-                if (!(item.ItemBase.Value is Equipment equipment))
-                {
-                    continue;
-                }
-
-                if (equipment.ItemId != itemUsable.ItemId)
-                {
-                    continue;
-                }
-
-                inventoryItem = item;
-                return true;
-            }
-
-            inventoryItem = null;
-            return false;
         }
 
         public bool TryGetConsumable(ItemUsable itemUsable, out InventoryItem inventoryItem)
@@ -295,8 +301,81 @@ namespace Nekoyume.UI.Model
             return false;
         }
 
+        public bool TryGetCostume(ItemUsable itemUsable, out InventoryItem inventoryItem)
+        {
+            if (itemUsable is null)
+            {
+                inventoryItem = null;
+                return false;
+            }
+
+            return TryGetCostume(itemUsable.Data.Id, out inventoryItem);
+        }
+
+        public bool TryGetCostume(Costume costume, out InventoryItem inventoryItem)
+        {
+            if (costume is null)
+            {
+                inventoryItem = null;
+                return false;
+            }
+
+            return TryGetCostume(costume.Data.Id, out inventoryItem);
+        }
+
+        public bool TryGetCostume(int id, out InventoryItem inventoryItem)
+        {
+            foreach (var item in Costumes)
+            {
+                if (item.ItemBase.Value.Data.Id != id)
+                {
+                    continue;
+                }
+
+                inventoryItem = item;
+                return true;
+            }
+
+            inventoryItem = null;
+            return false;
+        }
+
+        public bool TryGetEquipment(ItemUsable itemUsable, out InventoryItem inventoryItem)
+        {
+            if (itemUsable is null)
+            {
+                inventoryItem = null;
+                return false;
+            }
+
+            foreach (var item in Equipments)
+            {
+                if (!(item.ItemBase.Value is Equipment equipment))
+                {
+                    continue;
+                }
+
+                if (equipment.ItemId != itemUsable.ItemId)
+                {
+                    continue;
+                }
+
+                inventoryItem = item;
+                return true;
+            }
+
+            inventoryItem = null;
+            return false;
+        }
+
         public bool TryGetMaterial(Material material, out InventoryItem inventoryItem)
         {
+            if (material is null)
+            {
+                inventoryItem = null;
+                return false;
+            }
+
             return TryGetMaterial(material.Data.ItemId, out inventoryItem);
         }
 
@@ -351,18 +430,15 @@ namespace Nekoyume.UI.Model
 
         public void SelectItemView(InventoryItemView view)
         {
-            if (view is null)
+            if (view is null ||
+                view.Model is null)
             {
                 return;
             }
 
             DeselectItemView();
 
-            if (!(view.Model is null))
-            {
-                view.Model.Selected.Value = true;
-            }
-
+            view.Model.Selected.Value = true;
             SelectedItemView.Value = view;
             SetGlowedAll(false);
         }
@@ -406,12 +482,17 @@ namespace Nekoyume.UI.Model
                 DimmedFunc.Value = DefaultDimmedFunc;
             }
 
-            foreach (var item in Equipments)
+            foreach (var item in Consumables)
             {
                 item.Dimmed.Value = DimmedFunc.Value(item);
             }
 
-            foreach (var item in Consumables)
+            foreach (var item in Costumes)
+            {
+                item.Dimmed.Value = DimmedFunc.Value(item);
+            }
+
+            foreach (var item in Equipments)
             {
                 item.Dimmed.Value = DimmedFunc.Value(item);
             }
@@ -429,12 +510,17 @@ namespace Nekoyume.UI.Model
                 EffectEnabledFunc.Value = DefaultCoveredFunc;
             }
 
-            foreach (var item in Equipments)
+            foreach (var item in Consumables)
             {
                 item.EffectEnabled.Value = EffectEnabledFunc.Value(item);
             }
 
-            foreach (var item in Consumables)
+            foreach (var item in Costumes)
+            {
+                item.EffectEnabled.Value = EffectEnabledFunc.Value(item);
+            }
+
+            foreach (var item in Equipments)
             {
                 item.EffectEnabled.Value = EffectEnabledFunc.Value(item);
             }
@@ -452,12 +538,17 @@ namespace Nekoyume.UI.Model
                 EquippedEnabledFunc.Value = DefaultEquippedFunc;
             }
 
-            foreach (var item in Equipments)
+            foreach (var item in Consumables)
             {
                 item.EquippedEnabled.Value = EquippedEnabledFunc.Value(item);
             }
 
-            foreach (var item in Consumables)
+            foreach (var item in Costumes)
+            {
+                item.EquippedEnabled.Value = EquippedEnabledFunc.Value(item);
+            }
+
+            foreach (var item in Equipments)
             {
                 item.EquippedEnabled.Value = EquippedEnabledFunc.Value(item);
             }
@@ -483,19 +574,26 @@ namespace Nekoyume.UI.Model
         private static bool DefaultEquippedFunc(InventoryItem inventoryItem)
         {
             if (!(inventoryItem.ItemBase.Value is Equipment equipment))
+            {
                 return false;
+            }
 
             return equipment.equipped;
         }
 
         private void SetGlowedAll(bool value)
         {
-            foreach (var item in Equipments)
+            foreach (var item in Consumables)
             {
                 item.GlowEnabled.Value = value;
             }
 
-            foreach (var item in Consumables)
+            foreach (var item in Costumes)
+            {
+                item.GlowEnabled.Value = value;
+            }
+
+            foreach (var item in Equipments)
             {
                 item.GlowEnabled.Value = value;
             }
