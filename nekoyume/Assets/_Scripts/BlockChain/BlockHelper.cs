@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -55,12 +56,19 @@ namespace Nekoyume.BlockChain
         public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock()
         {
             var tableSheets = Game.Game.GetTableCsvAssets();
+            if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
+            {
+                throw new KeyNotFoundException(nameof(GameConfigSheet));
+            }
+            var gameConfigState = new GameConfigState(csv);
+
             var initialStatesAction = new InitializeStates
             {
                 RankingState = new RankingState(),
                 ShopState = new ShopState(),
                 TableSheetsState = new TableSheetsState(tableSheets),
                 WeeklyArenaAddresses = WeeklyArenaState.Addresses,
+                GameConfigState = gameConfigState,
             };
             var actions = new PolymorphicAction<ActionBase>[]
             {

@@ -10,7 +10,6 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
-using Nekoyume.State.Modifiers;
 
 namespace Nekoyume.BlockChain
 {
@@ -55,6 +54,7 @@ namespace Nekoyume.BlockChain
             WeeklyArenaReward();
             CombinationEquipment();
             RapidCombination();
+            GameConfig();
         }
 
         public void Stop()
@@ -173,7 +173,7 @@ namespace Nekoyume.BlockChain
                 {
                     var avatarAddress = eval.Action.avatarAddress;
                     LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, false);
-                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.ActionPointMax);
+                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
                     UpdateCurrentAvatarState(eval);
                 }).AddTo(_disposables);
         }
@@ -216,6 +216,13 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
+        }
+
+        private void GameConfig()
+        {
+            _renderer.EveryRender(GameConfigState.Address)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateGameConfigState).AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
