@@ -430,16 +430,15 @@ namespace Nekoyume.UI.Model
 
         public void SelectItemView(InventoryItemView view)
         {
-            DeselectItemView();
-
             if (view is null ||
                 view.Model is null)
             {
                 return;
             }
 
-            view.Model.Selected.Value = true;
+            DeselectItemView();
 
+            view.Model.Selected.Value = true;
             SelectedItemView.Value = view;
             SetGlowedAll(false);
         }
