@@ -3,6 +3,7 @@ import QtQuick.Controls 2.2
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.1
 import Qt.labs.platform 1.1
+import QtQuick.Controls.Styles 1.4
 
 import LibplanetLauncher 1.0
 
@@ -86,12 +87,11 @@ Item {
             MenuItem {
                 id: peerAddress
                 visible: (ctrl.privateKey != null &&
-                          !ctrl.gameRunning &&
                           !ctrl.updating &&
                           !ctrl.preprocessing &&
                           ctrl.currentNodeAddress != null)
                 text: "My node: " + ctrl.currentNodeAddress
-                // FIXME: 누르면 클립보드에 주소 복사하게...
+                onTriggered: ctrl.copyClipboard(ctrl.currentNodeAddress)
             }
 
             MenuSeparator { }

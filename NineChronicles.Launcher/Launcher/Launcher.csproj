@@ -27,6 +27,7 @@
         <PackageReference Include="Qml.Net.OSXBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
+        <PackageReference Include="TextCopy" Version="3.0.2" />
     </ItemGroup>
 
     <ItemGroup Label="Package References (Publish Helper)">
