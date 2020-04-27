@@ -462,7 +462,7 @@ namespace Nekoyume.State
         public static void ModifyCombinationSlot(
             TableSheets tableSheets,
             EquipmentItemRecipeSheet.Row row,
-            EquipmentCombinationPanel panel,
+            CombinationPanel panel,
             int slotIndex,
             int? subRecipeId
         )

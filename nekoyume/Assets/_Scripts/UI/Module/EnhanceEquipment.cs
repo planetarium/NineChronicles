@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class EnhanceEquipment : CombinationPanel<EnhancementMaterialView>
+    public class EnhanceEquipment : LegacyCombinationPanel<EnhancementMaterialView>
     {
         public Image arrowImage;
         public GameObject message;

@@ -17,7 +17,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class CombineConsumable : CombinationPanel<CombinationMaterialView>
+    public class CombineConsumable : LegacyCombinationPanel<CombinationMaterialView>
     {
         public SimpleItemView resultItemView;
         public TextMeshProUGUI resultItemNameText;
