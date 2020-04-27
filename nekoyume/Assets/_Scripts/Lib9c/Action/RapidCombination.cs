@@ -9,6 +9,7 @@ using Libplanet.Action;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume.Action
 {
@@ -64,8 +65,14 @@ namespace Nekoyume.Action
             }
 
             var slotState = states.GetCombinationSlotState(avatarAddress, slotIndex);
-            if (slotState?.Result is null || slotState.UnlockBlockIndex <= context.BlockIndex)
+            if (slotState?.Result is null)
             {
+                Log.Warning("CombinationSlot Result is null.");
+                return states;
+            }
+            if (slotState.UnlockBlockIndex <= context.BlockIndex)
+            {
+                Log.Warning($"Can't use combination slot. it unlock on {slotState.UnlockBlockIndex} block.");
                 return states;
             }
 
@@ -78,6 +85,7 @@ namespace Nekoyume.Action
             var diff = slotState.Result.itemUsable.RequiredBlockIndex - context.BlockIndex;
             if (diff < 0)
             {
+                Log.Information("Skip rapid combination.");
                 return states;
             }
 
@@ -87,6 +95,7 @@ namespace Nekoyume.Action
             var hourGlass = ItemFactory.CreateMaterial(row);
             if (!avatarState.inventory.RemoveFungibleItem(hourGlass, count))
             {
+                Log.Error($"Not enough item {hourGlass} : {count}");
                 return states;
             }
 
