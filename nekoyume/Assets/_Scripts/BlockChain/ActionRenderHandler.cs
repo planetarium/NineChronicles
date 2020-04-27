@@ -227,13 +227,15 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
         {
-            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            var agentState = eval.OutputStates.GetAgentState(agentAddress);
             var slot =
                 eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-            LocalStateModifier.ModifyAgentGold(agentAddress, agentState.modifiedGold);
-            LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, slot.Result.itemUsable.ItemId);
+            var result = (RapidCombination.ResultModel) slot.Result;
+            foreach (var pair in result.cost)
+            {
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
+            }
+            LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
             UpdateAgentState(eval);

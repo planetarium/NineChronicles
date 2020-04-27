@@ -26,8 +26,9 @@ namespace Nekoyume.UI
         public TouchHandler touchHandler;
 
         private int _slotIndex;
-        private decimal _cost;
+        private int _cost;
         private CombinationSelectSmallFrontVFX _frontVFX;
+        private MaterialItemSheet.Row _row;
 
         protected override void Awake()
         {
@@ -119,15 +120,18 @@ namespace Nekoyume.UI
             submitButton.HideAP();
             submitButton.HideNCG();
             submitButton.SetSubmittable(result.id != default);
-            var cost = result.itemUsable.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
-            if (cost < 0)
+            var diff = result.itemUsable.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
+            if (diff < 0)
             {
                 submitButton.HideHourglass();
             }
             else
             {
-                _cost = Convert.ToDecimal(cost);
-                submitButton.ShowHourglass((int) cost, States.Instance.AgentState.gold >= _cost);
+                _cost = Action.RapidCombination.CalculateHourglassCount(States.Instance.GameConfigState, diff);
+                _row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.Hourglass);
+                submitButton.ShowHourglass(_cost,
+                    States.Instance.CurrentAvatarState.inventory.HasItem(_row.ItemId, _cost));
             }
 
             base.Show();
@@ -135,7 +139,7 @@ namespace Nekoyume.UI
 
         private void RapidCombination()
         {
-            LocalStateModifier.ModifyAgentGold(States.Instance.AgentState.address, -_cost);
+            LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, _row.ItemId, _cost);
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             LocalStateModifier.UnlockCombinationSlot(_slotIndex, blockIndex);
             var slotState = States.Instance.CombinationSlotStates[_slotIndex];

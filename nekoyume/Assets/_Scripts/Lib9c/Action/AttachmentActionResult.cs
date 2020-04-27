@@ -19,6 +19,7 @@ namespace Nekoyume.Action
                 ["combination.result-model"] = d => new CombinationConsumable.ResultModel(d),
                 ["itemEnhancement.result"] = d => new ItemEnhancement.ResultModel(d),
                 ["sellCancellation.result"] = d => new SellCancellation.Result(d),
+                ["rapidCombination.result"] = d => new RapidCombination.ResultModel(d),
             };
 
         public ItemUsable itemUsable;
