@@ -84,7 +84,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void HideCellviews()
+        public void HideCellViews()
         {
             SelectedRecipe.Visible = true;
             scrollAlphaTweener.PlayReverse();
