@@ -25,6 +25,8 @@ namespace Nekoyume.Game.Character
         public Model.Item.Inventory Inventory;
         public TouchHandler touchHandler;
 
+        public List<Costume> Costumes =>
+            Inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList();
         public List<Equipment> Equipments =>
             Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
@@ -155,6 +157,11 @@ namespace Nekoyume.Game.Character
 
         private void UpdateArmor(Armor armor)
         {
+            if (Costumes.Any(costume => costume.Data.ItemSubType == ItemSubType.FullCostume))
+            {
+                return;
+            }
+
             var armorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.Data.SpineResourcePath ?? $"Character/Player/{armorId}";
 

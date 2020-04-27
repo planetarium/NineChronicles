@@ -3,6 +3,7 @@ using Nekoyume.Model.Item;
 
 namespace Nekoyume.TableData
 {
+    [Serializable]
     public class CostumeItemSheet : Sheet<int, CostumeItemSheet.Row>
     {
         [Serializable]
@@ -12,6 +13,15 @@ namespace Nekoyume.TableData
 
             public Row() : base()
             {
+            }
+
+            public Row(Bencodex.Types.Dictionary serialized) : base(serialized)
+            {
+            }
+
+            public new static Row Deserialize(Bencodex.Types.Dictionary serialized)
+            {
+                return new Row(serialized);
             }
         }
 

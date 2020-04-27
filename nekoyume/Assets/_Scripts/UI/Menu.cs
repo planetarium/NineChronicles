@@ -1,11 +1,15 @@
+using System;
 using System.Collections;
+using System.Linq;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
+using Nekoyume.Model.Item;
 using UnityEngine;
 using Player = Nekoyume.Game.Character.Player;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
 {
@@ -46,6 +50,58 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
         }
+
+        // 코스튬 테스트를 위한 임시 코드 블럭.
+#if UNITY_EDITOR
+
+        private Costume _targetCostume = null;
+        private Costume _equippedCostume = null;
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            _targetCostume = States.Instance.CurrentAvatarState.inventory.Items
+                .Select(item => item.item)
+                .OfType<Costume>()
+                .FirstOrDefault(costume => costume.Data.ItemSubType == ItemSubType.FullCostume);
+            if (_targetCostume is null)
+            {
+                Debug.LogError("Not Found Costume in Inventory");
+            }
+            else
+            {
+                _equippedCostume = _targetCostume.equipped
+                    ? _targetCostume
+                    : null;
+            }
+        }
+
+        private void OnGUI()
+        {
+            if (_equippedCostume is null)
+            {
+                if (GUILayout.Button("코스튬 입기"))
+                {
+                    _equippedCostume = _targetCostume;
+                    Debug.LogWarning("코스튬 입기 완료");
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("코스튬 벗기"))
+                {
+                    _equippedCostume = null;
+                    Debug.LogWarning("코스튬 벗기 완료");
+                }
+            }
+        }
+
+#endif
 
         private void UpdateButtons()
         {
