@@ -27,7 +27,7 @@
         public const int DefaultAvatarWeaponId = 10100000;
         public const int DefaultAvatarArmorId = 10200000;
 
-        public const int DailyRewardInterval = 2300;
+        public const int DailyRewardInterval = 1700;
         public const int DailyArenaInterval = 500;
         public const int WeeklyArenaInterval = 8000 * 7;
 
