@@ -45,7 +45,7 @@ namespace Nekoyume.UI
         private int _ear;
         private int _tail;
 
-        private const int HairCount = 1;
+        private const int HairCount = 6;
         private const int LensCount = 6;
         private const int EarCount = 10;
         private const int TailCount = 10;
@@ -87,14 +87,18 @@ namespace Nekoyume.UI
             Find<GrayLoadingScreen>().Show();
 
             Game.Game.instance.ActionManager
-                .CreateAvatar(AvatarState.CreateAvatarAddress(), _selectedIndex, nickName, _hair, _lens, _ear, _tail)
+                .CreateAvatar(AvatarState.CreateAvatarAddress(), _selectedIndex, nickName, _hair,
+                    _lens, _ear, _tail)
                 .Subscribe(eval =>
-                {
-                    var avatarState = States.Instance.SelectAvatar(_selectedIndex);
-                    States.Instance.SetCombinationSlotStates(avatarState);
-                    StartCoroutine(CreateAndLoginAnimation(avatarState));
-                    ActionRenderHandler.Instance.RenderQuest(avatarState.address, avatarState.questList.completedQuestIds);
-                }, onError: e => Widget.Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
+                    {
+                        var avatarState = States.Instance.SelectAvatar(_selectedIndex);
+                        States.Instance.SetCombinationSlotStates(avatarState);
+                        StartCoroutine(CreateAndLoginAnimation(avatarState));
+                        ActionRenderHandler.Instance.RenderQuest(avatarState.address,
+                            avatarState.questList.completedQuestIds);
+                    },
+                    onError: e =>
+                        Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
             AudioController.PlayClick();
         }
 
@@ -102,7 +106,10 @@ namespace Nekoyume.UI
         {
             var grayLoadingScreen = Find<GrayLoadingScreen>();
             if (grayLoadingScreen is null)
+            {
                 yield break;
+            }
+
             grayLoadingScreen.Close();
             yield return new WaitUntil(() => grayLoadingScreen.IsCloseAnimationCompleted);
             OnDidAvatarStateLoaded(state);
@@ -177,8 +184,8 @@ namespace Nekoyume.UI
         private void SetInformation(Player player)
         {
             var tuples = player.Stats.GetBaseAndAdditionalStats();
-            int idx = 0;
-            foreach(var (statType, value, additionalValue) in tuples)
+            var idx = 0;
+            foreach (var (statType, value, additionalValue) in tuples)
             {
                 var info = statusRows[idx];
                 info.Show(statType, value, additionalValue);
@@ -197,7 +204,11 @@ namespace Nekoyume.UI
         private void OnClickNotImplemented()
         {
             if (_isCreateMode)
-                Find<Alert>().Show("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+            {
+                Find<Alert>().Show(
+                    "UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                    "UI_ALERT_NOT_IMPLEMENTED_CONTENT");
+            }
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -208,7 +219,7 @@ namespace Nekoyume.UI
             acolyteButton.gameObject.SetActive(_isCreateMode);
             if (_isCreateMode)
             {
-                _hair = _lens = _ear = _tail =  0;
+                _hair = _lens = _ear = _tail = 0;
                 paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair + 1}";
                 paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens + 1}";
                 paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear + 1}";
@@ -218,51 +229,23 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
         }
 
-        public void ChangeHair(int offset)
-        {
-            var hair = _hair + offset;
-
-            if (hair < 0) hair = HairCount + offset;
-            else if (hair >= HairCount) hair = 0;
-
-            if (hair == _hair)
-                return;
-
-            _hair = hair;
-
-            paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair + 1}";
-        }
-
-        public void ChangeLens(int offset)
-        {
-            var lens = _lens + offset;
-
-            if (lens < 0) lens = LensCount + offset;
-            else if (lens >= LensCount) lens = 0;
-
-            if (lens == _lens)
-                return;
-
-            _lens = lens;
-
-            paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens + 1}";
-
-            var player = Game.Game.instance.Stage.selectedPlayer;
-            if (player is null)
-                throw new NullReferenceException(nameof(player));
-
-            player.UpdateEye(_lens);
-        }
-
         public void ChangeEar(int offset)
         {
             var ear = _ear + offset;
 
-            if (ear < 0) ear = EarCount + offset;
-            else if (ear >= EarCount) ear = 0;
+            if (ear < 0)
+            {
+                ear = EarCount + offset;
+            }
+            else if (ear >= EarCount)
+            {
+                ear = 0;
+            }
 
             if (ear == _ear)
+            {
                 return;
+            }
 
             _ear = ear;
 
@@ -270,20 +253,92 @@ namespace Nekoyume.UI
 
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
+            {
                 throw new NullReferenceException(nameof(player));
+            }
 
             player.UpdateEar(_ear);
+        }
+
+        public void ChangeLens(int offset)
+        {
+            var lens = _lens + offset;
+
+            if (lens < 0)
+            {
+                lens = LensCount + offset;
+            }
+            else if (lens >= LensCount)
+            {
+                lens = 0;
+            }
+
+            if (lens == _lens)
+            {
+                return;
+            }
+
+            _lens = lens;
+
+            paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens + 1}";
+
+            var player = Game.Game.instance.Stage.selectedPlayer;
+            if (player is null)
+            {
+                throw new NullReferenceException(nameof(player));
+            }
+
+            player.UpdateEye(_lens);
+        }
+
+        public void ChangeHair(int offset)
+        {
+            var hair = _hair + offset;
+
+            if (hair < 0)
+            {
+                hair = HairCount + offset;
+            }
+            else if (hair >= HairCount)
+            {
+                hair = 0;
+            }
+
+            if (hair == _hair)
+            {
+                return;
+            }
+
+            _hair = hair;
+
+            paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair + 1}";
+
+            var player = Game.Game.instance.Stage.selectedPlayer;
+            if (player is null)
+            {
+                throw new NullReferenceException(nameof(player));
+            }
+
+            player.UpdateHair(_hair);
         }
 
         public void ChangeTail(int offset)
         {
             var tail = _tail + offset;
 
-            if (tail < 0) tail = TailCount + offset;
-            else if (tail >= TailCount) tail = 0;
+            if (tail < 0)
+            {
+                tail = TailCount + offset;
+            }
+            else if (tail >= TailCount)
+            {
+                tail = 0;
+            }
 
             if (tail == _tail)
+            {
                 return;
+            }
 
             _tail = tail;
 
@@ -291,7 +346,9 @@ namespace Nekoyume.UI
 
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
+            {
                 throw new NullReferenceException(nameof(player));
+            }
 
             player.UpdateTail(_tail);
         }
@@ -304,7 +361,9 @@ namespace Nekoyume.UI
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
             if (_isCreateMode)
+            {
                 Close();
+            }
 
             EnterRoom();
         }
@@ -314,7 +373,6 @@ namespace Nekoyume.UI
             Close();
             Game.Event.OnRoomEnter.Invoke(false);
             Find<Login>()?.Close();
-
         }
     }
 }
