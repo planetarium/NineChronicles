@@ -72,6 +72,11 @@ namespace Nekoyume.UI
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
+        // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
+        protected override bool CanHandleInputEvent =>
+            base.CanHandleInputEvent &&
+            questButton.interactable;
+
         #region override
 
         protected override void Awake()
@@ -94,7 +99,9 @@ namespace Nekoyume.UI
             inventory.SharedModel.OnDoubleClickItemView.Subscribe(itemView =>
                 {
                     if (itemView.Model.Dimmed.Value)
+                    {
                         return;
+                    }
 
                     Equip(itemView.Model);
                 })
@@ -107,9 +114,9 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show();
+            base.Show(ignoreShowAnimation);
             inventory.SharedModel.State.Value = ItemType.Equipment;
 
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
@@ -196,21 +203,24 @@ namespace Nekoyume.UI
 
         private void ShowTooltip(InventoryItemView view)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
+                view.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
 
                 return;
             }
 
-            inventory.Tooltip.Show(view.RectTransform, view.Model,
+            tooltip.Show(
+                view.RectTransform,
+                view.Model,
                 value => !view.Model.Dimmed.Value,
                 view.Model.EquippedEnabled.Value
                     ? LocalizationManager.Localize("UI_UNEQUIP")
                     : LocalizationManager.Localize("UI_EQUIP"),
-                tooltip => Equip(tooltip.itemInformation.Model.item.Value),
-                tooltip =>
+                _ => Equip(tooltip.itemInformation.Model.item.Value),
+                _ =>
                 {
                     equipSlotGlow.SetActive(false);
                     inventory.SharedModel.DeselectItemView();
@@ -219,10 +229,11 @@ namespace Nekoyume.UI
 
         private void ShowTooltip(EquipmentSlot slot)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             if (slot is null ||
-                slot.RectTransform == inventory.Tooltip.Target)
+                slot.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
 
                 return;
             }
@@ -230,8 +241,10 @@ namespace Nekoyume.UI
             if (inventory.SharedModel.TryGetEquipment(slot.Item, out var item) ||
                 inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out item))
             {
-                inventory.Tooltip.Show(slot.RectTransform, item,
-                    tooltip => inventory.SharedModel.DeselectItemView());
+                tooltip.Show(
+                    slot.RectTransform,
+                    item,
+                    _ => inventory.SharedModel.DeselectItemView());
             }
         }
 
@@ -285,6 +298,11 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             Find<WorldMap>().Show(_worldId, _stageId.Value, false);
             gameObject.SetActive(false);
         }
@@ -326,12 +344,12 @@ namespace Nekoyume.UI
 
         public void QuestClick(bool repeat)
         {
+            questButton.interactable = false;
             StartCoroutine(CoQuestClick(repeat));
         }
 
         private IEnumerator CoQuestClick(bool repeat)
         {
-            questButton.interactable = false;
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
@@ -410,7 +428,7 @@ namespace Nekoyume.UI
         private void PostEquipOrUnequip(EquipmentSlot slot)
         {
             UpdateStats();
-            inventory.Tooltip.Close();
+            Find<ItemInformationTooltip>().Close();
 
             if (slot.ItemSubType == ItemSubType.Armor)
             {

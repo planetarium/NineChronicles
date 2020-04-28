@@ -41,16 +41,24 @@ namespace Nekoyume.UI
             inventory.SharedModel.SelectedItemView.Subscribe(SubscribeSelectedItemView).AddTo(gameObject);
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show();
+            base.Show(ignoreShowAnimation);
             inventory.SharedModel.State.Value = ItemType.Equipment;
-            blur?.Show();
+
+            if (blur)
+            {
+                blur.Show();
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            blur?.Close();
+            if (blur)
+            {
+                blur.Close();
+            }
+
             base.Close(ignoreCloseAnimation);
         }
 
@@ -58,18 +66,19 @@ namespace Nekoyume.UI
 
         private void SubscribeSelectedItemView(InventoryItemView view)
         {
+            var tooltip = Find<ItemInformationTooltip>();
             if (view is null ||
-                view.RectTransform == inventory.Tooltip.Target)
+                view.RectTransform == tooltip.Target)
             {
-                inventory.Tooltip.Close();
+                tooltip.Close();
 
                 return;
             }
 
-            inventory.Tooltip.Show(
+            tooltip.Show(
                 view.RectTransform,
                 view.Model,
-                tooltip => inventory.SharedModel.DeselectItemView());
+                _ => inventory.SharedModel.DeselectItemView());
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Nekoyume
         private int[,] _stageRange;
         private Model.Skill.Skill[] _skills;
         private Model.Skill.Skill _selectedSkill;
-        public override WidgetType WidgetType => WidgetType.Development;
+        protected override WidgetType WidgetType => WidgetType.Development;
 
         public class DebugRandom : IRandom
         {
@@ -209,7 +209,7 @@ namespace Nekoyume
             _updateTime += Time.deltaTime;
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
             _modal.gameObject.SetActive(true);
 
@@ -279,7 +279,7 @@ namespace Nekoyume
                 RefreshTableSheets();
             }
 
-            base.Show();
+            base.Show(ignoreShowAnimation);
         }
 
         private static Dictionary<string, string> GetTableAssetsHavingDifference()

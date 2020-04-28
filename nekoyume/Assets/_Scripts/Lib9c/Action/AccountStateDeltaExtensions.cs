@@ -165,5 +165,25 @@ namespace Nekoyume.Action
                 throw;
             }
         }
+
+        public static GameConfigState GetGameConfigState(this IAccountStateDelta states)
+        {
+            var value = states.GetState(GameConfigState.Address);
+            if (value is null)
+            {
+                Log.Warning("No game config state ({0})", GameConfigState.Address.ToHex());
+                return null;
+            }
+
+            try
+            {
+                return new GameConfigState((Dictionary) value);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Unexpected error occurred during {nameof(GetCombinationSlotState)}()");
+                throw;
+            }
+        }
     }
 }

@@ -75,8 +75,8 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            OnEnableStaticSubject.Subscribe(SubscribeOnEnable).AddTo(gameObject);
-            OnDisableStaticSubject.Subscribe(SubscribeOnDisable).AddTo(gameObject);
+            OnEnableStaticObservable.Subscribe(SubscribeOnEnable).AddTo(gameObject);
+            OnDisableStaticObservable.Subscribe(SubscribeOnDisable).AddTo(gameObject);
             scroller.onRequestToRemoveModelByIndex.Subscribe(SubscribeToRemoveModel).AddTo(gameObject);
             scroller.SetModel(Models);
 

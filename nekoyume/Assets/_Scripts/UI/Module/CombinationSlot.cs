@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Module
                 progressBar.gameObject.SetActive(!canUse);
             }
 
-            progressBar.maxValue = state.requiredBlockIndex;
+            progressBar.maxValue = state.RequiredBlockIndex;
             progressBar.value = blockIndex - state.StartBlockIndex;
             sliderText.text = $"({progressBar.value} / {progressBar.maxValue})";
         }

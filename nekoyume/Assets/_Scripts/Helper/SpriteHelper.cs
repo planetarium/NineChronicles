@@ -15,17 +15,28 @@ namespace Nekoyume.Helper
 
         private const string ItemBackgroundDefaultPath = "UI/Textures/item_bg_1";
         private const string ItemBackgroundPathFormat = "UI/Textures/item_bg_{0}";
-        
+
         private const string SmallItemBackgroundDefaultPath = "UI/Textures/item_bg_1_s";
         private const string SmallItemBackgroundPathFormat = "UI/Textures/item_bg_{0}_s";
 
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
 
-        private const string PlayerSpineTextureEarPath = "Character/PlayerSpineTexture/Ear/{0}";
-        private const string PlayerSpineTextureEyePath = "Character/PlayerSpineTexture/Eye/{0}";
-        private const string PlayerSpineTextureTailPath = "Character/PlayerSpineTexture/Tail/{0}";
-        private const string PlayerSpineTextureWeaponPath = "Character/PlayerSpineTexture/Weapon/{0}";
+        private const string PlayerSpineTextureEarLeftDefaultPath = "Character/PlayerSpineTexture/Ear/ear_0001_left";
+        private const string PlayerSpineTextureEarRightDefaultPath = "Character/PlayerSpineTexture/Ear/ear_0001_right";
+        private const string PlayerSpineTextureEarPathFormat = "Character/PlayerSpineTexture/Ear/{0}";
+
+        private const string PlayerSpineTextureEyeOpenDefaultPath = "Character/PlayerSpineTexture/Eye/eye_red_open";
+        private const string PlayerSpineTextureEyeHalfDefaultPath = "Character/PlayerSpineTexture/Eye/eye_red_half";
+        private const string PlayerSpineTextureEyePathFormat = "Character/PlayerSpineTexture/Eye/{0}";
+
+        private const string PlayerSpineTextureHairDefaultPath = "Character/PlayerSpineTexture/Hair/hair_0001_red_01";
+        private const string PlayerSpineTextureHairPathFormat = "Character/PlayerSpineTexture/Hair/{0}";
+
+        private const string PlayerSpineTextureTailDefaultPath = "Character/PlayerSpineTexture/Tail/tail_0001";
+        private const string PlayerSpineTextureTailPathFormat = "Character/PlayerSpineTexture/Tail/{0}";
+
+        private const string PlayerSpineTextureWeaponPathFormat = "Character/PlayerSpineTexture/Weapon/{0}";
 
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
@@ -51,7 +62,7 @@ namespace Nekoyume.Helper
             return Resources.Load<Sprite>(string.Format(ItemBackgroundPathFormat, grade)) ??
                    Resources.Load<Sprite>(ItemBackgroundDefaultPath);
         }
-        
+
         public static Sprite GetSmallItemBackground(int grade)
         {
             return Resources.Load<Sprite>(string.Format(SmallItemBackgroundPathFormat, grade)) ??
@@ -78,70 +89,81 @@ namespace Nekoyume.Helper
             {
                 return Resources.Load<Sprite>(BuffIconDefaultPath);
             }
-            
+
             return Resources.Load<Sprite>(string.Format(BuffIconPathFormat, iconResource)) ??
                    Resources.Load<Sprite>(BuffIconDefaultPath);
         }
-        
+
         public static Sprite GetPlayerSpineTextureEarLeft(string earLeftResource)
         {
             if (string.IsNullOrEmpty(earLeftResource))
             {
-                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarLeftResource));
+                return Resources.Load<Sprite>(PlayerSpineTextureEarLeftDefaultPath);
             }
-            
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, earLeftResource)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarLeftResource));
+
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPathFormat, earLeftResource)) ??
+                   Resources.Load<Sprite>(PlayerSpineTextureEarLeftDefaultPath);
         }
-        
+
         public static Sprite GetPlayerSpineTextureEarRight(string earRightResource)
         {
             if (string.IsNullOrEmpty(earRightResource))
             {
-                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarRightResource));
+                return Resources.Load<Sprite>(PlayerSpineTextureEarRightDefaultPath);
             }
-            
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, earRightResource)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPath, GameConfig.DefaultPlayerEarRightResource));
+
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarPathFormat, earRightResource)) ??
+                   Resources.Load<Sprite>(PlayerSpineTextureEarRightDefaultPath);
         }
-        
+
         public static Sprite GetPlayerSpineTextureEyeOpen(string eyeOpenResource)
         {
             if (string.IsNullOrEmpty(eyeOpenResource))
             {
-                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEyeOpenResource));
+                return Resources.Load<Sprite>(PlayerSpineTextureEyeOpenDefaultPath);
             }
-            
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, eyeOpenResource)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEyeOpenResource));
+
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePathFormat, eyeOpenResource)) ??
+                   Resources.Load<Sprite>(PlayerSpineTextureEyeOpenDefaultPath);
         }
-        
+
         public static Sprite GetPlayerSpineTextureEyeHalf(string eyeHalfResource)
         {
             if (string.IsNullOrEmpty(eyeHalfResource))
             {
-                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEyeHalfResource));
+                return Resources.Load<Sprite>(PlayerSpineTextureEyeHalfDefaultPath);
             }
-            
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, eyeHalfResource)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePath, GameConfig.DefaultPlayerEyeHalfResource));
+
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyePathFormat, eyeHalfResource)) ??
+                   Resources.Load<Sprite>(PlayerSpineTextureEyeHalfDefaultPath);
         }
-        
+
+        public static Sprite GetPlayerSpineTextureHair(string hairResource)
+        {
+            if (string.IsNullOrEmpty(hairResource))
+            {
+                return Resources.Load<Sprite>(PlayerSpineTextureHairDefaultPath);
+            }
+
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureHairPathFormat, hairResource)) ??
+                   Resources.Load<Sprite>(PlayerSpineTextureHairDefaultPath);
+        }
+
         public static Sprite GetPlayerSpineTextureTail(string tailResource)
         {
             if (string.IsNullOrEmpty(tailResource))
             {
-                return Resources.Load<Sprite>(string.Format(PlayerSpineTextureTailPath, GameConfig.DefaultPlayerTailResource));
+                return Resources.Load<Sprite>(PlayerSpineTextureTailDefaultPath);
             }
-            
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureTailPath, tailResource)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureTailPath, GameConfig.DefaultPlayerTailResource));
+
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureTailPathFormat, tailResource)) ??
+                   Resources.Load<Sprite>(PlayerSpineTextureTailDefaultPath);
         }
-        
+
         public static Sprite GetPlayerSpineTextureWeapon(int equipmentId)
         {
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPath, equipmentId)) ??
-                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPath, GameConfig.DefaultAvatarWeaponId));
+            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat, equipmentId)) ??
+                   Resources.Load<Sprite>(string.Format(PlayerSpineTextureWeaponPathFormat, GameConfig.DefaultAvatarWeaponId));
         }
 
         public static Sprite GetRankIcon(int rank)

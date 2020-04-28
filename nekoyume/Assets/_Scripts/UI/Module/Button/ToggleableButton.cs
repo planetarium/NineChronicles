@@ -59,7 +59,7 @@ namespace Nekoyume.UI.Module
                 return;
 
             _widget.Show();
-            _disposableForWidgetControllable = _widget.OnDisableSubject.Subscribe(_ => _toggleListener?.RequestToggledOff(this));
+            _disposableForWidgetControllable = _widget.OnDisableObservable.Subscribe(_ => _toggleListener?.RequestToggledOff(this));
         }
 
         public virtual void HideWidget()

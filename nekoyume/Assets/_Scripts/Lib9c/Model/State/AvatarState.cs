@@ -54,11 +54,11 @@ namespace Nekoyume.Model.State
             return key.PublicKey.ToAddress();
         }
 
-        public AvatarState(
-            Address address,
+        public AvatarState(Address address,
             Address agentAddress,
             long blockIndex,
             TableSheets sheets,
+            GameConfigState gameConfigState,
             string name = null) : base(address)
         {
             if (address == null)
@@ -79,7 +79,7 @@ namespace Nekoyume.Model.State
             );
             mailBox = new MailBox();
             this.blockIndex = blockIndex;
-            actionPoint = GameConfig.ActionPointMax;
+            actionPoint = gameConfigState.ActionPointMax;
             stageMap = new CollectionMap();
             monsterMap = new CollectionMap();
             itemMap = new CollectionMap();

@@ -23,10 +23,14 @@ namespace Nekoyume.UI
             SubmitWidget = () => Close();
         }
 
-        public override void Show()
+        public override void Show(bool ignoreStartAnimation = false)
         {
-            base.Show();
-            blur?.Show(radius: blurRadius);
+            base.Show(ignoreStartAnimation);
+
+            if (blur)
+            {
+                blur.Show(radius: blurRadius);
+            }
         }
 
         public virtual void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
