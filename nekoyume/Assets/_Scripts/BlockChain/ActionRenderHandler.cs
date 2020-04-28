@@ -202,7 +202,6 @@ namespace Nekoyume.BlockChain
                                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                                 Address agentAddress = States.Instance.AgentState.address;
                                 AgentState outAgentState = eval.OutputStates.GetAgentState(agentAddress);
-
                                 new TPStashEvent().CurrencyGet(
                                     player_uuid: agentAddress.ToHex(),
                                     currency_slug: "gold",
@@ -218,9 +217,6 @@ namespace Nekoyume.BlockChain
                                 // TentuPlay 실행 시 혹시 에러가 나더라도 넘어가도록.
                             }
                         }
-
-                                           
-                                                                     
                     }
 
                     UpdateAgentState(eval);
@@ -313,12 +309,12 @@ namespace Nekoyume.BlockChain
 
             //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용            
-            
+            AgentState outAgentState = eval.OutputStates.GetAgentState(avatarAddress);
             new TPStashEvent().CurrencyUse(
-                player_uuid: agentAddress.ToHex(),
+                player_uuid: avatarAddress.ToHex(),
                 currency_slug: "gold",
-                currency_quantity: (float)agentState.modifiedGold,
-                currency_total_quantity: (float)(agentState.gold - agentState.modifiedGold),
+                currency_quantity: (float)outAgentState.modifiedGold,
+                currency_total_quantity: (float)(outAgentState.gold - outAgentState.modifiedGold),
                 reference_entity: "items_consumables",
                 reference_category_slug: "consumables_rapid_combination",
                 reference_slug: slot.Result.itemUsable.Data.Id.ToString());
@@ -370,10 +366,6 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
-
-
-
-
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
@@ -414,9 +406,6 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.slotIndex);
-
-
-
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
@@ -474,7 +463,6 @@ namespace Nekoyume.BlockChain
                     reference_category_slug: "buy",
                     reference_slug: result.itemUsable.Data.Id.ToString() //아이템 품번
                     );
-
             }
             else
             {
@@ -507,7 +495,6 @@ namespace Nekoyume.BlockChain
                     reference_category_slug: "sell",
                     reference_slug: result.itemUsable.Data.Id.ToString() //아이템 품번
                 );
-
             }
 
             UpdateAgentState(eval);
@@ -544,7 +531,6 @@ namespace Nekoyume.BlockChain
             {
                 Widget.Find<BattleResult>().NextStage(eval);
             }
-
         }
 
         private void ResponseQuestReward(ActionBase.ActionEvaluation<QuestReward> eval)
@@ -592,7 +578,6 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);                
-
         }
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
@@ -610,7 +595,6 @@ namespace Nekoyume.BlockChain
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             Address agentAddress = States.Instance.AgentState.address;
             AgentState outAgentState = eval.OutputStates.GetAgentState(agentAddress);
-
             new TPStashEvent().CurrencyUse(
                 player_uuid: agentAddress.ToHex(),
                 currency_slug: "gold",
@@ -621,14 +605,9 @@ namespace Nekoyume.BlockChain
                 reference_slug: "WeeklyArenaEntryFee"
                 );
 
-
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateWeeklyArenaState(eval);
-
-
-
-            
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
@@ -660,7 +639,6 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             Widget.Find<LoadingScreen>().Close();
             UI.Notification.Push(MailType.System, $"Get Arena Reward: {gold}");
-
         }
 
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

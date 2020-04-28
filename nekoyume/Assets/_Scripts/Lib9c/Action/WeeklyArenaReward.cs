@@ -6,7 +6,6 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 
-
 namespace Nekoyume.Action
 {
     [Serializable]

@@ -14,7 +14,6 @@ using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
-
 namespace Nekoyume.Action
 {
     [Serializable]
@@ -187,7 +186,6 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(ctx);
-
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize())

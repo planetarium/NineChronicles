@@ -233,8 +233,6 @@ namespace Nekoyume.Action
             Log.Debug($"Buy Set ShopState: {sw.Elapsed}");
             Log.Debug($"Buy Total Executed Time: {ended - started}");
 
-
-
             return states
                 .SetState(ctx.Signer, buyerAgentState.Serialize())
                 .SetState(sellerAgentAddress, sellerAgentState.Serialize());

@@ -426,7 +426,6 @@ namespace Nekoyume.Game
             Widget.Find<BattleResult>().Show(_battleResultModel);
             yield return null;
 
-
             //[TentuPlay] PlayStage 끝 기록
             string stage_status = null;
             switch (log.result)
@@ -451,7 +450,6 @@ namespace Nekoyume.Game
                 stage_playtime: null,
                 is_autocombat_committed: true
                 );
-
         }
 
         private IEnumerator CoSlideBg()

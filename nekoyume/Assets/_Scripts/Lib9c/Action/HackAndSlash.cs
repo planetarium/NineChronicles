@@ -290,7 +290,6 @@ namespace Nekoyume.Action
 
             var ended = DateTimeOffset.UtcNow;
             Log.Debug($"HAS Total Executed Time: {ended - started}");
-
             return states.SetState(ctx.Signer, agentState.Serialize());
         }
     }

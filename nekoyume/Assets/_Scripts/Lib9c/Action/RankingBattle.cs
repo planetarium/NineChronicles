@@ -12,7 +12,6 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
 
-
 namespace Nekoyume.Action
 {
     [Serializable]

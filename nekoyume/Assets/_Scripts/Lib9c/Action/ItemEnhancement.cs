@@ -239,8 +239,6 @@ namespace Nekoyume.Action
             Log.Debug($"ItemEnhancement Set AvatarState: {sw.Elapsed}");
             var ended = DateTimeOffset.UtcNow;
             Log.Debug($"ItemEnhancement Total Executed Time: {ended - started}");
-
-
             return states
                 .SetState(slotAddress, slotState.Serialize())
                 .SetState(ctx.Signer, agentState.Serialize());

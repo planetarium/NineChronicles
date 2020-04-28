@@ -4,7 +4,6 @@ using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 
-
 namespace Nekoyume.Action
 {
     [Serializable]
@@ -52,8 +51,6 @@ namespace Nekoyume.Action
                 weekly.ResetCount(ctx.BlockIndex);
                 states = states.SetState(weekly.address, weekly.Serialize());
             }
-
-
             return states.SetState(ctx.Miner, agentState.Serialize());
         }
     }

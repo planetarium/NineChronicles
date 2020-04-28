@@ -6,7 +6,6 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 
-
 namespace Nekoyume.Action
 {
     [Serializable]
@@ -69,8 +68,6 @@ namespace Nekoyume.Action
                 try
                 {
                     agentState.gold += rewards[index];
-
-
                 }
                 catch (IndexOutOfRangeException)
                 {
