@@ -8,7 +8,10 @@ using Serilog.Events;
 using Launcher.Common;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using System.Net;
+using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Launcher
 {
@@ -68,6 +71,15 @@ namespace Launcher
             Log.Logger.Debug("Find Qt runtime from: {0}", CurrentPlatform.QtRuntimeDirectory);
             RuntimeManager.ConfigureRuntimeDirectory(CurrentPlatform.QtRuntimeDirectory);
 
+            // FIXME: 셀프 업데이트 가능한 업데이터로 재설치 없이 교체하기 위해 들어간 코드입니다. 차후 없애는 작업이 필요할 것 같습니다.
+            const string updateCheckDummyFilename = ".updater-updated";
+            string updateCheckDummyPath = Path.Combine(CurrentPlatform.CurrentWorkingDirectory, updateCheckDummyFilename);
+            if (!File.Exists(updateCheckDummyPath))
+            {
+                ReplaceUpdaterNewerAsync().ConfigureAwait(false);
+                File.Create(updateCheckDummyPath);
+            }
+
             QmlNetConfig.ShouldEnsureUIThread = false;
 
             using var application = new QGuiApplication(args);
@@ -95,6 +107,41 @@ namespace Launcher
             }
 
             return false;
+        }
+
+        private static async Task ReplaceUpdaterNewerAsync()
+        {
+            // Copied from Launcher.Updater/Program.cs L:31 @ git-cf29661f72e648b96720af3c0d5910ab2bc3832b
+            const string MacOSUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater";
+            const string WindowsUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater.exe";
+            string newUpdaterBinaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                ? MacOSUpdaterLatestBinaryUrl
+                : RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? WindowsUpdaterLatestBinaryUrl
+                    : throw new NotSupportedException();
+
+            // 1. Download
+            var tempPath = Path.GetTempFileName();
+            Log.Debug(
+                "Start to download updater from {NewUpdaterDownloadURL} to {TempPath}",
+                newUpdaterBinaryUrl,
+                tempPath);
+            using var httpClient = new HttpClient();
+            var stream = await httpClient.GetStreamAsync(newUpdaterBinaryUrl);
+            using (var tmpFile = File.Open(tempPath, FileMode.OpenOrCreate))
+            {
+                await stream.CopyToAsync(tmpFile);
+            }
+            Log.Debug("Finished to download.");
+
+
+            // 2. Replace
+            File.Delete(CurrentPlatform.ExecutableUpdaterBinaryPath);
+            File.Move(tempPath, CurrentPlatform.ExecutableUpdaterBinaryPath);
+            Log.Debug(
+                "Replaced updater to {TempPath} (from {NewUpdaterDownloadURL})",
+                tempPath,
+                newUpdaterBinaryUrl);
         }
     }
 }
