@@ -123,7 +123,18 @@ namespace Launcher.Updater
             var localUpdaterPath = Process.GetCurrentProcess().MainModule.FileName;
             if (File.Exists(localUpdaterPath + ".back"))
             {
-                File.Delete(localUpdaterPath + ".back");
+                while (true)
+                {
+                    try
+                    {
+                        File.Delete(localUpdaterPath + ".back");
+                        break;
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        await Task.Delay(1000);
+                    }
+                }
             }
 
             var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
