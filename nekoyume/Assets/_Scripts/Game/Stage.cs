@@ -265,9 +265,9 @@ namespace Nekoyume.Game
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "HackAndSlash",
                 stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
-                stage_status: "S",
+                stage_status: stageStatus.Start,
                 stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
-                is_autocombat_committed: true
+                is_autocombat_committed: isAutocombat.AutocombatOn
                 );
 
             IsInStage = true;
@@ -288,9 +288,9 @@ namespace Nekoyume.Game
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "RankingBattle",
                 stage_slug: "RankingBattle",
-                stage_status: "S",
+                stage_status: stageStatus.Start,
                 stage_level: null,
-                is_autocombat_committed: true
+                is_autocombat_committed: isAutocombat.AutocombatOn
                 );
 
             IsInStage = true;
@@ -427,17 +427,17 @@ namespace Nekoyume.Game
             yield return null;
 
             //[TentuPlay] PlayStage 끝 기록
-            string stage_status = null;
+            stageStatus stage_status = stageStatus.Unknown;
             switch (log.result)
             {
                 case BattleLog.Result.Win:
-                    stage_status = "W";
+                    stage_status = stageStatus.Win;
                     break;
                 case BattleLog.Result.Lose:
-                    stage_status = "L";
+                    stage_status = stageStatus.Lose;
                     break;
                 case BattleLog.Result.TimeOver:
-                    stage_status = "T";
+                    stage_status = stageStatus.Timeout;
                     break;
             }
             new TPStashEvent().PlayerStage(
@@ -448,7 +448,7 @@ namespace Nekoyume.Game
                 stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
                 stage_score: log.clearedWaveNumber,
                 stage_playtime: null,
-                is_autocombat_committed: true
+                is_autocombat_committed: isAutocombat.AutocombatOn
                 );
         }
 
@@ -482,17 +482,17 @@ namespace Nekoyume.Game
             yield return null;
 
             //[TentuPlay] RankingBattle 끝 기록
-            string stage_status = null;
+            stageStatus stage_status = stageStatus.Unknown;
             switch (log.result)
             {
                 case BattleLog.Result.Win:
-                    stage_status = "W";
+                    stage_status = stageStatus.Win;
                     break;
                 case BattleLog.Result.Lose:
-                    stage_status = "L";
+                    stage_status = stageStatus.Lose;
                     break;
                 case BattleLog.Result.TimeOver:
-                    stage_status = "T";
+                    stage_status = stageStatus.Timeout;
                     break;
             }
             new TPStashEvent().PlayerStage(
@@ -503,7 +503,7 @@ namespace Nekoyume.Game
                 stage_level: null,
                 stage_score: log.diffScore,
                 stage_playtime: null,
-                is_autocombat_committed: true
+                is_autocombat_committed: isAutocombat.AutocombatOn
                 );
         }
 

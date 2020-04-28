@@ -577,7 +577,7 @@ namespace Nekoyume.BlockChain
                 reference_slug: itemUsable.Data.Id.ToString());
 
             UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);                
+            UpdateCurrentAvatarState(eval);
         }
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
