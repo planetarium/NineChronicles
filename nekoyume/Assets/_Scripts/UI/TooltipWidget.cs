@@ -17,7 +17,7 @@ namespace Nekoyume.UI
     
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
-        public override WidgetType WidgetType => WidgetType.Tooltip;
+        protected override WidgetType WidgetType => WidgetType.Tooltip;
         
         public T Model { get; private set; }
         

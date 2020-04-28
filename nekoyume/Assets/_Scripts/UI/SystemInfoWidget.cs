@@ -5,6 +5,6 @@ namespace Nekoyume.UI
 {
     public class SystemInfoWidget : Widget
     {
-        public override WidgetType WidgetType => WidgetType.SystemInfo;
+        protected override WidgetType WidgetType => WidgetType.SystemInfo;
     }
 }

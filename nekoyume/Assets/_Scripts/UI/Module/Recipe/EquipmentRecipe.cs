@@ -7,8 +7,6 @@ using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
-using System.Collections;
-using DG.Tweening;
 
 namespace Nekoyume.UI.Module
 {
@@ -39,7 +37,7 @@ namespace Nekoyume.UI.Module
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
 
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
-        
+
         public EquipmentRecipeCellView SelectedRecipe { get; private set; }
 
         public DOTweenGroupAlpha scrollAlphaTweener;
@@ -66,6 +64,11 @@ namespace Nekoyume.UI.Module
             UpdateRecipes();
         }
 
+        private void OnDisable()
+        {
+            SelectedRecipe = null;
+        }
+
         private void OnDestroy()
         {
             _filterType.Dispose();
@@ -84,7 +87,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void HideCellviews()
+        public void HideCellViews()
         {
             SelectedRecipe.Visible = true;
             scrollAlphaTweener.PlayReverse();
@@ -112,7 +115,7 @@ namespace Nekoyume.UI.Module
                 cellViews[idx] = cellView;
                 ++idx;
             }
-            
+
             UpdateRecipes();
         }
 
@@ -121,7 +124,7 @@ namespace Nekoyume.UI.Module
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
                 return;
-            
+
             foreach (var cellView in cellViews)
             {
                 cellView.Set(avatarState);

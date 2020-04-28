@@ -94,19 +94,27 @@ namespace Nekoyume.UI
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
             tabState = MailTabState.All;
             MailBox = States.Instance.CurrentAvatarState.mailBox;
             ChangeState(0);
             UpdateTabs();
-            base.Show();
-            blur?.Show();
+            base.Show(ignoreShowAnimation);
+
+            if (blur)
+            {
+                blur.Show();
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            blur?.Close();
+            if (blur)
+            {
+                blur.Close();
+            }
+            
             base.Close(ignoreCloseAnimation);
         }
 

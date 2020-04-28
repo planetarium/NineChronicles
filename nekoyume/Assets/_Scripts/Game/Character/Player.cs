@@ -58,7 +58,9 @@ namespace Nekoyume.Game.Character
                 .Subscribe(_ =>
                 {
                     if (Game.instance.Stage.IsInStage)
+                    {
                         return;
+                    }
 
                     Animator.Touch();
                 })
@@ -77,7 +79,9 @@ namespace Nekoyume.Game.Character
         public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
         {
             if (!(model is Model.Player playerModel))
+            {
                 throw new ArgumentException(nameof(model));
+            }
 
             Set(playerModel, updateCurrentHP);
         }
@@ -99,8 +103,10 @@ namespace Nekoyume.Game.Character
             }
 
             SpeechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
-            if(!(this is EnemyPlayer))
+            if (!(this is EnemyPlayer))
+            {
                 Widget.Find<UI.Battle>().comboText.comboMax = CharacterModel.AttackCountMax;
+            }
         }
 
         protected override IEnumerator Dying()
@@ -135,7 +141,8 @@ namespace Nekoyume.Game.Character
             var center = HitPointBoxCollider.center;
             var size = HitPointBoxCollider.size;
             HitPointLocalOffset = new Vector3(center.x + size.x / 2, center.y - size.y / 2);
-            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
+            attackPoint.transform.localPosition =
+                new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
         }
 
         #endregion
@@ -157,7 +164,9 @@ namespace Nekoyume.Game.Character
             {
                 var animatorTargetName = spineResourcePath.Split('/').Last();
                 if (Animator.Target.name.Contains(animatorTargetName))
+                {
                     return;
+                }
 
                 Animator.DestroyTarget();
             }
@@ -172,7 +181,9 @@ namespace Nekoyume.Game.Character
         public void UpdateWeapon(Weapon weapon)
         {
             if (!SpineController)
+            {
                 return;
+            }
 
             var sprite = weapon.GetPlayerSpineTexture();
             SpineController.UpdateWeapon(sprite);
@@ -180,8 +191,9 @@ namespace Nekoyume.Game.Character
 
         public void UpdateCustomize()
         {
-            UpdateEye(Model.lensIndex);
             UpdateEar(Model.earIndex);
+            UpdateEye(Model.lensIndex);
+            UpdateHair(Model.hairIndex);
             UpdateTail(Model.tailIndex);
         }
 
@@ -190,19 +202,13 @@ namespace Nekoyume.Game.Character
             UpdateEar($"ear_{index + 1:d4}_left", $"ear_{index + 1:d4}_right");
         }
 
-        public void UpdateEar(string earLeftResource, string earRightResource)
+        private void UpdateEar(string earLeftResource, string earRightResource)
         {
-            if (!SpineController)
+            if (!SpineController ||
+                string.IsNullOrEmpty(earLeftResource) ||
+                string.IsNullOrEmpty(earRightResource))
+            {
                 return;
-
-            if (string.IsNullOrEmpty(earLeftResource))
-            {
-                earLeftResource = $"ear_{Model.earIndex + 1:d4}_left";
-            }
-
-            if (string.IsNullOrEmpty(earRightResource))
-            {
-                earRightResource = $"ear_{Model.earIndex + 1:d4}_right";
             }
 
             var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarLeft(earLeftResource);
@@ -212,27 +218,48 @@ namespace Nekoyume.Game.Character
 
         public void UpdateEye(int index)
         {
-            UpdateEye(CostumeSheet.GetEyeOpenResourceByIndex(index), CostumeSheet.GetEyeHalfResourceByIndex(index));
+            UpdateEye(CostumeSheet.GetEyeResources(index));
         }
 
-        public void UpdateEye(string eyeOpenResource, string eyeHalfResource)
+        private void UpdateEye(IReadOnlyList<string> eyeResources)
         {
-            if (!SpineController)
+            if (eyeResources is null ||
+                eyeResources.Count < 2 ||
+                !SpineController)
+            {
                 return;
-
-            if (string.IsNullOrEmpty(eyeOpenResource))
-            {
-                eyeOpenResource = CostumeSheet.GetEyeOpenResourceByIndex(Model.lensIndex);
             }
 
-            if (string.IsNullOrEmpty(eyeHalfResource))
+            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeHalf(eyeResources[0]);
+            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeOpen(eyeResources[1]);
+            SpineController.UpdateEye(eyeHalfSprite, eyeOpenSprite);
+        }
+
+        /// <param name="colorIndex">0~5</param>
+        public void UpdateHair(int colorIndex)
+        {
+            if (SpineController is null)
             {
-                eyeHalfResource = CostumeSheet.GetEyeHalfResourceByIndex(Model.lensIndex);
+                return;
             }
 
-            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeOpen(eyeOpenResource);
-            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeHalf(eyeHalfResource);
-            SpineController.UpdateEye(eyeOpenSprite, eyeHalfSprite);
+            UpdateHair(CostumeSheet.GetHairResources(SpineController.hairTypeIndex, colorIndex));
+        }
+
+        private void UpdateHair(IReadOnlyCollection<string> hairResources)
+        {
+            if (hairResources is null||
+                hairResources.Count < 6 ||
+                !SpineController)
+            {
+                return;
+            }
+
+            var sprites = hairResources
+                .Select(SpriteHelper.GetPlayerSpineTextureHair)
+                .ToList();
+
+            SpineController.UpdateHair(sprites);
         }
 
         public void UpdateTail(int index)
@@ -240,14 +267,12 @@ namespace Nekoyume.Game.Character
             UpdateTail($"tail_{index + 1:d4}");
         }
 
-        public void UpdateTail(string tailResource)
+        private void UpdateTail(string tailResource)
         {
-            if (!SpineController)
-                return;
-
-            if (string.IsNullOrEmpty(tailResource))
+            if (!SpineController ||
+                string.IsNullOrEmpty(tailResource))
             {
-                tailResource = $"tail_{Model.tailIndex + 1:d4}";
+                return;
             }
 
             var sprite = SpriteHelper.GetPlayerSpineTextureTail(tailResource);
@@ -277,7 +302,8 @@ namespace Nekoyume.Game.Character
                     level_to: (int)Level
                     );
 
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
+                    level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 InitStats(Model);
@@ -293,7 +319,8 @@ namespace Nekoyume.Game.Character
             Inventory = character.Inventory;
         }
 
-        protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
+        protected override void ProcessAttack(CharacterBase target,
+            Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
             ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);

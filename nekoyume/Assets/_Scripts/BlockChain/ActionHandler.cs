@@ -1,5 +1,6 @@
 using System.Linq;
 using Assets.SimpleLocalization;
+using Bencodex.Types;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -87,6 +88,12 @@ namespace Nekoyume.BlockChain
             var index = (int) evaluation.BlockIndex / GameConfig.WeeklyArenaInterval;
             var weeklyArenaState = evaluation.OutputStates.GetWeeklyArenaState(WeeklyArenaState.Addresses[index]);
             States.Instance.SetWeeklyArenaState(weeklyArenaState);
+        }
+
+        protected void UpdateGameConfigState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var state = evaluation.OutputStates.GetGameConfigState();
+            States.Instance.SetGameConfigState(state);
         }
 
         private static void UpdateAgentState(AgentState state)

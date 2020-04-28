@@ -17,9 +17,9 @@ namespace Nekoyume.UI
             xTweener = GetComponentInChildren<AnchoredPositionXTweener>();
         }
 
-        public override void Show()
-        { 
-            base.Show();
+        public override void Show(bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
             xTweener.StartTween();
         }
 

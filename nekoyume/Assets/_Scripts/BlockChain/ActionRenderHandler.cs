@@ -10,7 +10,6 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
-using Nekoyume.State.Modifiers;
 using TentuPlay.Api;
 
 namespace Nekoyume.BlockChain
@@ -56,6 +55,7 @@ namespace Nekoyume.BlockChain
             WeeklyArenaReward();
             CombinationEquipment();
             RapidCombination();
+            GameConfig();
         }
 
         public void Stop()
@@ -245,7 +245,7 @@ namespace Nekoyume.BlockChain
                 {
                     var avatarAddress = eval.Action.avatarAddress;
                     LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, false);
-                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.ActionPointMax);
+                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
                     UpdateCurrentAvatarState(eval);
                 }).AddTo(_disposables);
         }
@@ -290,15 +290,24 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
         }
 
+        private void GameConfig()
+        {
+            _renderer.EveryRender(GameConfigState.Address)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateGameConfigState).AddTo(_disposables);
+        }
+
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
         {
-            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            var agentState = eval.OutputStates.GetAgentState(agentAddress);
             var slot =
                 eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-            LocalStateModifier.ModifyAgentGold(agentAddress, agentState.modifiedGold);
-            LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, slot.Result.itemUsable.ItemId);
+            var result = (RapidCombination.ResultModel) slot.Result;
+            foreach (var pair in result.cost)
+            {
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
+            }
+            LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module.Common;
 using TMPro;
 using UniRx;
@@ -33,7 +34,10 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             sliderAnimator.OnSliderChange.Subscribe(_ => OnSliderChange()).AddTo(gameObject);
-            sliderAnimator.SetMaxValue(GameConfig.ActionPointMax);
+            sliderAnimator.SetMaxValue(States.Instance.GameConfigState.ActionPointMax);
+            GameConfigStateSubject.GameConfigState.ObserveOnMainThread().Subscribe(
+                state => sliderAnimator.SetMaxValue(state.ActionPointMax)
+            ).AddTo(gameObject);
             sliderAnimator.SetValue(0f, false);
         }
 

@@ -33,7 +33,7 @@ namespace Nekoyume.UI
 
         public IKeyStore KeyStore = Web3KeyStore.DefaultKeyStore;
 
-        public override WidgetType WidgetType => WidgetType.SystemInfo;
+        protected override WidgetType WidgetType => WidgetType.SystemInfo;
         public InputField passPhraseField;
         public InputField retypeField;
         public InputField loginField;
@@ -472,7 +472,7 @@ namespace Nekoyume.UI
         {
             base.Update();
 
-            if (Input.GetKeyUp(KeyCode.Tab))
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
                 switch (State.Value)
                 {
@@ -501,6 +501,8 @@ namespace Nekoyume.UI
                     case States.Show:
                     case States.Failed:
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
