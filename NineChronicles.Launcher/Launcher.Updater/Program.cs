@@ -144,14 +144,26 @@ namespace Launcher.Updater
                 using (var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write))
                 {
                     Log.Debug("Download from {url}", updaterBinaryUrl);
-                    resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
-                    if (!resp.IsSuccessStatusCode)
+                    var retry = 2;
+                    while (true)
                     {
-                        // FIXME 예외형을 정의하고 앞에서 잡아서 제대로 표시하는 정리가 필요합니다.
-                        throw new Exception($"Can't download latest updater from {updaterBinaryUrl}.");
-                    }
+                        resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
+                        if (!resp.IsSuccessStatusCode)
+                        {
+                            Log.Error("Can't download latest updater from {url}", updaterBinaryUrl);
+                            if (retry > 0)
+                            {
+                                Log.Debug("Retrying...");
+                                retry--;
+                                continue;
+                            }
+                            // FIXME 예외형을 정의하고 앞에서 잡아서 제대로 표시하는 정리가 필요합니다.
+                            throw new Exception($"Can't download latest updater from {updaterBinaryUrl}.");
+                        }
 
-                    await resp.Content.CopyToAsync(fileStream);
+                        await resp.Content.CopyToAsync(fileStream);
+                        break;
+                    }
                 }
 
                 // Replace updater and run.
