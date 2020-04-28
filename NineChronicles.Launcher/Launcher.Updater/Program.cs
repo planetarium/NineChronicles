@@ -141,9 +141,18 @@ namespace Launcher.Updater
                 Log.Debug("It needs to update.");
                 // Download latest updater binary.
                 string tempFileName = Path.GetTempFileName();
-                await using var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
-                await resp.Content.CopyToAsync(fileStream);
+                using (var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    Log.Debug("Download from {url}", updaterBinaryUrl);
+                    resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
+                    if (!resp.IsSuccessStatusCode)
+                    {
+                        // FIXME 예외형을 정의하고 앞에서 잡아서 제대로 표시하는 정리가 필요합니다.
+                        throw new Exception($"Can't download latest updater from {updaterBinaryUrl}.");
+                    }
+
+                    await resp.Content.CopyToAsync(fileStream);
+                }
 
                 // Replace updater and run.
                 string downloadedUpdaterPath = tempFileName;
