@@ -1,40 +1,89 @@
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace Nekoyume.TableData
 {
     public class CostumeSheet
     {
-        public static string GetEyeOpenResourceByIndex(int eyeIndex) =>
-            string.Format(
-                CultureInfo.InvariantCulture,
-                GetEyeResourceFormatByIndex(eyeIndex),
-                "open"
-            );
-        
-        public static string GetEyeHalfResourceByIndex(int eyeIndex) =>
-            string.Format(
-                CultureInfo.InvariantCulture,
-                GetEyeResourceFormatByIndex(eyeIndex),
-                "half"
-            );
-        
-        private static string GetEyeResourceFormatByIndex(int eyeIndex)
+        public static List<string> GetEyeResources(int colorIndex)
         {
-            switch (eyeIndex)
+            var result = new List<string>();
+            const string format = "eye_{0}_{1}";
+            for (var i = 0; i < 2; i++)
             {
-                default:
-                    return "eye_red_{0}";
-                case 1:
-                    return "eye_blue_{0}";
-                case 2:
-                    return "eye_green_{0}";
-                case 3:
-                    return "eye_violet_{0}";
-                case 4:
-                    return "eye_white_{0}";
-                case 5:
-                    return "eye_yellow_{0}";
+                var item1 = GetEyeColor(colorIndex);
+                var item2 = i == 0
+                    ? "half"
+                    : "open";
+                var resource = string.Format(
+                    CultureInfo.InvariantCulture,
+                    format,
+                    item1,
+                    item2
+                );
+                result.Add(resource);
             }
-        } 
+
+            return result;
+        }
+
+        public static List<string> GetHairResources(int typeIndex, int colorIndex)
+        {
+            var typeString = typeIndex == 0
+                ? "0001"
+                : "0007";
+            var resourceCount = typeIndex == 0
+                ? 6
+                : 8;
+            var result = new List<string>();
+            for (var i = 0; i < resourceCount; i++)
+            {
+                result.Add($"hair_{typeString}_{GetHairColor(colorIndex)}_{i + 1:d2}");
+            }
+
+            return result;
+        }
+
+        private static string GetEyeColor(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return "red";
+                case 1:
+                    return "blue";
+                case 2:
+                    return "green";
+                case 3:
+                    return "violet";
+                case 4:
+                    return "white";
+                case 5:
+                    return "yellow";
+                default:
+                    return "red";
+            }
+        }
+
+        private static string GetHairColor(int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    return "brown";
+                case 1:
+                    return "blue";
+                case 2:
+                    return "green";
+                case 3:
+                    return "red";
+                case 4:
+                    return "white";
+                case 5:
+                    return "yellow";
+                default:
+                    return "brown";
+            }
+        }
     }
 }
