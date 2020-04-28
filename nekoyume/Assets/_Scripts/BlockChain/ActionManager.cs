@@ -347,6 +347,24 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
+        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(Address address)
+        {
+            var action = new RedeemCode
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                code = address
+            };
+            ProcessAction(action);
+
+            return _renderer.EveryRender<RedeemCode>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
+
         #endregion
     }
 }

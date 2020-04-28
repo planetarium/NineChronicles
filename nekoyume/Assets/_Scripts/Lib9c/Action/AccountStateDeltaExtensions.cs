@@ -185,5 +185,25 @@ namespace Nekoyume.Action
                 throw;
             }
         }
+
+        public static PromotionCodeState GetPromotionCodeState(this IAccountStateDelta states)
+        {
+            var value = states.GetState(PromotionCodeState.Address);
+            if (value is null)
+            {
+                Log.Warning("PromotionCodeState is null. ({0})", PromotionCodeState.Address.ToHex());
+                return null;
+            }
+
+            try
+            {
+                return new PromotionCodeState((Dictionary) value);
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Unexpected error occurred during {nameof(GetCombinationSlotState)}()");
+                throw;
+            }
+        }
     }
 }
