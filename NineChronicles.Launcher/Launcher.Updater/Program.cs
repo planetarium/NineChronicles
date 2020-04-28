@@ -37,6 +37,14 @@ namespace Launcher.Updater
             AppDomain.CurrentDomain.ProcessExit += Configuration.FlushApplicationInsightLog;
             AppDomain.CurrentDomain.UnhandledException += Configuration.FlushApplicationInsightLog;
 
+            const string updateCheckDummyFilename = ".updater-dummy";
+            string updateCheckDummyPath = Path.Combine(CurrentPlatform.CurrentWorkingDirectory, updateCheckDummyFilename);
+            if (!File.Exists(updateCheckDummyPath))
+            {
+                await ReplaceUpdaterNewerAsync();
+                File.Create(updateCheckDummyPath);
+            }
+
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
                 .WriteTo.File(
@@ -116,6 +124,42 @@ namespace Launcher.Updater
             {
                 Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
             }
+        }
+
+        private static async Task ReplaceUpdaterNewerAsync()
+        {
+            Log.Debug("Start to upgrade updater");
+
+            // Copied from Launcher.Updater/Program.cs L:31 @ git-cf29661f72e648b96720af3c0d5910ab2bc3832b
+            const string MacOSUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater";
+            const string WindowsUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater.exe";
+            string newUpdaterBinaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
+                ? MacOSUpdaterLatestBinaryUrl
+                : RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? WindowsUpdaterLatestBinaryUrl
+                    : throw new NotSupportedException();
+
+            // 1. Download
+            Log.Debug("Start to download updater");
+            using var httpClient = new HttpClient();
+            var stream = await httpClient.GetStreamAsync(newUpdaterBinaryUrl);
+            var tempPath = Path.GetTempFileName();
+            using (var tmpFile = File.Open(tempPath, FileMode.OpenOrCreate))
+            {
+                await stream.CopyToAsync(tmpFile);
+            }
+            Log.Debug("Finished to upgrade updater");
+
+            // 2. Replace
+            Log.Debug("Start to replace updater");
+            if (File.Exists(CurrentPlatform.ExecutableUpdaterBinaryPath))
+            {
+                File.Delete(CurrentPlatform.ExecutableUpdaterBinaryPath);
+            }
+            File.Move(tempPath, CurrentPlatform.ExecutableUpdaterBinaryPath);
+            Log.Debug("Finished to replace updater");
+
+            Log.Debug("Finished to upgrade updater");
         }
 
         private static async Task CheckUpdaterUpdate(string argument, CancellationToken cancellationToken)
