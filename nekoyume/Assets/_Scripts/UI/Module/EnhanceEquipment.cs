@@ -203,7 +203,7 @@ namespace Nekoyume.UI.Module
 
             message.SetActive(true);
             messageText.text = string.Format(
-                LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
+                LocalizationManager.Localize("UI_ENHANCEMENT_GUIDE"),
                 count);
         }
     }
