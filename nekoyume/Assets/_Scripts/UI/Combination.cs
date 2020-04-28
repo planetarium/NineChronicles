@@ -502,7 +502,7 @@ namespace Nekoyume.UI
 
             inventory.gameObject.SetActive(false);
             recipeAnimator.Play("Close");
-            equipmentRecipe.HideCellviews();
+            equipmentRecipe.HideCellViews();
 
             var recipeCellView = selectedRecipe as EquipmentRecipeCellView;
 

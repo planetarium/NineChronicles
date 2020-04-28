@@ -272,19 +272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135108b12214e8b282f2cbe6c361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPoints:
-  - {x: 1.4, y: -1.101, z: 0}
-  - {x: 2.2, y: -1.201, z: 0}
-  - {x: 2.8, y: -1.301, z: 0}
-  - {x: 3.2, y: -1.101, z: 0}
-  - {x: 3.6, y: -1.201, z: 0}
-  - {x: 4.4, y: -1.301, z: 0}
-  - {x: 5.2, y: -1.101, z: 0}
-  - {x: 5.8, y: -1.201, z: 0}
-  - {x: 6.2, y: -1.301, z: 0}
-  - {x: 6.6, y: -1.101, z: 0}
-  - {x: 7.4, y: -1.201, z: 0}
-  - {x: 8.2, y: -1.301, z: 0}
+  spawnPoints: []
 --- !u!1 &282372974
 GameObject:
   m_ObjectHideFlags: 0
@@ -676,157 +664,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a35844bbaeff714a89b2c2d4be92a92, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  list:
-  - Prefab: {fileID: 1101687136648424, guid: 8c480d3d02c5f45a3aaaabb41d8007bf, type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 1208442540372552, guid: 37bb47060ecc74f05a492d60ff3e28c6, type: 3}
-    InitCount: 5
-    AddCount: 5
-  - Prefab: {fileID: 3236136856082345825, guid: a9f0799f07af9c348bf02ecae72037c4,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 8197625422693294542, guid: a338bc95fcc862e43ad0a42976b45e7b,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1351238356012968, guid: 8900087d9918c134582786ed2d074325, type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 1939661691863532, guid: 115fc8293630a3a4babf96ad5cd136aa, type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1056061149771412, guid: 03c53e10d7e395e488ed8d2e3c35d367, type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1322198228859034, guid: 202892cb652c518458202618adbcefeb, type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1616911531835682, guid: 40708929f6f62304793a921c038de5f9, type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 2088104808036545770, guid: ac7a1c3cf122a354c84628a84054a81b,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 6821532248166563126, guid: 57efff2f662fba1488d98a95c7d538b4,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 2013260641294951130, guid: 1a4f91e13096fa645944128957d1692a,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 6935105740374106053, guid: 2653e88a359db924e8a1e487ef5bc45f,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 2190558253493181965, guid: 6943defa54d9f1a46a51bb41a9d0d325,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 7362964850041351188, guid: cb231aabb102c414a88197f07cf10c4f,
-      type: 3}
-    InitCount: 20
-    AddCount: 10
-  - Prefab: {fileID: 7756120939619406518, guid: 18a90bf73ccf9834db3f450f3e3b3278,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1996707557506405315, guid: 6fe12a834fc003f408a09b938b32c7f3,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 6810647246816719368, guid: 4b357436a5426bb478488e833722282d,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 7238275187206761792, guid: 33e92766a330b984682f59148f7644df,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1391978601354276969, guid: d4e8ac3a96bf779479d4e319e54a84b8,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 7837708294353371776, guid: 7838f11a94751cc4699b5ecbd7356fdb,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 2280207480576973039, guid: 6b823acc2182e4f45ab6ee216761e7c8,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 5166876917278104467, guid: 96b1b4bff4a56f249a2c0b5bd7b05bba,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 7340977150770492934, guid: f2dc2c68c61a8764993f8ecd395f85ad,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1558000746528188469, guid: bf66b94958fafd840b307d0281411b3c,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1410163034875605269, guid: cf04e3ceafa3919448c9180dc44ed2b4,
-      type: 3}
-    InitCount: 5
-    AddCount: 3
-  - Prefab: {fileID: 1939722779027954621, guid: cd6f772995e697a41ac1b8b6168f3bd7,
-      type: 3}
-    InitCount: 10
-    AddCount: 5
-  - Prefab: {fileID: 9171198395192100627, guid: 75875f77466b065489f94ef3745e1641,
-      type: 3}
-    InitCount: 3
-    AddCount: 1
-  - Prefab: {fileID: 5603109290375153912, guid: 020de968715d15f4c9ef53beae6f075d,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 1101687136648424, guid: 5e9710e907b6f5a4e8d8d5ad5b44b4dc, type: 3}
-    InitCount: 2
-    AddCount: 1
-  - Prefab: {fileID: 3406874316825406012, guid: a0171646d2d936d4bbde1a161081d770,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 7354510331960268870, guid: 53504a15b0e31ff4dba79f627c294f35,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 8057692645195218224, guid: 40e624365ee5cbb44aca8651c8ca8a6b,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 42180657713481609, guid: 7901811b127fea146a098b344b66c14f, type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 5421720535952931083, guid: 1365b3cd85b70f8449e109e72ec9f8b3,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 469929775319107500, guid: 79243bdb41843cb4c83bb8b4be500721, type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 7423218383239420094, guid: a4c32b853a22ea042b73b98d476b5a0f,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 8803204602246951280, guid: 37750658317f70e45a2f9208eecbd142,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 2010068977434347807, guid: d429155b2e4810b46ae860ceeb562815,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
-  - Prefab: {fileID: 5416401612893247566, guid: 9edbb293d512b154bbde37d21102b9ea,
-      type: 3}
-    InitCount: 1
-    AddCount: 1
+  list: []
 --- !u!114 &1333831685
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1048,12 +886,12 @@ MonoBehaviour:
   maintainWidth: 1
   adaptPosition: 0
   chaseData:
-    offsetX: 1.5
-    smoothSpeed: 2
+    offsetX: 0
+    smoothSpeed: 0
   shakeData:
-    duration: 0.2
-    magnitudeX: 0.01
-    magnitudeY: 0.03
+    duration: 0
+    magnitudeX: 0
+    magnitudeY: 0
 --- !u!114 &1933286911
 MonoBehaviour:
   m_ObjectHideFlags: 0
