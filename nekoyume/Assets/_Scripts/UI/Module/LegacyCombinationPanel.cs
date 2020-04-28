@@ -13,7 +13,7 @@ namespace Nekoyume.UI.Module
 {
     public interface ICombinationPanel
     {
-        int CostNCG { get; }
+        decimal CostNCG { get; }
         int CostAP { get; }
     }
 
@@ -36,10 +36,10 @@ namespace Nekoyume.UI.Module
         public readonly Subject<LegacyCombinationPanel<TMaterialView>> OnMaterialChange =
             new Subject<LegacyCombinationPanel<TMaterialView>>();
 
-        public readonly Subject<int> OnCostNCGChange = new Subject<int>();
+        public readonly Subject<decimal> OnCostNCGChange = new Subject<decimal>();
         public readonly Subject<int> OnCostAPChange = new Subject<int>();
 
-        public int CostNCG { get; private set; }
+        public decimal CostNCG { get; private set; }
         public int CostAP { get; private set; }
 
         public bool IsThereAnyUnlockedEmptyMaterialView { get; private set; }

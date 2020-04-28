@@ -1,6 +1,4 @@
 using Assets.SimpleLocalization;
-using Nekoyume.State;
-using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using TMPro;
@@ -12,7 +10,7 @@ namespace Nekoyume.UI.Module
 {
     public class CombinationPanel : MonoBehaviour, ICombinationPanel
     {
-        public int CostNCG { get; protected set; }
+        public decimal CostNCG { get; protected set; }
         public int CostAP { get; protected set; }
         public Subject<long> RequiredBlockIndexSubject { get; } = new Subject<long>();
 

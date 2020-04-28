@@ -16,8 +16,8 @@ namespace Nekoyume.UI.Module
             confirmAreaYTweener.StartTween();
             confirmAreaAlphaTweener.PlayDelayed(0.2f);
 
-            CostNCG = (int) materialPanel.costNcg;
-            CostAP = materialPanel.costAp;
+            CostNCG = (int) materialPanel.costNCG;
+            CostAP = materialPanel.costAP;
 
             if (CostAP > 0)
             {

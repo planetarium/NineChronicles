@@ -126,7 +126,6 @@ namespace Nekoyume.UI.Module
         {
             scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
 
-            // FIXME : 테이블이 완성된 후 대응시켜야 함.
             foreach (var cellView in cellViews)
             {
                 if (cellView.ItemSubType == itemSubType)

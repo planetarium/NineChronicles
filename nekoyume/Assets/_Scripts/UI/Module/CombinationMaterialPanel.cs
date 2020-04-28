@@ -14,8 +14,8 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI materialText;
         public RequiredItemView[] materialViews;
-        public decimal costNcg;
-        public int costAp;
+        public decimal costNCG;
+        public int costAP;
 
         public List<(Nekoyume.Model.Item.Material, int)> MaterialList { get; private set; }
         public bool IsCraftable { get; set; }
@@ -32,14 +32,14 @@ namespace Nekoyume.UI.Module
         )
         {
             MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
-            costNcg = 0m;
-            costAp = 0;
+            costNCG = 0m;
+            costAP = 0;
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var materialRow = materialSheet.Values.First(i => i.Id == row.MaterialId);
             var baseMaterial = ItemFactory.CreateMaterial(materialRow);
             MaterialList.Add((baseMaterial, row.MaterialCount));
-            costNcg += row.RequiredGold;
-            costAp += row.RequiredActionPoint;
+            costNCG += row.RequiredGold;
+            costAP += row.RequiredActionPoint;
 
             if (subRecipeId.HasValue)
             {
@@ -52,8 +52,8 @@ namespace Nekoyume.UI.Module
                     MaterialList.Add((subMaterial, materialInfo.Count));
                 }
 
-                costNcg += subRecipeRow.RequiredGold;
-                costAp += subRecipeRow.RequiredActionPoint;
+                costNCG += subRecipeRow.RequiredGold;
+                costAP += subRecipeRow.RequiredActionPoint;
             }
 
             var inventory = Game.Game.instance.States.CurrentAvatarState.inventory;
@@ -91,16 +91,16 @@ namespace Nekoyume.UI.Module
         public void SetData(ConsumableItemRecipeSheet.Row row)
         {
             MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
-            costNcg = 0m;
-            costAp = 0;
+            costNCG = 0m;
+            costAP = 0;
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             foreach (var materialId in row.MaterialItemIds)
             {
                 var materialRow = materialSheet.Values.First(i => i.Id == materialId);
                 var baseMaterial = ItemFactory.CreateMaterial(materialRow);
                 MaterialList.Add((baseMaterial, 1));
-                costNcg += row.RequiredGold;
-                costAp += row.RequiredActionPoint;
+                costNCG += row.RequiredGold;
+                costAP += row.RequiredActionPoint;
             }
 
             IsCraftable = true;

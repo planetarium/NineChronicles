@@ -272,7 +272,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df7f135108b12214e8b282f2cbe6c361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPoints: []
+  spawnPoints:
+  - {x: 1.4, y: -1.101, z: 0}
+  - {x: 2.2, y: -1.201, z: 0}
+  - {x: 2.8, y: -1.301, z: 0}
+  - {x: 3.2, y: -1.101, z: 0}
+  - {x: 3.6, y: -1.201, z: 0}
+  - {x: 4.4, y: -1.301, z: 0}
+  - {x: 5.2, y: -1.101, z: 0}
+  - {x: 5.8, y: -1.201, z: 0}
+  - {x: 6.2, y: -1.301, z: 0}
+  - {x: 6.6, y: -1.101, z: 0}
+  - {x: 7.4, y: -1.201, z: 0}
+  - {x: 8.2, y: -1.301, z: 0}
 --- !u!1 &282372974
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,12 +1048,12 @@ MonoBehaviour:
   maintainWidth: 1
   adaptPosition: 0
   chaseData:
-    offsetX: 0
-    smoothSpeed: 0
+    offsetX: 1.5
+    smoothSpeed: 2
   shakeData:
-    duration: 0
-    magnitudeX: 0
-    magnitudeY: 0
+    duration: 0.2
+    magnitudeX: 0.01
+    magnitudeY: 0.03
 --- !u!114 &1933286911
 MonoBehaviour:
   m_ObjectHideFlags: 0
