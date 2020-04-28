@@ -123,6 +123,7 @@ namespace Editor
             stateProxy.RegisterAlias("shop", states.ShopState.address);
             stateProxy.RegisterAlias("ranking", states.RankingState.address);
             stateProxy.RegisterAlias("gameConfig", GameConfigState.Address);
+            stateProxy.RegisterAlias("promotionCode", PromotionCodeState.Address);
             if (!(states.CurrentAvatarState is null))
             {
                 stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);

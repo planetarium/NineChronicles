@@ -18,6 +18,7 @@ namespace Nekoyume.Action
         public TableSheetsState TableSheetsState { get; set; }
         public List<Address> WeeklyArenaAddresses { get; set; }
         public GameConfigState GameConfigState { get; set; }
+        public PromotionCodeState PromotionCodeState { get; set; }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -31,6 +32,7 @@ namespace Nekoyume.Action
                 states = WeeklyArenaAddresses.Aggregate(states,
                     (current, address) => current.SetState(address, MarkChanged));
                 states = states.SetState(GameConfigState.Address, MarkChanged);
+                states = states.SetState(PromotionCodeState.Address, MarkChanged);
                 return states;
             }
 
@@ -45,7 +47,8 @@ namespace Nekoyume.Action
                 .SetState(RankingState.Address, RankingState.Serialize())
                 .SetState(ShopState.Address, ShopState.Serialize())
                 .SetState(TableSheetsState.Address, TableSheetsState.Serialize())
-                .SetState(GameConfigState.Address, GameConfigState.Serialize());
+                .SetState(GameConfigState.Address, GameConfigState.Serialize())
+                .SetState(PromotionCodeState.Address, PromotionCodeState.Serialize());
             return states;
         }
 
@@ -59,7 +62,8 @@ namespace Nekoyume.Action
                     .Add("shop_state", ShopState.Serialize())
                     .Add("table_sheets_state", TableSheetsState.Serialize())
                     .Add("weekly_arena_addresses", addresses.Serialize())
-                    .Add("game_config_state", GameConfigState.Serialize());
+                    .Add("game_config_state", GameConfigState.Serialize())
+                    .Add("promotion_code_state", PromotionCodeState.Serialize());
             }
         }
 
@@ -71,6 +75,7 @@ namespace Nekoyume.Action
             var addressList = (Bencodex.Types.List) plainValue["weekly_arena_addresses"];
             WeeklyArenaAddresses = addressList.Select(d => d.ToAddress()).ToList();
             GameConfigState = new GameConfigState((Bencodex.Types.Dictionary) plainValue["game_config_state"]);
+            PromotionCodeState = new PromotionCodeState((Bencodex.Types.Dictionary) plainValue["promotion_code_state"]);
         }
     }
 }
