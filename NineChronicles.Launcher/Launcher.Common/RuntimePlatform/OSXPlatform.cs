@@ -45,6 +45,9 @@ namespace Launcher.Common.RuntimePlatform
                 Path.GetFileNameWithoutExtension(GameBinaryFilename)
             );
 
+        public string ExecutableUpdaterBinaryPath =>
+            Path.Combine(CurrentWorkingDirectory, "Nine Chronicles Updater");
+
         public string LogFilePath
             => Path.Combine(
                 Environment.GetEnvironmentVariable("HOME"),

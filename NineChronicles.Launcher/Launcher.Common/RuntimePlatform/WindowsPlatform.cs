@@ -25,6 +25,9 @@ namespace Launcher.Common.RuntimePlatform
         public string ExecutableGameBinaryPath =>
             Path.Combine(CurrentWorkingDirectory, GameBinaryFilename);
 
+        public string ExecutableUpdaterBinaryPath =>
+            Path.Combine(CurrentWorkingDirectory, "Nine Chronicles Updater.exe");
+
         public string LogFilePath =>
             Path.Combine(CurrentWorkingDirectory, "Logs", "launcher.log");
 

@@ -13,7 +13,7 @@ namespace Launcher.Common.RuntimePlatform
         string QtRuntimeDirectory { get; }
         string ExecutableLauncherBinaryPath { get; }
         string ExecutableGameBinaryPath { get; }
-        string ExecutableUpdaterBinaryPath => Path.Combine(CurrentWorkingDirectory, "Nine Chronicles Updater");
+        string ExecutableUpdaterBinaryPath { get; }
         string LogFilePath { get; }
         string UpdaterLogFilePath { get; }
     }
