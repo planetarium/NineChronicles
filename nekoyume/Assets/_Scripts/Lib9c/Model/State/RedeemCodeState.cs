@@ -7,7 +7,7 @@ using Libplanet;
 namespace Nekoyume.Model.State
 {
     [Serializable]
-    public class PromotionCodeState : State
+    public class RedeemCodeState : State
     {
         public static readonly Address Address = new Address(new byte[]
             {
@@ -53,13 +53,13 @@ namespace Nekoyume.Model.State
 
         private Dictionary<Address, Reward> _map = new Dictionary<Address,Reward>();
 
-        public PromotionCodeState() : base(Address)
+        public RedeemCodeState() : base(Address)
         {
             //TODO PrivateKey 목록 생성해서 제네시스 세일전에 반영.
             _map[Address] = new Reward(400000);
         }
 
-        public PromotionCodeState(Dictionary serialized) : base(serialized)
+        public RedeemCodeState(Dictionary serialized) : base(serialized)
         {
             _map = ((Dictionary) serialized["map"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
@@ -67,7 +67,7 @@ namespace Nekoyume.Model.State
             );
         }
 
-        public PromotionCodeState(IValue iValue) : base(iValue)
+        public RedeemCodeState(IValue iValue) : base(iValue)
         {
         }
 

@@ -23,7 +23,7 @@ namespace Nekoyume.UI
 
         public void RequestRedeemCode()
         {
-            Game.Game.instance.ActionManager.RedeemCode(PromotionCodeState.Address);
+            Game.Game.instance.ActionManager.RedeemCode(RedeemCodeState.Address);
             Notification.Push(MailType.System, "Request Redeem Code.");
             Close();
         }

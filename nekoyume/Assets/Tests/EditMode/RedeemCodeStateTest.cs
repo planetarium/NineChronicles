@@ -8,16 +8,16 @@ using NUnit.Framework;
 
 namespace Tests.EditMode
 {
-    public class PromotionCodeStateTest
+    public class RedeemCodeStateTest
     {
         [Test]
         public void Serialize()
         {
-            var state = new PromotionCodeState();
+            var state = new RedeemCodeState();
             var serialized = (Dictionary) state.Serialize();
             Assert.IsTrue(serialized.ContainsKey((Text) "address"));
             Assert.IsTrue(serialized.ContainsKey((Text) "map"));
-            var deserialized = new PromotionCodeState(serialized);
+            var deserialized = new RedeemCodeState(serialized);
             Assert.AreEqual(state.address, deserialized.address);
             foreach (var pair in state.Map)
             {
@@ -31,7 +31,7 @@ namespace Tests.EditMode
         [Test]
         public void RedeemThrowKeyNotFoundException()
         {
-            var state = new PromotionCodeState();
+            var state = new RedeemCodeState();
             var key = new Address();
             Assert.IsFalse(state.Map.ContainsKey(key));
             Assert.Throws<KeyNotFoundException>(() => state.Redeem(new Address(), new Address()));
@@ -40,7 +40,7 @@ namespace Tests.EditMode
         [Test]
         public void Redeem()
         {
-            var state = new PromotionCodeState();
+            var state = new RedeemCodeState();
             var key = state.Map.Keys.First();
             var result = state.Redeem(key, new Address());
             Assert.AreEqual(400000, result);
@@ -49,7 +49,7 @@ namespace Tests.EditMode
         [Test]
         public void RedeemThrowInvalidOperationException()
         {
-            var state = new PromotionCodeState();
+            var state = new RedeemCodeState();
             var key = state.Map.Keys.First();
             var address = new Address();
             state.Redeem(key, address);

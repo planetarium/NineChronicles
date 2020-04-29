@@ -24,7 +24,7 @@ namespace Nekoyume.Action
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {
-                states = states.SetState(PromotionCodeState.Address, MarkChanged);
+                states = states.SetState(RedeemCodeState.Address, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
                 states = states.SetState(context.Signer, MarkChanged);
                 return states;
@@ -36,8 +36,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var promotionState = states.GetPromotionCodeState();
-            if (promotionState is null)
+            var redeemState = states.GetRedeemCodeState();
+            if (redeemState is null)
             {
                 return states;
             }
@@ -45,7 +45,7 @@ namespace Nekoyume.Action
             int itemId;
             try
             {
-                itemId = promotionState.Redeem(code, avatarAddress);
+                itemId = redeemState.Redeem(code, avatarAddress);
             }
             catch (KeyNotFoundException)
             {
@@ -63,7 +63,7 @@ namespace Nekoyume.Action
             var material = ItemFactory.CreateMaterial(row);
             avatarState.inventory.AddItem(material);
             states = states.SetState(avatarAddress, avatarState.Serialize());
-            states = states.SetState(PromotionCodeState.Address, promotionState.Serialize());
+            states = states.SetState(RedeemCodeState.Address, redeemState.Serialize());
             return states;
         }
 

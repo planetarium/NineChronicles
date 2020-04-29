@@ -186,18 +186,18 @@ namespace Nekoyume.Action
             }
         }
 
-        public static PromotionCodeState GetPromotionCodeState(this IAccountStateDelta states)
+        public static RedeemCodeState GetRedeemCodeState(this IAccountStateDelta states)
         {
-            var value = states.GetState(PromotionCodeState.Address);
+            var value = states.GetState(RedeemCodeState.Address);
             if (value is null)
             {
-                Log.Warning("PromotionCodeState is null. ({0})", PromotionCodeState.Address.ToHex());
+                Log.Warning("RedeemCodeState is null. ({0})", RedeemCodeState.Address.ToHex());
                 return null;
             }
 
             try
             {
-                return new PromotionCodeState((Dictionary) value);
+                return new RedeemCodeState((Dictionary) value);
             }
             catch (Exception e)
             {
