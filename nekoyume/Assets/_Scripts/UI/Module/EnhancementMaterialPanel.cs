@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
         int CostAP { get; }
     }
 
-    public abstract class LegacyCombinationPanel<TMaterialView> : MonoBehaviour, ICombinationPanel
+    public abstract class EnhancementMaterialPanel<TMaterialView> : MonoBehaviour, ICombinationPanel
         where TMaterialView : CombinationMaterialView
     {
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
@@ -33,8 +33,8 @@ namespace Nekoyume.UI.Module
         public readonly Subject<InventoryItem> OnBaseMaterialRemove = new Subject<InventoryItem>();
         public readonly Subject<InventoryItem> OnOtherMaterialRemove = new Subject<InventoryItem>();
 
-        public readonly Subject<LegacyCombinationPanel<TMaterialView>> OnMaterialChange =
-            new Subject<LegacyCombinationPanel<TMaterialView>>();
+        public readonly Subject<EnhancementMaterialPanel<TMaterialView>> OnMaterialChange =
+            new Subject<EnhancementMaterialPanel<TMaterialView>>();
 
         public readonly Subject<decimal> OnCostNCGChange = new Subject<decimal>();
         public readonly Subject<int> OnCostAPChange = new Subject<int>();

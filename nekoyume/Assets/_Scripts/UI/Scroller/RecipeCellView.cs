@@ -1,16 +1,9 @@
-using System;
-using System.Linq;
-using System.Text;
-using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
 using TMPro;
-using Nekoyume.TableData;
 using UnityEngine.UI;
 using UniRx;
 using Nekoyume.Model.Stat;

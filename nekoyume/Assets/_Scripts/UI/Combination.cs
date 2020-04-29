@@ -13,7 +13,6 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
 using UniRx;
@@ -387,16 +386,16 @@ namespace Nekoyume.UI
             _toggleGroup.SetToggledOffAll();
 
             enhanceEquipment.Hide();
+            inventory.gameObject.SetActive(false);
+            recipeAnimator.Play("Close");
         }
 
         private void OnClickConsumableRecipe()
         {
+            OnClickRecipe();
 
             equipmentCombinationPanel.Hide();
             ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
-
-            inventory.gameObject.SetActive(false);
-            recipeAnimator.Play("Close");
             consumableRecipe.HideCellviews();
 
             var recipeCellView = selectedRecipe as ConsumableRecipeCellView;
@@ -406,14 +405,10 @@ namespace Nekoyume.UI
 
         private void OnClickEquipmentRecipe(bool isElemental)
         {
-            _toggleGroup.SetToggledOffAll();
+            OnClickRecipe();
 
-            enhanceEquipment.Hide();
             consumableCombinationPanel.Hide();
             ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
-
-            inventory.gameObject.SetActive(false);
-            recipeAnimator.Play("Close");
             equipmentRecipe.HideCellViews();
 
             var recipeCellView = selectedRecipe as EquipmentRecipeCellView;
@@ -464,13 +459,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeOnMaterialChange(LegacyCombinationPanel<CombinationMaterialView> viewModel)
-        {
-            inventory.SharedModel.UpdateDimAll();
-            inventory.SharedModel.UpdateEffectAll();
-        }
-
-        private void SubscribeOnMaterialChange(LegacyCombinationPanel<EnhancementMaterialView> viewModel)
+        private void SubscribeOnMaterialChange(EnhancementMaterialPanel<EnhancementMaterialView> viewModel)
         {
             inventory.SharedModel.UpdateDimAll();
             inventory.SharedModel.UpdateEffectAll();
