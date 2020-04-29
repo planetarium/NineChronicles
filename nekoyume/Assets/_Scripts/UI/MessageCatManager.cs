@@ -27,12 +27,20 @@ namespace Nekoyume.UI
             cat.Show(position, message, reverseDirection);
             return cat;
         }
-        
+
         public MessageCat Show(bool followMouse, string message, bool reverseDirection = false)
         {
             var cat = Pick();
             cat.Show(followMouse, message, reverseDirection);
             return cat;
+        }
+
+        public void HideAll(bool lazyHide = true)
+        {
+            foreach (var messageCat in _pool.Where(messageCat => messageCat.IsShown))
+            {
+                messageCat.Hide(lazyHide);
+            }
         }
 
         private MessageCat Pick()
