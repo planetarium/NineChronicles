@@ -309,12 +309,14 @@ namespace Nekoyume.BlockChain
 
             //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용            
-            AgentState outAgentState = eval.OutputStates.GetAgentState(avatarAddress);
+            var agentAddress = eval.Signer;
+            var agentState = eval.OutputStates.GetAgentState(agentAddress);
             new TPStashEvent().CurrencyUse(
-                player_uuid: avatarAddress.ToHex(),
+                player_uuid: agentAddress.ToHex(),
                 currency_slug: "gold",
-                currency_quantity: (float)outAgentState.modifiedGold,
-                currency_total_quantity: (float)(outAgentState.gold - outAgentState.modifiedGold),
+                currency_quantity: (float)agentState.modifiedGold,
+                currency_total_quantity: (float)(agentState.gold),
+                //currency_total_quantity: (float)(agentState.gold - agentState.modifiedGold),
                 reference_entity: "items_consumables",
                 reference_category_slug: "consumables_rapid_combination",
                 reference_slug: slot.Result.itemUsable.Data.Id.ToString());
