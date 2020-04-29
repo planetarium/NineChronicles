@@ -459,7 +459,7 @@ namespace Nekoyume.UI
             }
         }
 
-        private void SubscribeOnMaterialChange(EnhancementMaterialPanel<EnhancementMaterialView> viewModel)
+        private void SubscribeOnMaterialChange(EnhancementPanel<EnhancementMaterialView> viewModel)
         {
             inventory.SharedModel.UpdateDimAll();
             inventory.SharedModel.UpdateEffectAll();
