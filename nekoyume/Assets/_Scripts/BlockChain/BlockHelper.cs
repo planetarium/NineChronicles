@@ -69,6 +69,7 @@ namespace Nekoyume.BlockChain
                 TableSheetsState = new TableSheetsState(tableSheets),
                 WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                 GameConfigState = gameConfigState,
+                RedeemCodeState = new RedeemCodeState(),
             };
             var actions = new PolymorphicAction<ActionBase>[]
             {

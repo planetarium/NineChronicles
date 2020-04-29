@@ -1188,8 +1188,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_MethodName: ResetStore
+      - m_Target: {fileID: 7175602689383305378}
+        m_MethodName: RequestRedeemCode
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -55,6 +55,7 @@ namespace Nekoyume.BlockChain
             CombinationEquipment();
             RapidCombination();
             GameConfig();
+            RedeemCode();
         }
 
         public void Stop()
@@ -223,6 +224,14 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender(GameConfigState.Address)
                 .ObserveOnMainThread()
                 .Subscribe(UpdateGameConfigState).AddTo(_disposables);
+        }
+
+        private void RedeemCode()
+        {
+            _renderer.EveryRender<Action.RedeemCode>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRedeemCode).AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
@@ -464,6 +473,12 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             Widget.Find<LoadingScreen>().Close();
             UI.Notification.Push(MailType.System, $"Get Arena Reward: {gold}");
+        }
+
+        private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
+        {
+            UI.Notification.Push(MailType.System, "Response Redeem Code.");
+            UpdateCurrentAvatarState(eval);
         }
 
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
