@@ -1,6 +1,7 @@
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using System;
+using System.Linq;
 using System.Text;
 
 namespace Nekoyume.UI.Scroller
@@ -24,12 +25,9 @@ namespace Nekoyume.UI.Scroller
             Set(consumable);
 
             StatType = consumable.MainStat;
-            var sb = new StringBuilder();
-            foreach (var stat in consumable.Data.Stats)
-            {
-                sb.AppendLine($"{stat.StatType} +{stat.Value}");
-            }
-            optionText.text = sb.ToString();
+
+            var optionString = $"{consumable.MainStat} +{consumable.Data.Stats.First(stat => stat.StatType == consumable.MainStat).ValueAsInt}";
+            optionText.text = optionString;
         }
     }
 }

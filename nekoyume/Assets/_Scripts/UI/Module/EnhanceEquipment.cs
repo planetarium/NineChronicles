@@ -89,10 +89,10 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected override int GetCostNCG()
+        protected override decimal GetCostNCG()
         {
             if (baseMaterial.IsEmpty)
-                return 0;
+                return 0m;
             var baseEquipment = (Equipment) baseMaterial.Model.ItemBase.Value;
             return (int) ItemEnhancement.GetRequiredGold(baseEquipment);
         }

@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
         int CostAP { get; }
     }
 
-    public abstract class EnhancementPanel<TMaterialView> : MonoBehaviour, ICombinationPanel
+    public class EnhancementPanel<TMaterialView> : MonoBehaviour, ICombinationPanel
         where TMaterialView : CombinationMaterialView
     {
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Module
         public int CostAP { get; private set; }
 
         public bool IsThereAnyUnlockedEmptyMaterialView { get; private set; }
-        public abstract bool IsSubmittable { get; }
+        public virtual bool IsSubmittable { get; }
 
         #region Initialize & Terminate
 
@@ -128,7 +128,10 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
-        public abstract bool DimFunc(InventoryItem inventoryItem);
+        public virtual bool DimFunc(InventoryItem inventoryItem)
+        {
+            return false;
+        }
 
         public virtual bool Contains(InventoryItem inventoryItem)
         {
@@ -176,8 +179,15 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected abstract int GetCostNCG();
-        protected abstract int GetCostAP();
+        protected virtual decimal GetCostNCG()
+        {
+            return CostNCG;
+        }
+
+        protected virtual int GetCostAP()
+        {
+            return CostAP;
+        }
 
         #region Add Material
 
