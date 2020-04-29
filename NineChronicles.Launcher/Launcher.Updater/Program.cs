@@ -138,7 +138,7 @@ namespace Launcher.Updater
                 }
             }
 
-            var localUpdaterVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            var localUpdaterVersion = Assembly.GetExecutingAssembly().GetName().Version;
             using var client = new HttpClient();
 
             const string versionMetadataKey = "x-amz-meta-version";
@@ -146,10 +146,11 @@ namespace Launcher.Updater
                 ? MacOSUpdaterLatestBinaryUrl
                 : WindowsUpdaterLatestBinaryUrl;
             var resp = await client.GetAsync(updaterBinaryUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            // If there is no metadata, it will not do update.
-            // FIXME: 버전이 더 높은지 등으로 검사하면 좋을 것 같습니다.
-            if (resp.Headers.TryGetValues(versionMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums) &&
-                !string.Equals(latestUpdaterMD5Checksums.First(), localUpdaterVersion, StringComparison.InvariantCultureIgnoreCase))
+            // 메타데이터가 없다면 업데이트를 진행하지 않습니다.
+            // 메타데이터의 버전이 더 높은 경우에만 업데이트를 진행합니다.
+            // https://docs.microsoft.com/en-us/dotnet/api/system.version?view=netstandard-2.0#comparing-version-objects
+            if (resp.Headers.TryGetValues(versionMetadataKey, out IEnumerable<string> latestUpdaterVersions) &&
+                Version.Parse(latestUpdaterVersions.First()).CompareTo(localUpdaterVersion) == 1)
             {
                 Log.Debug("It needs to update.");
                 // Download latest updater binary.
