@@ -11,12 +11,6 @@ using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
-    public interface ICombinationPanel
-    {
-        decimal CostNCG { get; }
-        int CostAP { get; }
-    }
-
     public class EnhancementPanel<TMaterialView> : MonoBehaviour, ICombinationPanel
         where TMaterialView : CombinationMaterialView
     {

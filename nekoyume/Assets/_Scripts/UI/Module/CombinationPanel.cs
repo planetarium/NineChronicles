@@ -8,6 +8,12 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    public interface ICombinationPanel
+    {
+        decimal CostNCG { get; }
+        int CostAP { get; }
+    }
+
     public class CombinationPanel : MonoBehaviour, ICombinationPanel
     {
         public decimal CostNCG { get; protected set; }
