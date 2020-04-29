@@ -1,5 +1,5 @@
-id,_name,item_sub_type,grade,elemental_type
+id,_name,item_sub_type,grade,elemental_type,spine_resource_path
 _item_sub_type,FullCostume|HairCostume|EarCostume|EyeCostume|TailCostume
 _elemental_type,Normal|Fire|Water|Land|Wind
-40100000,발키리,FullCostume,1,Normal
-40100001,백사자,FullCostume,1,Normal
+40100000,발키리,FullCostume,1,Normal,
+40100001,백사자,FullCostume,1,Normal,

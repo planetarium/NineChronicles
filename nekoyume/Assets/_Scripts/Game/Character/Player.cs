@@ -38,6 +38,9 @@ namespace Nekoyume.Game.Character
         public PlayerSpineController SpineController { get; private set; }
         public Model.Player Model => (Model.Player) CharacterModel;
 
+        private bool IsFullCostumeEquipped =>
+            Costumes.Any(costume => costume.Data.ItemSubType == ItemSubType.FullCostume);
+
         #region Mono
 
         protected override void Awake()
@@ -147,17 +150,71 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        #region Equipments & Customize
+        #region Costumes & Equipments & Customize
+
+        public void EquipCostume(Costume costume)
+        {
+            if (costume is null)
+            {
+                return;
+            }
+
+            // 이 변경은 외부로 빠질 수 있음.
+            costume.equipped = true;
+
+            var spineResourcePath = costume.Data.SpineResourcePath;
+
+            if (!(Animator.Target is null))
+            {
+                var animatorTargetName = spineResourcePath.Split('/').Last();
+                if (Animator.Target.name.Contains(animatorTargetName))
+                {
+                    return;
+                }
+
+                Animator.DestroyTarget();
+            }
+
+            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var go = Instantiate(origin, gameObject.transform);
+            SpineController = go.GetComponent<PlayerSpineController>();
+            Animator.ResetTarget(go);
+            UpdateHitPoint();
+        }
+
+        public void UnequipCostume(Costume costume)
+        {
+            if (costume is null)
+            {
+                return;
+            }
+
+            // 이 변경은 외부로 빠질 수 있음.
+            costume.equipped = false;
+
+            if (!(CharacterModel is Model.Player model))
+            {
+                return;
+            }
+
+            UpdateEquipments(model.armor, model.weapon);
+            UpdateCustomize();
+        }
 
         public void UpdateEquipments(Armor armor, Weapon weapon = null)
         {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
             UpdateArmor(armor);
             UpdateWeapon(weapon);
         }
 
         private void UpdateArmor(Armor armor)
         {
-            if (Costumes.Any(costume => costume.Data.ItemSubType == ItemSubType.FullCostume))
+            if (IsFullCostumeEquipped)
             {
                 return;
             }
@@ -185,7 +242,8 @@ namespace Nekoyume.Game.Character
 
         public void UpdateWeapon(Weapon weapon)
         {
-            if (!SpineController)
+            if (IsFullCostumeEquipped ||
+                !SpineController)
             {
                 return;
             }
@@ -196,6 +254,11 @@ namespace Nekoyume.Game.Character
 
         public void UpdateCustomize()
         {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
             UpdateEar(Model.earIndex);
             UpdateEye(Model.lensIndex);
             UpdateHair(Model.hairIndex);

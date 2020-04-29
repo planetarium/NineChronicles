@@ -100,8 +100,8 @@ namespace Planetarium.Nekoyume.Editor
             var animationAssetsPath = Path.Combine(assetFolderPath, "ReferenceAssets");
             var split = assetPath.Split('/');
             var prefabName = split[split.Length > 1 ? split.Length - 2 : 0];
-            var isPlayer = prefabName.StartsWith("1");
-            var prefabPath = Path.Combine(isPlayer ? PlayerPrefabPath : MonsterPrefabPath, $"{prefabName}.prefab");
+            var isPlayerOrCostume = prefabName.StartsWith("1") || prefabName.StartsWith("4");
+            var prefabPath = Path.Combine(isPlayerOrCostume ? PlayerPrefabPath : MonsterPrefabPath, $"{prefabName}.prefab");
             var skeletonAnimation =
                 SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(skeletonDataAsset);
             skeletonAnimation.AnimationName = nameof(CharacterAnimation.Type.Idle);
@@ -131,7 +131,7 @@ namespace Planetarium.Nekoyume.Editor
             animator.runtimeAnimatorController =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerPath);
 
-            var controller = isPlayer
+            var controller = isPlayerOrCostume
                 ? gameObject.AddComponent<PlayerSpineController>()
                 : gameObject.AddComponent<CharacterSpineController>();
             // 지금은 예상 외의 애니메이션을 찾지 못하는 로직이다.

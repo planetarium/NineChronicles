@@ -55,7 +55,6 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
 
         private Costume _targetCostume = null;
-        private Costume _equippedCostume = null;
 
         protected override void OnEnable()
         {
@@ -73,30 +72,26 @@ namespace Nekoyume.UI
             {
                 Debug.LogError("Not Found Costume in Inventory");
             }
-            else
-            {
-                _equippedCostume = _targetCostume.equipped
-                    ? _targetCostume
-                    : null;
-            }
         }
 
         private void OnGUI()
         {
-            if (_equippedCostume is null)
+            if (_targetCostume.equipped)
             {
-                if (GUILayout.Button("코스튬 입기"))
+                if (GUILayout.Button("코스튬 벗기"))
                 {
-                    _equippedCostume = _targetCostume;
-                    Debug.LogWarning("코스튬 입기 완료");
+                    var player = Game.Game.instance.Stage.GetPlayer();
+                    player.UnequipCostume(_targetCostume);
+                    Debug.LogWarning("코스튬 벗기 완료");
                 }
             }
             else
             {
-                if (GUILayout.Button("코스튬 벗기"))
+                if (GUILayout.Button("코스튬 입기"))
                 {
-                    _equippedCostume = null;
-                    Debug.LogWarning("코스튬 벗기 완료");
+                    var player = Game.Game.instance.Stage.GetPlayer();
+                    player.EquipCostume(_targetCostume);
+                    Debug.LogWarning("코스튬 입기 완료");
                 }
             }
         }

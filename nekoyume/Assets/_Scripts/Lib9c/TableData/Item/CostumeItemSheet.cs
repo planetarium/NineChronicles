@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
 using Nekoyume.Model.Item;
 
 namespace Nekoyume.TableData
@@ -10,6 +13,7 @@ namespace Nekoyume.TableData
         public class Row : ItemSheet.Row
         {
             public override ItemType ItemType => ItemType.Costume;
+            public string SpineResourcePath { get; private set; }
 
             public Row() : base()
             {
@@ -17,11 +21,25 @@ namespace Nekoyume.TableData
 
             public Row(Bencodex.Types.Dictionary serialized) : base(serialized)
             {
+                SpineResourcePath = (Text) serialized["spine_resource_path"];
             }
 
             public new static Row Deserialize(Bencodex.Types.Dictionary serialized)
             {
                 return new Row(serialized);
+            }
+
+            public override IValue Serialize() => new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "spine_resource_path"] = (Text) SpineResourcePath,
+            }.Union((Bencodex.Types.Dictionary) base.Serialize()));
+
+            public override void Set(IReadOnlyList<string> fields)
+            {
+                base.Set(fields);
+                SpineResourcePath = string.IsNullOrEmpty(fields[4])
+                    ? $"Character/Costume/{Id}"
+                    : fields[4];
             }
         }
 
