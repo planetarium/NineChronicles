@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -137,17 +138,19 @@ namespace Launcher.Updater
                 }
             }
 
-            var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
+            var localUpdaterVersion = Assembly.GetExecutingAssembly().GetName().Version;
             using var client = new HttpClient();
 
-            const string md5ChecksumMetadataKey = "x-amz-meta-md5-checksum";
+            const string versionMetadataKey = "x-amz-meta-version";
             var updaterBinaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
                 ? MacOSUpdaterLatestBinaryUrl
                 : WindowsUpdaterLatestBinaryUrl;
             var resp = await client.GetAsync(updaterBinaryUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
-            // If there is no metadata, it will not do update.
-            if (resp.Headers.TryGetValues(md5ChecksumMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums) &&
-                !string.Equals(latestUpdaterMD5Checksums.First(), localUpdaterMD5Checksum, StringComparison.InvariantCultureIgnoreCase))
+            // 메타데이터가 없다면 업데이트를 진행하지 않습니다.
+            // 메타데이터의 버전이 더 높은 경우에만 업데이트를 진행합니다.
+            // https://docs.microsoft.com/en-us/dotnet/api/system.version?view=netstandard-2.0#comparing-version-objects
+            if (resp.Headers.TryGetValues(versionMetadataKey, out IEnumerable<string> latestUpdaterVersions) &&
+                Version.Parse(latestUpdaterVersions.First()).CompareTo(localUpdaterVersion) == 1)
             {
                 Log.Debug("It needs to update.");
                 // Download latest updater binary.
