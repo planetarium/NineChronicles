@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -137,17 +138,18 @@ namespace Launcher.Updater
                 }
             }
 
-            var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
+            var localUpdaterVersion = Assembly.GetExecutingAssembly().GetName().Version.ToString();
             using var client = new HttpClient();
 
-            const string md5ChecksumMetadataKey = "x-amz-meta-md5-checksum";
+            const string versionMetadataKey = "x-amz-meta-version";
             var updaterBinaryUrl = RuntimeInformation.IsOSPlatform(OSPlatform.OSX)
                 ? MacOSUpdaterLatestBinaryUrl
                 : WindowsUpdaterLatestBinaryUrl;
             var resp = await client.GetAsync(updaterBinaryUrl, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             // If there is no metadata, it will not do update.
-            if (resp.Headers.TryGetValues(md5ChecksumMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums) &&
-                !string.Equals(latestUpdaterMD5Checksums.First(), localUpdaterMD5Checksum, StringComparison.InvariantCultureIgnoreCase))
+            // FIXME: 버전이 더 높은지 등으로 검사하면 좋을 것 같습니다.
+            if (resp.Headers.TryGetValues(versionMetadataKey, out IEnumerable<string> latestUpdaterMD5Checksums) &&
+                !string.Equals(latestUpdaterMD5Checksums.First(), localUpdaterVersion, StringComparison.InvariantCultureIgnoreCase))
             {
                 Log.Debug("It needs to update.");
                 // Download latest updater binary.
