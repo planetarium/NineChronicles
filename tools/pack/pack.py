@@ -120,7 +120,7 @@ def main() -> None:
             logging.debug('Deserialzed clo.json: %r', clo)
     except FileNotFoundError:
         clo = {}
-        warning.debug('No clo.json; create an empty one')
+        logging.warning('No clo.json; create an empty one')
     clo.update(
         appProtocolVersionToken=apv,
         trustedAppProtocolVersionSigners=[public_key],
