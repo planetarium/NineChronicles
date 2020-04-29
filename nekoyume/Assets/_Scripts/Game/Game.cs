@@ -55,6 +55,7 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
+            Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
             _options = CommandLineOptions.Load(

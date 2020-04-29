@@ -415,6 +415,7 @@ namespace Nekoyume.UI
                     break;
                 case StateType.CombinationConfirm:
                     _toggleGroup.SetToggledOffAll();
+                    equipmentRecipe.HideCellViews();
                     var selectedRecipe = equipmentRecipe.SelectedRecipe;
                     var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
 
@@ -439,7 +440,7 @@ namespace Nekoyume.UI
 
             inventory.gameObject.SetActive(false);
             equipmentRecipeAnimator.Play("Hide");
-            equipmentRecipe.HideCellviews();
+            equipmentRecipe.HideCellViews();
 
             var selectedRecipe = equipmentRecipe.SelectedRecipe;
 
