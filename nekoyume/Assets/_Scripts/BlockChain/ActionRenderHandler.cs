@@ -600,8 +600,8 @@ namespace Nekoyume.BlockChain
             new TPStashEvent().CurrencyUse(
                 player_uuid: agentAddress.ToHex(),
                 currency_slug: "gold",
-                currency_quantity: (float)GameConfig.ArenaActivationCostNCG,
-                currency_total_quantity: (float) (outAgentState.gold - GameConfig.ArenaActivationCostNCG),
+                currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
+                currency_total_quantity: (float) (outAgentState.gold - Nekoyume.GameConfig.ArenaActivationCostNCG),
                 reference_entity: "quests",
                 reference_category_slug: "arena",
                 reference_slug: "WeeklyArenaEntryFee"
