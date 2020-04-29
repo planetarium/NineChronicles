@@ -123,7 +123,18 @@ namespace Launcher.Updater
             var localUpdaterPath = Process.GetCurrentProcess().MainModule.FileName;
             if (File.Exists(localUpdaterPath + ".back"))
             {
-                File.Delete(localUpdaterPath + ".back");
+                while (true)
+                {
+                    try
+                    {
+                        File.Delete(localUpdaterPath + ".back");
+                        break;
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        await Task.Delay(1000);
+                    }
+                }
             }
 
             var localUpdaterMD5Checksum = CalculateMD5File(localUpdaterPath);
@@ -141,9 +152,30 @@ namespace Launcher.Updater
                 Log.Debug("It needs to update.");
                 // Download latest updater binary.
                 string tempFileName = Path.GetTempFileName();
-                await using var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write);
-                resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
-                await resp.Content.CopyToAsync(fileStream);
+                using (var fileStream = new FileStream(tempFileName, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    Log.Debug("Download from {url}", updaterBinaryUrl);
+                    var retry = 2;
+                    while (true)
+                    {
+                        resp = await client.GetAsync(updaterBinaryUrl, cancellationToken);
+                        if (!resp.IsSuccessStatusCode)
+                        {
+                            Log.Error("Can't download latest updater from {url}", updaterBinaryUrl);
+                            if (retry > 0)
+                            {
+                                Log.Debug("Retrying...");
+                                retry--;
+                                continue;
+                            }
+                            // FIXME 예외형을 정의하고 앞에서 잡아서 제대로 표시하는 정리가 필요합니다.
+                            throw new Exception($"Can't download latest updater from {updaterBinaryUrl}.");
+                        }
+
+                        await resp.Content.CopyToAsync(fileStream);
+                        break;
+                    }
+                }
 
                 // Replace updater and run.
                 string downloadedUpdaterPath = tempFileName;
