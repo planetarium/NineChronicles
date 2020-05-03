@@ -206,14 +206,6 @@ namespace Launcher.Updater
             }
         }
 
-        private static string CalculateMD5File(string filename)
-        {
-            using var md5 = MD5.Create();
-            using var fileStream = File.OpenRead(filename);
-            var hashBytes = md5.ComputeHash(fileStream);
-            return BitConverter.ToString(hashBytes).Replace("-", string.Empty);
-        }
-
         private static async Task<string> DownloadBinariesAsync(
             string gameBinaryDownloadUri,
             CancellationToken cancellationToken
