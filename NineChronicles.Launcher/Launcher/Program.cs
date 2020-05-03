@@ -76,8 +76,9 @@ namespace Launcher
             string updateCheckDummyPath = Path.Combine(CurrentPlatform.CurrentWorkingDirectory, updateCheckDummyFilename);
             if (!File.Exists(updateCheckDummyPath))
             {
-                ReplaceUpdaterNewerAsync().ConfigureAwait(false);
-                File.Create(updateCheckDummyPath);
+                ReplaceUpdaterNewerAsync()
+                    .ContinueWith(_ => File.Create(updateCheckDummyPath))
+                    .ConfigureAwait(false);
             }
 
             QmlNetConfig.ShouldEnsureUIThread = false;
