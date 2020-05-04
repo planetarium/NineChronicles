@@ -404,7 +404,7 @@ namespace Launcher
                 Log.Error(e, "Unexpected exception happened during clearing store.");
             }
 
-            this.ActivateSignal("quit");
+            ActivateQuitSignal();
         }
 
         public void CreatePrivateKey(string passphrase)
@@ -435,7 +435,7 @@ namespace Launcher
 
         private void FatalError(Exception exception, string message)
         {
-            this.ActivateSignal("fatalError", message);
+            ActivateFatalErrorSignal(message);
             Log.Error(exception, message);
         }
 
@@ -453,7 +453,7 @@ namespace Launcher
 
             Process.Start(procInfo);
             // NOTE: Environment.Exit(int)에 Qt Thread가 반응하지 않아 Qt 쪽에서 프로세스 종료를 처리하게 합니다.
-            this.ActivateSignal("quit");
+            ActivateQuitSignal();
         }
 
         private string CreatePreloadStateDescription(PreloadState state)
@@ -500,6 +500,16 @@ namespace Launcher
             }
 
             return $"{descripiton} {count} / {totalCount} ({state.CurrentPhase} / {PreloadState.TotalPhase})";
+        }
+
+        private void ActivateQuitSignal()
+        {
+            this.ActivateSignal("quit");
+        }
+
+        private void ActivateFatalErrorSignal(string message)
+        {
+            this.ActivateSignal("fatalError", message);
         }
 
         private readonly string RpcServerHost = IPAddress.Loopback.ToString();
