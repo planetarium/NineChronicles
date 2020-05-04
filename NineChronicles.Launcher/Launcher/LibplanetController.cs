@@ -29,7 +29,7 @@ namespace Launcher
 {
     // FIXME: Memory leak.
     [Signal("quit")]
-    [Signal("fatalError", NetVariantType.String)]
+    [Signal("fatalError", NetVariantType.String, NetVariantType.Bool)]
     public class LibplanetController
     {
         private CancellationTokenSource _cancellationTokenSource;
@@ -105,15 +105,15 @@ namespace Launcher
                 }
                 catch (InvalidGenesisBlockException e)
                 {
-                    FatalError(e, "The network to connect and this game app do not have the same genesis block.");
+                    FatalError(e, "The network to connect and this game app do not have the same genesis block.", false);
                 }
                 catch (TimeoutException e)
                 {
-                    FatalError(e, "Timed out to connect to the network.");
+                    FatalError(e, "Timed out to connect to the network.", true);
                 }
                 catch (Exception e)
                 {
-                    FatalError(e, "Unexpected exception occurred during trying to connect to the network.");
+                    FatalError(e, "Unexpected exception occurred during trying to connect to the network.", true);
                 }
             }, cancellationToken);
         }
@@ -433,9 +433,9 @@ namespace Launcher
             return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
         }
 
-        private void FatalError(Exception exception, string message)
+        private void FatalError(Exception exception, string message, bool retryable)
         {
-            ActivateFatalErrorSignal(message);
+            ActivateFatalErrorSignal(message, retryable);
             Log.Error(exception, message);
         }
 
@@ -507,9 +507,9 @@ namespace Launcher
             this.ActivateSignal("quit");
         }
 
-        private void ActivateFatalErrorSignal(string message)
+        private void ActivateFatalErrorSignal(string message, bool retryable)
         {
-            this.ActivateSignal("fatalError", message);
+            this.ActivateSignal("fatalError", message, retryable);
         }
 
         private readonly string RpcServerHost = IPAddress.Loopback.ToString();

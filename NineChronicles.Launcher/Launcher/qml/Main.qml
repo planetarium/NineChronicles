@@ -204,10 +204,20 @@ Item {
                 Qt.quit()
             })
 
-            ctrl.fatalError.connect((message) => {
-                showMessage(message, () => {
-                    ctrl.quit()
-                })
+            ctrl.fatalError.connect((message, retryable) => {
+                showMessage(
+                    message,
+                    // onClosing
+                    () => {
+                        ctrl.quit()
+                    },
+                    // onRetrying
+                    // fatalError가 IBD 실패 상황에서만 호출되는 걸 가정.
+                    retryable ? () => {
+                        ctrl.stopSync()
+                        ctrl.startSync()
+                    } : undefined
+                )
             })
         }
     }
@@ -352,10 +362,17 @@ Item {
         }
     }
 
-    function showMessage(text, onClosing)
+    function showMessage(text, onClosing, onRetrying)
     {
         messageBox.text = text;
         messageBox.visible = true;
+        retryButton.visible = typeof onRetrying !== 'undefined';
+        if (typeof onRetrying !== 'undefined') {
+            retryButton.onClicked.connect(() => {
+                messageBox.visible = false;
+                onRetrying();
+            });
+        }
         if (typeof onClosing !== 'undefined') {
             messageBox.onClosing.connect(() => onClosing())
         }
@@ -385,12 +402,23 @@ Item {
                 text: ""
             }
 
-            Button {
-                Layout.preferredWidth: parent.width
+            RowLayout {
                 Layout.preferredHeight: 20
-                text: "Close"
-                onClicked: {
-                    messageBox.close()
+                Layout.alignment: Qt.AlignCenter
+                spacing: 2
+                Button {
+                    text: "Retry"
+                    id: retryButton
+                    visible: typeof onClicked !== "undefined"
+                    Layout.alignment: Qt.AlignCenter
+                }
+
+                Button {
+                    text: "Close"
+                    onClicked: {
+                        messageBox.close()
+                    }
+                    Layout.alignment: Qt.AlignCenter
                 }
             }
         }
