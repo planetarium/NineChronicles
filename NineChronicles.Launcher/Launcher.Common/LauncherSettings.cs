@@ -16,6 +16,8 @@ namespace Launcher.Common
 
         public bool NoMiner { get; set; }
 
+        public bool NoTrustedStateValidators { get; set; }
+
         public int MinimumDifficulty { get; set; }
 
         public string GenesisBlockPath { get; set; }

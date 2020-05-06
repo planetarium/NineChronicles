@@ -91,10 +91,9 @@ namespace Libplanet.Standalone.Hosting
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             var peers = _properties.Peers.ToImmutableArray();
+
             if (peers.Any())
             {
-                var trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
-
                 try
                 {
                     await Swarm.BootstrapAsync(
@@ -115,11 +114,10 @@ namespace Libplanet.Standalone.Hosting
                     }
                 }
 
-
                 await Swarm.PreloadAsync(
                     TimeSpan.FromSeconds(5),
                     _preloadProgress,
-                    trustedStateValidators,
+                    _properties.TrustedStateValidators,
                     cancellationToken: cancellationToken
                 );
                 PreloadEnded.Set();
