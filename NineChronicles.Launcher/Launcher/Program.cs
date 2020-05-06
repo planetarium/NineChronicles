@@ -12,6 +12,7 @@ using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static Launcher.Common.Utils;
 
 namespace Launcher
 {
@@ -139,6 +140,14 @@ namespace Launcher
             // 2. Replace
             File.Delete(CurrentPlatform.ExecutableUpdaterBinaryPath);
             File.Move(tempPath, CurrentPlatform.ExecutableUpdaterBinaryPath);
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
+                RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("chmod", $"+rx {EscapeShellArgument(CurrentPlatform.ExecutableUpdaterBinaryPath)}")
+                    .WaitForExit();
+            }
+
             Log.Debug(
                 "Replaced updater to {TempPath} (from {NewUpdaterDownloadURL})",
                 tempPath,
