@@ -27,6 +27,7 @@ namespace Nekoyume.Game.Character
 
         public List<Costume> Costumes =>
             Inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList();
+
         public List<Equipment> Equipments =>
             Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
@@ -162,24 +163,31 @@ namespace Nekoyume.Game.Character
             // 이 변경은 외부로 빠질 수 있음.
             costume.equipped = true;
 
-            var spineResourcePath = costume.Data.SpineResourcePath;
-
-            if (!(Animator.Target is null))
+            if (costume.Data.ItemSubType == ItemSubType.FullCostume)
             {
-                var animatorTargetName = spineResourcePath.Split('/').Last();
-                if (Animator.Target.name.Contains(animatorTargetName))
+                var spineResourcePath = costume.Data.SpineResourcePath;
+
+                if (!(Animator.Target is null))
                 {
-                    return;
+                    var animatorTargetName = spineResourcePath.Split('/').Last();
+                    if (Animator.Target.name.Contains(animatorTargetName))
+                    {
+                        return;
+                    }
+
+                    Animator.DestroyTarget();
                 }
 
-                Animator.DestroyTarget();
+                var origin = Resources.Load<GameObject>(spineResourcePath);
+                var go = Instantiate(origin, gameObject.transform);
+                SpineController = go.GetComponent<PlayerSpineController>();
+                Animator.ResetTarget(go);
+                UpdateHitPoint();
+
+                return;
             }
 
-            var origin = Resources.Load<GameObject>(spineResourcePath);
-            var go = Instantiate(origin, gameObject.transform);
-            SpineController = go.GetComponent<PlayerSpineController>();
-            Animator.ResetTarget(go);
-            UpdateHitPoint();
+
         }
 
         public void UnequipCostume(Costume costume)
@@ -279,8 +287,8 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarLeft(earLeftResource);
-            var spriteRight = SpriteHelper.GetPlayerSpineTextureEarRight(earRightResource);
+            var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarCostumeLeft(earLeftResource);
+            var spriteRight = SpriteHelper.GetPlayerSpineTextureEarCostumeRight(earRightResource);
             SpineController.UpdateEar(spriteLeft, spriteRight);
         }
 
@@ -298,8 +306,8 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeHalf(eyeResources[0]);
-            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeOpen(eyeResources[1]);
+            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeCostumeHalf(eyeResources[0]);
+            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeCostumeOpen(eyeResources[1]);
             SpineController.UpdateEye(eyeHalfSprite, eyeOpenSprite);
         }
 
@@ -316,7 +324,7 @@ namespace Nekoyume.Game.Character
 
         private void UpdateHair(IReadOnlyCollection<string> hairResources)
         {
-            if (hairResources is null||
+            if (hairResources is null ||
                 hairResources.Count < 6 ||
                 !SpineController)
             {
@@ -324,7 +332,7 @@ namespace Nekoyume.Game.Character
             }
 
             var sprites = hairResources
-                .Select(SpriteHelper.GetPlayerSpineTextureHair)
+                .Select(SpriteHelper.GetPlayerSpineTextureHairCostume)
                 .ToList();
 
             SpineController.UpdateHair(sprites);
@@ -343,7 +351,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var sprite = SpriteHelper.GetPlayerSpineTextureTail(tailResource);
+            var sprite = SpriteHelper.GetPlayerSpineTextureTailCostume(tailResource);
             SpineController.UpdateTail(sprite);
         }
 

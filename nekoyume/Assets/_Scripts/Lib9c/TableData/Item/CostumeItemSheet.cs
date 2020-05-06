@@ -38,7 +38,9 @@ namespace Nekoyume.TableData
             {
                 base.Set(fields);
                 SpineResourcePath = string.IsNullOrEmpty(fields[4])
-                    ? $"Character/Costume/{Id}"
+                    ? ItemSubType == ItemSubType.FullCostume
+                        ? $"Character/FullCostume/{Id}"
+                        : $"Character/PlayerSpineTexture/{ItemSubType}/{Id}"
                     : fields[4];
             }
         }
