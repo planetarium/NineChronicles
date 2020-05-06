@@ -47,6 +47,16 @@ namespace NineChronicles.Standalone
             Properties = properties;
             RpcProperties = rpcNodeServiceProperties;
 
+            try
+            {
+                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
+                Log.Debug("Secp256K1CryptoBackend initialized.");
+            }
+            catch(Exception e)
+            {
+                Log.Error("Secp256K1CryptoBackend initialize failed. Use default backend. {e}", e);
+            }
+
             // BlockPolicy shared through Lib9c.
             IBlockPolicy<PolymorphicAction<ActionBase>> blockPolicy = BlockPolicy.GetPolicy(
                 properties.MinimumDifficulty
