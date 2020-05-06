@@ -98,8 +98,7 @@ namespace Nekoyume.Game.Character
             CharacterModel = model;
 
             InitStats(model);
-            UpdateEquipments(model.armor, model.weapon);
-            UpdateCustomize();
+            UpdateEquipmentsAndCustomize(model.armor, model.weapon);
 
             if (!SpeechBubble)
             {
@@ -151,7 +150,7 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
-        #region Costumes & Equipments & Customize
+        #region Costumes
 
         public void EquipCostume(Costume costume)
         {
@@ -163,31 +162,25 @@ namespace Nekoyume.Game.Character
             // 이 변경은 외부로 빠질 수 있음.
             costume.equipped = true;
 
-            if (costume.Data.ItemSubType == ItemSubType.FullCostume)
+            // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
+            switch (costume.Data.ItemSubType)
             {
-                var spineResourcePath = costume.Data.SpineResourcePath;
-
-                if (!(Animator.Target is null))
-                {
-                    var animatorTargetName = spineResourcePath.Split('/').Last();
-                    if (Animator.Target.name.Contains(animatorTargetName))
-                    {
-                        return;
-                    }
-
-                    Animator.DestroyTarget();
-                }
-
-                var origin = Resources.Load<GameObject>(spineResourcePath);
-                var go = Instantiate(origin, gameObject.transform);
-                SpineController = go.GetComponent<PlayerSpineController>();
-                Animator.ResetTarget(go);
-                UpdateHitPoint();
-
-                return;
+                case ItemSubType.EarCostume:
+                    // UpdateEar();
+                    break;
+                case ItemSubType.EyeCostume:
+                    // UpdateEye();
+                    break;
+                case ItemSubType.FullCostume:
+                    ChangeSpine(costume.Data.SpineResourcePath);
+                    break;
+                case ItemSubType.HairCostume:
+                    // UpdateHair();
+                    break;
+                case ItemSubType.TailCostume:
+                    // UpdateTail();
+                    break;
             }
-
-
         }
 
         public void UnequipCostume(Costume costume)
@@ -200,14 +193,34 @@ namespace Nekoyume.Game.Character
             // 이 변경은 외부로 빠질 수 있음.
             costume.equipped = false;
 
-            if (!(CharacterModel is Model.Player model))
+            // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
+            switch (costume.Data.ItemSubType)
             {
-                return;
-            }
+                case ItemSubType.EarCostume:
+                    // UpdateEar();
+                    break;
+                case ItemSubType.EyeCostume:
+                    // UpdateEye();
+                    break;
+                case ItemSubType.FullCostume:
+                    if (CharacterModel is Model.Player model)
+                    {
+                        UpdateEquipmentsAndCustomize(model.armor, model.weapon);
+                    }
 
-            UpdateEquipments(model.armor, model.weapon);
-            UpdateCustomize();
+                    break;
+                case ItemSubType.HairCostume:
+                    // UpdateHair();
+                    break;
+                case ItemSubType.TailCostume:
+                    // UpdateTail();
+                    break;
+            }
         }
+
+        #endregion
+
+        #region Equipments
 
         public void UpdateEquipments(Armor armor, Weapon weapon = null)
         {
@@ -229,23 +242,7 @@ namespace Nekoyume.Game.Character
 
             var armorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.Data.SpineResourcePath ?? $"Character/Player/{armorId}";
-
-            if (!(Animator.Target is null))
-            {
-                var animatorTargetName = spineResourcePath.Split('/').Last();
-                if (Animator.Target.name.Contains(animatorTargetName))
-                {
-                    return;
-                }
-
-                Animator.DestroyTarget();
-            }
-
-            var origin = Resources.Load<GameObject>(spineResourcePath);
-            var go = Instantiate(origin, gameObject.transform);
-            SpineController = go.GetComponent<PlayerSpineController>();
-            Animator.ResetTarget(go);
-            UpdateHitPoint();
+            ChangeSpine(spineResourcePath);
         }
 
         public void UpdateWeapon(Weapon weapon)
@@ -259,6 +256,10 @@ namespace Nekoyume.Game.Character
             var sprite = weapon.GetPlayerSpineTexture();
             SpineController.UpdateWeapon(sprite);
         }
+
+        #endregion
+
+        #region Customize
 
         public void UpdateCustomize()
         {
@@ -355,7 +356,33 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateTail(sprite);
         }
 
+        public void UpdateEquipmentsAndCustomize(Armor armor, Weapon weapon = null)
+        {
+            UpdateEquipments(armor, weapon);
+            UpdateCustomize();
+        }
+
         #endregion
+
+        private void ChangeSpine(string spineResourcePath)
+        {
+            if (!(Animator.Target is null))
+            {
+                var animatorTargetName = spineResourcePath.Split('/').Last();
+                if (Animator.Target.name.Contains(animatorTargetName))
+                {
+                    return;
+                }
+
+                Animator.DestroyTarget();
+            }
+
+            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var go = Instantiate(origin, gameObject.transform);
+            SpineController = go.GetComponent<PlayerSpineController>();
+            Animator.ResetTarget(go);
+            UpdateHitPoint();
+        }
 
         public IEnumerator CoGetExp(long exp)
         {

@@ -134,8 +134,7 @@ namespace Nekoyume.UI
             {
                 _reset = false;
 
-                _player.UpdateEquipments(_player.Model.armor, _player.Model.weapon);
-                _player.UpdateCustomize();
+                _player.UpdateEquipmentsAndCustomize(_player.Model.armor, _player.Model.weapon);
                 // stop run immediately.
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
@@ -434,8 +433,7 @@ namespace Nekoyume.UI
             {
                 var armor = (Armor) slot.Item;
                 var weapon = (Weapon) _weaponSlot.Item;
-                _player.UpdateEquipments(armor, weapon);
-                _player.UpdateCustomize();
+                _player.UpdateEquipmentsAndCustomize(armor, weapon);
             }
             else if (slot.ItemSubType == ItemSubType.Weapon)
             {
