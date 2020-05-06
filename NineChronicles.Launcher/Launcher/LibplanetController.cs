@@ -211,7 +211,18 @@ namespace Launcher
                 .OrderBy(_ => rng.Next())
                 .Select(LoadIceServer)
                 .ToList();
-            LibplanetNodeServiceProperties properties = new LibplanetNodeServiceProperties
+            
+            IImmutableSet<Address> trustedStateValidators;
+            if (settings.NoTrustedStateValidators)
+            {
+                trustedStateValidators = ImmutableHashSet<Address>.Empty;
+            }
+            else
+            {
+                trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
+            }
+
+            var properties = new LibplanetNodeServiceProperties
             {
                 AppProtocolVersion = appProtocolVersion,
                 GenesisBlockPath = settings.GenesisBlockPath,
@@ -219,6 +230,7 @@ namespace Launcher
                 PrivateKey = PrivateKey ?? new PrivateKey(),
                 IceServers = iceServers,
                 Peers = peers,
+                TrustedStateValidators = trustedStateValidators,
                 // FIXME: how can we validate it to use right store type?
                 StorePath = storePath,
                 StoreType = settings.StoreType,
@@ -299,6 +311,16 @@ namespace Launcher
                 cancellationToken);
 
             await service.Run(cancellationToken);
+        }
+
+        private Address ToAddress(string hexstring)
+        {
+            if (hexstring.StartsWith("0x"))
+            {
+                hexstring = hexstring.Substring(2);
+            }
+
+            return new Address(ByteUtil.ParseHex(hexstring));
         }
 
         private int GetFreeTcpPort()

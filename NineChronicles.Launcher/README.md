@@ -29,6 +29,7 @@ There is [*launcher.json*][launcher-json] like below.
 - `iceServer`: URL of ice server.
 - `seed`: information of the peer having role like *seed* or *bootstrap node*.
 - `noMiner`: A flag for mode to mine or not.
+- `noTrustedStateValidators`: A flag for whether to trust the status of specified peers.
 - `minimumDifficulty`: Minimum mining difficulty agreed in the network.
 - `genesisBlockPath`: URL of the genesis block.
 - `gameBinaryPath`: Path of a directory having executable game binary. If it is empty, it will be set value in default.
