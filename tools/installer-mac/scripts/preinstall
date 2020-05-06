@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+INSTALL_DIR="$2"
+
+rm -rf "$INSTALL_DIR"
