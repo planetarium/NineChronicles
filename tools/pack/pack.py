@@ -129,11 +129,11 @@ def main() -> None:
         logging.debug('Serialize clo.json: %r', clo)
         dump(clo, f, ensure_ascii=False, indent='  ')
 
-    # 아카이브 생성 
+    # 아카이브 생성
     os.makedirs(args.out_dir, exist_ok=True)
     if args.platform.lower() == 'macos':
         archive_path = os.path.join(args.out_dir, 'macOS.tar.gz')
-        with tarfile.open(archive_path, 'w') as archive:
+        with tarfile.open(archive_path, 'w:gz') as archive:
             for arcname in os.listdir(temp_dir):
                 name = os.path.join(temp_dir, arcname)
                 archive.add(name, arcname=arcname)
