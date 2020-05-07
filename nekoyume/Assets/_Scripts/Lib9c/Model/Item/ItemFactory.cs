@@ -59,7 +59,13 @@ namespace Nekoyume.Model.Item
             switch (row)
             {
                 case CostumeItemSheet.Row costumeRow:
-                    return CreateCostume(costumeRow);
+                    var costume = CreateCostume(costumeRow);
+                    if (serialized.TryGetValue((Text) "equipped", out var costumeEquipped))
+                    {
+                        costume.equipped = costumeEquipped.ToBoolean();
+                    }
+
+                    return costume;
                 case MaterialItemSheet.Row materialRow:
                     return CreateMaterial(materialRow);
             }
