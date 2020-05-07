@@ -193,7 +193,7 @@ namespace Nekoyume.UI.Scroller
             var inventory = avatarState.inventory;
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             if (materialSheet.TryGetValue(RowData.MaterialId, out var materialRow) &&
-                inventory.TryGetFungibleItem(materialRow.ItemId, out var fungibleItem) &&
+                inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
                 fungibleItem.count >= RowData.MaterialCount)
             {
                 // 서브 재료 검사.
@@ -209,7 +209,7 @@ namespace Nekoyume.UI.Scroller
                         foreach (var info in subRow.Materials)
                         {
                             if (materialSheet.TryGetValue(info.Id, out materialRow) &&
-                                inventory.TryGetFungibleItem(materialRow.ItemId,
+                                inventory.TryGetMaterial(materialRow.ItemId,
                                     out fungibleItem) &&
                                 fungibleItem.count >= info.Count)
                             {

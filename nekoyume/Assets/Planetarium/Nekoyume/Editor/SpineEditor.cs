@@ -19,8 +19,10 @@ namespace Planetarium.Nekoyume.Editor
     {
         private const string FindAssetFilter = "CharacterAnimator t:AnimatorController";
 
-        private const string CostumePrefabPath = "Assets/Resources/Character/Costume";
-        private const string CostumeSpineRootPath = "Assets/AddressableAssets/Character/Costume";
+        private const string FullCostumePrefabPath = "Assets/Resources/Character/FullCostume";
+
+        private const string FullCostumeSpineRootPath =
+            "Assets/AddressableAssets/Character/FullCostume";
 
         private const string MonsterPrefabPath = "Assets/Resources/Character/Monster";
         private const string MonsterSpineRootPath = "Assets/AddressableAssets/Character/Monster";
@@ -59,11 +61,10 @@ namespace Planetarium.Nekoyume.Editor
             CreateSpinePrefabInternal(skeletonDataAsset);
         }
 
-        // TODO: 코스튬 대응하기.
-        // [MenuItem("Tools/9C/Create Spine Prefab(All Costume)", false, 0)]
-        public static void CreateSpinePrefabAllOfCostume()
+        [MenuItem("Tools/9C/Create Spine Prefab(All FullCostume)", false, 0)]
+        public static void CreateSpinePrefabAllOfFullCostume()
         {
-            CreateSpinePrefabAllOfPath(CostumeSpineRootPath);
+            CreateSpinePrefabAllOfPath(FullCostumeSpineRootPath);
         }
 
         [MenuItem("Tools/9C/Create Spine Prefab(All Monster)", false, 0)]
@@ -72,7 +73,10 @@ namespace Planetarium.Nekoyume.Editor
             CreateSpinePrefabAllOfPath(MonsterSpineRootPath);
         }
 
-        // TODO: NPC 대응하기.
+        // FIXME: ArgumentNotFoundException 발생.
+        // NPC의 경우에 `Idle_01`과 같이 각 상태 분류의 첫 번째 작명에 `_01`이라는 숫자가 들어가 있기 때문에태
+        // `CharacterAnimation.Type`을 같이 사용할 수 없는 상황이다.
+        // 따라서 NPC 스파인의 상태 작명을 수정한 후에 사용해야 한다.
         // [MenuItem("Tools/9C/Create Spine Prefab(All NPC)", false, 0)]
         public static void CreateSpinePrefabAllOfNPC()
         {
@@ -85,25 +89,53 @@ namespace Planetarium.Nekoyume.Editor
             CreateSpinePrefabAllOfPath(PlayerSpineRootPath);
         }
 
+        private static string GetPrefabPath(string prefabName)
+        {
+            string pathFormat = null;
+            if (IsFullCostume(prefabName))
+            {
+                pathFormat = FullCostumePrefabPath;
+            }
+
+            if (IsMonster(prefabName))
+            {
+                pathFormat = MonsterPrefabPath;
+            }
+
+            if (IsNPC(prefabName))
+            {
+                pathFormat = NPCPrefabPath;
+            }
+
+            if (IsPlayer(prefabName))
+            {
+                pathFormat = PlayerPrefabPath;
+            }
+
+            return string.IsNullOrEmpty(pathFormat)
+                ? null
+                : Path.Combine(pathFormat, $"{prefabName}.prefab");
+        }
+
         private static void CreateSpinePrefabInternal(SkeletonDataAsset skeletonDataAsset)
         {
-            // todo: 플레이어나 몬스터가 아닌 Costume과 NPC도 이곳으로 들어올 수 있어야 해서, 아래 로직은 이 이전에 한 번 분기가 만들어져야 한다.
-            if (!ValidateForPlayerOrMonster(skeletonDataAsset))
+            var assetPath = AssetDatabase.GetAssetPath(skeletonDataAsset);
+            var assetFolderPath = assetPath.Replace(Path.GetFileName(assetPath), "");
+            var animationAssetsPath = Path.Combine(assetFolderPath, "ReferenceAssets");
+            var split = assetPath.Split('/');
+            var prefabName = split[split.Length > 1 ? split.Length - 2 : 0];
+            var prefabPath = GetPrefabPath(prefabName);
+
+            if (!ValidateSpineResource(prefabName, skeletonDataAsset))
             {
                 return;
             }
 
             CreateAnimationReferenceAssets(skeletonDataAsset);
 
-            var assetPath = AssetDatabase.GetAssetPath(skeletonDataAsset);
-            var assetFolderPath = assetPath.Replace(Path.GetFileName(assetPath), "");
-            var animationAssetsPath = Path.Combine(assetFolderPath, "ReferenceAssets");
-            var split = assetPath.Split('/');
-            var prefabName = split[split.Length > 1 ? split.Length - 2 : 0];
-            var isPlayer = prefabName.StartsWith("1");
-            var prefabPath = Path.Combine(isPlayer ? PlayerPrefabPath : MonsterPrefabPath, $"{prefabName}.prefab");
             var skeletonAnimation =
-                SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(skeletonDataAsset);
+                SpineEditorUtilities.EditorInstantiation.InstantiateSkeletonAnimation(
+                    skeletonDataAsset);
             skeletonAnimation.AnimationName = nameof(CharacterAnimation.Type.Idle);
 
             var gameObject = skeletonAnimation.gameObject;
@@ -123,17 +155,17 @@ namespace Planetarium.Nekoyume.Editor
             if (animatorControllerGuidArray.Length == 0)
             {
                 Object.DestroyImmediate(gameObject);
-                throw new AssetNotFoundException($"AssetDatabase.FindAssets(\"{FindAssetFilter}\")");
+                throw new AssetNotFoundException(
+                    $"AssetDatabase.FindAssets(\"{FindAssetFilter}\")");
             }
 
-            var animatorControllerPath = AssetDatabase.GUIDToAssetPath(animatorControllerGuidArray[0]);
+            var animatorControllerPath =
+                AssetDatabase.GUIDToAssetPath(animatorControllerGuidArray[0]);
             var animator = gameObject.AddComponent<Animator>();
             animator.runtimeAnimatorController =
                 AssetDatabase.LoadAssetAtPath<AnimatorController>(animatorControllerPath);
 
-            var controller = isPlayer
-                ? gameObject.AddComponent<PlayerSpineController>()
-                : gameObject.AddComponent<CharacterSpineController>();
+            var controller = GetOrCreateSpineController(prefabName, gameObject);
             // 지금은 예상 외의 애니메이션을 찾지 못하는 로직이다.
             // animationAssetsPath 하위에 있는 모든 것을 검사..?
             // 애초에 CreateAnimationReferenceAssets() 단계에서 검사할 수 있겠다.
@@ -161,7 +193,8 @@ namespace Planetarium.Nekoyume.Editor
                             assetPath = Path.Combine(
                                 animationAssetsPath,
                                 $"{nameof(CharacterAnimation.Type.Idle)}.asset");
-                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
+                                assetPath);
                             break;
                         case CharacterAnimation.Type.Touch:
                         case CharacterAnimation.Type.CastingAttack:
@@ -169,7 +202,8 @@ namespace Planetarium.Nekoyume.Editor
                             assetPath = Path.Combine(
                                 animationAssetsPath,
                                 $"{nameof(CharacterAnimation.Type.Attack)}.asset");
-                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
+                                assetPath);
                             break;
                         default:
                             Object.DestroyImmediate(gameObject);
@@ -230,9 +264,73 @@ namespace Planetarium.Nekoyume.Editor
             }
         }
 
-        private static bool ValidateForCostume(SkeletonDataAsset skeletonDataAsset)
+        #region Character Type
+
+        private static bool IsFullCostume(string prefabName)
         {
-            return true;
+            return prefabName.StartsWith("4");
+        }
+
+        private static bool IsMonster(string prefabName)
+        {
+            return prefabName.StartsWith("2");
+        }
+
+        private static bool IsNPC(string prefabName)
+        {
+            return prefabName.StartsWith("3");
+        }
+
+        private static bool IsPlayer(string prefabName)
+        {
+            return prefabName.StartsWith("1");
+        }
+
+        #endregion
+
+        #region Validate Spine Resource
+
+        private static bool ValidateSpineResource(
+            string prefabName,
+            SkeletonDataAsset skeletonDataAsset)
+        {
+            if (IsFullCostume(prefabName))
+            {
+                return ValidateForFullCostume(skeletonDataAsset);
+            }
+
+            if (IsMonster(prefabName))
+            {
+                return ValidateForMonster(skeletonDataAsset);
+            }
+
+            if (IsNPC(prefabName))
+            {
+                return ValidateForNPC(skeletonDataAsset);
+            }
+
+            if (IsPlayer(prefabName))
+            {
+                return ValidateForPlayer(skeletonDataAsset);
+            }
+
+            return false;
+        }
+
+        private static bool ValidateForFullCostume(SkeletonDataAsset skeletonDataAsset)
+        {
+            var data = skeletonDataAsset.GetSkeletonData(false);
+            var hud = data.FindBone("HUD");
+
+            return !(hud is null);
+        }
+
+        private static bool ValidateForMonster(SkeletonDataAsset skeletonDataAsset)
+        {
+            var data = skeletonDataAsset.GetSkeletonData(false);
+            var hud = data.FindBone("HUD");
+
+            return !(hud is null);
         }
 
         private static bool ValidateForNPC(SkeletonDataAsset skeletonDataAsset)
@@ -240,16 +338,17 @@ namespace Planetarium.Nekoyume.Editor
             return true;
         }
 
-        // TODO: 플레이어와 몬스터 분리하기.
-        private static bool ValidateForPlayerOrMonster(SkeletonDataAsset skeletonDataAsset)
+        private static bool ValidateForPlayer(SkeletonDataAsset skeletonDataAsset)
         {
             var data = skeletonDataAsset.GetSkeletonData(false);
             var hud = data.FindBone("HUD");
 
-            // todo: 플레이어의 경우만 커스터마이징 슬롯 검사.
+            // TODO: 커스터마이징 슬롯 검사.
 
             return !(hud is null);
         }
+
+        #endregion
 
         // CharacterAnimation.Type에서 포함하지 않는 것을 이곳에서 걸러낼 수도 있겠다.
         /// <summary>
@@ -289,14 +388,16 @@ namespace Planetarium.Nekoyume.Editor
             var skeletonData = skeletonDataAsset.GetSkeletonData(false);
             foreach (var animation in skeletonData.Animations)
             {
-                var assetPath = $"{dataPath}/{SpineEditorUtilities.AssetUtility.GetPathSafeName(animation.Name)}.asset";
-                var existingAsset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
+                var assetPath =
+                    $"{dataPath}/{SpineEditorUtilities.AssetUtility.GetPathSafeName(animation.Name)}.asset";
+                var existingAsset =
+                    AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(assetPath);
                 if (!(existingAsset is null))
                 {
                     continue;
                 }
 
-                AnimationReferenceAsset newAsset = ScriptableObject.CreateInstance<AnimationReferenceAsset>();
+                var newAsset = ScriptableObject.CreateInstance<AnimationReferenceAsset>();
                 skeletonDataAssetField.SetValue(newAsset, skeletonDataAsset);
                 nameField.SetValue(newAsset, animation.Name);
                 AssetDatabase.CreateAsset(newAsset, assetPath);
@@ -308,6 +409,18 @@ namespace Planetarium.Nekoyume.Editor
                 Selection.activeObject = folderObject;
                 EditorGUIUtility.PingObject(folderObject);
             }
+        }
+
+        private static SpineController GetOrCreateSpineController(string prefabName,
+            GameObject target)
+        {
+            if (IsPlayer(prefabName) ||
+                IsFullCostume(prefabName))
+            {
+                return target.AddComponent<PlayerSpineController>();
+            }
+
+            return target.AddComponent<CharacterSpineController>();
         }
 
         private static void CreateSpinePrefabAllOfPath(string path)
@@ -323,7 +436,8 @@ namespace Planetarium.Nekoyume.Editor
             {
                 var id = Path.GetFileName(subFolderPath);
                 var skeletonDataAssetPath = Path.Combine(subFolderPath, $"{id}_SkeletonData.asset");
-                var skeletonDataAsset = AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(skeletonDataAssetPath);
+                var skeletonDataAsset =
+                    AssetDatabase.LoadAssetAtPath<SkeletonDataAsset>(skeletonDataAssetPath);
                 if (skeletonDataAsset is null)
                 {
                     Debug.LogError($"Not Found SkeletonData from {skeletonDataAssetPath}");
