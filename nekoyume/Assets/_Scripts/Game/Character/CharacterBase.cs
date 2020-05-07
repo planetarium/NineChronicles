@@ -281,7 +281,9 @@ namespace Nekoyume.Game.Character
         {
             var source = GetAnimatorHitPointBoxCollider();
             if (!source)
+            {
                 throw new NullReferenceException($"{nameof(GetAnimatorHitPointBoxCollider)}() returns null.");
+            }
 
             var scale = Animator.Target.transform.localScale;
             var center = source.center;

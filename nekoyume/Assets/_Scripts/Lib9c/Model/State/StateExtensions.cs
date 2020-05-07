@@ -222,6 +222,19 @@ namespace Nekoyume.Model.State
 
         #region Bencodex.Types.Dictionary Getter
 
+        public delegate bool IValueTryParseDelegate<T>(IValue input, out T output);
+
+        public static T GetValue<T>(this Dictionary serialized, string key, T defaultValue, IValueTryParseDelegate<T> tryParser)
+        {
+            if (serialized.ContainsKey((Text) key) &&
+                tryParser(serialized[key], out var value))
+            {
+                return value;
+            }
+
+            return defaultValue;
+        }
+
         public static Address GetAddress(this Dictionary serialized, string key, Address defaultValue = default)
         {
             return serialized.ContainsKey((Text)key)
