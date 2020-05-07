@@ -29,7 +29,7 @@ namespace Launcher
 {
     // FIXME: Memory leak.
     [Signal("quit")]
-    [Signal("fatalError", NetVariantType.String)]
+    [Signal("fatalError", NetVariantType.String, NetVariantType.Bool)]
     public class LibplanetController
     {
         private CancellationTokenSource _cancellationTokenSource;
@@ -105,15 +105,15 @@ namespace Launcher
                 }
                 catch (InvalidGenesisBlockException e)
                 {
-                    FatalError(e, "The network to connect and this game app do not have the same genesis block.");
+                    FatalError(e, "The network to connect and this game app do not have the same genesis block.", false);
                 }
                 catch (TimeoutException e)
                 {
-                    FatalError(e, "Timed out to connect to the network.");
+                    FatalError(e, "Timed out to connect to the network.", true);
                 }
                 catch (Exception e)
                 {
-                    FatalError(e, "Unexpected exception occurred during trying to connect to the network.");
+                    FatalError(e, "Unexpected exception occurred during trying to connect to the network.", true);
                 }
             }, cancellationToken);
         }
@@ -404,7 +404,7 @@ namespace Launcher
                 Log.Error(e, "Unexpected exception happened during clearing store.");
             }
 
-            this.ActivateSignal("quit");
+            ActivateQuitSignal();
         }
 
         public void CreatePrivateKey(string passphrase)
@@ -433,9 +433,9 @@ namespace Launcher
             return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
         }
 
-        private void FatalError(Exception exception, string message)
+        private void FatalError(Exception exception, string message, bool retryable)
         {
-            this.ActivateSignal("fatalError", message);
+            ActivateFatalErrorSignal(message, retryable);
             Log.Error(exception, message);
         }
 
@@ -453,7 +453,7 @@ namespace Launcher
 
             Process.Start(procInfo);
             // NOTE: Environment.Exit(int)에 Qt Thread가 반응하지 않아 Qt 쪽에서 프로세스 종료를 처리하게 합니다.
-            this.ActivateSignal("quit");
+            ActivateQuitSignal();
         }
 
         private string CreatePreloadStateDescription(PreloadState state)
@@ -500,6 +500,16 @@ namespace Launcher
             }
 
             return $"{descripiton} {count} / {totalCount} ({state.CurrentPhase} / {PreloadState.TotalPhase})";
+        }
+
+        private void ActivateQuitSignal()
+        {
+            this.ActivateSignal("quit");
+        }
+
+        private void ActivateFatalErrorSignal(string message, bool retryable)
+        {
+            this.ActivateSignal("fatalError", message, retryable);
         }
 
         private readonly string RpcServerHost = IPAddress.Loopback.ToString();
