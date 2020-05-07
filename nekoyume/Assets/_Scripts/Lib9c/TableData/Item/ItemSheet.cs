@@ -58,7 +58,7 @@ namespace Nekoyume.TableData
                 return new Row(serialized);
             }
         }
-        
+
         public ItemSheet() : base(nameof(ItemSheet))
         {
         }

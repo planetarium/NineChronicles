@@ -89,22 +89,22 @@ namespace Nekoyume.Game.Character
 
             TryGetSlotAndAttachment(
                 EarLeftSlot,
-                SpriteHelper.GetPlayerSpineTextureEarLeft,
+                SpriteHelper.GetPlayerSpineTextureEarCostumeLeft,
                 out _earLeft);
 
             TryGetSlotAndAttachment(
                 EarRightSlot,
-                SpriteHelper.GetPlayerSpineTextureEarRight,
+                SpriteHelper.GetPlayerSpineTextureEarCostumeRight,
                 out _earRight);
 
             TryGetSlotAndAttachment(
                 EyeHalfSlot,
-                SpriteHelper.GetPlayerSpineTextureEyeHalf,
+                SpriteHelper.GetPlayerSpineTextureEyeCostumeHalf,
                 out _eyeHalf);
 
             TryGetSlotAndAttachment(
                 EyeOpenSlot,
-                SpriteHelper.GetPlayerSpineTextureEyeOpen,
+                SpriteHelper.GetPlayerSpineTextureEyeCostumeOpen,
                 out _eyeOpen);
 
             var hairSlots = hairTypeIndex == 0
@@ -122,7 +122,7 @@ namespace Nekoyume.Game.Character
 
             TryGetSlotAndAttachment(
                 TailSlot,
-                SpriteHelper.GetPlayerSpineTextureTail,
+                SpriteHelper.GetPlayerSpineTextureTailCostume,
                 out _tail);
         }
 

@@ -149,6 +149,11 @@ namespace Nekoyume.Action
 
         private static void AddItemsForTest(AvatarState avatarState, IRandom random, TableSheets tableSheets)
         {
+            foreach (var row in tableSheets.CostumeItemSheet)
+            {
+                avatarState.inventory.AddItem(ItemFactory.CreateCostume(row));
+            }
+
             foreach (var row in tableSheets.MaterialItemSheet)
             {
                 avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);

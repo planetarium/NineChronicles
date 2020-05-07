@@ -111,7 +111,7 @@ namespace Nekoyume.UI.Module
             foreach (var info in _rowData.Materials)
             {
                 if (materialSheet.TryGetValue(info.Id, out var materialRow) &&
-                    inventory.TryGetFungibleItem(materialRow.ItemId, out var fungibleItem) &&
+                    inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
                     fungibleItem.count >= info.Count)
                 {
                     continue;
