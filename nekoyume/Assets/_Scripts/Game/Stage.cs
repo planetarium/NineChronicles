@@ -24,6 +24,7 @@ using Nekoyume.UI;
 using Nekoyume.UI.Model;
 using Spine.Unity;
 using UnityEngine;
+using TentuPlay.Api;
 
 namespace Nekoyume.Game
 {
@@ -259,6 +260,16 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayStage(BattleLog log)
         {
+            //[TentuPlay] PlayStage 시작 기록
+            new TPStashEvent().PlayerStage(
+                player_uuid: Game.instance.Agent.Address.ToHex(),
+                stage_category_slug: "HackAndSlash",
+                stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_status: stageStatus.Start,
+                stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
+                is_autocombat_committed: isAutocombat.AutocombatOn
+                );
+
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
             foreach (var e in log)
@@ -272,6 +283,16 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPlayRankingBattle(BattleLog log)
         {
+            //[TentuPlay] RankingBattle 시작 기록
+            new TPStashEvent().PlayerStage(
+                player_uuid: Game.instance.Agent.Address.ToHex(),
+                stage_category_slug: "RankingBattle",
+                stage_slug: "RankingBattle",
+                stage_status: stageStatus.Start,
+                stage_level: null,
+                is_autocombat_committed: isAutocombat.AutocombatOn
+                );
+
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
             foreach (var e in log)
@@ -404,6 +425,31 @@ namespace Nekoyume.Game
             ActionRenderHandler.Instance.Pending = false;
             Widget.Find<BattleResult>().Show(_battleResultModel);
             yield return null;
+
+            //[TentuPlay] PlayStage 끝 기록
+            stageStatus stage_status = stageStatus.Unknown;
+            switch (log.result)
+            {
+                case BattleLog.Result.Win:
+                    stage_status = stageStatus.Win;
+                    break;
+                case BattleLog.Result.Lose:
+                    stage_status = stageStatus.Lose;
+                    break;
+                case BattleLog.Result.TimeOver:
+                    stage_status = stageStatus.Timeout;
+                    break;
+            }
+            new TPStashEvent().PlayerStage(
+                player_uuid: Game.instance.Agent.Address.ToHex(),
+                stage_category_slug: "HackAndSlash",
+                stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_status: stage_status,
+                stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_score: log.clearedWaveNumber,
+                stage_playtime: null,
+                is_autocombat_committed: isAutocombat.AutocombatOn
+                );
         }
 
         private IEnumerator CoSlideBg()
@@ -434,6 +480,31 @@ namespace Nekoyume.Game
             ActionRenderHandler.Instance.Pending = false;
             Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
             yield return null;
+
+            //[TentuPlay] RankingBattle 끝 기록
+            stageStatus stage_status = stageStatus.Unknown;
+            switch (log.result)
+            {
+                case BattleLog.Result.Win:
+                    stage_status = stageStatus.Win;
+                    break;
+                case BattleLog.Result.Lose:
+                    stage_status = stageStatus.Lose;
+                    break;
+                case BattleLog.Result.TimeOver:
+                    stage_status = stageStatus.Timeout;
+                    break;
+            }
+            new TPStashEvent().PlayerStage(
+                player_uuid: Game.instance.Agent.Address.ToHex(),
+                stage_category_slug: "RankingBattle",
+                stage_slug: "RankingBattle",
+                stage_status: stage_status,
+                stage_level: null,
+                stage_score: log.diffScore,
+                stage_playtime: null,
+                is_autocombat_committed: isAutocombat.AutocombatOn
+                );
         }
 
         public IEnumerator CoSpawnPlayer(Player character)

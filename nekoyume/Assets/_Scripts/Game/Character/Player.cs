@@ -11,6 +11,8 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
+using Nekoyume.State;
+using TentuPlay.Api;
 
 namespace Nekoyume.Game.Character
 {
@@ -394,6 +396,14 @@ namespace Nekoyume.Game.Character
 
             if (Level != level)
             {
+                //[TentuPlay] 아바타 레벨업 기록
+                new TPStashEvent().CharacterLevelUp(
+                    player_uuid: Game.instance.Agent.Address.ToHex(),
+                    characterarchetype_slug: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                    level_from: (int)level,
+                    level_to: (int)Level
+                    );
+
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
                     level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
