@@ -26,7 +26,9 @@ namespace Nekoyume.UI
         public TextMeshProUGUI resetKeyStoreText;
         public TextMeshProUGUI resetStoreText;
         public TextMeshProUGUI confirmText;
+        public TextMeshProUGUI redeemCodeText;
         public Blur blur;
+        public RedeemCode redeemCode;
 
         #region Mono
 
@@ -44,9 +46,11 @@ namespace Nekoyume.UI
             resetStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
             resetKeyStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");
             confirmText.text = LocalizationManager.Localize("UI_CLOSE");
+            redeemCodeText.text = LocalizationManager.Localize("UI_REDEEM_CODE");
 
             addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard());
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard());
+            redeemCode.Close();
         }
 
         #endregion
@@ -161,6 +165,11 @@ namespace Nekoyume.UI
         public void ResetKeyStore()
         {
             Game.Game.instance.ResetKeyStore();
+        }
+
+        public void RedeemCode()
+        {
+            redeemCode.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
