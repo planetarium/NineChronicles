@@ -64,14 +64,14 @@ namespace Nekoyume.Model.Item
                     return CreateMaterial(materialRow);
             }
 
-            var item = CreateItemUsable(
+            var itemUsable = CreateItemUsable(
                 row,
                 serialized.GetGuid("itemId"),
                 serialized.GetLong("requiredBlockIndex")
             );
-            if (!(item is ItemUsable itemUsable))
+            if (itemUsable is null)
             {
-                return item;
+                return null;
             }
 
             if (serialized.TryGetValue((Text) "statsMap", out var statsMap) &&
@@ -95,7 +95,7 @@ namespace Nekoyume.Model.Item
 
             if (!(itemUsable is Equipment equipment))
             {
-                return item;
+                return itemUsable;
             }
 
             if (serialized.TryGetValue((Text) "equipped", out var equipped))
@@ -108,7 +108,7 @@ namespace Nekoyume.Model.Item
                 equipment.level = (int) ((Integer) level).Value;
             }
 
-            return item;
+            return equipment;
         }
 
         private static ItemSheet.Row DeserializeRow(Dictionary serialized)

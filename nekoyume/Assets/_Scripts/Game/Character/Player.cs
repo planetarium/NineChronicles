@@ -98,7 +98,7 @@ namespace Nekoyume.Game.Character
             CharacterModel = model;
 
             InitStats(model);
-            UpdateEquipmentsAndCustomize(model.armor, model.weapon);
+            EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
 
             if (!SpeechBubble)
             {
@@ -205,7 +205,7 @@ namespace Nekoyume.Game.Character
                 case ItemSubType.FullCostume:
                     if (CharacterModel is Model.Player model)
                     {
-                        UpdateEquipmentsAndCustomize(model.armor, model.weapon);
+                        EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
                     }
 
                     break;
@@ -222,18 +222,19 @@ namespace Nekoyume.Game.Character
 
         #region Equipments
 
-        public void UpdateEquipments(Armor armor, Weapon weapon = null)
+        public void EquipEquipmentsAndUpdateCustomize(Armor armor, Weapon weapon = null)
         {
             if (IsFullCostumeEquipped)
             {
                 return;
             }
 
-            UpdateArmor(armor);
-            UpdateWeapon(weapon);
+            EquipArmor(armor);
+            EquipWeapon(weapon);
+            UpdateCustomize();
         }
 
-        private void UpdateArmor(Armor armor)
+        private void EquipArmor(Armor armor)
         {
             if (IsFullCostumeEquipped)
             {
@@ -245,7 +246,7 @@ namespace Nekoyume.Game.Character
             ChangeSpine(spineResourcePath);
         }
 
-        public void UpdateWeapon(Weapon weapon)
+        public void EquipWeapon(Weapon weapon)
         {
             if (IsFullCostumeEquipped ||
                 !SpineController)
@@ -259,9 +260,11 @@ namespace Nekoyume.Game.Character
 
         #endregion
 
+        // TODO: 최초에 캐릭터 생성 시에만 커스터마이징하는 개념으로 개발되었으나 그 기능이 코스튬과 같기 때문에 이 둘을 적절하게 리펙토링 할 필요가 있습니다.
+        // 각 부위의 코스튬을 개발할 때 진행하면 좋겠습니다.
         #region Customize
 
-        public void UpdateCustomize()
+        private void UpdateCustomize()
         {
             if (IsFullCostumeEquipped)
             {
@@ -354,12 +357,6 @@ namespace Nekoyume.Game.Character
 
             var sprite = SpriteHelper.GetPlayerSpineTextureTailCostume(tailResource);
             SpineController.UpdateTail(sprite);
-        }
-
-        public void UpdateEquipmentsAndCustomize(Armor armor, Weapon weapon = null)
-        {
-            UpdateEquipments(armor, weapon);
-            UpdateCustomize();
         }
 
         #endregion

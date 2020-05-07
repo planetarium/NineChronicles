@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Item
@@ -21,7 +22,7 @@ namespace Nekoyume.Model.Item
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "equipped"] = new Bencodex.Types.Boolean(equipped),
+                [(Text) "equipped"] = equipped.Serialize(),
             }.Union((Dictionary) base.Serialize()));
 
         protected bool Equals(Material other)
