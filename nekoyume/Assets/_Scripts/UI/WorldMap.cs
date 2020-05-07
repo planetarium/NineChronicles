@@ -50,7 +50,6 @@ namespace Nekoyume.UI
         public GameObject stage;
         public StageInformation stageInformation;
         public SubmitButton submitButton;
-        public Animator worldMapAnimator;
 
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
