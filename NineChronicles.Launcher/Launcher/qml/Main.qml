@@ -368,10 +368,10 @@ Item {
         messageBox.visible = true;
         retryButton.visible = typeof onRetrying !== 'undefined';
         if (typeof onRetrying !== 'undefined') {
-            retryButton.onClicked.connect(() => {
+            retryButton.onRetrying = () => {
                 messageBox.visible = false;
                 onRetrying();
-            });
+            };
         }
         if (typeof onClosing !== 'undefined') {
             messageBox.onClosing.connect(() => onClosing())
@@ -409,7 +409,11 @@ Item {
                 Button {
                     text: "Retry"
                     id: retryButton
+                    property var onRetrying: () => { console.log("onRetrying was not assigned yet.") }
                     visible: typeof onClicked !== "undefined"
+                    onClicked: {
+                        onRetrying()
+                    }
                     Layout.alignment: Qt.AlignCenter
                 }
 
