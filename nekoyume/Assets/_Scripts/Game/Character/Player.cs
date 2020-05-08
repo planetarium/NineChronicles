@@ -100,6 +100,7 @@ namespace Nekoyume.Game.Character
             CharacterModel = model;
 
             InitStats(model);
+            EquipCostumes(model.Costumes);
             EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
 
             if (!SpeechBubble)
@@ -153,6 +154,14 @@ namespace Nekoyume.Game.Character
         #endregion
 
         #region Costumes
+
+        private void EquipCostumes(IEnumerable<Costume> costumes)
+        {
+            foreach (var costume in costumes)
+            {
+                EquipCostume(costume);
+            }
+        }
 
         public void EquipCostume(Costume costume)
         {

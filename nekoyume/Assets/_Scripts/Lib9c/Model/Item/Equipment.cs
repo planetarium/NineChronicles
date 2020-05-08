@@ -35,16 +35,14 @@ namespace Nekoyume.Model.Item
                 [(Text) "level"] = (Integer) level,
             }.Union((Dictionary) base.Serialize()));
 
-        public bool Equip()
+        public void Equip()
         {
             equipped = true;
-            return true;
         }
 
-        public bool Unequip()
+        public void Unequip()
         {
             equipped = false;
-            return true;
         }
 
         // FIXME: 기본 스탯을 복리로 증가시키고 있는데, 단리로 증가시켜야 한다.

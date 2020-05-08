@@ -549,6 +549,8 @@ namespace Nekoyume.UI
             _player.StartRun();
             ActionCamera.instance.ChaseX(_player.transform);
 
+            var costumes = _player.Costumes;
+
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
                 .Select(slot => (Equipment) slot.Item)
@@ -563,7 +565,7 @@ namespace Nekoyume.UI
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
-                .HackAndSlash(equipments, consumables, _worldId, _stageId.Value)
+                .HackAndSlash(costumes, equipments, consumables, _worldId, _stageId.Value)
                 .Subscribe(
                     _ =>
                     {

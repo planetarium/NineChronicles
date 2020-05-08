@@ -64,8 +64,10 @@ namespace Nekoyume.Model
         public int tailIndex;
         public CharacterLevelSheet characterLevelSheet;
 
+        private List<Costume> _costumes;
         private List<Equipment> _equipments;
 
+        public IReadOnlyList<Costume> Costumes => _costumes;
         public IReadOnlyList<Equipment> Equipments => _equipments;
 
         public Player(AvatarState avatarState, Simulator simulator)
@@ -163,6 +165,7 @@ namespace Nekoyume.Model
             tailIndex = value.tailIndex;
             characterLevelSheet = value.characterLevelSheet;
 
+            _costumes = value._costumes;
             _equipments = value._equipments;
         }
 
@@ -204,8 +207,12 @@ namespace Nekoyume.Model
             eventMap.Add(new KeyValuePair<int, int>((int) QuestEventType.Die, 1));
         }
 
-        private void Equip(IEnumerable<Inventory.Item> items, EquipmentItemSetEffectSheet sheet)
+        private void Equip(IReadOnlyList<Inventory.Item> items, EquipmentItemSetEffectSheet sheet)
         {
+            _costumes = items.Select(i => i.item)
+                .OfType<Costume>()
+                .Where(e => e.equipped)
+                .ToList();
             _equipments = items.Select(i => i.item)
                 .OfType<Equipment>()
                 .Where(e => e.equipped)

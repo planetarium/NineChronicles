@@ -20,6 +20,7 @@ namespace Nekoyume.Action
     [ActionType("hack_and_slash")]
     public class HackAndSlash : GameAction
     {
+        public List<Costume> costumes;
         public List<Equipment> equipments;
         public List<Consumable> foods;
         public int worldId;
@@ -31,6 +32,7 @@ namespace Nekoyume.Action
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
+                ["costumes"] = new Bencodex.Types.List(costumes.Select(e => e.Serialize())),
                 ["equipments"] = new Bencodex.Types.List(equipments.Select(e => e.Serialize())),
                 ["foods"] = new Bencodex.Types.List(foods.Select(e => e.Serialize())),
                 ["worldId"] = (Integer) worldId,
@@ -42,6 +44,9 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
+            costumes = ((Bencodex.Types.List) plainValue["costumes"]).Select(
+                e => (Costume) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+            ).ToList();
             equipments = ((Bencodex.Types.List) plainValue["equipments"]).Select(
                 e => (Equipment) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
             ).ToList();
@@ -169,6 +174,29 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= stage.CostAP;
 
+            // 코스튬 해제.
+            var inventoryCostumes = avatarState.inventory.Items
+                .Select(i => i.item)
+                .OfType<Costume>()
+                .Where(i => i.equipped)
+                .ToImmutableHashSet();
+            foreach (var costume in inventoryCostumes)
+            {
+                costume.equipped = false;
+            }
+
+            // 코스튬 장착.
+            foreach (var costume in costumes)
+            {
+                if (!avatarState.inventory.TryGetFungibleItem(costume, out var outItem))
+                {
+                    continue;
+                }
+
+                ((Costume) outItem.item).equipped = true;
+            }
+
+            // 장비 해제.
             var inventoryEquipments = avatarState.inventory.Items
                 .Select(i => i.item)
                 .OfType<Equipment>()
@@ -183,6 +211,7 @@ namespace Nekoyume.Action
             Log.Debug($"HAS Unequip items: {sw.Elapsed}");
             sw.Restart();
 
+            // 장비 장착.
             foreach (var equipment in equipments)
             {
                 if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
