@@ -172,9 +172,14 @@ namespace Nekoyume.BlockChain
             var policy = BlockPolicy.GetPolicy(minimumDifficulty);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
-            store.UnstageTransactionIds(
-                new HashSet<TxId>(store.IterateStagedTransactionIds())
-            );
+
+            // 같은 논스를 다시 찍지 않기 위해서 직접 만든 Tx는 유지합니다.
+            ImmutableHashSet<TxId> pendingTxsFromOhters = store.IterateStagedTransactionIds()
+                .Select(tid => store.GetTransaction<PolymorphicAction<ActionBase>>(tid))
+                .Where(tx => tx.Signer != Address)
+                .Select(tx => tx.Id)
+                .ToImmutableHashSet();
+            store.UnstageTransactionIds(pendingTxsFromOhters);
 
             try
             {
