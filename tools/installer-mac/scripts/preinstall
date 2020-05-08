@@ -2,4 +2,9 @@
 
 INSTALL_DIR="$2"
 
-rm -rf "$INSTALL_DIR"
+if ! rm -rf "$INSTALL_DIR"; then
+    sleep 1
+    rm -rf "$INSTALL_DIR" || true
+fi
+
+exit 0
