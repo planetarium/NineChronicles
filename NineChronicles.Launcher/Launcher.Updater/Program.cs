@@ -80,19 +80,14 @@ namespace Launcher.Updater
                     if (args.Length == 0)
                     {
                         // 인스톨러 모드 - 스냅샷 다운로드
-                        Console.Error.WriteLine("Start download snapshot");
-                        tempPath = await DownloadBinariesAsync(SnapshotUrl, cts.Token);
-                        string storePath = Path.Combine(
-                            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                            "planetarium",
-                            "9c"
-                        );
-                        if (Directory.Exists(storePath))
+                        Console.Error.WriteLine("Start downloading the latest blockchain snapshot...");
+                        using (var progress = new DownloadProgress(Downloader.SnapshotUrl))
                         {
-                            Directory.Delete(storePath, recursive: true);
+                            await Downloader.DownloadBlockchainSnapshot(
+                                progress,
+                                cts.Token
+                            );
                         }
-
-                        ZipFile.ExtractToDirectory(tempPath, storePath);
                     }
                 }
                 catch (OperationCanceledException)
@@ -207,61 +202,13 @@ namespace Launcher.Updater
         }
 
         private static async Task<string> DownloadBinariesAsync(
-            string gameBinaryDownloadUri,
-            CancellationToken cancellationToken
+            string downloadUrl,
+            CancellationToken cancellationToken = default(CancellationToken)
         )
         {
-            var tempFilePath = Path.GetTempFileName();
-            if (File.Exists(tempFilePath))
-            {
-                File.Delete(tempFilePath);
-            }
-
-            Log.Information(
-                "Start download from {DownloadUri} to {TempFilePath}.",
-                gameBinaryDownloadUri,
-                tempFilePath
-            );
-
-            using var httpClient = new HttpClient();
-            httpClient.Timeout = Timeout.InfiniteTimeSpan;
-            using var dest = new FileStream(tempFilePath, FileMode.Create, FileAccess.Write);
-            using HttpResponseMessage response = await httpClient.GetAsync(
-                gameBinaryDownloadUri,
-                HttpCompletionOption.ResponseHeadersRead,
-                cancellationToken
-            );
-            using var src = await response.Content.ReadAsStreamAsync();
-
-            var buffer = new byte[8192];
-            long contentLength = response.Content.Headers.ContentLength ?? 0;
-            long totalRead = 0;
-            int bytesRead;
-
             // FIXME: 표준 출력(stdout)으로 출력하고 있기 때문에, 커맨드라인 인자등을 추가해서 출력을 제어해야합니다.
-            using var progressBar = new ProgressBar(
-                (int)(contentLength / 1024L),
-                $"Downloading from {gameBinaryDownloadUri}...",
-                new ProgressBarOptions
-                {
-                    ProgressCharacter = '-',
-                    BackgroundCharacter = '-',
-                    CollapseWhenFinished = true,
-                    ProgressBarOnBottom = true,
-                    DisplayTimeInRealTime = false,
-                }
-            );
-
-            while ((bytesRead = await src.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) != 0)
-            {
-                await dest.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
-                totalRead += bytesRead;
-                progressBar.Tick((int)(totalRead / 1024L));
-                progressBar.Message = $"Downloading from {gameBinaryDownloadUri}... ({(int)(totalRead / 1024L)}KB/{(int)(contentLength / 1024L)}KB)";
-            }
-
-            Log.Information("Finished download from {DownloadUri}!", gameBinaryDownloadUri);
-            return tempFilePath;
+            using var progress = new DownloadProgress(downloadUrl);
+            return await Downloader.DownloadFileAsync(downloadUrl, progress, cancellationToken);
         }
 
         private static void ExtractBinaries(string path)

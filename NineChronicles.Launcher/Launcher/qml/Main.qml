@@ -140,6 +140,11 @@ Item {
                     onTriggered: ctrl.clearStore()
                 }
 
+                MenuItem {
+                    text: "Download the latest blockchain snapshot"
+                    onTriggered: ctrl.downloadBlockchainSnapshot()
+                }
+
                 Menu {
                     id: keyRevokationMenu
                     title: "Revoke key…"
@@ -424,6 +429,38 @@ Item {
                     }
                     Layout.alignment: Qt.AlignCenter
                 }
+            }
+        }
+    }
+
+    Window {
+        id: snapshotDownloadProgress
+        title: "Nine Chronicles"
+        width: 480
+        height: 40
+        minimumWidth: width
+        minimumHeight: height
+        maximumWidth: width
+        maximumHeight: height
+        flags: Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint
+        visible: ctrl.downloadingBlockchainSnapshot
+
+        ColumnLayout{
+            spacing: 1
+            anchors.fill: parent
+            anchors.margins: 10
+
+            ProgressBar {
+                indeterminate: false
+                value: ctrl.blockchainSnapshotDownloadProgress
+                Layout.preferredWidth: parent.width
+                visible: true
+            }
+
+            Label {
+                text: "Downloading the latest blockchain snapshot…"
+                Layout.preferredWidth: parent.width
+                visible: true
             }
         }
     }
