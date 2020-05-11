@@ -482,7 +482,7 @@ namespace Editor
             );
 
             using (FileStream stream = File.Open(configFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-            using (var writer = new Utf8JsonWriter(stream))
+            using (var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true }))
             {
                 writer.WriteStartObject();
                 writer.WritePropertyName("appProtocolVersionToken");
