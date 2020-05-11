@@ -65,4 +65,8 @@
       <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(PublishDir)/qt-runtime'" />
     </Target>
 
+    <Target Name="BundleLauncherConfig" AfterTargets="Publish">
+      <Copy SourceFiles="$(OutputPath)/launcher.json" DestinationFiles="$(PublishDir)/launcher.json" />
+    </Target>
+
 </Project>
