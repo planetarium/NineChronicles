@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Scroller
         /// </summary>
         private ReactiveCollection<Model.InventoryItem> _dataList = new ReactiveCollection<Model.InventoryItem>();
         private float _cellViewHeight = 100f;
-        
+
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
         #region Mono
@@ -54,8 +54,7 @@ namespace Nekoyume.UI.Scroller
 
         public EnhancedScrollerCellView GetCellView(EnhancedScroller scr, int dataIndex, int cellIndex)
         {
-            var cellView = scroller.GetCellView(cellViewPrefab) as InventoryCellView;
-            if (ReferenceEquals(cellView, null))
+            if (!(scroller.GetCellView(cellViewPrefab) is InventoryCellView cellView))
             {
                 throw new FailedToInstantiateGameObjectException(cellViewPrefab.name);
             }
@@ -72,16 +71,25 @@ namespace Nekoyume.UI.Scroller
 
         public void SetData(ReactiveCollection<Model.InventoryItem> dataList)
         {
+            Debug.LogWarning("Scroller SetData() called.");
             if (dataList is null)
             {
                 dataList = new ReactiveCollection<Model.InventoryItem>();
             }
-            
+
             _disposablesAtSetData.DisposeAllAndClear();
             _dataList = dataList;
-            _dataList.ObserveAdd().Subscribe(_ => scroller.ReloadData()).AddTo(_disposablesAtSetData);
-            _dataList.ObserveRemove().Subscribe(_ => scroller.ReloadData()).AddTo(_disposablesAtSetData);
-            
+            _dataList.ObserveAdd().Subscribe(_ =>
+            {
+                scroller.ReloadData();
+                Debug.LogWarning("Scroller ReloadData() called from ObserveAdd().");
+            }).AddTo(_disposablesAtSetData);
+            _dataList.ObserveRemove().Subscribe(_ =>
+            {
+                scroller.ReloadData();
+                Debug.LogWarning("Scroller ReloadData() called from ObserveRemove().");
+            }).AddTo(_disposablesAtSetData);
+
             scroller.ReloadData();
         }
 

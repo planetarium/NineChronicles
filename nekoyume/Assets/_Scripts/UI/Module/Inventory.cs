@@ -5,7 +5,6 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
@@ -48,8 +47,6 @@ namespace Nekoyume.UI.Module
 
         private readonly Dictionary<ItemType, RectTransform> _switchButtonTransforms =
             new Dictionary<ItemType, RectTransform>(ItemTypeComparer.Instance);
-
-        private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
         public RectTransform RectTransform { get; private set; }
 
@@ -120,18 +117,19 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            ReactiveAvatarState.Inventory.Subscribe(value =>
-                {
-                    scrollerController.DisposeAddedAtSetData();
-                    SharedModel.ResetItems(value);
-                    OnResetItems.OnNext(this);
-                })
-                .AddTo(_disposablesAtOnEnable);
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            var inventoryState = States.Instance.CurrentAvatarState.inventory;
+            scrollerController.DisposeAddedAtSetData();
+            SharedModel.ResetItems(inventoryState);
+            OnResetItems.OnNext(this);
         }
 
         private void OnDisable()
         {
-            _disposablesAtOnEnable.DisposeAllAndClear();
             Widget.Find<ItemInformationTooltip>().Close();
         }
 
