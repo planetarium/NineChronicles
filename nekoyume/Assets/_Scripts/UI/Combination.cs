@@ -317,7 +317,7 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(true);
                     consumableRecipe.gameObject.SetActive(false);
                     equipmentRecipe.ShowCellViews();
-                    recipeAnimator.Play("Show");
+                    recipeAnimator.Play("Show", -1, 0.0f);
                     break;
                 case StateType.CombineConsumable:
                     _selectedSpeechBubble = speechBubbleForEquipment;
@@ -335,7 +335,7 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(false);
                     consumableRecipe.gameObject.SetActive(true);
                     consumableRecipe.ShowCellViews();
-                    recipeAnimator.Play("Show");
+                    recipeAnimator.Play("Show", -1, 0.0f);
                     break;
                 case StateType.EnhanceEquipment:
                     _selectedSpeechBubble = speechBubbleForUpgrade;
