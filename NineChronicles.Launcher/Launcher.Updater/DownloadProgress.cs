@@ -40,7 +40,7 @@ namespace Launcher.Updater
 
         public void Report((long Downloaded, long Total) value)
         {
-            ProgressBar progressBar = GetProgressBar(value.Total)
+            ProgressBar progressBar = GetProgressBar(value.Total);
             progressBar.Tick((int)(value.Downloaded / 1024L));
             progressBar.Message = $"Downloading from {_downloadUrl}... " +
                 $"({(int)(value.Downloaded / 1024L)}KB/{(int)(value.Total / 1024L)}KB)";
