@@ -62,7 +62,7 @@ namespace Launcher.Common
             CancellationToken cancellationToken = default(CancellationToken)
         )
         {
-            Console.Error.WriteLine("Download the recent blockchain snapshot...");
+            Log.Information("Download the recent blockchain snapshot...");
             string tempPath = await DownloadFileAsync(SnapshotUrl, progress, cancellationToken);
             string storePath = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

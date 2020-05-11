@@ -80,7 +80,7 @@ namespace Launcher.Updater
                     if (args.Length == 0)
                     {
                         // 인스톨러 모드 - 스냅샷 다운로드
-                        Console.Error.WriteLine("Start downloading the latest blockchain snapshot...");
+                        Log.Information("Start downloading the latest blockchain snapshot...");
                         using (var progress = new DownloadProgress(Downloader.SnapshotUrl))
                         {
                             await Downloader.DownloadBlockchainSnapshot(
