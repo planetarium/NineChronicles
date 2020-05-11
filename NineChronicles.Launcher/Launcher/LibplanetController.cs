@@ -53,6 +53,12 @@ namespace Launcher
         //        bootstrapping and preloading ended up?
         public bool Preprocessing { get; private set; }
 
+        [NotifySignal]
+        public bool DownloadingBlockchainSnapshot { get; private set; }
+
+        [NotifySignal]
+        public double BlockchainSnapshotDownloadProgress { get; private set; }
+
         private Process GameProcess { get; set; }
 
         [NotifySignal]
@@ -405,6 +411,34 @@ namespace Launcher
             }
 
             ActivateQuitSignal();
+        }
+
+        public void DownloadBlockchainSnapshot()
+        {
+            DownloadingBlockchainSnapshot = true;
+            this.ActivateProperty(ctrl => ctrl.DownloadingBlockchainSnapshot);
+            Task.Run(async () =>
+            {
+                await Downloader.DownloadBlockchainSnapshot(new BlockchainSnapshotDownloadProgressBar(this));
+                ActivateQuitSignal();
+            });
+        }
+
+        private class BlockchainSnapshotDownloadProgressBar : IProgress<(long Downloaded, long Total)>
+        {
+            private LibplanetController _ctrl;
+
+            public BlockchainSnapshotDownloadProgressBar(LibplanetController ctrl)
+            {
+                _ctrl = ctrl;
+            }
+
+            public void Report((long Downloaded, long Total) value)
+            {
+                _ctrl.BlockchainSnapshotDownloadProgress =
+                    (double) value.Downloaded / (double) value.Total;
+                _ctrl.ActivateProperty(ctrl => ctrl.BlockchainSnapshotDownloadProgress);
+            }
         }
 
         public void CreatePrivateKey(string passphrase)
