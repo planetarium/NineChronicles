@@ -325,7 +325,7 @@ Item {
                 Label {
                     visible: ctrl.keyStoreEmpty
                     Component.onCompleted: {
-                        text = ctrl.preparedPrivateKeyAddressHex.substr(0, 24) + "..."
+                        text = ctrl.preparedPrivateKeyAddressHex.substr(0, 24) + "…"
                     }
                 }
 
