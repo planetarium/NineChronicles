@@ -48,6 +48,8 @@ namespace Nekoyume.UI.Module
         private readonly Dictionary<ItemType, RectTransform> _switchButtonTransforms =
             new Dictionary<ItemType, RectTransform>(ItemTypeComparer.Instance);
 
+        private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
+
         public RectTransform RectTransform { get; private set; }
 
         public Model.Inventory SharedModel { get; private set; }
@@ -117,19 +119,17 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            if (States.Instance.CurrentAvatarState is null)
+            ReactiveAvatarState.Inventory.Subscribe(inventoryState =>
             {
-                return;
-            }
-
-            var inventoryState = States.Instance.CurrentAvatarState.inventory;
-            scrollerController.DisposeAddedAtSetData();
-            SharedModel.ResetItems(inventoryState);
-            OnResetItems.OnNext(this);
+                scrollerController.DisposeAddedAtSetData();
+                SharedModel.ResetItems(inventoryState);
+                OnResetItems.OnNext(this);
+            }).AddTo(_disposablesAtOnEnable);
         }
 
         private void OnDisable()
         {
+            _disposablesAtOnEnable.DisposeAllAndClear();
             Widget.Find<ItemInformationTooltip>().Close();
         }
 
