@@ -361,7 +361,12 @@ namespace Nekoyume.UI
                 : stage.stageId + 1;
             ActionRenderHandler.Instance.Pending = true;
             yield return Game.Game.instance.ActionManager
-                .HackAndSlash(player.Equipments, new List<Consumable>(), worldId, stageId)
+                .HackAndSlash(
+                    player.Costumes,
+                    player.Equipments,
+                    new List<Consumable>(),
+                    worldId,
+                    stageId)
                 .Subscribe(_ => { },
                     (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }

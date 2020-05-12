@@ -86,7 +86,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            if (!avatarState.inventory.RemoveFungibleItem(material.ItemId, recipe.MaterialCount))
+            if (!avatarState.inventory.RemoveMaterial(material.ItemId, recipe.MaterialCount))
             {
                 return states;
             }
@@ -136,7 +136,7 @@ namespace Nekoyume.Action
                         return states;
                     }
 
-                    if (!avatarState.inventory.RemoveFungibleItem(subMaterialRow.ItemId,
+                    if (!avatarState.inventory.RemoveMaterial(subMaterialRow.ItemId,
                         materialInfo.Count))
                     {
                         return states;

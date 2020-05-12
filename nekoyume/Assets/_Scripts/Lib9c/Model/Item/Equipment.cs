@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Item
@@ -21,23 +22,27 @@ namespace Nekoyume.Model.Item
             return StatsMap.GetStat(UniqueStatType, true) * 0.1m;
         }
 
-
         public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex)
             : base(data, id, requiredBlockIndex)
         {
             Data = data;
         }
 
-        public bool Equip()
+        public override IValue Serialize() =>
+            new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "equipped"] = equipped.Serialize(),
+                [(Text) "level"] = (Integer) level,
+            }.Union((Dictionary) base.Serialize()));
+
+        public void Equip()
         {
             equipped = true;
-            return true;
         }
 
-        public bool Unequip()
+        public void Unequip()
         {
             equipped = false;
-            return true;
         }
 
         // FIXME: 기본 스탯을 복리로 증가시키고 있는데, 단리로 증가시켜야 한다.
@@ -47,18 +52,12 @@ namespace Nekoyume.Model.Item
         {
             level++;
             StatsMap.AddStatValue(UniqueStatType, GetIncrementAmountOfEnhancement());
-            if (new[] {4, 7, 10}.Contains(level) && GetOptionCount() > 0)
+            if (new[] {4, 7, 10}.Contains(level) &&
+                GetOptionCount() > 0)
             {
                 UpdateOptions();
             }
         }
-
-        public override IValue Serialize() =>
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text) "equipped"] = new Bencodex.Types.Boolean(equipped),
-                [(Text) "level"] = (Integer) level,
-            }.Union((Dictionary) base.Serialize()));
 
         public List<object> GetOptions()
         {
@@ -67,7 +66,9 @@ namespace Nekoyume.Model.Item
             options.AddRange(BuffSkills);
             foreach (var statMapEx in StatsMap.GetAdditionalStats())
             {
-                options.Add(new StatModifier(statMapEx.StatType, StatModifier.OperationType.Add,
+                options.Add(new StatModifier(
+                    statMapEx.StatType,
+                    StatModifier.OperationType.Add,
                     statMapEx.AdditionalValueAsInt));
             }
 
@@ -78,7 +79,9 @@ namespace Nekoyume.Model.Item
         {
             foreach (var statMapEx in StatsMap.GetAdditionalStats())
             {
-                StatsMap.SetStatAdditionalValue(statMapEx.StatType, statMapEx.AdditionalValue * 1.3m);
+                StatsMap.SetStatAdditionalValue(
+                    statMapEx.StatType,
+                    statMapEx.AdditionalValue * 1.3m);
             }
 
             var skills = new List<Skill.Skill>();
