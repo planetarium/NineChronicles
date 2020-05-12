@@ -1,149 +1,167 @@
-﻿using EnhancedUI.EnhancedScroller;
-using Nekoyume.Helper;
+using Nekoyume.Model.Elemental;
+using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
-using System;
-using System.Linq;
-using Assets.SimpleLocalization;
-using JetBrains.Annotations;
-using Nekoyume.Game.Controller;
-using TMPro;
-using UniRx;
 using UnityEngine;
+using TMPro;
 using UnityEngine.UI;
-using Nekoyume.Model.Item;
+using UniRx;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Scroller
 {
-    [RequireComponent(typeof(RectTransform))]
-    public class RecipeCellView : EnhancedScrollerCellView
+    public class RecipeCellView : MonoBehaviour
     {
-        public interface IEventListener
-        {
-            void OnRecipeCellViewStarClick(RecipeCellView recipeCellView);
-            void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView);
-        }
-        
-        public Button starButton;
-        public SimpleItemView resultItemView;
-        public TextMeshProUGUI resultItemNameText;
-        public SimpleItemView[] materialItemViews;
-        public SubmitButton submitButton;
-        public TextMeshProUGUI submitText;
-        
-        public RecipeInfo Model { get; private set; }
+        protected static readonly Color DisabledColor = new Color(0.5f, 0.5f, 0.5f);
 
-        [CanBeNull] private IEventListener _eventListener;
-        
+        [SerializeField]
+        protected Button button;
+
+        [SerializeField]
+        protected Image panelImageLeft;
+
+        [SerializeField]
+        protected Image panelImageRight;
+
+        [SerializeField]
+        protected Image backgroundImage;
+
+        [SerializeField]
+        protected Image[] elementalTypeImages;
+
+        [SerializeField]
+        protected TextMeshProUGUI titleText;
+
+        [SerializeField]
+        protected TextMeshProUGUI optionText;
+
+        [SerializeField]
+        protected SimpleCountableItemView itemView;
+
+        [SerializeField]
+        protected GameObject lockParent;
+
+        [SerializeField]
+        protected TextMeshProUGUI unlockConditionText;
+
+        [SerializeField]
+        protected CanvasGroup canvasGroup;
+
+        public readonly Subject<RecipeCellView> OnClick =
+            new Subject<RecipeCellView>();
+
+        protected bool IsLocked => lockParent.activeSelf;
+        public ItemSubType ItemSubType { get; protected set; }
+        public ElementalType ElementalType { get; protected set; }
+        public StatType StatType { get; protected set; }
+
+        public bool Visible
+        {
+            get => Mathf.Approximately(canvasGroup.alpha, 1f);
+            set => canvasGroup.alpha = value ? 1f : 0f;
+        }
+
         private void Awake()
         {
-            starButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                _eventListener?.OnRecipeCellViewStarClick(this);
-            }).AddTo(gameObject);
-            submitButton.OnSubmitClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                _eventListener?.OnRecipeCellViewSubmitClick(this);
-            }).AddTo(gameObject);
-            submitText.text = LocalizationManager.Localize("UI_SELECT");
+            button.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (IsLocked)
+                    {
+                        return;
+                    }
+
+                    OnClick.OnNext(this);
+                })
+                .AddTo(gameObject);
         }
 
-        public void RegisterListener(IEventListener eventListener)
+        private void OnDestroy()
         {
-            _eventListener = eventListener;
-        }
-        
-        public void SetData(RecipeInfo recipeInfo)
-        {
-            if (recipeInfo is null)
-            {
-                Clear();
-                return;
-            }
-            
-            Model = recipeInfo;
-            if (Model.IsLocked)
-            {
-                resultItemNameText.text = "?";
-                resultItemView.SetToUnknown();
-                
-                var materialInfosCount = Model.MaterialInfos.Count;
-                for (var i = 0; i < materialItemViews.Length; i++)
-                {
-                    var view = materialItemViews[i];
-                    if (i < materialInfosCount)
-                    {
-                        view.Show();
-                        view.SetToUnknown();
-                    }
-                    else
-                    {
-                        view.Hide();
-                    }
-                }
-                
-                submitButton.SetSubmittable(false);
-                submitText.color = ColorHelper.HexToColorRGB("92A3B5");
-            }
-            else
-            {
-                resultItemNameText.text = Model.ResultItemName;
-                var row = Game.Game.instance.TableSheets.ConsumableItemSheet.Values.First(r =>
-                    r.Id == Model.Row.ResultConsumableItemId);
-                var result = new Item(ItemFactory.CreateItemUsable(row, Guid.Empty, default));
-                SetItemView(result, resultItemView);
-                
-                var materialInfosCount = Model.MaterialInfos.Count;
-                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                for (var i = 0; i < materialItemViews.Length; i++)
-                {
-                    var view = materialItemViews[i];
-                    if (i < materialInfosCount)
-                    {
-                        var info = Model.MaterialInfos[i];
-                        view.Show();
-                        var item = new Item(
-                            ItemFactory.CreateMaterial(materialSheet.Values.First(r => r.Id == info.Id)));
-                        SetItemView(item, view, !info.IsEnough);
-                    }
-                    else
-                    {
-                        view.Hide();
-                    }
-                }
-                
-                if (Model.MaterialInfos.Any(info => info.Id != 0 && !info.IsEnough))
-                {
-                    submitButton.SetSubmittable(false);
-                    submitText.color = ColorHelper.HexToColorRGB("92A3B5");
-                }
-                else
-                {
-                    submitButton.SetSubmittable(true);
-                    submitText.color = Color.white;
-                }
-            }
+            OnClick.Dispose();
         }
 
-        private void SetItemView(Item item, SimpleItemView itemView, bool isDimmed = false)
+        public void Show()
         {
+            Visible = true;
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        protected void Set(ItemUsable itemUsable)
+        {
+            ItemSubType = itemUsable.Data.ItemSubType;
+            ElementalType = itemUsable.Data.ElementalType;
+
+            titleText.text = itemUsable.GetLocalizedNonColoredName();
+
+            var item = new CountableItem(itemUsable, 1);
             itemView.SetData(item);
-            itemView.Model.Dimmed.Value = isDimmed;
-            itemView.gameObject.SetActive(true);
+
+            var sprite = ElementalType.GetSprite();
+            var grade = itemUsable.Data.Grade;
+
+            for (var i = 0; i < elementalTypeImages.Length; ++i)
+            {
+                if (sprite is null || i >= grade)
+                {
+                    elementalTypeImages[i].gameObject.SetActive(false);
+                    continue;
+                }
+
+                elementalTypeImages[i].sprite = sprite;
+                elementalTypeImages[i].gameObject.SetActive(true);
+            }
+
+            SetCellViewLocked(false);
+            SetDimmed(false);
         }
 
-        private void Clear()
+        public void SetInteractable(bool value)
         {
-            resultItemView.Clear();
-            for (var i = 0; i < materialItemViews.Length; ++i)
+            button.interactable = value;
+        }
+
+        protected void SetCellViewLocked(bool value)
+        {
+            lockParent.SetActive(value);
+            itemView.gameObject.SetActive(!value);
+            titleText.enabled = !value;
+            optionText.enabled = !value;
+
+            foreach (var icon in elementalTypeImages)
             {
-                materialItemViews[i].Clear();
-                materialItemViews[i].gameObject.SetActive(false);
-                submitButton.SetSubmittable(false);
-                submitText.color = ColorHelper.HexToColorRGB("92A3B5");
+                icon.enabled = !value;
             }
+
+            SetPanelDimmed(value);
+        }
+
+        protected void SetDimmed(bool value)
+        {
+            var color = value ? DisabledColor : Color.white;
+            titleText.color = itemView.Model.ItemBase.Value.GetItemGradeColor() * color;
+            optionText.color = color;
+            itemView.Model.Dimmed.Value = value;
+
+            foreach (var icon in elementalTypeImages)
+            {
+                icon.color = value ? DisabledColor : Color.white;
+            }
+
+            SetPanelDimmed(value);
+        }
+
+        protected void SetPanelDimmed(bool value)
+        {
+            var color = value ? DisabledColor : Color.white;
+            panelImageLeft.color = color;
+            panelImageRight.color = color;
+            backgroundImage.color = color;
         }
     }
 }

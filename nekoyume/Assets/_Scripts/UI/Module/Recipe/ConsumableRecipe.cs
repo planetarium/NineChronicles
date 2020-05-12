@@ -7,25 +7,28 @@ using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
+using System.Collections;
+using DG.Tweening;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Module
 {
-    public class EquipmentRecipe : MonoBehaviour
+    public class ConsumableRecipe : MonoBehaviour
     {
         [SerializeField]
-        private EquipmentRecipeCellView cellViewPrefab;
+        private ConsumableRecipeCellView cellViewPrefab;
         [SerializeField]
-        private EquipmentRecipeCellView[] cellViews;
+        private ConsumableRecipeCellView[] cellViews;
         [SerializeField]
-        private TabButton weaponTabButton;
+        private TabButton hpTabButton;
         [SerializeField]
-        private TabButton armorTabButton;
+        private TabButton atkTabButton;
         [SerializeField]
-        private TabButton beltTabButton;
+        private TabButton criTabButton;
         [SerializeField]
-        private TabButton necklaceTabButton;
+        private TabButton hitTabButton;
         [SerializeField]
-        private TabButton ringTabButton;
+        private TabButton defTabButton;
         [SerializeField]
         private Transform cellViewParent;
         [SerializeField]
@@ -33,8 +36,8 @@ namespace Nekoyume.UI.Module
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
-        private readonly ReactiveProperty<ItemSubType> _filterType =
-            new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
+        private readonly ReactiveProperty<StatType> _filterType =
+            new ReactiveProperty<StatType>(StatType.HP);
 
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
 
@@ -44,11 +47,11 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
-            _toggleGroup.RegisterToggleable(weaponTabButton);
-            _toggleGroup.RegisterToggleable(armorTabButton);
-            _toggleGroup.RegisterToggleable(beltTabButton);
-            _toggleGroup.RegisterToggleable(necklaceTabButton);
-            _toggleGroup.RegisterToggleable(ringTabButton);
+            _toggleGroup.RegisterToggleable(hpTabButton);
+            _toggleGroup.RegisterToggleable(atkTabButton);
+            _toggleGroup.RegisterToggleable(criTabButton);
+            _toggleGroup.RegisterToggleable(hitTabButton);
+            _toggleGroup.RegisterToggleable(defTabButton);
 
             LoadRecipes();
             _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
@@ -79,7 +82,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void HideCellViews()
+        public void HideCellviews()
         {
             scrollAlphaTweener.PlayReverse();
             scrollPositionTweener.PlayReverse();
@@ -93,9 +96,9 @@ namespace Nekoyume.UI.Module
         {
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
 
-            var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
+            var recipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
             var totalCount = recipeSheet.Count;
-            cellViews = new EquipmentRecipeCellView[totalCount];
+            cellViews = new ConsumableRecipeCellView[totalCount];
 
             var idx = 0;
             foreach (var recipeRow in recipeSheet)
@@ -106,7 +109,7 @@ namespace Nekoyume.UI.Module
                 cellViews[idx] = cellView;
                 ++idx;
             }
-
+            
             UpdateRecipes();
         }
 
@@ -116,19 +119,20 @@ namespace Nekoyume.UI.Module
             if (avatarState is null)
                 return;
 
-            foreach (var cellView in cellViews)
-            {
-                cellView.Set(avatarState);
-            }
+            // FIXME : 소모품 해금도 대응시켜야 함.
+            //foreach (var cellView in cellViews)
+            //{
+            //    cellView.Set(avatarState);
+            //}
         }
 
-        private void SubScribeFilterType(ItemSubType itemSubType)
+        private void SubScribeFilterType(StatType statType)
         {
             scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
 
             foreach (var cellView in cellViews)
             {
-                if (cellView.ItemSubType == itemSubType)
+                if (cellView.StatType == statType)
                 {
                     cellView.Show();
                 }
@@ -138,54 +142,54 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            switch (itemSubType)
+            switch (statType)
             {
-                case ItemSubType.Weapon:
-                    _toggleGroup.SetToggledOn(weaponTabButton);
+                case StatType.HP:
+                    _toggleGroup.SetToggledOn(hpTabButton);
                     break;
-                case ItemSubType.Armor:
-                    _toggleGroup.SetToggledOn(armorTabButton);
+                case StatType.ATK:
+                    _toggleGroup.SetToggledOn(atkTabButton);
                     break;
-                case ItemSubType.Belt:
-                    _toggleGroup.SetToggledOn(beltTabButton);
+                case StatType.CRI:
+                    _toggleGroup.SetToggledOn(criTabButton);
                     break;
-                case ItemSubType.Necklace:
-                    _toggleGroup.SetToggledOn(necklaceTabButton);
+                case StatType.HIT:
+                    _toggleGroup.SetToggledOn(hitTabButton);
                     break;
-                case ItemSubType.Ring:
-                    _toggleGroup.SetToggledOn(ringTabButton);
+                case StatType.DEF:
+                    _toggleGroup.SetToggledOn(defTabButton);
                     break;
             }
         }
 
         private void SubscribeOnToggledOn(IToggleable toggleable)
         {
-            if (toggleable.Name.Equals(weaponTabButton.Name))
+            if (toggleable.Name.Equals(hpTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Weapon);
+                _filterType.SetValueAndForceNotify(StatType.HP);
             }
-            else if (toggleable.Name.Equals(armorTabButton.Name))
+            else if (toggleable.Name.Equals(atkTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Armor);
+                _filterType.SetValueAndForceNotify(StatType.ATK);
             }
-            else if (toggleable.Name.Equals(beltTabButton.Name))
+            else if (toggleable.Name.Equals(criTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Belt);
+                _filterType.SetValueAndForceNotify(StatType.CRI);
             }
-            else if (toggleable.Name.Equals(necklaceTabButton.Name))
+            else if (toggleable.Name.Equals(hitTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Necklace);
+                _filterType.SetValueAndForceNotify(StatType.HIT);
             }
-            else if (toggleable.Name.Equals(ringTabButton.Name))
+            else if (toggleable.Name.Equals(defTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Ring);
+                _filterType.SetValueAndForceNotify(StatType.DEF);
             }
         }
 
         private void SubscribeOnClickCellView(RecipeCellView cellView)
         {
             var combination = Widget.Find<Combination>();
-            combination.selectedRecipe = cellView as EquipmentRecipeCellView;
+            combination.selectedRecipe = cellView as ConsumableRecipeCellView;
             combination.State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }
