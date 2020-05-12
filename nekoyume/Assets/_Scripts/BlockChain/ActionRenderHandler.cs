@@ -6,6 +6,7 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
 using Nekoyume.Manager;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
@@ -57,6 +58,7 @@ namespace Nekoyume.BlockChain
             RapidCombination();
             GameConfig();
             RedeemCode();
+            ChargeActionPoint();
         }
 
         public void Stop()
@@ -300,6 +302,14 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRedeemCode).AddTo(_disposables);
+        }
+
+        private void ChargeActionPoint()
+        {
+            _renderer.EveryRender<ChargeActionPoint>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
@@ -663,6 +673,15 @@ namespace Nekoyume.BlockChain
             UpdateCurrentAvatarState(eval);
         }
 
+        private void ResponseChargeActionPoint(ActionBase.ActionEvaluation<ChargeActionPoint> eval)
+        {
+            var avatarAddress = eval.Action.avatarAddress;
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
+            var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            LocalStateModifier.AddItem(avatarAddress, row.ItemId, 1);
+            UpdateCurrentAvatarState(eval);
+        }
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
         {
             foreach (int id in ids)
