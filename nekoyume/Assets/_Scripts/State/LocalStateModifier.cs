@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -462,7 +462,7 @@ namespace Nekoyume.State
         public static void ModifyCombinationSlot(
             TableSheets tableSheets,
             EquipmentItemRecipeSheet.Row row,
-            EquipmentCombinationPanel panel,
+            CombinationPanel panel,
             int slotIndex,
             int? subRecipeId
         )
@@ -502,7 +502,7 @@ namespace Nekoyume.State
 
         public static void ModifyCombinationSlotConsumable(
             TableSheets tableSheets,
-            CombineConsumable panel,
+            ICombinationPanel panel,
             List<(Material material, int count)> materialInfoList,
             int slotIndex
         )

@@ -399,7 +399,12 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-            UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.Data.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId
+            );
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
             //[TentuPlay] Consumable 합성에 사용한 골드 기록

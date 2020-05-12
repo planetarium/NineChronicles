@@ -1,4 +1,4 @@
-﻿using Nekoyume.TableData;
+using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using UniRx;
@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void TweenCellViewInOption(EquipmentRecipeCellView view)
+        public void TweenCellViewInOption(RecipeCellView view)
         {
             var rect = view.transform as RectTransform;
 
