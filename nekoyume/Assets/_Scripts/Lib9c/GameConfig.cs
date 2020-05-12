@@ -34,7 +34,7 @@
         //TODO 안쓰는 프리팹과 함께 삭제해야함
         public const int CombineEquipmentCostAP = 5;
         public const int CombineEquipmentCostNCG = 10;
-        public const int EnhanceEquipmentCostAP = 5;
+        public const int EnhanceEquipmentCostAP = 0;
         public const int EnhanceEquipmentCostNCG = 10;
 
         public const int RankingRewardFirst = 50;
