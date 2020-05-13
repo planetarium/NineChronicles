@@ -1,4 +1,3 @@
-using System;
 using Libplanet;
 using Nekoyume.Model;
 using Nekoyume.Model.Mail;
@@ -27,9 +26,11 @@ namespace Nekoyume.State
 
         public static void Initialize(AvatarState state)
         {
-            // todo: 선택된 아바타가 없을 경우 null이 들어 오는데, 이 때 아래에서 별도로 처리해줘야 하겠음.. 구독하는 쪽에서도 null 검사를 잘 하도록.. 
+            // todo: 선택된 아바타가 없을 경우 null이 들어 오는데, 이 때 아래에서 별도로 처리해줘야 하겠음.. 구독하는 쪽에서도 null 검사를 잘 하도록..
             if (state is null)
+            {
                 return;
+            }
 
             Address.SetValueAndForceNotify(state.address);
             Inventory.SetValueAndForceNotify(state.inventory);
