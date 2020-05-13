@@ -190,6 +190,8 @@ MonoBehaviour:
   bubbleTweenTime: 0.2
   speechBreakTime: 0
   destroyTime: 4
+  enable: 0
+  onGoing: 0
 --- !u!1 &4214294061895458759
 GameObject:
   m_ObjectHideFlags: 0
