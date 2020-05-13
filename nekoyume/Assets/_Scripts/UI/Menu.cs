@@ -29,8 +29,6 @@ namespace Nekoyume.UI
         public MainMenu btnRanking;
         public ArenaPendingNCG arenaPendingNCG;
         public SpeechBubble[] SpeechBubbles;
-        public NPC npc;
-        public SpeechBubble speechBubble;
         public GameObject shopExclamationMark;
         public GameObject combinationExclamationMark;
         public GameObject rankingExclamationMark;

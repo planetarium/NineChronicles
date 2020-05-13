@@ -168,6 +168,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationSlots>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<AvatarInfo>());
+            yield return null;
 
             // 팝업류.
             _secondWidgets.Add(Widget.Create<BattleResult>());
