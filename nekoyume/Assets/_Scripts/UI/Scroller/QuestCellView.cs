@@ -110,7 +110,7 @@ namespace Nekoyume.UI.Scroller
                 var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
                     .First(pair => pair.Key == reward.Key);
 
-                LocalStateModifier.AddItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
+                LocalStateModifier.AddItem(avatarAddress, materialRow.Value.ItemId, reward.Value, false);
             }
 
             LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
