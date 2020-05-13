@@ -19,7 +19,7 @@ namespace Nekoyume.UI
 {
     public class CombinationSlotPopup : PopupWidget
     {
-        public EquipmentRecipeCellView cellView;
+        public RecipeCellView cellView;
         public CombinationMaterialPanel materialPanel;
         public EquipmentOptionRecipeView optionView;
         public SubmitWithCostButton submitButton;
@@ -88,7 +88,7 @@ namespace Nekoyume.UI
                     var recipeRow =
                         Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
-                    cellView.Set(recipeRow);
+                    (cellView as EquipmentRecipeCellView).Set(recipeRow);
                     if (subRecipeEnabled)
                     {
                         optionView.Show(
@@ -110,7 +110,7 @@ namespace Nekoyume.UI
                     var recipeRow =
                         Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
-                    cellView.Set(recipeRow);
+                    (cellView as ConsumableRecipeCellView).Set(recipeRow);
                     materialPanel.SetData(recipeRow);
                     materialPanel.gameObject.SetActive(true);
                     break;

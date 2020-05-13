@@ -4,12 +4,12 @@ using Nekoyume.UI.Scroller;
 
 namespace Nekoyume.UI.Module
 {
-    public class EquipmentCombinationPanel : CombinationPanel
+    public class ConsumableCombinationPanel : CombinationPanel
     {
-        public void SetData(EquipmentItemRecipeSheet.Row recipeRow, int? subRecipeId = null)
+        public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
         {
-            (recipeCellView as EquipmentRecipeCellView).Set(recipeRow);
-            materialPanel.SetData(recipeRow, subRecipeId);
+            (recipeCellView as ConsumableRecipeCellView).Set(recipeRow);
+            materialPanel.SetData(recipeRow);
 
             gameObject.SetActive(true);
             confirmAreaYTweener.OnComplete = OnTweenCompleted;
@@ -18,6 +18,7 @@ namespace Nekoyume.UI.Module
 
             CostNCG = (int) materialPanel.costNCG;
             CostAP = materialPanel.costAP;
+
             if (CostAP > 0)
             {
                 submitButton.ShowAP(CostAP, States.Instance.CurrentAvatarState.actionPoint >= CostAP);
@@ -36,17 +37,16 @@ namespace Nekoyume.UI.Module
                 submitButton.HideNCG();
             }
             submitButton.SetSubmittable(materialPanel.IsCraftable);
-            var requiredBlockIndex = recipeRow.RequiredBlockIndex;
-            if (subRecipeId.HasValue)
-            {
-                var subSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
-                if (subSheet.TryGetValue((int) subRecipeId, out var subRecipe))
-                {
-                    requiredBlockIndex += subRecipe.RequiredBlockIndex;
+        }
 
-                }
-            }
-            RequiredBlockIndexSubject.OnNext(requiredBlockIndex);
+        protected override void SubscribeOnClickCancel()
+        {
+            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineConsumable);
+        }
+
+        protected override void SubscribeOnClickSubmit()
+        {
+            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineConsumable);
         }
     }
 }

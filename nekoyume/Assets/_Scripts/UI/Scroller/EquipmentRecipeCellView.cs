@@ -1,102 +1,16 @@
-using System;
-using System.Linq;
-using System.Text;
 using Assets.SimpleLocalization;
-using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
-using UnityEngine;
-using TMPro;
 using Nekoyume.TableData;
-using UnityEngine.UI;
-using UniRx;
+using System;
+using System.Linq;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class EquipmentRecipeCellView : MonoBehaviour
+    public class EquipmentRecipeCellView : RecipeCellView
     {
-        private static readonly Color DisabledColor = new Color(0.5f, 0.5f, 0.5f);
-
-        [SerializeField]
-        private Button button;
-
-        [SerializeField]
-        private Image panelImageLeft;
-
-        [SerializeField]
-        private Image panelImageRight;
-
-        [SerializeField]
-        private Image backgroundImage;
-
-        [SerializeField]
-        private Image[] elementalTypeImages;
-
-        [SerializeField]
-        private TextMeshProUGUI titleText;
-
-        [SerializeField]
-        private TextMeshProUGUI optionText;
-
-        [SerializeField]
-        private SimpleCountableItemView itemView;
-
-        [SerializeField]
-        private GameObject lockParent;
-
-        [SerializeField]
-        private TextMeshProUGUI unlockConditionText;
-
-        [SerializeField]
-        private CanvasGroup canvasGroup;
-
-        public readonly Subject<EquipmentRecipeCellView> OnClick =
-            new Subject<EquipmentRecipeCellView>();
-
-        private bool IsLocked => lockParent.activeSelf;
         public EquipmentItemRecipeSheet.Row RowData { get; private set; }
-        public ItemSubType ItemSubType { get; private set; }
-        public ElementalType ElementalType { get; private set; }
-
-        public bool Visible
-        {
-            get => Mathf.Approximately(canvasGroup.alpha, 1f);
-            set => canvasGroup.alpha = value ? 1f : 0f;
-        }
-
-        private void Awake()
-        {
-            button.OnClickAsObservable()
-                .Subscribe(_ =>
-                {
-                    if (IsLocked)
-                    {
-                        return;
-                    }
-
-                    OnClick.OnNext(this);
-                })
-                .AddTo(gameObject);
-        }
-
-        private void OnDestroy()
-        {
-            OnClick.Dispose();
-        }
-
-        public void Show()
-        {
-            Visible = true;
-            gameObject.SetActive(true);
-        }
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
-        }
 
         public void Set(EquipmentItemRecipeSheet.Row recipeRow)
         {
@@ -111,68 +25,11 @@ namespace Nekoyume.UI.Scroller
 
             var equipment = (Equipment) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
             Set(equipment);
-        }
 
-        public void Set(ConsumableItemRecipeSheet.Row recipeRow)
-        {
-            if (recipeRow is null)
-                return;
-
-            var sheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
-            if (!sheet.TryGetValue(recipeRow.ResultConsumableItemId, out var row))
-                return;
-
-            var consumable = (Consumable) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
-            Set(consumable);
-        }
-
-        private void Set(ItemUsable itemUsable)
-        {
-            ItemSubType = itemUsable.Data.ItemSubType;
-            ElementalType = itemUsable.Data.ElementalType;
-
-            titleText.text = itemUsable.GetLocalizedNonColoredName();
-
-            var item = new CountableItem(itemUsable, 1);
-            itemView.SetData(item);
-
-            var sprite = ElementalType.GetSprite();
-            var grade = itemUsable.Data.Grade;
-
-            for (var i = 0; i < elementalTypeImages.Length; ++i)
-            {
-                if (sprite is null || i >= grade)
-                {
-                    elementalTypeImages[i].gameObject.SetActive(false);
-                    continue;
-                }
-
-                elementalTypeImages[i].sprite = sprite;
-                elementalTypeImages[i].gameObject.SetActive(true);
-            }
-
-            switch (itemUsable)
-            {
-                case Equipment equipment:
-                {
-                    var text = $"{equipment.Data.Stat.Type} +{equipment.Data.Stat.Value}";
-                    optionText.text = text;
-                    break;
-                }
-                case Consumable consumable:
-                {
-                    var sb = new StringBuilder();
-                    foreach (var stat in consumable.Data.Stats)
-                    {
-                        sb.AppendLine($"{stat.StatType} +{stat.Value}");
-                    }
-                    optionText.text = sb.ToString();
-                    break;
-                }
-            }
-
+            StatType = equipment.UniqueStatType;
+            var text = $"{equipment.Data.Stat.Type} +{equipment.Data.Stat.Value}";
+            optionText.text = text;
             SetLocked(false);
-            SetDimmed(false);
         }
 
         public void Set(AvatarState avatarState)
@@ -239,12 +96,7 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        public void SetInteractable(bool value)
-        {
-            button.interactable = value;
-        }
-
-        private void SetLocked(bool value)
+        protected void SetLocked(bool value)
         {
             // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
             if (value)
@@ -287,40 +139,7 @@ namespace Nekoyume.UI.Scroller
                 unlockConditionText.enabled = false;
             }
 
-            lockParent.SetActive(value);
-            itemView.gameObject.SetActive(!value);
-            titleText.enabled = !value;
-            optionText.enabled = !value;
-
-            foreach (var icon in elementalTypeImages)
-            {
-                icon.enabled = !value;
-            }
-
-            SetPanelDimmed(value);
-        }
-
-        private void SetDimmed(bool value)
-        {
-            var color = value ? DisabledColor : Color.white;
-            titleText.color = itemView.Model.ItemBase.Value.GetItemGradeColor() * color;
-            optionText.color = color;
-            itemView.Model.Dimmed.Value = value;
-
-            foreach (var icon in elementalTypeImages)
-            {
-                icon.color = value ? DisabledColor : Color.white;
-            }
-
-            SetPanelDimmed(value);
-        }
-
-        private void SetPanelDimmed(bool value)
-        {
-            var color = value ? DisabledColor : Color.white;
-            panelImageLeft.color = color;
-            panelImageRight.color = color;
-            backgroundImage.color = color;
+            SetCellViewLocked(value);
         }
     }
 }
