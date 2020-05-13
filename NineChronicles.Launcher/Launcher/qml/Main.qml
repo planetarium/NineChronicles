@@ -279,7 +279,7 @@ Item {
         id: passphraseWindow
         title: "Sign in"
         width: 360
-        height: ctrl.keyStoreEmpty ? 210 : 155
+        height: ctrl.keyStoreEmpty ? 230 : 155
         minimumWidth: width
         minimumHeight: height
         maximumWidth: width
@@ -311,7 +311,6 @@ Item {
                 width: parent.width
 
                 Label {
-                    visible: !ctrl.keyStoreEmpty
                     text: "Address"
                     Layout.preferredWidth: 120
                 }
@@ -321,6 +320,13 @@ Item {
                     id: addressComboBox
                     model: Net.toListModel(ctrl.keyStoreOptions)
                     Layout.fillWidth: true
+                }
+
+                Label {
+                    visible: ctrl.keyStoreEmpty
+                    Component.onCompleted: {
+                        text = ctrl.preparedPrivateKeyAddressHex.substr(0, 24) + "…"
+                    }
                 }
 
                 Label {
@@ -465,7 +471,47 @@ Item {
         }
     }
 
+    Window {
+        id: popup
+        width: 400
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 10
+
+            Label {
+                id: popupLabel
+                text: ""
+                Layout.alignment: Qt.AlignCenter
+            }
+
+            Button {
+                id: popupButton
+                text: "Create Account"
+                property var onClickEvent
+                onClicked: {
+                   popup.visible = false
+                   onClickEvent()
+                }
+                Layout.alignment: Qt.AlignCenter
+            }
+        }
+
+        function show(text, btnMsg, next) {
+            popupLabel.text = text
+            popupButton.text = btnMsg
+            popupButton.onClickEvent = next
+            popup.height = 10 + text.split('\n').length * 18 + 60 + 10
+            popup.visible = true
+        }
+    }
+
     Component.onCompleted: {
-        passphraseWindow.show()
+        if (ctrl.keyStoreEmpty) {
+            popup.show(ctrl.welcomeMessage, "Create Account", () => {
+                popup.show("ID Create Success!", "Create Password", passphraseWindow.show)
+            })
+        } else {
+            passphraseWindow.show()
+        }
     }
 }

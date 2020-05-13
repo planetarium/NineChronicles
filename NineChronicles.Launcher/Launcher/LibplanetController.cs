@@ -34,6 +34,15 @@ namespace Launcher
     {
         private CancellationTokenSource _cancellationTokenSource;
 
+        // Copied from UI_LOGIN_CONTENT in nekoyume/Assets/Resources/Localizations/common.csv
+        [NotifySignal]
+        public string WelcomeMessage =>
+            @"This is a community-powered
+fantasy world that fully runs on blockchain.
+
+It is a fantasy world on the blockchain.
+To start the game, you need to create your account.";
+
         // It used in qml/Main.qml to hide and turn on some menus.
         [NotifySignal]
         public bool GameRunning => !(GameProcess?.HasExited ?? true);
@@ -65,6 +74,9 @@ namespace Launcher
         public PrivateKey PrivateKey { get; set; }
 
         [NotifySignal]
+        public PrivateKey PreparedPrivateKey { get; } = new PrivateKey();
+
+        [NotifySignal]
         public Peer CurrentNode { get; set; }
 
         [NotifySignal]
@@ -75,7 +87,11 @@ namespace Launcher
         [NotifySignal]
         public string PreloadStatus { get; private set; }
 
+        [NotifySignal]
+        public string PreparedPrivateKeyAddressHex => PreparedPrivateKey.ToAddress().ToHex();
+
         private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
+
 
         public IKeyStore KeyStore
         {
@@ -443,7 +459,7 @@ namespace Launcher
 
         public void CreatePrivateKey(string passphrase)
         {
-            PrivateKey = new PrivateKey();
+            PrivateKey = PreparedPrivateKey;
             ProtectedPrivateKey ppk = ProtectedPrivateKey.Protect(PrivateKey, passphrase);
             KeyStore.Add(ppk);
             this.ActivateProperty(ctrl => ctrl.PrivateKey);
