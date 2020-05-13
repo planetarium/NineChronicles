@@ -27,6 +27,7 @@ namespace Nekoyume.UI.Module
             WorldMap,
             Settings,
             Combination,
+            AvatarInfo,
         }
 
         public class Model : IDisposable
@@ -70,6 +71,7 @@ namespace Nekoyume.UI.Module
         public NotifiableButton worldMapButton;
         public NotifiableButton settingsButton;
         public NotifiableButton combinationButton;
+        public NotifiableButton avatarInfoButton;
 
         public CanvasGroup canvasGroup;
         public VFX inventoryVFX;
@@ -90,6 +92,7 @@ namespace Nekoyume.UI.Module
         public readonly Subject<bool> HasNotificationInWorldMap = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInSettings = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInCombination = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInAvatarInfo = new Subject<bool>();
 
         protected override WidgetType WidgetType => WidgetType.Popup;
 
@@ -111,6 +114,7 @@ namespace Nekoyume.UI.Module
             settingsButton.SetWidgetType<Settings>();
             chatButton.SetWidgetType<Confirm>();
             combinationButton.SetWidgetType<CombinationSlots>();
+            avatarInfoButton.SetWidgetType<AvatarInfo>();
             // todo: 지금 월드맵 띄우는 것을 위젯으로 빼고, 여기서 설정하기?
             // worldMapButton.SetWidgetType<WorldMapPaper>();
 
@@ -131,6 +135,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(settingsButton);
             _toggleGroup.RegisterToggleable(chatButton);
             _toggleGroup.RegisterToggleable(combinationButton);
+            _toggleGroup.RegisterToggleable(avatarInfoButton);
 
             SubmitWidget = null;
             CloseWidget = null;
@@ -154,6 +159,7 @@ namespace Nekoyume.UI.Module
             HasNotificationInWorldMap.SubscribeTo(worldMapButton.SharedModel.HasNotification).AddTo(gameObject);
             HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification).AddTo(gameObject);
             HasNotificationInCombination.SubscribeTo(combinationButton.SharedModel.HasNotification).AddTo(gameObject);
+            HasNotificationInAvatarInfo.SubscribeTo(avatarInfoButton.SharedModel.HasNotification).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
         }
@@ -203,6 +209,7 @@ namespace Nekoyume.UI.Module
             HasNotificationInWorldMap.Dispose();
             HasNotificationInSettings.Dispose();
             HasNotificationInCombination.Dispose();
+            HasNotificationInAvatarInfo.Dispose();
         }
 
         public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
@@ -380,6 +387,8 @@ namespace Nekoyume.UI.Module
                     return ShowSettingsButton();
                 case ToggleableType.Combination:
                     return ShowCombinationButton();
+                case ToggleableType.AvatarInfo:
+                    return ShowAvatarInfoButton();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType, null);
             }
@@ -487,6 +496,12 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
+        private bool ShowAvatarInfoButton()
+        {
+            avatarInfoButton.Show();
+            return true;
+        }
+
         #endregion
 
         private ToggleableButton GetButton(ToggleableType toggleableType)
@@ -511,6 +526,8 @@ namespace Nekoyume.UI.Module
                     return settingsButton;
                 case ToggleableType.Combination:
                     return combinationButton;
+                case ToggleableType.AvatarInfo:
+                    return avatarInfoButton;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType, null);
             }

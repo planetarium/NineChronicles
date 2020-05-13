@@ -1,7 +1,16 @@
 fileFormatVersion: 2
-guid: 2539b00cd57924ecdaeddcd9fc3db15d
+guid: 970e626b3c9b84c4b8e00eaac4fad2cc
 TextureImporter:
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      213: -8965632953316222239
+    second: UI_line_03_multiple_0
+  - first:
+      213: -6629108465300814441
+    second: UI_line_03_multiple_1
+  - first:
+      213: 713582942218920066
+    second: UI_line_03_multiple_2
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -40,13 +49,13 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
-  spriteBorder: {x: 296, y: 1, z: 296, w: 1}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
   alphaIsTransparency: 1
@@ -82,11 +91,74 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: UI_line_03_multiple_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 297
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 23, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 14bb6f8c4f98c1544ad2187f4b166435
+      internalID: -8965632953316222239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_line_03_multiple_1
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 0
+        width: 148
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1002a49d27fc6d74a8c331ad7cfcc997
+      internalID: -6629108465300814441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_line_03_multiple_2
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 0
+        width: 297
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 23, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0414d161fa070b4f9b7cbb7e9dfab79
+      internalID: 713582942218920066
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 2e06efc4f0004437fb2aef586d7eb48d
+    spriteID: 14045bf637aaecf40aa7835ed078c3ac
     internalID: 0
     vertices: []
     indices: 
