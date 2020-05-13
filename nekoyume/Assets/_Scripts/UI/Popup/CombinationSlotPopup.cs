@@ -89,8 +89,6 @@ namespace Nekoyume.UI
                         Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
 
-                    consumableCellView.enabled = false;
-                    equipmentCellView.enabled = true;
                     equipmentCellView.Set(recipeRow);
                     if (subRecipeEnabled)
                     {
@@ -114,8 +112,6 @@ namespace Nekoyume.UI
                         Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
 
-                    equipmentCellView.enabled = false;
-                    consumableCellView.enabled = true;
                     consumableCellView.Set(recipeRow);
                     materialPanel.SetData(recipeRow);
                     materialPanel.gameObject.SetActive(true);
