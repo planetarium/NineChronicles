@@ -71,14 +71,15 @@ namespace Nekoyume.UI
         {
             var tooltip = Find<ItemInformationTooltip>();
             if (view is null ||
-                view.RectTransform == tooltip.Target)
+                view.RectTransform == tooltip.Target ||
+                view.Model?.ItemBase is null)
             {
                 tooltip.Close();
 
                 return;
             }
 
-            var subType = view.Model?.ItemBase.Value.Data.ItemSubType;
+            var subType = view.Model.ItemBase.Value.Data.ItemSubType;
             if (subType == ItemSubType.ApStone)
             {
                 tooltip.Show(
@@ -110,7 +111,7 @@ namespace Nekoyume.UI
 
         private static bool DimmedFuncForChargeActionPoint(CountableItem item)
         {
-            if (item?.Count.Value < 1)
+            if (item is null || item.Count.Value < 1)
             {
                 return false;
             }
