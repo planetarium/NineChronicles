@@ -11,12 +11,6 @@ namespace Nekoyume.UI
 {
     public class SpeechBubble : HudWidget
     {
-        public enum ImageType : int
-        {
-            Normal,
-            Emphasis,
-        }
-
         public string localizationKey;
         public Transform bubbleContainer;
         public Image[] bubbleImages;
@@ -31,7 +25,7 @@ namespace Nekoyume.UI
         public bool enable;
         public bool onGoing;
 
-        public int SpeechCount { get; private set; }
+        private int SpeechCount { get; set; }
         private Coroutine _coroutine;
         private Sequence _tweenScale;
         private Sequence _tweenMoveBy;
@@ -43,7 +37,16 @@ namespace Nekoyume.UI
             _defaultKey = localizationKey;
         }
 
-        public void Init(bool active=true)
+        protected override void OnDisable()
+        {
+            _tweenScale?.Kill();
+            _tweenScale = null;
+            _tweenMoveBy?.Kill();
+            _tweenMoveBy = null;
+            base.OnDisable();
+        }
+
+        public void Init(bool active = true)
         {
             enable = active;
             SpeechCount = LocalizationManager.LocalizedCount(localizationKey);
@@ -52,15 +55,16 @@ namespace Nekoyume.UI
 
         public void Clear()
         {
-            StopAllCoroutines();
-            DOTween.Kill(this);
             gameObject.SetActive(false);
         }
 
         public void UpdatePosition(GameObject target, Vector3 offset = new Vector3())
         {
             var targetPosition = target.transform.position + offset;
-            RectTransform.anchoredPosition = targetPosition.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            RectTransform.anchoredPosition =
+                targetPosition.ToCanvasPosition(
+                    ActionCamera.instance.Cam,
+                    MainCanvas.instance.Canvas);
         }
 
         public bool SetKey(string value)
@@ -70,9 +74,9 @@ namespace Nekoyume.UI
             return SpeechCount > 0;
         }
 
-        public void SetBubbleImage(int index)
+        private void SetBubbleImage(int index)
         {
-            for (int i = 0; i < bubbleImages.Length; ++i)
+            for (var i = 0; i < bubbleImages.Length; ++i)
             {
                 bubbleImages[i].gameObject.SetActive(index == i);
             }
@@ -100,8 +104,10 @@ namespace Nekoyume.UI
             {
                 yield break;
             }
+
             BeforeSpeech();
-            var speech = LocalizationManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
+            var speech =
+                LocalizationManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
             _coroutine = StartCoroutine(ShowText(speech, instant));
             yield return _coroutine;
         }
@@ -112,6 +118,7 @@ namespace Nekoyume.UI
             {
                 yield break;
             }
+
             BeforeSpeech();
             _coroutine = StartCoroutine(ShowText(speech, instant));
             yield return _coroutine;
@@ -136,29 +143,34 @@ namespace Nekoyume.UI
                 textSize.rectTransform.DOScale(0.0f, 0.0f);
                 textSize.rectTransform.DOScale(1.0f, bubbleTweenTime).SetEase(Ease.OutBack);
 
-                if (_tweenScale is null)
+                if (_tweenScale is null ||
+                    !_tweenScale.IsActive() ||
+                    !_tweenScale.IsPlaying())
                 {
-                    var tweenScale = DOTween.Sequence();
-                    tweenScale.Append(bubbleContainer.DOScale(1.1f, 1.4f));
-                    tweenScale.Append(bubbleContainer.DOScale(1.0f, 1.4f));
-                    tweenScale.SetLoops(3);
-                    tweenScale.Play();
-                    _tweenScale = tweenScale;
-                    tweenScale.onComplete = () => _tweenScale = null;
+                    _tweenScale = DOTween.Sequence();
+                    _tweenScale.Append(bubbleContainer.DOScale(1.1f, 1.4f));
+                    _tweenScale.Append(bubbleContainer.DOScale(1.0f, 1.4f));
+                    _tweenScale.SetLoops(3);
+                    _tweenScale.Play();
+                    _tweenScale.onComplete = () => _tweenScale = null;
                 }
 
-                if (_tweenMoveBy is null)
+                if (_tweenMoveBy is null ||
+                    !_tweenMoveBy.IsActive() ||
+                    !_tweenMoveBy.IsPlaying())
                 {
-                    var tweenMoveBy = DOTween.Sequence();
-                    tweenMoveBy.Append(textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, 6.0f), 1.4f));
-                    tweenMoveBy.Append(textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, -6.0f), 1.4f));
-                    tweenMoveBy.SetLoops(3);
-                    tweenMoveBy.Play();
-                    _tweenMoveBy = tweenMoveBy;
-                    tweenMoveBy.onComplete = () => _tweenMoveBy = null;
+                    _tweenMoveBy = DOTween.Sequence();
+                    _tweenMoveBy.Append(
+                        textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, 6.0f), 1.4f));
+                    _tweenMoveBy.Append(
+                        textSize.transform.DOBlendableLocalMoveBy(new Vector3(0.0f, -6.0f), 1.4f));
+                    _tweenMoveBy.SetLoops(3);
+                    _tweenMoveBy.Play();
+                    _tweenMoveBy.onComplete = () => _tweenMoveBy = null;
                 }
 
                 yield return new WaitForSeconds(bubbleTweenTime);
+
                 if (instant)
                 {
                     text.text = speech;
@@ -167,7 +179,9 @@ namespace Nekoyume.UI
                 {
                     for (var i = 1; i <= speech.Length; ++i)
                     {
-                        text.text = i == speech.Length ? $"{speech.Substring(0, i)}" : $"{speech.Substring(0, i)}<alpha=#00>{speech.Substring(i)}";
+                        text.text = i == speech.Length
+                            ? $"{speech.Substring(0, i)}"
+                            : $"{speech.Substring(0, i)}<alpha=#00>{speech.Substring(i)}";
                         yield return new WaitForSeconds(speechSpeedInterval);
 
                         // check destroy

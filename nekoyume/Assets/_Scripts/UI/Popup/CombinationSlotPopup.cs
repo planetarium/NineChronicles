@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
