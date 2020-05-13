@@ -15,7 +15,7 @@ namespace Nekoyume.UI.Module
         public Image effectImage;
         public Image glowImage;
         public Image equippedIcon;
-        
+
         protected override ImageSizeType imageSizeType => ImageSizeType.Middle;
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module
                 Clear();
                 return;
             }
-            
+
             base.SetData(model);
             _disposablesAtSetData.DisposeAllAndClear();
             Model.EffectEnabled.SubscribeTo(effectImage).AddTo(_disposablesAtSetData);
@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Module
         protected override void SetDim(bool isDim)
         {
             base.SetDim(isDim);
-            
+
             effectImage.color = isDim ? DimmedColor : OriginColor;
             glowImage.color = isDim ? DimmedColor : OriginColor;
             equippedIcon.color = isDim ? DimmedColor : OriginColor;
@@ -82,15 +82,13 @@ namespace Nekoyume.UI.Module
         {
             if (Model is null)
             {
-                selectionImage.enabled = false;
                 effectImage.enabled = false;
                 glowImage.enabled = false;
                 equippedIcon.enabled = false;
-                
+
                 return;
             }
 
-            selectionImage.enabled = Model.Selected.Value;
             effectImage.enabled = Model.EffectEnabled.Value;
             glowImage.enabled = Model.GlowEnabled.Value;
             equippedIcon.enabled = Model.EquippedEnabled.Value;

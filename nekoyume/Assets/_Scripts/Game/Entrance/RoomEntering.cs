@@ -71,7 +71,8 @@ namespace Nekoyume.Game.Entrance
                 BottomMenu.ToggleableType.Character,
                 BottomMenu.ToggleableType.Inventory,
                 BottomMenu.ToggleableType.Settings,
-                BottomMenu.ToggleableType.Combination
+                BottomMenu.ToggleableType.Combination,
+                BottomMenu.ToggleableType.AvatarInfo
             );
 
             Destroy(this);

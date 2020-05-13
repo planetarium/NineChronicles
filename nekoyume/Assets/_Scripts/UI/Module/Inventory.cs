@@ -5,7 +5,6 @@ using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
@@ -120,13 +119,12 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            ReactiveAvatarState.Inventory.Subscribe(value =>
-                {
-                    scrollerController.DisposeAddedAtSetData();
-                    SharedModel.ResetItems(value);
-                    OnResetItems.OnNext(this);
-                })
-                .AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.Inventory.Subscribe(inventoryState =>
+            {
+                scrollerController.DisposeAddedAtSetData();
+                SharedModel.ResetItems(inventoryState);
+                OnResetItems.OnNext(this);
+            }).AddTo(_disposablesAtOnEnable);
         }
 
         private void OnDisable()
