@@ -508,7 +508,7 @@ Item {
     Component.onCompleted: {
         if (ctrl.keyStoreEmpty) {
             popup.show(ctrl.welcomeMessage, "Create Account", () => {
-                popup.show("ID Create Success!", "Create Password", passphraseWindow.show)
+                popup.show("ID was created successfully!\n\nClick the below button and go to complete sign up steps!", "Create Password", passphraseWindow.show)
             })
         } else {
             passphraseWindow.show()
