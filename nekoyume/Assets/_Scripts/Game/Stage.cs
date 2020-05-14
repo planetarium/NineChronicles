@@ -390,8 +390,9 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(0.75f);
             if (log.result == BattleLog.Result.Win && !failed)
             {
-                yield return StartCoroutine(CoDialog(log.stageId));
                 var playerCharacter = GetPlayer();
+                playerCharacter.DisableHUD();
+                yield return StartCoroutine(CoDialog(log.stageId));
                 playerCharacter.Animator.Win();
                 playerCharacter.ShowSpeech("PLAYER_WIN");
                 yield return new WaitForSeconds(2.2f);
