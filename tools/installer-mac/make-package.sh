@@ -40,7 +40,7 @@ if [ "$DOTNET_RUNTIME_PACKAGE_CHECKSUM" \
     exit 1
 fi
 
-TEMP_PRODUCT_DIR="tmp"
+TEMP_PRODUCT_DIR="/tmp/9c-installer"
 rm -rf "$TEMP_PRODUCT_DIR"
 
 # Extract dotnet runtime package
