@@ -179,7 +179,7 @@ namespace Nekoyume.BlockChain
                     for (var index = 0; index < agentAddresses.Length; index++)
                     {
                         Address thisAddress = agentAddresses[index];
-                        
+
                         if(index < 3) // index 는 3보다 작아야 => 0,1,2 만가능
                         {
                             try
@@ -211,7 +211,7 @@ namespace Nekoyume.BlockChain
                                     reference_entity: "quests",
                                     reference_category_slug: "arena",
                                     reference_slug: "RankingRewardIndex" + index.ToString()
-                                    );                                    
+                                    );
                             }
                             catch
                             {
@@ -310,14 +310,15 @@ namespace Nekoyume.BlockChain
             var result = (RapidCombination.ResultModel) slot.Result;
             foreach (var pair in result.cost)
             {
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
 
             //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
-            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용            
+            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             var agentAddress = eval.Signer;
             var agentState = eval.OutputStates.GetAgentState(agentAddress);
             new TPStashEvent().CurrencyUse(
@@ -347,7 +348,8 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -392,7 +394,8 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -429,7 +432,8 @@ namespace Nekoyume.BlockChain
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var itemId = eval.Action.itemUsable.ItemId;
 
-            LocalStateModifier.AddItem(avatarAddress, itemId);
+            // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+            LocalStateModifier.AddItem(avatarAddress, itemId, false);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
             UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
@@ -568,10 +572,11 @@ namespace Nekoyume.BlockChain
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
-            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId);
+            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
             foreach (var itemId in result.materialItemIdList)
             {
-                LocalStateModifier.AddItem(avatarAddress, itemId);
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, itemId, false);
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);

@@ -114,7 +114,7 @@ namespace Nekoyume.UI
             {
                 blur.Close();
             }
-            
+
             base.Close(ignoreCloseAnimation);
         }
 
@@ -191,8 +191,8 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
-                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
+                LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
                 LocalStateModifier.RemoveAttachmentResult(avatarAddress, mail.id);
                 LocalStateModifier.ModifyAvatarItemRequiredIndex(
                     avatarAddress, item.ItemId, Game.Game.instance.Agent.BlockIndex);
@@ -216,14 +216,14 @@ namespace Nekoyume.UI
             model.Item.Value = new CountEditableItem(item, 1, 1, 1);
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
                 popup.Close();
             }).AddTo(gameObject);
             model.OnClickCancel.Subscribe(_ =>
             {
                 //TODO 재판매 처리추가되야함\
-                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id);
                 popup.Close();
             }).AddTo(gameObject);
@@ -243,7 +243,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, buyerMail.id);
             }).AddTo(gameObject);
             popup.Pop(model);
@@ -273,7 +273,7 @@ namespace Nekoyume.UI
             };
             model.OnClickSubmit.Subscribe(_ =>
             {
-                LocalStateModifier.AddItem(avatarAddress, item.ItemId);
+                LocalStateModifier.AddItem(avatarAddress, item.ItemId, false);
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, itemEnhanceMail.id);
             });
             popup.Pop(model);
