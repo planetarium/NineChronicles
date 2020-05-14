@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Resources;
 using Nekoyume.EnumType;
 using UniRx;
 using UnityEngine;
@@ -154,14 +153,14 @@ namespace Nekoyume.UI
             return (T) model.widget;
         }
 
-        public static T Find<T>(GameObject target) where T : HudWidget
+        public static T FindOrCreate<T>() where T : HudWidget
         {
             var type = typeof(T);
             var names = type.ToString().Split('.');
             var widgetName = $"UI_{names[names.Length - 1]}";
             var resName = $"UI/Prefabs/{widgetName}";
             var pool = Game.Game.instance.Stage.objectPool;
-            var go = Game.Game.instance.Stage.objectPool.Get(widgetName, false);
+            var go = pool.Get(widgetName, false);
             if (go is null)
             {
                 Debug.Log("create new");

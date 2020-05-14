@@ -159,7 +159,7 @@ namespace Nekoyume.Game.Character
 
             if (!HPBar)
             {
-                HPBar = Widget.Find<HpBar>(gameObject);
+                HPBar = Widget.FindOrCreate<HpBar>();
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
