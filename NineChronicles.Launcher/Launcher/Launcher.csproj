@@ -66,7 +66,7 @@
       <TarExe>tar</TarExe>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
-      <TarExe>$(BaseIntermediateOutputPath)\bin\tar.exe</TarExe>
+      <TarExe>$(BaseIntermediateOutputPath)\bin\bsdtar.exe</TarExe>
     </PropertyGroup>
 
     <Target Name="BundleQtRuntime" DependsOnTargets="WindowsTar">
@@ -93,21 +93,21 @@
 
     <Target Name="WindowsTar" Condition=" '$(OS)' == 'Windows_NT' ">
       <DownloadFile
-        SourceUrl="https://jaist.dl.sourceforge.net/project/gnuwin32/tar/1.13-1/tar-1.13-1-bin.zip"
+        SourceUrl="http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-bin.zip"
         DestinationFolder="$(BaseIntermediateOutputPath)"
         SkipUnchangedFiles="true"
-        Retries="3" />
+        Retries="5" />
       <Unzip
-        SourceFiles="$(BaseIntermediateOutputPath)\tar-1.13-1-bin.zip"
+        SourceFiles="$(BaseIntermediateOutputPath)\libarchive-2.4.12-1-bin.zip"
         DestinationFolder="$(BaseIntermediateOutputPath)"
         SkipUnchangedFiles="true" />
       <DownloadFile
-        SourceUrl="https://jaist.dl.sourceforge.net/project/gnuwin32/tar/1.13-1/tar-1.13-1-dep.zip"
+        SourceUrl="http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-dep.zip"
         DestinationFolder="$(BaseIntermediateOutputPath)"
         SkipUnchangedFiles="true"
-        Retries="3" />
+        Retries="5" />
       <Unzip
-        SourceFiles="$(BaseIntermediateOutputPath)\tar-1.13-1-dep.zip"
+        SourceFiles="$(BaseIntermediateOutputPath)\libarchive-2.4.12-1-dep.zip"
         DestinationFolder="$(BaseIntermediateOutputPath)"
         SkipUnchangedFiles="true" />
     </Target>
