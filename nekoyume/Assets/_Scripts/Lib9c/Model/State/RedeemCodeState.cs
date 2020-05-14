@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Model.State
 {
@@ -53,10 +54,13 @@ namespace Nekoyume.Model.State
 
         private Dictionary<Address, Reward> _map = new Dictionary<Address,Reward>();
 
-        public RedeemCodeState() : base(Address)
+        public RedeemCodeState(RedeemRewardSheet redeemRewardSheet) : base(Address)
         {
-            //TODO PrivateKey 목록 생성해서 제네시스 세일전에 반영.
-            _map[Address] = new Reward(400000);
+            //TODO 프라이빗키 목록을 받아서 주소대신 퍼블릭키를 키로 써야함.
+            foreach (var row in redeemRewardSheet.Values)
+            {
+                _map[address] = new Reward(row.Id);
+            }
         }
 
         public RedeemCodeState(Dictionary serialized) : base(serialized)

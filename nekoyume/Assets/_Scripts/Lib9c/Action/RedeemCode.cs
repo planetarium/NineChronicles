@@ -42,10 +42,10 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            int itemId;
+            int redeemId;
             try
             {
-                itemId = redeemState.Redeem(code, avatarAddress);
+                redeemId = redeemState.Redeem(code, avatarAddress);
             }
             catch (KeyNotFoundException)
             {
@@ -59,11 +59,27 @@ namespace Nekoyume.Action
             }
 
             var tableSheets = TableSheets.FromActionContext(context);
-            var row = tableSheets.MaterialItemSheet.Values.First(r => r.Id == itemId);
-            var material = ItemFactory.CreateMaterial(row);
-            avatarState.inventory.AddItem(material);
+            var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == redeemId);
+            var rewards = row.Rewards;
+            foreach (var info in rewards)
+            {
+                switch (info.Type)
+                {
+                    case RewardType.Item:
+                        var itemRow = tableSheets.MaterialItemSheet.Values.First(r => r.Id == info.ItemId);
+                        var material = ItemFactory.CreateMaterial(itemRow);
+                        avatarState.inventory.AddItem(material, info.Quantity);
+                        break;
+                    case RewardType.Gold:
+                        agentState.gold += info.Quantity;
+                        break;
+                    default:
+                        continue;
+                }
+            }
             states = states.SetState(avatarAddress, avatarState.Serialize());
             states = states.SetState(RedeemCodeState.Address, redeemState.Serialize());
+            states = states.SetState(context.Signer, agentState.Serialize());
             return states;
         }
 

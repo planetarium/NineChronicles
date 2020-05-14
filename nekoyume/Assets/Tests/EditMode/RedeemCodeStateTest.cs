@@ -3,17 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume.Helper;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using NUnit.Framework;
 
 namespace Tests.EditMode
 {
     public class RedeemCodeStateTest
     {
+        private RedeemRewardSheet _sheet;
+        [OneTimeSetUp]
+        public void Init()
+        {
+            var tableSheets = TableSheetsHelper.MakeTableSheets();
+            _sheet = tableSheets.RedeemRewardSheet;
+        }
+
         [Test]
         public void Serialize()
         {
-            var state = new RedeemCodeState();
+            var state = new RedeemCodeState(_sheet);
             var serialized = (Dictionary) state.Serialize();
             Assert.IsTrue(serialized.ContainsKey((Text) "address"));
             Assert.IsTrue(serialized.ContainsKey((Text) "map"));
@@ -31,7 +41,7 @@ namespace Tests.EditMode
         [Test]
         public void RedeemThrowKeyNotFoundException()
         {
-            var state = new RedeemCodeState();
+            var state = new RedeemCodeState(_sheet);
             var key = new Address();
             Assert.IsFalse(state.Map.ContainsKey(key));
             Assert.Throws<KeyNotFoundException>(() => state.Redeem(new Address(), new Address()));
@@ -40,7 +50,7 @@ namespace Tests.EditMode
         [Test]
         public void Redeem()
         {
-            var state = new RedeemCodeState();
+            var state = new RedeemCodeState(_sheet);
             var key = state.Map.Keys.First();
             var result = state.Redeem(key, new Address());
             Assert.AreEqual(400000, result);
@@ -49,7 +59,7 @@ namespace Tests.EditMode
         [Test]
         public void RedeemThrowInvalidOperationException()
         {
-            var state = new RedeemCodeState();
+            var state = new RedeemCodeState(_sheet);
             var key = state.Map.Keys.First();
             var address = new Address();
             state.Redeem(key, address);
