@@ -8,13 +8,16 @@ namespace Nekoyume.UI
     public class AvatarInfo : Widget
     {
         [SerializeField]
-        private TextMeshProUGUI nicknameText;
+        private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
-        private TextMeshProUGUI cpText;
+        private TextMeshProUGUI cpText = null;
 
         [SerializeField]
-        private DetailedStatView[] statViews;
+        private EquipmentSlots slots = null;
+
+        [SerializeField]
+        private DetailedStatView[] statViews = null;
 
 
         private const string nicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
@@ -45,6 +48,7 @@ namespace Nekoyume.UI
 
             cpText.text = CPHelper.GetCP(currentAvatar, gameInstance.TableSheets.CharacterSheet).ToString();
 
+            slots.SetPlayer(player, null, null);
         }
 
         #endregion
