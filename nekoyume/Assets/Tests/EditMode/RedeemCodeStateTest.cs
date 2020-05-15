@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -12,12 +13,12 @@ namespace Tests.EditMode
 {
     public class RedeemCodeStateTest
     {
-        private RedeemRewardSheet _sheet;
+        private RedeemCodeListSheet _sheet;
         [OneTimeSetUp]
         public void Init()
         {
             var tableSheets = TableSheetsHelper.MakeTableSheets();
-            _sheet = tableSheets.RedeemRewardSheet;
+            _sheet = tableSheets.RedeemCodeListSheet;
         }
 
         [Test]
@@ -42,9 +43,9 @@ namespace Tests.EditMode
         public void RedeemThrowKeyNotFoundException()
         {
             var state = new RedeemCodeState(_sheet);
-            var key = new Address();
+            var key = new PrivateKey().PublicKey;
             Assert.IsFalse(state.Map.ContainsKey(key));
-            Assert.Throws<KeyNotFoundException>(() => state.Redeem(new Address(), new Address()));
+            Assert.Throws<KeyNotFoundException>(() => state.Redeem(new PrivateKey().PublicKey, new Address()));
         }
 
         [Test]
@@ -53,7 +54,7 @@ namespace Tests.EditMode
             var state = new RedeemCodeState(_sheet);
             var key = state.Map.Keys.First();
             var result = state.Redeem(key, new Address());
-            Assert.AreEqual(400000, result);
+            Assert.AreEqual(1, result);
         }
 
         [Test]

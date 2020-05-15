@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.State
@@ -16,7 +17,7 @@ namespace Nekoyume.Model.State
             }
         );
 
-        public IReadOnlyDictionary<Address, Reward> Map => _map;
+        public IReadOnlyDictionary<PublicKey, Reward> Map => _map;
 
         public class Reward
         {
@@ -52,21 +53,21 @@ namespace Nekoyume.Model.State
             }
         }
 
-        private Dictionary<Address, Reward> _map = new Dictionary<Address,Reward>();
+        private Dictionary<PublicKey, Reward> _map = new Dictionary<PublicKey, Reward>();
 
-        public RedeemCodeState(RedeemRewardSheet redeemRewardSheet) : base(Address)
+        public RedeemCodeState(RedeemCodeListSheet sheet) : base(Address)
         {
             //TODO 프라이빗키 목록을 받아서 주소대신 퍼블릭키를 키로 써야함.
-            foreach (var row in redeemRewardSheet.Values)
+            foreach (var row in sheet.Values)
             {
-                _map[address] = new Reward(row.Id);
+                _map[row.Key] = new Reward(row.RewardId);
             }
         }
 
         public RedeemCodeState(Dictionary serialized) : base(serialized)
         {
             _map = ((Dictionary) serialized["map"]).ToDictionary(
-                kv => kv.Key.ToAddress(),
+                kv => kv.Key.ToPublicKey(),
                 kv => new Reward((Dictionary) kv.Value)
             );
         }
@@ -84,7 +85,7 @@ namespace Nekoyume.Model.State
                 )))
             }.Union((Dictionary) base.Serialize()));
 
-        public int Redeem(Address key, Address userAddress)
+        public int Redeem(PublicKey key, Address userAddress)
         {
             if (!_map.ContainsKey(key))
             {
