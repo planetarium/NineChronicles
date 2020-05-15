@@ -62,7 +62,7 @@ namespace Nekoyume.BlockChain
             }
             var gameConfigState = new GameConfigState(csv);
             var tableSheetsState = new TableSheetsState(tableSheets);
-            var redeemRewardSheet = TableSheets.FromTableSheetsState(tableSheetsState).RedeemRewardSheet;
+            var redeemCodeListSheet = TableSheets.FromTableSheetsState(tableSheetsState).RedeemCodeListSheet;
             var initialStatesAction = new InitializeStates
             {
                 RankingState = new RankingState(),
@@ -70,7 +70,7 @@ namespace Nekoyume.BlockChain
                 TableSheetsState = tableSheetsState,
                 WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                 GameConfigState = gameConfigState,
-                RedeemCodeState = new RedeemCodeState(redeemRewardSheet),
+                RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
             };
             var actions = new PolymorphicAction<ActionBase>[]
             {

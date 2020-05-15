@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Crypto;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -16,7 +17,7 @@ namespace Nekoyume.Action
     [ActionType("redeem_code")]
     public class RedeemCode : GameAction
     {
-        public Address code;
+        public PublicKey code;
         public Address avatarAddress;
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -92,7 +93,7 @@ namespace Nekoyume.Action
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            code = plainValue["code"].ToAddress();
+            code = plainValue["code"].ToPublicKey();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
         }
     }
