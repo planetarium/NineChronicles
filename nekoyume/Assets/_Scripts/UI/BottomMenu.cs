@@ -221,7 +221,7 @@ namespace Nekoyume.UI.Module
             if(animateAlpha)
             {
                 // FIXME: Widget의 연출 주기 캡슐화가 깨지는 부분이에요.
-                _animationState = AnimationState.Showing;
+                AnimationState = AnimationStateType.Showing;
                 var pos = _buttons.position;
                 pos.y = _buttonsPositionY;
                 _buttons.position = pos;
@@ -229,7 +229,7 @@ namespace Nekoyume.UI.Module
                 canvasGroup.alpha = 0f;
                 canvasGroup
                     .DOFade(1f,  1f)
-                    .OnComplete(() => _animationState = AnimationState.Shown);
+                    .OnComplete(() => AnimationState = AnimationStateType.Shown);
             }
             else
             {

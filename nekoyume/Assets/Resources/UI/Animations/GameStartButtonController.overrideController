@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GameStartButtonController
+  m_Controller: {fileID: 9100000, guid: ee49662d868e5bd46b9e71f7fb23a690, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: -6563502671527378963, guid: ee49662d868e5bd46b9e71f7fb23a690,
+      type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 3d6b71bc05481274383addcf3fceda11, type: 2}
+  - m_OriginalClip: {fileID: -8669861648721990141, guid: ee49662d868e5bd46b9e71f7fb23a690,
+      type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: bf70c84270679d54cbb6305d13ede7e9, type: 2}
+  - m_OriginalClip: {fileID: -4665319221632113459, guid: ee49662d868e5bd46b9e71f7fb23a690,
+      type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 41856cd254a70a845b32961137ab03cb, type: 2}
