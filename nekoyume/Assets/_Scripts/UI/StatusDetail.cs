@@ -1,5 +1,3 @@
-using System;
-using System.Text;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;

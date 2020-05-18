@@ -4,7 +4,6 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
