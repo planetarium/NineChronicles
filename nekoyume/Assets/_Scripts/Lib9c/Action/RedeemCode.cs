@@ -75,7 +75,7 @@ namespace Nekoyume.Action
                         agentState.gold += info.Quantity;
                         break;
                     default:
-                        continue;
+                        throw new ArgumentOutOfRangeException(nameof(info.Type), info.Type, null);
                 }
             }
             states = states.SetState(avatarAddress, avatarState.Serialize());
