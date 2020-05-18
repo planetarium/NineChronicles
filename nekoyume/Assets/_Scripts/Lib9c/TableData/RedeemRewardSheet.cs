@@ -32,7 +32,7 @@ namespace Nekoyume.TableData
             public override int Key => Id;
             public int Id { get; private set; }
             public List<RewardInfo> Rewards { get; private set; }
-           public override void Set(IReadOnlyList<string> fields)
+            public override void Set(IReadOnlyList<string> fields)
             {
                 Id = ParseInt(fields[0]);
                 var info = new RewardInfo(fields.Skip(1).ToArray());
@@ -54,7 +54,9 @@ namespace Nekoyume.TableData
             }
 
             if (!value.Rewards.Any())
+            {
                 return;
+            }
 
             row.Rewards.Add(value.Rewards[0]);
         }
