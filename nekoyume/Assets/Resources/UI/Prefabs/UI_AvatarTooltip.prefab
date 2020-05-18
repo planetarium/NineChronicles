@@ -552,6 +552,7 @@ GameObject:
   - component: {fileID: 4315631110727555822}
   - component: {fileID: 9022472332190097087}
   - component: {fileID: 7608922118886992045}
+  - component: {fileID: 4265881594067948051}
   m_Layer: 5
   m_Name: NameText
   m_TagString: Untagged
@@ -575,8 +576,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 8, y: 0}
-  m_SizeDelta: {x: -48, y: -4}
+  m_AnchoredPosition: {x: 12, y: 0}
+  m_SizeDelta: {x: -56, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9022472332190097087
 CanvasRenderer:
@@ -698,6 +699,19 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4265881594067948051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5948376250107140161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51191e1399da544f688fdf1540b818be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationKey: UI_CHARACTER_INFO
 --- !u!1 &6363774517245589725
 GameObject:
   m_ObjectHideFlags: 0
@@ -848,7 +862,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -120, y: 38}
+  m_SizeDelta: {x: -112, y: 38}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &5059548927179389059
 CanvasRenderer:
