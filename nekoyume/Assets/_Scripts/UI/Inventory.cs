@@ -1,6 +1,9 @@
 using System;
+using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
+using Nekoyume.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine.UI;
@@ -68,17 +71,52 @@ namespace Nekoyume.UI
         {
             var tooltip = Find<ItemInformationTooltip>();
             if (view is null ||
-                view.RectTransform == tooltip.Target)
+                view.RectTransform == tooltip.Target ||
+                view.Model?.ItemBase is null)
             {
                 tooltip.Close();
 
                 return;
             }
 
-            tooltip.Show(
-                view.RectTransform,
-                view.Model,
-                _ => inventory.SharedModel.DeselectItemView());
+            var subType = view.Model.ItemBase.Value.Data.ItemSubType;
+            if (subType == ItemSubType.ApStone)
+            {
+                tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
+                    DimmedFuncForChargeActionPoint,
+                    LocalizationManager.Localize("UI_CHARGE_AP"),
+                    _ => ChargeActionPoint((Material) view.Model.ItemBase.Value),
+                    _ => inventory.SharedModel.DeselectItemView());
+            }
+            else
+            {
+                tooltip.Show(
+                    view.RectTransform,
+                    view.Model,
+                    _ => inventory.SharedModel.DeselectItemView());
+            }
+        }
+
+        private static void ChargeActionPoint(Material material)
+        {
+            Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                LocalizationManager.Localize("UI_CHARGE_AP"));
+            Game.Game.instance.ActionManager.ChargeActionPoint();
+            LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, material.Data.ItemId, 1);
+            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                States.Instance.GameConfigState.ActionPointMax);
+        }
+
+        private static bool DimmedFuncForChargeActionPoint(CountableItem item)
+        {
+            if (item is null || item.Count.Value < 1)
+            {
+                return false;
+            }
+
+            return States.Instance.CurrentAvatarState.actionPoint != States.Instance.GameConfigState.ActionPointMax;
         }
     }
 }

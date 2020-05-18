@@ -366,6 +366,22 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
+        public IObservable<ActionBase.ActionEvaluation<ChargeActionPoint>> ChargeActionPoint()
+        {
+            var action = new ChargeActionPoint
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.agentAddress
+            };
+            ProcessAction(action);
+
+            return _renderer.EveryRender<ChargeActionPoint>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
 
         #endregion
     }

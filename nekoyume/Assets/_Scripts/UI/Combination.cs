@@ -45,7 +45,7 @@ namespace Nekoyume.UI
 
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.SelectMenu);
-        
+
         private const int NPCId = 300001;
 
         public SelectionArea selectionArea;
@@ -71,7 +71,6 @@ namespace Nekoyume.UI
         public Transform npcPosition01;
         public Transform npcPosition02;
         public CanvasGroup canvasGroup;
-        public Animator recipeAnimator;
         public ModuleBlur blur;
         public RecipeCellView selectedRecipe;
 
@@ -84,6 +83,10 @@ namespace Nekoyume.UI
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
         private SpeechBubble _selectedSpeechBubble;
+
+        protected override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
+            ? AnimationState == AnimationStateType.Closed
+            : base.CanHandleInputEvent;
 
         #region Override
 
@@ -317,7 +320,7 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(true);
                     consumableRecipe.gameObject.SetActive(false);
                     equipmentRecipe.ShowCellViews();
-                    recipeAnimator.Play("Show", -1, 0.0f);
+                    Animator.Play("Show", -1, 0.0f);
                     break;
                 case StateType.CombineConsumable:
                     _selectedSpeechBubble = speechBubbleForEquipment;
@@ -335,7 +338,7 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(false);
                     consumableRecipe.gameObject.SetActive(true);
                     consumableRecipe.ShowCellViews();
-                    recipeAnimator.Play("Show", -1, 0.0f);
+                    Animator.Play("Show", -1, 0.0f);
                     break;
                 case StateType.EnhanceEquipment:
                     _selectedSpeechBubble = speechBubbleForUpgrade;
@@ -387,7 +390,7 @@ namespace Nekoyume.UI
 
             enhanceEquipment.Hide();
             inventory.gameObject.SetActive(false);
-            recipeAnimator.Play("Close");
+            Animator.Play("Close");
         }
 
         private void OnClickConsumableRecipe()
@@ -493,21 +496,20 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (State.Value == StateType.SelectMenu)
+            switch (State.Value)
             {
-                Close();
-                Game.Event.OnRoomEnter.Invoke(true);
-            }
-            else if (State.Value == StateType.CombinationConfirm)
-            {
-                if (selectedRecipe.ItemSubType == ItemSubType.Food)
-                    State.SetValueAndForceNotify(StateType.CombineConsumable);
-                else
-                    State.SetValueAndForceNotify(StateType.CombineEquipment);
-            }
-            else
-            {
-                State.SetValueAndForceNotify(StateType.SelectMenu);
+                case StateType.SelectMenu:
+                    Close();
+                    Game.Event.OnRoomEnter.Invoke(true);
+                    break;
+                case StateType.CombinationConfirm:
+                    State.SetValueAndForceNotify(selectedRecipe.ItemSubType == ItemSubType.Food
+                        ? StateType.CombineConsumable
+                        : StateType.CombineEquipment);
+                    break;
+                default:
+                    State.SetValueAndForceNotify(StateType.SelectMenu);
+                    break;
             }
         }
 
@@ -520,7 +522,7 @@ namespace Nekoyume.UI
         private void SubscribeBlockIndex(long blockIndex)
         {
             _blockIndex = blockIndex;
-            ResetSelectedIndex();   
+            ResetSelectedIndex();
         }
 
         #region Action

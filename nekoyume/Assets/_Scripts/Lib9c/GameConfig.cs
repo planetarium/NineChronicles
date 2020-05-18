@@ -27,14 +27,14 @@
         public const int DefaultAvatarWeaponId = 10100000;
         public const int DefaultAvatarArmorId = 10200000;
 
-        public const int DailyRewardInterval = 2000;
+        public const int DailyRewardInterval = 1700;
         public const int DailyArenaInterval = 500;
         public const int WeeklyArenaInterval = 8000 * 7;
 
         //TODO 안쓰는 프리팹과 함께 삭제해야함
         public const int CombineEquipmentCostAP = 5;
         public const int CombineEquipmentCostNCG = 10;
-        public const int EnhanceEquipmentCostAP = 5;
+        public const int EnhanceEquipmentCostAP = 0;
         public const int EnhanceEquipmentCostNCG = 10;
 
         public const int RankingRewardFirst = 50;
