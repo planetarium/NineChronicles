@@ -317,9 +317,11 @@ namespace Nekoyume.UI
             }
         }
 
-        private void OnClickAvatarInfo(Address avatarAddress)
+        private void OnClickAvatarInfo((RectTransform target, Address avatarAddress) tuple)
         {
-            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, avatarAddress));
+            // NOTE: 블록 익스플로러 연결 코드. 이후에 참고하기 위해 남겨 둡니다.
+            // Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, avatarAddress));
+            Find<AvatarTooltip>().Show(tuple.target, tuple.avatarAddress);
         }
 
         private void OnClickChallenge(ArenaCellView info)
