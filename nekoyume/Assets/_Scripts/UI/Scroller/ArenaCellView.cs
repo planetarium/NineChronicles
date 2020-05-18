@@ -2,7 +2,6 @@ using System;
 using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using TMPro;
