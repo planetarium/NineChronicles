@@ -48,6 +48,8 @@ namespace Nekoyume.UI.Module
             {
                 TryToEquip(costume);
             }
+
+            ClearAllEmptySlots();
         }
 
         public void SetPlayerEquipments(
@@ -67,6 +69,17 @@ namespace Nekoyume.UI.Module
             foreach (var equipment in player.Equipments)
             {
                 TryToEquip(equipment);
+            }
+
+            ClearAllEmptySlots();
+        }
+
+        private void ClearAllEmptySlots()
+        {
+            var emptySlots = slots.Where(slot => !slot.IsLock && slot.IsEmpty);
+            foreach (var slot in emptySlots)
+            {
+                slot.Clear();
             }
         }
 

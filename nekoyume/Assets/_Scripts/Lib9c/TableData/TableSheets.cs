@@ -54,6 +54,8 @@ namespace Nekoyume.TableData
         public EquipmentItemSubRecipeSheet EquipmentItemSubRecipeSheet { get; private set; }
         public EquipmentItemOptionSheet EquipmentItemOptionSheet { get; private set; }
         public GameConfigSheet GameConfigSheet { get; private set; }
+        public RedeemRewardSheet RedeemRewardSheet { get; private set; }
+        public RedeemCodeListSheet RedeemCodeListSheet { get; private set; }
 
         #endregion
 

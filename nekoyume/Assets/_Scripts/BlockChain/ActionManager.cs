@@ -357,12 +357,12 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(Address address)
+        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(PublicKey key)
         {
             var action = new RedeemCode
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
-                code = address
+                code = key
             };
             ProcessAction(action);
 
