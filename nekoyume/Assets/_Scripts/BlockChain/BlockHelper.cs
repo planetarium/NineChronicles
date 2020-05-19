@@ -61,15 +61,16 @@ namespace Nekoyume.BlockChain
                 throw new KeyNotFoundException(nameof(GameConfigSheet));
             }
             var gameConfigState = new GameConfigState(csv);
-
+            var tableSheetsState = new TableSheetsState(tableSheets);
+            var redeemCodeListSheet = TableSheets.FromTableSheetsState(tableSheetsState).RedeemCodeListSheet;
             var initialStatesAction = new InitializeStates
             {
                 RankingState = new RankingState(),
                 ShopState = new ShopState(),
-                TableSheetsState = new TableSheetsState(tableSheets),
+                TableSheetsState = tableSheetsState,
                 WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                 GameConfigState = gameConfigState,
-                RedeemCodeState = new RedeemCodeState(),
+                RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
             };
             var actions = new PolymorphicAction<ActionBase>[]
             {
