@@ -173,7 +173,7 @@ namespace Nekoyume.BlockChain
             var action = new SellCancellation
             {
                 productId = productId,
-                sellerAvatarAddress = States.Instance.CurrentAvatarState.address,
+                sellerAvatarAddress = sellerAvatarAddress
             };
             ProcessAction(action);
 
