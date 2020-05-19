@@ -178,10 +178,6 @@ namespace Nekoyume.UI.Module
             return slot;
         }
 
-        public void Unequip(EquipmentSlot slot)
-        {
-        }
-
         /// <summary>
         /// 모든 슬롯을 해제한다.
         /// </summary>

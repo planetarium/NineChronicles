@@ -151,17 +151,12 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        public void Set(ItemUsable equipment)
-        {
-            Set(equipment, _onClick, _onDoubleClick);
-        }
-
         public void Set(
-            ItemBase equipment,
+            ItemBase itemBase,
             Action<EquipmentSlot> onClick,
             Action<EquipmentSlot> onDoubleClick)
         {
-            var sprite = equipment.GetIconSprite();
+            var sprite = itemBase.GetIconSprite();
             if (defaultImage)
             {
                 defaultImage.enabled = false;
@@ -170,18 +165,18 @@ namespace Nekoyume.UI.Module
             itemImage.enabled = true;
             itemImage.overrideSprite = sprite;
             itemImage.SetNativeSize();
-            Item = equipment;
+            Item = itemBase;
 
-            var gradeSprite = equipment.GetBackgroundSprite();
+            var gradeSprite = itemBase.GetBackgroundSprite();
             if (gradeSprite is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(equipment.Data.Grade.ToString());
+                throw new FailedToLoadResourceException<Sprite>(itemBase.Data.Grade.ToString());
             }
 
             gradeImage.enabled = true;
             gradeImage.overrideSprite = gradeSprite;
 
-            if (equipment is Equipment equip && equip.level > 0)
+            if (itemBase is Equipment equip && equip.level > 0)
             {
                 enhancementText.enabled = true;
                 enhancementText.text = $"+{equip.level}";
@@ -236,7 +231,9 @@ namespace Nekoyume.UI.Module
         {
             if (!(eventData is PointerEventData data) ||
                 data.button != PointerEventData.InputButton.Left)
+            {
                 return;
+            }
 
             switch (data.clickCount)
             {
