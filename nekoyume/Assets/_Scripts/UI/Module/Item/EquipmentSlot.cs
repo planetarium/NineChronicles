@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Module
         public RectTransform RectTransform { get; private set; }
         public ItemSubType ItemSubType => itemSubType;
         public int ItemSubTypeIndex => itemSubTypeIndex;
-        public ItemUsable Item { get; private set; }
+        public ItemBase Item { get; private set; }
         public bool IsLock => lockImage.gameObject.activeSelf;
         public bool IsEmpty => Item is null;
 
@@ -156,7 +156,9 @@ namespace Nekoyume.UI.Module
             Set(equipment, _onClick, _onDoubleClick);
         }
 
-        public void Set(ItemUsable equipment, Action<EquipmentSlot> onClick,
+        public void Set(
+            ItemBase equipment,
+            Action<EquipmentSlot> onClick,
             Action<EquipmentSlot> onDoubleClick)
         {
             var sprite = equipment.GetIconSprite();

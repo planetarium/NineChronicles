@@ -58,7 +58,9 @@ namespace Nekoyume.State
         public void InitializeAgentAndAvatars(AgentState agentState)
         {
             if (agentState is null)
+            {
                 throw new ArgumentNullException(nameof(agentState));
+            }
 
             var agentAddress = agentState.address;
             // 이미 초기화되어 있는 에이전트와 같을 경우.
@@ -68,7 +70,8 @@ namespace Nekoyume.State
                 // _avatarModifierInfos에는 있지만, 에이전트에는 없는 것 삭제하기.
                 foreach (var info in _avatarModifierInfos
                     .Where(info =>
-                        !agentState.avatarAddresses.Values.Any(avatarAddress => avatarAddress.Equals(info.Address)))
+                        !agentState.avatarAddresses.Values
+                            .Any(avatarAddress => avatarAddress.Equals(info.Address)))
                     .ToList())
                 {
                     _avatarModifierInfos.Remove(info);
@@ -77,10 +80,12 @@ namespace Nekoyume.State
                 // 에이전트에는 있지만, _avatarModifierInfos에는 없는 것 추가하기.
                 foreach (var avatarAddress in agentState.avatarAddresses.Values
                     .Where(avatarAddress =>
-                        !_avatarModifierInfos.Any(
-                            avatarModifierInfo => avatarAddress.Equals(avatarModifierInfo.Address))))
+                        !_avatarModifierInfos
+                            .Any(avatarModifierInfo =>
+                                avatarAddress.Equals(avatarModifierInfo.Address))))
                 {
-                    _avatarModifierInfos.Add(new ModifierInfo<AvatarStateModifier>(avatarAddress,
+                    _avatarModifierInfos.Add(new ModifierInfo<AvatarStateModifier>(
+                        avatarAddress,
                         LoadModifiers<AvatarStateModifier>(avatarAddress)));
                 }
 
@@ -89,10 +94,13 @@ namespace Nekoyume.State
 
             // _agentModifierInfo 초기화하기.
             _agentModifierInfo =
-                new ModifierInfo<AgentStateModifier>(agentAddress, LoadModifiers<AgentStateModifier>(agentAddress));
+                new ModifierInfo<AgentStateModifier>(
+                    agentAddress,
+                    LoadModifiers<AgentStateModifier>(agentAddress));
             foreach (var avatarAddress in agentState.avatarAddresses.Values)
             {
-                _avatarModifierInfos.Add(new ModifierInfo<AvatarStateModifier>(avatarAddress,
+                _avatarModifierInfos.Add(new ModifierInfo<AvatarStateModifier>(
+                    avatarAddress,
                     LoadModifiers<AvatarStateModifier>(avatarAddress)));
             }
         }
@@ -100,8 +108,9 @@ namespace Nekoyume.State
         public void InitializeWeeklyArena(WeeklyArenaState weeklyArenaState)
         {
             var address = weeklyArenaState.address;
-            _weeklyArenaModifierInfo =
-                new ModifierInfo<WeeklyArenaStateModifier>(address, LoadModifiers<WeeklyArenaStateModifier>(address));
+            _weeklyArenaModifierInfo = new ModifierInfo<WeeklyArenaStateModifier>(
+                address,
+                LoadModifiers<WeeklyArenaStateModifier>(address));
         }
 
         #endregion
@@ -118,7 +127,9 @@ namespace Nekoyume.State
         {
             if (modifier is null ||
                 modifier.IsEmpty)
+            {
                 return;
+            }
 
             var modifierInfo = _agentModifierInfo;
             if (agentAddress.Equals(modifierInfo.Address))
@@ -143,7 +154,10 @@ namespace Nekoyume.State
             }
             else if (!isVolatile)
             {
-                if (TryLoadModifier<AgentStateModifier>(agentAddress, modifier.GetType(), out var outModifier))
+                if (TryLoadModifier<AgentStateModifier>(
+                    agentAddress,
+                    modifier.GetType(),
+                    out var outModifier))
                 {
                     outModifier.Add(modifier);
                     modifier = outModifier;
@@ -159,13 +173,19 @@ namespace Nekoyume.State
         /// <param name="avatarAddress"></param>
         /// <param name="modifier"></param>
         /// <param name="isVolatile"></param>
-        public void Add(Address avatarAddress, AvatarStateModifier modifier, bool isVolatile = false)
+        public void Add(
+            Address avatarAddress,
+            AvatarStateModifier modifier,
+            bool isVolatile = false)
         {
             if (modifier is null ||
                 modifier.IsEmpty)
+            {
                 return;
+            }
 
-            var modifierInfo = _avatarModifierInfos.FirstOrDefault(e => e.Address.Equals(avatarAddress));
+            var modifierInfo = _avatarModifierInfos
+                .FirstOrDefault(e => e.Address.Equals(avatarAddress));
             if (!(modifierInfo is null))
             {
                 var modifiers = isVolatile
@@ -188,7 +208,10 @@ namespace Nekoyume.State
             }
             else if (!isVolatile)
             {
-                if (TryLoadModifier<AvatarStateModifier>(avatarAddress, modifier.GetType(), out var outModifier))
+                if (TryLoadModifier<AvatarStateModifier>(
+                    avatarAddress,
+                    modifier.GetType(),
+                    out var outModifier))
                 {
                     outModifier.Add(modifier);
                     modifier = outModifier;
@@ -204,11 +227,16 @@ namespace Nekoyume.State
         /// <param name="weeklyArenaAddress"></param>
         /// <param name="modifier"></param>
         /// <param name="isVolatile"></param>
-        public void Add(Address weeklyArenaAddress, WeeklyArenaStateModifier modifier, bool isVolatile = false)
+        public void Add(
+            Address weeklyArenaAddress,
+            WeeklyArenaStateModifier modifier,
+            bool isVolatile = false)
         {
             if (modifier is null ||
                 modifier.IsEmpty)
+            {
                 return;
+            }
 
             var modifierInfo = _weeklyArenaModifierInfo;
             if (weeklyArenaAddress.Equals(modifierInfo.Address))
@@ -233,7 +261,9 @@ namespace Nekoyume.State
             }
             else if (!isVolatile)
             {
-                if (TryLoadModifier<WeeklyArenaStateModifier>(weeklyArenaAddress, modifier.GetType(),
+                if (TryLoadModifier<WeeklyArenaStateModifier>(
+                    weeklyArenaAddress,
+                    modifier.GetType(),
                     out var outModifier))
                 {
                     outModifier.Add(modifier);
@@ -251,11 +281,16 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         /// <param name="isVolatile"></param>
         /// <typeparam name="T"></typeparam>
-        private static void PostAdd<T>(Address address, IAccumulatableStateModifier<T> modifier, bool isVolatile)
+        private static void PostAdd<T>(
+            Address address,
+            IAccumulatableStateModifier<T> modifier,
+            bool isVolatile)
             where T : Model.State.State
         {
             if (isVolatile)
+            {
                 return;
+            }
 
             SaveModifier(address, modifier);
         }
@@ -270,11 +305,16 @@ namespace Nekoyume.State
         /// <param name="agentAddress"></param>
         /// <param name="modifier"></param>
         /// <param name="isVolatile"></param>
-        public void Remove(Address agentAddress, AgentStateModifier modifier, bool isVolatile = false)
+        public void Remove(
+            Address agentAddress,
+            AgentStateModifier modifier,
+            bool isVolatile = false)
         {
             if (modifier is null ||
                 modifier.IsEmpty)
+            {
                 return;
+            }
 
             var modifierInfo = _agentModifierInfo;
             if (agentAddress.Equals(modifierInfo.Address))
@@ -299,7 +339,10 @@ namespace Nekoyume.State
             }
             else if (!isVolatile)
             {
-                if (TryLoadModifier<AgentStateModifier>(agentAddress, modifier.GetType(), out var outModifier))
+                if (TryLoadModifier<AgentStateModifier>(
+                    agentAddress,
+                    modifier.GetType(),
+                    out var outModifier))
                 {
                     outModifier.Remove(modifier);
                     modifier = outModifier;
@@ -327,13 +370,19 @@ namespace Nekoyume.State
         /// <param name="avatarAddress"></param>
         /// <param name="modifier"></param>
         /// <param name="isVolatile"></param>
-        public void Remove(Address avatarAddress, AvatarStateModifier modifier, bool isVolatile = false)
+        public void Remove(
+            Address avatarAddress,
+            AvatarStateModifier modifier,
+            bool isVolatile = false)
         {
             if (modifier is null ||
                 modifier.IsEmpty)
+            {
                 return;
+            }
 
-            var modifierInfo = _avatarModifierInfos.FirstOrDefault(e => e.Address.Equals(avatarAddress));
+            var modifierInfo = _avatarModifierInfos.FirstOrDefault(e =>
+                e.Address.Equals(avatarAddress));
             if (!(modifierInfo is null))
             {
                 var modifiers = isVolatile
@@ -356,7 +405,10 @@ namespace Nekoyume.State
             }
             else if (!isVolatile)
             {
-                if (TryLoadModifier<AvatarStateModifier>(avatarAddress, modifier.GetType(), out var outModifier))
+                if (TryLoadModifier<AvatarStateModifier>(
+                    avatarAddress,
+                    modifier.GetType(),
+                    out var outModifier))
                 {
                     outModifier.Remove(modifier);
                     modifier = outModifier;
@@ -384,11 +436,16 @@ namespace Nekoyume.State
         /// <param name="weeklyArenaAddress"></param>
         /// <param name="modifier"></param>
         /// <param name="isVolatile"></param>
-        public void Remove(Address weeklyArenaAddress, WeeklyArenaStateModifier modifier, bool isVolatile = false)
+        public void Remove(
+            Address weeklyArenaAddress,
+            WeeklyArenaStateModifier modifier,
+            bool isVolatile = false)
         {
             if (modifier is null ||
                 modifier.IsEmpty)
+            {
                 return;
+            }
 
             var modifierInfo = _weeklyArenaModifierInfo;
             if (weeklyArenaAddress.Equals(modifierInfo.Address))
@@ -413,7 +470,9 @@ namespace Nekoyume.State
             }
             else if (!isVolatile)
             {
-                if (TryLoadModifier<WeeklyArenaStateModifier>(weeklyArenaAddress, modifier.GetType(),
+                if (TryLoadModifier<WeeklyArenaStateModifier>(
+                    weeklyArenaAddress,
+                    modifier.GetType(),
                     out var outModifier))
                 {
                     outModifier.Remove(modifier);
@@ -443,11 +502,16 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         /// <param name="isVolatile"></param>
         /// <typeparam name="T"></typeparam>
-        private static void PostRemove<T>(Address address, IAccumulatableStateModifier<T> modifier, bool isVolatile)
+        private static void PostRemove<T>(
+            Address address,
+            IAccumulatableStateModifier<T> modifier,
+            bool isVolatile)
             where T : Model.State.State
         {
             if (isVolatile)
+            {
                 return;
+            }
 
             SaveModifier(address, modifier);
         }
@@ -465,21 +529,11 @@ namespace Nekoyume.State
         {
             if (state is null ||
                 !state.address.Equals(_agentModifierInfo.Address))
+            {
                 return state;
+            }
 
             return PostModify(state, _agentModifierInfo);
-
-            // foreach (var modifier in _agentModifierInfo.NonVolatileModifiers)
-            // {
-            //     modifier.Modify(state);
-            // }
-            //
-            // foreach (var modifier in _agentModifierInfo.VolatileModifiers)
-            // {
-            //     modifier.Modify(state);
-            // }
-            //
-            // return state;
         }
 
         /// <summary>
@@ -490,24 +544,15 @@ namespace Nekoyume.State
         public AvatarState Modify(AvatarState state)
         {
             if (state is null)
+            {
                 return null;
+            }
 
-            var modifierInfo = _avatarModifierInfos.FirstOrDefault(e => e.Address.Equals(state.address));
+            var modifierInfo = _avatarModifierInfos.FirstOrDefault(e =>
+                e.Address.Equals(state.address));
             return modifierInfo is null
                 ? state
                 : PostModify(state, modifierInfo);
-
-            // foreach (var modifier in info.NonVolatileModifiers)
-            // {
-            //     modifier.Modify(state);
-            // }
-            //
-            // foreach (var modifier in info.VolatileModifiers)
-            // {
-            //     modifier.Modify(state);
-            // }
-            //
-            // return state;
         }
 
         /// <summary>
@@ -519,13 +564,18 @@ namespace Nekoyume.State
         {
             if (state is null ||
                 !state.address.Equals(_weeklyArenaModifierInfo.Address))
+            {
                 return null;
+            }
 
             return PostModify(state, _weeklyArenaModifierInfo);
         }
 
-        private static TState PostModify<TState, TModifier>(TState state, ModifierInfo<TModifier> modifierInfo)
-            where TState : Model.State.State where TModifier : IStateModifier<TState>
+        private static TState PostModify<TState, TModifier>(
+            TState state,
+            ModifierInfo<TModifier> modifierInfo)
+            where TState : Model.State.State
+            where TModifier : IStateModifier<TState>
         {
             foreach (var modifier in modifierInfo.NonVolatileModifiers)
             {
@@ -550,7 +600,10 @@ namespace Nekoyume.State
         /// <param name="address"></param>
         /// <param name="modifier"></param>
         /// <typeparam name="T"></typeparam>
-        private static void SaveModifier<T>(Address address, IAccumulatableStateModifier<T> modifier) where T : Model.State.State
+        private static void SaveModifier<T>(
+            Address address,
+            IAccumulatableStateModifier<T> modifier)
+            where T : Model.State.State
         {
             var key = GetKey(address, modifier);
             if (modifier.IsEmpty)
@@ -568,12 +621,16 @@ namespace Nekoyume.State
             var baseType = typeof(T);
             var modifiers = new List<T>();
 
-            var types = Assembly.GetExecutingAssembly().GetTypes()
+            var types = Assembly
+                .GetExecutingAssembly()
+                .GetTypes()
                 .Where(e => e.IsInheritsFrom(baseType));
             foreach (var type in types)
             {
                 if (!TryLoadModifier<T>(address, type, out var outModifier))
+                {
                     continue;
+                }
 
                 modifiers.Add(outModifier);
             }
@@ -589,8 +646,11 @@ namespace Nekoyume.State
         /// <param name="outModifier"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static bool TryLoadModifier<T>(Address address, Type typeOfModifier,
-            out T outModifier) where T : class
+        private static bool TryLoadModifier<T>(
+            Address address,
+            Type typeOfModifier,
+            out T outModifier)
+            where T : class
         {
             var key = GetKey(address, typeOfModifier);
             if (!PlayerPrefs.HasKey(key))
@@ -606,6 +666,24 @@ namespace Nekoyume.State
 
         #endregion
 
+        #region Clear
+
+        /// <summary>
+        /// `T`형 상태 변경자를 모두 제거한다.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        public void ClearAvatarModifiers<T>(Address avatarAddress, bool isVolatile = false)
+            where T : AvatarStateModifier
+        {
+            var modifiers = LoadModifiers<T>(avatarAddress);
+            foreach (var modifier in modifiers)
+            {
+                Remove(avatarAddress, modifier, isVolatile);
+            }
+        }
+
+        #endregion
+
         #region Key
 
         /// <summary>
@@ -615,7 +693,10 @@ namespace Nekoyume.State
         /// <param name="modifier"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static string GetKey<T>(Address address, IAccumulatableStateModifier<T> modifier) where T : Model.State.State
+        private static string GetKey<T>(
+            Address address,
+            IAccumulatableStateModifier<T> modifier)
+            where T : Model.State.State
         {
             return GetKey(address, modifier.GetType());
         }
@@ -647,8 +728,10 @@ namespace Nekoyume.State
         /// <param name="outModifier"></param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        private static bool TryGetSameTypeModifier<T>(T modifier,
-            IEnumerable<T> modifiers, out T outModifier)
+        private static bool TryGetSameTypeModifier<T>(
+            T modifier,
+            IEnumerable<T> modifiers,
+            out T outModifier)
         {
             var type = modifier.GetType();
             try

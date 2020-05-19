@@ -59,7 +59,7 @@ namespace Nekoyume.UI
             _player = Game.Game.instance.Stage.selectedPlayer;
             var player = _player.Model;
 
-            equipmentSlots.SetPlayer(_player.Model, ShowTooltip, null);
+            equipmentSlots.SetPlayerEquipments(_player.Model, ShowTooltip, null);
 
             // status info
             var tuples = player.Stats.GetBaseAndAdditionalStats();

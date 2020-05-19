@@ -94,7 +94,15 @@ namespace Nekoyume.BlockChain
             int stageId)
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            // NOTE: HAS를 할 때에만 장착 여부를 저장한다.
+            // 따라서 이때에 찌꺼기를 남기지 않기 위해서 장착에 대한 모든 로컬 상태를 비워준다.
+            LocalStateModifier.ClearEquipOrUnequipOfCostumeAndEquipment(avatarAddress, false);
 
             var action = new HackAndSlash
             {
@@ -103,7 +111,7 @@ namespace Nekoyume.BlockChain
                 foods = foods,
                 worldId = worldId,
                 stageId = stageId,
-                avatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = avatarAddress,
                 WeeklyArenaAddress = weeklyArenaAddress,
             };
             ProcessAction(action);
