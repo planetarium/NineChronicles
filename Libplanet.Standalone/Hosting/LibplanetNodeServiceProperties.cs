@@ -18,6 +18,8 @@ namespace Libplanet.Standalone.Hosting
 
         public string StorePath { get; set; }
 
+        public int StoreStatesCacheSize { get; set; }
+
         public string GenesisBlockPath { get; set; }
 
         public IEnumerable<Peer> Peers { get; set; }
