@@ -20,8 +20,22 @@ namespace Nekoyume.UI.Scroller
         public Tween.DOTweenRectTransformMoveBy tweenMove;
         public Tween.DOTweenGroupAlpha tweenAlpha;
 
-        public System.Action<Address> onClick;
-        
+        public System.Action<(RectTransform rectTransform, Address avatarAddress)> onClick;
+
+        private RectTransform _rectTransform;
+        public RectTransform RectTransform
+        {
+            get
+            {
+                if (!_rectTransform)
+                {
+                    _rectTransform = GetComponent<RectTransform>();
+                }
+
+                return _rectTransform;
+            }
+        }
+
         public Nekoyume.Model.State.RankingInfo AvatarInfo { get; private set; }
 
         private void Awake()
@@ -29,14 +43,14 @@ namespace Nekoyume.UI.Scroller
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                onClick.Invoke(AvatarInfo.AvatarAddress);
+                onClick?.Invoke((RectTransform, AvatarInfo.AvatarAddress));
             }).AddTo(gameObject);
         }
 
         public void Set(int ranking, Nekoyume.Model.State.RankingInfo avatarState)
         {
             AvatarInfo = avatarState;
-            
+
             rank.text = ranking.ToString();
             icon.sprite = SpriteHelper.GetItemIcon(avatarState.ArmorId);
             icon.SetNativeSize();
