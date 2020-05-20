@@ -23,7 +23,7 @@ namespace Nekoyume.State
         /// 변경자 정보는 대상 주소(Address), 비휘발성 상태 변경자(NonVolatileModifiers), 휘발성 상태 변경자(VolatileModifiers)로 구성된다.
         /// </summary>
         /// <typeparam name="T">AgentStateModifier, AvatarStateModifier</typeparam>
-        private class ModifierInfo<T>
+        private class ModifierInfo<T> where T : class
         {
             public readonly Address Address;
             public readonly List<T> NonVolatileModifiers;
@@ -575,11 +575,18 @@ namespace Nekoyume.State
             TState state,
             ModifierInfo<TModifier> modifierInfo)
             where TState : Model.State.State
-            where TModifier : IStateModifier<TState>
+            where TModifier : class, IStateModifier<TState>
         {
             foreach (var modifier in modifierInfo.NonVolatileModifiers)
             {
                 modifier.Modify(state);
+                if (!modifier.dirty)
+                {
+                    continue;
+                }
+
+                SaveModifier(state.address, modifier);
+                modifier.dirty = false;
             }
 
             foreach (var modifier in modifierInfo.VolatileModifiers)
@@ -602,7 +609,7 @@ namespace Nekoyume.State
         /// <typeparam name="T"></typeparam>
         private static void SaveModifier<T>(
             Address address,
-            IAccumulatableStateModifier<T> modifier)
+            IStateModifier<T> modifier)
             where T : Model.State.State
         {
             var key = GetKey(address, modifier);
@@ -660,8 +667,17 @@ namespace Nekoyume.State
             }
 
             var json = PlayerPrefs.GetString(key);
-            outModifier = (T) JsonUtility.FromJson(json, typeOfModifier);
-            return !(outModifier is null);
+
+            try
+            {
+                outModifier = (T) JsonUtility.FromJson(json, typeOfModifier);
+                return true;
+            }
+            catch (InvalidCastException)
+            {
+                outModifier = null;
+                return false;
+            }
         }
 
         #endregion
@@ -695,7 +711,7 @@ namespace Nekoyume.State
         /// <returns></returns>
         private static string GetKey<T>(
             Address address,
-            IAccumulatableStateModifier<T> modifier)
+            IStateModifier<T> modifier)
             where T : Model.State.State
         {
             return GetKey(address, modifier.GetType());

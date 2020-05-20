@@ -395,6 +395,12 @@ namespace Nekoyume.State
 
         #region Avatar
 
+        /// <summary>
+        /// `AvatarInventoryCostumeEquippedModifier`, `AvatarInventoryEquipmentEquippedModifier` 형의 상태 변경자를 모두 삭제합니다.
+        /// `AvatarState.Inventory`의 아이템이 빠지는 모든 액션에서 호출합니다.
+        /// </summary>
+        /// <param name="avatarAddress"></param>
+        /// <param name="resetState"></param>
         public static void ClearEquipOrUnequipOfCostumeAndEquipment(
             Address avatarAddress,
             bool resetState = true)

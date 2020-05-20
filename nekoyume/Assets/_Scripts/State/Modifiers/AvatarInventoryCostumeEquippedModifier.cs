@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.JsonConvertibles;
 using Nekoyume.Model.Item;
@@ -63,18 +64,33 @@ namespace Nekoyume.State.Modifiers
                 return null;
             }
 
-            var equipments = state.inventory.Items
+            var shouldRemoveKeys = new List<int>();
+            var costumes = state.inventory.Items
                 .Select(inventoryItem => inventoryItem.item)
                 .OfType<Costume>()
                 .ToArray();
 
             foreach (var pair in dictionary.Value)
             {
-                foreach (var equipment in
-                    equipments.Where(equipment => equipment.Data.Id == pair.Key))
+                var costume = costumes.FirstOrDefault(item => item.Data.Id == pair.Key);
+                if (costume is null)
                 {
-                    equipment.equipped = pair.Value;
+                    shouldRemoveKeys.Add(pair.Key);
                 }
+                else
+                {
+                    costume.equipped = pair.Value;
+                }
+            }
+
+            if (shouldRemoveKeys.Count > 0)
+            {
+                foreach (var shouldRemoveKey in shouldRemoveKeys)
+                {
+                    dictionary.Value.Remove(shouldRemoveKey);
+                }
+
+                dirty = true;
             }
 
             return state;

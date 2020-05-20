@@ -11,6 +11,9 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    // TODO: 지금의 `EquipmentSlot`은 장비 뿐만 아니라 소모품과 코스튬이 모두 사용하고 있습니다.
+    // 이것을 각각의 아이템 타입에 맞게 일반화할 필요가 있습니다.
+    // 이에 따라 `EquipmentSlots`도 함께 수정될 필요가 있습니다.
     [RequireComponent(typeof(RectTransform))]
     public class EquipmentSlot : MonoBehaviour
     {

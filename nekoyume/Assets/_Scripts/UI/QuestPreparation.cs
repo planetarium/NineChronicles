@@ -402,6 +402,7 @@ namespace Nekoyume.UI
                         out inventoryItemToUnequip))
                 {
                     inventoryItemToUnequip.EquippedEnabled.Value = false;
+                    LocalStateItemEquipModify(slot.Item, false);
                 }
             }
 
@@ -434,9 +435,9 @@ namespace Nekoyume.UI
                     out inventoryItem))
             {
                 inventoryItem.EquippedEnabled.Value = false;
+                LocalStateItemEquipModify(slot.Item, false);
             }
 
-            LocalStateItemEquipModify(slot.Item, false);
             slot.Clear();
             PostEquipOrUnequip(slot);
         }
