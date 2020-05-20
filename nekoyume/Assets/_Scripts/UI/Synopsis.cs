@@ -54,8 +54,6 @@ namespace Nekoyume.UI
 
             foreach (var script in scripts)
             {
-                script.image.sprite = script.sprite;
-
                 script.scripts =
                     LocalizationManager.Localize(script.scriptsLocalizationKey);
                 script.texts.text = string.Empty;
@@ -75,6 +73,7 @@ namespace Nekoyume.UI
             {
                 skipSynopsis = false;
                 script.image.transform.parent.gameObject.SetActive(true);
+                script.image.overrideSprite = script.sprite;
 
                 switch (script.textAnimationTypes)
                 {
