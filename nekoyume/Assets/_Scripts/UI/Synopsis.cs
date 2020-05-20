@@ -23,7 +23,7 @@ namespace Nekoyume.UI
             public Image image;
             [Tooltip("페이드 혹은 나타날 사진")]
             public Sprite sprite;
-            [Tooltip("이미지가 나타날떄 방법")]
+            [Tooltip("이미지가 나타날때 방법")]
             public ImageAnimationType imageAnmationType;
             [Tooltip("이미지가 나타날때 걸리는 시간")]
             public float imageAnimationTime;
