@@ -1,6 +1,8 @@
+using System;
 using Assets.SimpleLocalization;
+using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.State;
 using TMPro;
 
 namespace Nekoyume.UI
@@ -11,6 +13,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI placeHolder;
         public TextMeshProUGUI cancelButtonText;
         public TextMeshProUGUI submitButtonText;
+        public TMP_InputField codeField;
 
         protected override void Awake()
         {
@@ -23,7 +26,19 @@ namespace Nekoyume.UI
 
         public void RequestRedeemCode()
         {
-            Game.Game.instance.ActionManager.RedeemCode(RedeemCodeState.Address);
+            var hex = codeField.text;
+            PublicKey key;
+            try
+            {
+                key = new PrivateKey(ByteUtil.ParseHex(hex)).PublicKey;
+            }
+            catch (Exception)
+            {
+                //TODO 실패 안내
+                Close();
+                return;
+            }
+            Game.Game.instance.ActionManager.RedeemCode(key);
             Notification.Push(MailType.System, "Request Redeem Code.");
             Close();
         }
