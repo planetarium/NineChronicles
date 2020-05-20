@@ -4,7 +4,6 @@ using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,12 +20,16 @@ namespace Nekoyume.UI
                 Fade,
                 Immediately
             }
+            [Tooltip("페이드 혹은 나타날 사진이 찍히는 Image컴포넌트")]
             public Image image;
+            [Tooltip("페이드 혹은 나타날 사진")]
             public Sprite sprite;
+            [Tooltip("이미지가 나타날떄 방법")]
             public ImageAnimationType imageAnmationType;
+            [Tooltip("이미지가 나타날때 걸리는 시간")]
             public float imageAnimationTime;
+            [Tooltip("이미지가 로딩된 후 텍스트가 로딩되기 전까지 기다리는 시간")]
             public float imageAnimationEndTerm;
-
 
             public enum TextAnimationType
             {
@@ -36,14 +39,22 @@ namespace Nekoyume.UI
                 ImmediatelyAndFade
             }
             [Space]
+
+            [Tooltip("글씨가 나타날 TextMeshPro 컴포넌트")]
             public TextMeshProUGUI texts;
+            [Tooltip("대사의 LocalizationKey")]
             public string scriptsLocalizationKey;
-            [NonSerialized] public string scripts;
+            [NonSerialized]
+            public string scripts;
+            [Tooltip("대사가 나타날때 방식")]
             public TextAnimationType textAnimationTypes;
+            [Tooltip("대사가 전부 나타다는데 걸리는 시간")]
             public float scriptsAnimationTime;
+            [Tooltip("대사가 전부 나온 뒤 기다리는 시간")]
             public float scriptsEndTerm;
         }
         public SynopsisScene[] scripts;
+        [Tooltip("대사가 사라질때 걸리는 시간")]
         public float textFadeOutTime = 0.5f;
 
         private bool skipSynopsis;
