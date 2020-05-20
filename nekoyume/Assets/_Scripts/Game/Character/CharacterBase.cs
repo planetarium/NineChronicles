@@ -161,7 +161,7 @@ namespace Nekoyume.Game.Character
 
             if (!HPBar)
             {
-                HPBar = Widget.Create<HpBar>(true);
+                HPBar = Widget.FindOrCreate<HpBar>();
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
@@ -389,7 +389,7 @@ namespace Nekoyume.Game.Character
         {
             if (HPBar)
             {
-                Destroy(HPBar.gameObject);
+                HPBar.gameObject.SetActive(false);
                 HPBar = null;
             }
 
