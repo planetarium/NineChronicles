@@ -12,6 +12,7 @@ using UniRx;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Character;
+using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
@@ -20,6 +21,7 @@ namespace Nekoyume.Game.Character
         protected const float AnimatorTimeScale = 1.2f;
 
         public GameObject attackPoint;
+        public SortingGroup sortingGroup;
 
         private bool _applicationQuitting = false;
         private Root _root;
@@ -819,6 +821,12 @@ namespace Nekoyume.Game.Character
         public void Dead()
         {
             StartCoroutine(Dying());
+        }
+
+        public void SetSortingLayer(int layerId, int orderInLayer = 0)
+        {
+            sortingGroup.sortingLayerID = layerId;
+            sortingGroup.sortingOrder = orderInLayer;
         }
     }
 }
