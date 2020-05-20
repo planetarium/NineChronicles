@@ -260,18 +260,25 @@ namespace Editor
             string solutionDir = Path.Combine("..", "NineChronicles.Launcher");
             var pi = new ProcessStartInfo
             {
-                // FIXME: Process.Start()는 따로 PATH 검색을 안 해주는 듯. 직접 PATH 파싱을 해서 실행파일
-                // 경로를 확정해야 하는데, 이마저도 POSIX와 Windows가 문법이 미묘하게 다름.  일단은 디폴트 경로로
-                // 하드코딩.
-                FileName = Application.platform == RuntimePlatform.WindowsEditor
-                    ? @"C:\Program Files\dotnet\dotnet.exe"
-                    : "/usr/local/bin/dotnet",
                 Arguments = $"publish -r {rid} -p:PublishSingleFile=true",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 WorkingDirectory = Path.Combine(solutionDir, "Launcher"),
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
             };
+            // FIXME: Process.Start()는 따로 PATH 검색을 안 해주는 듯. 직접 PATH 파싱을 해서 실행파일
+            // 경로를 확정해야 하는데, 이마저도 POSIX와 Windows가 문법이 미묘하게 다름.  일단은 디폴트 경로로
+            // 하드코딩.
+            if (Application.platform == RuntimePlatform.WindowsEditor)
+            {
+                pi.FileName = "cmd.exe";
+                pi.Arguments = @"/C dotnet.exe " + pi.Arguments;
+            }
+            else
+            {
+                pi.FileName = "/usr/local/bin/dotnet";
+            }
             Process p = Process.Start(pi);
             return (p, Path.Combine(solutionDir, "out", rid));
         }
@@ -568,14 +575,19 @@ namespace Editor
 
                     if (launcherBuild is Process proc && launcherPath is string path)
                     {
+                        StreamReader stdout = proc.StandardOutput, stderr = proc.StandardError;
+                        string @out = stdout.ReadToEnd(), err = stderr.ReadToEnd();
                         proc.WaitForExit();
-                        if (proc.ExitCode != 0)
+                        int code = proc.ExitCode;
+                        if (code != 0)
                         {
-                            StreamReader stdout = proc.StandardOutput, stderr = proc.StandardError;
+                            Debug.LogErrorFormat(
+                                "Failed to build the Nine Chronicles Launcher (exit code: {0}).\n{1}\n{2}",
+                                code, @out, err
+                            );
                             EditorUtility.DisplayDialog(
                                 "Failed to pack",
-                                "Failed to build the Nine Chronicles Launcher.\n" +
-                                stdout.ReadToEnd() + "\n" + stderr.ReadToEnd(),
+                                $"Failed to build the Nine Chronicles Launcher (exit code: {code}).\n{@out}\n{@err}",
                                 "OK"
                             );
                             return;
