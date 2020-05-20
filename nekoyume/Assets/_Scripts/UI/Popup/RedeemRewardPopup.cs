@@ -12,9 +12,9 @@ namespace Nekoyume.UI
         public SubmitButton submitButton;
         public TouchHandler touchHandler;
 
-        protected override void Awake()
+        public override void Initialize()
         {
-            base.Awake();
+            base.Initialize();
 
             submitButton.SetSubmitText(
                 LocalizationManager.Localize("UI_CLOSE"),
