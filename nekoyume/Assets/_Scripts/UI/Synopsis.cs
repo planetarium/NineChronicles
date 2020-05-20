@@ -9,7 +9,6 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
-    [ExecuteInEditMode]
     public class Synopsis : Widget
     {
         [Serializable]
