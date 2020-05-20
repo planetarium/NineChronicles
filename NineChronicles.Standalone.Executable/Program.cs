@@ -91,6 +91,7 @@ namespace NineChronicles.Standalone.Executable
                 TrustedStateValidators = trustedStateValidators,
                 StoreType = storeType,
                 StorePath = storePath,
+                StoreStatesCacheSize = 5000,
                 MinimumDifficulty = minimumDifficulty,
             };
 

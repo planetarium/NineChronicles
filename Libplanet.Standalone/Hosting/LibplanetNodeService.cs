@@ -63,7 +63,10 @@ namespace Libplanet.Standalone.Hosting
 
             var iceServers = _properties.IceServers;
 
-            Store = LoadStore(_properties.StorePath, _properties.StoreType);
+            Store = LoadStore(
+                _properties.StorePath,
+                _properties.StoreType,
+                _properties.StoreStatesCacheSize);
             _blockPolicy = blockPolicy;
             BlockChain = new BlockChain<T>(_blockPolicy, Store, genesisBlock);
             _privateKey = _properties.PrivateKey;
@@ -144,7 +147,7 @@ namespace Libplanet.Standalone.Hosting
             return Swarm.StopAsync(cancellationToken);
         }
 
-        private BaseStore LoadStore(string path, string type)
+        private BaseStore LoadStore(string path, string type, int statesCacheSize)
         {
             BaseStore store = null;
 
@@ -152,7 +155,7 @@ namespace Libplanet.Standalone.Hosting
             {
                 try
                 {
-                    store = new RocksDBStore.RocksDBStore(path);
+                    store = new RocksDBStore.RocksDBStore(path, statesCacheSize: statesCacheSize);
                     Log.Debug("RocksDB is initialized.");
                 }
                 catch (TypeInitializationException e)
@@ -168,7 +171,8 @@ namespace Libplanet.Standalone.Hosting
                 Log.Debug($"{message}. DefaultStore will be used.");
             }
 
-            return store ?? new DefaultStore(path, flush: false, compress: true);
+            return store ?? new DefaultStore(
+                path, flush: false, compress: true, statesCacheSize: statesCacheSize);
         }
 
         public void Dispose()

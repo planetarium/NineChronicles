@@ -233,7 +233,7 @@ To start the game, you need to create your account.";
                 .OrderBy(_ => rng.Next())
                 .Select(LoadIceServer)
                 .ToList();
-            
+
             IImmutableSet<Address> trustedStateValidators;
             if (settings.NoTrustedStateValidators)
             {
@@ -256,6 +256,7 @@ To start the game, you need to create your account.";
                 // FIXME: how can we validate it to use right store type?
                 StorePath = storePath,
                 StoreType = settings.StoreType,
+                StoreStatesCacheSize = 100,
                 MinimumDifficulty = settings.MinimumDifficulty,
                 TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners,
                 DifferentAppProtocolVersionEncountered = NewAppProtocolVersionEncountered,
