@@ -130,6 +130,11 @@ namespace Assets.SimpleLocalization
         /// </summary>
         public static string Localize(string localizationKey)
         {
+            if (string.IsNullOrEmpty(localizationKey))
+            {
+                throw new ArgumentNullException(nameof(localizationKey));
+            }
+
             if (Dictionary.Count == 0)
             {
                 Initialize();

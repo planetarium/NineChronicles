@@ -199,6 +199,8 @@ namespace Nekoyume.UI
             yield return null;
 
             // 툴팁류.
+            _secondWidgets.Add(Widget.Create<AvatarTooltip>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
