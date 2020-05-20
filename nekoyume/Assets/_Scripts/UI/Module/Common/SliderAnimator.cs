@@ -15,13 +15,14 @@ namespace Nekoyume.UI.Module.Common
         protected Slider slider = null;
 
         private Tweener _tweener;
-        
+
         private readonly Subject<float> _onMaxValueChange = new Subject<float>();
         private readonly Subject<float> _onValueChange = new Subject<float>();
 
         public bool IsFull => Math.Abs(Value - MaxValue) < 0.001f;
         public IObservable<float> OnMaxValueChange => _onMaxValueChange;
         public IObservable<float> OnValueChange => _onValueChange;
+
         public IObservable<SliderAnimator> OnSliderChange => OnMaxValueChange
             .Merge(OnValueChange)
             .Select(x => this);
@@ -51,7 +52,7 @@ namespace Nekoyume.UI.Module.Common
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()
-        {   
+        {
             if (slider is null)
                 throw new SerializeFieldNullException();
         }
@@ -63,7 +64,9 @@ namespace Nekoyume.UI.Module.Common
 
         public void SetValue(float value, bool useAnimation = true)
         {
-            if (_tweener?.IsPlaying() ?? false)
+            if (!(_tweener is null) &&
+                _tweener.IsActive() &&
+                _tweener.IsPlaying())
             {
                 _tweener.Kill();
             }
@@ -82,7 +85,9 @@ namespace Nekoyume.UI.Module.Common
 
         public void Stop()
         {
-            if (_tweener?.IsPlaying() ?? false)
+            if (!(_tweener is null) &&
+                _tweener.IsActive() &&
+                _tweener.IsPlaying())
             {
                 _tweener.Kill();
             }

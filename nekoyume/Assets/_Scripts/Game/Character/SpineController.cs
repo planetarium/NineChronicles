@@ -64,14 +64,14 @@ namespace Nekoyume.Game.Character
         #endregion
 
         #region Fade
-        
+
         public void Appear(float duration = 1f, bool fromZero = true)
         {
             if (fromZero)
             {
                 SkeletonAnimation.skeleton.A = 0f;
             }
-            
+
             duration *= 1f - SkeletonAnimation.skeleton.A;
             StartFade(1f, duration);
         }
@@ -82,11 +82,11 @@ namespace Nekoyume.Game.Character
             {
                 SkeletonAnimation.skeleton.A = 1f;
             }
-            
+
             duration *= SkeletonAnimation.skeleton.A;
             StartFade(0f, duration);
         }
-        
+
         private void StartFade(float toValue, float duration)
         {
             StopFade();
@@ -98,14 +98,17 @@ namespace Nekoyume.Game.Character
         private void StopFade()
         {
             if (_fadeTweener is null ||
+                !_fadeTweener.IsActive() ||
                 !_fadeTweener.IsPlaying())
+            {
                 return;
-            
+            }
+
             _fadeTweener.Kill();
         }
-        
+
         #endregion
-        
+
         /// <summary>Sets the horizontal flip state of the skeleton based on a nonzero float. If negative, the skeleton is flipped. If positive, the skeleton is not flipped.</summary>
         public void SetFlip(float horizontal)
         {
@@ -141,7 +144,7 @@ namespace Nekoyume.Game.Character
             state.SetAnimation(0, oneShot, false);
             state.AddAnimation(0, TargetAnimation, true, 0f);
         }
-        
+
         protected Attachment RemapAttachment(Slot slot, Sprite sprite)
         {
             return slot.Attachment.GetRemappedClone(sprite, _material);
@@ -155,7 +158,7 @@ namespace Nekoyume.Game.Character
 
             return attachment;
         }
-        
+
         protected virtual bool IsLoopAnimation(string animationName)
         {
             return true;

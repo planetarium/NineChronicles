@@ -168,6 +168,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationSlots>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<AvatarInfo>());
+            yield return null;
 
             // 팝업류.
             _secondWidgets.Add(Widget.Create<BattleResult>());
@@ -185,6 +187,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<InputBox>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<RedeemRewardPopup>());
             yield return null;
             // 임시로 팝업보다 상단에 배치
             _secondWidgets.Add(Widget.Create<BottomMenu>());
