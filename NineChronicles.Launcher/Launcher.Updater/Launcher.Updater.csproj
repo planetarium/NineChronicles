@@ -7,10 +7,12 @@
     <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
     <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
     <AssemblyName>Nine Chronicles Updater</AssemblyName>
     <Authors>Planetarium</Authors>
     <Company>Planetarium</Company>
     <Product>Nine Chronicles Updater</Product>
+    <Version>0.1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup Label="Resources">
@@ -24,6 +26,7 @@
   <ItemGroup>
     <PackageReference Include="SharpZipLib" Version="1.2.0" />
     <PackageReference Include="ShellProgressBar" Version="5.0.0" />
+    <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
 
 </Project>

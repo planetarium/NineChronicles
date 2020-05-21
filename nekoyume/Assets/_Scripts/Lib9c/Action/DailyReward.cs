@@ -26,7 +26,7 @@ namespace Nekoyume.Action
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out _, out AvatarState avatarState))
             {
-                return states;
+                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
             }
 
             if (ctx.BlockIndex - avatarState.dailyRewardReceivedIndex >= GameConfig.DailyRewardInterval)

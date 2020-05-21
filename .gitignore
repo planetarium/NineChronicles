@@ -101,5 +101,5 @@ shared/bin/*
 # Installer Output
 Output/
 
-
 !/.github/**/*
+.github/bin/.pack-venv/

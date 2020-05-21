@@ -17,8 +17,6 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={localappdata}{\}Programs{\}{#MyAppName}
 DisableProgramGroupPage=yes
-; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
 OutputBaseFilename="Nine Chronicles Installer"
 Compression=lzma
 SolidCompression=yes
@@ -40,11 +38,15 @@ Name: "RegisterStartup"; Description: "{cm:RegisterStartup}"; GroupDescription: 
 [Files]
 Source: "..\..\NineChronicles.Launcher\out\win-x64\Nine Chronicles Updater.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\NineChronicles.Launcher\Launcher\icon.ico"; DestDir: "{app}"
+Source: ".\windowsdesktop-runtime-3.1.3-win-x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; IconFilename: "{app}\{#GameIconName}"; Tasks: CreateDesktopIcon
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
+
+[Run]
+Filename: "{tmp}\windowsdesktop-runtime-3.1.3-win-x64.exe"
 
 [Run]
 Filename: "{app}\Nine Chronicles Updater.exe"
