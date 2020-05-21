@@ -62,10 +62,6 @@ namespace Nekoyume.UI.Module
             UpdateRecipes();
         }
 
-        private void OnDisable()
-        {
-        }
-
         private void OnDestroy()
         {
             _filterType.Dispose();
