@@ -46,8 +46,10 @@
       <Message Importance="high" Text="Copied icon: $(OutputPath)/$(CFBundleIconFile)" />
       <CallTarget Targets="BundleApp" />
       <Message Importance="high" Text="Bundled: $(PublishDir)/$(AssemblyName).app" />
-      <Exec Command="scripts\cleanup-macos-bundle.sh '$(PublishDir)' '$(PublishDir)/$(AssemblyName).app'" />
-      <Message Importance="high" Text="Cleaned up temporary assets from: $(PublishDir)/" />
+      <Delete Files="$(PublishDir)/$(AssemblyName)" />
+      <Delete Files="$(PublishDir)/$(AssemblyName).pdb" />
+      <Exec Command="rm -rf '$(PublishDir)/qt-runtime'" />
+      <Message Importance="high" Text="Cleaned up temporary assets in $(PublishDir)" />
     </Target>
 
     <UsingTask TaskName="NSubsys.Tasks.NSubsys" AssemblyFile="$(NuGetPackageRoot)\nsubsys\1.0.0\tool\NSubsys.Tasks.dll" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
@@ -57,12 +59,57 @@
       <NSubsys TargetFile="$(PublishDir)\$(AssemblyName).exe" />
     </Target>
 
-    <Target Name="QtRuntime" AfterTargets="AfterBuild">
-      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(OutputPath)/qt-runtime'" />
+    <Target Name="QtRuntime" DependsOnTargets="BundleQtRuntime" AfterTargets="AfterBuild">
     </Target>
 
-    <Target Name="BundleQtRuntime">
-      <Exec Command="scripts\prepare-qt-runtime.sh $(RuntimeIdentifier) '$(PublishDir)/qt-runtime'" />
+    <PropertyGroup>
+      <TarExe>tar</TarExe>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(OS)' == 'Windows_NT' ">
+      <TarExe>$(BaseIntermediateOutputPath)\bin\bsdtar.exe</TarExe>
+    </PropertyGroup>
+
+    <Target Name="BundleQtRuntime" DependsOnTargets="WindowsTar">
+      <Message Importance="high" Text="Download Qt runtime for $(RuntimeIDentifier)..." />
+      <DownloadFile
+        SourceUrl="https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-5.12.2-ad0689c-$(RuntimeIdentifier)-runtime.tar.gz"
+        DestinationFolder="$(BaseIntermediateOutputPath)"
+        SkipUnchangedFiles="true"
+        Retries="3" />
+      <MakeDir Directories="$(BaseIntermediateOutputPath)\qt-runtimes\$(RuntimeIdentifier)" />
+      <Message Importance="high" Text="Extract Qt runtime for $(RuntimeIDentifier)..." />
+      <Exec
+        Command="$(TarExe) xvfz $(BaseIntermediateOutputPath)/qt-5.12.2-ad0689c-$(RuntimeIdentifier)-runtime.tar.gz -C $(BaseIntermediateOutputPath)/qt-runtimes/$(RuntimeIdentifier)"
+        />
+      <ItemGroup>
+        <_QtRuntimeFiles Include="$(BaseIntermediateOutputPath)\qt-runtimes\$(RuntimeIdentifier)\**\*" />
+      </ItemGroup>
+      <Copy
+        SourceFiles="@(_QtRuntimeFiles)"
+        DestinationFiles="@(_QtRuntimeFiles->'$(PublishDir)\qt-runtime\%(RecursiveDir)%(Filename)%(Extension)')"
+        SkipUnchangedFiles="true" />
+      <Message Importance="high" Text="Qt runtime was placed to $(PublishDir)" />
+    </Target>
+
+    <Target Name="WindowsTar" Condition=" '$(OS)' == 'Windows_NT' ">
+      <DownloadFile
+        SourceUrl="http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-bin.zip"
+        DestinationFolder="$(BaseIntermediateOutputPath)"
+        SkipUnchangedFiles="true"
+        Retries="5" />
+      <Unzip
+        SourceFiles="$(BaseIntermediateOutputPath)\libarchive-2.4.12-1-bin.zip"
+        DestinationFolder="$(BaseIntermediateOutputPath)"
+        SkipUnchangedFiles="true" />
+      <DownloadFile
+        SourceUrl="http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-dep.zip"
+        DestinationFolder="$(BaseIntermediateOutputPath)"
+        SkipUnchangedFiles="true"
+        Retries="5" />
+      <Unzip
+        SourceFiles="$(BaseIntermediateOutputPath)\libarchive-2.4.12-1-dep.zip"
+        DestinationFolder="$(BaseIntermediateOutputPath)"
+        SkipUnchangedFiles="true" />
     </Target>
 
     <Target Name="BundleLauncherConfig" AfterTargets="Publish">
