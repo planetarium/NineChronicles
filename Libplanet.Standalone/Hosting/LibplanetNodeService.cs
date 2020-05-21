@@ -40,14 +40,14 @@ namespace Libplanet.Standalone.Hosting
 
         private Address _address;
 
-        private LibplanetNodeServiceProperties _properties;
+        private LibplanetNodeServiceProperties<T> _properties;
 
         private Progress<PreloadState> _preloadProgress;
 
         private bool _ignoreBootstrapFailure;
 
         public LibplanetNodeService(
-            LibplanetNodeServiceProperties properties,
+            LibplanetNodeServiceProperties<T> properties,
             IBlockPolicy<T> blockPolicy,
             Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> minerLoopAction,
             Progress<PreloadState> preloadProgress,
@@ -56,10 +56,7 @@ namespace Libplanet.Standalone.Hosting
         {
             _properties = properties;
 
-            var uri = new Uri(_properties.GenesisBlockPath);
-            using var client = new WebClient();
-            var rawGenesisBlock = client.DownloadData(uri);
-            var genesisBlock = Block<T>.Deserialize(rawGenesisBlock);
+            var genesisBlock = LoadGenesisBlock(properties);
 
             var iceServers = _properties.IceServers;
 
@@ -173,6 +170,26 @@ namespace Libplanet.Standalone.Hosting
 
             return store ?? new DefaultStore(
                 path, flush: false, compress: true, statesCacheSize: statesCacheSize);
+        }
+
+        private Block<T> LoadGenesisBlock(LibplanetNodeServiceProperties<T> properties)
+        {
+            if (!(properties.GenesisBlock is null))
+            {
+                return properties.GenesisBlock;
+            }
+            else if (!string.IsNullOrEmpty(properties.GenesisBlockPath))
+            {
+                var uri = new Uri(_properties.GenesisBlockPath);
+                using var client = new WebClient();
+                var rawGenesisBlock = client.DownloadData(uri);
+                return Block<T>.Deserialize(rawGenesisBlock);
+            }
+            else
+            {
+                throw new ArgumentException(
+                    $"At least, one of {nameof(LibplanetNodeServiceProperties<T>.GenesisBlock)} or {nameof(LibplanetNodeServiceProperties<T>.GenesisBlockPath)} must be set.");
+            }
         }
 
         public void Dispose()
