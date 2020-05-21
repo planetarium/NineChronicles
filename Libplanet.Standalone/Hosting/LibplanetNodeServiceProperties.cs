@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using Libplanet.Action;
+using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
 
 namespace Libplanet.Standalone.Hosting
 {
-    public struct LibplanetNodeServiceProperties
+    public struct LibplanetNodeServiceProperties<T>
+        where T : IAction, new()
     {
         // swarm.
         public string Host { get; set; }
@@ -21,6 +24,8 @@ namespace Libplanet.Standalone.Hosting
         public int StoreStatesCacheSize { get; set; }
 
         public string GenesisBlockPath { get; set; }
+
+        public Block<T> GenesisBlock { get; set; }
 
         public IEnumerable<Peer> Peers { get; set; }
 
