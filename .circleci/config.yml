@@ -12,26 +12,14 @@ executors:
 jobs:
   unittest:
     docker:
-      - image: gableroux/unity3d:2019.1.0f2
+      - image: mcr.microsoft.com/dotnet/core/sdk:3.1
     steps:
       - checkout
       - run:
-          name: run-unittest
+          name: unittest
           command: |
-            ./scripts/test.sh
-            ls -al /tmp/test/
-            cat /tmp/test/result.txt > /tmp/test-result/result.txt
-            cat /tmp/test/junit.xml > /tmp/test-result/junit.xml
-
-      - store_test_results:
-          path: /tmp/test-result
-
-      - store_artifacts:
-          path: /tmp/test-result
-
-      - run:
-          name: ensure-tests-pass
-          command: '[ "$(cat /tmp/test-result/result.txt)" = "Passed" ]'
+            dotnet test ./NineChronicles.Standalone.Executable/
+            dotnet test ./NineChronicles.Launcher/
   build-lib9c:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
@@ -45,6 +33,7 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
+      - unittest
       - build-lib9c
       - aws-ecr/build-and-push-image:
           requires:
