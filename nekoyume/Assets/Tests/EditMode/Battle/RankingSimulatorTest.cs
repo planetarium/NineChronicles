@@ -26,7 +26,7 @@ namespace Tests.EditMode.Battle
         public void SerializeBattleLog()
         {
             var agentState = new AgentState(new Address());
-            var avatarState = new AvatarState(new Address(), agentState.address, 0, _tableSheets);
+            var avatarState = new AvatarState(new Address(), agentState.address, 0, _tableSheets, new GameConfigState());
             var simulator = new RankingSimulator(
                 new Cheat.DebugRandom(),
                 avatarState,
