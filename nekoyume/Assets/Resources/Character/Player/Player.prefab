@@ -49,6 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPoint: {fileID: 1339136423157052646}
+  sortingGroup: {fileID: 8562625896270624523}
   EXP: 0
   touchHandler: {fileID: 8697454501930479228}
 --- !u!210 &8562625896270624523
@@ -250,5 +251,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.5}
+  m_Size: {x: 1.25, y: 1.75}
   m_EdgeRadius: 0

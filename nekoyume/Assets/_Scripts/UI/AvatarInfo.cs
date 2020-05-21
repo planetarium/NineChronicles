@@ -19,8 +19,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private DetailedStatView[] statViews = null;
 
+        [SerializeField]
+        private RectTransform avatarPosition = null;
 
         private const string nicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
+
+        private Vector3 _previousAvatarPosition;
 
         #region Override
 
@@ -29,9 +33,10 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             var gameInstance = Game.Game.instance;
-            var player = gameInstance.Stage.selectedPlayer.Model;
+            var stage = gameInstance.Stage;
+            var playerModel = stage.selectedPlayer.Model;
 
-            var statTuples = player.Stats.GetBaseAndAdditionalStats();
+            var statTuples = playerModel.Stats.GetBaseAndAdditionalStats();
             var idx = 0;
             foreach (var (statType, value, additionalValue) in statTuples)
             {
@@ -47,8 +52,23 @@ namespace Nekoyume.UI
                 currentAvatar.NameWithHash);
 
             cpText.text = CPHelper.GetCP(currentAvatar, gameInstance.TableSheets.CharacterSheet).ToString();
+            slots.SetPlayer(playerModel, null, null);
 
-            slots.SetPlayer(player, null, null);
+            var player = stage.GetPlayer();
+            _previousAvatarPosition = player.transform.position;
+            player.transform.position = avatarPosition.position;
+            var layerId = SortingLayer.NameToID("UI");
+            player.SetSortingLayer(layerId, 1);
+        }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+
+            var stage = Game.Game.instance.Stage;
+            var player = stage.GetPlayer(_previousAvatarPosition);
+            var layerId = SortingLayer.NameToID("Character");
+            player.SetSortingLayer(layerId, 100);
         }
 
         #endregion
