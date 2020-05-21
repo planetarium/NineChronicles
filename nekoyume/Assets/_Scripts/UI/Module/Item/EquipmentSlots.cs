@@ -32,6 +32,12 @@ namespace Nekoyume.UI.Module
             {
                 TryToEquip(equipment, onClick, onDoubleClick);
             }
+
+            var emptySlots = slots.Where(slot => !slot.IsLock && slot.IsEmpty);
+            foreach (var slot in emptySlots)
+            {
+                slot.Clear();
+            }
         }
 
         public bool TryToEquip(Equipment equipment, Action<EquipmentSlot> onClick, Action<EquipmentSlot> onDoubleClick)

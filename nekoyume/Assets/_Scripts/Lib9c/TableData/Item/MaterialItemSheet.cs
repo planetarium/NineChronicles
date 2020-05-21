@@ -7,8 +7,6 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Stat;
-using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
 {
@@ -44,7 +42,7 @@ namespace Nekoyume.TableData
                 ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
             }
         }
-        
+
         public MaterialItemSheet() : base(nameof(MaterialItemSheet))
         {
         }

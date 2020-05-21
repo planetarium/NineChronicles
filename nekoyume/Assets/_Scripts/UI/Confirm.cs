@@ -33,10 +33,14 @@ namespace Nekoyume.UI
             SubmitWidget = Yes;
         }
 
-        public override void Show()
+        public override void Show(bool ignoreStartAnimation = false)
         {
-            base.Show();
-            blur?.Show(radius:blurRadius);
+            base.Show(ignoreStartAnimation);
+
+            if (blur)
+            {
+                blur.Show(radius: blurRadius);
+            }
         }
 
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
@@ -80,7 +84,10 @@ namespace Nekoyume.UI
 
         public void Yes()
         {
-            blur?.Close();
+            if (blur)
+            {
+                blur.Close();
+            }
 
             base.Close();
             AudioController.PlayClick();
@@ -89,7 +96,10 @@ namespace Nekoyume.UI
 
         public void No()
         {
-            blur?.Close();
+            if (blur)
+            {
+                blur.Close();
+            }
 
             base.Close();
             AudioController.PlayClick();
@@ -98,8 +108,11 @@ namespace Nekoyume.UI
 
         public void NoWithoutCallback()
         {
-            blur?.Close();
-            
+            if (blur)
+            {
+                blur.Close();
+            }
+
             base.Close();
             AudioController.PlayClick();
         }

@@ -12,6 +12,7 @@ using UniRx;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Character;
+using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
@@ -20,6 +21,7 @@ namespace Nekoyume.Game.Character
         protected const float AnimatorTimeScale = 1.2f;
 
         public GameObject attackPoint;
+        public SortingGroup sortingGroup;
 
         private bool _applicationQuitting = false;
         private Root _root;
@@ -159,7 +161,7 @@ namespace Nekoyume.Game.Character
 
             if (!HPBar)
             {
-                HPBar = Widget.Create<HpBar>(true);
+                HPBar = Widget.FindOrCreate<HpBar>();
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
@@ -281,7 +283,9 @@ namespace Nekoyume.Game.Character
         {
             var source = GetAnimatorHitPointBoxCollider();
             if (!source)
+            {
                 throw new NullReferenceException($"{nameof(GetAnimatorHitPointBoxCollider)}() returns null.");
+            }
 
             var scale = Animator.Target.transform.localScale;
             var center = source.center;
@@ -385,7 +389,7 @@ namespace Nekoyume.Game.Character
         {
             if (HPBar)
             {
-                Destroy(HPBar.gameObject);
+                HPBar.gameObject.SetActive(false);
                 HPBar = null;
             }
 
@@ -817,6 +821,12 @@ namespace Nekoyume.Game.Character
         public void Dead()
         {
             StartCoroutine(Dying());
+        }
+
+        public void SetSortingLayer(int layerId, int orderInLayer = 0)
+        {
+            sortingGroup.sortingLayerID = layerId;
+            sortingGroup.sortingOrder = orderInLayer;
         }
     }
 }

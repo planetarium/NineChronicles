@@ -26,21 +26,15 @@
         public const int DefaultAvatarCharacterId = 100010;
         public const int DefaultAvatarWeaponId = 10100000;
         public const int DefaultAvatarArmorId = 10200000;
-        public const string DefaultPlayerEarLeftResource = "ear_0001_left";
-        public const string DefaultPlayerEarRightResource = "ear_0001_right";
-        public const string DefaultPlayerEyeOpenResource = "eye_red_open";
-        public const string DefaultPlayerEyeHalfResource = "eye_red_half";
-        public const string DefaultPlayerTailResource = "tail_0001";
-        public const int ActionPointMax = 120;
 
-        public const int DailyRewardInterval = 2300;
+        public const int DailyRewardInterval = 1700;
         public const int DailyArenaInterval = 500;
         public const int WeeklyArenaInterval = 8000 * 7;
 
         //TODO 안쓰는 프리팹과 함께 삭제해야함
         public const int CombineEquipmentCostAP = 5;
         public const int CombineEquipmentCostNCG = 10;
-        public const int EnhanceEquipmentCostAP = 5;
+        public const int EnhanceEquipmentCostAP = 0;
         public const int EnhanceEquipmentCostNCG = 10;
 
         public const int RankingRewardFirst = 50;

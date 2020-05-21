@@ -4800,7 +4800,7 @@ GameObject:
   - component: {fileID: 1300123710854422382}
   - component: {fileID: 1300123710855103194}
   m_Layer: 0
-  m_Name: star 1
+  m_Name: bg_main_star
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4838,7 +4838,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1

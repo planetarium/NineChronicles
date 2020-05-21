@@ -6,11 +6,12 @@ using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
 using Nekoyume.Manager;
+using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
-using Nekoyume.State.Modifiers;
+using TentuPlay.Api;
 
 namespace Nekoyume.BlockChain
 {
@@ -55,6 +56,9 @@ namespace Nekoyume.BlockChain
             WeeklyArenaReward();
             CombinationEquipment();
             RapidCombination();
+            GameConfig();
+            RedeemCode();
+            ChargeActionPoint();
         }
 
         public void Stop()
@@ -81,7 +85,24 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<RewardGold>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateAgentState).AddTo(_disposables);
+                .Subscribe(eval =>
+                {
+                    //[TentuPlay] RewardGold 기록
+                    //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                    Address agentAddress = States.Instance.AgentState.address;
+                    AgentState outAgentState = eval.OutputStates.GetAgentState(agentAddress);
+                    new TPStashEvent().CurrencyGet(
+                        player_uuid: agentAddress.ToHex(),
+                        currency_slug: "gold",
+                        currency_quantity: (float)eval.Action.Gold,
+                        currency_total_quantity: (float)(outAgentState.gold + eval.Action.Gold),
+                        reference_entity: "bonuses",
+                        reference_category_slug: "reward_gold",
+                        reference_slug: "RewardGold");
+
+                    UpdateAgentState(eval);
+
+                }).AddTo(_disposables);
         }
 
         private void CreateAvatar()
@@ -153,7 +174,57 @@ namespace Nekoyume.BlockChain
             _renderer.EveryRender<RankingReward>()
                 .Where(ValidateEvaluationForAgentState)
                 .ObserveOnMainThread()
-                .Subscribe(UpdateAgentState).AddTo(_disposables);
+                .Subscribe(eval =>
+                {
+
+                    Address[] agentAddresses = eval.Action.agentAddresses;
+                    for (var index = 0; index < agentAddresses.Length; index++)
+                    {
+                        Address thisAddress = agentAddresses[index];
+
+                        if(index < 3) // index 는 3보다 작아야 => 0,1,2 만가능
+                        {
+                            try
+                            {
+                                float gold = 0.0F;
+
+                                if (index == 0)
+                                {
+                                    gold = (float) eval.Action.gold1;
+                                }
+                                else if (index == 1)
+                                {
+                                    gold = (float)eval.Action.gold2;
+                                }
+                                else
+                                {
+                                    gold = (float)eval.Action.gold3;
+                                }
+
+                                //[TentuPlay] RankingReward 기록
+                                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                                Address agentAddress = States.Instance.AgentState.address;
+                                AgentState outAgentState = eval.OutputStates.GetAgentState(agentAddress);
+                                new TPStashEvent().CurrencyGet(
+                                    player_uuid: agentAddress.ToHex(),
+                                    currency_slug: "gold",
+                                    currency_quantity: gold,
+                                    currency_total_quantity: (float)(outAgentState.gold) + gold,
+                                    reference_entity: "quests",
+                                    reference_category_slug: "arena",
+                                    reference_slug: "RankingRewardIndex" + index.ToString()
+                                    );
+                            }
+                            catch
+                            {
+                                // TentuPlay 실행 시 혹시 에러가 나더라도 넘어가도록.
+                            }
+                        }
+                    }
+
+                    UpdateAgentState(eval);
+
+                }).AddTo(_disposables);
         }
 
         private void ItemEnhancement()
@@ -173,7 +244,7 @@ namespace Nekoyume.BlockChain
                 {
                     var avatarAddress = eval.Action.avatarAddress;
                     LocalStateModifier.ModifyAvatarDailyRewardReceivedIndex(avatarAddress, false);
-                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -GameConfig.ActionPointMax);
+                    LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
                     UpdateCurrentAvatarState(eval);
                 }).AddTo(_disposables);
         }
@@ -218,17 +289,58 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseRapidCombination).AddTo(_disposables);
         }
 
+        private void GameConfig()
+        {
+            _renderer.EveryRender(GameConfigState.Address)
+                .ObserveOnMainThread()
+                .Subscribe(UpdateGameConfigState).AddTo(_disposables);
+        }
+
+        private void RedeemCode()
+        {
+            _renderer.EveryRender<Action.RedeemCode>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseRedeemCode).AddTo(_disposables);
+        }
+
+        private void ChargeActionPoint()
+        {
+            _renderer.EveryRender<ChargeActionPoint>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
+        }
+
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
         {
-            var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.avatarAddress;
-            var agentState = eval.OutputStates.GetAgentState(agentAddress);
             var slot =
                 eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
-            LocalStateModifier.ModifyAgentGold(agentAddress, agentState.modifiedGold);
-            LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, slot.Result.itemUsable.ItemId);
+            var result = (RapidCombination.ResultModel) slot.Result;
+            foreach (var pair in result.cost)
+            {
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
+            }
+            LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
 
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+
+            //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
+            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+            var agentAddress = eval.Signer;
+            var agentState = eval.OutputStates.GetAgentState(agentAddress);
+            new TPStashEvent().CurrencyUse(
+                player_uuid: agentAddress.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)agentState.modifiedGold,
+                currency_total_quantity: (float)(agentState.gold),
+                //currency_total_quantity: (float)(agentState.gold - agentState.modifiedGold),
+                reference_entity: "items_consumables",
+                reference_category_slug: "consumables_rapid_combination",
+                reference_slug: slot.Result.itemUsable.Data.Id.ToString());
+
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.slotIndex);
@@ -246,7 +358,8 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -260,6 +373,19 @@ namespace Nekoyume.BlockChain
                 result.itemUsable.ItemId
             );
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+
+            //[TentuPlay] Equipment 합성에 사용한 골드 기록
+            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+            AgentState outAgentState = eval.OutputStates.GetAgentState(agentAddress);
+            new TPStashEvent().CurrencyUse(
+                player_uuid: agentAddress.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)result.gold,
+                currency_total_quantity: (float)(outAgentState.gold - result.gold),
+                reference_entity: "items_equipments",
+                reference_category_slug: "equipments_combination",
+                reference_slug: result.itemUsable.Data.Id.ToString());
+
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
@@ -278,15 +404,34 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
             foreach (var pair in result.materials)
             {
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value);
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
-            UI.Notification.Push(MailType.Workshop, string.Format(format, itemUsable.Data.GetLocalizedName()));
+            UI.Notification.Reserve(
+                MailType.Workshop,
+                string.Format(format, result.itemUsable.Data.GetLocalizedName()),
+                slot.UnlockBlockIndex,
+                result.itemUsable.ItemId
+            );
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombinationSuccess);
+
+            //[TentuPlay] Consumable 합성에 사용한 골드 기록
+            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+            AgentState outAgentState = eval.OutputStates.GetAgentState(agentAddress);
+            new TPStashEvent().CurrencyUse(
+                player_uuid: agentAddress.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)result.gold,
+                currency_total_quantity: (float)(outAgentState.gold - result.gold),
+                reference_entity: "items_consumables",
+                reference_category_slug: "consumables_combination",
+                reference_slug: result.itemUsable.Data.Id.ToString());
+
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.slotIndex);
@@ -297,7 +442,8 @@ namespace Nekoyume.BlockChain
             var avatarAddress = eval.Action.sellerAvatarAddress;
             var itemId = eval.Action.itemUsable.ItemId;
 
-            LocalStateModifier.AddItem(avatarAddress, itemId);
+            // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+            LocalStateModifier.AddItem(avatarAddress, itemId, false);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
             UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
             UpdateCurrentAvatarState(eval);
@@ -334,6 +480,19 @@ namespace Nekoyume.BlockChain
                 RenderQuest(buyerAvatarAddress, buyerAvatar.questList.completedQuestIds);
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
+
+                //[TentuPlay] 아이템 구입, 골드 사용
+                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                AgentState outAgentState = eval.OutputStates.GetAgentState(buyerAgentAddress);
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: States.Instance.AgentState.address.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float) price,
+                    currency_total_quantity: (float) (outAgentState.gold - price),
+                    reference_entity: "trades",
+                    reference_category_slug: "buy",
+                    reference_slug: result.itemUsable.Data.Id.ToString() //아이템 품번
+                    );
             }
             else
             {
@@ -353,6 +512,19 @@ namespace Nekoyume.BlockChain
                             (Bencodex.Types.Dictionary) eval.OutputStates.GetState(eval.Action.buyerAvatarAddress))
                         .NameWithHash;
                 UI.Notification.Push(MailType.Auction, string.Format(format, buyerName, result.itemUsable.GetLocalizedName()));
+
+                //[TentuPlay] 아이템 판매완료, 골드 증가
+                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                AgentState outAgentState = eval.OutputStates.GetAgentState(sellerAgentAddress);
+                new TPStashEvent().CurrencyGet(
+                    player_uuid: sellerAgentAddress.ToHex(), // seller == 본인인지 확인필요
+                    currency_slug: "gold",
+                    currency_quantity: (float)gold,
+                    currency_total_quantity: (float)(outAgentState.gold + gold),
+                    reference_entity: "trades",
+                    reference_category_slug: "sell",
+                    reference_slug: result.itemUsable.Data.Id.ToString() //아이템 품번
+                );
             }
 
             UpdateAgentState(eval);
@@ -410,10 +582,11 @@ namespace Nekoyume.BlockChain
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, result.actionPoint);
-            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId);
+            LocalStateModifier.AddItem(avatarAddress, itemUsable.ItemId, false);
             foreach (var itemId in result.materialItemIdList)
             {
-                LocalStateModifier.AddItem(avatarAddress, itemId);
+                // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
+                LocalStateModifier.AddItem(avatarAddress, itemId, false);
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -421,6 +594,19 @@ namespace Nekoyume.BlockChain
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,
                 string.Format(format, result.itemUsable.Data.GetLocalizedName()));
+
+            //[TentuPlay] 장비강화, 골드사용
+            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+            AgentState outAgentState = eval.OutputStates.GetAgentState(agentAddress);
+            new TPStashEvent().CurrencyUse(
+                player_uuid: agentAddress.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)result.gold,
+                currency_total_quantity: (float)(outAgentState.gold - result.gold),
+                reference_entity: "items_equipments",     //강화가 가능하므로 장비
+                reference_category_slug: "item_enhancement",
+                reference_slug: itemUsable.Data.Id.ToString());
+
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
@@ -435,6 +621,20 @@ namespace Nekoyume.BlockChain
             // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 더한 골드를 빼주지 못함.
             // LocalStateModifier.ModifyWeeklyArenaGold(-GameConfig.ArenaActivationCostNCG);
             LocalStateModifier.RemoveWeeklyArenaInfoActivator(weeklyArenaAddress, avatarAddress);
+
+            //[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
+            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+            Address agentAddress = States.Instance.AgentState.address;
+            AgentState outAgentState = eval.OutputStates.GetAgentState(agentAddress);
+            new TPStashEvent().CurrencyUse(
+                player_uuid: agentAddress.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
+                currency_total_quantity: (float) (outAgentState.gold - Nekoyume.GameConfig.ArenaActivationCostNCG),
+                reference_entity: "quests",
+                reference_category_slug: "arena",
+                reference_slug: "WeeklyArenaEntryFee"
+                );
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -452,11 +652,41 @@ namespace Nekoyume.BlockChain
             var currentAgentState = States.Instance.AgentState;
             var agentState = eval.OutputStates.GetAgentState(currentAgentState.address);
             var gold = agentState.gold - currentAgentState.gold;
+
+
+            //[TentuPlay] ArenaReward 기록
+            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+            Address agentAddress = States.Instance.AgentState.address;
+
+            new TPStashEvent().CurrencyGet(
+                player_uuid: agentAddress.ToHex(),
+                currency_slug: "gold",
+                currency_quantity: (float)gold,
+                currency_total_quantity: (float) (agentState.gold + gold),
+                reference_entity: "quests",
+                reference_category_slug: "arena",
+                reference_slug: "WeeklyArenaReward");
+
             UpdateAgentState(eval);
             Widget.Find<LoadingScreen>().Close();
             UI.Notification.Push(MailType.System, $"Get Arena Reward: {gold}");
         }
 
+        private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
+        {
+            UI.Notification.Push(MailType.System, "Response Redeem Code.");
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseChargeActionPoint(ActionBase.ActionEvaluation<ChargeActionPoint> eval)
+        {
+            var avatarAddress = eval.Action.avatarAddress;
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -States.Instance.GameConfigState.ActionPointMax);
+            var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
+                r.ItemSubType == ItemSubType.ApStone);
+            LocalStateModifier.AddItem(avatarAddress, row.ItemId, 1);
+            UpdateCurrentAvatarState(eval);
+        }
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
         {
             foreach (int id in ids)

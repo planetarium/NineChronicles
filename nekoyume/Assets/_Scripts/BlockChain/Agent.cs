@@ -347,6 +347,7 @@ namespace Nekoyume.BlockChain
                 Assert.IsNotNull(GetState(RankingState.Address));
                 Assert.IsNotNull(GetState(ShopState.Address));
                 Assert.IsNotNull(GetState(TableSheetsState.Address));
+                Assert.IsNotNull(GetState(GameConfigState.Address));
 
                 // 랭킹의 상태를 한 번 동기화 한다.
                 States.Instance.SetRankingState(
@@ -366,6 +367,15 @@ namespace Nekoyume.BlockChain
                 }
                 else
                     throw new FailedToInstantiateStateException<WeeklyArenaState>();
+
+                if (GetState(GameConfigState.Address) is Dictionary configDict)
+                {
+                    States.Instance.SetGameConfigState(new GameConfigState(configDict));
+                }
+                else
+                {
+                    throw new FailedToInstantiateStateException<GameConfigState>();
+                }
 
                 // 에이전트의 상태를 한 번 동기화 한다.
                 States.Instance.SetAgentState(
@@ -783,7 +793,11 @@ namespace Nekoyume.BlockChain
                 yield return waitForSeconds;
 
                 yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    new List<Equipment>(), new List<Consumable>(), 1, 1).ToYieldInstruction();
+                    new List<Costume>(),
+                    new List<Equipment>(),
+                    new List<Consumable>(),
+                    1,
+                    1).ToYieldInstruction();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }

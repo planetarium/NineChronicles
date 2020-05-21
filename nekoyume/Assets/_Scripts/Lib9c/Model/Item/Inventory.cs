@@ -22,7 +22,16 @@ namespace Nekoyume.Model.Item
 
             public Item(ItemBase itemBase, int count = 1)
             {
-                item = ItemFactory.CreateMaterial((MaterialItemSheet.Row) itemBase.Data);
+                switch (itemBase.Data.ItemType)
+                {
+                    case ItemType.Costume:
+                        item = ItemFactory.CreateCostume((CostumeItemSheet.Row) itemBase.Data);
+                        break;
+                    case ItemType.Material:
+                        item = ItemFactory.CreateMaterial((MaterialItemSheet.Row) itemBase.Data);
+                        break;
+                }
+
                 this.count = count;
             }
 
@@ -88,6 +97,11 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        public IValue Serialize() =>
+            new Bencodex.Types.List(Items.Select(i => i.Serialize()));
+
+        #region Add
+
         public KeyValuePair<int, int> AddItem(ItemBase itemBase, int count = 1)
         {
             switch (itemBase.Data.ItemType)
@@ -96,6 +110,7 @@ namespace Nekoyume.Model.Item
                 case ItemType.Equipment:
                     AddNonFungibleItem((ItemUsable) itemBase);
                     break;
+                case ItemType.Costume:
                 case ItemType.Material:
                     AddFungibleItem(itemBase, count);
                     break;
@@ -104,7 +119,7 @@ namespace Nekoyume.Model.Item
             }
             return new KeyValuePair<int, int>(itemBase.Data.Id, count);
         }
-        
+
         private Item AddFungibleItem(ItemBase itemBase, int count = 1)
         {
             if (TryGetFungibleItem(itemBase, out var fungibleItem))
@@ -118,7 +133,6 @@ namespace Nekoyume.Model.Item
             return fungibleItem;
         }
 
-        // Todo. NonFungibleItem 개발 후 `ItemBase itemBase` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
         private Item AddNonFungibleItem(ItemUsable itemBase)
         {
             var nonFungibleItem = new Item(itemBase);
@@ -126,14 +140,26 @@ namespace Nekoyume.Model.Item
             return nonFungibleItem;
         }
 
+        #endregion
+
+        #region Remove
+
         public bool RemoveFungibleItem(ItemBase itemBase, int count = 1)
         {
-            return itemBase is Material material && RemoveFungibleItem(material.Data.ItemId, count);
+            switch (itemBase)
+            {
+                case Costume costume:
+                    return RemoveCostume(costume.Data.Id, count);
+                case Material material:
+                    return RemoveMaterial(material.Data.ItemId, count);
+                default:
+                    return false;
+            }
         }
 
-        public bool RemoveFungibleItem(HashDigest<SHA256> id, int count = 1)
+        public bool RemoveCostume(int id, int count = 1)
         {
-            if (!TryGetFungibleItem(id, out var item) ||
+            if (!TryGetCostume(id, out var item) ||
                 item.count < count)
             {
                 return false;
@@ -148,45 +174,87 @@ namespace Nekoyume.Model.Item
             return true;
         }
 
-        // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public bool RemoveMaterial(HashDigest<SHA256> id, int count = 1)
+        {
+            if (!TryGetMaterial(id, out var item) ||
+                item.count < count)
+            {
+                return false;
+            }
+
+            item.count -= count;
+            if (item.count == 0)
+            {
+                _items.Remove(item);
+            }
+
+            return true;
+        }
+
         public bool RemoveNonFungibleItem(ItemUsable itemUsable)
         {
             return TryGetNonFungibleItem(itemUsable, out Item item) && _items.Remove(item);
         }
-        
+
         public bool RemoveNonFungibleItem(Guid itemGuid)
         {
             return TryGetNonFungibleItem(itemGuid, out Item item) && _items.Remove(item);
         }
 
-        // FungibleItem, NonFungibleItem 만들기
+        #endregion
+
+        #region Try Get
+
         public bool TryGetFungibleItem(ItemBase itemBase, out Item outFungibleItem)
         {
-            if (itemBase is Material material)
-                return TryGetFungibleItem(material.Data.ItemId, out outFungibleItem);
-
-            outFungibleItem = null;
-            return false;
+            switch (itemBase)
+            {
+                case Costume costume:
+                    return TryGetCostume(costume.Data.Id, out outFungibleItem);
+                case Material material:
+                    return TryGetMaterial(material.Data.ItemId, out outFungibleItem);
+                default:
+                    outFungibleItem = null;
+                    return false;
+            }
         }
 
-        public bool TryGetFungibleItem(HashDigest<SHA256> itemId, out Item outFungibleItem)
+        public bool TryGetCostume(int id, out Item outCostume)
         {
-            foreach (var fungibleItem in _items)
+            foreach (var item in _items)
             {
-                if (!(fungibleItem.item is Material material) || !material.Data.ItemId.Equals(itemId))
+                if (!(item.item is Costume costume) ||
+                    costume.Data.Id != id)
                 {
                     continue;
                 }
 
-                outFungibleItem = fungibleItem;
+                outCostume = item;
                 return true;
             }
 
-            outFungibleItem = null;
+            outCostume = null;
             return false;
         }
 
-        // Todo. NonFungibleItem 개발 후 `ItemUsable itemUsable` 인자를 `NonFungibleItem nonFungibleItem`로 수정.
+        public bool TryGetMaterial(HashDigest<SHA256> itemId, out Item outMaterial)
+        {
+            foreach (var fungibleItem in _items)
+            {
+                if (!(fungibleItem.item is Material material) ||
+                    !material.Data.ItemId.Equals(itemId))
+                {
+                    continue;
+                }
+
+                outMaterial = fungibleItem;
+                return true;
+            }
+
+            outMaterial = null;
+            return false;
+        }
+
         public bool TryGetNonFungibleItem(ItemUsable itemUsable, out ItemUsable outNonFungibleItem)
         {
             foreach (var item in _items)
@@ -200,7 +268,7 @@ namespace Nekoyume.Model.Item
                 {
                     continue;
                 }
-                
+
                 outNonFungibleItem = nonFungibleItem;
                 return true;
             }
@@ -208,7 +276,7 @@ namespace Nekoyume.Model.Item
             outNonFungibleItem = null;
             return false;
         }
-        
+
         public bool TryGetNonFungibleItemFromLast(out ItemUsable outNonFungibleItem)
         {
             foreach (var item in Enumerable.Reverse(_items))
@@ -230,7 +298,7 @@ namespace Nekoyume.Model.Item
         {
             return TryGetNonFungibleItem(itemUsable.ItemId, out outNonFungibleItem);
         }
-        
+
         public bool TryGetNonFungibleItem(Guid itemGuid, out Item outNonFungibleItem)
         {
             foreach (var item in _items)
@@ -260,7 +328,10 @@ namespace Nekoyume.Model.Item
             var newItem = _items.FirstOrDefault(i => !inventory.Items.Contains(i));
             outAddedItem = null;
             if (newItem is null)
+            {
                 return false;
+            }
+
             try
             {
                 outAddedItem = (ItemUsable) newItem.item;
@@ -271,27 +342,9 @@ namespace Nekoyume.Model.Item
 
                 Log.Error("Item {0}: {1} is not ItemUsable.", item.Data.ItemType, item.Data.Id);
             }
+
             return !(outAddedItem is null);
         }
-
-        public bool HasItem(int id, int count = 1)
-        {
-            return _items.Exists(item => item.item.Data.Id == id && item.count >= count);
-        }
-        
-        public bool HasItem(HashDigest<SHA256> id, int count = 1)
-        {
-            return _items.Exists(item =>
-            {
-                if (!(item.item is Material material))
-                    return false;
-                
-                return material.Data.ItemId.Equals(id) && item.count >= count;
-            });
-        }
-
-        public bool HasItem(Guid itemId) =>
-            _items.Select(i => i.item).OfType<ItemUsable>().Any(i => i.ItemId == itemId);
 
         public bool TryGetNonFungibleItem(Guid itemId, out ItemUsable outNonFungibleItem)
         {
@@ -315,7 +368,31 @@ namespace Nekoyume.Model.Item
             return false;
         }
 
-        public IValue Serialize() =>
-            new Bencodex.Types.List(Items.Select(i => i.Serialize()));
+        #endregion
+
+        #region Has
+
+        public bool HasItem(int id, int count = 1)
+        {
+            return _items.Exists(item => item.item.Data.Id == id && item.count >= count);
+        }
+
+        public bool HasItem(HashDigest<SHA256> id, int count = 1)
+        {
+            return _items.Exists(item =>
+            {
+                if (!(item.item is Material material))
+                {
+                    return false;
+                }
+
+                return material.Data.ItemId.Equals(id) && item.count >= count;
+            });
+        }
+
+        public bool HasItem(Guid itemId) =>
+            _items.Select(i => i.item).OfType<ItemUsable>().Any(i => i.ItemId == itemId);
+
+        #endregion
     }
 }

@@ -2,7 +2,6 @@ using System;
 using Libplanet;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using TMPro;
@@ -16,7 +15,7 @@ namespace Nekoyume.UI.Scroller
     public class ArenaCellView : MonoBehaviour
     {
         public Action<ArenaCellView> onClickChallenge;
-        public Action<Address> onClickInfo;
+        public Action<(RectTransform rectTransform, Address avatarAddress)> onClickInfo;
 
         [SerializeField]
         private GameObject rankImageContainer = null;
@@ -50,6 +49,20 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private DOTweenGroupAlpha tweenAlpha = null;
 
+        private RectTransform _rectTransform;
+        public RectTransform RectTransform
+        {
+            get
+            {
+                if (!_rectTransform)
+                {
+                    _rectTransform = GetComponent<RectTransform>();
+                }
+
+                return _rectTransform;
+            }
+        }
+
         public ArenaInfo ArenaInfo { get; private set; }
 
         private void Awake()
@@ -57,13 +70,13 @@ namespace Nekoyume.UI.Scroller
             challengeButton.OnSubmitClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                onClickChallenge.Invoke(this);
+                onClickChallenge?.Invoke(this);
             }).AddTo(gameObject);
 
             avatarInfoButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                onClickInfo.Invoke(ArenaInfo.AvatarAddress);
+                onClickInfo?.Invoke((RectTransform, ArenaInfo.AvatarAddress));
             }).AddTo(gameObject);
         }
 
@@ -117,7 +130,7 @@ namespace Nekoyume.UI.Scroller
                 case 3:
                     rankImageContainer.SetActive(true);
                     rankTextContainer.SetActive(false);
-                    rankImage.overrideSprite = SpriteHelper.GetRankIcon(rank); 
+                    rankImage.overrideSprite = SpriteHelper.GetRankIcon(rank);
                     break;
                 default:
                     rankImageContainer.SetActive(false);

@@ -27,6 +27,7 @@ namespace Nekoyume.UI.Module
             WorldMap,
             Settings,
             Combination,
+            AvatarInfo,
         }
 
         public class Model : IDisposable
@@ -70,6 +71,7 @@ namespace Nekoyume.UI.Module
         public NotifiableButton worldMapButton;
         public NotifiableButton settingsButton;
         public NotifiableButton combinationButton;
+        public NotifiableButton avatarInfoButton;
 
         public CanvasGroup canvasGroup;
         public VFX inventoryVFX;
@@ -90,8 +92,9 @@ namespace Nekoyume.UI.Module
         public readonly Subject<bool> HasNotificationInWorldMap = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInSettings = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInCombination = new Subject<bool>();
+        public readonly Subject<bool> HasNotificationInAvatarInfo = new Subject<bool>();
 
-        public override WidgetType WidgetType => WidgetType.Popup;
+        protected override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {
@@ -111,6 +114,7 @@ namespace Nekoyume.UI.Module
             settingsButton.SetWidgetType<Settings>();
             chatButton.SetWidgetType<Confirm>();
             combinationButton.SetWidgetType<CombinationSlots>();
+            avatarInfoButton.SetWidgetType<AvatarInfo>();
             // todo: 지금 월드맵 띄우는 것을 위젯으로 빼고, 여기서 설정하기?
             // worldMapButton.SetWidgetType<WorldMapPaper>();
 
@@ -131,6 +135,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(settingsButton);
             _toggleGroup.RegisterToggleable(chatButton);
             _toggleGroup.RegisterToggleable(combinationButton);
+            _toggleGroup.RegisterToggleable(avatarInfoButton);
 
             SubmitWidget = null;
             CloseWidget = null;
@@ -154,6 +159,7 @@ namespace Nekoyume.UI.Module
             HasNotificationInWorldMap.SubscribeTo(worldMapButton.SharedModel.HasNotification).AddTo(gameObject);
             HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification).AddTo(gameObject);
             HasNotificationInCombination.SubscribeTo(combinationButton.SharedModel.HasNotification).AddTo(gameObject);
+            HasNotificationInAvatarInfo.SubscribeTo(avatarInfoButton.SharedModel.HasNotification).AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
         }
@@ -203,6 +209,7 @@ namespace Nekoyume.UI.Module
             HasNotificationInWorldMap.Dispose();
             HasNotificationInSettings.Dispose();
             HasNotificationInCombination.Dispose();
+            HasNotificationInAvatarInfo.Dispose();
         }
 
         public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
@@ -210,17 +217,23 @@ namespace Nekoyume.UI.Module
         {
             CloseWidget = () => navigationAction?.Invoke(this);
 
-            base.Show();
+            base.Show(animateAlpha);
             if(animateAlpha)
             {
+                // FIXME: Widget의 연출 주기 캡슐화가 깨지는 부분이에요.
+                AnimationState = AnimationStateType.Showing;
                 var pos = _buttons.position;
                 pos.y = _buttonsPositionY;
                 _buttons.position = pos;
-                Animator.enabled = false;
 
-                canvasGroup.DOKill();
-                canvasGroup.alpha = 0;
-                canvasGroup.DOFade(1,  1.0f);
+                canvasGroup.alpha = 0f;
+                canvasGroup
+                    .DOFade(1f,  1f)
+                    .OnComplete(() => AnimationState = AnimationStateType.Shown);
+            }
+            else
+            {
+                canvasGroup.alpha = 1f;
             }
 
             SharedModel.NavigationType.SetValueAndForceNotify(navigationType);
@@ -239,6 +252,8 @@ namespace Nekoyume.UI.Module
         // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            canvasGroup.DOKill();
+
             foreach (var toggleable in _toggleGroup.Toggleables)
             {
                 if (!(toggleable is IWidgetControllable widgetControllable))
@@ -372,6 +387,8 @@ namespace Nekoyume.UI.Module
                     return ShowSettingsButton();
                 case ToggleableType.Combination:
                     return ShowCombinationButton();
+                case ToggleableType.AvatarInfo:
+                    return ShowAvatarInfoButton();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType, null);
             }
@@ -479,6 +496,12 @@ namespace Nekoyume.UI.Module
             return true;
         }
 
+        private bool ShowAvatarInfoButton()
+        {
+            avatarInfoButton.Show();
+            return true;
+        }
+
         #endregion
 
         private ToggleableButton GetButton(ToggleableType toggleableType)
@@ -503,6 +526,8 @@ namespace Nekoyume.UI.Module
                     return settingsButton;
                 case ToggleableType.Combination:
                     return combinationButton;
+                case ToggleableType.AvatarInfo:
+                    return avatarInfoButton;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType, null);
             }

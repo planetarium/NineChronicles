@@ -11,6 +11,8 @@ using Nekoyume.TableData;
 using Nekoyume.UI;
 using UniRx;
 using UnityEngine;
+using Nekoyume.State;
+using TentuPlay.Api;
 
 namespace Nekoyume.Game.Character
 {
@@ -25,6 +27,9 @@ namespace Nekoyume.Game.Character
         public Model.Item.Inventory Inventory;
         public TouchHandler touchHandler;
 
+        public List<Costume> Costumes =>
+            Inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped).ToList();
+
         public List<Equipment> Equipments =>
             Inventory.Items.Select(i => i.item).OfType<Equipment>().Where(e => e.equipped).ToList();
 
@@ -35,6 +40,9 @@ namespace Nekoyume.Game.Character
 
         public PlayerSpineController SpineController { get; private set; }
         public Model.Player Model => (Model.Player) CharacterModel;
+
+        private bool IsFullCostumeEquipped =>
+            Costumes.Any(costume => costume.Data.ItemSubType == ItemSubType.FullCostume);
 
         #region Mono
 
@@ -50,10 +58,15 @@ namespace Nekoyume.Game.Character
 
             Inventory = new Model.Item.Inventory();
 
-            touchHandler.OnClick.Subscribe(_ =>
+            touchHandler.OnClick
+                .Merge(touchHandler.OnDoubleClick)
+                .Merge(touchHandler.OnMultipleClick)
+                .Subscribe(_ =>
                 {
                     if (Game.instance.Stage.IsInStage)
+                    {
                         return;
+                    }
 
                     Animator.Touch();
                 })
@@ -72,7 +85,9 @@ namespace Nekoyume.Game.Character
         public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
         {
             if (!(model is Model.Player playerModel))
+            {
                 throw new ArgumentException(nameof(model));
+            }
 
             Set(playerModel, updateCurrentHP);
         }
@@ -85,8 +100,8 @@ namespace Nekoyume.Game.Character
             CharacterModel = model;
 
             InitStats(model);
-            UpdateEquipments(model.armor, model.weapon);
-            UpdateCustomize();
+            EquipCostumes(model.Costumes);
+            EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
 
             if (!SpeechBubble)
             {
@@ -94,8 +109,10 @@ namespace Nekoyume.Game.Character
             }
 
             SpeechBubble.speechBreakTime = GameConfig.PlayerSpeechBreakTime;
-            if(!(this is EnemyPlayer))
+            if (!(this is EnemyPlayer))
+            {
                 Widget.Find<UI.Battle>().comboText.comboMax = CharacterModel.AttackCountMax;
+            }
         }
 
         protected override IEnumerator Dying()
@@ -104,7 +121,7 @@ namespace Nekoyume.Game.Character
             {
                 SpeechBubble.Clear();
             }
-            
+
             ShowSpeech("PLAYER_LOSE");
 
             yield return StartCoroutine(base.Dying());
@@ -120,39 +137,250 @@ namespace Nekoyume.Game.Character
         {
             return SpineController.BoxCollider;
         }
-        
+
         #region AttackPoint & HitPoint
 
         protected override void UpdateHitPoint()
         {
             base.UpdateHitPoint();
-            
+
             var center = HitPointBoxCollider.center;
             var size = HitPointBoxCollider.size;
             HitPointLocalOffset = new Vector3(center.x + size.x / 2, center.y - size.y / 2);
-            attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
+            attackPoint.transform.localPosition =
+                new Vector3(HitPointLocalOffset.x + CharacterModel.attackRange, 0f);
         }
-        
+
         #endregion
 
-        #region Equipments & Customize
+        #region Costumes
 
-        public void UpdateEquipments(Armor armor, Weapon weapon = null)
+        private void EquipCostumes(IEnumerable<Costume> costumes)
         {
-            UpdateArmor(armor);
-            UpdateWeapon(weapon);
+            foreach (var costume in costumes)
+            {
+                EquipCostume(costume);
+            }
         }
 
-        private void UpdateArmor(Armor armor)
+        public void EquipCostume(Costume costume)
         {
+            if (costume is null)
+            {
+                return;
+            }
+
+            // 이 변경은 외부로 빠질 수 있음.
+            costume.equipped = true;
+
+            // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
+            switch (costume.Data.ItemSubType)
+            {
+                case ItemSubType.EarCostume:
+                    // UpdateEar();
+                    break;
+                case ItemSubType.EyeCostume:
+                    // UpdateEye();
+                    break;
+                case ItemSubType.FullCostume:
+                    ChangeSpine(costume.Data.SpineResourcePath);
+                    break;
+                case ItemSubType.HairCostume:
+                    // UpdateHair();
+                    break;
+                case ItemSubType.TailCostume:
+                    // UpdateTail();
+                    break;
+            }
+        }
+
+        public void UnequipCostume(Costume costume)
+        {
+            if (costume is null)
+            {
+                return;
+            }
+
+            // 이 변경은 외부로 빠질 수 있음.
+            costume.equipped = false;
+
+            // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
+            switch (costume.Data.ItemSubType)
+            {
+                case ItemSubType.EarCostume:
+                    // UpdateEar();
+                    break;
+                case ItemSubType.EyeCostume:
+                    // UpdateEye();
+                    break;
+                case ItemSubType.FullCostume:
+                    if (CharacterModel is Model.Player model)
+                    {
+                        EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
+                    }
+
+                    break;
+                case ItemSubType.HairCostume:
+                    // UpdateHair();
+                    break;
+                case ItemSubType.TailCostume:
+                    // UpdateTail();
+                    break;
+            }
+        }
+
+        #endregion
+
+        #region Equipments
+
+        public void EquipEquipmentsAndUpdateCustomize(Armor armor, Weapon weapon = null)
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
+            EquipArmor(armor);
+            EquipWeapon(weapon);
+            UpdateCustomize();
+        }
+
+        private void EquipArmor(Armor armor)
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
             var armorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
             var spineResourcePath = armor?.Data.SpineResourcePath ?? $"Character/Player/{armorId}";
+            ChangeSpine(spineResourcePath);
+        }
 
+        public void EquipWeapon(Weapon weapon)
+        {
+            if (IsFullCostumeEquipped ||
+                !SpineController)
+            {
+                return;
+            }
+
+            var sprite = weapon.GetPlayerSpineTexture();
+            SpineController.UpdateWeapon(sprite);
+        }
+
+        #endregion
+
+        // TODO: 최초에 캐릭터 생성 시에만 커스터마이징하는 개념으로 개발되었으나 그 기능이 코스튬과 같기 때문에 이 둘을 적절하게 리펙토링 할 필요가 있습니다.
+        // 각 부위의 코스튬을 개발할 때 진행하면 좋겠습니다.
+        #region Customize
+
+        private void UpdateCustomize()
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
+            UpdateEar(Model.earIndex);
+            UpdateEye(Model.lensIndex);
+            UpdateHair(Model.hairIndex);
+            UpdateTail(Model.tailIndex);
+        }
+
+        public void UpdateEar(int index)
+        {
+            UpdateEar($"ear_{index + 1:d4}_left", $"ear_{index + 1:d4}_right");
+        }
+
+        private void UpdateEar(string earLeftResource, string earRightResource)
+        {
+            if (!SpineController ||
+                string.IsNullOrEmpty(earLeftResource) ||
+                string.IsNullOrEmpty(earRightResource))
+            {
+                return;
+            }
+
+            var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarCostumeLeft(earLeftResource);
+            var spriteRight = SpriteHelper.GetPlayerSpineTextureEarCostumeRight(earRightResource);
+            SpineController.UpdateEar(spriteLeft, spriteRight);
+        }
+
+        public void UpdateEye(int index)
+        {
+            UpdateEye(CostumeSheet.GetEyeResources(index));
+        }
+
+        private void UpdateEye(IReadOnlyList<string> eyeResources)
+        {
+            if (eyeResources is null ||
+                eyeResources.Count < 2 ||
+                !SpineController)
+            {
+                return;
+            }
+
+            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeCostumeHalf(eyeResources[0]);
+            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeCostumeOpen(eyeResources[1]);
+            SpineController.UpdateEye(eyeHalfSprite, eyeOpenSprite);
+        }
+
+        /// <param name="colorIndex">0~5</param>
+        public void UpdateHair(int colorIndex)
+        {
+            if (SpineController is null)
+            {
+                return;
+            }
+
+            UpdateHair(CostumeSheet.GetHairResources(SpineController.hairTypeIndex, colorIndex));
+        }
+
+        private void UpdateHair(IReadOnlyCollection<string> hairResources)
+        {
+            if (hairResources is null ||
+                hairResources.Count < 6 ||
+                !SpineController)
+            {
+                return;
+            }
+
+            var sprites = hairResources
+                .Select(SpriteHelper.GetPlayerSpineTextureHairCostume)
+                .ToList();
+
+            SpineController.UpdateHair(sprites);
+        }
+
+        public void UpdateTail(int index)
+        {
+            UpdateTail($"tail_{index + 1:d4}");
+        }
+
+        private void UpdateTail(string tailResource)
+        {
+            if (!SpineController ||
+                string.IsNullOrEmpty(tailResource))
+            {
+                return;
+            }
+
+            var sprite = SpriteHelper.GetPlayerSpineTextureTailCostume(tailResource);
+            SpineController.UpdateTail(sprite);
+        }
+
+        #endregion
+
+        private void ChangeSpine(string spineResourcePath)
+        {
             if (!(Animator.Target is null))
             {
                 var animatorTargetName = spineResourcePath.Split('/').Last();
                 if (Animator.Target.name.Contains(animatorTargetName))
+                {
                     return;
+                }
 
                 Animator.DestroyTarget();
             }
@@ -163,93 +391,6 @@ namespace Nekoyume.Game.Character
             Animator.ResetTarget(go);
             UpdateHitPoint();
         }
-
-        public void UpdateWeapon(Weapon weapon)
-        {
-            if (!SpineController)
-                return;
-
-            var sprite = weapon.GetPlayerSpineTexture();
-            SpineController.UpdateWeapon(sprite);
-        }
-
-        public void UpdateCustomize()
-        {
-            UpdateEye(Model.lensIndex);
-            UpdateEar(Model.earIndex);
-            UpdateTail(Model.tailIndex);
-        }
-
-        public void UpdateEar(int index)
-        {
-            UpdateEar($"ear_{index + 1:d4}_left", $"ear_{index + 1:d4}_right");
-        }
-
-        public void UpdateEar(string earLeftResource, string earRightResource)
-        {
-            if (!SpineController)
-                return;
-
-            if (string.IsNullOrEmpty(earLeftResource))
-            {
-                earLeftResource = $"ear_{Model.earIndex + 1:d4}_left";
-            }
-
-            if (string.IsNullOrEmpty(earRightResource))
-            {
-                earRightResource = $"ear_{Model.earIndex + 1:d4}_right";
-            }
-
-            var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarLeft(earLeftResource);
-            var spriteRight = SpriteHelper.GetPlayerSpineTextureEarRight(earRightResource);
-            SpineController.UpdateEar(spriteLeft, spriteRight);
-        }
-
-        public void UpdateEye(int index)
-        {
-            UpdateEye(CostumeSheet.GetEyeOpenResourceByIndex(index), CostumeSheet.GetEyeHalfResourceByIndex(index));
-        }
-
-        public void UpdateEye(string eyeOpenResource, string eyeHalfResource)
-        {
-            if (!SpineController)
-                return;
-
-            if (string.IsNullOrEmpty(eyeOpenResource))
-            {
-                eyeOpenResource = CostumeSheet.GetEyeOpenResourceByIndex(Model.lensIndex);
-            }
-
-            if (string.IsNullOrEmpty(eyeHalfResource))
-            {
-                eyeHalfResource = CostumeSheet.GetEyeHalfResourceByIndex(Model.lensIndex);
-            }
-
-            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeOpen(eyeOpenResource);
-            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeHalf(eyeHalfResource);
-            SpineController.UpdateEye(eyeOpenSprite, eyeHalfSprite);
-        }
-
-        public void UpdateTail(int index)
-        {
-            UpdateTail($"tail_{index + 1:d4}");
-        }
-
-        public void UpdateTail(string tailResource)
-        {
-            if (!SpineController)
-                return;
-
-            if (string.IsNullOrEmpty(tailResource))
-            {
-                tailResource = $"tail_{Model.tailIndex + 1:d4}";
-            }
-
-            var sprite = SpriteHelper.GetPlayerSpineTextureTail(tailResource);
-            SpineController.UpdateTail(sprite);
-        }
-
-        #endregion
 
         public IEnumerator CoGetExp(long exp)
         {
@@ -264,7 +405,16 @@ namespace Nekoyume.Game.Character
 
             if (Level != level)
             {
-                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp, level);
+                //[TentuPlay] 아바타 레벨업 기록
+                new TPStashEvent().CharacterLevelUp(
+                    player_uuid: Game.instance.Agent.Address.ToHex(),
+                    characterarchetype_slug: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                    level_from: (int)level,
+                    level_to: (int)Level
+                    );
+
+                AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
+                    level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
                 VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
                 InitStats(Model);
@@ -280,7 +430,8 @@ namespace Nekoyume.Game.Character
             Inventory = character.Inventory;
         }
 
-        protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
+        protected override void ProcessAttack(CharacterBase target,
+            Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
             bool isConsiderElementalType)
         {
             ShowSpeech("PLAYER_SKILL", (int) skill.ElementalType, (int) skill.SkillCategory);

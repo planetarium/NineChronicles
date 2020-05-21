@@ -1,11 +1,15 @@
+using System;
 using System.Collections;
+using System.Linq;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
+using Nekoyume.Model.Item;
 using UnityEngine;
 using Player = Nekoyume.Game.Character.Player;
+using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
 {
@@ -25,8 +29,6 @@ namespace Nekoyume.UI
         public MainMenu btnRanking;
         public ArenaPendingNCG arenaPendingNCG;
         public SpeechBubble[] SpeechBubbles;
-        public NPC npc;
-        public SpeechBubble speechBubble;
         public GameObject shopExclamationMark;
         public GameObject combinationExclamationMark;
         public GameObject rankingExclamationMark;
@@ -46,6 +48,53 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
         }
+
+        // 코스튬 테스트를 위한 임시 코드 블럭.
+#if UNITY_EDITOR
+
+        private Costume _targetCostume = null;
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            if (States.Instance.CurrentAvatarState is null)
+            {
+                return;
+            }
+
+            _targetCostume = States.Instance.CurrentAvatarState.inventory.Items
+                .Select(item => item.item)
+                .OfType<Costume>()
+                .FirstOrDefault(costume => costume.Data.ItemSubType == ItemSubType.FullCostume);
+            if (_targetCostume is null)
+            {
+                Debug.LogError("Not Found Costume in Inventory");
+            }
+        }
+
+        private void OnGUI()
+        {
+            if (_targetCostume.equipped)
+            {
+                if (GUILayout.Button("코스튬 벗기"))
+                {
+                    var player = Game.Game.instance.Stage.GetPlayer();
+                    player.UnequipCostume(_targetCostume);
+                    Debug.LogWarning("코스튬 벗기 완료");
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("코스튬 입기"))
+                {
+                    var player = Game.Game.instance.Stage.GetPlayer();
+                    player.EquipCostume(_targetCostume);
+                    Debug.LogWarning("코스튬 입기 완료");
+                }
+            }
+        }
+
+#endif
 
         private void UpdateButtons()
         {
@@ -179,7 +228,7 @@ namespace Nekoyume.UI
             AudioController.PlayClick();
         }
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
             if (!(_coLazyClose is null))
             {
@@ -187,7 +236,7 @@ namespace Nekoyume.UI
                 _coLazyClose = null;
             }
 
-            base.Show();
+            base.Show(ignoreShowAnimation);
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();

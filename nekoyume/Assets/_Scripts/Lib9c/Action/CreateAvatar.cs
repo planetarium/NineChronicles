@@ -133,11 +133,13 @@ namespace Nekoyume.Action
         private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx)
         {
             var tableSheets = TableSheets.FromActionContext(ctx);
+            var gameConfigState = ctx.PreviousStates.GetGameConfigState();
             var avatarState = new AvatarState(
                 avatarAddress,
                 ctx.Signer,
                 ctx.BlockIndex,
                 tableSheets,
+                gameConfigState,
                 name
             );
 
@@ -151,6 +153,11 @@ namespace Nekoyume.Action
 
         private static void AddItemsForTest(AvatarState avatarState, IRandom random, TableSheets tableSheets)
         {
+            foreach (var row in tableSheets.CostumeItemSheet)
+            {
+                avatarState.inventory.AddItem(ItemFactory.CreateCostume(row));
+            }
+
             foreach (var row in tableSheets.MaterialItemSheet)
             {
                 avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);

@@ -25,10 +25,11 @@ namespace Nekoyume.UI
             image.overrideSprite = sprite;
             UpdateStatus(Data);
 
-            if (isAdded)
+            if (isAdded &&
+                enabled)
             {
-                var vfx = VFXController.instance.CreateAndChaseRectTransform<DropItemInventoryVFX>
-                    (image.rectTransform);
+                VFXController.instance
+                    .CreateAndChaseRectTransform<DropItemInventoryVFX>(image.rectTransform);
             }
         }
 
@@ -36,7 +37,7 @@ namespace Nekoyume.UI
         {
             Data = buff;
             remainedDurationText.text = Data.remainedDuration.ToString();
-        } 
+        }
 
         public void Hide()
         {

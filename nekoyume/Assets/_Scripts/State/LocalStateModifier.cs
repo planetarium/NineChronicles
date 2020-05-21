@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -87,11 +87,17 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="guid"></param>
-        public static void AddItem(Address avatarAddress, Guid guid)
+        public static void AddItem(Address avatarAddress, Guid guid, bool resetState = true)
         {
             var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
-            AddItemInternal(avatarAddress);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         /// <summary>
@@ -100,14 +106,22 @@ namespace Nekoyume.State
         /// <param name="avatarAddress"></param>
         /// <param name="id"></param>
         /// <param name="count"></param>
-        public static void AddItem(Address avatarAddress, HashDigest<SHA256> id, int count)
+        public static void AddItem(Address avatarAddress, HashDigest<SHA256> id, int count, bool resetState = true)
         {
             if (count is 0)
+            {
                 return;
+            }
 
             var modifier = new AvatarInventoryFungibleItemRemover(id, count);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
-            AddItemInternal(avatarAddress);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         /// <summary>
@@ -115,15 +129,16 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="idAndCountDictionary"></param>
-        public static void AddItem(Address avatarAddress, Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
+        public static void AddItem(Address avatarAddress, Dictionary<HashDigest<SHA256>, int> idAndCountDictionary, bool resetState = true)
         {
             var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
-            AddItemInternal(avatarAddress);
-        }
 
-        private static void AddItemInternal(Address avatarAddress)
-        {
+            if (!resetState)
+            {
+                return;
+            }
+
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
@@ -261,17 +276,29 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="mailId"></param>
-        public static void RemoveNewAttachmentMail(Address avatarAddress, Guid mailId)
+        public static void RemoveNewAttachmentMail(Address avatarAddress, Guid mailId, bool resetState = true)
         {
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+
+            if (!resetState)
+            {
+                return;
+            }
+
             TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
         }
 
-        public static void RemoveAttachmentResult(Address avatarAddress, Guid mailId)
+        public static void RemoveAttachmentResult(Address avatarAddress, Guid mailId, bool resetState = true)
         {
             var resultModifier = new AvatarAttachmentMailResultSetter(mailId);
             LocalStateSettings.Instance.Remove(avatarAddress, resultModifier);
+
+            if (!resetState)
+            {
+                return;
+            }
+
             TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
         }
 
@@ -314,10 +341,16 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="id"></param>
-        public static void RemoveReceivableQuest(Address avatarAddress, int id)
+        public static void RemoveReceivableQuest(Address avatarAddress, int id, bool resetState = true)
         {
             var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+
+            if (!resetState)
+            {
+                return;
+            }
+
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
@@ -462,13 +495,19 @@ namespace Nekoyume.State
         public static void ModifyCombinationSlot(
             TableSheets tableSheets,
             EquipmentItemRecipeSheet.Row row,
-            EquipmentCombinationPanel panel,
+            CombinationPanel panel,
             int slotIndex,
             int? subRecipeId
         )
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var requiredBlockIndex = row.RequiredBlockIndex + blockIndex;
+            if (subRecipeId.HasValue)
+            {
+                var subRow =
+                    tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
+                requiredBlockIndex += subRow.RequiredBlockIndex;
+            }
             var equipRow =
                 tableSheets.EquipmentItemSheet.Values.First(i => i.Id == row.ResultEquipmentId);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.Empty, requiredBlockIndex);
@@ -496,7 +535,7 @@ namespace Nekoyume.State
 
         public static void ModifyCombinationSlotConsumable(
             TableSheets tableSheets,
-            CombineConsumable panel,
+            ICombinationPanel panel,
             List<(Material material, int count)> materialInfoList,
             int slotIndex
         )

@@ -1,5 +1,3 @@
-using System;
-using System.Text;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.UI.Model;
@@ -54,7 +52,7 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public override void Show()
+        public override void Show(bool ignoreShowAnimation = false)
         {
             _player = Game.Game.instance.Stage.selectedPlayer;
             var player = _player.Model;
@@ -80,21 +78,29 @@ namespace Nekoyume.UI
                 go.SetActive(true);
             }
 
-            base.Show();
-            blur?.Show();
+            base.Show(ignoreShowAnimation);
+
+            if (blur)
+            {
+                blur.Show();
+            }
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            blur?.Close();
+            if (blur)
+            {
+                blur.Close();
+            }
+            
             base.Close(ignoreCloseAnimation);
             equipmentSlots.Clear();
         }
-        
+
         private void ShowTooltip(EquipmentSlot slot)
         {
             var tooltip = Find<ItemInformationTooltip>();
-            
+
             if (slot is null ||
                 slot.Item is null ||
                 slot.RectTransform == tooltip.Target)
@@ -102,7 +108,7 @@ namespace Nekoyume.UI
                 tooltip.Close();
                 return;
             }
-            
+
             tooltip.Show(slot.RectTransform, new CountableItem(slot.Item, 1));
         }
 

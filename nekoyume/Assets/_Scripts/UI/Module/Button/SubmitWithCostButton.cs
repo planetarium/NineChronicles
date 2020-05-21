@@ -1,3 +1,4 @@
+using System.Globalization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,17 +20,20 @@ namespace Nekoyume.UI.Module
         public Image costAPImageForSubmittable;
         public TextMeshProUGUI costAPText;
         public TextMeshProUGUI costAPTextForSubmittable;
+        public GameObject costHourglass;
+        public Image costHourglassImage;
+        public Image costHourGlassImageForSubmittable;
+        public TextMeshProUGUI costHourglassText;
+        public TextMeshProUGUI costHourglassTextForSubmittable;
         public HorizontalLayoutGroup layoutGroup;
 
         public void ShowNCG(decimal ncg, bool isEnough)
         {
             costNCG.SetActive(true);
-            costNCGText.text = ncg.ToString();
-            costNCGTextForSubmittable.text = costNCGText.text;
-            costNCGText.color = isEnough ? Color.white : Color.red;
-            costNCGTextForSubmittable.color = costNCGText.color; 
+            SetText(costNCGText, costNCGTextForSubmittable, isEnough, ncg);
             UpdateSpace();
         }
+
 
         public void HideNCG()
         {
@@ -40,16 +44,26 @@ namespace Nekoyume.UI.Module
         public void ShowAP(int ap, bool isEnough)
         {
             costAP.SetActive(true);
-            costAPText.text = ap.ToString();
-            costAPTextForSubmittable.text = costAPText.text;
-            costAPText.color = isEnough ? Color.white : Color.red;
-            costAPTextForSubmittable.color = costAPText.color;
+            SetText(costAPText, costAPTextForSubmittable, isEnough, ap);
             UpdateSpace();
         }
 
         public void HideAP()
         {
             costAP.SetActive(false);
+            UpdateSpace();
+        }
+
+        public void ShowHourglass(int count, bool isEnough)
+        {
+            costHourglass.SetActive(true);
+            SetText(costHourglassText, costHourglassTextForSubmittable, isEnough, count);
+            UpdateSpace();
+        }
+
+        public void HideHourglass()
+        {
+            costHourglass.SetActive(false);
             UpdateSpace();
         }
 
@@ -60,25 +74,49 @@ namespace Nekoyume.UI.Module
             costNCGTextForSubmittable.gameObject.SetActive(submittable);
             costAPText.gameObject.SetActive(!submittable);
             costAPTextForSubmittable.gameObject.SetActive(submittable);
+            costHourglassText.gameObject.SetActive(!submittable);
+            costHourglassTextForSubmittable.gameObject.SetActive(submittable);
 
             costBackgroundImage.enabled = !submittable;
             costAPImage.enabled = !submittable;
             costNCGImage.enabled = !submittable;
+            costHourglassImage.enabled = !submittable;
 
             costBackgroundImageForSubmittable.enabled = submittable;
             costAPImageForSubmittable.enabled = submittable;
             costNCGImageForSubmittable.enabled = submittable;
+            costHourGlassImageForSubmittable.enabled = submittable;
 
             UpdateSpace();
         }
 
         private void UpdateSpace()
         {
-            bool hasNoCost = !costAP.activeSelf && !costNCG.activeSelf;
+            bool hasNoCost = !costAP.activeSelf && !costNCG.activeSelf && !costHourglass.activeSelf;
 
             costs.SetActive(!hasNoCost);
             layoutGroup.childAlignment = hasNoCost ? TextAnchor.MiddleCenter : TextAnchor.MiddleLeft;
-            layoutGroup.spacing = costAP.activeSelf ^ costNCG.activeSelf ? 15 : 5;
+            layoutGroup.spacing = costAP.activeSelf ^ costNCG.activeSelf ^ costHourglass.activeSelf ? 15 : 5;
+        }
+
+        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, int cost)
+        {
+            textField.text = cost.ToString(CultureInfo.InvariantCulture);
+            submitField.text = textField.text;
+            SetTextColor(textField, submitField, isEnough);
+        }
+
+        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, decimal cost)
+        {
+            textField.text = cost.ToString(CultureInfo.InvariantCulture);
+            submitField.text = textField.text;
+            SetTextColor(textField, submitField, isEnough);
+        }
+
+        private static void SetTextColor(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough)
+        {
+            textField.color = isEnough ? Color.white : Color.red;
+            submitField.color = textField.color;
         }
     }
 }

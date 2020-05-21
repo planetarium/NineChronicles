@@ -87,6 +87,7 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+            List<Costume> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
@@ -97,6 +98,7 @@ namespace Nekoyume.BlockChain
 
             var action = new HackAndSlash
             {
+                costumes = costumes,
                 equipments = equipments,
                 foods = foods,
                 worldId = worldId,
@@ -171,7 +173,7 @@ namespace Nekoyume.BlockChain
             var action = new SellCancellation
             {
                 productId = productId,
-                sellerAvatarAddress = States.Instance.CurrentAvatarState.address,
+                sellerAvatarAddress = sellerAvatarAddress
             };
             ProcessAction(action);
 
@@ -213,7 +215,7 @@ namespace Nekoyume.BlockChain
             var action = new DailyReward
             {
                 avatarAddress = States.Instance.CurrentAvatarState.address,
-                refillPoint = GameConfig.ActionPointMax
+                refillPoint = States.Instance.GameConfigState.ActionPointMax
             };
             ProcessAction(action);
 
@@ -346,6 +348,40 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Timeout(ActionTimeout);
         }
+
+        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(PublicKey key)
+        {
+            var action = new RedeemCode
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                code = key
+            };
+            ProcessAction(action);
+
+            return _renderer.EveryRender<RedeemCode>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<ChargeActionPoint>> ChargeActionPoint()
+        {
+            var action = new ChargeActionPoint
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.agentAddress
+            };
+            ProcessAction(action);
+
+            return _renderer.EveryRender<ChargeActionPoint>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
 
         #endregion
     }

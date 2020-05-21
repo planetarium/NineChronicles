@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1891051865323658137}
   - component: {fileID: 708780606284774776}
   - component: {fileID: 4300689548754571659}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: DropItemWorldVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 0
   useRigidbodyForVelocity: 1
@@ -4822,8 +4822,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 764030297
+  m_SortingLayer: 7
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0

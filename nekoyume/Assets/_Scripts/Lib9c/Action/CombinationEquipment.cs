@@ -107,7 +107,7 @@ namespace Nekoyume.Action
                 );
             }
 
-            if (!avatarState.inventory.RemoveFungibleItem(material.ItemId, recipe.MaterialCount))
+            if (!avatarState.inventory.RemoveMaterial(material.ItemId, recipe.MaterialCount))
             {
                 return LogError(
                     context,
@@ -133,14 +133,16 @@ namespace Nekoyume.Action
                 );
             }
 
+            var requiredBlockIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
-                equipRow, ctx.Random.GenerateRandomGuid(),
-                ctx.BlockIndex + recipe.RequiredBlockIndex);
-
+                equipRow,
+                ctx.Random.GenerateRandomGuid(),
+                requiredBlockIndex
+            );
 
             // 서브 레시피 검증
             HashSet<int> optionIds = null;
-            if (!(SubRecipeId is null))
+            if (SubRecipeId.HasValue)
             {
                 var subSheet = tableSheets.EquipmentItemSubRecipeSheet;
                 if (!subSheet.TryGetValue((int) SubRecipeId, out var subRecipe))
@@ -162,6 +164,8 @@ namespace Nekoyume.Action
                     );
                 }
 
+                requiredBlockIndex += subRecipe.RequiredBlockIndex;
+
                 foreach (var materialInfo in subRecipe.Materials)
                 {
                     if (!materialSheet.TryGetValue(materialInfo.Id, out var subMaterialRow))
@@ -173,7 +177,7 @@ namespace Nekoyume.Action
                         );
                     }
 
-                    if (!avatarState.inventory.RemoveFungibleItem(subMaterialRow.ItemId,
+                    if (!avatarState.inventory.RemoveMaterial(subMaterialRow.ItemId,
                         materialInfo.Count))
                     {
                         return LogError(
@@ -192,6 +196,7 @@ namespace Nekoyume.Action
                 }
 
                 optionIds = SelectOption(tableSheets, subRecipe, ctx.Random, equipment);
+                equipment.Update(requiredBlockIndex);
             }
 
             // 자원 검증
@@ -225,10 +230,9 @@ namespace Nekoyume.Action
                 subRecipeId = SubRecipeId,
                 itemType = ItemType.Equipment,
             };
-            var requiredIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
-            slotState.Update(result, ctx.BlockIndex, requiredIndex);
+            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
             var mail = new CombinationMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
-                requiredIndex);
+                requiredBlockIndex);
             result.id = mail.id;
             avatarState.Update(mail);
             avatarState.UpdateFromCombination(equipment);

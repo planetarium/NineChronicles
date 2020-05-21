@@ -14,6 +14,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using TentuPlay.Api;
 
 namespace Nekoyume.UI
 {
@@ -32,7 +33,7 @@ namespace Nekoyume.UI
 
         public IKeyStore KeyStore = Web3KeyStore.DefaultKeyStore;
 
-        public override WidgetType WidgetType => WidgetType.SystemInfo;
+        protected override WidgetType WidgetType => WidgetType.SystemInfo;
         public InputField passPhraseField;
         public InputField retypeField;
         public InputField loginField;
@@ -245,6 +246,9 @@ namespace Nekoyume.UI
             if (Login)
             {
                 Close();
+
+                //[TentuPlay] 로그인 기록
+                new TPStashEvent().Login(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
             }
             else
             {
@@ -468,7 +472,7 @@ namespace Nekoyume.UI
         {
             base.Update();
 
-            if (Input.GetKeyUp(KeyCode.Tab))
+            if (Input.GetKeyDown(KeyCode.Tab))
             {
                 switch (State.Value)
                 {
@@ -497,6 +501,8 @@ namespace Nekoyume.UI
                     case States.Show:
                     case States.Failed:
                         break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
 
@@ -552,6 +558,11 @@ namespace Nekoyume.UI
             var ppk = ProtectedPrivateKey.Protect(privateKey, passPhraseField.text);
             KeyStore.Add(ppk);
             _privateKey = privateKey;
+
+            //[TentuPlay] 가입 기록
+            TPStashEvent MyStashEvent = new TPStashEvent();
+            MyStashEvent.Join(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
+            MyStashEvent.Login(player_uuid: _privateKey.PublicKey.ToAddress().ToHex());
         }
 
         private void SetState(States states)

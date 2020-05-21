@@ -65,6 +65,11 @@ namespace Nekoyume.UI
 
         public void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
         {
+            if (!CanClose)
+            {
+                return;
+            }
+
             var stage = Game.Game.instance.Stage;
             if (stage.isExitReserved)
             {
@@ -109,7 +114,7 @@ namespace Nekoyume.UI
         }
 
         public void ShowComboText(bool attacked)
-        { 
+        {
             comboText.StopAllCoroutines();
             comboText.Show(attacked);
         }
@@ -124,9 +129,9 @@ namespace Nekoyume.UI
             VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.button.transform, Vector3.zero);
         }
 
-        protected override void OnCompleteOfCloseAnimation()
+        protected override void OnCompleteOfCloseAnimationInternal()
         {
-            base.OnCompleteOfCloseAnimation();
+            base.OnCompleteOfCloseAnimationInternal();
             stageTitle.Close();
             stageProgressBar.Close();
         }

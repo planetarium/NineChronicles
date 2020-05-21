@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
-    public class EnhanceEquipment : CombinationPanel<EnhancementMaterialView>
+    public class EnhanceEquipment : EnhancementPanel<EnhancementMaterialView>
     {
         public Image arrowImage;
         public GameObject message;
@@ -89,10 +89,10 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected override int GetCostNCG()
+        protected override decimal GetCostNCG()
         {
             if (baseMaterial.IsEmpty)
-                return 0;
+                return 0m;
             var baseEquipment = (Equipment) baseMaterial.Model.ItemBase.Value;
             return (int) ItemEnhancement.GetRequiredGold(baseEquipment);
         }
@@ -203,7 +203,7 @@ namespace Nekoyume.UI.Module
 
             message.SetActive(true);
             messageText.text = string.Format(
-                LocalizationManager.Localize("UI_ENHANCEMENT_N_OPTION_RANDOMLY_SELECT"),
+                LocalizationManager.Localize("UI_ENHANCEMENT_GUIDE"),
                 count);
         }
     }

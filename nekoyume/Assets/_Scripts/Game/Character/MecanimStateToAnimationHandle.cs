@@ -20,20 +20,27 @@ namespace Nekoyume.Game.Character
         private Spine.TrackEntry _trackEntry;
         private float _normalizedTime;
 
-        public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        public override void OnStateEnter(
+            Animator animator,
+            AnimatorStateInfo stateInfo,
+            int layerIndex)
         {
             if (!_controller)
             {
                 _controller = animator.GetComponent<SpineController>();
                 if (!_controller)
+                {
                     throw new NotFoundComponentException<SpineController>();
+                }
             }
 
             if (!_skeletonAnimation)
             {
                 _skeletonAnimation = animator.GetComponentInChildren<SkeletonAnimation>();
                 if (!_skeletonAnimation)
+                {
                     throw new NotFoundComponentException<SkeletonAnimation>();
+                }
 
                 _spineAnimationState = _skeletonAnimation.state;
             }
@@ -50,7 +57,10 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        public override void OnStateUpdate(
+            Animator animator,
+            AnimatorStateInfo stateInfo,
+            int layerIndex)
         {
             if (loop)
             {
@@ -67,14 +77,6 @@ namespace Nekoyume.Game.Character
             {
                 animator.SetTrigger(TransitionHash);
             }
-        }
-
-        public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {
-            if (!stateInfo.IsName(nameof(CharacterAnimation.Type.Touch)))
-                return;
-            
-            animator.SetBool(nameof(CharacterAnimation.Type.Touch), false);
         }
     }
 }

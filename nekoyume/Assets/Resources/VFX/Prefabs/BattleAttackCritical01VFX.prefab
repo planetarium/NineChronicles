@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4538823832322176}
   - component: {fileID: 198373850421119438}
   - component: {fileID: 199140653876372648}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: attack_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4613,7 +4613,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
@@ -4650,7 +4650,7 @@ GameObject:
   - component: {fileID: 4827748928693898}
   - component: {fileID: 198652896586786486}
   - component: {fileID: 199777082749558680}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: flash_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9315,7 +9315,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
@@ -9352,7 +9352,7 @@ GameObject:
   - component: {fileID: 4863826596660880}
   - component: {fileID: 198385628247468922}
   - component: {fileID: 199212001476109954}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: dot_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13909,7 +13909,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
@@ -13946,7 +13946,7 @@ GameObject:
   - component: {fileID: 4813197164492632}
   - component: {fileID: 198873548024965236}
   - component: {fileID: 199595827732575678}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: attack_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18602,7 +18602,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
@@ -18639,7 +18639,7 @@ GameObject:
   - component: {fileID: 4762795281603258}
   - component: {fileID: 198154266532923958}
   - component: {fileID: 199434282536212188}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: flash_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23241,7 +23241,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
@@ -23279,7 +23279,7 @@ GameObject:
   - component: {fileID: 198389272005974146}
   - component: {fileID: 199397287776009212}
   - component: {fileID: 114795138295418652}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: BattleAttackCritical01VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23323,7 +23323,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -27951,7 +27951,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
@@ -28000,7 +28000,7 @@ GameObject:
   - component: {fileID: 4099594031429286}
   - component: {fileID: 198801415377329370}
   - component: {fileID: 199908605729673868}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: glow_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32602,7 +32602,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 0
@@ -32639,7 +32639,7 @@ GameObject:
   - component: {fileID: 4230039843782598}
   - component: {fileID: 198907791818786966}
   - component: {fileID: 199799556223036818}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: lines_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37223,7 +37223,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 764030297
+  m_SortingLayerID: -317291175
   m_SortingLayer: 5
   m_SortingOrder: 10
   m_RenderMode: 1

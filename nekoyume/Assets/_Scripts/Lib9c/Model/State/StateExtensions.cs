@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Crypto;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 
@@ -203,9 +204,9 @@ namespace Nekoyume.Model.State
                 new List(
                     value.Select(
                         pair =>
-                        (IValue)Dictionary.Empty
-                            .Add("material", pair.Key.Serialize())
-                            .Add("count", pair.Value.Serialize())));
+                            (IValue)Dictionary.Empty
+                                .Add("material", pair.Key.Serialize())
+                                .Add("count", pair.Value.Serialize())));
         }
 
         public static Dictionary<Material, int> ToDictionary_Material_int(this IValue serialized)
@@ -221,6 +222,19 @@ namespace Nekoyume.Model.State
         #endregion
 
         #region Bencodex.Types.Dictionary Getter
+
+        public delegate bool IValueTryParseDelegate<T>(IValue input, out T output);
+
+        public static T GetValue<T>(this Dictionary serialized, string key, T defaultValue, IValueTryParseDelegate<T> tryParser)
+        {
+            if (serialized.ContainsKey((Text) key) &&
+                tryParser(serialized[key], out var value))
+            {
+                return value;
+            }
+
+            return defaultValue;
+        }
 
         public static Address GetAddress(this Dictionary serialized, string key, Address defaultValue = default)
         {
@@ -283,6 +297,18 @@ namespace Nekoyume.Model.State
             return serialized.ContainsKey((Text)key)
                 ? serialized[key].ToDecimalStat()
                 : defaultValue;
+        }
+
+        #endregion
+
+        #region PublicKey
+
+        public static IValue Serialize(this PublicKey key) => new Binary(key.Format(true));
+
+        public static PublicKey ToPublicKey(this IValue serialized)
+        {
+            var bin = ((Binary) serialized).Value;
+            return new PublicKey(bin);
         }
 
         #endregion

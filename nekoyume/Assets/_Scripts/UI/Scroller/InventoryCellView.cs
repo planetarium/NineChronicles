@@ -18,22 +18,24 @@ namespace Nekoyume.UI.Scroller
         }
 
         #endregion
-        
+
         public void SetData(EnhancedScroller scroller, ReactiveCollection<Model.InventoryItem> dataList, int firstIndex)
         {
-            if (ReferenceEquals(dataList, null))
+            if (dataList is null)
             {
                 Clear();
                 return;
             }
-            
+
             var dataCount = dataList.Count;
-            for (int i = 0; i < items.Length; i++)
+            for (var i = 0; i < items.Length; i++)
             {
                 var index = firstIndex + i;
                 var item = items[i];
 
-                item.SetData(index < dataCount ? dataList[index] : null);
+                item.SetData(index < dataCount
+                    ? dataList[index]
+                    : null);
                 item.gameObject.SetActive(true);
             }
         }

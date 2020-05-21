@@ -17,6 +17,8 @@ namespace Nekoyume.Action
         public ShopState ShopState { get; set; }
         public TableSheetsState TableSheetsState { get; set; }
         public List<Address> WeeklyArenaAddresses { get; set; }
+        public GameConfigState GameConfigState { get; set; }
+        public RedeemCodeState RedeemCodeState { get; set; }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -29,6 +31,8 @@ namespace Nekoyume.Action
                 states = states.SetState(TableSheetsState.Address, MarkChanged);
                 states = WeeklyArenaAddresses.Aggregate(states,
                     (current, address) => current.SetState(address, MarkChanged));
+                states = states.SetState(GameConfigState.Address, MarkChanged);
+                states = states.SetState(RedeemCodeState.Address, MarkChanged);
                 return states;
             }
 
@@ -42,7 +46,9 @@ namespace Nekoyume.Action
             states = states
                 .SetState(RankingState.Address, RankingState.Serialize())
                 .SetState(ShopState.Address, ShopState.Serialize())
-                .SetState(TableSheetsState.Address, TableSheetsState.Serialize());
+                .SetState(TableSheetsState.Address, TableSheetsState.Serialize())
+                .SetState(GameConfigState.Address, GameConfigState.Serialize())
+                .SetState(RedeemCodeState.Address, RedeemCodeState.Serialize());
             return states;
         }
 
@@ -55,7 +61,9 @@ namespace Nekoyume.Action
                     .Add("ranking_state", RankingState.Serialize())
                     .Add("shop_state", ShopState.Serialize())
                     .Add("table_sheets_state", TableSheetsState.Serialize())
-                    .Add("weekly_arena_addresses", addresses.Serialize());
+                    .Add("weekly_arena_addresses", addresses.Serialize())
+                    .Add("game_config_state", GameConfigState.Serialize())
+                    .Add("redeem_code_state", RedeemCodeState.Serialize());
             }
         }
 
@@ -66,6 +74,8 @@ namespace Nekoyume.Action
             TableSheetsState = new TableSheetsState((Bencodex.Types.Dictionary) plainValue["table_sheets_state"]);
             var addressList = (Bencodex.Types.List) plainValue["weekly_arena_addresses"];
             WeeklyArenaAddresses = addressList.Select(d => d.ToAddress()).ToList();
+            GameConfigState = new GameConfigState((Bencodex.Types.Dictionary) plainValue["game_config_state"]);
+            RedeemCodeState = new RedeemCodeState((Bencodex.Types.Dictionary) plainValue["redeem_code_state"]);
         }
     }
 }

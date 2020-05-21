@@ -24,7 +24,6 @@ namespace Nekoyume.UI
         public BuffLayout buffLayout;
         public BuffTooltip buffTooltip;
         public BattleTimerView battleTimerView;
-        public CanvasGroup canvasGroup;
 
         private string _avatarName = "";
         private Player _player;
@@ -40,26 +39,18 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
-            Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus).AddTo(gameObject);
+            Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
+                .AddTo(gameObject);
 
             CloseWidget = null;
         }
 
         #endregion
 
-        public void Show(bool animateAlpha = false)
+        public override void Show(bool ignoreStartAnimation = false)
         {
-            base.Show();
+            base.Show(ignoreStartAnimation);
             battleTimerView.Close();
-
-            if (animateAlpha)
-            {
-                Animator.enabled = false;
-
-                canvasGroup.alpha = 0;
-                canvasGroup.DOFade(1, 1.0f);
-                canvasGroup.transform.position = Vector3.zero;
-            }
 
             _statusDetail = Find<StatusDetail>();
             if (_statusDetail is null)
@@ -83,15 +74,14 @@ namespace Nekoyume.UI
             buffLayout.SetBuff(null);
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            base.Close(ignoreCloseAnimation);
-        }
-
         private void SubscribeOnUpdatePlayerStatus(Player player)
         {
-            if (player?.Model is null || player is EnemyPlayer)
+            if (!player ||
+                player is EnemyPlayer ||
+                player.Model is null)
+            {
                 return;
+            }
 
             UpdateExp();
             SetBuffs(player.Model.Buffs);
@@ -119,10 +109,12 @@ namespace Nekoyume.UI
         public void ShowBuffTooltip(GameObject sender)
         {
             var icon = sender.GetComponent<BuffIcon>();
+            var iconRectTransform = icon.image.rectTransform;
+
             buffTooltip.gameObject.SetActive(true);
             buffTooltip.UpdateText(icon.Data);
-            buffTooltip.RectTransform.anchoredPosition = icon.image.rectTransform.anchoredPosition +
-                                                         Vector2.down * (icon.image.rectTransform.sizeDelta.y);
+            buffTooltip.RectTransform.anchoredPosition =
+                iconRectTransform.anchoredPosition + Vector2.down * iconRectTransform.sizeDelta.y;
         }
 
         public void HideBuffTooltip()
@@ -135,7 +127,9 @@ namespace Nekoyume.UI
         private void UpdateExp()
         {
             if (!_player)
+            {
                 return;
+            }
 
             var level = _player.Level;
 
@@ -143,9 +137,10 @@ namespace Nekoyume.UI
             textLvName.text = $"<color=#B38271>LV. {level}</color> {_avatarName}";
             var displayHp = _player.CurrentHP;
             textHp.text = $"{displayHp} / {_player.HP}";
-            textExp.text = $"{_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
+            textExp.text =
+                $"{_player.Model.Exp.Need - _player.EXPMax + _player.EXP} / {_player.Model.Exp.Need}";
 
-            float hpValue = _player.CurrentHP / (float) _player.HP;
+            var hpValue = _player.CurrentHP / (float) _player.HP;
             hpBar.gameObject.SetActive(hpValue > 0.0f);
             hpValue = Mathf.Min(Mathf.Max(hpValue, 0.1f), 1.0f);
             hpBar.fillAmount = hpValue;

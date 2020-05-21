@@ -9,29 +9,57 @@ namespace Nekoyume.UI
 {
     public class Widget : MonoBehaviour
     {
+        protected enum AnimationStateType
+        {
+            Showing,
+            Shown,
+            Closing,
+            Closed
+        }
+
         private struct PoolElementModel
         {
             public GameObject gameObject;
             public Widget widget;
         }
 
-        public static readonly Subject<Widget> OnEnableStaticSubject = new Subject<Widget>();
-        public static readonly Subject<Widget> OnDisableStaticSubject = new Subject<Widget>();
-
-        public readonly Subject<Widget> OnEnableSubject = new Subject<Widget>();
-        public readonly Subject<Widget> OnDisableSubject = new Subject<Widget>();
-
-        protected Animator Animator { get; private set; }
+        private static readonly Subject<Widget> OnEnableStaticSubject = new Subject<Widget>();
+        private static readonly Subject<Widget> OnDisableStaticSubject = new Subject<Widget>();
 
         private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
-        public bool IsCloseAnimationCompleted { get; private set; }
-        
+
+        public static IObservable<Widget> OnEnableStaticObservable => OnEnableStaticSubject;
+
+        public static IObservable<Widget> OnDisableStaticObservable => OnDisableStaticSubject;
+
+        /// <summary>
+        /// AnimationState 캡슐화가 깨지는 setter를 사용하지 않도록 한다.
+        /// BottomMenu에서만 예외적으로 사용하고 있는데, 이를 Widget 안으로 옮긴 후에 setter를 private으로 변경한다.
+        /// </summary>
+        protected AnimationStateType AnimationState { get; set; } = AnimationStateType.Closed;
+
+        private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
+        private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
+
         protected System.Action CloseWidget;
         protected System.Action SubmitWidget;
 
-        public RectTransform RectTransform { get; private set; }
-        public virtual WidgetType WidgetType => WidgetType.Widget;
+        protected virtual WidgetType WidgetType => WidgetType.Widget;
+
+        protected RectTransform RectTransform { get; private set; }
+
+        protected Animator Animator { get; private set; }
+
+        public bool IsCloseAnimationCompleted { get; private set; }
+
+        public IObservable<Widget> OnEnableObservable => _onEnableSubject;
+
+        public IObservable<Widget> OnDisableObservable => _onDisableSubject;
+
+        protected virtual bool CanHandleInputEvent => AnimationState == AnimationStateType.Shown;
+
+        protected bool CanClose => CanHandleInputEvent;
 
         #region Mono
 
@@ -46,31 +74,25 @@ namespace Nekoyume.UI
 
         protected virtual void Update()
         {
-            if (WidgetStack.Count == 0 || WidgetStack.Peek() != gameObject)
-                return;
-            
-            if(Input.GetKeyUp(KeyCode.Escape))
-                CloseWidget?.Invoke();
-            if (Input.GetKeyUp(KeyCode.Return))
-                SubmitWidget?.Invoke();
+            CheckInput();
         }
 
         protected virtual void OnEnable()
         {
             OnEnableStaticSubject.OnNext(this);
-            OnEnableSubject.OnNext(this);
+            _onEnableSubject.OnNext(this);
         }
 
         protected virtual void OnDisable()
         {
             OnDisableStaticSubject.OnNext(this);
-            OnDisableSubject.OnNext(this);
+            _onDisableSubject.OnNext(this);
         }
 
         protected virtual void OnDestroy()
         {
-            OnEnableSubject.Dispose();
-            OnDisableSubject.Dispose();
+            _onEnableSubject.Dispose();
+            _onDisableSubject.Dispose();
         }
 
         #endregion
@@ -87,7 +109,7 @@ namespace Nekoyume.UI
             var res = Resources.Load<GameObject>(resName);
             if (res is null)
                 throw new FailedToLoadResourceException<GameObject>(resName);
-            
+
             if (Pool.ContainsKey(type))
             {
                 Debug.LogWarning($"Duplicated create widget: {type}");
@@ -134,12 +156,33 @@ namespace Nekoyume.UI
 
             return (T) model.widget;
         }
-        
+
+        public static T FindOrCreate<T>() where T : HudWidget
+        {
+            var type = typeof(T);
+            var names = type.ToString().Split('.');
+            var widgetName = $"UI_{names[names.Length - 1]}";
+            var resName = $"UI/Prefabs/{widgetName}";
+            var pool = Game.Game.instance.Stage.objectPool;
+            var go = pool.Get(widgetName, false);
+            if (go is null)
+            {
+                Debug.Log("create new");
+                var res = Resources.Load<GameObject>(resName);
+                var go2 = Instantiate(res, MainCanvas.instance.transform);
+                go2.name = widgetName;
+                pool.Add(go2, 1);
+                return go2.GetComponent<T>();
+            }
+            go.transform.SetParent(MainCanvas.instance.GetTransform(WidgetType.Hud));
+            return go.GetComponent<T>();
+        }
+
         public virtual bool IsActive()
         {
             return gameObject.activeSelf;
         }
-        
+
         public void Toggle()
         {
             if (IsActive())
@@ -152,11 +195,15 @@ namespace Nekoyume.UI
             }
         }
 
-        public virtual void Show()
+        public virtual void Show(bool ignoreShowAnimation = false)
         {
-            if(CloseWidget != null || SubmitWidget != null || WidgetType == WidgetType.Screen)
+            if (CloseWidget != null ||
+                SubmitWidget != null ||
+                WidgetType == WidgetType.Screen)
+            {
                 WidgetStack.Push(gameObject);
-            
+            }
+
             if (WidgetType == WidgetType.Screen)
             {
                 MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Popup);
@@ -167,53 +214,71 @@ namespace Nekoyume.UI
             }
 
             gameObject.SetActive(true);
-            if (Animator)
+
+            if (!Animator ||
+                ignoreShowAnimation)
             {
-                Animator.enabled = true;
-                Animator.Play("Show");
+                AnimationState = AnimationStateType.Shown;
+                return;
             }
+
+            AnimationState = AnimationStateType.Showing;
+            Animator.Play("Show");
         }
-        
+
         public virtual void Close(bool ignoreCloseAnimation = false)
         {
-            if(WidgetStack.Count != 0 && WidgetStack.Peek() == gameObject) 
+            if (WidgetStack.Count != 0 &&
+                WidgetStack.Peek() == gameObject)
+            {
                 WidgetStack.Pop();
-            
-            StopAllCoroutines();
+            }
+
             if (!gameObject.activeSelf)
             {
                 return;
             }
 
-            if (ignoreCloseAnimation)
+            StopAllCoroutines();
+
+            if (!Animator ||
+                ignoreCloseAnimation)
             {
                 OnCompleteOfCloseAnimation();
                 gameObject.SetActive(false);
+                AnimationState = AnimationStateType.Closed;
                 return;
             }
 
+            AnimationState = AnimationStateType.Closing;
             // TODO : wait close animation
             StartCoroutine(CoClose());
         }
 
         protected void Push()
         {
-            if(CloseWidget != null || SubmitWidget != null || WidgetType == WidgetType.Screen)
+            if (CloseWidget != null ||
+                SubmitWidget != null ||
+                WidgetType == WidgetType.Screen)
+            {
                 WidgetStack.Push(gameObject);
+            }
         }
 
         protected void Pop()
         {
-            if(WidgetStack.Count != 0 && WidgetStack.Peek() == gameObject) 
+            if (WidgetStack.Count != 0 &&
+                WidgetStack.Peek() == gameObject)
+            {
                 WidgetStack.Pop();
+            }
         }
-        
+
         public virtual IEnumerator CoClose()
         {
             if (Animator)
             {
                 IsCloseAnimationCompleted = false;
-                Animator.enabled = true;
                 Animator.Play("Close");
                 var coroutine = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
@@ -229,29 +294,72 @@ namespace Nekoyume.UI
             if (!IsCloseAnimationCompleted)
             {
                 IsCloseAnimationCompleted = true;
+                AnimationState = AnimationStateType.Closed;
             }
         }
 
         #region Call From Animation
 
-        protected virtual void OnCompleteOfShowAnimation()
+        private void OnCompleteOfShowAnimation()
         {
-            if (Animator)
-            {
-                Animator.enabled = false;
-            }
+            OnCompleteOfShowAnimationInternal();
+            AnimationState = AnimationStateType.Shown;
         }
 
-        protected virtual void OnCompleteOfCloseAnimation()
+        protected virtual void OnCompleteOfShowAnimationInternal()
         {
-            if (Animator)
-            {
-                Animator.enabled = false;
-            }
+        }
+
+        private void OnCompleteOfCloseAnimation()
+        {
+            OnCompleteOfCloseAnimationInternal();
 
             IsCloseAnimationCompleted = true;
+            AnimationState = AnimationStateType.Closed;
         }
-        
+
+        protected virtual void OnCompleteOfCloseAnimationInternal()
+        {
+        }
+
         #endregion
+
+        private void CheckInput()
+        {
+            if (!CanHandleInputEvent)
+            {
+                return;
+            }
+
+            if (WidgetStack.Count == 0 ||
+                WidgetStack.Peek() != gameObject)
+            {
+                return;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                HideAllMessageCat();
+                CloseWidget?.Invoke();
+            }
+
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                HideAllMessageCat();
+                SubmitWidget?.Invoke();
+            }
+        }
+
+        private static void HideAllMessageCat()
+        {
+            try
+            {
+                Find<MessageCatManager>().HideAll(false);
+            }
+            catch (WidgetNotFoundException)
+            {
+                // Do Nothing.
+            }
+        }
     }
 }

@@ -119,7 +119,6 @@ namespace Nekoyume.UI
 
             var item = Model.itemInformation.Value.item.Value.ItemBase.Value;
             var isEquipment = item is Equipment;
-            materialPlusImage.gameObject.SetActive(isEquipment);
 
             if (Model.isSuccess)
             {
@@ -140,6 +139,9 @@ namespace Nekoyume.UI
                 materialView.SetActive(true);
                 using (var e = Model.materialItems.GetEnumerator())
                 {
+                    var hasMultipleMaterials = Model.materialItems.Count() > 1;
+                    materialPlusImage.gameObject.SetActive(isEquipment && hasMultipleMaterials);
+
                     foreach (var material in materialItems)
                     {
                         e.MoveNext();
