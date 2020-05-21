@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<installer-gui-script minSpecVersion="2">
+    <title>Nine Chronicles</title>
+    <options customize="never" require-scripts="false"/>
+    <volume-check>
+        <allowed-os-versions>
+            <os-version min="10.12"/>
+        </allowed-os-versions>
+    </volume-check>
+    <choices-outline>
+        <line choice="com.microsoft.dotnet.sharedframework.Microsoft.NETCore.App.3.1.4.component.osx.x64.pkg"/>
+        <line choice="com.microsoft.dotnet.sharedhost.component.osx.x64.pkg"/>
+        <line choice="com.microsoft.dotnet.hostfxr.3.1.4.component.osx.x64.pkg"/>
+        <line choice="com.ninechronicles.pkg.NineChroniclesInstaller.pkg"/>
+    </choices-outline>
+    <choice id="com.microsoft.dotnet.sharedframework.Microsoft.NETCore.App.3.1.4.component.osx.x64.pkg" visible="false" title="Microsoft .NET Core Runtime - 3.1.4 (x64)" description="The .NET Core Shared Framework">
+        <pkg-ref id="com.microsoft.dotnet.sharedframework.Microsoft.NETCore.App.3.1.4.component.osx.x64.pkg"/>
+    </choice>
+    <choice id="com.microsoft.dotnet.hostfxr.3.1.4.component.osx.x64.pkg" visible="false" title="Microsoft .NET Core Host FX Resolver - 3.1.4 (x64)" description="The .NET Core HostFxr">
+        <pkg-ref id="com.microsoft.dotnet.hostfxr.3.1.4.component.osx.x64.pkg"/>
+    </choice>
+    <choice id="com.microsoft.dotnet.sharedhost.component.osx.x64.pkg" visible="false" title="Microsoft .NET Core Host - 3.1.4 (x64)" description="The .NET Core Shared Host.">
+        <pkg-ref id="com.microsoft.dotnet.sharedhost.component.osx.x64.pkg"/>
+    </choice>
+    <choice id="com.ninechronicles.pkg.NineChroniclesInstaller.pkg" visible="false" title="Nine Chronicles" description="Nine Chronicles">
+        <pkg-ref id="com.ninechronicles.pkg.NineChroniclesInstaller.pkg"/>
+    </choice>
+    <pkg-ref id="com.microsoft.dotnet.sharedframework.Microsoft.NETCore.App.3.1.4.component.osx.x64.pkg" packageIdentifier="com.microsoft.dotnet.sharedframework.Microsoft.NETCore.App.3.1.4.component.osx.x64" version="3.1.4" onConclusion="none" installKBytes="70723">#com.microsoft.dotnet.sharedframework.Microsoft.NETCore.App.3.1.4.component.osx.x64.pkg</pkg-ref>
+    <pkg-ref id="com.microsoft.dotnet.hostfxr.3.1.4.component.osx.x64.pkg" packageIdentifier="com.microsoft.dotnet.hostfxr.3.1.4.component.osx.x64" version="3.1.4" onConclusion="none" installKBytes="400">#com.microsoft.dotnet.hostfxr.3.1.4.component.osx.x64.pkg</pkg-ref>
+    <pkg-ref id="com.microsoft.dotnet.sharedhost.component.osx.x64.pkg" packageIdentifier="com.microsoft.dotnet.sharedhost.component.osx.x64" version="3.1.4" onConclusion="none" installKBytes="136">#com.microsoft.dotnet.sharedhost.component.osx.x64.pkg</pkg-ref>
+    <pkg-ref id="com.ninechronicles.pkg.NineChroniclesInstaller.pkg" packageIdentifier="com.ninechronicles.pkg.NineChroniclesInstaller" version="0.0.1" onConclusion="none" installKBytes="72027">#com.ninechronicles.pkg.NineChroniclesInstaller.pkg</pkg-ref>
+    <pkg-ref id="com.microsoft.dotnet.sharedframework.Microsoft.NETCore.App.3.1.4.component.osx.x64.pkg">
+        <bundle-version/>
+    </pkg-ref>
+    <pkg-ref id="com.microsoft.dotnet.sharedhost.component.osx.x64.pkg">
+        <bundle-version/>
+    </pkg-ref>
+    <pkg-ref id="com.microsoft.dotnet.hostfxr.3.1.4.component.osx.x64.pkg">
+        <bundle-version/>
+    </pkg-ref>
+    <pkg-ref id="com.ninechronicles.pkg.NineChroniclesInstaller.pkg">
+        <bundle-version/>
+    </pkg-ref>
+    <product id="com.ninechronicles.pkg.NineChronicles.osx.x64" version="0.0.1"/>
+</installer-gui-script>

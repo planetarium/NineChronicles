@@ -47,13 +47,18 @@ namespace Nekoyume.Action
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
                 out var avatarState))
             {
-                return states;
+                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
             }
 
             var slotState = states.GetCombinationSlotState(AvatarAddress, SlotIndex);
             if (slotState is null || !(slotState.Validate(avatarState, ctx.BlockIndex)))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the slot state is failed to load or invalid: {@SlotState} @ {SlotIndex}",
+                    slotState,
+                    SlotIndex
+                );
             }
 
             var tableSheets = TableSheets.FromActionContext(ctx);
@@ -64,31 +69,52 @@ namespace Nekoyume.Action
             // 레시피 검증
             if (!recipeSheet.TryGetValue(RecipeId, out var recipe))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the recipe {RecipeId} was failed to load from the sheet.",
+                    RecipeId
+                );
             }
 
             if (!(SubRecipeId is null))
             {
                 if (!recipe.SubRecipeIds.Contains((int) SubRecipeId))
                 {
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as the subrecipe {SubRecipeId} was failed to load from the sheet.",
+                        SubRecipeId
+                    );
                 }
             }
 
             // 메인 레시피 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(recipe.UnlockStage))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the signer is not cleared the minimum stage level required to use the recipe {@Recipe} yet.",
+                    recipe
+                );
             }
 
             if (!materialSheet.TryGetValue(recipe.MaterialId, out var material))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the material {MaterialId} was failed to load from the sheet.",
+                    recipe.MaterialId
+                );
             }
 
             if (!avatarState.inventory.RemoveMaterial(material.ItemId, recipe.MaterialCount))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the player has no enough material ({Material} * {Quantity})",
+                    material,
+                    recipe.MaterialCount
+                );
             }
 
             var equipmentMaterial = ItemFactory.CreateMaterial(materialSheet, material.Id);
@@ -98,10 +124,13 @@ namespace Nekoyume.Action
             var requiredActionPoint = recipe.RequiredActionPoint;
 
             // 장비 제작
-            if (!tableSheets.EquipmentItemSheet.TryGetValue(recipe.ResultEquipmentId,
-                out var equipRow))
+            if (!tableSheets.EquipmentItemSheet.TryGetValue(recipe.ResultEquipmentId, out var equipRow))
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted as the equipment item {EquipmentId} was failed to load from the sheet.",
+                    recipe.ResultEquipmentId
+                );
             }
 
             var requiredBlockIndex = ctx.BlockIndex + recipe.RequiredBlockIndex;
@@ -118,13 +147,21 @@ namespace Nekoyume.Action
                 var subSheet = tableSheets.EquipmentItemSubRecipeSheet;
                 if (!subSheet.TryGetValue((int) SubRecipeId, out var subRecipe))
                 {
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as the subrecipe {SubRecipeId} was failed to load from the subsheet.",
+                        SubRecipeId
+                    );
                 }
 
                 // 서브 레시피 해금 검사.
                 if (!avatarState.worldInformation.IsStageCleared(subRecipe.UnlockStage))
                 {
-                    return states;
+                    return LogError(
+                        context,
+                        "Aborted as the signer is not cleared the minimum stage level required to use the subrecipe {@SubRecipe} yet.",
+                        subRecipe
+                    );
                 }
 
                 requiredBlockIndex += subRecipe.RequiredBlockIndex;
@@ -133,13 +170,22 @@ namespace Nekoyume.Action
                 {
                     if (!materialSheet.TryGetValue(materialInfo.Id, out var subMaterialRow))
                     {
-                        return states;
+                        return LogError(
+                            context,
+                            "Aborted as the meterial info {MaterialInfoId} was failed to load from the submaterial sheet.",
+                            materialInfo.Id
+                        );
                     }
 
                     if (!avatarState.inventory.RemoveMaterial(subMaterialRow.ItemId,
                         materialInfo.Count))
                     {
-                        return states;
+                        return LogError(
+                            context,
+                            "Aborted as the player has no enough material ({Material} * {Quantity})",
+                            subMaterialRow,
+                            materialInfo.Count
+                        );
                     }
 
                     var subMaterial = ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
@@ -156,7 +202,12 @@ namespace Nekoyume.Action
             // 자원 검증
             if (agentState.gold < requiredGold || avatarState.actionPoint < requiredActionPoint)
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted due to insufficient action point: {ActionPointBalance} < {ActionCost}",
+                    avatarState.actionPoint,
+                    requiredActionPoint
+                );
             }
 
             avatarState.actionPoint -= requiredActionPoint;

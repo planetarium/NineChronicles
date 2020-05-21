@@ -1,14 +1,15 @@
 using System;
-using Bencodex.Types;
-using Libplanet;
-using Libplanet.Action;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
 using Bencodex;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+using Bencodex.Types;
+using Libplanet;
+using Libplanet.Action;
+using Serilog;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -149,6 +150,18 @@ namespace Nekoyume.Action
                 BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
             });
+        }
+
+        protected IAccountStateDelta LogError(IActionContext context, string message, params object[] values)
+        {
+            string actionType = GetType().Name;
+            object[] prependedValues = new object[values.Length + 2];
+            prependedValues[0] = context.BlockIndex;
+            prependedValues[1] = context.Signer;
+            values.CopyTo(prependedValues, 2);
+            string msg = $"#{{BlockIndex}} {actionType} (by {{Signer}}): {message}";
+            Log.Error(msg, prependedValues);
+            return context.PreviousStates;
         }
     }
 }

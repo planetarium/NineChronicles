@@ -78,31 +78,36 @@ namespace Nekoyume.Action
             if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
-                return states;
+                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
             }
             sw.Stop();
-            Log.Debug($"HAS Get AgentAvatarStates: {sw.Elapsed}");
+            Log.Debug("HAS Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
 
             var worldInformation = avatarState.worldInformation;
 
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
-                throw new ArgumentException(
-                    $"{nameof(worldId)}({worldId}) not unlocked. If you want to clear, unlock first.");
+                return LogError(context, "Aborted as the world {WorldId} is locked.", worldId);
             }
 
             if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
                 !world.IsStageCleared && stageId != world.StageBegin)
             {
-                var sb = new StringBuilder();
-                sb.AppendLine($"{nameof(worldId)}({worldId})-{nameof(stageId)}({stageId}) is too big.");
-                sb.AppendLine($"Cleared {nameof(stageId)} is ({world.StageClearedId}).");
-                throw new ArgumentException(sb.ToString());
+                return LogError(
+                    context,
+                    "Aborted as the stage ({WorldId}/{StageId}) is not cleared; cleared stage: {StageClearedId}",
+                    worldId,
+                    stageId,
+                    world.StageClearedId
+                );
             }
 
             sw.Restart();
 
             // 장비가 유효한지 검사한다.
+            // FIXME: 이하의 코드 블록이 상당부분 RankingBattle.Execute()에도 중복되어 들어있습니다.
+            // 한 쪽 로직만 수정하는 실수가 일어나기 쉬우니 로직을 하나로 합쳐서 양쪽에서 공통 로직을 가져다 쓰게 하는 게
+            // 좋을 듯합니다.
             {
                 var level = avatarState.level;
                 var ringCount = 0;
@@ -150,26 +155,31 @@ namespace Nekoyume.Action
                 if (failed)
                 {
                     // 장비가 유효하지 않은 에러.
-                    return states;
+                    return LogError(context, "Aborted as the equipment is invalid.");
                 }
             }
 
             var tableSheetState = TableSheetsState.FromActionContext(ctx);
 
             sw.Stop();
-            Log.Debug($"HAS Get TableSheetsState: {sw.Elapsed}");
+            Log.Debug("HAS Get TableSheetsState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
 
             sw.Stop();
-            Log.Debug($"HAS Initialize TableSheets: {sw.Elapsed}");
+            Log.Debug("HAS Initialize TableSheets: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             var stage = tableSheets.StageSheet.Values.First(i => i.Id == stageId);
             if (avatarState.actionPoint < stage.CostAP)
             {
-                return states;
+                return LogError(
+                    context,
+                    "Aborted due to insufficient action point: {ActionPointBalance} < {ActionCost}",
+                    avatarState.actionPoint,
+                    stage.CostAP
+                );
             }
 
             avatarState.actionPoint -= stage.CostAP;
@@ -208,7 +218,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Debug($"HAS Unequip items: {sw.Elapsed}");
+            Log.Debug("HAS Unequip items: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             // 장비 장착.
@@ -232,21 +242,25 @@ namespace Nekoyume.Action
             );
 
             sw.Stop();
-            Log.Debug($"HAS Initialize Simulator: {sw.Elapsed}");
+            Log.Debug("HAS Initialize Simulator: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             simulator.Simulate();
 
             sw.Stop();
-            Log.Debug($"HAS Simulator.Simulate(): {sw.Elapsed}");
+            Log.Debug("HAS Simulator.Simulate(): {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            Log.Debug($"Execute HackAndSlash({avatarAddress}). " +
-                      $"worldId: {worldId}, " +
-                      $"stageId: {stageId}, " +
-                      $"result: {simulator.Log?.result}, " +
-                      $"clearWave: {simulator.Log?.clearedWaveNumber}," +
-                      $"totalWave: {simulator.Log?.waveCount}");
+            Log.Debug(
+                "Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
+                "clearWave: {ClearWave}, totalWave: {TotalWave}",
+                avatarAddress,
+                worldId,
+                stageId,
+                simulator.Log?.result,
+                simulator.Log?.clearedWaveNumber,
+                simulator.Log?.waveCount
+            );
 
             if (simulator.Result == BattleLog.Result.Win && simulator.Log?.clearedWaveNumber == simulator.Log?.waveCount)
             {
@@ -259,7 +273,7 @@ namespace Nekoyume.Action
             }
 
             sw.Stop();
-            Log.Debug($"HAS ClearStage: {sw.Elapsed}");
+            Log.Debug("HAS ClearStage: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             avatarState.Update(simulator);
@@ -270,7 +284,7 @@ namespace Nekoyume.Action
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();
-            Log.Debug($"HAS Set AvatarState: {sw.Elapsed}");
+            Log.Debug("HAS Set AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
             if (states.TryGetState(RankingState.Address, out Dictionary d) && simulator.Result == BattleLog.Result.Win)
             {
@@ -278,18 +292,18 @@ namespace Nekoyume.Action
                 ranking.Update(avatarState);
 
                 sw.Stop();
-                Log.Debug($"HAS Update RankingState: {sw.Elapsed}");
+                Log.Debug("HAS Update RankingState: {Elapsed}", sw.Elapsed);
                 sw.Restart();
 
                 var serialized = ranking.Serialize();
 
                 sw.Stop();
-                Log.Debug($"HAS Serialize RankingState: {sw.Elapsed}");
+                Log.Debug("HAS Serialize RankingState: {Elapsed}", sw.Elapsed);
                 sw.Restart();
                 states = states.SetState(RankingState.Address, serialized);
             }
             sw.Stop();
-            Log.Debug($"HAS Set RankingState : {sw.Elapsed}");
+            Log.Debug("HAS Set RankingState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
             if (states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
@@ -306,19 +320,19 @@ namespace Nekoyume.Action
                     weekly.Set(avatarState, tableSheets.CharacterSheet);
                 }
                 sw.Stop();
-                Log.Debug($"HAS Update WeeklyArenaState: {sw.Elapsed}");
+                Log.Debug("HAS Update WeeklyArenaState: {Elapsed}", sw.Elapsed);
                 sw.Restart();
 
                 var weeklySerialized = weekly.Serialize();
                 sw.Stop();
-                Log.Debug($"HAS Serialize RankingState: {sw.Elapsed}");
+                Log.Debug("HAS Serialize RankingState: {Elapsed}", sw.Elapsed);
                 states = states.SetState(weekly.address, weekly.Serialize());
             }
 
             Result = simulator.Log;
 
             var ended = DateTimeOffset.UtcNow;
-            Log.Debug($"HAS Total Executed Time: {ended - started}");
+            Log.Debug("HAS Total Executed Time: {Elapsed}", ended - started);
             return states.SetState(ctx.Signer, agentState.Serialize());
         }
     }

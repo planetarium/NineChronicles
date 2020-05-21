@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+INSTALL_DIR="$2"
+
+# macOS 에서 디렉토리를 관리할때 쓰는 .DS_Store 파일이 디렉토리를 쓰고 있어서 삭제도중 Directory not empty 에러가 발생하는 문제가 있습니다. 디렉토리 자체가 삭제 되지 않아도 큰 문제는 없을것 같아 몇 번 더 시도해보고 안될 경우 무시해서 문제를 우회했습니다.
+RETRY=5
+for _ in $(seq $RETRY); do
+    if rm -rf "$INSTALL_DIR"; then
+        break
+    else
+        sleep 1
+    fi
+done
+
+exit 0
