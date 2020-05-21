@@ -25,6 +25,8 @@ using static Launcher.Common.Utils;
 using Nekoyume;
 using TextCopy;
 
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+
 namespace Launcher
 {
     // FIXME: Memory leak.
@@ -244,7 +246,7 @@ To start the game, you need to create your account.";
                 trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
             }
 
-            var properties = new LibplanetNodeServiceProperties
+            var properties = new LibplanetNodeServiceProperties<NineChroniclesActionType>
             {
                 AppProtocolVersion = appProtocolVersion,
                 GenesisBlockPath = settings.GenesisBlockPath,
