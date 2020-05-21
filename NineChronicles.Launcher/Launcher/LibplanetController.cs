@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.IO;
+using System.IO.Abstractions;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -20,7 +20,7 @@ using NineChronicles.Standalone;
 using Qml.Net;
 using Serilog;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
-using static Launcher.Common.Configuration;
+using static Launcher.Common.Configuration.Path;
 using static Launcher.Common.Utils;
 using Nekoyume;
 using TextCopy;
@@ -35,6 +35,10 @@ namespace Launcher
     public class LibplanetController
     {
         private CancellationTokenSource _cancellationTokenSource;
+
+        private readonly IFileSystem FileSystem;
+
+        private readonly Configuration Configuration;
 
         // Copied from UI_LOGIN_CONTENT in nekoyume/Assets/Resources/Localizations/common.csv
         [NotifySignal]
@@ -94,20 +98,34 @@ To start the game, you need to create your account.";
 
         private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
 
+        private IFile File => FileSystem.File;
 
         public IKeyStore KeyStore
         {
             get
             {
-                LauncherSettings settings = LoadSettings();
+                LauncherSettings settings = Configuration.LoadSettings();
                 return string.IsNullOrEmpty(settings.KeyStorePath)
                     ? Web3KeyStore.DefaultKeyStore
                     : new Web3KeyStore(settings.KeyStorePath);
             }
         }
 
-        public LibplanetController()
+        public LibplanetController() : this(new FileSystem())
         {
+        }
+
+        internal LibplanetController(IFileSystem fileSystem) : this (
+            configuration: new Configuration(fileSystem),
+            fileSystem: fileSystem
+        )
+        {
+        }
+
+        internal LibplanetController(Configuration configuration, IFileSystem fileSystem)
+        {
+            Configuration = configuration;
+            FileSystem = fileSystem;
         }
 
         public void StartSync()
@@ -124,7 +142,7 @@ To start the game, you need to create your account.";
             {
                 try
                 {
-                    var settings = LoadSettings();
+                    var settings = Configuration.LoadSettings();
                     await SyncTask(settings, cancellationToken);
                 }
                 catch (InvalidGenesisBlockException e)
@@ -282,7 +300,7 @@ To start the game, you need to create your account.";
                 })
             );
 
-            TelemetryClient.Context.User.AuthenticatedUserId = service.Swarm.Address.ToHex();
+            Configuration.Log.TelemetryClient.Context.User.AuthenticatedUserId = service.Swarm.Address.ToHex();
 
             Task.Run(
                 async () =>
@@ -404,14 +422,14 @@ To start the game, you need to create your account.";
         // Advanced → Settings 메뉴가 호출
         public void OpenSettingFile()
         {
-            InitializeSettingFile();
+            Configuration.InitializeSettingFile();
             Process.Start(CurrentPlatform.OpenCommand, EscapeShellArgument(SettingFilePath));
         }
 
         // Advanced → Clear cache 메뉴가 호출
         public void ClearStore()
         {
-            LauncherSettings settings = LoadSettings();
+            LauncherSettings settings = Configuration.LoadSettings();
             string storePath = string.IsNullOrEmpty(settings?.StorePath)
                 ? DefaultStorePath
                 : settings.StorePath;
