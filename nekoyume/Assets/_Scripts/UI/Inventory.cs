@@ -79,24 +79,15 @@ namespace Nekoyume.UI
                 return;
             }
 
-            var subType = view.Model.ItemBase.Value.Data.ItemSubType;
-            if (subType == ItemSubType.ApStone)
-            {
-                tooltip.Show(
-                    view.RectTransform,
-                    view.Model,
-                    DimmedFuncForChargeActionPoint,
-                    LocalizationManager.Localize("UI_CHARGE_AP"),
-                    _ => ChargeActionPoint((Material) view.Model.ItemBase.Value),
-                    _ => inventory.SharedModel.DeselectItemView());
-            }
-            else
-            {
-                tooltip.Show(
-                    view.RectTransform,
-                    view.Model,
-                    _ => inventory.SharedModel.DeselectItemView());
-            }
+            var (dimmedFunc, submitText, onSubmit) = GetToolTipParams(view.Model.ItemBase.Value);
+
+            tooltip.Show(
+                view.RectTransform,
+                view.Model,
+                dimmedFunc,
+                submitText,
+                _ => onSubmit((Material) view.Model.ItemBase.Value),
+                _ => inventory.SharedModel.DeselectItemView());
         }
 
         private static void ChargeActionPoint(Material material)
@@ -117,6 +108,27 @@ namespace Nekoyume.UI
             }
 
             return States.Instance.CurrentAvatarState.actionPoint != States.Instance.GameConfigState.ActionPointMax;
+        }
+
+        private static (Func<CountableItem, bool>, string, Action<Material>) GetToolTipParams(ItemBase item)
+        {
+            var subType = item.Data.ItemSubType;
+            Func<CountableItem, bool> dimmedFunc = null;
+            string submitText = null;
+            Action<Material> onSubmit = ChargeActionPoint;
+
+            switch (subType)
+            {
+                case ItemSubType.ApStone:
+                    dimmedFunc = DimmedFuncForChargeActionPoint;
+                    submitText = LocalizationManager.Localize("UI_CHARGE_AP");
+                    onSubmit = ChargeActionPoint;
+                    break;
+                case ItemSubType.Chest:
+                    break;
+            }
+
+            return (dimmedFunc, submitText, onSubmit);
         }
     }
 }
