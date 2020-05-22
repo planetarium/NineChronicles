@@ -170,9 +170,6 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            // 이 변경은 외부로 빠질 수 있음.
-            costume.equipped = true;
-
             // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
             switch (costume.Data.ItemSubType)
             {
@@ -200,9 +197,6 @@ namespace Nekoyume.Game.Character
             {
                 return;
             }
-
-            // 이 변경은 외부로 빠질 수 있음.
-            costume.equipped = false;
 
             // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
             switch (costume.Data.ItemSubType)

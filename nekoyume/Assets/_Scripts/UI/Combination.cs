@@ -624,7 +624,7 @@ namespace Nekoyume.UI
         }
 
         private void CreateItemEnhancementAction(Guid baseItemGuid,
-            IEnumerable<Guid> otherItemGuidList, int slotIndex)
+            List<Guid> otherItemGuidList, int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotItemEnhancement(
                 enhanceEquipment,
