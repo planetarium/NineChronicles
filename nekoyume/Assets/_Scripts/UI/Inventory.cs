@@ -125,10 +125,23 @@ namespace Nekoyume.UI
                     onSubmit = ChargeActionPoint;
                     break;
                 case ItemSubType.Chest:
+                    dimmedFunc = DimmedFuncForChest;
+                    submitText = "OPEN";
+                    onSubmit = OpenChest;
                     break;
             }
 
             return (dimmedFunc, submitText, onSubmit);
+        }
+
+        private static bool DimmedFuncForChest(CountableItem item)
+        {
+            return !(item is null) && item.Count.Value >= 1;
+        }
+
+        private static void OpenChest(Material material)
+        {
+            //TODO 상자열기처리
         }
     }
 }
