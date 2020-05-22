@@ -7,35 +7,33 @@ namespace Nekoyume.JsonConvertibles
     public class JsonConvertibleGuid : ISerializationCallbackReceiver
     {
         [NonSerialized]
-        public Guid Value;
+        private Guid _value;
 
         [SerializeField]
         private string json;
 
-        public JsonConvertibleGuid() : this(new Guid())
-        {
-        }
+        public Guid Value => _value;
 
         public JsonConvertibleGuid(Guid value)
         {
-            Value = value;
+            _value = value;
             json = null;
         }
-        
+
         public void OnBeforeSerialize()
         {
-            json = Value.ToString();
+            json = _value.ToString();
         }
 
         public void OnAfterDeserialize()
         {
-            Value = Guid.Parse(json);
+            _value = Guid.Parse(json);
             json = null;
         }
 
         protected bool Equals(JsonConvertibleGuid other)
         {
-            return Value.Equals(other.Value);
+            return _value.Equals(other._value);
         }
 
         public override bool Equals(object obj)
@@ -48,7 +46,7 @@ namespace Nekoyume.JsonConvertibles
 
         public override int GetHashCode()
         {
-            return Value.GetHashCode();
+            return _value.GetHashCode();
         }
     }
 }
