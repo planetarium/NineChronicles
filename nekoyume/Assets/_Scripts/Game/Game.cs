@@ -296,16 +296,11 @@ namespace Nekoyume.Game
         {
             var confirm = Widget.Find<Confirm>();
             var storagePath = _options.StoragePath ?? BlockChain.Agent.DefaultStoragePath;
-            var prevStoragePath = Path.Combine(BlockChain.Agent.PrevStorageDirectoryPath,
-                $"{storagePath}_{UnityEngine.Random.Range(0, 100)}");
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
                     return;
-                if (Directory.Exists(storagePath))
-                {
-                    Directory.Move(storagePath, prevStoragePath);
-                }
+                StoreUtils.ResetStore(storagePath);
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.ExitPlaymode();
 #else

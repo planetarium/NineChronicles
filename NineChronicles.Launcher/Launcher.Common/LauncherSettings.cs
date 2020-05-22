@@ -10,11 +10,13 @@ namespace Launcher.Common
 
         public string AppProtocolVersionToken { get; set; }
 
-        public string IceServer { get; set; }
+        public string[] IceServers { get; set; }
 
-        public string Seed { get; set; }
+        public string[] Peers { get; set; }
 
         public bool NoMiner { get; set; }
+
+        public bool NoTrustedStateValidators { get; set; }
 
         public int MinimumDifficulty { get; set; }
 

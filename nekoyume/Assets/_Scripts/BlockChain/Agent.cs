@@ -49,8 +49,6 @@ namespace Nekoyume.BlockChain
 
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
-        public static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
-
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         private static IEnumerator _miner;
@@ -174,9 +172,14 @@ namespace Nekoyume.BlockChain
             var policy = BlockPolicy.GetPolicy(minimumDifficulty);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
-            store.UnstageTransactionIds(
-                new HashSet<TxId>(store.IterateStagedTransactionIds())
-            );
+
+            // 같은 논스를 다시 찍지 않기 위해서 직접 만든 Tx는 유지합니다.
+            ImmutableHashSet<TxId> pendingTxsFromOhters = store.IterateStagedTransactionIds()
+                .Select(tid => store.GetTransaction<PolymorphicAction<ActionBase>>(tid))
+                .Where(tx => tx.Signer != Address)
+                .Select(tx => tx.Id)
+                .ToImmutableHashSet();
+            store.UnstageTransactionIds(pendingTxsFromOhters);
 
             try
             {
@@ -273,9 +276,10 @@ namespace Nekoyume.BlockChain
         private void Awake()
         {
             ForceDotNet.Force();
-            if (!Directory.Exists(PrevStorageDirectoryPath))
+            string parentDir = Path.GetDirectoryName(DefaultStoragePath);
+            if (!Directory.Exists(parentDir))
             {
-                Directory.CreateDirectory(PrevStorageDirectoryPath);
+                Directory.CreateDirectory(parentDir);
             }
             DeletePreviousStore();
         }
@@ -540,6 +544,9 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion localVersion
         )
         {
+            // TODO: 론처 쪽 코드의 LibplanetController.NewAppProtocolVersionEncountered() 메서드와 기본적인
+            // 로직은 같지만 구체적으로 취해야 할 액션이 크게 달라서 코드 공유를 하지 못하고 있음. 판단 로직과 판단에 따른
+            // 행동 로직을 분리해서 판단 부분은 코드를 공유할 필요가 있음.
             Debug.LogWarningFormat(
                 "Different Version Encountered; expected (local): {0}; actual ({1}): {2}",
                 localVersion, peer, peerVersion
@@ -873,11 +880,11 @@ namespace Nekoyume.BlockChain
 
         private static void DeletePreviousStore()
         {
-            var dirs = Directory.GetDirectories(PrevStorageDirectoryPath).ToList();
-            foreach (var dir in dirs)
+            // 백업 저장소 지우는 데에 시간이 꽤 걸리기 때문에 백그라운드 잡으로 스폰
+            Task.Run(() =>
             {
-                Task.Run(() => { Directory.Delete(dir, true); });
-            }
+                StoreUtils.ClearBackupStores(DefaultStoragePath);
+            });
         }
 
         private IEnumerator CoCheckStagedTxs()

@@ -1,3 +1,4 @@
+using System;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
@@ -5,6 +6,7 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.Model
 {
+    [Serializable]
     public class EnemyPlayer: Player
     {
         public readonly string NameWithHash;

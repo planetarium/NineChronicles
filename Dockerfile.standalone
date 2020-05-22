@@ -13,7 +13,7 @@ RUN dotnet restore NineChronicles.Standalone.Executable
 
 # Copy everything else and build
 COPY . ./
-RUN dotnet publish NineChronicles.Standalone.Executable -c Release -r linux-x64 -o out --self-contained
+RUN dotnet publish NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj -c Release -r linux-x64 -o out --self-contained
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1

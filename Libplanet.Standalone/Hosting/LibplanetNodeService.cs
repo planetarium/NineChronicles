@@ -11,6 +11,7 @@ using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
+using Libplanet.Net.Protocols;
 using Libplanet.Store;
 using Microsoft.Extensions.Hosting;
 using Nito.AsyncEx;
@@ -43,11 +44,14 @@ namespace Libplanet.Standalone.Hosting
 
         private Progress<PreloadState> _preloadProgress;
 
+        private bool _ignoreBootstrapFailure;
+
         public LibplanetNodeService(
             LibplanetNodeServiceProperties properties,
             IBlockPolicy<T> blockPolicy,
             Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> minerLoopAction,
-            Progress<PreloadState> preloadProgress
+            Progress<PreloadState> preloadProgress,
+            bool ignoreBootstrapFailure = false
         )
         {
             _properties = properties;
@@ -59,7 +63,10 @@ namespace Libplanet.Standalone.Hosting
 
             var iceServers = _properties.IceServers;
 
-            Store = LoadStore(_properties.StorePath, _properties.StoreType);
+            Store = LoadStore(
+                _properties.StorePath,
+                _properties.StoreType,
+                _properties.StoreStatesCacheSize);
             _blockPolicy = blockPolicy;
             BlockChain = new BlockChain<T>(_blockPolicy, Store, genesisBlock);
             _privateKey = _properties.PrivateKey;
@@ -73,27 +80,47 @@ namespace Libplanet.Standalone.Hosting
                 host: _properties.Host,
                 listenPort: _properties.Port,
                 iceServers: iceServers,
-                differentAppProtocolVersionEncountered: _properties.DifferentAppProtocolVersionEncountered);
+                workers: 50,
+                differentAppProtocolVersionEncountered: _properties.DifferentAppProtocolVersionEncountered
+            );
 
             PreloadEnded = new AsyncAutoResetEvent();
             BootstrapEnded = new AsyncAutoResetEvent();
 
             _preloadProgress = preloadProgress;
+            _ignoreBootstrapFailure = ignoreBootstrapFailure;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             var peers = _properties.Peers.ToImmutableArray();
+
             if (peers.Any())
             {
-                var trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
-                await Swarm.BootstrapAsync(peers, null, null, cancellationToken: cancellationToken);
-                BootstrapEnded.Set();
+                try
+                {
+                    await Swarm.BootstrapAsync(
+                        peers,
+                        TimeSpan.FromSeconds(5),
+                        TimeSpan.FromSeconds(5),
+                        depth: 1,
+                        cancellationToken: cancellationToken);
+                    BootstrapEnded.Set();
+                }
+                catch (PeerDiscoveryException e)
+                {
+                    Log.Error(e, "Bootstrap failed: {Exception}", e);
+
+                    if (!_ignoreBootstrapFailure)
+                    {
+                        throw;
+                    }
+                }
 
                 await Swarm.PreloadAsync(
-                    null,
+                    TimeSpan.FromSeconds(5),
                     _preloadProgress,
-                    trustedStateValidators, 
+                    _properties.TrustedStateValidators,
                     cancellationToken: cancellationToken
                 );
                 PreloadEnded.Set();
@@ -120,7 +147,7 @@ namespace Libplanet.Standalone.Hosting
             return Swarm.StopAsync(cancellationToken);
         }
 
-        private BaseStore LoadStore(string path, string type)
+        private BaseStore LoadStore(string path, string type, int statesCacheSize)
         {
             BaseStore store = null;
 
@@ -128,7 +155,7 @@ namespace Libplanet.Standalone.Hosting
             {
                 try
                 {
-                    store = new RocksDBStore.RocksDBStore(path);
+                    store = new RocksDBStore.RocksDBStore(path, statesCacheSize: statesCacheSize);
                     Log.Debug("RocksDB is initialized.");
                 }
                 catch (TypeInitializationException e)
@@ -144,7 +171,8 @@ namespace Libplanet.Standalone.Hosting
                 Log.Debug($"{message}. DefaultStore will be used.");
             }
 
-            return store ?? new DefaultStore(path, flush: false, compress: true);
+            return store ?? new DefaultStore(
+                path, flush: false, compress: true, statesCacheSize: statesCacheSize);
         }
 
         public void Dispose()

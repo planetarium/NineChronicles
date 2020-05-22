@@ -1,7 +1,9 @@
 using System;
 using System.IO;
 using System.Text.Json;
-using Serilog;
+using System.Threading;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
@@ -9,6 +11,17 @@ namespace Launcher.Common
 {
     public static class Configuration
     {
+        private const string InstrumentationKey = "953da29a-95f7-4f04-9efe-d48c42a1b53a";
+
+        public static readonly TelemetryClient TelemetryClient =
+            new TelemetryClient(new TelemetryConfiguration(InstrumentationKey));
+
+        public static void FlushApplicationInsightLog(object sender, EventArgs e)
+        {
+            TelemetryClient?.Flush();
+            Thread.Sleep(1000);
+        }
+
         public static LauncherSettings LoadSettings()
         {
             InitializeSettingFile();
@@ -40,7 +53,7 @@ namespace Launcher.Common
             }
         }
 
-        private const string SettingFileName = "launcher.json";
+        public const string SettingFileName = "launcher.json";
 
         public static string DefaultStorePath => Path.Combine(PlanetariumLocalApplicationPath, "9c");
 

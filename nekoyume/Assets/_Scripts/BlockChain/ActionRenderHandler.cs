@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Action;
 using Nekoyume.Model.Mail;
@@ -674,8 +675,30 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
         {
-            UI.Notification.Push(MailType.System, "Response Redeem Code.");
-            UpdateCurrentAvatarState(eval);
+            var code = eval.Action.code;
+            RedeemCodeState redeemCodeState = null;
+            if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+            {
+                redeemCodeState = new RedeemCodeState(d);
+            }
+
+            if (redeemCodeState is null)
+            {
+                return;
+            }
+
+            var msg = "Invalid Redeem Code.";
+
+            if (redeemCodeState.Map.TryGetValue(code, out var reward))
+            {
+                var tableSheets = Game.Game.instance.TableSheets;
+                var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
+                var rewards = row.Rewards;
+                Widget.Find<RedeemRewardPopup>().Pop(rewards, tableSheets);
+                msg = "Response Redeem Code.";
+                UpdateCurrentAvatarState(eval);
+            }
+            UI.Notification.Push(MailType.System, msg);
         }
 
         private void ResponseChargeActionPoint(ActionBase.ActionEvaluation<ChargeActionPoint> eval)
