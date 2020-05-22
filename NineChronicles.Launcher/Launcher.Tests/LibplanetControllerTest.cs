@@ -23,8 +23,12 @@ namespace Launcher.Tests
             {
                 KeyStorePath = Path.Combine(Path.GetTempPath(), "keystore"),
             };
-            // `Path.GetTempPath` doesn't return randomly well.
-            Directory.Delete(LauncherSettings.KeyStorePath, recursive: true);
+
+            if (Directory.Exists(LauncherSettings.KeyStorePath))
+            {
+                // `Path.GetTempPath` doesn't return randomly well.
+                Directory.Delete(LauncherSettings.KeyStorePath, recursive: true);
+            }
         }
 
         private readonly LauncherSettings LauncherSettings;
