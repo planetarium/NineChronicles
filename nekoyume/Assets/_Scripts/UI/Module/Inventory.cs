@@ -15,28 +15,24 @@ namespace Nekoyume.UI.Module
 {
     public class Inventory : MonoBehaviour
     {
-        private static readonly Vector2 BtnHighlightSize = new Vector2(120f, 60f);
-        private static readonly Vector2 BtnSize = new Vector2(93f, 36f);
+        private static readonly Vector2 BtnHighlightSize = new Vector2(122f, 60f);
+        private static readonly Vector2 BtnSize = new Vector2(95f, 36f);
 
         public TextMeshProUGUI titleText;
         public Button equipmentsButton;
         public Image equipmentsButtonImage;
-        public Image equipmentsButtonIconImage;
         public TextMeshProUGUI equipmentsButtonText;
         public TextMeshProUGUI equipmentsButtonSelectedText;
         public Button consumablesButton;
         public Image consumablesButtonImage;
-        public Image consumablesButtonIconImage;
         public TextMeshProUGUI consumablesButtonText;
         public TextMeshProUGUI consumablesButtonSelectedText;
         public Button costumesButton;
         public Image costumesButtonImage;
-        public Image costumesButtonIconImage;
         public TextMeshProUGUI costumesButtonText;
         public TextMeshProUGUI costumesButtonSelectedText;
         public Button materialsButton;
         public Image materialsButtonImage;
-        public Image materialsButtonIconImage;
         public TextMeshProUGUI materialsButtonText;
         public TextMeshProUGUI materialsButtonSelectedText;
         public InventoryScrollerController scrollerController;
