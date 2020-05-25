@@ -140,9 +140,6 @@ namespace Nekoyume.UI
             {
                 _reset = false;
 
-                // _player.EquipEquipmentsAndUpdateCustomize(_player.Model.armor,
-                //     _player.Model.weapon);
-
                 // stop run immediately.
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
@@ -307,7 +304,7 @@ namespace Nekoyume.UI
             {
                 return;
             }
-            
+
             Find<WorldMap>().Show(_worldId, _stageId.Value, false);
             gameObject.SetActive(false);
         }
