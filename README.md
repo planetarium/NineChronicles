@@ -75,6 +75,20 @@ $ /UnityPath/Unity -quit -batchmode -projectPath=/path/to/nekoyume/ -executeMeth
 $ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
 ```
 
+### 에디터 빌드
+
+유니티 에디터 상단의 Build 메뉴를 사용해서 빌드합니다.
+
+#### 싱글 마이너로 빌드할 때 주의할 점
+
+`Assets/StreamingAssets/clo.json` 파일을 사용하지 않고 `S3` 서버에서 갖고옵니다. 그렇기 때문에 빌드한 게임에 원하는 설정을 적용하기 위해서는 빌드 결과물의 `clo.json` 파일을 수정해야 합니다.
+
+##### 경로
+
+macOS: `<path to player app bundle>/Contents/Resources/Data/StreamingAssets/clo.json`
+
+Windows: `<path to executablename_Data folder>/StreamingAssets/clo.json`
+
 ### 피어 설정
 
 #### 읽기 순서
