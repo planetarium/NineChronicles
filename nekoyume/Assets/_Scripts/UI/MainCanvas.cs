@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using _Scripts.UI;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
@@ -13,33 +14,66 @@ namespace Nekoyume.UI
      RequireComponent(typeof(RectTransform))]
     public class MainCanvas : MonoSingleton<MainCanvas>
     {
+        [Serializable]
+        public class CanvasLayer
+        {
+            public Canvas root;
+
+            public IReadOnlyList<Canvas> Children { get; private set; }
+
+            public void UpdateChildren()
+            {
+                Children = root.GetComponentsInChildren<Canvas>()
+                    .Where(canvas => !canvas.Equals(root))
+                    .ToList();
+            }
+
+            public void SetSortingOrder(int sortingOrder)
+            {
+                var rootSortingOrderBackup = root.sortingOrder;
+                root.sortingOrder = sortingOrder;
+
+                if (Children is null)
+                {
+                    UpdateChildren();
+                }
+
+                foreach (var childCanvas in Children)
+                {
+                    childCanvas.sortingOrder =
+                        sortingOrder + (childCanvas.sortingOrder - rootSortingOrderBackup);
+                }
+            }
+        }
+
         [SerializeField]
         private CanvasGroup canvasGroup = null;
 
         [SerializeField]
-        private GameObject hudLayer = null;
+        private CanvasLayer hudLayer = default;
 
         [SerializeField]
-        private GameObject popupLayer = null;
+        private CanvasLayer popupLayer = default;
 
         [SerializeField]
-        private GameObject screenLayer = null;
+        private CanvasLayer screenLayer = default;
 
         [SerializeField]
-        private GameObject tooltipLayer = null;
+        private CanvasLayer tooltipLayer = default;
 
         [SerializeField]
-        private GameObject widgetLayer = null;
+        private CanvasLayer widgetLayer = default;
 
         [SerializeField]
-        private GameObject animationLayer = null;
+        private CanvasLayer animationLayer = default;
 
         [SerializeField]
-        private GameObject systemInfoLayer = null;
+        private CanvasLayer systemInfoLayer = default;
 
         [SerializeField]
-        private GameObject developmentLayer = null;
+        private CanvasLayer developmentLayer = default;
 
+        private List<CanvasLayer> _layers;
         private List<Widget> _firstWidgets;
         private List<Widget> _secondWidgets;
 
@@ -52,29 +86,34 @@ namespace Nekoyume.UI
             set => canvasGroup.interactable = value;
         }
 
-        public Transform GetTransform(WidgetType widgetType)
+        public CanvasLayer GetLayer(WidgetType widgetType)
         {
             switch (widgetType)
             {
                 case WidgetType.Hud:
-                    return hudLayer.transform;
+                    return hudLayer;
                 case WidgetType.Popup:
-                    return popupLayer.transform;
+                    return popupLayer;
                 case WidgetType.Screen:
-                    return screenLayer.transform;
+                    return screenLayer;
                 case WidgetType.Tooltip:
-                    return tooltipLayer.transform;
+                    return tooltipLayer;
                 case WidgetType.Widget:
-                    return widgetLayer.transform;
+                    return widgetLayer;
                 case WidgetType.Animation:
-                    return animationLayer.transform;
+                    return animationLayer;
                 case WidgetType.SystemInfo:
-                    return systemInfoLayer.transform;
+                    return systemInfoLayer;
                 case WidgetType.Development:
-                    return developmentLayer.transform;
+                    return developmentLayer;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
+        }
+
+        public Transform GetLayerRootTransform(WidgetType widgetType)
+        {
+            return GetLayer(widgetType).root.transform;
         }
 
         protected override void Awake()
@@ -83,6 +122,31 @@ namespace Nekoyume.UI
 
             RectTransform = GetComponent<RectTransform>();
             Canvas = GetComponent<Canvas>();
+        }
+
+        private void UpdateLayers()
+        {
+            if (_layers is null)
+            {
+                _layers = new List<CanvasLayer>
+                {
+                    hudLayer,
+                    popupLayer,
+                    screenLayer,
+                    tooltipLayer,
+                    widgetLayer,
+                    animationLayer,
+                    systemInfoLayer,
+                    developmentLayer,
+                };
+
+                _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
+            }
+
+            foreach (var layer in _layers)
+            {
+                layer.UpdateChildren();
+            }
         }
 
         public void InitializeFirst()
@@ -118,6 +182,8 @@ namespace Nekoyume.UI
             }
 
             Notification.RegisterWidgetTypeForUX<Mail>();
+
+            UpdateLayers();
         }
 
         public IEnumerator InitializeSecond()
@@ -218,82 +284,49 @@ namespace Nekoyume.UI
             }
 
             Notification.RegisterWidgetTypeForUX<Mail>();
+
+            UpdateLayers();
         }
 
-        public void SetSiblingOrderNext(WidgetType fromWidgetType, WidgetType targetWidgetType)
+        public void SetLayerSortingOrderToTarget(WidgetType fromWidgetType,
+            WidgetType toWidgetType)
         {
-            GameObject from;
-            switch (fromWidgetType)
+            if (fromWidgetType == toWidgetType)
             {
-                case WidgetType.Hud:
-                    from = hudLayer;
-                    break;
-                case WidgetType.Popup:
-                    from = popupLayer;
-                    break;
-                case WidgetType.Screen:
-                    from = screenLayer;
-                    break;
-                case WidgetType.Tooltip:
-                    from = tooltipLayer;
-                    break;
-                case WidgetType.Widget:
-                    from = widgetLayer;
-                    break;
-                case WidgetType.SystemInfo:
-                    from = systemInfoLayer;
-                    break;
-                case WidgetType.Development:
-                    from = developmentLayer;
-                    break;
-                case WidgetType.Animation:
-                    from = animationLayer;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(fromWidgetType), fromWidgetType, null);
+                return;
             }
 
-            GameObject target;
-            switch (targetWidgetType)
+            var from = GetLayer(fromWidgetType);
+            var fromSortingOrder = from.root.sortingOrder;
+            var to = GetLayer(toWidgetType);
+            var toSortingOrder = to.root.sortingOrder;
+            if (fromSortingOrder == toSortingOrder)
             {
-                case WidgetType.Hud:
-                    target = hudLayer;
-                    break;
-                case WidgetType.Popup:
-                    target = popupLayer;
-                    break;
-                case WidgetType.Screen:
-                    target = screenLayer;
-                    break;
-                case WidgetType.Tooltip:
-                    target = tooltipLayer;
-                    break;
-                case WidgetType.Widget:
-                    target = widgetLayer;
-                    break;
-                case WidgetType.SystemInfo:
-                    target = systemInfoLayer;
-                    break;
-                case WidgetType.Development:
-                    target = developmentLayer;
-                    break;
-                case WidgetType.Animation:
-                    target = animationLayer;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(targetWidgetType), targetWidgetType, null);
+                return;
             }
 
-            var fromIndex = from.transform.GetSiblingIndex();
-            var targetIndex = target.transform.GetSiblingIndex();
-            if (fromIndex > targetIndex)
+            var fromIndex = fromSortingOrder == 0 ? 0 : fromSortingOrder / 10;
+            var toIndex = toSortingOrder == 0 ? 0 : toSortingOrder / 10;
+            from.SetSortingOrder(toSortingOrder);
+
+            if (fromIndex < toIndex)
             {
-                from.transform.SetSiblingIndex(targetIndex + 1);
+                for (var i = fromIndex + 1; i < toIndex + 1; i++)
+                {
+                    var layer = _layers[i];
+                    layer.SetSortingOrder(layer.root.sortingOrder - 10);
+                }
             }
             else
             {
-                from.transform.SetSiblingIndex(targetIndex);
+                for (var i = toIndex; i < fromIndex; i++)
+                {
+                    var layer = _layers[i];
+                    layer.SetSortingOrder(layer.root.sortingOrder + 10);
+                }
             }
+
+            _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
         }
     }
 }

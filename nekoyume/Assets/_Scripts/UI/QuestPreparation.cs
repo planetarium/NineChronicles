@@ -92,6 +92,8 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
+
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
                 inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView
@@ -138,12 +140,14 @@ namespace Nekoyume.UI
             {
                 _reset = false;
 
-                _player.EquipEquipmentsAndUpdateCustomize(_player.Model.armor,
-                    _player.Model.weapon);
+                // _player.EquipEquipmentsAndUpdateCustomize(_player.Model.armor,
+                //     _player.Model.weapon);
+
                 // stop run immediately.
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
+
                 equipmentSlots.SetPlayerEquipments(_player.Model, ShowTooltip, Unequip);
                 foreach (var consumableSlot in consumableSlots)
                 {
@@ -151,7 +155,6 @@ namespace Nekoyume.UI
                 }
 
                 var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
-
                 var idx = 0;
                 foreach (var (statType, value, additionalValue) in tuples)
                 {
@@ -159,8 +162,6 @@ namespace Nekoyume.UI
                     info.Show(statType, value, additionalValue);
                     ++idx;
                 }
-
-                _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
             }
 
             // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
