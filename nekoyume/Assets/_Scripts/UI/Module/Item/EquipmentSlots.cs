@@ -35,6 +35,8 @@ namespace Nekoyume.UI.Module
             Action<EquipmentSlot> onClick,
             Action<EquipmentSlot> onDoubleClick)
         {
+            Clear();
+
             if (player is null)
             {
                 return;
@@ -48,8 +50,6 @@ namespace Nekoyume.UI.Module
             {
                 TryToEquip(costume);
             }
-
-            ClearAllEmptySlots();
         }
 
         public void SetPlayerEquipments(
@@ -57,6 +57,8 @@ namespace Nekoyume.UI.Module
             Action<EquipmentSlot> onClick,
             Action<EquipmentSlot> onDoubleClick)
         {
+            Clear();
+
             if (player is null)
             {
                 return;
@@ -66,20 +68,10 @@ namespace Nekoyume.UI.Module
             _onSlotDoubleClicked = onDoubleClick;
 
             UpdateSlots(player.Level);
+
             foreach (var equipment in player.Equipments)
             {
                 TryToEquip(equipment);
-            }
-
-            ClearAllEmptySlots();
-        }
-
-        private void ClearAllEmptySlots()
-        {
-            var emptySlots = slots.Where(slot => !slot.IsLock && slot.IsEmpty);
-            foreach (var slot in emptySlots)
-            {
-                slot.Clear();
             }
         }
 

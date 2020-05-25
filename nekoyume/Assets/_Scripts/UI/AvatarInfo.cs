@@ -107,6 +107,7 @@ namespace Nekoyume.UI
 
         private void ReturnPlayer()
         {
+            // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
             var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
             player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
         }
@@ -128,7 +129,6 @@ namespace Nekoyume.UI
             // TODO: 코스튬 대응하기.
             // costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, Unequip);
             equipmentSlots.SetPlayerEquipments(playerModel, ShowTooltip, Unequip);
-
             // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
             // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
             // 따라서 강제로 상태를 설정한다.
