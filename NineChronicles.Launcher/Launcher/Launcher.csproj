@@ -5,7 +5,6 @@
         <RootNamespace>Launcher</RootNamespace>
         <OutputType>WinExe</OutputType>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-        <PublishSingleFile>true</PublishSingleFile>
         <SelfContained>true</SelfContained>
         <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
         <ApplicationIcon>icon.ico</ApplicationIcon>
