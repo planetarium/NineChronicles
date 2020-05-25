@@ -3,16 +3,31 @@ orbs:
   aws-ecr: circleci/aws-ecr@6.6.0
   azure-cli: circleci/azure-cli@1.1.0
   kubernetes: circleci/kubernetes@0.3.0
+  win: circleci/windows@2.4.0
 
 executors:
   default:
     machine:
       docker_layer_caching: true
+  macos:
+    macos:
+      xcode: "11.5"  
 
 jobs:
-  unittest:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:3.1
+  unittest_macos:
+    executor: macos
+    steps:
+      - checkout
+      - run:
+          name: setup-dotnet-core
+          command: brew install dotnet-sdk 
+      - run:
+          name: unittest
+          command: |
+            dotnet test ./NineChronicles.Standalone.Executable/
+            dotnet test ./NineChronicles.Launcher/
+  unittest_windows:
+    executor: win/default
     steps:
       - checkout
       - run:
@@ -33,7 +48,9 @@ workflows:
   version: 2
   build_and_deploy:
     jobs:
-      - unittest
+      # TODO macos trial plan이 끝나서 run할 수 없습니다.
+      # - unittest_macos
+      - unittest_windows
       - build-lib9c
       - aws-ecr/build-and-push-image:
           requires:

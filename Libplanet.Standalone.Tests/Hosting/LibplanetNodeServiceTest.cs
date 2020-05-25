@@ -1,9 +1,12 @@
+using System;
+using System.Net;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
+using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
 using Libplanet.Tx;
@@ -13,15 +16,18 @@ namespace Libplanet.Standalone.Tests.Hosting
 {
     public class LibplanetNodeServiceTest
     {
-        // FIXME 깨지고 있는 테스트입니다.
-        // https://github.com/planetarium/nekoyume-unity/issues/2152
-        // [Fact]
+        [Fact]
         public void Constructor()
         {
+            var genesisBlock = BlockChain<DummyAction>.MakeGenesisBlock();
             var service = new LibplanetNodeService<DummyAction>(
-                new LibplanetNodeServiceProperties()
+                new LibplanetNodeServiceProperties<DummyAction>()
                 {
                     AppProtocolVersion = new AppProtocolVersion(),
+                    GenesisBlock = genesisBlock,
+                    PrivateKey = new PrivateKey(),
+                    StoreStatesCacheSize = 2,
+                    Host = IPAddress.Loopback.ToString(),
                 },
                 new BlockPolicy(),
                 (chain, swarm, pk, ct) => Task.CompletedTask,
@@ -29,6 +35,26 @@ namespace Libplanet.Standalone.Tests.Hosting
             );
 
             Assert.NotNull(service);
+        }
+
+        [Fact]
+        public void PropertiesMustContainGenesisBlockOrPath()
+        {
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var service = new LibplanetNodeService<DummyAction>(
+                    new LibplanetNodeServiceProperties<DummyAction>()
+                    {
+                        AppProtocolVersion = new AppProtocolVersion(),
+                        PrivateKey = new PrivateKey(),
+                        StoreStatesCacheSize = 2,
+                        Host = IPAddress.Loopback.ToString(),
+                    },
+                    new BlockPolicy(),
+                    (chain, swarm, pk, ct) => Task.CompletedTask,
+                    null
+                );
+            });
         }
 
         private class BlockPolicy : IBlockPolicy<DummyAction>
