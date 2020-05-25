@@ -209,14 +209,12 @@ namespace Nekoyume.UI
 
             if (WidgetType == WidgetType.Screen)
             {
-                // MainCanvas.instance.SetSiblingOrderNext(WidgetType.Screen, WidgetType.Popup);
                 MainCanvas.instance.SetLayerSortingOrderToTarget(
                     WidgetType.Screen,
                     WidgetType.Popup);
             }
             else if (WidgetType == WidgetType.Popup)
             {
-                // MainCanvas.instance.SetSiblingOrderNext(WidgetType.Popup, WidgetType.Screen);
                 MainCanvas.instance.SetLayerSortingOrderToTarget(
                     WidgetType.Popup,
                     WidgetType.Screen);
