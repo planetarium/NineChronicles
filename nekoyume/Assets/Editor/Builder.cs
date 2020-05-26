@@ -260,7 +260,7 @@ namespace Editor
             string solutionDir = Path.Combine("..", "NineChronicles.Launcher");
             var pi = new ProcessStartInfo
             {
-                Arguments = $"publish -r {rid} -p:PublishSingleFile=true",
+                Arguments = $"publish -r {rid}",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
