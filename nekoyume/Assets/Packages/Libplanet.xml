@@ -46,7 +46,7 @@
             a single action.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.ActionEvaluation.#ctor(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+        <member name="M:Libplanet.Action.ActionEvaluation.#ctor(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta,System.Exception)">
             <summary>
             Creates an <see cref="T:Libplanet.Action.ActionEvaluation"/> instance
             with filling properties.
@@ -56,6 +56,8 @@
             evaluate <paramref name="action"/>.</param>
             <param name="outputStates">The result states that
             <paramref name="action"/> makes.</param>
+            <param name="exception">An exception that has risen during evaluating a given
+            <paramref name="action"/>.</param>
         </member>
         <member name="P:Libplanet.Action.ActionEvaluation.Action">
             <summary>
@@ -73,6 +75,11 @@
         <member name="P:Libplanet.Action.ActionEvaluation.OutputStates">
             <summary>
             The result states that <see cref="P:Libplanet.Action.ActionEvaluation.Action"/> makes.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.ActionEvaluation.Exception">
+            <summary>
+            An exception that had risen during evaluation.
             </summary>
         </member>
         <member name="M:Libplanet.Action.ActionEvaluation.EvaluateActionsGradually(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,System.Nullable{Libplanet.Tx.TxId},Libplanet.Action.IAccountStateDelta,Libplanet.Address,Libplanet.Address,System.Byte[],System.Collections.Immutable.IImmutableList{Libplanet.Action.IAction},System.Boolean)">
@@ -103,11 +110,6 @@
             Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object
             has a unconsumed state.
             </returns>
-            <exception cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
-            Thrown when one of <paramref name="actions"/> throws some exception.
-            The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
-            is stored in its <see cref="P:System.Exception.InnerException"/> property.
-            </exception>
         </member>
         <member name="T:Libplanet.Action.ActionTypeAttribute">
             <summary>
@@ -517,6 +519,20 @@
             cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method returned.
             </param>
         </member>
+        <member name="M:Libplanet.Action.IAction.RenderError(Libplanet.Action.IActionContext,System.Exception)">
+            <summary>
+            Does the similar things to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>,
+            except that this method is invoked when <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method
+            has terminated with an exception.
+            </summary>
+            <param name="context">The equivalent context object to
+            what <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method had received.
+            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are
+            the states right <em>before</em> this action executed.
+            </param>
+            <param name="exception">The exception that had raised during excuting this action.
+            </param>
+        </member>
         <member name="M:Libplanet.Action.IAction.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <summary>
             Does things that should be undone right after this action is
@@ -540,6 +556,23 @@
             <remarks>As a rule of thumb, this should be the inverse of
             <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method
             with redrawing the graphics on the display at the finish.</remarks>
+        </member>
+        <member name="M:Libplanet.Action.IAction.UnrenderError(Libplanet.Action.IActionContext,System.Exception)">
+            <summary>
+            Does the similar things to <see cref="M:Libplanet.Action.IAction.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>,
+            except that this method is invoked when see cref="Execute(IActionContext)"/> method
+            has terminated with an exception.
+            <para>This method takes the equivalent arguments to
+            <see cref="M:Libplanet.Action.IAction.RenderError(Libplanet.Action.IActionContext,System.Exception)"/> method.
+            </para>
+            </summary>
+            <param name="context">The equivalent context object to
+            what <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method had received.
+            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are
+            the states right <em>before</em> this action executed.
+            </param>
+            <param name="exception">The exception that had raised during excuting this action.
+            </param>
         </member>
         <member name="T:Libplanet.Action.IActionContext">
             <summary>
@@ -922,6 +955,12 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Action.PolymorphicAction`1.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.RenderError(Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.PolymorphicAction`1.UnrenderError(Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Action.RandomExtensions">
@@ -4471,7 +4510,13 @@
         <member name="M:Libplanet.Store.StoreExtensions.NullAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc/>
         </member>
+        <member name="M:Libplanet.Store.StoreExtensions.NullAction.RenderError(Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc/>
+        </member>
         <member name="M:Libplanet.Store.StoreExtensions.NullAction.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Store.StoreExtensions.NullAction.UnrenderError(Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
@@ -4844,19 +4889,6 @@
             is passed to <paramref name="privateKey"/> or
             or <paramref name="actions"/>.
             </exception>
-            <exception cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
-            Thrown when one of <paramref name="actions"/> throws some
-            exception during their rehearsal.
-            <para>This exception is thrown probably because the logic of some of
-            the <paramref name="actions"/> is not enough generic so that
-            it can cover every case including &#x201c;rehearsal mode.&#x201d;
-            The <see cref="P:Libplanet.Action.IActionContext.Rehearsal"/> property also might be
-            useful to make the <see cref="T:Libplanet.Action.IAction"/> can deal with the case of
-            rehearsal mode.</para>
-            <para>The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
-            is stored in its <see cref="P:System.Exception.InnerException"/> property.
-            </para>
-            </exception>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Serialize(System.Boolean)">
             <summary>
@@ -4907,14 +4939,6 @@
             Note that each <see cref="P:Libplanet.Action.IActionContext.Random"/> object has
             a unconsumed state.
             </returns>
-            <exception cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
-            Thrown when one of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> throws some
-            exception during <paramref name="rehearsal"/> mode.
-            The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
-            is stored in its <see cref="P:System.Exception.InnerException"/> property.
-            It is never thrown if the <paramref name="rehearsal"/> option is
-            <c>false</c>.
-            </exception>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.EvaluateActions(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Int64,Libplanet.Action.IAccountStateDelta,Libplanet.Address,System.Boolean)">
             <summary>
@@ -4940,14 +4964,6 @@
             being executed.  Note that it maintains
             <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedAddresses"/> of the given
             <paramref name="previousStates"/> as well.</returns>
-            <exception cref="T:Libplanet.Action.UnexpectedlyTerminatedActionException">
-            Thrown when one of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> throws some
-            exception during <paramref name="rehearsal"/> mode.
-            The actual exception that an <see cref="T:Libplanet.Action.IAction"/> threw
-            is stored in its <see cref="P:System.Exception.InnerException"/> property.
-            It is never thrown if the <paramref name="rehearsal"/> option is
-            <c>false</c>.
-            </exception>
         </member>
         <member name="M:Libplanet.Tx.Transaction`1.Validate">
             <summary>
