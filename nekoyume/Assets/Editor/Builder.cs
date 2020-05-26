@@ -277,7 +277,8 @@ namespace Editor
             }
             else
             {
-                pi.FileName = "/usr/local/bin/dotnet";
+                pi.FileName = Environment.GetEnvironmentVariable("DOTNET_PATH")
+                    ?? "/usr/local/bin/dotnet";
             }
             Process p = Process.Start(pi);
             return (p, Path.Combine(solutionDir, "out", rid));
