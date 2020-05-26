@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Bencodex.Types;
 using Libplanet.Action;
@@ -55,6 +56,14 @@ namespace Libplanet.Standalone.Tests.Hosting
         {
             IValue IAction.PlainValue => Dictionary.Empty;
 
+            public void RenderError(IActionContext context, Exception exception)
+            {
+            }
+
+            public void UnrenderError(IActionContext context, Exception exception)
+            {
+            }
+
             IAccountStateDelta IAction.Execute(IActionContext context)
             {
                 return context.PreviousStates;
@@ -66,12 +75,10 @@ namespace Libplanet.Standalone.Tests.Hosting
 
             void IAction.Render(IActionContext context, IAccountStateDelta nextStates)
             {
-                throw new System.NotImplementedException();
             }
 
             void IAction.Unrender(IActionContext context, IAccountStateDelta nextStates)
             {
-                throw new System.NotImplementedException();
             }
         }
     }
