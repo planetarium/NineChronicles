@@ -13,6 +13,11 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI cpText = null;
 
+        // TODO: Costume 슬롯 대응하기.
+        // [SerializeField]
+        // private EquipmentSlots costumeSlots = null;
+
+        // TODO: Rename equipmentSlots.
         [SerializeField]
         private EquipmentSlots slots = null;
 
@@ -47,12 +52,15 @@ namespace Nekoyume.UI
 
             var currentAvatar = gameInstance.States.CurrentAvatarState;
 
-            nicknameText.text = string.Format(nicknameTextFormat,
+            nicknameText.text = string.Format(
+                nicknameTextFormat,
                 currentAvatar.level,
                 currentAvatar.NameWithHash);
 
             cpText.text = CPHelper.GetCP(currentAvatar, gameInstance.TableSheets.CharacterSheet).ToString();
-            slots.SetPlayer(playerModel, null, null);
+            // TODO: Costume 슬롯 대응하기.
+            // slots.SetPlayerCostumes(playerModel, null, null);
+            slots.SetPlayerEquipments(playerModel, null, null);
 
             var player = stage.GetPlayer();
             _previousAvatarPosition = player.transform.position;

@@ -12,14 +12,17 @@ namespace Nekoyume.JsonConvertibles
     [Serializable]
     public class JsonConvertibleDictionary<TKey, TValue> : ISerializationCallbackReceiver
     {
-        [NonSerialized] public Dictionary<TKey, TValue> Value;
-        
         [SerializeField]
         private List<TKey> keys;
 
         [SerializeField]
         private List<TValue> values;
-        
+
+        public int Count => Value.Count;
+
+        [field: NonSerialized]
+        public Dictionary<TKey, TValue> Value { get; }
+
         public JsonConvertibleDictionary(params (TKey key, TValue value)[] tuples)
         {
             Value = new Dictionary<TKey, TValue>(tuples.Length);
@@ -27,18 +30,18 @@ namespace Nekoyume.JsonConvertibles
             {
                 Value.Add(key, value);
             }
-            
+
             keys = null;
             values = null;
         }
-        
+
         public JsonConvertibleDictionary(Dictionary<TKey, TValue> value)
         {
             Value = value;
             keys = null;
             values = null;
         }
-        
+
         public void OnBeforeSerialize()
         {
             keys = new List<TKey>(Value.Keys);

@@ -8,6 +8,7 @@ namespace Nekoyume.State.Modifiers
         private readonly long _unlockBlockIndex;
         private readonly AttachmentActionResult _result;
         private readonly long _blockIndex;
+        public bool dirty { get; set; }
         public bool IsEmpty => !(_result is null);
 
         public CombinationSlotStateModifier(
