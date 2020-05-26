@@ -30,6 +30,23 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public bool TryGetSlot(ItemSubType itemSubType, out EquipmentSlot outSlot)
+        {
+            foreach (var slot in slots)
+            {
+                if (slot.ItemSubType != itemSubType)
+                {
+                    continue;
+                }
+
+                outSlot = slot;
+                return true;
+            }
+
+            outSlot = default;
+            return false;
+        }
+
         public void SetPlayerCostumes(
             Player player,
             Action<EquipmentSlot> onClick,
