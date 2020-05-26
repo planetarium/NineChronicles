@@ -36,6 +36,7 @@ namespace Nekoyume.Model.Item
         NormalMaterial,
         Hourglass,
         ApStone,
+        Chest,
     }
 
     public class ItemTypeComparer : IEqualityComparer<ItemType>
