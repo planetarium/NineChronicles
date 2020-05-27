@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
