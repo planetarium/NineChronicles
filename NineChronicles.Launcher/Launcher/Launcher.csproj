@@ -6,6 +6,7 @@
         <OutputType>WinExe</OutputType>
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
         <SelfContained>true</SelfContained>
+        <PublishSingleFile>true</PublishSingleFile>
         <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
         <ApplicationIcon>icon.ico</ApplicationIcon>
         <CFBundleIconFile>AppIcon.icns</CFBundleIconFile>
