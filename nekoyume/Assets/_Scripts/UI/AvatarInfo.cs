@@ -5,6 +5,7 @@ using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -99,12 +100,8 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show(ignoreShowAnimation);
-            inventory.SharedModel.State.Value = ItemType.Equipment;
-
-            ReplacePlayer();
-            UpdateSlotView();
-            UpdateStatViews();
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            Show(currentAvatarState, ignoreShowAnimation);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -115,9 +112,20 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private void ReplacePlayer()
+        public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
+        {
+            base.Show(ignoreShowAnimation);
+            inventory.SharedModel.State.Value = ItemType.Equipment;
+
+            ReplacePlayer(avatarState);
+            UpdateSlotView(avatarState);
+            UpdateStatViews();
+        }
+
+        private void ReplacePlayer(AvatarState avatarState)
         {
             var player = Game.Game.instance.Stage.GetPlayer();
+            player.Set(avatarState);
             var playerTransform = player.transform;
             _previousAvatarPosition = playerTransform.position;
             _previousSortingLayerID = player.sortingGroup.sortingLayerID;
@@ -133,21 +141,22 @@ namespace Nekoyume.UI
         {
             // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
             var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            player.Set(currentAvatarState);
             player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
         }
 
-        private void UpdateSlotView()
+        private void UpdateSlotView(AvatarState avatarState)
         {
             var game = Game.Game.instance;
-            var currentAvatar = game.States.CurrentAvatarState;
             var playerModel = game.Stage.GetPlayer().Model;
 
             nicknameText.text = string.Format(
                 NicknameTextFormat,
-                currentAvatar.level,
-                currentAvatar.NameWithHash);
+                avatarState.level,
+                avatarState.NameWithHash);
 
-            cpText.text = CPHelper.GetCP(currentAvatar, game.TableSheets.CharacterSheet)
+            cpText.text = CPHelper.GetCP(avatarState, game.TableSheets.CharacterSheet)
                 .ToString();
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, Unequip);

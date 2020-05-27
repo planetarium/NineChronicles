@@ -33,6 +33,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private Button avatarInfoButton = null;
 
+        private AvatarState _selectedAvatarState = null;
+
         public override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
 
         protected override void Awake()
@@ -76,13 +78,17 @@ namespace Nekoyume.UI
             avatarImage.sprite = SpriteHelper.GetCharacterIcon(avatarState.characterId);
             levelText.text = $"<color=#B38271>LV.{avatarState.level}</color>";
             nameAndHashText.text = avatarState.NameWithHash;
+            _selectedAvatarState = avatarState;
+            var currentAvatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
+            var isCurrentAvatar = currentAvatarAddress.Equals(_selectedAvatarState.address);
+            avatarInfoButton.gameObject.SetActive(!isCurrentAvatar);
             Show(new ViewModel(target));
         }
 
         private void OnClickAvatarInfo(Unit unit)
         {
             AudioController.PlayClick();
-            Find<AvatarInfo>().Show();
+            Find<AvatarInfo>().Show(_selectedAvatarState);
             Close();
         }
     }
