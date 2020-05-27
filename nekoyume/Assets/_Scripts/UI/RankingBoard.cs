@@ -326,8 +326,7 @@ namespace Nekoyume.UI
         private void OnClickChallenge(ArenaCellView info)
         {
             Game.Game.instance.ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
-            Find<LoadingScreen>().Show();
-            Find<RankingBattleLoadingScreen>().Show(info.ArenaInfo);
+            Find<ArenaBattleLoadingScreen>().Show(info.ArenaInfo);
         }
 
         private void SetAvatars(DateTimeOffset? dt)
@@ -394,7 +393,7 @@ namespace Nekoyume.UI
         {
             Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
             Find<LoadingScreen>().Close();
-            Find<RankingBattleLoadingScreen>().Close();
+            Find<ArenaBattleLoadingScreen>().Close();
             Close();
         }
     }
