@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using static Launcher.Common.Utils;
 
 namespace Launcher.Common.RuntimePlatform
 {
@@ -63,5 +64,25 @@ namespace Launcher.Common.RuntimePlatform
                 "Logs",
                 "Planetarium",
                 "updater.log");
+
+
+        public void DisplayNotification(string title, string message)
+        {
+            // 2. open AppleScript Application, then it will read the file and display notification.
+            string executableNotifierBinaryPath = Path.Combine(
+                Path.GetDirectoryName(ExecutableLauncherBinaryPath),
+                "NineChronicles Notifier.app",
+                "Contents",
+                "MacOS",
+                "NineChronicles Notifier"
+            );
+            string arguments =
+                $"{EscapeShellArgument(title)} {EscapeShellArgument(message)} {EscapeShellArgument(ExecutableGameBinaryPath)}";
+
+            Process.Start(
+                executableNotifierBinaryPath,
+                arguments
+            );
+        }
     }
 }

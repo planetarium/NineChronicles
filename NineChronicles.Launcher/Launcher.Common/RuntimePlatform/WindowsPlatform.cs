@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace Launcher.Common.RuntimePlatform
 {
@@ -33,5 +34,30 @@ namespace Launcher.Common.RuntimePlatform
 
         public string UpdaterLogFilePath =>
             Path.Combine(CurrentWorkingDirectory, "Logs", "updater.log");
+
+        public void DisplayNotification(string title, string message)
+        {
+            var content = new ToastContent
+            {
+                Visual = new ToastVisual
+                {
+                    BindingGeneric = new ToastBindingGeneric()
+                    {
+                        Children =
+                        {
+                            new AdaptiveText()
+                            {
+                                Text = title,
+                                HintMaxLines = 1,
+                            },
+                            new AdaptiveText()
+                            {
+                                Text = message,
+                            },
+                        }
+                    }
+                }
+            };
+        }
     }
 }
