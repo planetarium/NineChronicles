@@ -34,7 +34,7 @@ namespace Nekoyume.UI
         private EquipmentSlots equipmentSlots = null;
 
         [SerializeField]
-        private DetailedStatView[] statViews = null;
+        private AvatarStats avatarStats = null;
 
         [SerializeField]
         private RectTransform avatarPosition = null;
@@ -172,19 +172,8 @@ namespace Nekoyume.UI
                 null,
                 Game.Game.instance.TableSheets
             );
-            using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())
-            {
-                foreach (var statView in statViews)
-                {
-                    if (!enumerator.MoveNext())
-                    {
-                        break;
-                    }
 
-                    var (statType, baseValue, additionalValue) = enumerator.Current;
-                    statView.Show(statType, baseValue, additionalValue);
-                }
-            }
+            avatarStats.SetData(stats);
         }
 
         #region Subscribe
