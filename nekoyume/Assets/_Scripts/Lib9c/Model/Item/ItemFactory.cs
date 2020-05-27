@@ -147,6 +147,7 @@ namespace Nekoyume.Model.Item
                 case ItemSubType.NormalMaterial:
                 case ItemSubType.Hourglass:
                 case ItemSubType.ApStone:
+                case ItemSubType.Chest:
                     return new MaterialItemSheet.Row(serialized);
                 default:
                     throw new ArgumentOutOfRangeException();
