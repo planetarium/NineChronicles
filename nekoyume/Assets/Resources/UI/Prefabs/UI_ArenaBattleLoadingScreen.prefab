@@ -1291,25 +1291,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerProfile: {fileID: 990888984104645877}
   enemyProfile: {fileID: 2111457578272024766}
-  playerMoveImage: {fileID: 180026958305496699}
-  enemyMoveImage: {fileID: 4100519653401476618}
-  backPlateRight: {fileID: 8238714520112529825}
-  backPlateLeft: {fileID: 6574487319611687968}
-  emblem: {fileID: 751653044108883523}
-  versus: {fileID: 8742618745075938906}
-  versusEffect: {fileID: 7288449879654532463}
   loadingText: {fileID: 6870852636630381853}
-  backPlateAnimatingAt: 0
-  backPlateAnimatingTime: 1.5
-  emblemAnimatingAt: 0
-  emblemAnimatingTime: 2
-  playerProfileAnimatingAt: 1.5
-  playerProfileAnimatingTime: 0.4
-  versusAnimatingAt: 1.65
-  versusAnimatingTime: 0.25
-  loadingTextAnimatingAt: 0
-  loadingTextAnimatingTime: 2
-  shakeRadius: 5
 --- !u!95 &4289835828712100599
 Animator:
   serializedVersion: 3
@@ -1320,7 +1302,7 @@ Animator:
   m_GameObject: {fileID: 3643145208598142874}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 22100000, guid: 01b531e71818fff4d865ff68e5e4d7e5, type: 2}
+  m_Controller: {fileID: 9100000, guid: c4ef92705e93fbd4cb557028c1c5258c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
