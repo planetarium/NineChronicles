@@ -466,17 +466,21 @@ namespace Nekoyume.UI
 
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
+            return inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume ||
+                   inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
         }
 
         private static bool EquippedFuncForSell(InventoryItem inventoryItem)
         {
-            if (!(inventoryItem.ItemBase.Value is Equipment equipment))
+            switch (inventoryItem.ItemBase.Value)
             {
-                return false;
+                case Costume costume:
+                    return costume.equipped;
+                case Equipment equipment:
+                    return equipment.equipped;
+                default:
+                    return false;
             }
-
-            return equipment.equipped;
         }
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
