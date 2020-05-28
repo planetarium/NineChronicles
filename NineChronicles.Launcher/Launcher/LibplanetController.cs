@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -9,6 +10,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Bencodex.Types;
 using Launcher.Common;
 using Libplanet;
 using Libplanet.Blocks;
@@ -23,6 +25,7 @@ using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using static Launcher.Common.Configuration.Path;
 using static Launcher.Common.Utils;
 using Nekoyume;
+using Nekoyume.Model.State;
 using TextCopy;
 
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -95,6 +98,8 @@ To start the game, you need to create your account.";
 
         [NotifySignal]
         public string PreparedPrivateKeyAddressHex => PreparedPrivateKey.ToAddress().ToHex();
+
+        private ConcurrentDictionary<Address, long> NotificationRecords { get; } = new ConcurrentDictionary<Address, long>();
 
         private string PrivateKeyHex => ByteUtil.Hex(PrivateKey.ByteArray);
 
@@ -300,6 +305,39 @@ To start the game, you need to create your account.";
                     this.ActivateProperty(ctrl => ctrl.PreloadStatus);
                 })
             );
+
+            var chain = service.Swarm.BlockChain;
+            chain.TipChanged += (sender, args) =>
+            {
+                IValue state = chain.GetState(PrivateKey.ToAddress());
+                if (state is null)
+                {
+                    return;
+                }
+
+                var agentState = new AgentState((Bencodex.Types.Dictionary)state);
+                var avatarStates = agentState.avatarAddresses.Values
+                    .Select(
+                        address => new AvatarState((Bencodex.Types.Dictionary) chain.GetState(address)))
+                    .ToList();
+                var avatarStatesCanRefill = avatarStates
+                    .Where(avatarState => NotificationRecords.TryGetValue(avatarState.address, out long notificationRecord)
+                                          ? avatarState.dailyRewardReceivedIndex != notificationRecord
+                                          : args.Index >= avatarState.dailyRewardReceivedIndex + GameConfig.DailyRewardInterval)
+                    .ToList();
+
+                if (avatarStatesCanRefill.Any())
+                {
+                    CurrentPlatform.DisplayNotification("You can refill action point!", "Turn on Nine Chronicles!");
+                }
+
+                foreach (var avatarState in avatarStatesCanRefill)
+                {
+                    Log.Debug("Record notification for {AvatarAddress}", avatarState.address.ToHex());
+
+                    NotificationRecords[avatarState.address] = avatarState.dailyRewardReceivedIndex;
+                }
+            };
 
             Configuration.Log.TelemetryClient.Context.User.AuthenticatedUserId = service.Swarm.Address.ToHex();
 
