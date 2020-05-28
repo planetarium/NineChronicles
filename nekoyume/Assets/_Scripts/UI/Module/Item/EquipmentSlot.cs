@@ -70,6 +70,21 @@ namespace Nekoyume.UI.Module
 
             switch (ItemSubType)
             {
+                case ItemSubType.FullCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                    break;
+                case ItemSubType.HairCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot;
+                    break;
+                case ItemSubType.EarCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot;
+                    break;
+                case ItemSubType.EyeCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot;
+                    break;
+                case ItemSubType.TailCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
+                    break;
                 case ItemSubType.Weapon:
                     _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
                     break;
