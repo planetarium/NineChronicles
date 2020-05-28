@@ -76,9 +76,9 @@ namespace Launcher.Common.RuntimePlatform
                 "MacOS",
                 "NineChronicles Notifier"
             );
-            string arguments =
-                $"{EscapeShellArgument(title)} {EscapeShellArgument(message)} {EscapeShellArgument(ExecutableGameBinaryPath)}";
 
+            string arguments =
+                $"{EscapeShellArgument(title)} {EscapeShellArgument(message)} {EscapeShellArgument(ExecutableLauncherBinaryPath)}";
             Process.Start(
                 executableNotifierBinaryPath,
                 arguments
