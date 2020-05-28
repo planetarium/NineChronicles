@@ -1285,11 +1285,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8771803193584919966}
-  - component: {fileID: 2130542999658398408}
+  - component: {fileID: -9000095536101024658}
   - component: {fileID: 2075681916752197807}
   - component: {fileID: 4506733151476811093}
   m_Layer: 5
-  m_Name: QuestCellView
+  m_Name: QuestCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1310,12 +1310,12 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -34.5}
   m_SizeDelta: {x: 605, y: 69}
-  m_Pivot: {x: 0.5, y: 1}
---- !u!114 &2130542999658398408
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &-9000095536101024658
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1324,10 +1324,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 8553884987421549240}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4537e94ab8eadd649ae56bb9b5053f70, type: 3}
+  m_Script: {fileID: 11500000, guid: 3dba7f4644354a0a9413e3cb46d63589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellIdentifier: 
   background: {fileID: 3834196779160892302}
   fillImage: {fileID: 8029265962574283102}
   titleText: {fileID: 1355623074940685725}

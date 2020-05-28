@@ -1,37 +1,48 @@
-﻿using Assets.SimpleLocalization;
-using EnhancedUI.EnhancedScroller;
-using Nekoyume.Helper;
-using System;
 using System.Linq;
+using Assets.SimpleLocalization;
+using FancyScrollView;
+using Nekoyume.Game.Controller;
+using Nekoyume.Helper;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using Nekoyume.Game.Controller;
-using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
-using UniRx;
 using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class QuestCellView : EnhancedScrollerCellView
+    public class QuestCell : FancyScrollRectCell<QuestModel, QuestScroll.ContextModel>
     {
-        public Image background;
-        public Image fillImage;
-        public TextMeshProUGUI titleText;
-        public TextMeshProUGUI contentText;
-        public TextMeshProUGUI progressText;
-        public Slider progressBar;
-        public SimpleCountableItemView[] rewardViews;
-        public SubmitButton receiveButton;
+        public event System.Action onClickSubmitButton;
 
-        private QuestModel _quest;
-        private int _currentDataIndex;
+        [SerializeField]
+        private Image background = null;
 
-        public System.Action onClickSubmitButton;
+        [SerializeField]
+        private Image fillImage = null;
+
+        [SerializeField]
+        private TextMeshProUGUI titleText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI contentText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI progressText = null;
+
+        [SerializeField]
+        private Slider progressBar = null;
+
+        [SerializeField]
+        private SimpleCountableItemView[] rewardViews = null;
+
+        [SerializeField]
+        private SubmitButton receiveButton = null;
 
         [Header("ItemMoveAnimation")]
         [SerializeField, Range(.5f, 3.0f)]
@@ -40,8 +51,12 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private bool moveToLeft = false;
 
-        [SerializeField, Range(0f, 10f), Tooltip("Gap between start position X and middle position X")]
+        [SerializeField,
+         Range(0f, 10f),
+         Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
+
+        private QuestModel _quest;
 
         #region Mono
 
@@ -57,11 +72,9 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
 
-        public void SetData(QuestModel quest)
+        public override void UpdateContent(QuestModel itemData)
         {
-            _quest = quest;
-            _currentDataIndex = dataIndex;
-
+            _quest = itemData;
             UpdateView();
         }
 
@@ -71,14 +84,18 @@ namespace Nekoyume.UI.Scroller
             AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
             foreach (var view in rewardViews)
             {
-                if (view.gameObject.activeSelf)
-                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id),
+                if (!(view.Model is null) &&
+                    view.gameObject.activeSelf)
+                {
+                    ItemMoveAnimation.Show(
+                        SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id),
                         view.transform.position,
                         Widget.Find<BottomMenu>().inventoryButton.transform.position,
                         moveToLeft,
                         animationTime,
                         middleXGap,
                         true);
+                }
             }
 
             var quest = Widget.Find<Quest>();
@@ -96,7 +113,8 @@ namespace Nekoyume.UI.Scroller
             Notification.Push(MailType.System, msg);
 
             // 로컬 아바타의 퀘스트 상태 업데이트.
-            var quest = States.Instance.CurrentAvatarState.questList.FirstOrDefault(q => q == _quest);
+            var quest =
+                States.Instance.CurrentAvatarState.questList.FirstOrDefault(q => q == _quest);
             if (quest is null)
             {
                 return;
@@ -110,7 +128,11 @@ namespace Nekoyume.UI.Scroller
                 var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
                     .First(pair => pair.Key == reward.Key);
 
-                LocalStateModifier.AddItem(avatarAddress, materialRow.Value.ItemId, reward.Value, false);
+                LocalStateModifier.AddItem(
+                    avatarAddress,
+                    materialRow.Value.ItemId,
+                    reward.Value,
+                    false);
             }
 
             LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
@@ -122,8 +144,8 @@ namespace Nekoyume.UI.Scroller
             titleText.text = _quest.GetTitle();
             contentText.text = _quest.GetContent();
 
-            string text = _quest.GetProgressText();
-            bool showProgressBar = !string.IsNullOrEmpty(text);
+            var text = _quest.GetProgressText();
+            var showProgressBar = !string.IsNullOrEmpty(text);
             progressText.gameObject.SetActive(showProgressBar);
             progressBar.gameObject.SetActive(showProgressBar);
             if (showProgressBar)
@@ -174,7 +196,8 @@ namespace Nekoyume.UI.Scroller
                     var pair = itemMap.ElementAt(i);
                     var rewardView = rewardViews[i];
                     rewardView.ignoreOne = true;
-                    var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                    var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(
+                        itemRow => itemRow.Id == pair.Key);
                     var item = ItemFactory.CreateMaterial(row);
                     var countableItem = new CountableItem(item, pair.Value);
                     countableItem.Dimmed.Value = isReceived;
