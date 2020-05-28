@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -12,7 +12,7 @@ using Serilog;
 
 namespace NineChronicles.Standalone.Executable
 {
-    public class Program
+    public class Program : CoconaLiteConsoleAppBase
     {
         static async Task Main(string[] args)
         {
@@ -40,6 +40,8 @@ namespace NineChronicles.Standalone.Executable
             string[] iceServerStrings = null,
             [Option("peer")]
             string[] peerStrings = null,
+            [Option("no-trusted-state-validators")]
+            bool noTrustedStateValidators = false,
             [Option("trusted-app-protocol-version-signer", new[] { 'T' },
                     Description = "Trustworthy signers who claim new app protocol versions")]
             string[] trustedAppProtocolVersionSigners = null,
@@ -63,7 +65,17 @@ namespace NineChronicles.Standalone.Executable
             var iceServers = iceServerStrings.Select(LoadIceServer).ToImmutableArray();
             var peers = peerStrings.Select(LoadPeer).ToImmutableArray();
 
-            LibplanetNodeServiceProperties properties = new LibplanetNodeServiceProperties
+            IImmutableSet<Address> trustedStateValidators;
+            if (noTrustedStateValidators)
+            {
+                trustedStateValidators = ImmutableHashSet<Address>.Empty;
+            }
+            else
+            {
+                trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
+            }
+
+            var properties = new LibplanetNodeServiceProperties
             {
                 Host = host,
                 Port = port,
@@ -76,8 +88,10 @@ namespace NineChronicles.Standalone.Executable
                 PrivateKey = privateKey,
                 IceServers = iceServers,
                 Peers = peers,
+                TrustedStateValidators = trustedStateValidators,
                 StoreType = storeType,
                 StorePath = storePath,
+                StoreStatesCacheSize = 5000,
                 MinimumDifficulty = minimumDifficulty,
             };
 
@@ -109,8 +123,11 @@ namespace NineChronicles.Standalone.Executable
                 }
             }
 
-            var service = new NineChroniclesNodeService(properties, rpcProperties);
-            await service.Run();
+            var service = new NineChroniclesNodeService(
+                properties,
+                rpcProperties,
+                ignoreBootstrapFailure: true);
+            await service.Run(Context.CancellationToken);
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)

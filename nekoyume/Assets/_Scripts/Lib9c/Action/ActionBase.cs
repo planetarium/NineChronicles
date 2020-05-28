@@ -1,14 +1,15 @@
 using System;
-using Bencodex.Types;
-using Libplanet;
-using Libplanet.Action;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
 using Bencodex;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+using Bencodex.Types;
+using Libplanet;
+using Libplanet.Action;
+using Serilog;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -74,12 +75,15 @@ namespace Nekoyume.Action
 
             public IAccountStateDelta OutputStates { get; set; }
 
+            public Exception Exception { get; set; }
+
             public ActionEvaluation(SerializationInfo info, StreamingContext ctx)
             {
                 Action = FromBytes((byte[])info.GetValue("action", typeof(byte[])));
                 Signer = new Address((byte[])info.GetValue("signer", typeof(byte[])));
                 BlockIndex = info.GetInt64("blockIndex");
                 OutputStates = new AccountStateDelta((byte[])info.GetValue("outputStates", typeof(byte[])));
+                Exception = (Exception) info.GetValue("exc", typeof(Exception));
             }
 
             public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -88,6 +92,7 @@ namespace Nekoyume.Action
                 info.AddValue("signer", Signer.ToByteArray());
                 info.AddValue("blockIndex", BlockIndex);
                 info.AddValue("outputStates", ToBytes(OutputStates));
+                info.AddValue("exc", Exception);
             }
 
             private static byte[] ToBytes(T action)
@@ -149,6 +154,46 @@ namespace Nekoyume.Action
                 BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
             });
+        }
+
+        protected IAccountStateDelta LogError(IActionContext context, string message, params object[] values)
+        {
+            string actionType = GetType().Name;
+            object[] prependedValues = new object[values.Length + 2];
+            prependedValues[0] = context.BlockIndex;
+            prependedValues[1] = context.Signer;
+            values.CopyTo(prependedValues, 2);
+            string msg = $"#{{BlockIndex}} {actionType} (by {{Signer}}): {message}";
+            Log.Error(msg, prependedValues);
+            return context.PreviousStates;
+        }
+
+        public void RenderError(IActionContext context, Exception exception)
+        {
+            RenderSubject.OnNext(
+                new ActionEvaluation<ActionBase>()
+                {
+                    Action = this,
+                    Signer = context.Signer,
+                    BlockIndex = context.BlockIndex,
+                    OutputStates = context.PreviousStates,
+                    Exception = exception,
+                }
+            );
+        }
+
+        public void UnrenderError(IActionContext context, Exception exception)
+        {
+            UnrenderSubject.OnNext(
+                new ActionEvaluation<ActionBase>()
+                {
+                    Action = this,
+                    Signer = context.Signer,
+                    BlockIndex = context.BlockIndex,
+                    OutputStates = context.PreviousStates,
+                    Exception = exception,
+                }  
+            );
         }
     }
 }

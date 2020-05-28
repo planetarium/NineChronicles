@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Libplanet.Crypto;
 using Libplanet.Net;
 
@@ -17,9 +18,13 @@ namespace Libplanet.Standalone.Hosting
 
         public string StorePath { get; set; }
 
+        public int StoreStatesCacheSize { get; set; }
+
         public string GenesisBlockPath { get; set; }
 
         public IEnumerable<Peer> Peers { get; set; }
+
+        public IImmutableSet<Address> TrustedStateValidators { get; set; }
 
         public bool NoMiner { get; set; }
 

@@ -110,6 +110,13 @@ namespace Nekoyume.Action
             Log.Debug($"Sell Cancel Get Unregister Item: {sw.Elapsed}");
             sw.Restart();
 
+            //9c-beta 브랜치에서는 블록 인덱스도 확인 해야함 (이전 블록 유효성 보장)
+            if (outUnregisteredItem.SellerAvatarAddress != sellerAvatarAddress)
+            {
+                Log.Error("Invalid Avatar Address");
+                return states;
+            }
+
             // 메일에 아이템을 넣는다.
             result = new Result
             {

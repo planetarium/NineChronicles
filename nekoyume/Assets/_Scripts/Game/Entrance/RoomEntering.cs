@@ -50,10 +50,9 @@ namespace Nekoyume.Game.Entrance
             Widget.Find<LoadingScreen>().Close();
 
             if (player)
-                while (player.transform.position.x < stage.roomPosition.x)
-                {
-                    yield return null;
-                }
+            {
+                yield return new WaitWhile(() => player.transform.position.x < stage.roomPosition.x);
+            }
 
             player.RunSpeed = 0.0f;
             player.Animator.Idle();

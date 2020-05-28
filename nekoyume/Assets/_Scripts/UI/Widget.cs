@@ -26,7 +26,9 @@ namespace Nekoyume.UI
         private static readonly Subject<Widget> OnEnableStaticSubject = new Subject<Widget>();
         private static readonly Subject<Widget> OnDisableStaticSubject = new Subject<Widget>();
 
-        private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
+        private static readonly Dictionary<Type, PoolElementModel> Pool =
+            new Dictionary<Type, PoolElementModel>();
+
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
 
         public static IObservable<Widget> OnEnableStaticObservable => OnEnableStaticSubject;
@@ -141,7 +143,7 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            go.transform.SetParent(MainCanvas.instance.GetTransform(widget.WidgetType));
+            go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
             go.SetActive(activate);
             return widget;
         }
@@ -174,7 +176,8 @@ namespace Nekoyume.UI
                 pool.Add(go2, 1);
                 return go2.GetComponent<T>();
             }
-            go.transform.SetParent(MainCanvas.instance.GetTransform(WidgetType.Hud));
+
+            go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(WidgetType.Hud));
             return go.GetComponent<T>();
         }
 
@@ -206,11 +209,15 @@ namespace Nekoyume.UI
 
             if (WidgetType == WidgetType.Screen)
             {
-                MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Popup);
+                MainCanvas.instance.SetLayerSortingOrderToTarget(
+                    WidgetType.Screen,
+                    WidgetType.Popup);
             }
             else if (WidgetType == WidgetType.Popup)
             {
-                MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Screen);
+                MainCanvas.instance.SetLayerSortingOrderToTarget(
+                    WidgetType.Popup,
+                    WidgetType.Screen);
             }
 
             gameObject.SetActive(true);

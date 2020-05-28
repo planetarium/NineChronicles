@@ -94,7 +94,15 @@ namespace Nekoyume.BlockChain
             int stageId)
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
+            {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            // NOTE: HAS를 할 때에만 장착 여부를 저장한다.
+            // 따라서 이때에 찌꺼기를 남기지 않기 위해서 장착에 대한 모든 로컬 상태를 비워준다.
+            LocalStateModifier.ClearEquipOrUnequipOfCostumeAndEquipment(avatarAddress, false);
 
             var action = new HackAndSlash
             {
@@ -103,7 +111,7 @@ namespace Nekoyume.BlockChain
                 foods = foods,
                 worldId = worldId,
                 stageId = stageId,
-                avatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = avatarAddress,
                 WeeklyArenaAddress = weeklyArenaAddress,
             };
             ProcessAction(action);
@@ -150,9 +158,14 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, decimal price)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
+            LocalStateModifier.SetEquipmentEquip(avatarAddress, itemUsable.ItemId, false, false);
+
             var action = new Sell
             {
-                sellerAvatarAddress = States.Instance.CurrentAvatarState.address,
+                sellerAvatarAddress = avatarAddress,
                 productId = Guid.NewGuid(),
                 itemUsable = itemUsable,
                 price = price
@@ -167,13 +180,14 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout); // Last() is for completion
         }
 
-        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(Address sellerAvatarAddress,
+        public IObservable<ActionBase.ActionEvaluation<SellCancellation>> SellCancellation(
+            Address sellerAvatarAddress,
             Guid productId)
         {
             var action = new SellCancellation
             {
                 productId = productId,
-                sellerAvatarAddress = States.Instance.CurrentAvatarState.address,
+                sellerAvatarAddress = sellerAvatarAddress,
             };
             ProcessAction(action);
 
@@ -229,11 +243,20 @@ namespace Nekoyume.BlockChain
 
         public IObservable<ActionBase.ActionEvaluation<ItemEnhancement>> ItemEnhancement(Guid itemId, IEnumerable<Guid> materialIds, int slotIndex)
         {
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            // NOTE: 장착했는지 안 했는지에 상관없이 해제 플래그를 걸어 둔다.
+            LocalStateModifier.SetEquipmentEquip(avatarAddress, itemId, false, false);
+            foreach (var materialId in materialIds)
+            {
+                LocalStateModifier.SetEquipmentEquip(avatarAddress, materialId, false, false);
+            }
+
             var action = new ItemEnhancement
             {
                 itemId = itemId,
                 materialIds = materialIds,
-                avatarAddress = States.Instance.CurrentAvatarState.address,
+                avatarAddress = avatarAddress,
                 slotIndex = slotIndex,
             };
             ProcessAction(action);

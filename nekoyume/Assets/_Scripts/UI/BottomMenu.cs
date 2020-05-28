@@ -164,19 +164,22 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        private void SubScribeOnClickChat(Unit unit)
+        private static void SubScribeOnClickChat(Unit unit)
         {
             var confirm = Find<Confirm>();
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
+                {
                     return;
+                }
+
                 Application.OpenURL(GameConfig.DiscordLink);
             };
             confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
         }
 
-        private void SubscribeOnClick(Unit unit)
+        private static void SubscribeOnClick(Unit unit)
         {
             Find<Alert>().Set("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT", blurRadius: 2);
         }
@@ -212,12 +215,16 @@ namespace Nekoyume.UI.Module
             HasNotificationInAvatarInfo.Dispose();
         }
 
-        public void Show(UINavigator.NavigationType navigationType, Action<BottomMenu> navigationAction,
-            bool animateAlpha = true, params ToggleableType[] showButtons)
+        public void Show(
+            UINavigator.NavigationType navigationType,
+            Action<BottomMenu> navigationAction,
+            bool animateAlpha = true,
+            params ToggleableType[] showButtons)
         {
             CloseWidget = () => navigationAction?.Invoke(this);
 
             base.Show(animateAlpha);
+
             if(animateAlpha)
             {
                 // FIXME: Widget의 연출 주기 캡슐화가 깨지는 부분이에요.
@@ -242,7 +249,9 @@ namespace Nekoyume.UI.Module
             foreach (var toggleableType in ToggleableTypes)
             {
                 if (showButtons.Contains(toggleableType) && ShowButton(toggleableType))
+                {
                     continue;
+                }
 
                 var button = GetButton(toggleableType);
                 button.Hide();
@@ -257,7 +266,9 @@ namespace Nekoyume.UI.Module
             foreach (var toggleable in _toggleGroup.Toggleables)
             {
                 if (!(toggleable is IWidgetControllable widgetControllable))
+                {
                     continue;
+                }
 
                 widgetControllable.HideWidget();
             }

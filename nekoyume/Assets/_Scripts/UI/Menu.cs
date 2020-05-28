@@ -1,7 +1,6 @@
-using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
@@ -52,7 +51,7 @@ namespace Nekoyume.UI
         // 코스튬 테스트를 위한 임시 코드 블럭.
 #if UNITY_EDITOR
 
-        private Costume _targetCostume = null;
+        private List<Costume> _fullCostumes = null;
 
         protected override void OnEnable()
         {
@@ -62,34 +61,71 @@ namespace Nekoyume.UI
                 return;
             }
 
-            _targetCostume = States.Instance.CurrentAvatarState.inventory.Items
+            _fullCostumes = States.Instance.CurrentAvatarState.inventory.Items
                 .Select(item => item.item)
                 .OfType<Costume>()
-                .FirstOrDefault(costume => costume.Data.ItemSubType == ItemSubType.FullCostume);
-            if (_targetCostume is null)
+                .Where(costume => costume.Data.ItemSubType == ItemSubType.FullCostume)
+                .ToList();
+            if (_fullCostumes.Count == 0)
             {
-                Debug.LogError("Not Found Costume in Inventory");
+                Debug.LogError("Not Found FullCostume in Inventory");
             }
         }
 
         private void OnGUI()
         {
-            if (_targetCostume.equipped)
+            foreach (var costume in _fullCostumes)
             {
-                if (GUILayout.Button("코스튬 벗기"))
+                var costumeName = costume.GetLocalizedName();
+                if (costume.equipped)
                 {
-                    var player = Game.Game.instance.Stage.GetPlayer();
-                    player.UnequipCostume(_targetCostume);
-                    Debug.LogWarning("코스튬 벗기 완료");
+                    if (GUILayout.Button($"{costumeName} 벗기"))
+                    {
+                        // 이 로직은 이동될 예정입니다.
+                        {
+                            costume.equipped = false;
+                            LocalStateModifier.SetCostumeEquip(
+                                States.Instance.CurrentAvatarState.address,
+                                costume.Data.Id,
+                                false,
+                                false);
+                        }
+
+                        var player = Game.Game.instance.Stage.GetPlayer();
+                        player.UnequipCostume(costume);
+                        Debug.LogWarning($"{costumeName} 벗기 완료");
+                    }
                 }
-            }
-            else
-            {
-                if (GUILayout.Button("코스튬 입기"))
+                else
                 {
-                    var player = Game.Game.instance.Stage.GetPlayer();
-                    player.EquipCostume(_targetCostume);
-                    Debug.LogWarning("코스튬 입기 완료");
+                    if (GUILayout.Button($"{costumeName} 입기"))
+                    {
+                        // 이 로직은 이동될 예정입니다.
+                        {
+                            var equippedCostume = States.Instance.CurrentAvatarState.inventory
+                                .Costumes.FirstOrDefault(item => item.equipped);
+                            if (!(equippedCostume is null))
+                            {
+                                equippedCostume.equipped = false;
+                                LocalStateModifier.SetCostumeEquip(
+                                    States.Instance.CurrentAvatarState.address,
+                                    equippedCostume.Data.Id,
+                                    false,
+                                    false);
+                            }
+
+                            costume.equipped = true;
+                            LocalStateModifier.SetCostumeEquip(
+                                States.Instance.CurrentAvatarState.address,
+                                costume.Data.Id,
+                                true,
+                                false);
+                        }
+
+                        var player = Game.Game.instance.Stage.GetPlayer();
+                        player.EquipCostume(costume);
+                        Debug.LogWarning($"{costumeName} 입기 완료");
+                    }
                 }
             }
         }

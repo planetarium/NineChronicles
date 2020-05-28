@@ -11,7 +11,9 @@ namespace Nekoyume.Game.Factory
         public static GameObject Create(AvatarState avatarState)
         {
             if (avatarState is null)
+            {
                 throw new ArgumentNullException(nameof(avatarState));
+            }
 
             return Create(new Player(avatarState, Game.instance.TableSheets));
         }
@@ -26,7 +28,9 @@ namespace Nekoyume.Game.Factory
             var objectPool = Game.instance.Stage.objectPool;
             var player = objectPool.Get<Character.Player>();
             if (!player)
+            {
                 throw new NotFoundComponentException<Character.Player>();
+            }
 
             player.Set(model, true);
             return player.gameObject;
