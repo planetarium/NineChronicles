@@ -92,6 +92,8 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
+
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
                 inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView
@@ -138,20 +140,23 @@ namespace Nekoyume.UI
             {
                 _reset = false;
 
-                _player.EquipEquipmentsAndUpdateCustomize(_player.Model.armor,
-                    _player.Model.weapon);
                 // stop run immediately.
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
+
                 equipmentSlots.SetPlayerEquipments(_player.Model, ShowTooltip, Unequip);
+                // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
+                // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
+                // 따라서 강제로 상태를 설정한다.
+                SubscribeInventoryResetItems(inventory);
+
                 foreach (var consumableSlot in consumableSlots)
                 {
                     consumableSlot.Set(_player.Level);
                 }
 
                 var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
-
                 var idx = 0;
                 foreach (var (statType, value, additionalValue) in tuples)
                 {
@@ -159,14 +164,7 @@ namespace Nekoyume.UI
                     info.Show(statType, value, additionalValue);
                     ++idx;
                 }
-
-                _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
             }
-
-            // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
-            // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
-            // 따라서 강제로 상태를 설정한다.
-            SubscribeInventoryResetItems(inventory);
 
             var worldMap = Find<WorldMap>();
             _worldId = worldMap.SelectedWorldId;
@@ -579,7 +577,9 @@ namespace Nekoyume.UI
                 foreach (var statView in statusRows)
                 {
                     if (!enumerator.MoveNext())
+                    {
                         break;
+                    }
 
                     var (statType, baseValue, additionalValue) = enumerator.Current;
                     statView.Show(statType, baseValue, additionalValue);
