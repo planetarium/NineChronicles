@@ -65,7 +65,9 @@ namespace Nekoyume.UI.Module
         public void Set(WorldSheet.Row worldRow)
         {
             if (worldRow is null)
+            {
                 throw new ArgumentNullException(nameof(worldRow));
+            }
 
             _disposablesForModel.DisposeAllAndClear();
             SharedViewModel = new ViewModel(worldRow);
@@ -76,8 +78,10 @@ namespace Nekoyume.UI.Module
                 .ToList();
             var stageRowsCount = stageRows.Count;
             if (worldRow.StagesCount != stageRowsCount)
+            {
                 throw new SheetRowValidateException(
                     $"{worldRow.Id}: worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageRowsCount})");
+            }
 
             var stageOffset = 0;
             var nextPageShouldHide = false;
@@ -105,9 +109,10 @@ namespace Nekoyume.UI.Module
                     var stageRowsIndex = stageOffset + i;
                     if (stageRowsIndex < stageRowsCount)
                     {
+                        var stageRow = stageRows[stageRowsIndex];
                         var stageModel = new WorldMapStage.ViewModel(
-                            stageRows[stageRowsIndex],
-                            $"{stageRowsIndex + 1}",
+                            stageRow,
+                            stageRow.StageId.ToString(),
                             WorldMapStage.State.Normal);
 
                         stageModels.Add(stageModel);
