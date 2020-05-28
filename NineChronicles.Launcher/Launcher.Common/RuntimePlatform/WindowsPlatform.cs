@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.IO;
-using Microsoft.Toolkit.Uwp.Notifications;
+using Windows.UI.Notifications;
 
 namespace Launcher.Common.RuntimePlatform
 {
@@ -37,27 +37,10 @@ namespace Launcher.Common.RuntimePlatform
 
         public void DisplayNotification(string title, string message)
         {
-            var content = new ToastContent
-            {
-                Visual = new ToastVisual
-                {
-                    BindingGeneric = new ToastBindingGeneric()
-                    {
-                        Children =
-                        {
-                            new AdaptiveText()
-                            {
-                                Text = title,
-                                HintMaxLines = 1,
-                            },
-                            new AdaptiveText()
-                            {
-                                Text = message,
-                            },
-                        }
-                    }
-                }
-            };
+            var template = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
+            template.GetElementsByTagName("text").Item(0).InnerText = title;
+            template.GetElementsByTagName("text").Item(1).InnerText = message;
+            ToastNotificationManager.CreateToastNotifier("NineChronicles Notifier").Show(new ToastNotification(template));
         }
     }
 }
