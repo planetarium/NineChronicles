@@ -142,6 +142,7 @@ namespace Nekoyume.UI.Model
                     }
 
                     inventoryItem = CreateInventoryItem(itemBase, count);
+                    inventoryItem.EquippedEnabled.Value = costume.equipped;
                     Costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
@@ -573,12 +574,15 @@ namespace Nekoyume.UI.Model
 
         private static bool DefaultEquippedFunc(InventoryItem inventoryItem)
         {
-            if (!(inventoryItem.ItemBase.Value is Equipment equipment))
+            switch (inventoryItem.ItemBase.Value)
             {
-                return false;
+                case Costume costume:
+                    return costume.equipped;
+                case Equipment equipment:
+                    return equipment.equipped;
+                default:
+                    return false;
             }
-
-            return equipment.equipped;
         }
 
         private void SetGlowedAll(bool value)

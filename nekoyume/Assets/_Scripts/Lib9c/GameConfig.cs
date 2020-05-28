@@ -51,6 +51,16 @@
 
         public static class RequireCharacterLevel
         {
+            #region character costume slot
+
+            public const int CharacterFullCostumeSlot = IsEditor ? 1 : 2;
+            public const int CharacterHairCostumeSlot = IsEditor ? 1 : 2;
+            public const int CharacterEarCostumeSlot = IsEditor ? 1 : 2;
+            public const int CharacterEyeCostumeSlot = IsEditor ? 1 : 2;
+            public const int CharacterTailCostumeSlot = IsEditor ? 1 : 2;
+
+            #endregion
+
             #region character equipment slot
 
             public const int CharacterEquipmentSlotWeapon = 1;
