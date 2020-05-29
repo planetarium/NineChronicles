@@ -206,7 +206,11 @@ namespace Nekoyume.UI
 
             if (_npc01 is null)
             {
-                var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition01.position);
+                var go = Game.Game.instance.Stage.npcFactory.Create(
+                    NPCId,
+                    npcPosition01.position,
+                    LayerType.InGameBackground,
+                    3);
                 _npc01 = go.GetComponent<NPC>();
             }
 
@@ -703,9 +707,12 @@ namespace Nekoyume.UI
             _npc01.SpineController.Disappear();
             Push();
             yield return new WaitForSeconds(.5f);
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, npcPosition02.position);
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                npcPosition02.position,
+                LayerType.UI,
+                100);
             _npc02 = go.GetComponent<NPC>();
-            _npc02.SetSortingLayer(LayerType.UI);
             _npc02.SpineController.Appear(.3f);
             _npc02.PlayAnimation(NPCAnimation.Type.Appear_02);
             yield return new WaitForSeconds(5f);

@@ -92,7 +92,10 @@ namespace Nekoyume.UI
         {
             base.Initialize();
 
+            _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
+
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
+                inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume ||
                 inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView
                 .Subscribe(SubscribeInventorySelectedItem)
@@ -138,20 +141,23 @@ namespace Nekoyume.UI
             {
                 _reset = false;
 
-                _player.EquipEquipmentsAndUpdateCustomize(_player.Model.armor,
-                    _player.Model.weapon);
                 // stop run immediately.
                 _player.gameObject.SetActive(false);
                 _player.gameObject.SetActive(true);
                 _player.SpineController.Appear();
+
                 equipmentSlots.SetPlayerEquipments(_player.Model, ShowTooltip, Unequip);
+                // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
+                // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
+                // 따라서 강제로 상태를 설정한다.
+                SubscribeInventoryResetItems(inventory);
+
                 foreach (var consumableSlot in consumableSlots)
                 {
                     consumableSlot.Set(_player.Level);
                 }
 
                 var tuples = _player.Model.Stats.GetBaseAndAdditionalStats();
-
                 var idx = 0;
                 foreach (var (statType, value, additionalValue) in tuples)
                 {
@@ -159,14 +165,7 @@ namespace Nekoyume.UI
                     info.Show(statType, value, additionalValue);
                     ++idx;
                 }
-
-                _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
             }
-
-            // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
-            // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
-            // 따라서 강제로 상태를 설정한다.
-            SubscribeInventoryResetItems(inventory);
 
             var worldMap = Find<WorldMap>();
             _worldId = worldMap.SelectedWorldId;
@@ -263,22 +262,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            foreach (var inventoryItem in value.SharedModel.Equipments)
+            inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
             {
-                switch (inventoryItem.ItemBase.Value.Data.ItemType)
+                if (inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume &&
+                    inventoryItem.ItemBase.Value is Costume costume)
                 {
-                    case ItemType.Consumable:
-                    case ItemType.Equipment:
-                        inventoryItem.EquippedEnabled.Value =
-                            TryToFindSlotAlreadyEquip((ItemUsable) inventoryItem.ItemBase.Value,
-                                out var _);
-                        break;
-                    case ItemType.Material:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    return costume.equipped;
                 }
-            }
+
+                return TryToFindSlotAlreadyEquip(inventoryItem.ItemBase.Value, out _);
+            });
         }
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
@@ -444,24 +437,17 @@ namespace Nekoyume.UI
 
         private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            switch (itemBase.Data.ItemType)
+            if (itemBase.Data.ItemType != ItemType.Equipment)
             {
-                case ItemType.Costume:
-                    LocalStateModifier.SetCostumeEquip(
-                        States.Instance.CurrentAvatarState.address,
-                        itemBase.Data.Id,
-                        equip,
-                        false);
-                    break;
-                case ItemType.Equipment:
-                    var equipment = (Equipment) itemBase;
-                    LocalStateModifier.SetEquipmentEquip(
-                        States.Instance.CurrentAvatarState.address,
-                        equipment.ItemId,
-                        equip,
-                        false);
-                    break;
+                return;
             }
+
+            var equipment = (Equipment) itemBase;
+            LocalStateModifier.SetEquipmentEquip(
+                States.Instance.CurrentAvatarState.address,
+                equipment.ItemId,
+                equip,
+                false);
         }
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
@@ -489,35 +475,41 @@ namespace Nekoyume.UI
         {
             switch (item.Data.ItemType)
             {
-                case ItemType.Costume:
+                case ItemType.Consumable:
+                    foreach (var consumableSlot in consumableSlots.Where(consumableSlot =>
+                        !consumableSlot.IsLock && !consumableSlot.IsEmpty))
+                    {
+                        if (!consumableSlot.Item.Equals(item))
+                            continue;
+
+                        slot = consumableSlot;
+                        return true;
+                    }
+
+                    slot = null;
+                    return false;
                 case ItemType.Equipment:
                     return equipmentSlots.TryGetAlreadyEquip(item, out slot);
+                default:
+                    slot = null;
+                    return false;
             }
-
-            foreach (var consumableSlot in consumableSlots.Where(consumableSlot =>
-                !consumableSlot.IsLock && !consumableSlot.IsEmpty))
-            {
-                if (!consumableSlot.Item.Equals(item))
-                    continue;
-
-                slot = consumableSlot;
-                return true;
-            }
-
-            slot = null;
-            return false;
         }
 
         private bool TryToFindSlotToEquip(ItemBase item, out EquipmentSlot slot)
         {
-            if (item.Data.ItemType == ItemType.Equipment)
+            switch (item.Data.ItemType)
             {
-                return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
+                case ItemType.Consumable:
+                    slot = consumableSlots.FirstOrDefault(s => !s.IsLock && s.IsEmpty)
+                           ?? consumableSlots[0];
+                    return true;
+                case ItemType.Equipment:
+                    return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
+                default:
+                    slot = null;
+                    return false;
             }
-
-            slot = consumableSlots.FirstOrDefault(s => !s.IsLock && s.IsEmpty)
-                   ?? consumableSlots[0];
-            return true;
         }
 
         private void UpdateGlowEquipSlot(ItemUsable itemUsable)
@@ -579,7 +571,9 @@ namespace Nekoyume.UI
                 foreach (var statView in statusRows)
                 {
                     if (!enumerator.MoveNext())
+                    {
                         break;
+                    }
 
                     var (statType, baseValue, additionalValue) = enumerator.Current;
                     statView.Show(statType, baseValue, additionalValue);

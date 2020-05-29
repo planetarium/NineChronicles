@@ -531,10 +531,11 @@ namespace Nekoyume.Game
             else
             {
                 battle.Show(stageId, repeatStage, isExitReserved);
-
                 var stageSheet = Game.instance.TableSheets.StageSheet;
-                stageSheet.TryGetValue(stageId, out var row);
-                status.battleTimerView.Show(row.TurnLimit);
+                if (stageSheet.TryGetValue(stageId, out var row))
+                {
+                    status.battleTimerView.Show(row.TurnLimit);
+                }
             }
 
             battle.repeatButton.gameObject.SetActive(!_rankingBattle);
@@ -824,25 +825,34 @@ namespace Nekoyume.Game
             character.Dead();
         }
 
-        public Character.Player GetPlayer()
+        public Character.Player GetPlayer(bool forceCreate = false)
         {
-            if (!(selectedPlayer is null) && selectedPlayer.gameObject.activeSelf)
+            if (!forceCreate &&
+                selectedPlayer &&
+                selectedPlayer.gameObject.activeSelf)
             {
                 return selectedPlayer;
+            }
+
+            if (selectedPlayer)
+            {
+                objectPool.Remove<Player>(selectedPlayer.gameObject);
             }
 
             var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
             selectedPlayer = go.GetComponent<Character.Player>();
 
             if (selectedPlayer is null)
+            {
                 throw new NotFoundComponentException<Character.Player>();
+            }
 
             return selectedPlayer;
         }
 
-        public Character.Player GetPlayer(Vector2 position)
+        public Character.Player GetPlayer(Vector2 position, bool forceCreate = false)
         {
-            var player = GetPlayer();
+            var player = GetPlayer(forceCreate);
             player.transform.position = position;
             return player;
         }

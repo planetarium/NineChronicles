@@ -130,7 +130,11 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Inventory);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                NPCPosition,
+                LayerType.InGameBackground,
+                3);
             _npc = go.GetComponent<NPC>();
             go.SetActive(true);
             _sequenceOfShopItems = null;
@@ -466,17 +470,21 @@ namespace Nekoyume.UI
 
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
+            return inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume ||
+                   inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
         }
 
         private static bool EquippedFuncForSell(InventoryItem inventoryItem)
         {
-            if (!(inventoryItem.ItemBase.Value is Equipment equipment))
+            switch (inventoryItem.ItemBase.Value)
             {
-                return false;
+                case Costume costume:
+                    return costume.equipped;
+                case Equipment equipment:
+                    return equipment.equipped;
+                default:
+                    return false;
             }
-
-            return equipment.equipped;
         }
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)

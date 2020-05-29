@@ -36,6 +36,7 @@ namespace Nekoyume.Action
                 Signer = eval.Signer,
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
+                Exception = eval.Exception,
             });
         }
 
@@ -50,6 +51,7 @@ namespace Nekoyume.Action
                 Signer = eval.Signer,
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
+                Exception = eval.Exception,
             });
         }
 
@@ -63,6 +65,7 @@ namespace Nekoyume.Action
                 Signer = eval.Signer,
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
+                Exception = eval.Exception,
             });
         }
 
@@ -76,6 +79,7 @@ namespace Nekoyume.Action
                 Signer = eval.Signer,
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
+                Exception = eval.Exception,
             });
         }
     }
