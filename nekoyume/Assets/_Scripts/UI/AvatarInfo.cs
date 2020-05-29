@@ -161,10 +161,20 @@ namespace Nekoyume.UI
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, Unequip);
             equipmentSlots.SetPlayerEquipments(playerModel, ShowTooltip, Unequip);
-            // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
-            // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
-            // 따라서 강제로 상태를 설정한다.
-            SubscribeInventoryResetItems(inventory);
+
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (avatarState.Equals(currentAvatarState))
+            {
+                // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
+                // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
+                // 따라서 강제로 상태를 설정한다.
+                inventory.gameObject.SetActive(true);
+                SubscribeInventoryResetItems(inventory);
+            }
+            else
+            {
+                inventory.gameObject.SetActive(false);
+            }
         }
 
         private void UpdateStatViews()
