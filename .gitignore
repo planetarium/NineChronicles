@@ -100,9 +100,5 @@ shared/bin/*
 # Installer Output
 Output/
 
-# TentuPlay
-/nekoyume/Assets/TentuPlay/Resources*
-/nekoyume/Assets/TentuPlay/Resources/TentuPlaySettings*
-
 !/.github/**/*
 .github/bin/.pack-venv/
