@@ -44,6 +44,8 @@ namespace Nekoyume.UI
         private Vector3 _previousAvatarPosition;
         private int _previousSortingLayerID;
         private int _previousSortingLayerOrder;
+        private bool _previousActivated = false;
+        private bool _isCurrentAvatar = false;
         private CharacterStats _tempStats;
 
         #region Override
@@ -124,7 +126,9 @@ namespace Nekoyume.UI
 
         private void ReplacePlayer(AvatarState avatarState)
         {
-            var player = Game.Game.instance.Stage.GetPlayer();
+            var stage = Game.Game.instance.Stage;
+            _previousActivated = stage.selectedPlayer.gameObject.activeSelf;
+            var player = stage.GetPlayer();
             player.Set(avatarState);
             var playerTransform = player.transform;
             _previousAvatarPosition = playerTransform.position;
@@ -144,6 +148,7 @@ namespace Nekoyume.UI
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             player.Set(currentAvatarState);
             player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
+            player.gameObject.SetActive(_previousActivated);
         }
 
         private void UpdateSlotView(AvatarState avatarState)
@@ -170,10 +175,12 @@ namespace Nekoyume.UI
                 // 따라서 강제로 상태를 설정한다.
                 inventory.gameObject.SetActive(true);
                 SubscribeInventoryResetItems(inventory);
+                _isCurrentAvatar = true;
             }
             else
             {
                 inventory.gameObject.SetActive(false);
+                _isCurrentAvatar = false;
             }
         }
 
@@ -232,7 +239,15 @@ namespace Nekoyume.UI
                 Unequip(slot, true);
             }
 
-            slot.Set(itemBase, ShowTooltip, Unequip);
+            if (_isCurrentAvatar)
+            {
+                slot.Set(itemBase, ShowTooltip, Unequip);
+            }
+            else
+            {
+                slot.Set(itemBase, ShowTooltip, null);
+                return;
+            }
             LocalStateItemEquipModify(slot.Item, true);
 
             switch (itemBase)
@@ -280,6 +295,11 @@ namespace Nekoyume.UI
 
         private void Unequip(EquipmentSlot slot, bool onlyData)
         {
+            if (!_isCurrentAvatar)
+            {
+                return;
+            }
+
             Find<ItemInformationTooltip>().Close();
 
             if (slot.IsEmpty)
@@ -445,14 +465,23 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out var item) ||
-                inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
-                inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
+            if (_isCurrentAvatar)
+            {
+                if (inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out var item) ||
+                    inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
+                    inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
+                {
+                    tooltip.Show(
+                        slot.RectTransform,
+                        item,
+                        _ => inventory.SharedModel.DeselectItemView());
+                }
+            }
+            else
             {
                 tooltip.Show(
                     slot.RectTransform,
-                    item,
-                    _ => inventory.SharedModel.DeselectItemView());
+                    new InventoryItem(slot.Item, 1));
             }
         }
     }
