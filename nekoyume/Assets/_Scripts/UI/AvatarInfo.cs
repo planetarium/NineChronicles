@@ -127,7 +127,7 @@ namespace Nekoyume.UI
         private void ReplacePlayer(AvatarState avatarState)
         {
             var stage = Game.Game.instance.Stage;
-            _previousActivated = stage.selectedPlayer.gameObject.activeSelf;
+            _previousActivated = stage.selectedPlayer?.gameObject.activeSelf ?? false;
             var player = stage.GetPlayer();
             player.Set(avatarState);
             var playerTransform = player.transform;
@@ -239,15 +239,13 @@ namespace Nekoyume.UI
                 Unequip(slot, true);
             }
 
-            if (_isCurrentAvatar)
-            {
-                slot.Set(itemBase, ShowTooltip, Unequip);
-            }
-            else
+            if (!_isCurrentAvatar)
             {
                 slot.Set(itemBase, ShowTooltip, null);
                 return;
             }
+
+            slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
 
             switch (itemBase)
