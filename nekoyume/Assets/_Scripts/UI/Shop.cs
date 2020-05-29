@@ -132,7 +132,11 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Inventory);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                NPCPosition,
+                LayerType.InGameBackground,
+                3);
             _npc = go.GetComponent<NPC>();
             go.SetActive(true);
             _sequenceOfShopItems = null;
