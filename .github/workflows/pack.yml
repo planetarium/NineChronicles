@@ -133,7 +133,7 @@ jobs:
         timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
         # TentuPlay 설정 파일 만들기
-        sed 's|__API_KEY__|${{ secrets.TENTU_API_KEY }}|'
+        sed 's|__API_KEY__|${{ secrets.TENTU_API_KEY }}|' \
           .github/data/TentuPlaySettings.asset.template \
           | sed 's|__SECRET__|${{ secrets.TENTU_SECRET }}|' \
           | sed 's|__DEBUG__|0|' \
