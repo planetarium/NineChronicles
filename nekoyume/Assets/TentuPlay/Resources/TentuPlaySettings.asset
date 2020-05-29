@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: TentuPlaySettings
   m_EditorClassIdentifier: 
   restBaseUrl: https://api.tentuplay.io/v2/unity
-  apiKey: 'i am api key'
-  secret: 'i am secret'
+  apiKey: 
+  secret: 
   debug: 0
   authMode: api_key_plain
   useStaticTP: 1

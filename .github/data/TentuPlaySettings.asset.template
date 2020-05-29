@@ -15,9 +15,9 @@ MonoBehaviour:
   restBaseUrl: https://api.tentuplay.io/v2/unity
   apiKey: '__API_KEY__'
   secret: '__SECRET__'
-  debug: 0
+  debug: '__DEBUG__'
   authMode: api_key_plain
   useStaticTP: 1
-  usePersistDBConn: 0
-  autoUpload: 0
+  usePersistDBConn: '__USE_PERSIST_DB_CONN__'
+  autoUpload: '__AUTO_UPLOAD__'
   deferredSendIntervalSec: 1200
