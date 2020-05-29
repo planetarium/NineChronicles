@@ -49,7 +49,8 @@ namespace NineChronicles.Standalone.Executable
             string[] trustedAppProtocolVersionSigners = null,
             bool rpcServer = false,
             string rpcListenHost = "0.0.0.0",
-            int? rpcListenPort = null
+            int? rpcListenPort = null,
+            bool graphQLServer = false
         )
         {
             // Setup logger.
@@ -126,9 +127,15 @@ namespace NineChronicles.Standalone.Executable
                 }
             }
 
+            var graphQLProperties = new GraphQLNodeServiceProperties
+            {
+                GraphQLServer = graphQLServer,
+            };
+
             var service = new NineChroniclesNodeService(
                 properties,
                 rpcProperties,
+                graphQLProperties,
                 ignoreBootstrapFailure: true);
             await service.Run(Context.CancellationToken);
         }
