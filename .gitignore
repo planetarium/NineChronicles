@@ -97,9 +97,11 @@ nekoyume/compose/results
 # Shared project
 shared/bin/*
 
-
 # Installer Output
 Output/
+
+# TentuPlay
+/nekoyume/Assets/TentuPlay/Resources/TentuPlaySettings*
 
 !/.github/**/*
 .github/bin/.pack-venv/
