@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.State;
@@ -125,7 +126,11 @@ namespace Nekoyume.UI
 
             Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                NPCPosition,
+                LayerType.InGameBackground,
+                3);
             _npc = go.GetComponent<NPC>();
             _npc.gameObject.SetActive(false);
 
@@ -362,13 +367,21 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            if (!CanClose)
+            var avatarInfo = Find<AvatarInfo>();
+            if (avatarInfo.gameObject.activeSelf)
             {
-                return;
+                avatarInfo.Close();
             }
+            else
+            {
+                if (!CanClose)
+                {
+                    return;
+                }
 
-            Close(true);
-            Game.Event.OnRoomEnter.Invoke(true);
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
         }
 
         private void ShowSpeech(string key,

@@ -164,7 +164,7 @@ namespace Nekoyume.UI.Module
                 case ItemType.Equipment:
                     equipmentsButtonImage.sprite = _selectedButtonSprite;
                     costumesButtonImage.sprite = _deselectedButtonSprite;
-                    consumablesButtonImage.sprite = _deselectedButtonSprite;                    
+                    consumablesButtonImage.sprite = _deselectedButtonSprite;
                     materialsButtonImage.sprite = _deselectedButtonSprite;
                     scrollerController.SetData(SharedModel.Equipments);
                     equipmentsButtonSelectedText.gameObject.SetActive(true);
@@ -186,7 +186,7 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
             }
-            
+
             // 선택된 버튼의 스프라이트가 1픽셀 내려가는 문제가 있음.
 
             foreach (var pair in _switchButtonTransforms)
@@ -211,7 +211,9 @@ namespace Nekoyume.UI.Module
         private void SubscribeSelectedItemView(InventoryItemView view)
         {
             if (view is null)
+            {
                 return;
+            }
 
             AdjustmentScrollPosition(view);
         }
