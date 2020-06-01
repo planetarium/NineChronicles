@@ -4,7 +4,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Launcher</RootNamespace>
         <OutputType>WinExe</OutputType>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <RuntimeIdentifiers>win-x64;osx-x64</RuntimeIdentifiers>
         <SelfContained>true</SelfContained>
         <PublishSingleFile>true</PublishSingleFile>
         <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>

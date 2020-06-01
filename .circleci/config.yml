@@ -25,7 +25,7 @@ jobs:
           name: unittest
           command: |
             dotnet test ./NineChronicles.Standalone.Executable/
-            dotnet test ./NineChronicles.Launcher/
+            dotnet test --runtime osx-x64 ./NineChronicles.Launcher/
   unittest_windows:
     executor: win/default
     steps:
@@ -34,7 +34,7 @@ jobs:
           name: unittest
           command: |
             dotnet test ./NineChronicles.Standalone.Executable/
-            dotnet test ./NineChronicles.Launcher/
+            dotnet test --runtime win-x64 ./NineChronicles.Launcher/
   build-lib9c:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
