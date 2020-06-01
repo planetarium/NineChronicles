@@ -1,6 +1,9 @@
+using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using Windows.UI.Notifications;
+using Serilog;
 
 namespace Launcher.Common.RuntimePlatform
 {
@@ -37,10 +40,26 @@ namespace Launcher.Common.RuntimePlatform
 
         public void DisplayNotification(string title, string message)
         {
-            var template = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
-            template.GetElementsByTagName("text").Item(0).InnerText = title;
-            template.GetElementsByTagName("text").Item(1).InnerText = message;
-            ToastNotificationManager.CreateToastNotifier("NineChronicles Notifier").Show(new ToastNotification(template));
+            try
+            {
+                var template =
+                    ToastNotificationManager.GetTemplateContent(ToastTemplateType
+                        .ToastImageAndText02);
+                template.GetElementsByTagName("image")[0].Attributes.GetNamedItem("src").InnerText =
+                    "file://" +
+                    Path.Join(
+                        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                        "images",
+                        "logo-0.png");
+                template.GetElementsByTagName("text").Item(0).InnerText = title;
+                template.GetElementsByTagName("text").Item(1).InnerText = message;
+                ToastNotificationManager.CreateToastNotifier("NineChronicles Notifier")
+                    .Show(new ToastNotification(template));
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, e.Message);
+            }
         }
     }
 }
