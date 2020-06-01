@@ -15,7 +15,7 @@ namespace Nekoyume.TableData
             public override ItemType ItemType => ItemType.Costume;
             public string SpineResourcePath { get; private set; }
 
-            public Row() : base()
+            public Row()
             {
             }
 
