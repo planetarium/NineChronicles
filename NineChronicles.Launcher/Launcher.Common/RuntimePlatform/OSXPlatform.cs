@@ -68,7 +68,9 @@ namespace Launcher.Common.RuntimePlatform
 
         public void DisplayNotification(string title, string message)
         {
-            // 2. open AppleScript Application, then it will read the file and display notification.
+            // NineChronicles.Launcher/Notifier/NineChronicles Notifier 에 위치한 xcode swift 프로젝트에서
+            // 빌드한 번들 앱을 사용합니다.  msbuild 빌드 태스크에 포함되어 있지 않아서 임시로 직접 빌드하여 론처 resources
+            // 하위에 넣어 빌드할 때 포함하게 하고 있습니다.
             string executableNotifierBinaryPath = Path.Combine(
                 Path.GetDirectoryName(ExecutableLauncherBinaryPath),
                 "NineChronicles Notifier.app",
