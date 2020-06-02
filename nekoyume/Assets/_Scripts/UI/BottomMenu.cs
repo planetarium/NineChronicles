@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using _Scripts.UI;
 using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
