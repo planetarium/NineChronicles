@@ -42,5 +42,7 @@ namespace Libplanet.Standalone.Hosting
         public int MinimumDifficulty { get; set; }
 
         public DifferentAppProtocolVersionEncountered DifferentAppProtocolVersionEncountered { get; set; }
+
+        public bool Render { get; set; }
     }
 }

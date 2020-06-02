@@ -65,7 +65,7 @@ namespace Libplanet.Standalone.Hosting
                 _properties.StoreType,
                 _properties.StoreStatesCacheSize);
             _blockPolicy = blockPolicy;
-            BlockChain = new BlockChain<T>(_blockPolicy, Store, genesisBlock);
+            BlockChain = new BlockChain<T>(_blockPolicy, Store, genesisBlock, _properties.Render);
             _privateKey = _properties.PrivateKey;
             _address = _privateKey.PublicKey.ToAddress();
             _minerLoopAction = minerLoopAction;

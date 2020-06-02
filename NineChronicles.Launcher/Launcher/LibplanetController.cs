@@ -280,6 +280,7 @@ To start the game, you need to create your account.";
                 MinimumDifficulty = settings.MinimumDifficulty,
                 TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners,
                 DifferentAppProtocolVersionEncountered = NewAppProtocolVersionEncountered,
+                Render = true
             };
 
             RpcServerPort = GetFreeTcpPort();

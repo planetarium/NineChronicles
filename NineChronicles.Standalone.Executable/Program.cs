@@ -95,6 +95,7 @@ namespace NineChronicles.Standalone.Executable
                 StorePath = storePath,
                 StoreStatesCacheSize = 5000,
                 MinimumDifficulty = minimumDifficulty,
+                Render = rpcServer
             };
 
             var rpcProperties = new RpcNodeServiceProperties
