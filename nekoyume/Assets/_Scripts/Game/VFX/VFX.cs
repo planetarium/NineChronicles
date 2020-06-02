@@ -26,7 +26,7 @@ namespace Nekoyume.Game.VFX
         /// </summary>
         public System.Action OnFinished = null;
         /// <summary>
-        /// VFX 재생이 성공적으로 완료되고 비활성화 되었을 때 호출되는 콜백
+        /// VFX 재생이 성공적으로 완료되고 비활성화 될 때 호출되는 콜백
         /// </summary>
         public System.Action OnTerminated = null;
         /// <summary>
@@ -101,10 +101,6 @@ namespace Nekoyume.Game.VFX
         {
             gameObject.SetActive(false);
             _isPlaying = false;
-            if (_isFinished)
-            {
-                OnTerminated?.Invoke();
-            }
         }
 
         private IEnumerator CoAutoInactive()
@@ -131,6 +127,10 @@ namespace Nekoyume.Game.VFX
 
         private IEnumerator CoLazyStop(float delay)
         {
+            if (_isFinished)
+            {
+                OnTerminated?.Invoke();
+            }
             yield return new WaitForSeconds(delay);
             Stop();
         }
