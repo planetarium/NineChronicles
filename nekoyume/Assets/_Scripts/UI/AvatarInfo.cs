@@ -48,6 +48,7 @@ namespace Nekoyume.UI
         private bool _previousActivated = false;
         private bool _isCurrentAvatar = false;
         private CharacterStats _tempStats;
+        private Coroutine _constraintsPlayerToUI;
 
         #region Override
 
@@ -147,8 +148,6 @@ namespace Nekoyume.UI
 
             _constraintsPlayerToUI = StartCoroutine(CoConstraintsPlayerToUI(playerTransform));
         }
-
-        private Coroutine _constraintsPlayerToUI;
 
         private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
         {
