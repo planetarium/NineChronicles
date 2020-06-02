@@ -144,7 +144,6 @@ namespace Nekoyume.UI.Module
             SubmitWidget = null;
             CloseWidget = null;
 
-            // _inventoryAnimator = inventoryButton.GetComponent<Animator>();
             _buttonsPositionY = _buttons.position.y;
         }
 
@@ -310,12 +309,8 @@ namespace Nekoyume.UI.Module
 
         public void PlayGetItemAnimation()
         {
-            // characterButton
-            if (_inventoryAnimator)
-            {
-                _inventoryAnimator.Play("GetItem");
-                inventoryVFX.Play();
-            }
+            characterButton.Animator.Play("GetItem");
+            inventoryVFX.Play();
         }
 
         #region Subscribe
