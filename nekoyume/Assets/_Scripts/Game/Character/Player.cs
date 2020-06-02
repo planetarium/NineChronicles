@@ -13,6 +13,7 @@ using UniRx;
 using UnityEngine;
 using Nekoyume.State;
 using TentuPlay.Api;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.Game.Character
 {
@@ -81,6 +82,11 @@ namespace Nekoyume.Game.Character
         }
 
         #endregion
+
+        public void Set(AvatarState avatarState)
+        {
+            Set(new Model.Player(avatarState, Game.instance.TableSheets));
+        }
 
         public override void Set(Model.CharacterBase model, bool updateCurrentHP = false)
         {

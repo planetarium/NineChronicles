@@ -230,7 +230,8 @@ namespace Nekoyume.UI
             }
 
             AnimationState = AnimationStateType.Showing;
-            Animator.Play("Show");
+            Animator.enabled = true;
+            Animator.Play("Show", 0, 0);
         }
 
         public virtual void Close(bool ignoreCloseAnimation = false)
@@ -286,7 +287,8 @@ namespace Nekoyume.UI
             if (Animator)
             {
                 IsCloseAnimationCompleted = false;
-                Animator.Play("Close");
+                Animator.enabled = true;
+                Animator.Play("Close", 0, 0);
                 var coroutine = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
                 StopCoroutine(coroutine);
