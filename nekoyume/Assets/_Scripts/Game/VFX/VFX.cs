@@ -106,7 +106,7 @@ namespace Nekoyume.Game.VFX
             {
                 duration += Time.deltaTime;
 
-                if (!gameObject.activeSelf)
+                if (!gameObject.activeInHierarchy)
                 {
                     yield break;
                 }
@@ -114,12 +114,12 @@ namespace Nekoyume.Game.VFX
                 yield return null;
             }
 
-            OnFinished?.Invoke();
             LazyStop();
         }
 
         private IEnumerator CoLazyStop(float delay)
         {
+            OnFinished?.Invoke();
             yield return new WaitForSeconds(delay);
             Stop();
         }
