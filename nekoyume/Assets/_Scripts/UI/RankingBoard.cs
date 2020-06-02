@@ -124,7 +124,11 @@ namespace Nekoyume.UI
 
             _state.SetValueAndForceNotify(stateType);
 
-            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+            Find<BottomMenu>()?.Show(
+                UINavigator.NavigationType.Back,
+                SubscribeBackButtonClick,
+                true,
+                BottomMenu.ToggleableType.Character);
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -367,13 +371,21 @@ namespace Nekoyume.UI
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            if (!CanClose)
+            var avatarInfo = Find<AvatarInfo>();
+            if (avatarInfo.gameObject.activeSelf)
             {
-                return;
+                avatarInfo.Close();
             }
+            else
+            {
+                if (!CanClose)
+                {
+                    return;
+                }
 
-            Close(true);
-            Game.Event.OnRoomEnter.Invoke(true);
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
         }
 
         private void ShowSpeech(string key,

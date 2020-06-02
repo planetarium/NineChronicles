@@ -1,10 +1,12 @@
 using System;
+using System.Collections;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -14,7 +16,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class AvatarInfo : Widget
+    public class AvatarInfo : XTweenWidget
     {
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
@@ -34,7 +36,7 @@ namespace Nekoyume.UI
         private EquipmentSlots equipmentSlots = null;
 
         [SerializeField]
-        private DetailedStatView[] statViews = null;
+        private AvatarStats avatarStats = null;
 
         [SerializeField]
         private RectTransform avatarPosition = null;
@@ -43,7 +45,10 @@ namespace Nekoyume.UI
         private Vector3 _previousAvatarPosition;
         private int _previousSortingLayerID;
         private int _previousSortingLayerOrder;
+        private bool _previousActivated = false;
+        private bool _isCurrentAvatar = false;
         private CharacterStats _tempStats;
+        private Coroutine _constraintsPlayerToUI;
 
         #region Override
 
@@ -99,25 +104,33 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            base.Show(ignoreShowAnimation);
-            inventory.SharedModel.State.Value = ItemType.Equipment;
-
-            ReplacePlayer();
-            UpdateSlotView();
-            UpdateStatViews();
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
+        protected override void OnCompleteOfCloseAnimationInternal()
         {
             ReturnPlayer();
-            base.Close(ignoreCloseAnimation);
         }
 
         #endregion
 
-        private void ReplacePlayer()
+        public void Show(AvatarState avatarState, bool ignoreShowAnimation = false)
         {
-            var player = Game.Game.instance.Stage.GetPlayer();
+            base.Show(ignoreShowAnimation);
+            inventory.SharedModel.State.Value = ItemType.Equipment;
+
+            ReplacePlayer(avatarState);
+            UpdateSlotView(avatarState);
+            UpdateStatViews();
+        }
+
+        private void ReplacePlayer(AvatarState avatarState)
+        {
+            var stage = Game.Game.instance.Stage;
+            _previousActivated = stage.selectedPlayer && stage.selectedPlayer.gameObject.activeSelf;
+            var player = stage.GetPlayer();
+            player.Set(avatarState);
             var playerTransform = player.transform;
             _previousAvatarPosition = playerTransform.position;
             _previousSortingLayerID = player.sortingGroup.sortingLayerID;
@@ -127,35 +140,71 @@ namespace Nekoyume.UI
             player.SetSortingLayer(SortingLayer.NameToID("UI"), 11);
 
             _tempStats = player.Model.Stats.Clone() as CharacterStats;
+
+            if (!(_constraintsPlayerToUI is null))
+            {
+                StopCoroutine(_constraintsPlayerToUI);
+            }
+
+            _constraintsPlayerToUI = StartCoroutine(CoConstraintsPlayerToUI(playerTransform));
+        }
+
+        private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
+        {
+            while (enabled)
+            {
+                playerTransform.position = avatarPosition.position;
+                yield return null;
+            }
         }
 
         private void ReturnPlayer()
         {
+            if (!(_constraintsPlayerToUI is null))
+            {
+                StopCoroutine(_constraintsPlayerToUI);
+                _constraintsPlayerToUI = null;
+            }
+
             // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
             var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            player.Set(currentAvatarState);
             player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
+            player.gameObject.SetActive(_previousActivated);
         }
 
-        private void UpdateSlotView()
+        private void UpdateSlotView(AvatarState avatarState)
         {
             var game = Game.Game.instance;
-            var currentAvatar = game.States.CurrentAvatarState;
             var playerModel = game.Stage.GetPlayer().Model;
 
             nicknameText.text = string.Format(
                 NicknameTextFormat,
-                currentAvatar.level,
-                currentAvatar.NameWithHash);
+                avatarState.level,
+                avatarState.NameWithHash);
 
-            cpText.text = CPHelper.GetCP(currentAvatar, game.TableSheets.CharacterSheet)
+            cpText.text = CPHelper.GetCP(avatarState, game.TableSheets.CharacterSheet)
                 .ToString();
 
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, Unequip);
             equipmentSlots.SetPlayerEquipments(playerModel, ShowTooltip, Unequip);
-            // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
-            // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
-            // 따라서 강제로 상태를 설정한다.
-            SubscribeInventoryResetItems(inventory);
+
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (avatarState.Equals(currentAvatarState))
+            {
+                // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
+                // 또한 인벤토리는 기본적으로 `OnEnable()` 단계에서 `OnResetItems` 이벤트를 일으키기 때문에 `equipmentSlots.SetPlayer()`와 호출 순서 커플링이 생기게 된다.
+                // 따라서 강제로 상태를 설정한다.
+                inventory.gameObject.SetActive(true);
+                SubscribeInventoryResetItems(inventory);
+                _isCurrentAvatar = true;
+            }
+            else
+            {
+                inventory.gameObject.SetActive(false);
+                _isCurrentAvatar = false;
+            }
         }
 
         private void UpdateStatViews()
@@ -172,19 +221,8 @@ namespace Nekoyume.UI
                 null,
                 Game.Game.instance.TableSheets
             );
-            using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())
-            {
-                foreach (var statView in statViews)
-                {
-                    if (!enumerator.MoveNext())
-                    {
-                        break;
-                    }
 
-                    var (statType, baseValue, additionalValue) = enumerator.Current;
-                    statView.Show(statType, baseValue, additionalValue);
-                }
-            }
+            avatarStats.SetData(stats);
         }
 
         #region Subscribe
@@ -222,6 +260,12 @@ namespace Nekoyume.UI
             if (!slot.IsEmpty)
             {
                 Unequip(slot, true);
+            }
+
+            if (!_isCurrentAvatar)
+            {
+                slot.Set(itemBase, ShowTooltip, null);
+                return;
             }
 
             slot.Set(itemBase, ShowTooltip, Unequip);
@@ -272,6 +316,11 @@ namespace Nekoyume.UI
 
         private void Unequip(EquipmentSlot slot, bool onlyData)
         {
+            if (!_isCurrentAvatar)
+            {
+                return;
+            }
+
             Find<ItemInformationTooltip>().Close();
 
             if (slot.IsEmpty)
@@ -437,14 +486,23 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out var item) ||
-                inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
-                inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
+            if (_isCurrentAvatar)
+            {
+                if (inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out var item) ||
+                    inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
+                    inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
+                {
+                    tooltip.Show(
+                        slot.RectTransform,
+                        item,
+                        _ => inventory.SharedModel.DeselectItemView());
+                }
+            }
+            else
             {
                 tooltip.Show(
                     slot.RectTransform,
-                    item,
-                    _ => inventory.SharedModel.DeselectItemView());
+                    new InventoryItem(slot.Item, 1));
             }
         }
     }

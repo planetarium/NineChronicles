@@ -5,13 +5,10 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Tween
 {
-    // todo: `AnchoredPositionSingleTweener`로 바꾸고, 좌표계를 선택할 수 있도록. `RotateSingleTweener` 참고. 
+    // todo: `AnchoredPositionSingleTweener`로 바꾸고, 좌표계를 선택할 수 있도록. `RotateSingleTweener` 참고.
     [RequireComponent(typeof(RectTransform))]
     public class AnchoredPositionXTweener : MonoBehaviour
     {
-        public TweenCallback OnComplete = null;
-        public TweenCallback OnReverseComplete = null;
-
         [SerializeField] private float startDelay = 0f;
         [SerializeField] private float end = 0f;
         [SerializeField] private float duration = 1f;
@@ -25,34 +22,35 @@ namespace Nekoyume.UI.Tween
         private RectTransform _rectTransform;
         private TweenerCore<Vector2, Vector2, VectorOptions> _tween;
 
-        private Vector2 originAnchoredPosition;
+        private Vector2 _originAnchoredPosition;
 
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
-            originAnchoredPosition = _rectTransform.anchoredPosition;
+            _originAnchoredPosition = _rectTransform.anchoredPosition;
         }
 
         public Tweener StartTween()
         {
             RefreshTween();
 
-            _rectTransform.anchoredPosition = originAnchoredPosition;
+            _rectTransform.anchoredPosition = _originAnchoredPosition;
             if (isFrom)
             {
-                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping)
+                _tween = _rectTransform
+                    .DOAnchorPosX(end, duration, snapping)
                     .SetDelay(startDelay)
                     .SetEase(showEase)
                     .From();
             }
             else
             {
-                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping)
+                _tween = _rectTransform
+                    .DOAnchorPosX(end, duration, snapping)
                     .SetDelay(startDelay)
                     .SetEase(showEase);
             }
 
-            _tween.onComplete = OnComplete;
             return _tween;
         }
 
@@ -61,38 +59,34 @@ namespace Nekoyume.UI.Tween
             RefreshTween();
 
             _rectTransform.anchoredPosition = new Vector2(
-                originAnchoredPosition.x + end,
-                originAnchoredPosition.y);
+                _originAnchoredPosition.x + end,
+                _originAnchoredPosition.y);
 
             if (isFrom)
             {
-                _tween = _rectTransform.DOAnchorPosX(originAnchoredPosition.x, duration, snapping)
+                _tween = _rectTransform
+                    .DOAnchorPosX(_originAnchoredPosition.x, duration, snapping)
                     .SetDelay(startDelay)
                     .SetEase(showEase)
                     .From();
             }
             else
             {
-                _tween = _rectTransform.DOAnchorPosX(originAnchoredPosition.x, duration, snapping)
+                _tween = _rectTransform.
+                    DOAnchorPosX(_originAnchoredPosition.x, duration, snapping)
                     .SetDelay(startDelay)
                     .SetEase(showEase);
             }
 
-            _tween.onComplete = OnReverseComplete;
             return _tween;
         }
 
         public Tweener StopTween()
         {
             RefreshTween();
-            if (isFrom)
-            {
-                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase);
-            }
-            else
-            {
-                _tween = _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase).From();
-            }
+            _tween = isFrom
+                ? _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase)
+                : _rectTransform.DOAnchorPosX(end, duration, snapping).SetEase(closeEase).From();
             return _tween;
         }
 
