@@ -50,9 +50,9 @@ namespace Nekoyume.UI.Scroller
             receiveButton.SetSubmitText(
                 LocalizationManager.Localize("UI_PROGRESS"),
                 LocalizationManager.Localize("UI_RECEIVE"));
+            receiveButton.SetSubmitTextColor(ColorHelper.HexToColorRGB("955c4a"));
             receiveButton.SetSubmittable(true);
             receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
-            receiveButton.submitText.color = ColorHelper.HexToColorRGB("955c4a");
         }
 
         #endregion

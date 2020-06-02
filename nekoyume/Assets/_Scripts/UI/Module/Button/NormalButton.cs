@@ -9,17 +9,30 @@ namespace Nekoyume.UI.Module
 {
     public class NormalButton : MonoBehaviour
     {
-        public Button button;
-        public Image image;
-        public TextMeshProUGUI text;
-        public string localizationKey;
-        
+        [SerializeField]
+        private Button button;
+
+        [SerializeField]
+        private Image image;
+
+        [SerializeField]
+        private TextMeshProUGUI text;
+
+        [SerializeField]
+        private string localizationKey;
+
+        public readonly Subject<NormalButton> OnClick = new Subject<NormalButton>();
+
         #region Mono
 
-        protected virtual void Awake()
+        protected void Awake()
         {
             text.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
-            button.OnClickAsObservable().Subscribe(_ => AudioController.PlayClick()).AddTo(gameObject);
+            button.OnClickAsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                OnClick.OnNext(this);
+            }).AddTo(gameObject);
         }
 
         #endregion

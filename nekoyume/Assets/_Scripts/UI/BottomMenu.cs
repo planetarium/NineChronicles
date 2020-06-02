@@ -96,17 +96,17 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
 
-            backButton.button.OnClickAsObservable()
-                .Subscribe(SubscribeNavigationButtonClick)
+            backButton.OnClick
+                .Subscribe(_ => SubscribeNavigationButtonClick())
                 .AddTo(gameObject);
-            mainButton.button.OnClickAsObservable()
-                .Subscribe(SubscribeNavigationButtonClick)
+            mainButton.OnClick
+                .Subscribe(_ => SubscribeNavigationButtonClick())
                 .AddTo(gameObject);
-            quitButton.button.OnClickAsObservable()
-                .Subscribe(SubscribeNavigationButtonClick)
+            quitButton.OnClick
+                .Subscribe(_ => SubscribeNavigationButtonClick())
                 .AddTo(gameObject);
-            exitButton.button.OnClickAsObservable()
-                .Subscribe(SubscribeNavigationButtonClick)
+            exitButton.OnClick
+                .Subscribe(_ => SubscribeNavigationButtonClick())
                 .AddTo(gameObject);
 
             quitButton.SetWidgetType<Confirm>();
@@ -120,11 +120,11 @@ namespace Nekoyume.UI.Module
             // todo: 지금 월드맵 띄우는 것을 위젯으로 빼고, 여기서 설정하기?
             // worldMapButton.SetWidgetType<WorldMapPaper>();
 
-            chatButton.button.OnClickAsObservable()
+            chatButton.OnClick
                 .Subscribe(SubScribeOnClickChat)
                 .AddTo(gameObject);
             // 미구현
-            illustratedBookButton.button.OnClickAsObservable()
+            illustratedBookButton.OnClick
                 .Subscribe(SubscribeOnClick)
                 .AddTo(gameObject);
             illustratedBookButton.SetWidgetType<Alert>();
@@ -186,7 +186,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        private static void SubScribeOnClickChat(Unit unit)
+        private static void SubScribeOnClickChat(ToggleableButton button)
         {
             var confirm = Find<Confirm>();
             confirm.CloseCallback = result =>
@@ -201,7 +201,7 @@ namespace Nekoyume.UI.Module
             confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
         }
 
-        private static void SubscribeOnClick(Unit unit)
+        private static void SubscribeOnClick(ToggleableButton button)
         {
             Find<Alert>().Set(
                 "UI_ALERT_NOT_IMPLEMENTED_TITLE",
@@ -360,7 +360,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SubscribeNavigationButtonClick(Unit unit)
+        private void SubscribeNavigationButtonClick()
         {
             SharedModel.NavigationAction?.Invoke(this);
         }

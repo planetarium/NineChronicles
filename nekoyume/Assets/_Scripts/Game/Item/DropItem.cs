@@ -123,7 +123,7 @@ namespace Nekoyume.Game.Item
                     throw new WidgetNotFoundException<BottomMenu>();
                 }
 
-                _inventoryPosition = bottomMenu.characterButton.button.transform.position;
+                _inventoryPosition = bottomMenu.characterButton.transform.position;
                 _inventoryPosition.z = transform.position.z;
             }
         }

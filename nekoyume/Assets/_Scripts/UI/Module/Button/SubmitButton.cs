@@ -6,13 +6,31 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    [RequireComponent(typeof(Animator))]
     public class SubmitButton : MonoBehaviour
     {
-        public Button button;
-        public Image backgroundImage;
-        public Image backgroundImageForSubmittable;
-        public TextMeshProUGUI submitText;
-        public TextMeshProUGUI submitTextForSubmittable;
+        [SerializeField]
+        private Button button;
+
+        [SerializeField]
+        private Image backgroundImage;
+
+        [SerializeField]
+        private Image backgroundImageForSubmittable;
+
+        [SerializeField]
+        private TextMeshProUGUI submitText;
+
+        [SerializeField]
+        private TextMeshProUGUI submitTextForSubmittable;
+
+        private Animator _animatorCache;
+
+        public Animator Animator => !_animatorCache
+            ? _animatorCache = GetComponent<Animator>()
+            : _animatorCache;
+
+        public bool Interactable => button.interactable;
 
         public readonly Subject<SubmitButton> OnSubmitClick = new Subject<SubmitButton>();
 
@@ -50,6 +68,11 @@ namespace Nekoyume.UI.Module
         {
             submitText.text = nonSubmittableText;
             submitTextForSubmittable.text = submittableText;
+        }
+
+        public void SetSubmitTextColor(Color color)
+        {
+            submitText.color = color;
         }
     }
 }
