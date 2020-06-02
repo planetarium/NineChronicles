@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Scroller
                 if (view.gameObject.activeSelf)
                     ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id),
                         view.transform.position,
-                        Widget.Find<BottomMenu>().inventoryButton.transform.position,
+                        Widget.Find<BottomMenu>().characterButton.transform.position,
                         moveToLeft,
                         animationTime,
                         middleXGap,

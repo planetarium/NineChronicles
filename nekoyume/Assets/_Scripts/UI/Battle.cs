@@ -55,8 +55,7 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat,
                     BottomMenu.ToggleableType.IllustratedBook,
-                    BottomMenu.ToggleableType.Character,
-                    BottomMenu.ToggleableType.Inventory);
+                    BottomMenu.ToggleableType.Character);
 
                 bottomMenu.exitButton.SetToggleListener(this);
                 bottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
@@ -126,7 +125,7 @@ namespace Nekoyume.UI
             {
                 throw new WidgetNotFoundException<BottomMenu>();
             }
-            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.button.transform, Vector3.zero);
+            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.characterButton.button.transform, Vector3.zero);
         }
 
         protected override void OnCompleteOfCloseAnimationInternal()
