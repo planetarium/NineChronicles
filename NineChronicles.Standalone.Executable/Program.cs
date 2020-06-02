@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
+using NineChronicles.Standalone.Properties;
 using Serilog;
 
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
@@ -23,11 +24,11 @@ namespace NineChronicles.Standalone.Executable
 
         [Command(Description = "Run standalone application with options.")]
         public async Task Run(
+            bool noMiner = false,
             [Option("app-protocol-version", new[] { 'V' }, Description = "App protocol version token")]
-            string appProtocolVersionToken,
+            string appProtocolVersionToken = null,
             [Option('G')]
-            string genesisBlockPath,
-            bool noMiner,
+            string genesisBlockPath = null,
             [Option('H')]
             string host = null,
             [Option('P')]
@@ -50,7 +51,12 @@ namespace NineChronicles.Standalone.Executable
             bool rpcServer = false,
             string rpcListenHost = "0.0.0.0",
             int? rpcListenPort = null,
-            bool graphQLServer = false
+            [Option("graphql-server")]
+            bool graphQLServer = false,
+            [Option("graphql-host")]
+            string graphQLHost = "0.0.0.0",
+            [Option("graphql-port")]
+            int? graphQLPort = null
         )
         {
             // Setup logger.
@@ -58,86 +64,112 @@ namespace NineChronicles.Standalone.Executable
                 .WriteTo.Console()
                 .MinimumLevel.Debug().CreateLogger();
 
-            var privateKey = string.IsNullOrEmpty(privateKeyString)
-                ? new PrivateKey()
-                : new PrivateKey(ByteUtil.ParseHex(privateKeyString));
-
-            peerStrings ??= Array.Empty<string>();
-            iceServerStrings ??= Array.Empty<string>();
-
-            var iceServers = iceServerStrings.Select(LoadIceServer).ToImmutableArray();
-            var peers = peerStrings.Select(LoadPeer).ToImmutableArray();
-
-            IImmutableSet<Address> trustedStateValidators;
-            if (noTrustedStateValidators)
+            if (graphQLServer)
             {
-                trustedStateValidators = ImmutableHashSet<Address>.Empty;
+                var graphQLNodeServiceProperties = new GraphQLNodeServiceProperties
+                {
+                    GraphQLServer = graphQLServer,
+                    GraphQLListenHost = graphQLHost,
+                    GraphQLListenPort = graphQLPort,
+                };
+
+                await StandaloneServices.RunGraphQLAsync(graphQLNodeServiceProperties);
             }
             else
             {
-                trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
-            }
-
-            var properties = new LibplanetNodeServiceProperties<NineChroniclesActionType>
-            {
-                Host = host,
-                Port = port,
-                AppProtocolVersion = AppProtocolVersion.FromToken(appProtocolVersionToken),
-                TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners
-                    ?.Select(s => new PublicKey(ByteUtil.ParseHex(s)))
-                    ?.ToHashSet(),
-                GenesisBlockPath = genesisBlockPath,
-                NoMiner = noMiner,
-                PrivateKey = privateKey,
-                IceServers = iceServers,
-                Peers = peers,
-                TrustedStateValidators = trustedStateValidators,
-                StoreType = storeType,
-                StorePath = storePath,
-                StoreStatesCacheSize = 5000,
-                MinimumDifficulty = minimumDifficulty,
-                Render = rpcServer
-            };
-
-            var rpcProperties = new RpcNodeServiceProperties
-            {
-                RpcServer = rpcServer,
-            };
-
-            if (rpcServer)
-            {
-                if (string.IsNullOrEmpty(rpcListenHost))
+                if (appProtocolVersionToken == null)
                 {
                     throw new CommandExitedException(
-                        "--rpc-listen-host must be required when --rpc-server is present.",
+                        "--app-protocol-version must be required.",
                         -1
                     );
                 }
-                else if (!(rpcListenPort is int rpcPortValue))
+
+                if (genesisBlockPath == null)
                 {
                     throw new CommandExitedException(
-                        "--rpc-listen-port must be required when --rpc-server is present.",
+                        "--genesis-block-path must be required.",
                         -1
                     );
+                }
+
+                var privateKey = string.IsNullOrEmpty(privateKeyString)
+                ? new PrivateKey()
+                : new PrivateKey(ByteUtil.ParseHex(privateKeyString));
+
+                peerStrings ??= Array.Empty<string>();
+                iceServerStrings ??= Array.Empty<string>();
+
+                var iceServers = iceServerStrings.Select(LoadIceServer).ToImmutableArray();
+                var peers = peerStrings.Select(LoadPeer).ToImmutableArray();
+
+                IImmutableSet<Address> trustedStateValidators;
+                if (noTrustedStateValidators)
+                {
+                    trustedStateValidators = ImmutableHashSet<Address>.Empty;
                 }
                 else
                 {
-                    rpcProperties.RpcListenHost = rpcListenHost;
-                    rpcProperties.RpcListenPort = rpcPortValue;
+                    trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
                 }
+
+                var properties = new LibplanetNodeServiceProperties<NineChroniclesActionType>
+                {
+                    Host = host,
+                    Port = port,
+                    AppProtocolVersion = AppProtocolVersion.FromToken(appProtocolVersionToken),
+                    TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners
+                        ?.Select(s => new PublicKey(ByteUtil.ParseHex(s)))
+                        ?.ToHashSet(),
+                    GenesisBlockPath = genesisBlockPath,
+                    NoMiner = noMiner,
+                    PrivateKey = privateKey,
+                    IceServers = iceServers,
+                    Peers = peers,
+                    TrustedStateValidators = trustedStateValidators,
+                    StoreType = storeType,
+                    StorePath = storePath,
+                    StoreStatesCacheSize = 5000,
+                    MinimumDifficulty = minimumDifficulty,
+                    Render = rpcServer
+                };
+
+                var rpcProperties = new RpcNodeServiceProperties
+                {
+                    RpcServer = rpcServer
+                };
+
+                var nineChroniclesProperties = new NineChroniclesNodeServiceProperties
+                {
+                    Rpc = rpcProperties,
+                    Libplanet = properties
+                };
+
+                if (rpcServer)
+                {
+                    if (string.IsNullOrEmpty(rpcListenHost))
+                    {
+                        throw new CommandExitedException(
+                            "--rpc-listen-host must be required when --rpc-server is present.",
+                            -1
+                        );
+                    }
+                    else if (!(rpcListenPort is int rpcPortValue))
+                    {
+                        throw new CommandExitedException(
+                            "--rpc-listen-port must be required when --rpc-server is present.",
+                            -1
+                        );
+                    }
+                    else
+                    {
+                        rpcProperties.RpcListenHost = rpcListenHost;
+                        rpcProperties.RpcListenPort = rpcPortValue;
+                    }
+                }
+
+                await StandaloneServices.RunHeadlessAsync(nineChroniclesProperties, Context.CancellationToken);
             }
-
-            var graphQLProperties = new GraphQLNodeServiceProperties
-            {
-                GraphQLServer = graphQLServer,
-            };
-
-            var service = new NineChroniclesNodeService(
-                properties,
-                rpcProperties,
-                graphQLProperties,
-                ignoreBootstrapFailure: true);
-            await service.Run(Context.CancellationToken);
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)

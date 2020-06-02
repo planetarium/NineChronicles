@@ -17,6 +17,7 @@ using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
+using NineChronicles.Standalone.Properties;
 using Nito.AsyncEx;
 using Serilog;
 
@@ -43,14 +44,14 @@ namespace NineChronicles.Standalone
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties<NineChroniclesActionType> properties,
             RpcNodeServiceProperties rpcNodeServiceProperties,
-            GraphQLNodeServiceProperties graphQlNodeServiceProperties,
+            //GraphQLNodeServiceProperties graphQlNodeServiceProperties,
             Progress<PreloadState> preloadProgress = null,
             bool ignoreBootstrapFailure = false
         )
         {
             Properties = properties;
             RpcProperties = rpcNodeServiceProperties;
-            GraphQLProperties = graphQlNodeServiceProperties;
+            //GraphQLProperties = graphQlNodeServiceProperties;
 
             try
             {
@@ -121,13 +122,14 @@ namespace NineChronicles.Standalone
                     });
             }
 
-            if (GraphQLProperties.GraphQLServer)
-            {
-                hostBuilder.ConfigureWebHostDefaults(builder =>
-                {
-                    builder.UseStartup<GraphQLStartup>();
-                });
-            }
+            // if (GraphQLProperties.GraphQLServer)
+            // {
+            //     hostBuilder.ConfigureWebHostDefaults(builder =>
+            //     {
+            //         builder.UseStartup<GraphQLStartup>();
+            //         builder.UseUrls($"http://{GraphQLProperties.GraphQLListenHost}:{GraphQLProperties.GraphQLListenPort}/");
+            //     });
+            // }
 
             await hostBuilder.ConfigureServices((ctx, services) =>
             {
