@@ -329,7 +329,7 @@ namespace Nekoyume.UI
                 foreach (var item in inventory.SharedModel.Equipments)
                 {
                     item.GlowEnabled.Value =
-                        item.ItemBase.Value.Data.ItemSubType == slot.ItemSubType;
+                        item.ItemBase.Value.ItemSubType == slot.ItemSubType;
                 }
 
                 return;
@@ -405,12 +405,12 @@ namespace Nekoyume.UI
 
         private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            switch (itemBase.Data.ItemType)
+            switch (itemBase.ItemType)
             {
                 case ItemType.Costume:
                     LocalStateModifier.SetCostumeEquip(
                         States.Instance.CurrentAvatarState.address,
-                        itemBase.Data.Id,
+                        itemBase.Id,
                         equip,
                         false);
                     break;
@@ -427,7 +427,7 @@ namespace Nekoyume.UI
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
         {
-            switch (item.Data.ItemType)
+            switch (item.ItemType)
             {
                 case ItemType.Costume:
                     return costumeSlots.TryGetAlreadyEquip(item, out slot);
@@ -441,7 +441,7 @@ namespace Nekoyume.UI
 
         private bool TryToFindSlotToEquip(ItemBase item, out EquipmentSlot slot)
         {
-            switch (item.Data.ItemType)
+            switch (item.ItemType)
             {
                 case ItemType.Costume:
                     return costumeSlots.TryGetToEquip((Costume) item, out slot);

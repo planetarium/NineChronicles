@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using JetBrains.Annotations;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -78,8 +79,9 @@ namespace Nekoyume.UI.Module
                 Clear();
                 return;
             }
-            
-            base.SetData(model.ItemBase.Value.Data);
+
+            var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(r => r.Id == model.ItemBase.Value.Id);
+            base.SetData(row);
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;
             Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);

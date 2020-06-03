@@ -354,7 +354,7 @@ namespace Nekoyume.Model.State
             ArenaRecord = new Record();
             Level = avatarState.level;
             var armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
-            ArmorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
+            ArmorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
             CombatPoint = CPHelper.GetCP(avatarState, characterSheet);
             Active = active;
             DailyChallengeCount = GameConfig.ArenaChallengeCountMax;

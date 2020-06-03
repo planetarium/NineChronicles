@@ -43,7 +43,7 @@ namespace Nekoyume.Game.Character
         public Model.Player Model => (Model.Player) CharacterModel;
 
         private bool IsFullCostumeEquipped =>
-            Costumes.Any(costume => costume.Data.ItemSubType == ItemSubType.FullCostume);
+            Costumes.Any(costume => costume.ItemSubType == ItemSubType.FullCostume);
 
         #region Mono
 
@@ -177,7 +177,7 @@ namespace Nekoyume.Game.Character
             }
 
             // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
-            switch (costume.Data.ItemSubType)
+            switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
                     // UpdateEar();
@@ -186,7 +186,7 @@ namespace Nekoyume.Game.Character
                     // UpdateEye();
                     break;
                 case ItemSubType.FullCostume:
-                    ChangeSpine(costume.Data.SpineResourcePath);
+                    ChangeSpine(costume.SpineResourcePath);
                     break;
                 case ItemSubType.HairCostume:
                     // UpdateHair();
@@ -205,7 +205,7 @@ namespace Nekoyume.Game.Character
             }
 
             // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
-            switch (costume.Data.ItemSubType)
+            switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
                     // UpdateEar();
@@ -252,8 +252,8 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var armorId = armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
-            var spineResourcePath = armor?.Data.SpineResourcePath ?? $"Character/Player/{armorId}";
+            var armorId = armor?.Id ?? GameConfig.DefaultAvatarArmorId;
+            var spineResourcePath = armor?.SpineResourcePath ?? $"Character/Player/{armorId}";
             ChangeSpine(spineResourcePath);
         }
 

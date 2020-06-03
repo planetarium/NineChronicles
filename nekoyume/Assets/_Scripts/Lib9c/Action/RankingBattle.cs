@@ -68,7 +68,7 @@ namespace Nekoyume.Action
                         break;
                     }
                     
-                    switch (equipment.Data.ItemSubType)
+                    switch (equipment.ItemSubType)
                     {
                         case ItemSubType.Weapon:
                             failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;

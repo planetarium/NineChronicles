@@ -13,7 +13,6 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public abstract class ItemUsable : ItemBase
     {
-        public new ItemSheet.Row Data { get; }
         public Guid ItemId { get; }
         public StatsMap StatsMap { get; }
         public List<Skill.Skill> Skills { get; }
@@ -22,7 +21,6 @@ namespace Nekoyume.Model.Item
 
         protected ItemUsable(ItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data)
         {
-            Data = data;
             ItemId = id;
             StatsMap = new StatsMap();
 
@@ -47,6 +45,41 @@ namespace Nekoyume.Model.Item
             RequiredBlockIndex = requiredBlockIndex;
         }
 
+        protected ItemUsable(Dictionary serialized) : base(serialized)
+        {
+            StatsMap = new StatsMap();
+            Skills = new List<Model.Skill.Skill>();
+            BuffSkills = new List<BuffSkill>();
+            if (serialized.TryGetValue((Text) "itemId", out var itemId))
+            {
+                ItemId = itemId.ToGuid();
+            }
+            if (serialized.TryGetValue((Text) "statsMap", out var statsMap))
+            {
+                StatsMap.Deserialize((Dictionary) statsMap);
+            }
+            if (serialized.TryGetValue((Text) "skills", out var skills))
+            {
+                foreach (var value in (List) skills)
+                {
+                    var skill = (Dictionary) value;
+                    Skills.Add(SkillFactory.Deserialize(skill));
+                }
+            }
+            if (serialized.TryGetValue((Text) "buffSkills", out var buffSkills))
+            {
+                foreach (var value in (List) buffSkills)
+                {
+                    var buffSkill = (Dictionary) value;
+                    BuffSkills.Add((BuffSkill) SkillFactory.Deserialize(buffSkill));
+                }
+            }
+            if (serialized.TryGetValue((Text) "requiredBlockIndex", out var requiredBlockIndex))
+            {
+                RequiredBlockIndex = requiredBlockIndex.ToLong();
+            }
+        }
+
         protected bool Equals(ItemUsable other)
         {
             return base.Equals(other) && Equals(ItemId, other.ItemId);
@@ -56,13 +89,16 @@ namespace Nekoyume.Model.Item
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
+            if (obj.GetType() != this.GetType()) return false;
             return Equals((ItemUsable) obj);
         }
 
         public override int GetHashCode()
         {
-            return (Data != null ? Data.GetHashCode() : 0) ^ ItemId.GetHashCode();
+            unchecked
+            {
+                return (base.GetHashCode() * 397) ^ ItemId.GetHashCode();
+            }
         }
 
         public int GetOptionCount()

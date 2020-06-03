@@ -43,7 +43,7 @@ namespace Nekoyume.UI.Model
                 return false;
             }
             
-            return countableItem.ItemBase.Value.Data.ItemType == ItemType.Material;
+            return countableItem.ItemBase.Value.ItemType == ItemType.Material;
         }
     }
 }

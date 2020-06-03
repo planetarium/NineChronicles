@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using Bencodex.Types;
 using Nekoyume.Model.Stat;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Item
@@ -7,22 +11,27 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class Consumable : ItemUsable
     {
-        public new ConsumableItemSheet.Row Data { get; }
-        public StatType MainStat
-        {
-            get
-            {
-                if (Data.Stats.Count == 0)
-                    return StatType.NONE;
+        public StatType MainStat => Stats.Any() ? Stats[0].StatType : StatType.NONE;
 
-                // 임시로 첫번재 스탯을 리턴
-                return Data.Stats[0].StatType;
-            }
-        }
+        public List<StatMap> Stats { get; }
 
         public Consumable(ConsumableItemSheet.Row data, Guid id, long requiredBlockIndex) : base(data, id, requiredBlockIndex)
         {
-            Data = data;
+            Stats = data.Stats;
         }
+
+        public Consumable(Dictionary serialized) : base(serialized)
+        {
+            if (serialized.TryGetValue((Text) "stats", out var stats))
+            {
+                Stats = stats.ToList(i => new StatMap((Dictionary) i));
+            }
+        }
+
+        public override IValue Serialize() =>
+            new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "stats"] = new List(Stats.Select(s => s.Serialize())),
+            }.Union((Dictionary) base.Serialize()));
     }
 }

@@ -65,7 +65,7 @@ namespace Nekoyume.TableData
             var setInfo = new Dictionary<int, int>();
             foreach (var equipment in equipments)
             {
-                var key = equipment.Data.SetId;
+                var key = equipment.SetId;
                 if (!setInfo.ContainsKey(key))
                 {
                     setInfo[key] = 0;

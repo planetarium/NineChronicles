@@ -23,7 +23,7 @@ namespace Nekoyume.Game.Factory
             for (var i = 0; i < items.Count; i++)
             {
                 var item = items[i];
-                var exist = ItemFactory.CreateMaterial(Game.instance.TableSheets.MaterialItemSheet, item.Data.Id);
+                var exist = ItemFactory.CreateMaterial(Game.instance.TableSheets.MaterialItemSheet, item.Id);
                 if (exist == null)
                 {
                     items.Remove(item);

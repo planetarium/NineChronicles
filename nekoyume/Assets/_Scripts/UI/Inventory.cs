@@ -95,7 +95,7 @@ namespace Nekoyume.UI
             Notification.Push(Nekoyume.Model.Mail.MailType.System,
                 LocalizationManager.Localize("UI_CHARGE_AP"));
             Game.Game.instance.ActionManager.ChargeActionPoint();
-            LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, material.Data.ItemId, 1);
+            LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, material.ItemId, 1);
             LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 States.Instance.GameConfigState.ActionPointMax);
         }
@@ -112,7 +112,7 @@ namespace Nekoyume.UI
 
         private static (Func<CountableItem, bool>, string, Action<Material>) GetToolTipParams(ItemBase item)
         {
-            var subType = item.Data.ItemSubType;
+            var subType = item.ItemSubType;
             Func<CountableItem, bool> dimmedFunc = null;
             string submitText = null;
             Action<Material> onSubmit = ChargeActionPoint;
