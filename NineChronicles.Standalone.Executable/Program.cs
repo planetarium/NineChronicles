@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
+using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
 using Serilog;
 
@@ -62,6 +63,8 @@ namespace NineChronicles.Standalone.Executable
                 .WriteTo.Console()
                 .MinimumLevel.Debug().CreateLogger();
 
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+
             // GraphQL 서비스를 실행할 때는 런처를 통해 실행 된 GraphQL을 이용하여 노드 서비스가 실행되게 설계되었습니다.
             // 따라서 graphQLServer가 true라면, 노드 서비스가 실행되지 않는 것이 의도된 사항입니다.
             if (graphQLServer)
@@ -73,7 +76,10 @@ namespace NineChronicles.Standalone.Executable
                     GraphQLListenPort = graphQLPort,
                 };
 
-                await StandaloneServices.RunGraphQLAsync(graphQLNodeServiceProperties);
+                await StandaloneServices.RunGraphQLAsync(
+                    graphQLNodeServiceProperties,
+                    hostBuilder,
+                    Context.CancellationToken);
             }
             else
             {
@@ -166,7 +172,10 @@ namespace NineChronicles.Standalone.Executable
                     rpcProperties.RpcListenPort = rpcPortValue;
                 }
 
-                await StandaloneServices.RunHeadlessAsync(nineChroniclesProperties, Context.CancellationToken);
+                await StandaloneServices.RunHeadlessAsync(
+                    nineChroniclesProperties,
+                    hostBuilder,
+                    Context.CancellationToken);
             }
         }
 

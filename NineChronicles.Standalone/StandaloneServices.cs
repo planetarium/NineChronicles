@@ -11,26 +11,23 @@ namespace NineChronicles.Standalone
     {
         public static Task RunHeadlessAsync(
             NineChroniclesNodeServiceProperties properties,
+            IHostBuilder hostBuilder,
             CancellationToken cancellationToken)
         {
             var service = new NineChroniclesNodeService(
                 properties.Libplanet,
                 properties.Rpc,
                 ignoreBootstrapFailure: true);
-            return service.Run(cancellationToken);
+            return service.Run(hostBuilder, cancellationToken);
         }
 
         public static Task RunGraphQLAsync(
-            GraphQLNodeServiceProperties graphQLProperties
-        )
+            GraphQLNodeServiceProperties graphQLProperties,
+            IHostBuilder hostBuilder,
+            CancellationToken cancellationToken)
         {
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-            hostBuilder.ConfigureWebHostDefaults(builder =>
-            {
-                builder.UseStartup<GraphQLStartup>();
-                builder.UseUrls($"http://{graphQLProperties.GraphQLListenHost}:{graphQLProperties.GraphQLListenPort}/");
-            });
-            return hostBuilder.RunConsoleAsync();
+            var service = new GraphQLService(graphQLProperties);
+            return service.Run(hostBuilder, cancellationToken);
         }
     }
 }

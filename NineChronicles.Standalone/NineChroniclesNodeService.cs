@@ -97,9 +97,10 @@ namespace NineChronicles.Standalone
             }
         }
 
-        public async Task Run(CancellationToken cancellationToken = default)
+        public async Task Run(
+            IHostBuilder hostBuilder,
+            CancellationToken cancellationToken = default)
         {
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
             if (RpcProperties.RpcServer)
             {
                 hostBuilder = hostBuilder
