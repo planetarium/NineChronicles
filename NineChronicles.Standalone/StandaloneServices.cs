@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
 
-namespace NineChronicles.Standalone.Executable
+namespace NineChronicles.Standalone
 {
     public static class StandaloneServices
     {
