@@ -124,5 +124,12 @@ namespace NineChronicles.Standalone
                 services.AddSingleton(provider => NodeService.BlockChain);
             }).RunConsoleAsync(cancellationToken);
         }
+
+        public async Task Run(
+            CancellationToken cancellationToken = default)
+        {
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+            await Run(hostBuilder, cancellationToken);
+        }
     }
 }
