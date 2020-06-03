@@ -266,7 +266,7 @@ namespace Nekoyume.UI
                 _coClose = null;
             }
 
-            StartCoroutine(CoClose());
+            _coClose = StartCoroutine(CoClose());
         }
 
         protected void Push()
