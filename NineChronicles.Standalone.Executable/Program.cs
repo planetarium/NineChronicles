@@ -94,8 +94,8 @@ namespace NineChronicles.Standalone.Executable
                 }
 
                 var privateKey = string.IsNullOrEmpty(privateKeyString)
-                ? new PrivateKey()
-                : new PrivateKey(ByteUtil.ParseHex(privateKeyString));
+                    ? new PrivateKey()
+                    : new PrivateKey(ByteUtil.ParseHex(privateKeyString));
 
                 peerStrings ??= Array.Empty<string>();
                 iceServerStrings ??= Array.Empty<string>();
