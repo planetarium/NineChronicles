@@ -260,7 +260,7 @@ namespace Nekoyume.UI
 
         public void Submit()
         {
-            if (!submitButton.button.interactable)
+            if (!submitButton.Interactable)
             {
                 return;
             }

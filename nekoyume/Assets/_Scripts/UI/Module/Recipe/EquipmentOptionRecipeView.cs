@@ -44,7 +44,8 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            recipeClickVFX.OnFinished = () => OnClick.OnNext(this);
+            recipeClickVFX.OnTerminated = () => OnClick.OnNext(this);
+
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 if (IsLocked || NotEnoughMaterials)

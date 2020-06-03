@@ -8,16 +8,34 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    [RequireComponent(typeof(Animator))]
     public class ToggleableButton : MonoBehaviour, IToggleable, IWidgetControllable
     {
-        [SerializeField] public Button button = null;
-        [SerializeField] public TextMeshProUGUI toggledOffText = null;
-        [SerializeField] public Image toggledOffImage = null;
-        [SerializeField] protected TextMeshProUGUI toggledOnText = null;
-        [SerializeField] protected Image toggledOnImage = null;
-        [SerializeField] protected string localizationKey = null;
+        [SerializeField]
+        private Button button = null;
+
+        [SerializeField]
+        private TextMeshProUGUI toggledOffText = null;
+
+        [SerializeField]
+        private Image toggledOffImage = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI toggledOnText = null;
+
+        [SerializeField]
+        private Image toggledOnImage = null;
+
+        [SerializeField]
+        protected string localizationKey = null;
 
         private IToggleListener _toggleListener;
+
+        private Animator _animatorCache;
+
+        public Animator Animator => !_animatorCache
+            ? _animatorCache = GetComponent<Animator>()
+            : _animatorCache;
 
         public readonly Subject<ToggleableButton> OnClick = new Subject<ToggleableButton>();
 
@@ -56,32 +74,43 @@ namespace Nekoyume.UI.Module
         public virtual void ShowWidget()
         {
             if (_widget is null || !IsWidgetControllable)
+            {
                 return;
+            }
 
             _widget.Show();
-            _disposableForWidgetControllable = _widget.OnDisableObservable.Subscribe(_ => _toggleListener?.RequestToggledOff(this));
+            _disposableForWidgetControllable =
+                _widget.OnDisableObservable.Subscribe(_ =>
+                    _toggleListener?.RequestToggledOff(this));
         }
 
         public virtual void HideWidget()
         {
             if (_widget is null || !IsWidgetControllable)
+            {
                 return;
+            }
 
             _disposableForWidgetControllable?.Dispose();
 
             if (!_widget.IsActive())
+            {
                 return;
+            }
 
             if (_widget is Confirm confirm)
             {
                 confirm.NoWithoutCallback();
             }
+
             if (_widget is InputBox inputBox)
             {
                 inputBox.No();
             }
             else
+            {
                 _widget.Close();
+            }
         }
 
         #endregion
@@ -102,7 +131,9 @@ namespace Nekoyume.UI.Module
         public virtual void SetToggledOn()
         {
             if (!Toggleable)
+            {
                 return;
+            }
 
             toggledOffImage.gameObject.SetActive(false);
             toggledOnImage.gameObject.SetActive(true);
@@ -114,7 +145,9 @@ namespace Nekoyume.UI.Module
         public virtual void SetToggledOff()
         {
             if (!Toggleable)
+            {
                 return;
+            }
 
             toggledOffImage.gameObject.SetActive(true);
             toggledOnImage.gameObject.SetActive(false);

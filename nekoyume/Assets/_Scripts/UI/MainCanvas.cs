@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using _Scripts.UI;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
@@ -262,6 +261,8 @@ namespace Nekoyume.UI
             _secondWidgets.Add(Widget.Create<Dialog>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
+            yield return null;
+            _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
 
             // 툴팁류.

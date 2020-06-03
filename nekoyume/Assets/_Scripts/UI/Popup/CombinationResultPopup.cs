@@ -44,10 +44,10 @@ namespace Nekoyume.UI
                 Model.OnClickSubmit.OnNext(Model);
                 AudioController.PlayClick();
                 ItemMoveAnimation.Show(itemInformation.Model.item.Value.ItemBase.Value.GetIconSprite(),
-                    itemInformation.transform.position, 
-                    Find<BottomMenu>().inventoryButton.transform.position,
+                    itemInformation.transform.position,
+                    Find<BottomMenu>().characterButton.transform.position,
                     false,
-                    1f, 
+                    1f,
                     0.82f,
                     true);
                 Close();
@@ -56,7 +56,7 @@ namespace Nekoyume.UI
             {
                 if (!pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
                     return;
-                
+
                 AudioController.PlayClick();
                 Close();
             }).AddTo(gameObject);

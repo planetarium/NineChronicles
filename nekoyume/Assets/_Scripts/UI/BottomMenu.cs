@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using _Scripts.UI;
 using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
@@ -23,11 +22,9 @@ namespace Nekoyume.UI.Module
             Chat,
             IllustratedBook,
             Character,
-            Inventory,
             WorldMap,
             Settings,
             Combination,
-            AvatarInfo,
         }
 
         public class Model : IDisposable
@@ -58,7 +55,6 @@ namespace Nekoyume.UI.Module
 
         // 네비게이션 버튼.
         public ToggleableButton quitButton;
-
         public GlowingButton exitButton;
 
         // 일반 버튼.
@@ -67,18 +63,19 @@ namespace Nekoyume.UI.Module
         public NotifiableButton questButton;
         public NotifiableButton illustratedBookButton;
         public NotifiableButton characterButton;
-        public NotifiableButton inventoryButton;
         public NotifiableButton worldMapButton;
         public NotifiableButton settingsButton;
         public NotifiableButton combinationButton;
-        public NotifiableButton avatarInfoButton;
 
         public CanvasGroup canvasGroup;
         public VFX inventoryVFX;
+
         private Animator _inventoryAnimator;
         private long _blockIndex;
 
-        [SerializeField] private RectTransform _buttons = null;
+        [SerializeField]
+        private RectTransform _buttons = null;
+
         private float _buttonsPositionY;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -88,11 +85,9 @@ namespace Nekoyume.UI.Module
         public readonly Subject<bool> HasNotificationInChat = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInIllustratedBook = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInCharacter = new Subject<bool>();
-        public readonly Subject<bool> HasNotificationInInventory = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInWorldMap = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInSettings = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInCombination = new Subject<bool>();
-        public readonly Subject<bool> HasNotificationInAvatarInfo = new Subject<bool>();
 
         protected override WidgetType WidgetType => WidgetType.Popup;
 
@@ -100,27 +95,37 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
 
-            backButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
-            mainButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
-            quitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
-            exitButton.button.OnClickAsObservable().Subscribe(SubscribeNavigationButtonClick).AddTo(gameObject);
+            backButton.OnClick
+                .Subscribe(_ => SubscribeNavigationButtonClick())
+                .AddTo(gameObject);
+            mainButton.OnClick
+                .Subscribe(_ => SubscribeNavigationButtonClick())
+                .AddTo(gameObject);
+            quitButton.OnClick
+                .Subscribe(_ => SubscribeNavigationButtonClick())
+                .AddTo(gameObject);
+            exitButton.OnClick
+                .Subscribe(_ => SubscribeNavigationButtonClick())
+                .AddTo(gameObject);
 
             quitButton.SetWidgetType<Confirm>();
             exitButton.SetWidgetType<Confirm>();
             mailButton.SetWidgetType<Mail>();
             questButton.SetWidgetType<Quest>();
-            characterButton.SetWidgetType<StatusDetail>();
-            inventoryButton.SetWidgetType<UI.Inventory>();
+            characterButton.SetWidgetType<AvatarInfo>();
             settingsButton.SetWidgetType<Settings>();
             chatButton.SetWidgetType<Confirm>();
             combinationButton.SetWidgetType<CombinationSlots>();
-            avatarInfoButton.SetWidgetType<AvatarInfo>();
             // todo: 지금 월드맵 띄우는 것을 위젯으로 빼고, 여기서 설정하기?
             // worldMapButton.SetWidgetType<WorldMapPaper>();
 
-            chatButton.button.OnClickAsObservable().Subscribe(SubScribeOnClickChat).AddTo(gameObject);
+            chatButton.OnClick
+                .Subscribe(SubScribeOnClickChat)
+                .AddTo(gameObject);
             // 미구현
-            illustratedBookButton.button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            illustratedBookButton.OnClick
+                .Subscribe(SubscribeOnClick)
+                .AddTo(gameObject);
             illustratedBookButton.SetWidgetType<Alert>();
 
             _toggleGroup = new ToggleGroup();
@@ -130,17 +135,14 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(questButton);
             _toggleGroup.RegisterToggleable(illustratedBookButton);
             _toggleGroup.RegisterToggleable(characterButton);
-            _toggleGroup.RegisterToggleable(inventoryButton);
             _toggleGroup.RegisterToggleable(worldMapButton);
             _toggleGroup.RegisterToggleable(settingsButton);
             _toggleGroup.RegisterToggleable(chatButton);
             _toggleGroup.RegisterToggleable(combinationButton);
-            _toggleGroup.RegisterToggleable(avatarInfoButton);
 
             SubmitWidget = null;
             CloseWidget = null;
 
-            _inventoryAnimator = inventoryButton.GetComponent<Animator>();
             _buttonsPositionY = _buttons.position.y;
         }
 
@@ -148,23 +150,41 @@ namespace Nekoyume.UI.Module
         {
             base.Initialize();
 
-            SharedModel.NavigationType.Subscribe(SubscribeNavigationType).AddTo(gameObject);
-            HasNotificationInMail.SubscribeTo(mailButton.SharedModel.HasNotification).AddTo(gameObject);
-            HasNotificationInQuest.SubscribeTo(questButton.SharedModel.HasNotification).AddTo(gameObject);
-            HasNotificationInChat.SubscribeTo(chatButton.SharedModel.HasNotification).AddTo(gameObject);
-            HasNotificationInIllustratedBook.SubscribeTo(illustratedBookButton.SharedModel.HasNotification)
+            SharedModel.NavigationType.
+                Subscribe(SubscribeNavigationType)
                 .AddTo(gameObject);
-            HasNotificationInCharacter.SubscribeTo(characterButton.SharedModel.HasNotification).AddTo(gameObject);
-            HasNotificationInInventory.SubscribeTo(inventoryButton.SharedModel.HasNotification).AddTo(gameObject);
-            HasNotificationInWorldMap.SubscribeTo(worldMapButton.SharedModel.HasNotification).AddTo(gameObject);
-            HasNotificationInSettings.SubscribeTo(settingsButton.SharedModel.HasNotification).AddTo(gameObject);
-            HasNotificationInCombination.SubscribeTo(combinationButton.SharedModel.HasNotification).AddTo(gameObject);
-            HasNotificationInAvatarInfo.SubscribeTo(avatarInfoButton.SharedModel.HasNotification).AddTo(gameObject);
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+            HasNotificationInMail
+                .SubscribeTo(mailButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            HasNotificationInQuest.
+                SubscribeTo(questButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            HasNotificationInChat
+                .SubscribeTo(chatButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            HasNotificationInIllustratedBook
+                .SubscribeTo(illustratedBookButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            HasNotificationInCharacter
+                .SubscribeTo(characterButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            HasNotificationInWorldMap
+                .SubscribeTo(worldMapButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            HasNotificationInSettings
+                .SubscribeTo(settingsButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+            HasNotificationInCombination
+                .SubscribeTo(combinationButton.SharedModel.HasNotification)
+                .AddTo(gameObject);
+
+            Game.Game.instance.Agent.BlockIndexSubject
+                .ObserveOnMainThread()
+                .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
         }
 
-        private static void SubScribeOnClickChat(Unit unit)
+        private static void SubScribeOnClickChat(ToggleableButton button)
         {
             var confirm = Find<Confirm>();
             confirm.CloseCallback = result =>
@@ -179,17 +199,24 @@ namespace Nekoyume.UI.Module
             confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
         }
 
-        private static void SubscribeOnClick(Unit unit)
+        private static void SubscribeOnClick(ToggleableButton button)
         {
-            Find<Alert>().Set("UI_ALERT_NOT_IMPLEMENTED_TITLE", "UI_ALERT_NOT_IMPLEMENTED_CONTENT", blurRadius: 2);
+            Find<Alert>().Set(
+                "UI_ALERT_NOT_IMPLEMENTED_TITLE",
+                "UI_ALERT_NOT_IMPLEMENTED_CONTENT",
+                blurRadius: 2);
         }
 
         protected override void OnEnable()
         {
             base.OnEnable();
             _disposablesAtOnEnable.DisposeAllAndClear();
-            ReactiveAvatarState.MailBox?.Subscribe(SubscribeAvatarMailBox).AddTo(_disposablesAtOnEnable);
-            ReactiveAvatarState.QuestList?.Subscribe(SubscribeAvatarQuestList).AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.MailBox?
+                .Subscribe(SubscribeAvatarMailBox)
+                .AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.QuestList?
+                .Subscribe(SubscribeAvatarQuestList)
+                .AddTo(_disposablesAtOnEnable);
         }
 
         protected override void OnDisable()
@@ -208,11 +235,9 @@ namespace Nekoyume.UI.Module
             HasNotificationInChat.Dispose();
             HasNotificationInIllustratedBook.Dispose();
             HasNotificationInCharacter.Dispose();
-            HasNotificationInInventory.Dispose();
             HasNotificationInWorldMap.Dispose();
             HasNotificationInSettings.Dispose();
             HasNotificationInCombination.Dispose();
-            HasNotificationInAvatarInfo.Dispose();
         }
 
         public void Show(
@@ -225,7 +250,7 @@ namespace Nekoyume.UI.Module
 
             base.Show(animateAlpha);
 
-            if(animateAlpha)
+            if (animateAlpha)
             {
                 // FIXME: Widget의 연출 주기 캡슐화가 깨지는 부분이에요.
                 AnimationState = AnimationStateType.Showing;
@@ -235,7 +260,7 @@ namespace Nekoyume.UI.Module
 
                 canvasGroup.alpha = 0f;
                 canvasGroup
-                    .DOFade(1f,  1f)
+                    .DOFade(1f, 1f)
                     .OnComplete(() => AnimationState = AnimationStateType.Shown);
             }
             else
@@ -283,11 +308,8 @@ namespace Nekoyume.UI.Module
 
         public void PlayGetItemAnimation()
         {
-            if (_inventoryAnimator)
-            {
-                _inventoryAnimator.Play("GetItem");
-                inventoryVFX.Play();
-            }
+            characterButton.Animator.Play("GetItem");
+            inventoryVFX.Play();
         }
 
         #region Subscribe
@@ -327,11 +349,12 @@ namespace Nekoyume.UI.Module
                     quitButton.Show();
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(navigationType), navigationType, null);
+                    throw new ArgumentOutOfRangeException(nameof(navigationType), navigationType,
+                        null);
             }
         }
 
-        private void SubscribeNavigationButtonClick(Unit unit)
+        private void SubscribeNavigationButtonClick()
         {
             SharedModel.NavigationAction?.Invoke(this);
         }
@@ -344,7 +367,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            HasNotificationInMail.OnNext(mailBox.Any(i => i.New && i.requiredBlockIndex <= _blockIndex));
+            HasNotificationInMail.OnNext(mailBox.Any(i =>
+                i.New && i.requiredBlockIndex <= _blockIndex));
         }
 
         private void SubscribeAvatarQuestList(QuestList questList)
@@ -355,7 +379,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            HasNotificationInQuest.OnNext(questList.Any(quest => quest.IsPaidInAction && quest.isReceivable));
+            HasNotificationInQuest.OnNext(questList.Any(quest =>
+                quest.IsPaidInAction && quest.isReceivable));
             // todo: `Quest`와의 결합을 끊을 필요가 있어 보임.
             Find<Quest>().SetList(questList);
         }
@@ -369,7 +394,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            HasNotificationInMail.OnNext(mailBox.Any(i => i.New && i.requiredBlockIndex <= _blockIndex));
+            HasNotificationInMail.OnNext(mailBox.Any(i =>
+                i.New && i.requiredBlockIndex <= _blockIndex));
         }
 
         #endregion
@@ -390,29 +416,31 @@ namespace Nekoyume.UI.Module
                     return ShowIllustratedBookButton();
                 case ToggleableType.Character:
                     return ShowCharacterButton();
-                case ToggleableType.Inventory:
-                    return ShowInventoryButton();
                 case ToggleableType.WorldMap:
                     return ShowWorldMapButton();
                 case ToggleableType.Settings:
                     return ShowSettingsButton();
                 case ToggleableType.Combination:
                     return ShowCombinationButton();
-                case ToggleableType.AvatarInfo:
-                    return ShowAvatarInfoButton();
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType, null);
+                    throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType,
+                        null);
             }
         }
 
         private bool ShowChatButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                out var world))
+            if (!States.Instance.CurrentAvatarState.worldInformation
+                .TryGetUnlockedWorldByStageClearedBlockIndex(
+                    out var world))
+            {
                 return false;
+            }
 
             if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuChat)
+            {
                 return false;
+            }
 
             chatButton.Show();
             return true;
@@ -420,12 +448,17 @@ namespace Nekoyume.UI.Module
 
         private bool ShowMailButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                out var world))
+            if (!States.Instance.CurrentAvatarState.worldInformation
+                .TryGetUnlockedWorldByStageClearedBlockIndex(
+                    out var world))
+            {
                 return false;
+            }
 
             if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuMail)
+            {
                 return false;
+            }
 
             // todo: 제조 시도 후인지 추가 검사.
 
@@ -435,12 +468,17 @@ namespace Nekoyume.UI.Module
 
         private bool ShowQuestButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                out var world))
+            if (!States.Instance.CurrentAvatarState.worldInformation
+                .TryGetUnlockedWorldByStageClearedBlockIndex(
+                    out var world))
+            {
                 return false;
+            }
 
             if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuQuest)
+            {
                 return false;
+            }
 
             questButton.Show();
             return true;
@@ -453,27 +491,19 @@ namespace Nekoyume.UI.Module
 
         private bool ShowCharacterButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                out var world))
+            if (!States.Instance.CurrentAvatarState.worldInformation
+                .TryGetUnlockedWorldByStageClearedBlockIndex(
+                    out var world))
+            {
                 return false;
+            }
 
             if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter)
+            {
                 return false;
+            }
 
             characterButton.Show();
-            return true;
-        }
-
-        private bool ShowInventoryButton()
-        {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                out var world))
-                return false;
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuInventory)
-                return false;
-
-            inventoryButton.Show();
             return true;
         }
 
@@ -485,12 +515,17 @@ namespace Nekoyume.UI.Module
 
         private bool ShowSettingsButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(
-                out var world))
+            if (!States.Instance.CurrentAvatarState.worldInformation
+                .TryGetUnlockedWorldByStageClearedBlockIndex(
+                    out var world))
+            {
                 return false;
+            }
 
             if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuSettings)
+            {
                 return false;
+            }
 
             settingsButton.Show();
             return true;
@@ -503,13 +538,8 @@ namespace Nekoyume.UI.Module
             {
                 return false;
             }
-            combinationButton.Show();
-            return true;
-        }
 
-        private bool ShowAvatarInfoButton()
-        {
-            avatarInfoButton.Show();
+            combinationButton.Show();
             return true;
         }
 
@@ -529,18 +559,15 @@ namespace Nekoyume.UI.Module
                     return illustratedBookButton;
                 case ToggleableType.Character:
                     return characterButton;
-                case ToggleableType.Inventory:
-                    return inventoryButton;
                 case ToggleableType.WorldMap:
                     return worldMapButton;
                 case ToggleableType.Settings:
                     return settingsButton;
                 case ToggleableType.Combination:
                     return combinationButton;
-                case ToggleableType.AvatarInfo:
-                    return avatarInfoButton;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType, null);
+                    throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType,
+                        null);
             }
         }
     }

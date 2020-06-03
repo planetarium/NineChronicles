@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Battle;
@@ -15,7 +16,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class AvatarInfo : Widget
+    public class AvatarInfo : XTweenWidget
     {
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
@@ -47,6 +48,7 @@ namespace Nekoyume.UI
         private bool _previousActivated = false;
         private bool _isCurrentAvatar = false;
         private CharacterStats _tempStats;
+        private Coroutine _constraintsPlayerToUI;
 
         #region Override
 
@@ -106,10 +108,9 @@ namespace Nekoyume.UI
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
+        protected override void OnCompleteOfCloseAnimationInternal()
         {
             ReturnPlayer();
-            base.Close(ignoreCloseAnimation);
         }
 
         #endregion
@@ -127,7 +128,7 @@ namespace Nekoyume.UI
         private void ReplacePlayer(AvatarState avatarState)
         {
             var stage = Game.Game.instance.Stage;
-            _previousActivated = stage.selectedPlayer?.gameObject.activeSelf ?? false;
+            _previousActivated = stage.selectedPlayer && stage.selectedPlayer.gameObject.activeSelf;
             var player = stage.GetPlayer();
             player.Set(avatarState);
             var playerTransform = player.transform;
@@ -136,13 +137,36 @@ namespace Nekoyume.UI
             _previousSortingLayerOrder = player.sortingGroup.sortingOrder;
 
             playerTransform.position = avatarPosition.position;
-            player.SetSortingLayer(SortingLayer.NameToID("UI"), 11);
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 3;
+            player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
 
             _tempStats = player.Model.Stats.Clone() as CharacterStats;
+
+            if (!(_constraintsPlayerToUI is null))
+            {
+                StopCoroutine(_constraintsPlayerToUI);
+            }
+
+            _constraintsPlayerToUI = StartCoroutine(CoConstraintsPlayerToUI(playerTransform));
+        }
+
+        private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
+        {
+            while (enabled)
+            {
+                playerTransform.position = avatarPosition.position;
+                yield return null;
+            }
         }
 
         private void ReturnPlayer()
         {
+            if (!(_constraintsPlayerToUI is null))
+            {
+                StopCoroutine(_constraintsPlayerToUI);
+                _constraintsPlayerToUI = null;
+            }
+
             // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
             var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
