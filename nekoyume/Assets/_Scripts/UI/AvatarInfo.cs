@@ -137,7 +137,8 @@ namespace Nekoyume.UI
             _previousSortingLayerOrder = player.sortingGroup.sortingOrder;
 
             playerTransform.position = avatarPosition.position;
-            player.SetSortingLayer(SortingLayer.NameToID("UI"), 11);
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 3;
+            player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
 
             _tempStats = player.Model.Stats.Clone() as CharacterStats;
 

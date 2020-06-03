@@ -31,7 +31,7 @@ namespace Nekoyume.UI
 
         public RectTransform Target => Model.target.Value;
 
-        public override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
+        protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
 
         protected override void Awake()
         {
