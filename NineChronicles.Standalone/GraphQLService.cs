@@ -1,10 +1,12 @@
 using System.Threading;
 using System.Threading.Tasks;
+using GraphQL.Server;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NineChronicles.Standalone.GraphTypes;
 using NineChronicles.Standalone.Properties;
 
 namespace NineChronicles.Standalone
@@ -45,6 +47,19 @@ namespace NineChronicles.Standalone
             {
                 services.AddControllers();
 
+                services
+                    .AddSingleton<StandaloneSchema>()
+                    .AddSingleton<IStandaloneContext, StandaloneContext>()
+                    .AddGraphQL((provider, options) =>
+                    {
+                        options.EnableMetrics = true;
+                        options.ExposeExceptions = true;
+                    })
+                    .AddSystemTextJson()
+                    .AddWebSockets()
+                    .AddDataLoader()
+                    .AddGraphTypes(typeof(StandaloneSchema));
+
                 services.AddCors(options =>
                     options.AddPolicy(
                         "AllowAllOrigins",
@@ -63,14 +78,22 @@ namespace NineChronicles.Standalone
                     app.UseDeveloperExceptionPage();
                 }
 
-                app.UseCors("AllowAllOrigins");
-
                 app.UseRouting();
 
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
                 });
+
+                // WebSocket으로 운영합니다.
+                app.UseWebSockets();
+                app.UseGraphQLWebSockets<StandaloneSchema>("/graphql");
+                app.UseGraphQL<StandaloneSchema>("/graphql");
+
+                // /ui/playground 옵션을 통해서 Playground를 사용할 수 있습니다.
+                app.UseGraphQLPlayground();
+
+                app.UseCors("AllowAllOrigins");
             }
         }
 
