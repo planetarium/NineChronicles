@@ -5,6 +5,7 @@ using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using TMPro;
 using UniRx;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -35,7 +36,8 @@ namespace Nekoyume.UI
 
         private AvatarState _selectedAvatarState = null;
 
-        public override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
+        protected override PivotPresetType TargetPivotPresetType => PivotPresetType.TopRight;
+        protected override float2 OffsetFromTarget => new float2(-20f, -30f);
 
         protected override void Awake()
         {
