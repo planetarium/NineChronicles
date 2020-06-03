@@ -1,12 +1,6 @@
 using System;
-using System.Collections.Immutable;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Cocona;
-using Libplanet;
-using Libplanet.Crypto;
-using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
@@ -99,50 +93,47 @@ namespace NineChronicles.Standalone.Executable
                     );
                 }
 
-                var privateKey = string.IsNullOrEmpty(privateKeyString)
-                    ? new PrivateKey()
-                    : new PrivateKey(ByteUtil.ParseHex(privateKeyString));
-
-                peerStrings ??= Array.Empty<string>();
-                iceServerStrings ??= Array.Empty<string>();
-
-                var iceServers = iceServerStrings.Select(LoadIceServer).ToImmutableArray();
-                var peers = peerStrings.Select(LoadPeer).ToImmutableArray();
-
-                IImmutableSet<Address> trustedStateValidators;
-                if (noTrustedStateValidators)
+                var properties = new LibplanetNodeServiceProperties();
+                try
                 {
-                    trustedStateValidators = ImmutableHashSet<Address>.Empty;
+                    properties = NineChroniclesNodeServiceProperties
+                        .GenerateLibplanetNodeServiceProperties(
+                            appProtocolVersionToken,
+                            genesisBlockPath,
+                            host,
+                            port,
+                            minimumDifficulty,
+                            privateKeyString,
+                            storeType,
+                            storePath,
+                            iceServerStrings,
+                            peerStrings,
+                            noTrustedStateValidators,
+                            trustedAppProtocolVersionSigners,
+                            noMiner);
                 }
-                else
+                catch (Exception e)
                 {
-                    trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
+                    throw new CommandExitedException(
+                        e.Message,
+                        -1);
                 }
 
-                var properties = new LibplanetNodeServiceProperties
+                var rpcProperties = new RpcNodeServiceProperties();
+                try
                 {
-                    Host = host,
-                    Port = port,
-                    AppProtocolVersion = AppProtocolVersion.FromToken(appProtocolVersionToken),
-                    TrustedAppProtocolVersionSigners = trustedAppProtocolVersionSigners
-                        ?.Select(s => new PublicKey(ByteUtil.ParseHex(s)))
-                        ?.ToHashSet(),
-                    GenesisBlockPath = genesisBlockPath,
-                    NoMiner = noMiner,
-                    PrivateKey = privateKey,
-                    IceServers = iceServers,
-                    Peers = peers,
-                    TrustedStateValidators = trustedStateValidators,
-                    StoreType = storeType,
-                    StorePath = storePath,
-                    StoreStatesCacheSize = 5000,
-                    MinimumDifficulty = minimumDifficulty,
-                };
-
-                var rpcProperties = new RpcNodeServiceProperties
+                    rpcProperties = NineChroniclesNodeServiceProperties
+                        .GenerateRpcNodeServiceProperties(
+                            rpcServer,
+                            rpcListenHost,
+                            rpcListenPort);
+                }
+                catch (Exception e)
                 {
-                    RpcServer = rpcServer
-                };
+                    throw new CommandExitedException(
+                        e.Message,
+                        -1);
+                }
 
                 var nineChroniclesProperties = new NineChroniclesNodeServiceProperties
                 {
@@ -150,88 +141,10 @@ namespace NineChronicles.Standalone.Executable
                     Libplanet = properties
                 };
 
-                if (rpcServer)
-                {
-                    if (string.IsNullOrEmpty(rpcListenHost))
-                    {
-                        throw new CommandExitedException(
-                            "--rpc-listen-host must be required when --rpc-server is present.",
-                            -1
-                        );
-                    }
-
-                    if (!(rpcListenPort is int rpcPortValue))
-                    {
-                        throw new CommandExitedException(
-                            "--rpc-listen-port must be required when --rpc-server is present.",
-                            -1
-                        );
-                    }
-
-                    rpcProperties.RpcListenHost = rpcListenHost;
-                    rpcProperties.RpcListenPort = rpcPortValue;
-                }
-
                 await StandaloneServices.RunHeadlessAsync(
                     nineChroniclesProperties,
                     hostBuilder,
                     Context.CancellationToken);
-            }
-        }
-
-        private static IceServer LoadIceServer(string iceServerInfo)
-        {
-            try
-            {
-                var uri = new Uri(iceServerInfo);
-                string[] userInfo = uri.UserInfo.Split(':');
-
-                return new IceServer(new[] {uri}, userInfo[0], userInfo[1]);
-            }
-            catch (Exception e)
-            {
-                throw new CommandExitedException(
-                    $"--ice-server '{iceServerInfo}' seems invalid.\n" +
-                    $"{e.GetType()} {e.Message}\n" +
-                    $"{e.StackTrace}",
-                    -1);
-            }
-        }
-
-        private static BoundPeer LoadPeer(string peerInfo)
-        {
-            var tokens = peerInfo.Split(',');
-            if (tokens.Length != 3)
-            {
-                throw new CommandExitedException(
-                    $"--peer '{peerInfo}', should have format <pubkey>,<host>,<port>",
-                    -1);
-            }
-
-            if (!(tokens[0].Length == 130 || tokens[0].Length == 66))
-            {
-                throw new CommandExitedException(
-                    $"--peer '{peerInfo}', a length of public key must be 130 or 66 in hexadecimal," +
-                    $" but the length of given public key '{tokens[0]}' doesn't.",
-                    -1);
-            }
-
-            try
-            {
-                var pubKey = new PublicKey(ByteUtil.ParseHex(tokens[0]));
-                var host = tokens[1];
-                var port = int.Parse(tokens[2]);
-
-                // FIXME: It might be better to make Peer.AppProtocolVersion property nullable...
-                return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
-            }
-            catch (Exception e)
-            {
-                throw new CommandExitedException(
-                    $"--peer '{peerInfo}' seems invalid.\n" +
-                    $"{e.GetType()} {e.Message}\n" +
-                    $"{e.StackTrace}",
-                    -1);
             }
         }
     }
