@@ -45,6 +45,7 @@ namespace Nekoyume.UI
         private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
 
         private Coroutine _coClose;
+        private Coroutine _coCompleteCloseAnimation;
 
         protected System.Action CloseWidget;
         protected System.Action SubmitWidget;
@@ -266,6 +267,12 @@ namespace Nekoyume.UI
                 _coClose = null;
             }
 
+            if (!(_coCompleteCloseAnimation is null))
+            {
+                StopCoroutine(_coCompleteCloseAnimation);
+                _coCompleteCloseAnimation = null;
+            }
+
             _coClose = StartCoroutine(CoClose());
         }
 
@@ -295,10 +302,16 @@ namespace Nekoyume.UI
                 IsCloseAnimationCompleted = false;
                 Animator.enabled = true;
                 Animator.Play("Close", 0, 0);
-                _coClose = StartCoroutine(CoCompleteCloseAnimation());
+
+                if (!(_coCompleteCloseAnimation is null))
+                {
+                    StopCoroutine(_coCompleteCloseAnimation);
+                }
+
+                _coCompleteCloseAnimation = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
-                StopCoroutine(_coClose);
-                _coClose = null;
+                StopCoroutine(_coCompleteCloseAnimation);
+                _coCompleteCloseAnimation = null;
             }
 
             gameObject.SetActive(false);
