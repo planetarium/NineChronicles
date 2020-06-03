@@ -188,7 +188,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _reset = true;
-            Find<BottomMenu>().Close(true);
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             foreach (var slot in consumableSlots)
             {
@@ -583,6 +583,7 @@ namespace Nekoyume.UI
 
         private void Quest(bool repeat)
         {
+            Find<BottomMenu>().Close(true);
             Find<LoadingScreen>().Show();
 
             questButton.gameObject.SetActive(false);

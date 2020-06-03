@@ -6,9 +6,9 @@ namespace Nekoyume.Battle
     {
         public const int DifferLowerLimit = -15;
         public const int DifferUpperLimit = 10;
-        public const int RewardExpMin = 1;
+        public const int RewardExpMin = 0;
         public const int RewardExpMax = 300;
-        
+
         /// <summary>
         /// key: differ (stage number - character level)
         /// value: exp
@@ -42,18 +42,24 @@ namespace Nekoyume.Battle
             {9, 1},
             {DifferUpperLimit, RewardExpMin},
         };
-        
+
         public static int GetExp(int characterLevel, int stageNumber)
         {
             var differ = characterLevel - stageNumber;
             if (differ <= DifferLowerLimit)
+            {
                 return RewardExpMax;
+            }
 
             if (differ >= DifferUpperLimit)
+            {
                 return RewardExpMin;
-            
+            }
+
             if (!CachedExp.TryGetValue(differ, out var exp))
+            {
                 throw new KeyNotFoundException($"[{nameof(StageRewardExpHelper)}] {nameof(CachedExp)} not contains {differ}");
+            }
 
             return exp;
         }

@@ -132,6 +132,15 @@ jobs:
         # macOS 내장 date는 ISO 8601 서식 옵션이 따로 없음
         timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
+        # TentuPlay 설정 파일 만들기
+        sed 's|__API_KEY__|${{ secrets.TENTU_API_KEY }}|' \
+          .github/data/TentuPlaySettings.asset.template \
+          | sed 's|__SECRET__|${{ secrets.TENTU_SECRET }}|' \
+          | sed 's|__DEBUG__|0|' \
+          | sed 's|__USE_PERSIST_DB_CONN__|0|' \
+          | sed 's|__AUTO_UPLOAD__|1|' \
+          > nekoyume/Assets/TentuPlay/Resources/TentuPlaySettings.asset
+
         .github/bin/pack.sh \
           /tmp/package \
           Windows \

@@ -68,10 +68,8 @@ namespace Nekoyume.Game.Entrance
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory,
                 BottomMenu.ToggleableType.Settings,
-                BottomMenu.ToggleableType.Combination,
-                BottomMenu.ToggleableType.AvatarInfo
+                BottomMenu.ToggleableType.Combination
             );
 
             Destroy(this);

@@ -26,7 +26,9 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             if (!gameObject.activeSelf)
+            {
                 return;
+            }
 
             StartCoroutine(CoClose(ignoreCloseAnimation));
         }

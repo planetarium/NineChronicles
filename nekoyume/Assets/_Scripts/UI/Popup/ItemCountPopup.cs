@@ -56,7 +56,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForAwake);
 
             CloseWidget = cancelButton.onClick.Invoke;
-            SubmitWidget = submitButton.button.onClick.Invoke;
+            SubmitWidget = () => submitButton.OnSubmitClick.OnNext(submitButton);
         }
 
         protected override void OnDestroy()
