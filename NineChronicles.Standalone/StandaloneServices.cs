@@ -18,7 +18,7 @@ namespace NineChronicles.Standalone
                 properties.Libplanet,
                 properties.Rpc,
                 ignoreBootstrapFailure: true);
-            return service.Run(cancellationToken);
+            return service.Run(hostBuilder, cancellationToken);
         }
 
         public static Task RunGraphQLAsync(

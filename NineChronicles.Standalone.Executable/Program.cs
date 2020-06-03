@@ -94,6 +94,7 @@ namespace NineChronicles.Standalone.Executable
                 }
 
                 var properties = new LibplanetNodeServiceProperties();
+                var rpcProperties = new RpcNodeServiceProperties();
                 try
                 {
                     properties = NineChroniclesNodeServiceProperties
@@ -111,17 +112,6 @@ namespace NineChronicles.Standalone.Executable
                             noTrustedStateValidators,
                             trustedAppProtocolVersionSigners,
                             noMiner);
-                }
-                catch (Exception e)
-                {
-                    throw new CommandExitedException(
-                        e.Message,
-                        -1);
-                }
-
-                var rpcProperties = new RpcNodeServiceProperties();
-                try
-                {
                     rpcProperties = NineChroniclesNodeServiceProperties
                         .GenerateRpcNodeServiceProperties(
                             rpcServer,
@@ -135,12 +125,11 @@ namespace NineChronicles.Standalone.Executable
                         -1);
                 }
 
-                var nineChroniclesProperties = new NineChroniclesNodeServiceProperties
+                var nineChroniclesProperties = new NineChroniclesNodeServiceProperties()
                 {
                     Rpc = rpcProperties,
                     Libplanet = properties
                 };
-
                 await StandaloneServices.RunHeadlessAsync(
                     nineChroniclesProperties,
                     hostBuilder,

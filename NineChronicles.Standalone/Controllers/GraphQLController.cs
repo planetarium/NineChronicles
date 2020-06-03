@@ -45,10 +45,10 @@ namespace NineChronicles.Standalone.Controllers
 
         [HttpPost("/run-standalone")]
         public IActionResult RunStandAlone(
-            [FromBody] NineChroniclesNodeServiceProperties properties
+            [FromBody] ServiceBindingProperties properties
         )
         {
-            return Ok("test");
+           return Ok(properties.ToString());
         }
     }
 }
