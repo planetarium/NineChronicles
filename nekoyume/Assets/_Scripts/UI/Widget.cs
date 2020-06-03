@@ -44,6 +44,8 @@ namespace Nekoyume.UI
         private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
         private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
 
+        private Coroutine _coClose;
+
         protected System.Action CloseWidget;
         protected System.Action SubmitWidget;
 
@@ -220,6 +222,7 @@ namespace Nekoyume.UI
                     WidgetType.Screen);
             }
 
+            AnimationState = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
             if (!Animator ||
@@ -229,7 +232,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            AnimationState = AnimationStateType.Showing;
             Animator.enabled = true;
             Animator.Play("Show", 0, 0);
         }
@@ -247,8 +249,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            StopAllCoroutines();
-
             if (!Animator ||
                 ignoreCloseAnimation)
             {
@@ -260,6 +260,12 @@ namespace Nekoyume.UI
 
             AnimationState = AnimationStateType.Closing;
             // TODO : wait close animation
+            if (!(_coClose is null))
+            {
+                StopCoroutine(_coClose);
+                _coClose = null;
+            }
+
             StartCoroutine(CoClose());
         }
 
@@ -289,12 +295,14 @@ namespace Nekoyume.UI
                 IsCloseAnimationCompleted = false;
                 Animator.enabled = true;
                 Animator.Play("Close", 0, 0);
-                var coroutine = StartCoroutine(CoCompleteCloseAnimation());
+                _coClose = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
-                StopCoroutine(coroutine);
+                StopCoroutine(_coClose);
+                _coClose = null;
             }
 
             gameObject.SetActive(false);
+            AnimationState = AnimationStateType.Closed;
         }
 
         private IEnumerator CoCompleteCloseAnimation()
@@ -324,7 +332,6 @@ namespace Nekoyume.UI
             OnCompleteOfCloseAnimationInternal();
 
             IsCloseAnimationCompleted = true;
-            AnimationState = AnimationStateType.Closed;
         }
 
         protected virtual void OnCompleteOfCloseAnimationInternal()
