@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +10,6 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
 using MagicOnion.Hosting;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
@@ -33,8 +31,6 @@ namespace NineChronicles.Standalone
 
         private RpcNodeServiceProperties RpcProperties { get; }
 
-        private GraphQLNodeServiceProperties GraphQLProperties { get; }
-
         public AsyncAutoResetEvent BootstrapEnded => NodeService.BootstrapEnded;
 
         public AsyncAutoResetEvent PreloadEnded => NodeService.PreloadEnded;
@@ -44,14 +40,12 @@ namespace NineChronicles.Standalone
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties<NineChroniclesActionType> properties,
             RpcNodeServiceProperties rpcNodeServiceProperties,
-            //GraphQLNodeServiceProperties graphQlNodeServiceProperties,
             Progress<PreloadState> preloadProgress = null,
             bool ignoreBootstrapFailure = false
         )
         {
             Properties = properties;
             RpcProperties = rpcNodeServiceProperties;
-            //GraphQLProperties = graphQlNodeServiceProperties;
 
             try
             {
@@ -121,15 +115,6 @@ namespace NineChronicles.Standalone
                         ));
                     });
             }
-
-            // if (GraphQLProperties.GraphQLServer)
-            // {
-            //     hostBuilder.ConfigureWebHostDefaults(builder =>
-            //     {
-            //         builder.UseStartup<GraphQLStartup>();
-            //         builder.UseUrls($"http://{GraphQLProperties.GraphQLListenHost}:{GraphQLProperties.GraphQLListenPort}/");
-            //     });
-            // }
 
             await hostBuilder.ConfigureServices((ctx, services) =>
             {
