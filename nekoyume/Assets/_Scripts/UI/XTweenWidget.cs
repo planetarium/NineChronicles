@@ -9,13 +9,8 @@ namespace Nekoyume.UI
     {
         [SerializeField]
         private AnchoredPositionXTweener xTweener;
-        protected AnchoredPositionXTweener XTweener => xTweener;
 
-        protected override void Awake()
-        {
-            base.Awake();
-            xTweener = GetComponentInChildren<AnchoredPositionXTweener>();
-        }
+        protected AnchoredPositionXTweener XTweener => xTweener;
 
         public override void Show(bool ignoreShowAnimation = false)
         {
