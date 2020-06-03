@@ -77,7 +77,7 @@ namespace NineChronicles.Standalone.Executable
             }
             else
             {
-                if (appProtocolVersionToken == null)
+                if (appProtocolVersionToken is null)
                 {
                     throw new CommandExitedException(
                         "--app-protocol-version must be required.",
@@ -85,7 +85,7 @@ namespace NineChronicles.Standalone.Executable
                     );
                 }
 
-                if (genesisBlockPath == null)
+                if (genesisBlockPath is null)
                 {
                     throw new CommandExitedException(
                         "--genesis-block-path must be required.",
@@ -154,18 +154,17 @@ namespace NineChronicles.Standalone.Executable
                             -1
                         );
                     }
-                    else if (!(rpcListenPort is int rpcPortValue))
+
+                    if (!(rpcListenPort is int rpcPortValue))
                     {
                         throw new CommandExitedException(
                             "--rpc-listen-port must be required when --rpc-server is present.",
                             -1
                         );
                     }
-                    else
-                    {
-                        rpcProperties.RpcListenHost = rpcListenHost;
-                        rpcProperties.RpcListenPort = rpcPortValue;
-                    }
+
+                    rpcProperties.RpcListenHost = rpcListenHost;
+                    rpcProperties.RpcListenPort = rpcPortValue;
                 }
 
                 await StandaloneServices.RunHeadlessAsync(nineChroniclesProperties, Context.CancellationToken);
