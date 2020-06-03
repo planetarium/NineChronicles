@@ -38,7 +38,13 @@ namespace Nekoyume.Game.Character
 
         public void SetSortingLayer(LayerType layerType)
         {
+            SetSortingLayer(layerType, _sortingGroup.sortingOrder);
+        }
+
+        public void SetSortingLayer(LayerType layerType, int sortingOrder)
+        {
             _sortingGroup.sortingLayerName = layerType.ToLayerName();
+            _sortingGroup.sortingOrder = sortingOrder;
         }
 
         public void ResetAnimatorTarget(GameObject target)

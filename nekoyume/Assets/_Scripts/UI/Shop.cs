@@ -32,6 +32,8 @@ namespace Nekoyume.UI
         private const int NPCId = 300000;
         private static readonly Vector2 NPCPosition = new Vector2(2.76f, -1.72f);
 
+        private bool _isStateShowBefore = false;
+
         private float _defaultAnchoredPositionXOfBg1;
         private float _defaultAnchoredPositionXOfRight;
         private NPC _npc;
@@ -128,9 +130,13 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.Quest,
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook,
-                BottomMenu.ToggleableType.Inventory);
+                BottomMenu.ToggleableType.Character);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                NPCPosition,
+                LayerType.InGameBackground,
+                3);
             _npc = go.GetComponent<NPC>();
             go.SetActive(true);
             _sequenceOfShopItems = null;
@@ -140,8 +146,8 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfShowAnimationInternal()
         {
-            base.OnCompleteOfShowAnimationInternal();
             canvasGroup.interactable = true;
+            SharedModel.State.Value = StateType.Buy;
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
@@ -180,13 +186,23 @@ namespace Nekoyume.UI
             {
                 case StateType.Show:
                     shopItems.SharedModel.State.Value = stateType;
-                    SharedModel.State.Value = StateType.Buy;
+                    shopNotice.SetActive(false);
                     _toggleGroup.SetToggledOn(buyButton);
+                    _isStateShowBefore = true;
                     return;
                 case StateType.Buy:
                     inventory.SharedModel.DimmedFunc.Value = null;
                     shopNotice.SetActive(false);
                     _toggleGroup.SetToggledOn(buyButton);
+
+                    if (_isStateShowBefore)
+                    {
+                        _isStateShowBefore = false;
+                        shopItems.SharedModel.State.Value = stateType;
+                        buyButton.SetInteractable(false, true);
+                        sellButton.SetInteractable(true, true);
+                        return;
+                    }
                     break;
                 case StateType.Sell:
                     inventory.SharedModel.DimmedFunc.Value = DimmedFuncForSell;
@@ -201,6 +217,7 @@ namespace Nekoyume.UI
             rightCanvasGroup.alpha = 0;
             if (_sequenceOfShopItems is null)
             {
+                Animator.enabled = false;
                 _sequenceOfShopItems = DOTween.Sequence();
                 SetSequenceOfShopItems(true, ref _sequenceOfShopItems);
                 _sequenceOfShopItems.AppendCallback(() =>
@@ -210,6 +227,7 @@ namespace Nekoyume.UI
                 {
                     rightCanvasGroup.DOFade(1f, 0.5f).OnComplete(() =>
                     {
+                        Animator.enabled = true;
                         canvasGroup.interactable = true;
                         _sequenceOfShopItems = null;
                         buyButton.SetInteractable(stateType == StateType.Sell, true);
@@ -466,17 +484,21 @@ namespace Nekoyume.UI
 
         private static bool DimmedFuncForSell(InventoryItem inventoryItem)
         {
-            return inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
+            return inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume ||
+                   inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
         }
 
         private static bool EquippedFuncForSell(InventoryItem inventoryItem)
         {
-            if (!(inventoryItem.ItemBase.Value is Equipment equipment))
+            switch (inventoryItem.ItemBase.Value)
             {
-                return false;
+                case Costume costume:
+                    return costume.equipped;
+                case Equipment equipment:
+                    return equipment.equipped;
+                default:
+                    return false;
             }
-
-            return equipment.equipped;
         }
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)

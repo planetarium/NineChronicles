@@ -4617,7 +4617,7 @@ ParticleSystemRenderer:
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
@@ -4641,8 +4641,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayer: 7
+  m_SortingOrder: 100
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -9360,7 +9360,7 @@ ParticleSystemRenderer:
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
@@ -9384,8 +9384,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayer: 7
+  m_SortingOrder: 100
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -14067,7 +14067,7 @@ ParticleSystemRenderer:
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
@@ -14091,8 +14091,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayer: 7
+  m_SortingOrder: 100
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -18657,7 +18657,7 @@ ParticleSystemRenderer:
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
@@ -18681,8 +18681,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayer: 7
+  m_SortingOrder: 100
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -23415,7 +23415,7 @@ ParticleSystemRenderer:
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
@@ -23439,8 +23439,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayer: 7
+  m_SortingOrder: 100
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -28161,7 +28161,7 @@ ParticleSystemRenderer:
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
+  m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
@@ -28185,8 +28185,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayer: 7
+  m_SortingOrder: 100
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0

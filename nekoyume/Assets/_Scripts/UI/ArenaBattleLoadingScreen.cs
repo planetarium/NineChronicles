@@ -12,9 +12,14 @@ namespace Nekoyume.UI
 {
     public class ArenaBattleLoadingScreen : ScreenWidget
     {
-        [SerializeField]private CharacterProfile playerProfile;
-        [SerializeField]private CharacterProfile enemyProfile;
-        [SerializeField]private TextMeshProUGUI loadingText;
+        [SerializeField]
+        private CharacterProfile playerProfile = null;
+        
+        [SerializeField]
+        private CharacterProfile enemyProfile = null;
+        
+        [SerializeField]
+        private TextMeshProUGUI loadingText = null;
 
         public void Show(ArenaInfo enemyInfo)
         {

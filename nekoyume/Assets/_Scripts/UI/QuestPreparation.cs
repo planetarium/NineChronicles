@@ -95,6 +95,7 @@ namespace Nekoyume.UI
             _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
+                inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume ||
                 inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView
                 .Subscribe(SubscribeInventorySelectedItem)
@@ -187,7 +188,7 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             _reset = true;
-            Find<BottomMenu>().Close(true);
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
 
             foreach (var slot in consumableSlots)
             {
@@ -261,22 +262,16 @@ namespace Nekoyume.UI
                 return;
             }
 
-            foreach (var inventoryItem in value.SharedModel.Equipments)
+            inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
             {
-                switch (inventoryItem.ItemBase.Value.Data.ItemType)
+                if (inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume &&
+                    inventoryItem.ItemBase.Value is Costume costume)
                 {
-                    case ItemType.Consumable:
-                    case ItemType.Equipment:
-                        inventoryItem.EquippedEnabled.Value =
-                            TryToFindSlotAlreadyEquip((ItemUsable) inventoryItem.ItemBase.Value,
-                                out var _);
-                        break;
-                    case ItemType.Material:
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    return costume.equipped;
                 }
-            }
+
+                return TryToFindSlotAlreadyEquip(inventoryItem.ItemBase.Value, out _);
+            });
         }
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
@@ -442,24 +437,17 @@ namespace Nekoyume.UI
 
         private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            switch (itemBase.Data.ItemType)
+            if (itemBase.Data.ItemType != ItemType.Equipment)
             {
-                case ItemType.Costume:
-                    LocalStateModifier.SetCostumeEquip(
-                        States.Instance.CurrentAvatarState.address,
-                        itemBase.Data.Id,
-                        equip,
-                        false);
-                    break;
-                case ItemType.Equipment:
-                    var equipment = (Equipment) itemBase;
-                    LocalStateModifier.SetEquipmentEquip(
-                        States.Instance.CurrentAvatarState.address,
-                        equipment.ItemId,
-                        equip,
-                        false);
-                    break;
+                return;
             }
+
+            var equipment = (Equipment) itemBase;
+            LocalStateModifier.SetEquipmentEquip(
+                States.Instance.CurrentAvatarState.address,
+                equipment.ItemId,
+                equip,
+                false);
         }
 
         private void PostEquipOrUnequip(EquipmentSlot slot)
@@ -487,35 +475,41 @@ namespace Nekoyume.UI
         {
             switch (item.Data.ItemType)
             {
-                case ItemType.Costume:
+                case ItemType.Consumable:
+                    foreach (var consumableSlot in consumableSlots.Where(consumableSlot =>
+                        !consumableSlot.IsLock && !consumableSlot.IsEmpty))
+                    {
+                        if (!consumableSlot.Item.Equals(item))
+                            continue;
+
+                        slot = consumableSlot;
+                        return true;
+                    }
+
+                    slot = null;
+                    return false;
                 case ItemType.Equipment:
                     return equipmentSlots.TryGetAlreadyEquip(item, out slot);
+                default:
+                    slot = null;
+                    return false;
             }
-
-            foreach (var consumableSlot in consumableSlots.Where(consumableSlot =>
-                !consumableSlot.IsLock && !consumableSlot.IsEmpty))
-            {
-                if (!consumableSlot.Item.Equals(item))
-                    continue;
-
-                slot = consumableSlot;
-                return true;
-            }
-
-            slot = null;
-            return false;
         }
 
         private bool TryToFindSlotToEquip(ItemBase item, out EquipmentSlot slot)
         {
-            if (item.Data.ItemType == ItemType.Equipment)
+            switch (item.Data.ItemType)
             {
-                return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
+                case ItemType.Consumable:
+                    slot = consumableSlots.FirstOrDefault(s => !s.IsLock && s.IsEmpty)
+                           ?? consumableSlots[0];
+                    return true;
+                case ItemType.Equipment:
+                    return equipmentSlots.TryGetToEquip((Equipment) item, out slot);
+                default:
+                    slot = null;
+                    return false;
             }
-
-            slot = consumableSlots.FirstOrDefault(s => !s.IsLock && s.IsEmpty)
-                   ?? consumableSlots[0];
-            return true;
         }
 
         private void UpdateGlowEquipSlot(ItemUsable itemUsable)
@@ -589,6 +583,7 @@ namespace Nekoyume.UI
 
         private void Quest(bool repeat)
         {
+            Find<BottomMenu>().Close(true);
             Find<LoadingScreen>().Show();
 
             questButton.gameObject.SetActive(false);

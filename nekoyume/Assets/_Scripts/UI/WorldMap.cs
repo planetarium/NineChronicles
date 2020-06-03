@@ -201,7 +201,7 @@ namespace Nekoyume.UI
                 SubscribeBackButtonClick,
                 true,
                 BottomMenu.ToggleableType.WorldMap);
-            bottomMenu.worldMapButton.button.OnClickAsObservable()
+            bottomMenu.worldMapButton.OnClick
                 .Subscribe(_ => SharedViewModel.IsWorldShown.SetValueAndForceNotify(true))
                 .AddTo(_disposablesAtShow);
 
@@ -234,7 +234,11 @@ namespace Nekoyume.UI
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
                 throw new ArgumentException(nameof(worldId));
 
-            CloseWidget = Find<BottomMenu>().worldMapButton.button.onClick.Invoke;
+            CloseWidget = () =>
+            {
+                var button = Find<BottomMenu>().worldMapButton;
+                button.OnClick.OnNext(button);
+            };
             CloseWidget += Pop;
             CloseWidget += () => CloseWidget = null;
             Push();
@@ -323,7 +327,7 @@ namespace Nekoyume.UI
 
             var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
-            stageInformation.titleText.text = $"Stage #{stageWaveRow.StageId - SelectedWorldStageBegin + 1}";
+            stageInformation.titleText.text = $"Stage #{stageWaveRow.StageId}";
 
             var monsterCount = stageWaveRow.TotalMonsterIds.Count;
             for (var i = 0; i < stageInformation.monstersAreaCharacterViews.Count; i++)

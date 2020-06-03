@@ -9,7 +9,7 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 
-namespace _Scripts.UI
+namespace Nekoyume.UI
 {
     public class CombinationSlots : XTweenWidget
     {
@@ -23,10 +23,10 @@ namespace _Scripts.UI
             base.Awake();
             CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SetSlots)
                 .AddTo(gameObject);
-            Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
             headerText.text = LocalizationManager.Localize("UI_COMBINATION");
-            _blockIndex = Game.instance.Agent.BlockIndex;
+            _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }
 
         private void SetSlots(Dictionary<int, CombinationSlotState> states)

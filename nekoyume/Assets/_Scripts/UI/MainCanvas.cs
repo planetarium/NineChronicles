@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using _Scripts.UI;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
