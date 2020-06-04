@@ -87,7 +87,7 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
-            List<Costume> costumes,
+            List<int> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
@@ -107,8 +107,8 @@ namespace Nekoyume.BlockChain
             var action = new HackAndSlash
             {
                 costumes = costumes,
-                equipments = equipments,
-                foods = foods,
+                equipments = equipments.Select(e => e.ItemId).ToList(),
+                foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarAddress,

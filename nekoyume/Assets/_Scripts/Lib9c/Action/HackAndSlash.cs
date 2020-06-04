@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -20,9 +19,9 @@ namespace Nekoyume.Action
     [ActionType("hack_and_slash")]
     public class HackAndSlash : GameAction
     {
-        public List<Costume> costumes;
-        public List<Equipment> equipments;
-        public List<Consumable> foods;
+        public List<int> costumes;
+        public List<Guid> equipments;
+        public List<Guid> foods;
         public int worldId;
         public int stageId;
         public Address avatarAddress;
@@ -35,8 +34,8 @@ namespace Nekoyume.Action
                 ["costumes"] = new Bencodex.Types.List(costumes.Select(e => e.Serialize())),
                 ["equipments"] = new Bencodex.Types.List(equipments.Select(e => e.Serialize())),
                 ["foods"] = new Bencodex.Types.List(foods.Select(e => e.Serialize())),
-                ["worldId"] = (Integer) worldId,
-                ["stageId"] = (Integer) stageId,
+                ["worldId"] = worldId.Serialize(),
+                ["stageId"] = stageId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
             }.ToImmutableDictionary();
@@ -45,16 +44,16 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             costumes = ((Bencodex.Types.List) plainValue["costumes"]).Select(
-                e => (Costume) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+                e => e.ToInteger()
             ).ToList();
             equipments = ((Bencodex.Types.List) plainValue["equipments"]).Select(
-                e => (Equipment) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+                e => e.ToGuid()
             ).ToList();
             foods = ((Bencodex.Types.List) plainValue["foods"]).Select(
-                e => (Consumable) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+                e => e.ToGuid()
             ).ToList();
-            worldId = (int) ((Integer) plainValue["worldId"]).Value;
-            stageId = (int) ((Integer) plainValue["stageId"]).Value;
+            worldId = plainValue["worldId"].ToInteger();
+            stageId = plainValue["stageId"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
         }
@@ -148,9 +147,9 @@ namespace Nekoyume.Action
             }
 
             // 코스튬 장착.
-            foreach (var costume in costumes)
+            foreach (var costumeId in costumes)
             {
-                if (!avatarState.inventory.TryGetFungibleItem(costume, out var outItem))
+                if (!avatarState.inventory.TryGetCostume(costumeId, out var outItem))
                 {
                     continue;
                 }
@@ -174,9 +173,9 @@ namespace Nekoyume.Action
             sw.Restart();
 
             // 장비 장착.
-            foreach (var equipment in equipments)
+            foreach (var equipmentId in equipments)
             {
-                if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
+                if (!avatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable outNonFungibleItem))
                 {
                     continue;
                 }

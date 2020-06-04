@@ -30,7 +30,7 @@ namespace Nekoyume.Battle
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
-            List<Consumable> foods,
+            List<Guid> foods,
             int worldId,
             int stageId,
             TableSheets tableSheets) : base(random, avatarState, foods, tableSheets)
@@ -59,7 +59,7 @@ namespace Nekoyume.Battle
         public StageSimulator(
             IRandom random,
             AvatarState avatarState,
-            List<Consumable> foods,
+            List<Guid> foods,
             int worldId,
             int stageId,
             TableSheets tableSheets,
