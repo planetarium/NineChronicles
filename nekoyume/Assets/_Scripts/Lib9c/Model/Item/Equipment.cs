@@ -39,7 +39,14 @@ namespace Nekoyume.Model.Item
             }
             if (serialized.TryGetValue((Text) "level", out var toLevel))
             {
-                level = (int) ((Integer) toLevel).Value;
+                try
+                {
+                    level = toLevel.ToInteger();
+                }
+                catch (InvalidCastException)
+                {
+                    level = (int) ((Integer) toLevel).Value;
+                }
             }
             if (serialized.TryGetValue((Text) "stat", out var stat))
             {
@@ -59,8 +66,7 @@ namespace Nekoyume.Model.Item
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "equipped"] = equipped.Serialize(),
-                //하위호환성때문에 남겨둡니다.
-                [(Text) "level"] = (Integer) level,
+                [(Text) "level"] = level.Serialize(),
                 [(Text) "stat"] = Stat.Serialize(),
                 [(Text) "set_id"] = SetId.Serialize(),
                 [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
