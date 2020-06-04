@@ -17,14 +17,14 @@ namespace Nekoyume.Action
     {
         public Address sellerAvatarAddress;
         public Guid productId;
-        public ItemUsable itemUsable;
+        public Guid itemId;
         public decimal price;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
             ["sellerAvatarAddress"] = sellerAvatarAddress.Serialize(),
             ["productId"] = productId.Serialize(),
-            ["itemUsable"] = itemUsable.Serialize(),
+            ["itemId"] = itemId.Serialize(),
             ["price"] = price.Serialize(),
         }.ToImmutableDictionary();
 
@@ -32,9 +32,7 @@ namespace Nekoyume.Action
         {
             sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
             productId = plainValue["productId"].ToGuid();
-            itemUsable = (ItemUsable) ItemFactory.Deserialize(
-                (Bencodex.Types.Dictionary) plainValue["itemUsable"]
-            );
+            itemId = plainValue["itemId"].ToGuid();
             price = plainValue["price"].ToDecimal();
         }
 
@@ -95,12 +93,12 @@ namespace Nekoyume.Action
             Log.Debug("Execute Sell; seller: {SellerAvatarAddress}", sellerAvatarAddress);
 
             // 인벤토리에서 판매할 아이템을 선택하고 수량을 조절한다.
-            if (!avatarState.inventory.TryGetNonFungibleItem(itemUsable, out ItemUsable nonFungibleItem))
+            if (!avatarState.inventory.TryGetNonFungibleItem(itemId, out ItemUsable nonFungibleItem))
             {
                 return LogError(
                     context,
                     "Aborted as the NonFungibleItem ({@Item}) was failed to load from avatar's inventory.",
-                    itemUsable
+                    itemId
                 );
             }
 
@@ -110,7 +108,7 @@ namespace Nekoyume.Action
                 return LogError(
                     context,
                     "Aborted as the equipment to enhance ({@Item}) is not available yet; it will be available at the block #{RequiredBlockIndex}.",
-                    itemUsable,
+                    itemId,
                     nonFungibleItem.RequiredBlockIndex
                 );
             }
