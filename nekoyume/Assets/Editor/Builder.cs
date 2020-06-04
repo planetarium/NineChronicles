@@ -260,7 +260,7 @@ namespace Editor
             string solutionDir = Path.Combine("..", "NineChronicles.Launcher");
             var pi = new ProcessStartInfo
             {
-                Arguments = $"publish -r {rid} -p:PublishSingleFile=true",
+                Arguments = $"publish -r {rid}",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
@@ -277,7 +277,8 @@ namespace Editor
             }
             else
             {
-                pi.FileName = "/usr/local/bin/dotnet";
+                pi.FileName = Environment.GetEnvironmentVariable("DOTNET_PATH")
+                    ?? "/usr/local/bin/dotnet";
             }
             Process p = Process.Start(pi);
             return (p, Path.Combine(solutionDir, "out", rid));
@@ -558,10 +559,16 @@ namespace Editor
                     }
                     string cloPath = Path.Combine(streamingAssetsDir, "clo.json");
 
-                    // FIXME: clo.template.json 파일이 어디 있는지 지금은 잘 안 보이는데,
-                    // 나중에 CI 체계를 업데이트하면서 찾기 쉬운 곳으로 옮기든가 해야 할 듯.
                     string cloTemplatePath = Path.Combine(
-                        outputPath, "..", "..", "..", ".github", "bin", "clo.json.template");
+                            outputPath, "..", "..", "Assets", "StreamingAssets", "clo.json");
+                    if (!File.Exists(cloTemplatePath))
+                    {
+                        // FIXME: clo.template.json 파일이 어디 있는지 지금은 잘 안 보이는데,
+                        // 나중에 CI 체계를 업데이트하면서 찾기 쉬운 곳으로 옮기든가 해야 할 듯.
+                        cloTemplatePath = Path.Combine(
+                            outputPath, "..", "..", "..", ".github", "bin", "clo.json.template");
+                    }
+
                     if (File.Exists(cloTemplatePath))
                     {
                         File.Copy(cloTemplatePath, cloPath, overwrite: true);

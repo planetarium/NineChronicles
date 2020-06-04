@@ -16,6 +16,7 @@ using Serilog;
 using Serilog.Events;
 using ShellProgressBar;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
+using static Launcher.Common.Configuration.Path;
 using static Launcher.Common.Utils;
 
 namespace Launcher.Updater
@@ -35,8 +36,9 @@ namespace Launcher.Updater
 
         static async Task Main(string[] args)
         {
-            AppDomain.CurrentDomain.ProcessExit += Configuration.FlushApplicationInsightLog;
-            AppDomain.CurrentDomain.UnhandledException += Configuration.FlushApplicationInsightLog;
+            var configuration = new Configuration();
+            AppDomain.CurrentDomain.ProcessExit += Configuration.Log.FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.UnhandledException += Configuration.Log.FlushApplicationInsightLog;
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
@@ -46,7 +48,7 @@ namespace Launcher.Updater
                     rollOnFileSizeLimit: true,
                     retainedFileCountLimit: 5)
                 .WriteTo.ApplicationInsights(
-                    Configuration.TelemetryClient,
+                    Configuration.Log.TelemetryClient,
                     TelemetryConverter.Traces,
                     LogEventLevel.Information)
                 .MinimumLevel.Debug()
@@ -218,7 +220,7 @@ namespace Launcher.Updater
 
             var cwd = new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
 
-            string settingPath = Path.Combine(cwd, Configuration.SettingFileName);
+            string settingPath = Path.Combine(cwd, SettingFileName);
             string prevSettingPath = settingPath + ".prev";
             if (File.Exists(settingPath))
             {

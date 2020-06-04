@@ -50,9 +50,11 @@ def main() -> None:
             path = os.path.join(root, name)
             tmppath = os.path.join(temp_dir, name)
             if os.path.isdir(path):
-                shutil.copytree(path, tmppath)
+                if not os.path.isdir(tmppath):  # skip duplicate dirs
+                    shutil.copytree(path, tmppath)
             else:
-                shutil.copy2(path, tmppath)
+                if not os.path.isfile(tmppath):  # skip duplicate files
+                    shutil.copy2(path, tmppath)
             logging.info('Copy: %s -> %s', path, tmppath)
 
     # 아직 실제로 올라가 있지 않더라도, 이쪽으로 올려야 함. 서명을 하기 위해 미리 URL을 결정해 둠.
