@@ -1,12 +1,14 @@
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using BTAI;
 using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Subscription;
 using GraphQL.Types;
+using Libplanet;
 using Libplanet.Blockchain;
 using Log = Serilog.Log;
 
@@ -14,14 +16,16 @@ namespace NineChronicles.Standalone.GraphTypes
 {
     public class StandaloneSubscription : ObjectGraphType
     {
-        // TODO: 추가적인 값을 줘야 합니다.
         class TipChanged : ObjectGraphType<TipChanged>
         {
             public long Index { get; set; }
 
+            public HashDigest<SHA256> Hash { get; set; }
+
             public TipChanged()
             {
                 Field<LongGraphType>(nameof(Index));
+                Field<ByteStringType>("hash", resolve: context => context.Source.Hash.ToByteArray());
             }
         }
 
@@ -55,6 +59,7 @@ namespace NineChronicles.Standalone.GraphTypes
                 _subject.OnNext(new TipChanged
                 {
                     Index = args.Index,
+                    Hash = args.Hash,
                 });
             };
         }

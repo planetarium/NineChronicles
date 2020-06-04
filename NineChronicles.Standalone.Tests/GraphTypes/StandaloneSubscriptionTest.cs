@@ -41,6 +41,7 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             var schema = new StandaloneSchema(StandaloneContextFx);
             Assert.IsType<StandaloneSubscription>(schema.Subscription);
             schema.Subscription.As<StandaloneSubscription>().RegisterTipChangedSubscription();
+            var blockChain = StandaloneContextFx.BlockChain;
 
             var miner = new Address();
 
@@ -49,13 +50,12 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             const int repeat = 10;
             foreach (long index in Enumerable.Range(1, repeat))
             {
-                await StandaloneContextFx.BlockChain.MineBlock(miner);
+                await blockChain.MineBlock(miner);
 
                 var result = await executor.ExecuteAsync(new ExecutionOptions
                 {
-                    Query = "subscription { tipChanged { index } }",
+                    Query = "subscription { tipChanged { index hash } }",
                     Schema = schema,
-
                 });
 
                 Assert.IsType<SubscriptionExecutionResult>(result);
@@ -68,6 +68,7 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                 var events = (Dictionary<string, object>) rawEvents.Data;
                 var tipChangedEvent = (Dictionary<string, object>) events["tipChanged"];
                 Assert.Equal(index, tipChangedEvent["index"]);
+                Assert.Equal(blockChain[index].Hash.ToByteArray(), ByteUtil.ParseHex((string) tipChangedEvent["hash"]));
             }
         }
     }
