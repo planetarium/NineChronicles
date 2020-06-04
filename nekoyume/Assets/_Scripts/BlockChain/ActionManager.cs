@@ -127,25 +127,16 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
-            List<(Material material, int count)> materialInfoList, int slotIndex)
+            int recipeId, int slotIndex)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
-            var action = new CombinationConsumable();
-            materialInfoList.ForEach(info =>
+            var action = new CombinationConsumable
             {
-                var (material, count) = info;
-                if (action.Materials.ContainsKey(material))
-                {
-                    action.Materials[material] += count;
-                }
-                else
-                {
-                    action.Materials.Add(material, count);
-                }
-            });
-            action.AvatarAddress = States.Instance.CurrentAvatarState.address;
-            action.slotIndex = slotIndex;
+                recipeId = recipeId,
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                slotIndex = slotIndex,
+            };
             ProcessAction(action);
 
             return _renderer.EveryRender<CombinationConsumable>()
