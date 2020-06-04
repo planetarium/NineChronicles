@@ -338,6 +338,57 @@ namespace Nekoyume.Model.State
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
         }
 
+        public bool ValidateEquipments(List<Guid> equipmentIds, long blockIndex)
+        {
+            var ringCount = 0;
+            var failed = false;
+            foreach (var itemId in equipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(itemId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                var equipment = (Equipment) outNonFungibleItem;
+                if (equipment.RequiredBlockIndex > blockIndex)
+                {
+                    failed = true;
+                    break;
+                }
+
+                switch (equipment.ItemSubType)
+                {
+                    case ItemSubType.Weapon:
+                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                        break;
+                    case ItemSubType.Armor:
+                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                        break;
+                    case ItemSubType.Belt:
+                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                        break;
+                    case ItemSubType.Necklace:
+                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                        break;
+                    case ItemSubType.Ring:
+                        ringCount++;
+                        var requireLevel = ringCount == 1
+                            ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
+                            : ringCount == 2
+                                ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
+                                : int.MaxValue;
+                        failed = level < requireLevel;
+                        break;
+                    default:
+                        failed = true;
+                        break;
+                }
+            }
+
+            return !failed;
+        }
+
+
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
