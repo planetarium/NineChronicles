@@ -93,7 +93,7 @@ namespace NineChronicles.Standalone.Executable
                     );
                 }
 
-                var properties = new LibplanetNodeServiceProperties();
+                var properties = new LibplanetNodeServiceProperties<NineChroniclesActionType>();
                 var rpcProperties = new RpcNodeServiceProperties();
                 try
                 {

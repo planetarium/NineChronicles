@@ -7,6 +7,7 @@ using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
 using NineChronicles.Standalone.Exceptions;
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace NineChronicles.Standalone.Properties
 {
@@ -14,9 +15,9 @@ namespace NineChronicles.Standalone.Properties
     {
         public RpcNodeServiceProperties Rpc { get; set; }
 
-        public LibplanetNodeServiceProperties Libplanet { get; set; }
+        public LibplanetNodeServiceProperties<NineChroniclesActionType> Libplanet { get; set; }
 
-        public static LibplanetNodeServiceProperties
+        public static LibplanetNodeServiceProperties<NineChroniclesActionType>
             GenerateLibplanetNodeServiceProperties(
                 string appProtocolVersionToken = null,
                 string genesisBlockPath = null,
@@ -53,7 +54,7 @@ namespace NineChronicles.Standalone.Properties
                 trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
             }
 
-            return new LibplanetNodeServiceProperties
+            return new LibplanetNodeServiceProperties<NineChroniclesActionType>
             {
                 Host = swarmHost,
                 Port = swarmPort,
