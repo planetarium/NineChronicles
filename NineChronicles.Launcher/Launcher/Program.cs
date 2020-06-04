@@ -33,8 +33,8 @@ namespace Launcher
                 );
             }
 
-            AppDomain.CurrentDomain.ProcessExit += Configuration.FlushApplicationInsightLog;
-            AppDomain.CurrentDomain.UnhandledException += Configuration.FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.ProcessExit += Configuration.Log.FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.UnhandledException += Configuration.Log.FlushApplicationInsightLog;
 
             string procName = Process.GetCurrentProcess().ProcessName;
             Process[] ps = Process.GetProcessesByName(procName);
@@ -48,7 +48,7 @@ namespace Launcher
                 File.Delete(CurrentPlatform.RunCommandFilePath);
             }
 
-            Configuration.TelemetryClient.Context.Session.Id = Guid.NewGuid().ToString();
+            Configuration.Log.TelemetryClient.Context.Session.Id = Guid.NewGuid().ToString();
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
@@ -58,7 +58,7 @@ namespace Launcher
                     rollOnFileSizeLimit: true,
                     retainedFileCountLimit: 5)
                 .WriteTo.ApplicationInsights(
-                    Configuration.TelemetryClient,
+                    Configuration.Log.TelemetryClient,
                     TelemetryConverter.Traces,
                     LogEventLevel.Information)
                 .MinimumLevel.Debug()

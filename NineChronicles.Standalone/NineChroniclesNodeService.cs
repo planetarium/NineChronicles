@@ -27,7 +27,7 @@ namespace NineChronicles.Standalone
     {
         private LibplanetNodeService<NineChroniclesActionType> NodeService { get; set; }
 
-        private LibplanetNodeServiceProperties Properties { get; }
+        private LibplanetNodeServiceProperties<NineChroniclesActionType> Properties { get; }
 
         private RpcNodeServiceProperties RpcProperties { get; }
 
@@ -38,7 +38,7 @@ namespace NineChronicles.Standalone
         public Swarm<NineChroniclesActionType> Swarm => NodeService?.Swarm;
 
         public NineChroniclesNodeService(
-            LibplanetNodeServiceProperties properties,
+            LibplanetNodeServiceProperties<NineChroniclesActionType> properties,
             RpcNodeServiceProperties rpcNodeServiceProperties,
             Progress<PreloadState> preloadProgress = null,
             bool ignoreBootstrapFailure = false

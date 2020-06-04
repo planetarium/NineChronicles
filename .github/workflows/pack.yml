@@ -18,12 +18,14 @@ jobs:
     - uses: docker://gableroux/unity3d:2019.1.0f2
       env:
         ULF: ${{ secrets.ULF }}
+        APV_SIGNING_PRIVATE_KEY: ${{ secrets.APV_SIGNING_PRIVATE_KEY }}
       with:
         entrypoint: scripts/build-development.sh
         args: MacOS
     - uses: docker://gableroux/unity3d:2019.1.0f2
       env:
         ULF: ${{ secrets.ULF }}
+        APV_SIGNING_PRIVATE_KEY: ${{ secrets.APV_SIGNING_PRIVATE_KEY }}
       with:
         entrypoint: scripts/build-development.sh
         args: Windows
@@ -68,7 +70,6 @@ jobs:
           --output launcher-bin/ \
           --runtime "$rid" \
           --configuration=Release \
-          -p:PublishSingleFile=true \
           NineChronicles.Launcher/Launcher/Launcher.csproj
       shell: bash
     # GitHub Actions의 아티펙트 기능을 쓰면 권한 등의 속성이 다 날아감.

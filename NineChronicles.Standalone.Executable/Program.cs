@@ -10,6 +10,8 @@ using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
 using Serilog;
 
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+
 namespace NineChronicles.Standalone.Executable
 {
     public class Program : CoconaLiteConsoleAppBase
@@ -75,7 +77,7 @@ namespace NineChronicles.Standalone.Executable
                 trustedStateValidators = peers.Select(p => p.Address).ToImmutableHashSet();
             }
 
-            var properties = new LibplanetNodeServiceProperties
+            var properties = new LibplanetNodeServiceProperties<NineChroniclesActionType>
             {
                 Host = host,
                 Port = port,
@@ -93,6 +95,7 @@ namespace NineChronicles.Standalone.Executable
                 StorePath = storePath,
                 StoreStatesCacheSize = 5000,
                 MinimumDifficulty = minimumDifficulty,
+                Render = rpcServer
             };
 
             var rpcProperties = new RpcNodeServiceProperties
