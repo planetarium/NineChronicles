@@ -135,53 +135,13 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= stage.CostAP;
 
-            // 코스튬 해제.
-            var inventoryCostumes = avatarState.inventory.Items
-                .Select(i => i.item)
-                .OfType<Costume>()
-                .Where(i => i.equipped)
-                .ToImmutableHashSet();
-            foreach (var costume in inventoryCostumes)
-            {
-                costume.equipped = false;
-            }
+            avatarState.EquipCostumes(costumes);
 
-            // 코스튬 장착.
-            foreach (var costumeId in costumes)
-            {
-                if (!avatarState.inventory.TryGetCostume(costumeId, out var outItem))
-                {
-                    continue;
-                }
-
-                ((Costume) outItem.item).equipped = true;
-            }
-
-            // 장비 해제.
-            var inventoryEquipments = avatarState.inventory.Items
-                .Select(i => i.item)
-                .OfType<Equipment>()
-                .Where(i => i.equipped)
-                .ToImmutableHashSet();
-            foreach (var equipment in inventoryEquipments)
-            {
-                equipment.Unequip();
-            }
-
+            avatarState.EquipEquipments(equipments);
             sw.Stop();
             Log.Debug("HAS Unequip items: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            // 장비 장착.
-            foreach (var equipmentId in equipments)
-            {
-                if (!avatarState.inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable outNonFungibleItem))
-                {
-                    continue;
-                }
-
-                ((Equipment) outNonFungibleItem).Equip();
-            }
 
             var simulator = new StageSimulator(
                 ctx.Random,

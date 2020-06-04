@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
@@ -388,6 +389,55 @@ namespace Nekoyume.Model.State
             return !failed;
         }
 
+        public void EquipCostumes(List<int> costumeIds)
+        {
+            // 코스튬 해제.
+            var inventoryCostumes = inventory.Items
+                .Select(i => i.item)
+                .OfType<Costume>()
+                .Where(i => i.equipped)
+                .ToImmutableHashSet();
+            foreach (var costume in inventoryCostumes)
+            {
+                costume.equipped = false;
+            }
+
+            // 코스튬 장착.
+            foreach (var costumeId in costumeIds)
+            {
+                if (!inventory.TryGetCostume(costumeId, out var outItem))
+                {
+                    continue;
+                }
+
+                ((Costume) outItem.item).equipped = true;
+            }
+        }
+
+        public void EquipEquipments(List<Guid> equipmentIds)
+        {
+            // 장비 해제.
+            var inventoryEquipments = inventory.Items
+                .Select(i => i.item)
+                .OfType<Equipment>()
+                .Where(i => i.equipped)
+                .ToImmutableHashSet();
+            foreach (var equipment in inventoryEquipments)
+            {
+                equipment.Unequip();
+            }
+
+            // 장비 장착.
+            foreach (var equipmentId in equipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                ((Equipment) outNonFungibleItem).Equip();
+            }
+        }
 
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
