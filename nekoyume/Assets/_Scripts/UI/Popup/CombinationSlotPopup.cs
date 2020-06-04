@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
@@ -150,7 +151,7 @@ namespace Nekoyume.UI
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             Notification.Push(
                 MailType.Workshop,
-                string.Format(format, result.itemUsable.GetLocalizedName())
+                string.Format(CultureInfo.InvariantCulture,  format, result.itemUsable.GetLocalizedName())
             );
             Notification.Remove(result.itemUsable.ItemId);
             Game.Game.instance.ActionManager.RapidCombination(_slotIndex);

@@ -5,10 +5,11 @@ using JetBrains.Annotations;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
+using Nekoyume.TableData;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -80,7 +81,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var row = Game.Game.instance.TableSheets.ItemSheet.Values.First(r => r.Id == model.ItemBase.Value.Id);
+            var row = Game.Game.instance.TableSheets.ItemSheet.Values
+                .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
+            if (row is null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), model.ItemBase.Value.Id, null);
+            }
             base.SetData(row);
             _disposablesAtSetData.DisposeAllAndClear();
             Model = model;

@@ -25,7 +25,10 @@ namespace Tests.EditMode
                     Game.AddressableAssetsContainerPath);
 
             var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            foreach (var asset in csvAssets) _tableSheets.SetToSheet(asset.name, asset.text);
+            foreach (var asset in csvAssets)
+            {
+                _tableSheets.SetToSheet(asset.name, asset.text);
+            }
 
             _tableSheets.ItemSheetInitialize();
             _tableSheets.QuestSheetInitialize();

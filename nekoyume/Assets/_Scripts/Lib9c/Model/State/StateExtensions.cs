@@ -321,11 +321,7 @@ namespace Nekoyume.Model.State
 
         public static T ToEnum<T>(this IValue serialized) where T : struct
         {
-            if (Enum.TryParse<T>((Text) serialized, out var result))
-            {
-                return result;
-            }
-            throw new InvalidCastException();
+            return (T) Enum.Parse(typeof(T), (Text) serialized);
         }
 
         #endregion

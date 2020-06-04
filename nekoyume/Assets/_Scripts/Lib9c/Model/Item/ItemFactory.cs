@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 using Nekoyume.Model.Skill;
@@ -151,14 +152,15 @@ namespace Nekoyume.Model.Item
                                     return new Ring(serialized);
                             }
                         }
-                        throw new ArgumentOutOfRangeException();
+                        break;
                     case ItemType.Material:
                         return new Material(serialized);
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException(nameof(itemType));
                 }
             }
-            throw new ArgumentNullException();
+
+            throw new ArgumentException($"Can't Deserialize Item {serialized}");
         }
         private static ItemSheet.Row DeserializeRow(Dictionary serialized)
         {

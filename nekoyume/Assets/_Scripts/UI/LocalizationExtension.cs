@@ -221,7 +221,7 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedDescription(this ItemBase item)
         {
-                return LocalizationManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
+            return LocalizationManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
         }
         private static string GetColorHexByGrade(ItemBase item)
         {
