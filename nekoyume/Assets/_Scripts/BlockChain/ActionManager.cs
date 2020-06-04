@@ -277,7 +277,12 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(Address enemyAddress)
+        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
+            Address enemyAddress,
+            List<int> costumeIds,
+            List<Guid> equipmentIds,
+            List<Guid> consumableIds
+        )
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
@@ -287,6 +292,9 @@ namespace Nekoyume.BlockChain
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EnemyAddress = enemyAddress,
                 WeeklyArenaAddress = weeklyArenaAddress,
+                costumeIds = costumeIds,
+                equipmentIds = equipmentIds,
+                consumableIds = consumableIds
             };
             ProcessAction(action);
 
