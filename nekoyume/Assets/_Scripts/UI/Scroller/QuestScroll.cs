@@ -24,9 +24,16 @@ namespace Nekoyume.UI.Scroller
 
         protected override float CellSize => cellSize;
 
-        public void UpdateData(IList<QuestModel> items)
+        public void UpdateData(IList<QuestModel> items, bool jumpToFirst = true)
         {
             UpdateContents(items);
+
+            if (!jumpToFirst)
+            {
+                return;
+            }
+
+            JumpTo(0);
         }
     }
 }
