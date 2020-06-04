@@ -556,7 +556,7 @@ namespace Nekoyume.Game
             battle.enemyPlayerStatus.Show();
             battle.enemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
 
-            var sprite = SpriteHelper.GetItemIcon(character.armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId);
+            var sprite = SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
             battle.enemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
             yield return StartCoroutine(spawner.CoSetData(character));
         }

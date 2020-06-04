@@ -25,23 +25,23 @@ namespace Nekoyume.UI
             {
                 case BuyerMail buyerMail:
                     return string.Format(
-                        LocalizationManager.Localize("UI_BUYER_MAIL_FORMAT"), 
-                        buyerMail.attachment.itemUsable.Data.GetLocalizedName()
+                        LocalizationManager.Localize("UI_BUYER_MAIL_FORMAT"),
+                        GetLocalizedNonColoredName(buyerMail.attachment.itemUsable)
                     );
                 case CombinationMail combinationMail:
                     return string.Format(
                         LocalizationManager.Localize("UI_COMBINATION_NOTIFY_FORMAT"),
-                        combinationMail.attachment.itemUsable.GetLocalizedName()
+                        GetLocalizedNonColoredName(combinationMail.attachment.itemUsable)
                     );
                 case ItemEnhanceMail itemEnhanceMail:
                     return string.Format(
                         LocalizationManager.Localize("UI_ITEM_ENHANCEMENT_MAIL_FORMAT"),
-                        itemEnhanceMail.attachment.itemUsable.Data.GetLocalizedName()
+                        GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable)
                     );
                 case SellCancelMail sellCancelMail:
                     return string.Format(
                         LocalizationManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
-                        sellCancelMail.attachment.itemUsable.Data.GetLocalizedName()
+                        GetLocalizedNonColoredName(sellCancelMail.attachment.itemUsable)
                     );
                 case SellerMail sellerMail:
                     var attachment = sellerMail.attachment;
@@ -49,7 +49,7 @@ namespace Nekoyume.UI
                         throw new InvalidCastException($"({nameof(Buy.SellerResult)}){nameof(attachment)}");
 
                     var format = LocalizationManager.Localize("UI_SELLER_MAIL_FORMAT");
-                    return string.Format(format, sellerResult.gold, sellerResult.itemUsable.Data.GetLocalizedName());
+                    return string.Format(format, sellerResult.gold, GetLocalizedNonColoredName(attachment.itemUsable));
                 default:
                     throw new NotSupportedException(
                         $"Given mail[{mail}] doesn't support {nameof(ToInfo)}() method."
@@ -197,7 +197,7 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedName(this ItemBase item)
         {
-            string name = item.Data.GetLocalizedName();
+            string name = item.GetLocalizedNonColoredName();
             switch (item)
             {
                 case Equipment equipment:
@@ -211,7 +211,7 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedNonColoredName(this ItemBase item)
         {
-            return item.Data.GetLocalizedName();
+            return LocalizationManager.Localize($"ITEM_NAME_{item.Id}");
         }
 
         public static Color GetItemGradeColor(this ItemBase item)
@@ -221,12 +221,11 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedDescription(this ItemBase item)
         {
-            return item.Data.GetLocalizedDescription();
+            return LocalizationManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
         }
-
         private static string GetColorHexByGrade(ItemBase item)
         {
-            switch (item.Data.Grade)
+            switch (item.Grade)
             {
                 case 1:
                     return ColorConfig.ColorHexForGrade1;

@@ -46,7 +46,7 @@ namespace Tests.EditMode.Battle
             var reward = StageSimulator.SetReward(row, new Cheat.DebugRandom(), _tableSheets);
             Assert.AreEqual(2,reward.Count);
             Assert.IsNotEmpty(reward);
-            Assert.AreEqual(new[]{306043, 303000}, reward.Select(i => i.Data.Id).ToArray());
+            Assert.AreEqual(new[]{306043, 303000}, reward.Select(i => i.Id).ToArray());
         }
 
         [Test]
@@ -62,7 +62,7 @@ namespace Tests.EditMode.Battle
             var reward = StageSimulator.SetReward(row, new Cheat.DebugRandom(), _tableSheets);
             Assert.AreEqual(2, reward.Count);
             Assert.IsNotEmpty(reward);
-            Assert.AreEqual(1, reward.Select(i => i.Data.Id).ToImmutableHashSet().Count);
+            Assert.AreEqual(1, reward.Select(i => i.Id).ToImmutableHashSet().Count);
         }
 
         [Test]
