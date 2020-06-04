@@ -80,7 +80,7 @@ namespace NineChronicles.Standalone.Executable
                 if (appProtocolVersionToken is null)
                 {
                     throw new CommandExitedException(
-                        "--app-protocol-version must be required.",
+                        "--app-protocol-version must be present.",
                         -1
                     );
                 }
@@ -88,7 +88,7 @@ namespace NineChronicles.Standalone.Executable
                 if (genesisBlockPath is null)
                 {
                     throw new CommandExitedException(
-                        "--genesis-block-path must be required.",
+                        "--genesis-block-path must be present.",
                         -1
                     );
                 }

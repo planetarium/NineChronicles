@@ -83,13 +83,13 @@ namespace NineChronicles.Standalone.Properties
             if (string.IsNullOrEmpty(rpcListenHost))
             {
                 throw new ArgumentNullException(
-                    "--rpc-listen-host must be required when --rpc-server is present.");
+                    "--rpc-listen-host is required when --rpc-server is present.");
             }
 
             if (!(rpcListenPort is int rpcPortValue))
             {
                 throw new ArgumentNullException(
-                    "--rpc-listen-port must be required when --rpc-server is present.");
+                    "--rpc-listen-port is required when --rpc-server is present.");
             }
 
             return new RpcNodeServiceProperties
