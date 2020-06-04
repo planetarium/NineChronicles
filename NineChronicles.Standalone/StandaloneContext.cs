@@ -1,13 +1,13 @@
-using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Crypto;
-using Nekoyume.Action;
+
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace NineChronicles.Standalone
 {
-    public class StandaloneContext : IStandaloneContext
+    public class StandaloneContext
     {
-        public BlockChain<PolymorphicAction<ActionBase>> BlockChain { get; set; }
+        public BlockChain<NineChroniclesActionType> BlockChain { get; set; }
         public PrivateKey PrivateKey { get; set; }
     }
 }

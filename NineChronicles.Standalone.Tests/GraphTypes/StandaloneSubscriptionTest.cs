@@ -18,7 +18,7 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
 {
     public class StandaloneSubscriptionTest
     {
-        private IStandaloneContext StandaloneContextFx { get; }
+        private StandaloneContext StandaloneContextFx { get; }
 
         public StandaloneSubscriptionTest()
         {

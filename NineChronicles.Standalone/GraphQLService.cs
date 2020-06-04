@@ -49,7 +49,7 @@ namespace NineChronicles.Standalone
 
                 services
                     .AddSingleton<StandaloneSchema>()
-                    .AddSingleton<IStandaloneContext, StandaloneContext>()
+                    .AddSingleton<StandaloneContext>()
                     .AddGraphQL((provider, options) =>
                     {
                         options.EnableMetrics = true;

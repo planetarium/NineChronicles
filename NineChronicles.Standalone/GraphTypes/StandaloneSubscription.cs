@@ -27,9 +27,9 @@ namespace NineChronicles.Standalone.GraphTypes
 
         private ISubject<TipChanged> _subject = new ReplaySubject<TipChanged>();
 
-        private IStandaloneContext StandaloneContext { get; }
+        private StandaloneContext StandaloneContext { get; }
 
-        public StandaloneSubscription(IStandaloneContext standaloneContext)
+        public StandaloneSubscription(StandaloneContext standaloneContext)
         {
             StandaloneContext = standaloneContext;
             AddField(new EventStreamFieldType {
