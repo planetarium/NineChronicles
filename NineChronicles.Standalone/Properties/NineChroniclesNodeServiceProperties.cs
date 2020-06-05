@@ -13,7 +13,7 @@ namespace NineChronicles.Standalone.Properties
 {
     public class NineChroniclesNodeServiceProperties
     {
-        public RpcNodeServiceProperties Rpc { get; set; }
+        public RpcNodeServiceProperties? Rpc { get; set; }
 
         public LibplanetNodeServiceProperties<NineChroniclesActionType> Libplanet { get; set; }
 
@@ -76,26 +76,24 @@ namespace NineChronicles.Standalone.Properties
         }
 
         public static RpcNodeServiceProperties GenerateRpcNodeServiceProperties(
-            bool rpcServer = false,
             string rpcListenHost = "0.0.0.0",
             int? rpcListenPort = null)
         {
 
             if (string.IsNullOrEmpty(rpcListenHost))
             {
-                throw new ArgumentNullException(
+                throw new ArgumentException(
                     "--rpc-listen-host is required when --rpc-server is present.");
             }
 
             if (!(rpcListenPort is int rpcPortValue))
             {
-                throw new ArgumentNullException(
+                throw new ArgumentException(
                     "--rpc-listen-port is required when --rpc-server is present.");
             }
 
             return new RpcNodeServiceProperties
             {
-                RpcServer = rpcServer,
                 RpcListenHost = rpcListenHost,
                 RpcListenPort = rpcPortValue
             };

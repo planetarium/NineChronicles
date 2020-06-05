@@ -292,7 +292,6 @@ To start the game, you need to create your account.";
             RpcServerPort = GetFreeTcpPort();
             var rpcProperties = new RpcNodeServiceProperties
             {
-                RpcServer = true,
                 RpcListenHost = RpcListenHost,
                 RpcListenPort = RpcServerPort
             };
