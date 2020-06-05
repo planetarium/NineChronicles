@@ -145,7 +145,9 @@ namespace NineChronicles.Standalone.Properties
                 var port = int.Parse(tokens[2]);
 
                 // FIXME: It might be better to make Peer.AppProtocolVersion property nullable...
-                return new BoundPeer(pubKey, new DnsEndPoint(host, port),
+                return new BoundPeer(
+                    pubKey,
+                    new DnsEndPoint(host, port),
                     default(AppProtocolVersion));
             }
             catch (Exception e)

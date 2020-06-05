@@ -5,6 +5,7 @@ using Libplanet.Standalone.Hosting;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
 using Serilog;
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace NineChronicles.Standalone.Executable
 {
