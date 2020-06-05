@@ -362,7 +362,7 @@ namespace Nekoyume.UI
             ActionRenderHandler.Instance.Pending = true;
             yield return Game.Game.instance.ActionManager
                 .HackAndSlash(
-                    player.Costumes,
+                    player.Costumes.Select(i => i.Id).ToList(),
                     player.Equipments,
                     new List<Consumable>(),
                     worldId,

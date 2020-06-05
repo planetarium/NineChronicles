@@ -7,7 +7,6 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -21,6 +20,9 @@ namespace Nekoyume.Action
         public Address AvatarAddress;
         public Address EnemyAddress;
         public Address WeeklyArenaAddress;
+        public List<int> costumeIds;
+        public List<Guid> equipmentIds;
+        public List<Guid> consumableIds;
         public BattleLog Result { get; private set; }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -48,63 +50,10 @@ namespace Nekoyume.Action
 
             // 도전자의 장비가 유효한지 검사한다.
             // 피도전자의 장비도 검사해야 하는가는 모르겠다. 이후에 필요하다면 추가하는 것으로 한다.
-            // FIXME: 이하의 코드 블록이 상당부분 HackAndSlash.Execute()에도 중복되어 들어있습니다.
-            // 한 쪽 로직만 수정하는 실수가 일어나기 쉬우니 로직을 하나로 합쳐서 양쪽에서 공통 로직을 가져다 쓰게 하는 게
-            // 좋을 듯합니다.
+            if (!avatarState.ValidateEquipments(equipmentIds, context.BlockIndex))
             {
-                var equipments = avatarState.inventory.Items
-                    .Select(e => e.item)
-                    .OfType<Equipment>()
-                    .Where(e => e.equipped)
-                    .ToList();
-                var level = avatarState.level;
-                var ringCount = 0;
-                var failed = false;
-                foreach (var equipment in equipments)
-                {
-                    if (equipment.RequiredBlockIndex > context.BlockIndex)
-                    {
-                        failed = true;
-                        break;
-                    }
-                    
-                    switch (equipment.ItemSubType)
-                    {
-                        case ItemSubType.Weapon:
-                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
-                            break;
-                        case ItemSubType.Armor:
-                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
-                            break;
-                        case ItemSubType.Belt:
-                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
-                            break;
-                        case ItemSubType.Necklace:
-                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
-                            break;
-                        case ItemSubType.Ring:
-                            ringCount++;
-                            var requireLevel = ringCount == 1
-                                ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
-                                : ringCount == 2
-                                    ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
-                                    : int.MaxValue;
-                            failed = level < requireLevel;
-                            break;
-                        default:
-                            failed = true;
-                            break;
-                    }
-
-                    if (failed)
-                        break;
-                }
-
-                if (failed)
-                {
-                    // 장비가 유효하지 않은 에러.
-                    return LogError(context, "Aborted as the equipment is invalid.");
-                }
+                // 장비가 유효하지 않은 에러.
+                return LogError(context, "Aborted as the equipment is invalid.");
             }
 
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
@@ -122,6 +71,9 @@ namespace Nekoyume.Action
                     GameConfig.RequireClearedStageLevel.ActionsInRankingBoard
                 );
             }
+
+            avatarState.EquipCostumes(costumeIds);
+            avatarState.EquipEquipments(equipmentIds);
 
             var enemyAvatarState = states.GetAvatarState(EnemyAddress);
             if (enemyAvatarState is null)
@@ -185,7 +137,7 @@ namespace Nekoyume.Action
                 ctx.Random,
                 avatarState,
                 enemyAvatarState,
-                new List<Consumable>(),
+                consumableIds,
                 tableSheets);
 
             simulator.Simulate();
@@ -207,6 +159,9 @@ namespace Nekoyume.Action
                 ["avatarAddress"] = AvatarAddress.Serialize(),
                 ["enemyAddress"] = EnemyAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
+                ["costume_ids"] = new Bencodex.Types.List(costumeIds.Select(e => e.Serialize())),
+                ["equipment_ids"] = new Bencodex.Types.List(equipmentIds.Select(e => e.Serialize())),
+                ["consumable_ids"] = new Bencodex.Types.List(consumableIds.Select(e => e.Serialize())),
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -214,6 +169,16 @@ namespace Nekoyume.Action
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             EnemyAddress = plainValue["enemyAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
+            costumeIds = ((Bencodex.Types.List) plainValue["costume_ids"]).Select(
+                e => e.ToInteger()
+            ).ToList();
+            equipmentIds = ((Bencodex.Types.List) plainValue["equipment_ids"]).Select(
+                e => e.ToGuid()
+            ).ToList();
+            consumableIds = ((Bencodex.Types.List) plainValue["consumable_ids"]).Select(
+                e => e.ToGuid()
+            ).ToList();
+
         }
     }
 }

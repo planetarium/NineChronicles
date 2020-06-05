@@ -214,7 +214,7 @@ namespace Nekoyume.BlockChain
                                     reference_entity: "quests",
                                     reference_category_slug: "arena",
                                     reference_slug: "RankingRewardIndex" + index.ToString()
-                                    );
+                                );
                             }
                             catch
                             {
@@ -441,12 +441,16 @@ namespace Nekoyume.BlockChain
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = eval.Action.itemUsable.ItemId;
+            var itemId = eval.Action.itemId;
 
             // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
             LocalStateModifier.AddItem(avatarAddress, itemId, false);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
+            var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
+            if (shopState.TryGet(eval.Signer, eval.Action.productId, out var pair))
+            {
+                UI.Notification.Push(MailType.Auction, string.Format(format, pair.Value.ItemUsable.GetLocalizedName()));
+            }
             UpdateCurrentAvatarState(eval);
         }
 
@@ -493,7 +497,7 @@ namespace Nekoyume.BlockChain
                     reference_entity: "trades",
                     reference_category_slug: "buy",
                     reference_slug: result.itemUsable.Id.ToString() //아이템 품번
-                    );
+                );
             }
             else
             {
@@ -635,7 +639,7 @@ namespace Nekoyume.BlockChain
                 reference_entity: "quests",
                 reference_category_slug: "arena",
                 reference_slug: "WeeklyArenaEntryFee"
-                );
+            );
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
