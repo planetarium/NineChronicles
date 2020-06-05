@@ -4,11 +4,15 @@ namespace NineChronicles.Standalone.GraphTypes
 {
     public class StandaloneMutation : ObjectGraphType
     {
-        public StandaloneMutation()
+        private StandaloneContext StandaloneContext { get; }
+
+        public StandaloneMutation(StandaloneContext standaloneContext)
         {
-            Field<BooleanGraphType>("start",
-                arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>>
-                    {Name = "name"}));
+            StandaloneContext = standaloneContext;
+
+            Field<KeyStoreMutation>(
+                name: "keyStore",
+                resolve: context => standaloneContext.KeyStore);
         }
     }
 }

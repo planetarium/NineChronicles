@@ -7,7 +7,7 @@ namespace NineChronicles.Standalone.GraphTypes
         public StandaloneSchema(StandaloneContext standaloneContext)
         {
             Query = new StandaloneQuery(standaloneContext);
-            Mutation = new StandaloneMutation();
+            Mutation = new StandaloneMutation(standaloneContext);
             Subscription = new StandaloneSubscription(standaloneContext);
         }
     }
