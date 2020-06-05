@@ -29,7 +29,7 @@ namespace NineChronicles.Standalone
 
         private LibplanetNodeServiceProperties<NineChroniclesActionType> Properties { get; }
 
-        private RpcNodeServiceProperties RpcProperties { get; }
+        private RpcNodeServiceProperties? RpcProperties { get; }
 
         public AsyncAutoResetEvent BootstrapEnded => NodeService.BootstrapEnded;
 
@@ -39,7 +39,7 @@ namespace NineChronicles.Standalone
 
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties<NineChroniclesActionType> properties,
-            RpcNodeServiceProperties rpcNodeServiceProperties,
+            RpcNodeServiceProperties? rpcNodeServiceProperties,
             Progress<PreloadState> preloadProgress = null,
             bool ignoreBootstrapFailure = false
         )
@@ -101,18 +101,18 @@ namespace NineChronicles.Standalone
             IHostBuilder hostBuilder,
             CancellationToken cancellationToken = default)
         {
-            if (RpcProperties.RpcServer)
+            if (RpcProperties is RpcNodeServiceProperties rpcProperties)
             {
                 hostBuilder = hostBuilder
                     .UseMagicOnion(
-                        new ServerPort(RpcProperties.RpcListenHost, RpcProperties.RpcListenPort, ServerCredentials.Insecure)
+                        new ServerPort(rpcProperties.RpcListenHost, rpcProperties.RpcListenPort, ServerCredentials.Insecure)
                     )
                     .ConfigureServices((ctx, services) =>
                     {
                         services.AddHostedService(provider => new ActionEvaluationPublisher(
                             NodeService.BlockChain,
                             IPAddress.Loopback.ToString(),
-                            RpcProperties.RpcListenPort
+                            rpcProperties.RpcListenPort
                         ));
                     });
             }
