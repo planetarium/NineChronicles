@@ -261,7 +261,7 @@ namespace Nekoyume.Model.State
         public void UpdateFromCombination(ItemUsable itemUsable)
         {
             questList.UpdateCombinationQuest(itemUsable);
-            var type = itemUsable.Data.ItemType == ItemType.Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
+            var type = itemUsable.ItemType == ItemType.Equipment ? QuestEventType.Equipment : QuestEventType.Consumable;
             eventMap.Add(new KeyValuePair<int, int>((int)type, 1));
             UpdateGeneralQuest(new[] { type });
             UpdateCompletedQuest();
@@ -335,7 +335,7 @@ namespace Nekoyume.Model.State
         public int GetArmorId()
         {
             var armor = inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
-            return armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId;
+            return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
         }
 
         public override IValue Serialize() =>

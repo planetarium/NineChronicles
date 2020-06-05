@@ -219,14 +219,14 @@ namespace Nekoyume.Model
                 .ToList();
             foreach (var equipment in _equipments)
             {
-                switch (equipment.Data.ItemSubType)
+                switch (equipment.ItemSubType)
                 {
                     case ItemSubType.Weapon:
                         weapon = equipment as Weapon;
                         break;
                     case ItemSubType.Armor:
                         armor = equipment as Armor;
-                        defElementType = equipment.Data.ElementalType;
+                        defElementType = equipment.ElementalType;
                         break;
                     case ItemSubType.Belt:
                         belt = equipment as Belt;

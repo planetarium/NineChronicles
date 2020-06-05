@@ -61,10 +61,5 @@ namespace Nekoyume.TableData
             row = null;
             return false;
         }
-
-        public bool TryGetValue(IEnumerable<MaterialItemSheet.Row> materialItemRows, out Row row, bool throwException = false)
-        {
-            return TryGetValue(materialItemRows.Select(materialItemRow => materialItemRow.Id), out row, throwException);
-        }
     }
 }

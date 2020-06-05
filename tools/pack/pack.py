@@ -12,6 +12,7 @@ import tarfile
 import tempfile
 from typing import Optional, Sequence
 import zipfile
+from zipfile import ZIP_DEFLATED
 
 from boto3 import client
 from commentjson import dump, load
@@ -142,7 +143,7 @@ def main() -> None:
                 logging.info('Added: %s <- %s', arcname, name)
     elif args.platform.lower() == 'windows':
         archive_path = os.path.join(args.out_dir, 'Windows.zip')
-        with zipfile.ZipFile(archive_path, 'w') as archive:
+        with zipfile.ZipFile(archive_path, 'w', ZIP_DEFLATED) as archive:
             basepath = os.path.abspath(temp_dir) + os.sep
             for path, dirs, files in os.walk(temp_dir):
                 logging.debug('Walk: %r, %r, %r', path, dirs, files)

@@ -116,7 +116,7 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            var itemIDs = equipments.Select(e => e.Data.Id).Concat(foods.Select(f => f.Data.Id)).ToArray();
+            var itemIDs = equipments.Select(e => e.Id).Concat(foods.Select(f => f.Id)).ToArray();
             AnalyticsManager.Instance.Battle(itemIDs);
             return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))

@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Scroller
 
             StatType = consumable.MainStat;
 
-            var optionString = $"{consumable.MainStat} +{consumable.Data.Stats.First(stat => stat.StatType == consumable.MainStat).ValueAsInt}";
+            var optionString = $"{consumable.MainStat} +{consumable.Stats.First(stat => stat.StatType == consumable.MainStat).ValueAsInt}";
             optionText.text = optionString;
         }
     }

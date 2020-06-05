@@ -72,7 +72,7 @@ namespace Nekoyume.State.Modifiers
 
             foreach (var pair in dictionary.Value)
             {
-                var costume = costumes.FirstOrDefault(item => item.Data.Id == pair.Key);
+                var costume = costumes.FirstOrDefault(item => item.Id == pair.Key);
                 if (costume is null)
                 {
                     shouldRemoveKeys.Add(pair.Key);

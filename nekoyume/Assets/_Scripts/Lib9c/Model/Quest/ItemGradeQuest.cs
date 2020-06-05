@@ -51,10 +51,10 @@ namespace Nekoyume.Model.Quest
             if (Complete)
                 return;
 
-            if (!_itemIds.Contains(itemUsable.Data.Id))
+            if (!_itemIds.Contains(itemUsable.Id))
             {
                 _current++;
-                _itemIds.Add(itemUsable.Data.Id);
+                _itemIds.Add(itemUsable.Id);
             }
             Check();
         }

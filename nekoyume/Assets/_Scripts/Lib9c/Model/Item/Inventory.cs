@@ -22,16 +22,7 @@ namespace Nekoyume.Model.Item
 
             public Item(ItemBase itemBase, int count = 1)
             {
-                switch (itemBase.Data.ItemType)
-                {
-                    case ItemType.Costume:
-                        item = ItemFactory.CreateCostume((CostumeItemSheet.Row) itemBase.Data);
-                        break;
-                    case ItemType.Material:
-                        item = ItemFactory.CreateMaterial((MaterialItemSheet.Row) itemBase.Data);
-                        break;
-                }
-
+                item = itemBase;
                 this.count = count;
             }
 
@@ -116,7 +107,7 @@ namespace Nekoyume.Model.Item
 
         public KeyValuePair<int, int> AddItem(ItemBase itemBase, int count = 1)
         {
-            switch (itemBase.Data.ItemType)
+            switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
                 case ItemType.Equipment:
@@ -129,7 +120,7 @@ namespace Nekoyume.Model.Item
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            return new KeyValuePair<int, int>(itemBase.Data.Id, count);
+            return new KeyValuePair<int, int>(itemBase.Id, count);
         }
 
         private Item AddFungibleItem(ItemBase itemBase, int count = 1)
@@ -161,9 +152,9 @@ namespace Nekoyume.Model.Item
             switch (itemBase)
             {
                 case Costume costume:
-                    return RemoveCostume(costume.Data.Id, count);
+                    return RemoveCostume(costume.Id, count);
                 case Material material:
-                    return RemoveMaterial(material.Data.ItemId, count);
+                    return RemoveMaterial(material.ItemId, count);
                 default:
                     return false;
             }
@@ -222,9 +213,9 @@ namespace Nekoyume.Model.Item
             switch (itemBase)
             {
                 case Costume costume:
-                    return TryGetCostume(costume.Data.Id, out outFungibleItem);
+                    return TryGetCostume(costume.Id, out outFungibleItem);
                 case Material material:
-                    return TryGetMaterial(material.Data.ItemId, out outFungibleItem);
+                    return TryGetMaterial(material.ItemId, out outFungibleItem);
                 default:
                     outFungibleItem = null;
                     return false;
@@ -236,7 +227,7 @@ namespace Nekoyume.Model.Item
             foreach (var item in _items)
             {
                 if (!(item.item is Costume costume) ||
-                    costume.Data.Id != id)
+                    costume.Id != id)
                 {
                     continue;
                 }
@@ -254,7 +245,7 @@ namespace Nekoyume.Model.Item
             foreach (var fungibleItem in _items)
             {
                 if (!(fungibleItem.item is Material material) ||
-                    !material.Data.ItemId.Equals(itemId))
+                    !material.ItemId.Equals(itemId))
                 {
                     continue;
                 }
@@ -352,7 +343,7 @@ namespace Nekoyume.Model.Item
             {
                 var item = newItem.item;
 
-                Log.Error("Item {0}: {1} is not ItemUsable.", item.Data.ItemType, item.Data.Id);
+                Log.Error("Item {0}: {1} is not ItemUsable.", item.ItemType, item.Id);
             }
 
             return !(outAddedItem is null);
@@ -386,7 +377,7 @@ namespace Nekoyume.Model.Item
 
         public bool HasItem(int id, int count = 1)
         {
-            return _items.Exists(item => item.item.Data.Id == id && item.count >= count);
+            return _items.Exists(item => item.item.Id == id && item.count >= count);
         }
 
         public bool HasItem(HashDigest<SHA256> id, int count = 1)
@@ -398,7 +389,7 @@ namespace Nekoyume.Model.Item
                     return false;
                 }
 
-                return material.Data.ItemId.Equals(id) && item.count >= count;
+                return material.ItemId.Equals(id) && item.count >= count;
             });
         }
 

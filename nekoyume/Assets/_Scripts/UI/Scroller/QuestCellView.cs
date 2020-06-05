@@ -72,7 +72,7 @@ namespace Nekoyume.UI.Scroller
             foreach (var view in rewardViews)
             {
                 if (view.gameObject.activeSelf)
-                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id),
+                    ItemMoveAnimation.Show(SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Id),
                         view.transform.position,
                         Widget.Find<BottomMenu>().characterButton.transform.position,
                         moveToLeft,

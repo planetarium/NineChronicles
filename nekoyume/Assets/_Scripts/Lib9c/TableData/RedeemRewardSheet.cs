@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Bencodex.Types;
+using Nekoyume.Model.State;
 using static Nekoyume.TableData.TableExtensions;
 
 namespace Nekoyume.TableData
@@ -9,7 +11,7 @@ namespace Nekoyume.TableData
     public class RedeemRewardSheet : Sheet<int, RedeemRewardSheet.Row>
     {
         [Serializable]
-        public class RewardInfo
+        public class RewardInfo : IState
         {
             public readonly RewardType Type;
             public readonly int Quantity;
@@ -23,6 +25,20 @@ namespace Nekoyume.TableData
                 {
                     ItemId = ParseInt(fields[2]);
                 }
+            }
+
+            public IValue Serialize()
+            {
+                var dict = new Dictionary<IKey, IValue>
+                {
+                    [(Text) "type"] = ((int) Type).Serialize(),
+                    [(Text) "quantity"] = Quantity.Serialize(),
+                };
+                if (ItemId.HasValue)
+                {
+                    dict[(Text) "item_id"] = ItemId.Serialize();
+                }
+                return new Dictionary(dict);
             }
         }
 
