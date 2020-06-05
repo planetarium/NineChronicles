@@ -1280,7 +1280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b14bd34355c35734d8ae13a0e130447e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  xTweener: {fileID: 0}
+  xTweener: {fileID: 8566487285093028089}
   tabState: 0
   scroll: {fileID: 192174903448513590}
   tabButtons:
@@ -1860,7 +1860,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   viewport: {fileID: 3275746585768687918}
   scrollDirection: 0
-  movementType: 2
+  movementType: 1
   elasticity: 0.1
   scrollSensitivity: 2
   inertia: 1
