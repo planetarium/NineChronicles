@@ -40,6 +40,11 @@ namespace NineChronicles.Standalone.GraphTypes
                     return new Codec().Encode(state);
                 }
             );
+
+            Field<KeyStoreType>(
+                name: "keyStore",
+                resolve: context => standaloneContext.KeyStore
+            );
         }
     }
 }
