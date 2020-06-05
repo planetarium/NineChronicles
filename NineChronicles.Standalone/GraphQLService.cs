@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GraphQL.Server;
+using Libplanet.KeyStore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -47,9 +48,14 @@ namespace NineChronicles.Standalone
             {
                 services.AddControllers();
 
+                var standaloneContext = new StandaloneContext
+                {
+                    KeyStore = Web3KeyStore.DefaultKeyStore,
+                };
+
                 services
                     .AddSingleton<StandaloneSchema>()
-                    .AddSingleton<StandaloneContext>()
+                    .AddSingleton<StandaloneContext>(standaloneContext)
                     .AddGraphQL((provider, options) =>
                     {
                         options.EnableMetrics = true;

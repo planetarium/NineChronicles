@@ -8,7 +8,6 @@ namespace NineChronicles.Standalone
     public class StandaloneContext
     {
         public BlockChain<NineChroniclesActionType> BlockChain { get; set; }
-        public PrivateKey PrivateKey { get; set; }
         public IKeyStore KeyStore { get; set; }
     }
 }

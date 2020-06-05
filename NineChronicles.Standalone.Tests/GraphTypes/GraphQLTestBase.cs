@@ -38,7 +38,6 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             StandaloneContextFx = new StandaloneContext
             {
                 BlockChain = blockChain,
-                PrivateKey = new PrivateKey(),
                 KeyStore = keyStore,
             };
 

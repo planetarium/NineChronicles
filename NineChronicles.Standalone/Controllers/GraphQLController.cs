@@ -15,6 +15,13 @@ namespace NineChronicles.Standalone.Controllers
     [ApiController]
     public class GraphQLController : ControllerBase
     {
+        private StandaloneContext StandaloneContext { get; }
+
+        public GraphQLController(StandaloneContext standaloneContext)
+        {
+            StandaloneContext = standaloneContext;
+        }
+
         [HttpGet("/health-check")]
         public IActionResult HealthCheck()
         {
@@ -70,6 +77,7 @@ namespace NineChronicles.Standalone.Controllers
                 StandaloneServices.RunHeadlessAsync(
                     nineChroniclesProperties,
                     hostBuilder,
+                    StandaloneContext,
                     NodeCancellationContext.CancellationToken);
             }
             catch (Exception e)

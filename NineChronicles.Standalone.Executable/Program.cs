@@ -136,7 +136,7 @@ namespace NineChronicles.Standalone.Executable
                 await StandaloneServices.RunHeadlessAsync(
                     nineChroniclesProperties,
                     hostBuilder,
-                    Context.CancellationToken);
+                    cancellationToken: Context.CancellationToken);
             }
         }
     }
