@@ -2,6 +2,7 @@ using System;
 
 namespace NineChronicles.Standalone.Exceptions
 {
+    [Serializable]
     public class PeerInvalidException: Exception
     {
         public PeerInvalidException()

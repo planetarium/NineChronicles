@@ -97,7 +97,7 @@ namespace NineChronicles.Standalone
             }
         }
 
-        public async Task Run(
+        public Task Run(
             IHostBuilder hostBuilder,
             CancellationToken cancellationToken = default)
         {
@@ -117,7 +117,7 @@ namespace NineChronicles.Standalone
                     });
             }
 
-            await hostBuilder.ConfigureServices((ctx, services) =>
+            return hostBuilder.ConfigureServices((ctx, services) =>
             {
                 services.AddHostedService(provider => NodeService);
                 services.AddSingleton(provider => NodeService.Swarm);
@@ -125,11 +125,11 @@ namespace NineChronicles.Standalone
             }).RunConsoleAsync(cancellationToken);
         }
 
-        public async Task Run(
+        public Task Run(
             CancellationToken cancellationToken = default)
         {
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-            await Run(hostBuilder, cancellationToken);
+            return Run(hostBuilder, cancellationToken);
         }
     }
 }

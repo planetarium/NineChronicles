@@ -112,6 +112,9 @@ namespace NineChronicles.Standalone.Properties
             }
             catch (Exception e)
             {
+                if (e.InnerException != null)
+                    throw e.InnerException;
+
                 throw new IceServerInvalidException(
                     $"--ice-server '{iceServerInfo}' seems invalid.\n" +
                     $"{e.GetType()} {e.Message}\n" +
@@ -147,6 +150,9 @@ namespace NineChronicles.Standalone.Properties
             }
             catch (Exception e)
             {
+                if (e.InnerException != null)
+                    throw e.InnerException;
+
                 throw new PeerInvalidException(
                     $"--peer '{peerInfo}' seems invalid.\n" +
                     $"{e.GetType()} {e.Message}\n" +

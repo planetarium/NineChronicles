@@ -2,14 +2,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace NineChronicles.Standalone.Properties
 {
-    public struct ServiceBindingProperties
+    public class ServiceBindingProperties
     {
-        public bool noMiner { get; set; }
-
-        [BindRequired]
+        public bool NoMiner { get; set; }
         public string AppProtocolVersion { get; set; }
-
-        [BindRequired]
         public string GenesisBlockPath { get; set; }
         public string SwarmHost { get; set; }
         public ushort? SwarmPort { get; set; }
