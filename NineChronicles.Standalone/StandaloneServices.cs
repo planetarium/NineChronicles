@@ -12,7 +12,7 @@ namespace NineChronicles.Standalone
         public static Task RunHeadlessAsync(
             NineChroniclesNodeServiceProperties properties,
             IHostBuilder hostBuilder,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var service = new NineChroniclesNodeService(
                 properties.Libplanet,
@@ -24,7 +24,7 @@ namespace NineChronicles.Standalone
         public static Task RunGraphQLAsync(
             GraphQLNodeServiceProperties graphQLProperties,
             IHostBuilder hostBuilder,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken = default)
         {
             var service = new GraphQLService(graphQLProperties);
             return service.Run(hostBuilder, cancellationToken);
