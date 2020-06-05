@@ -603,7 +603,7 @@
             &#x201c;rehearsal mode&#x201d;, that there is nothing
             in <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/>.
             </summary>
-            <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/>
+            <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/>
         </member>
         <member name="P:Libplanet.Action.IActionContext.PreviousStates">
             <summary>
@@ -1233,6 +1233,11 @@
             <seealso cref="T:Libplanet.Blocks.Block`1"/>
             <seealso cref="T:Libplanet.Tx.Transaction`1"/>
         </member>
+        <member name="F:Libplanet.Blockchain.BlockChain`1._render">
+            <summary>
+            Defines whether to render actions on this <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </summary>
+        </member>
         <member name="F:Libplanet.Blockchain.BlockChain`1._blocks">
             <summary>
             All <see cref="T:Libplanet.Blocks.Block`1"/>s in the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
@@ -1249,7 +1254,7 @@
             their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Blocks.Block{`0})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Blocks.Block{`0},System.Boolean)">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> class.
             </summary>
@@ -1263,6 +1268,8 @@
             it checks if the existing genesis block and this argument is the same.
             If the <paramref name="store"/> has no genesis block yet this argument will
             be used for that.</param>
+            <param name="render">Defines whether to render actions on this
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.  Turned on by default.</param>
             <exception cref="T:Libplanet.Blocks.InvalidGenesisBlockException">Thrown when the <paramref name="store"/>
             has a genesis block and it does not match to what the network expects
             (i.e., <paramref name="genesisBlock"/>).</exception>
@@ -1473,6 +1480,7 @@
         <member name="M:Libplanet.Blockchain.BlockChain`1.MakeTransaction(Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/> and stage the transaction.
+            Cannot create new transaction if the genesis block does not exist.
             </summary>
             <param name="privateKey">A <see cref="T:Libplanet.Crypto.PrivateKey"/> of the account who creates and
             signs a new transaction.</param>
@@ -1484,7 +1492,7 @@
             signed.</param>
             <returns>A created new <see cref="T:Libplanet.Tx.Transaction`1"/> signed by the given
             <paramref name="privateKey"/>.</returns>
-            <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
+            <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlocks(System.Int64)">
             <summary>
@@ -4540,6 +4548,38 @@
             The <see cref="P:Libplanet.Tx.InvalidTxException.TxId"/> of the invalid <see cref="T:Libplanet.Tx.Transaction`1"/>.
             </summary>
         </member>
+        <member name="T:Libplanet.Tx.InvalidTxGenesisHashException">
+            <summary>
+            The exception that is thrown when the <see cref="P:Libplanet.Tx.Transaction`1.GenesisHash"/>
+            is different from the <see cref="T:Libplanet.HashDigest`1"/> of
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Genesis"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Tx.InvalidTxGenesisHashException.#ctor(Libplanet.Tx.TxId,Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.String)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Tx.InvalidTxGenesisHashException"/> class.
+            </summary>
+            <param name="txid">The invalid <see cref="T:Libplanet.Tx.Transaction`1"/>'s
+            <see cref="P:Libplanet.Tx.Transaction`1.Id"/>.  It is automatically included to
+            the <see cref="P:System.Exception.Message"/> string.</param>
+            <param name="expectedGenesisHash">The <see cref="T:Libplanet.HashDigest`1"/>
+            value of <see cref="P:Libplanet.Blockchain.BlockChain`1.Genesis"/>.</param>
+            <param name="improperGenesisHash">The actual
+            <see cref="P:Libplanet.Tx.Transaction`1.GenesisHash"/>.  This can be <c>null</c>.</param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Tx.InvalidTxGenesisHashException.ExpectedGenesisHash">
+            <summary>
+            The <see cref="T:Libplanet.HashDigest`1"/> value of
+            <see cref="P:Libplanet.Blockchain.BlockChain`1.Genesis"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Tx.InvalidTxGenesisHashException.ImproperGenesisHash">
+            <summary>
+            The actual <see cref="P:Libplanet.Tx.Transaction`1.GenesisHash"/>, which is improper.
+            </summary>
+        </member>
         <member name="T:Libplanet.Tx.InvalidTxIdException">
             <summary>
             The exception that is thrown when a given <see cref="T:Libplanet.Tx.TxId"/> cannot be
@@ -4679,7 +4719,7 @@
             <seealso cref="T:Libplanet.Action.IAction"/>
             <seealso cref="T:Libplanet.Action.PolymorphicAction`1"/>
         </member>
-        <member name="M:Libplanet.Tx.Transaction`1.#ctor(System.Int64,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])">
+        <member name="M:Libplanet.Tx.Transaction`1.#ctor(System.Int64,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])">
             <summary>
             Creates a new <see cref="T:Libplanet.Tx.Transaction`1"/>.
             <para>This constructor takes all required and only required values
@@ -4688,7 +4728,7 @@
             this constructor is only useful when all details of
             a <see cref="T:Libplanet.Tx.Transaction`1"/> need to be manually adjusted.
             For the most cases, the fa&#xe7;ade factory <see
-            cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/> is more useful.</para>
+            cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})"/> is more useful.</para>
             </summary>
             <param name="nonce">The number of previous
             <see cref="T:Libplanet.Tx.Transaction`1"/>s committed by the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>
@@ -4703,6 +4743,11 @@
             name="signer"/> address <see cref="T:Libplanet.Tx.InvalidTxPublicKeyException"/>
             is thrown.  This cannot be <c>null</c>.  This goes to
             the <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/> property.</param>
+            <param name="genesisHash">A <see cref="T:Libplanet.HashDigest`1"/> value
+            of the genesis which this <see cref="T:Libplanet.Tx.Transaction`1"/> is made from.
+            This can be <c>null</c> iff the transaction is contained
+            in the genesis block.
+            </param>
             <param name="updatedAddresses"><see cref="T:Libplanet.Address"/>es whose
             states affected by <paramref name="actions"/>.  This goes to
             the <see cref="P:Libplanet.Tx.Transaction`1.UpdatedAddresses"/> property.</param>
@@ -4794,6 +4839,14 @@
             for each transaction.  This cannot be <c>null</c>.
             </summary>
         </member>
+        <member name="P:Libplanet.Tx.Transaction`1.GenesisHash">
+            <summary>
+            A <see cref="T:Libplanet.HashDigest`1"/> value of the genesis which this
+            <see cref="T:Libplanet.Tx.Transaction`1"/> is made from.
+            This can be <c>null</c> iff the transaction is contained
+            in the genesis block.
+            </summary>
+        </member>
         <member name="M:Libplanet.Tx.Transaction`1.Deserialize(System.Byte[])">
             <summary>
             Decodes a <see cref="T:Libplanet.Tx.Transaction`1"/>'s
@@ -4804,10 +4857,10 @@
             <returns>A decoded <see cref="T:Libplanet.Tx.Transaction`1"/> object.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Serialize(System.Boolean)"/>
         </member>
-        <member name="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})">
             <summary>
             A fa&#xe7;ade factory to create a new <see cref="T:Libplanet.Tx.Transaction`1"/>.
-            Unlike the <see cref="M:Libplanet.Tx.Transaction`1.#ctor(System.Int64,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])"/>
+            Unlike the <see cref="M:Libplanet.Tx.Transaction`1.#ctor(System.Int64,Libplanet.Address,Libplanet.Crypto.PublicKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.DateTimeOffset,System.Collections.Generic.IEnumerable{`0},System.Byte[])"/>
             constructor, it automatically fills the following values from:
             <list type="table">
             <listheader>
@@ -4866,6 +4919,11 @@
             the <see cref="P:Libplanet.Tx.Transaction`1.Signer"/>, <see cref="P:Libplanet.Tx.Transaction`1.PublicKey"/>, and
             <see cref="P:Libplanet.Tx.Transaction`1.Signature"/> properties, but this in itself is not
             included in the transaction.</param>
+            <param name="genesisHash">A <see cref="T:Libplanet.HashDigest`1"/> value
+            of the genesis which this <see cref="T:Libplanet.Tx.Transaction`1"/> is made from.
+            This can be <c>null</c> iff the transaction is contained
+            in the genesis block.
+            </param>
             <param name="actions">A list of <see cref="T:Libplanet.Action.IAction"/>s.  This
             can be empty, but cannot be <c>null</c>.  This goes to
             the <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> property, and <see cref="T:Libplanet.Action.IAction"/>s
