@@ -87,7 +87,7 @@ namespace Nekoyume.UI.Scroller
                     view.gameObject.activeSelf)
                 {
                     ItemMoveAnimation.Show(
-                        SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Data.Id),
+                        SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Id),
                         view.transform.position,
                         Widget.Find<BottomMenu>().characterButton.transform.position,
                         moveToLeft,

@@ -1,5 +1,5 @@
 using System;
-using System.IO;
+using System.IO.Abstractions;
 using System.Text.Json;
 using System.Threading;
 using Microsoft.ApplicationInsights;
@@ -9,43 +9,47 @@ using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 
 namespace Launcher.Common
 {
-    public static class Configuration
+    public class Configuration
     {
-        private const string InstrumentationKey = "953da29a-95f7-4f04-9efe-d48c42a1b53a";
+        private readonly IFileSystem FileSystem;
 
-        public static readonly TelemetryClient TelemetryClient =
-            new TelemetryClient(new TelemetryConfiguration(InstrumentationKey));
+        private IFile File => FileSystem.File;
 
-        public static void FlushApplicationInsightLog(object sender, EventArgs e)
+        public Configuration() : this(
+            fileSystem: new FileSystem()
+        )
         {
-            TelemetryClient?.Flush();
-            Thread.Sleep(1000);
         }
 
-        public static LauncherSettings LoadSettings()
+        public Configuration(IFileSystem fileSystem)
+        {
+            FileSystem = fileSystem;
+        }
+
+        public LauncherSettings LoadSettings()
         {
             InitializeSettingFile();
             return JsonSerializer.Deserialize<LauncherSettings>(
-                File.ReadAllText(SettingFilePath),
+                File.ReadAllText(Path.SettingFilePath),
                 new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 });
         }
 
-        public static void InitializeSettingFile()
+        public void InitializeSettingFile()
         {
-            if (!File.Exists(SettingFilePath))
+            if (!File.Exists(Path.SettingFilePath))
             {
-                File.Copy(SettingFileName, SettingFilePath);
+                File.Copy(Path.SettingFileName, Path.SettingFilePath);
             }
         }
 
-        public static string LoadKeyStorePath(LauncherSettings settings)
+        public string LoadKeyStorePath(LauncherSettings settings)
         {
             if (string.IsNullOrEmpty(settings.KeyStorePath))
             {
-                return DefaultKeyStorePath;
+                return Path.DefaultKeyStorePath;
             }
             else
             {
@@ -53,23 +57,40 @@ namespace Launcher.Common
             }
         }
 
-        public const string SettingFileName = "launcher.json";
+        public static class Log
+        {
+            private const string InstrumentationKey = "953da29a-95f7-4f04-9efe-d48c42a1b53a";
 
-        public static string DefaultStorePath => Path.Combine(PlanetariumLocalApplicationPath, "9c");
+            public static readonly TelemetryClient TelemetryClient =
+                new TelemetryClient(new TelemetryConfiguration(InstrumentationKey));
 
-        // It assumes there is game binary file in same directory.
-        public static string GameBinaryPath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, CurrentPlatform.GameBinaryFilename);
+            public static void FlushApplicationInsightLog(object sender, EventArgs e)
+            {
+                TelemetryClient?.Flush();
+                Thread.Sleep(1000);
+            }
+        }
 
-        public static string DefaultKeyStorePath => Path.Combine(PlanetariumApplicationPath, "keystore");
+        public static class Path
+        {
+            public const string SettingFileName = "launcher.json";
 
-        public static string SettingFilePath => Path.Combine(CurrentPlatform.CurrentWorkingDirectory, SettingFileName);
+            public static string DefaultStorePath => System.IO.Path.Combine(PlanetariumLocalApplicationPath, "9c");
 
-        private static string PlanetariumLocalApplicationPath => Path.Combine(LocalApplicationDataPath, "planetarium");
+            // It assumes there is game binary file in same directory.
+            public static string GameBinaryPath => System.IO.Path.Combine(CurrentPlatform.CurrentWorkingDirectory, CurrentPlatform.GameBinaryFilename);
 
-        private static string PlanetariumApplicationPath => Path.Combine(ApplicationDataPath, "planetarium");
+            public static string DefaultKeyStorePath => System.IO.Path.Combine(PlanetariumApplicationPath, "keystore");
 
-        private static string LocalApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            public static string SettingFilePath => System.IO.Path.Combine(CurrentPlatform.CurrentWorkingDirectory, SettingFileName);
 
-        private static string ApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            private static string PlanetariumLocalApplicationPath => System.IO.Path.Combine(LocalApplicationDataPath, "planetarium");
+
+            private static string PlanetariumApplicationPath => System.IO.Path.Combine(ApplicationDataPath, "planetarium");
+
+            private static string LocalApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+            private static string ApplicationDataPath => Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        }
     }
 }

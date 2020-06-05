@@ -39,7 +39,7 @@ namespace Tests.EditMode
             var row = _tableSheets.EquipmentItemSubRecipeSheet.Values.First();
             row.Set(new List<string>
             {
-                "1", "3", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0.55", "4", "0.5", "2", "0.05",
+                "1", "3", "1", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0.55", "4", "0.5", "2", "0.05",
                 "", "", "0"
             });
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
@@ -58,7 +58,7 @@ namespace Tests.EditMode
             var row = _tableSheets.EquipmentItemSubRecipeSheet.Values.First();
             row.Set(new List<string>
             {
-                "1", "3", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0", "4", "0", "2", "0",
+                "1", "3", "1", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0", "4", "0", "2", "0",
                 "", "", "2"
             });
             var equipment = (Equipment) ItemFactory.CreateItemUsable(
@@ -75,9 +75,10 @@ namespace Tests.EditMode
         public void SelectOption([Values(1, 2)] int expected)
         {
             var row = _tableSheets.EquipmentItemSubRecipeSheet.Values.First();
+            // ATK, Skill, SPD 옵션 3종류
             row.Set(new List<string>
             {
-                "1", "3", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0.5", "4", "0.3", "17", "0.2",
+                "1", "3", "1", "1", "1", "306040", "3", "306023", "2", "306024", "1", "1", "0.5", "7", "0.3", "17", "0.2",
                 "", "", expected.ToString()
             });
             var equipment = (Equipment) ItemFactory.CreateItemUsable(

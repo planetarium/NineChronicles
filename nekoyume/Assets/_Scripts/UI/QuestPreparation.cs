@@ -95,8 +95,8 @@ namespace Nekoyume.UI
             _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
-                inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume ||
-                inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
+                inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
+                inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView
                 .Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(gameObject);
@@ -264,7 +264,7 @@ namespace Nekoyume.UI
 
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
             {
-                if (inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume &&
+                if (inventoryItem.ItemBase.Value.ItemType == ItemType.Costume &&
                     inventoryItem.ItemBase.Value is Costume costume)
                 {
                     return costume.equipped;
@@ -414,7 +414,7 @@ namespace Nekoyume.UI
                 foreach (var item in inventory.SharedModel.Equipments)
                 {
                     item.GlowEnabled.Value =
-                        item.ItemBase.Value.Data.ItemSubType == slot.ItemSubType;
+                        item.ItemBase.Value.ItemSubType == slot.ItemSubType;
                 }
 
                 return;
@@ -437,7 +437,7 @@ namespace Nekoyume.UI
 
         private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            if (itemBase.Data.ItemType != ItemType.Equipment)
+            if (itemBase.ItemType != ItemType.Equipment)
             {
                 return;
             }
@@ -473,7 +473,7 @@ namespace Nekoyume.UI
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
         {
-            switch (item.Data.ItemType)
+            switch (item.ItemType)
             {
                 case ItemType.Consumable:
                     foreach (var consumableSlot in consumableSlots.Where(consumableSlot =>
@@ -498,7 +498,7 @@ namespace Nekoyume.UI
 
         private bool TryToFindSlotToEquip(ItemBase item, out EquipmentSlot slot)
         {
-            switch (item.Data.ItemType)
+            switch (item.ItemType)
             {
                 case ItemType.Consumable:
                     slot = consumableSlots.FirstOrDefault(s => !s.IsLock && s.IsEmpty)
@@ -514,7 +514,7 @@ namespace Nekoyume.UI
 
         private void UpdateGlowEquipSlot(ItemUsable itemUsable)
         {
-            var itemType = itemUsable.Data.ItemType;
+            var itemType = itemUsable.ItemType;
             EquipmentSlot equipmentSlot;
             switch (itemType)
             {

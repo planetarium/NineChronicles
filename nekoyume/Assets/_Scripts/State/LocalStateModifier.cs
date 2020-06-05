@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -690,7 +690,7 @@ namespace Nekoyume.State
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             tableSheets.ConsumableItemRecipeSheet.TryGetValue(
-                materialInfoList.Select(i => i.material.Data.Id),
+                materialInfoList.Select(i => i.material.Id),
                 out var recipeRow
             );
             var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;

@@ -121,7 +121,7 @@ namespace Nekoyume.UI.Model
         {
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
             InventoryItem inventoryItem;
-            switch (itemBase.Data.ItemType)
+            switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
                     var consumable = (Consumable) itemBase;
@@ -180,7 +180,7 @@ namespace Nekoyume.UI.Model
         public void RemoveItem(ItemBase itemBase, int count = 1)
         {
             InventoryItem inventoryItem;
-            switch (itemBase.Data.ItemType)
+            switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
                     if (!TryGetConsumable((ItemUsable) itemBase, out inventoryItem))
@@ -259,7 +259,7 @@ namespace Nekoyume.UI.Model
 
         public bool TryGetItem(ItemBase itemBase, out InventoryItem inventoryItem)
         {
-            switch (itemBase.Data.ItemType)
+            switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
                     return TryGetConsumable((ItemUsable) itemBase, out inventoryItem);
@@ -310,7 +310,7 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            return TryGetCostume(itemUsable.Data.Id, out inventoryItem);
+            return TryGetCostume(itemUsable.Id, out inventoryItem);
         }
 
         public bool TryGetCostume(Costume costume, out InventoryItem inventoryItem)
@@ -321,14 +321,14 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            return TryGetCostume(costume.Data.Id, out inventoryItem);
+            return TryGetCostume(costume.Id, out inventoryItem);
         }
 
         public bool TryGetCostume(int id, out InventoryItem inventoryItem)
         {
             foreach (var item in Costumes)
             {
-                if (item.ItemBase.Value.Data.Id != id)
+                if (item.ItemBase.Value.Id != id)
                 {
                     continue;
                 }
@@ -377,7 +377,7 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            return TryGetMaterial(material.Data.ItemId, out inventoryItem);
+            return TryGetMaterial(material.ItemId, out inventoryItem);
         }
 
         public bool TryGetMaterial(HashDigest<SHA256> itemId, out InventoryItem inventoryItem)
@@ -385,7 +385,7 @@ namespace Nekoyume.UI.Model
             foreach (var item in Materials)
             {
                 if (!(item.ItemBase.Value is Material material) ||
-                    !material.Data.ItemId.Equals(itemId))
+                    !material.ItemId.Equals(itemId))
                 {
                     continue;
                 }
@@ -402,7 +402,7 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in Materials)
             {
-                if (item.ItemBase.Value.Data.Id != id)
+                if (item.ItemBase.Value.Id != id)
                 {
                     continue;
                 }

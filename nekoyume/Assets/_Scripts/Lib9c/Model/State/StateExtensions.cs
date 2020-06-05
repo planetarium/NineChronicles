@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Crypto;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 
@@ -183,7 +185,7 @@ namespace Nekoyume.Model.State
 
         public static IValue Serialize(this DecimalStat decimalStat) =>
             Dictionary.Empty
-                .Add("type", decimalStat.Type.Serialize())
+                .Add("type", StatTypeExtension.Serialize(decimalStat.Type))
                 .Add("value", decimalStat.Value.Serialize());
 
         public static DecimalStat ToDecimalStat(this IValue serialized) =>
@@ -309,6 +311,31 @@ namespace Nekoyume.Model.State
         {
             var bin = ((Binary) serialized).Value;
             return new PublicKey(bin);
+        }
+
+        #endregion
+
+        #region Enum
+
+        public static IValue Serialize(this Enum type) => (Text) type.ToString();
+
+        public static T ToEnum<T>(this IValue serialized) where T : struct
+        {
+            return (T) Enum.Parse(typeof(T), (Text) serialized);
+        }
+
+        #endregion
+
+        #region HashDigest<SHA256>
+
+        public static IValue Serialize(this HashDigest<SHA256> hashDigest)
+        {
+            return new Binary(hashDigest.ToByteArray());
+        }
+
+        public static HashDigest<SHA256> ToItemId(this IValue serialized)
+        {
+            return new HashDigest<SHA256>(((Binary)serialized).Value);
         }
 
         #endregion

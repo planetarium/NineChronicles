@@ -227,8 +227,8 @@ namespace Nekoyume.Model.Quest
             //                                     !i.Complete);
             //            quest?.Update(new List<ItemBase> {itemUsable});
             var targets = _quests.OfType<CombinationQuest>()
-                .Where(i => i.ItemType == itemUsable.Data.ItemType &&
-                            i.ItemSubType == itemUsable.Data.ItemSubType &&
+                .Where(i => i.ItemType == itemUsable.ItemType &&
+                            i.ItemSubType == itemUsable.ItemSubType &&
                             !i.Complete);
             foreach (var target in targets)
             {
@@ -292,7 +292,7 @@ namespace Nekoyume.Model.Quest
             //                .FirstOrDefault(i => !i.Complete && i.Grade == equipment.Data.Grade);
             //            quest?.Update(equipment);
             var targets = _quests.OfType<ItemEnhancementQuest>()
-                .Where(i => !i.Complete && i.Grade == equipment.Data.Grade);
+                .Where(i => !i.Complete && i.Grade == equipment.Grade);
             foreach (var target in targets)
             {
                 target.Update(equipment);
@@ -323,7 +323,7 @@ namespace Nekoyume.Model.Quest
             //                .FirstOrDefault(i => i.Grade == itemUsable.Data.Grade && !i.Complete);
             //            quest?.Update(itemUsable);
             var targets = _quests.OfType<ItemGradeQuest>()
-                .Where(i => i.Grade == itemUsable.Data.Grade && !i.Complete);
+                .Where(i => i.Grade == itemUsable.Grade && !i.Complete);
             foreach (var target in targets)
             {
                 target.Update(itemUsable);
@@ -338,7 +338,7 @@ namespace Nekoyume.Model.Quest
                 //                    .FirstOrDefault(i => i.ItemType == item.Data.ItemType && !i.Complete);
                 //                quest?.Update(item);
                 var targets = _quests.OfType<ItemTypeCollectQuest>()
-                    .Where(i => i.ItemType == item.Data.ItemType && !i.Complete);
+                    .Where(i => i.ItemType == item.ItemType && !i.Complete);
                 foreach (var target in targets)
                 {
                     target.Update(item);

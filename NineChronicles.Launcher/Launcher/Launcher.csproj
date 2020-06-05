@@ -4,9 +4,9 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>Launcher</RootNamespace>
         <OutputType>WinExe</OutputType>
-        <RuntimeIdentifier>osx-x64</RuntimeIdentifier>
-        <PublishSingleFile>true</PublishSingleFile>
+        <RuntimeIdentifiers>win-x64;osx-x64</RuntimeIdentifiers>
         <SelfContained>true</SelfContained>
+        <PublishSingleFile>true</PublishSingleFile>
         <PublishDir>..\out\$(RuntimeIdentifier)</PublishDir>
         <ApplicationIcon>icon.ico</ApplicationIcon>
         <CFBundleIconFile>AppIcon.icns</CFBundleIconFile>
@@ -27,6 +27,7 @@
         <PackageReference Include="Qml.Net.OSXBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.WindowsBinaries" Version="0.10.1" />
         <PackageReference Include="Qml.Net.LinuxBinaries" Version="0.10.1" />
+        <PackageReference Include="System.IO.Abstractions" Version="11.0.6" />
         <PackageReference Include="TextCopy" Version="3.0.2" />
     </ItemGroup>
 
@@ -71,45 +72,22 @@
 
     <Target Name="BundleQtRuntime" DependsOnTargets="WindowsTar">
       <Message Importance="high" Text="Download Qt runtime for $(RuntimeIDentifier)..." />
-      <DownloadFile
-        SourceUrl="https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-5.12.2-ad0689c-$(RuntimeIdentifier)-runtime.tar.gz"
-        DestinationFolder="$(BaseIntermediateOutputPath)"
-        SkipUnchangedFiles="true"
-        Retries="3" />
+      <DownloadFile SourceUrl="https://github.com/qmlnet/qt-runtimes/releases/download/releases/qt-5.12.2-ad0689c-$(RuntimeIdentifier)-runtime.tar.gz" DestinationFolder="$(BaseIntermediateOutputPath)" SkipUnchangedFiles="true" Retries="3" />
       <MakeDir Directories="$(BaseIntermediateOutputPath)\qt-runtimes\$(RuntimeIdentifier)" />
       <Message Importance="high" Text="Extract Qt runtime for $(RuntimeIDentifier)..." />
-      <Exec
-        Command="$(TarExe) xvfz $(BaseIntermediateOutputPath)/qt-5.12.2-ad0689c-$(RuntimeIdentifier)-runtime.tar.gz -C $(BaseIntermediateOutputPath)/qt-runtimes/$(RuntimeIdentifier)"
-        />
+      <Exec Command="$(TarExe) xvfz $(BaseIntermediateOutputPath)/qt-5.12.2-ad0689c-$(RuntimeIdentifier)-runtime.tar.gz -C $(BaseIntermediateOutputPath)/qt-runtimes/$(RuntimeIdentifier)" />
       <ItemGroup>
         <_QtRuntimeFiles Include="$(BaseIntermediateOutputPath)\qt-runtimes\$(RuntimeIdentifier)\**\*" />
       </ItemGroup>
-      <Copy
-        SourceFiles="@(_QtRuntimeFiles)"
-        DestinationFiles="@(_QtRuntimeFiles->'$(PublishDir)\qt-runtime\%(RecursiveDir)%(Filename)%(Extension)')"
-        SkipUnchangedFiles="true" />
+      <Copy SourceFiles="@(_QtRuntimeFiles)" DestinationFiles="@(_QtRuntimeFiles->'$(PublishDir)\qt-runtime\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
       <Message Importance="high" Text="Qt runtime was placed to $(PublishDir)" />
     </Target>
 
     <Target Name="WindowsTar" Condition=" '$(OS)' == 'Windows_NT' ">
-      <DownloadFile
-        SourceUrl="http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-bin.zip"
-        DestinationFolder="$(BaseIntermediateOutputPath)"
-        SkipUnchangedFiles="true"
-        Retries="5" />
-      <Unzip
-        SourceFiles="$(BaseIntermediateOutputPath)\libarchive-2.4.12-1-bin.zip"
-        DestinationFolder="$(BaseIntermediateOutputPath)"
-        SkipUnchangedFiles="true" />
-      <DownloadFile
-        SourceUrl="http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-dep.zip"
-        DestinationFolder="$(BaseIntermediateOutputPath)"
-        SkipUnchangedFiles="true"
-        Retries="5" />
-      <Unzip
-        SourceFiles="$(BaseIntermediateOutputPath)\libarchive-2.4.12-1-dep.zip"
-        DestinationFolder="$(BaseIntermediateOutputPath)"
-        SkipUnchangedFiles="true" />
+      <DownloadFile SourceUrl="http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-bin.zip" DestinationFolder="$(BaseIntermediateOutputPath)" SkipUnchangedFiles="true" Retries="5" />
+      <Unzip SourceFiles="$(BaseIntermediateOutputPath)\libarchive-2.4.12-1-bin.zip" DestinationFolder="$(BaseIntermediateOutputPath)" SkipUnchangedFiles="true" />
+      <DownloadFile SourceUrl="http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-dep.zip" DestinationFolder="$(BaseIntermediateOutputPath)" SkipUnchangedFiles="true" Retries="5" />
+      <Unzip SourceFiles="$(BaseIntermediateOutputPath)\libarchive-2.4.12-1-dep.zip" DestinationFolder="$(BaseIntermediateOutputPath)" SkipUnchangedFiles="true" />
     </Target>
 
     <Target Name="BundleLauncherConfig" AfterTargets="Publish">

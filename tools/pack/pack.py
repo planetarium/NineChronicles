@@ -12,6 +12,7 @@ import tarfile
 import tempfile
 from typing import Optional, Sequence
 import zipfile
+from zipfile import ZIP_DEFLATED
 
 from boto3 import client
 from commentjson import dump, load
@@ -50,9 +51,11 @@ def main() -> None:
             path = os.path.join(root, name)
             tmppath = os.path.join(temp_dir, name)
             if os.path.isdir(path):
-                shutil.copytree(path, tmppath)
+                if not os.path.isdir(tmppath):  # skip duplicate dirs
+                    shutil.copytree(path, tmppath)
             else:
-                shutil.copy2(path, tmppath)
+                if not os.path.isfile(tmppath):  # skip duplicate files
+                    shutil.copy2(path, tmppath)
             logging.info('Copy: %s -> %s', path, tmppath)
 
     # 아직 실제로 올라가 있지 않더라도, 이쪽으로 올려야 함. 서명을 하기 위해 미리 URL을 결정해 둠.
@@ -140,7 +143,7 @@ def main() -> None:
                 logging.info('Added: %s <- %s', arcname, name)
     elif args.platform.lower() == 'windows':
         archive_path = os.path.join(args.out_dir, 'Windows.zip')
-        with zipfile.ZipFile(archive_path, 'w') as archive:
+        with zipfile.ZipFile(archive_path, 'w', ZIP_DEFLATED) as archive:
             basepath = os.path.abspath(temp_dir) + os.sep
             for path, dirs, files in os.walk(temp_dir):
                 logging.debug('Walk: %r, %r, %r', path, dirs, files)

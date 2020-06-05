@@ -45,7 +45,7 @@ namespace Nekoyume.Action
                 actionPoint = serialized["actionPoint"].ToInteger();
                 recipeId = serialized["recipeId"].ToInteger();
                 subRecipeId = serialized["subRecipeId"].ToNullableInteger();
-                itemType = itemUsable.Data.ItemType;
+                itemType = itemUsable.ItemType;
             }
 
             public override IValue Serialize() =>
@@ -193,10 +193,10 @@ namespace Nekoyume.Action
 
             };
 
-            var materialRows = Materials.ToDictionary(pair => pair.Key.Data, pair => pair.Value);
+            var materialRows = Materials.ToDictionary(pair => pair.Key, pair => pair.Value);
             var consumableItemRecipeSheet = tableSheets.ConsumableItemRecipeSheet;
             var consumableItemSheet = tableSheets.ConsumableItemSheet;
-            var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial);
+            var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial).Select(pair => pair.Id);
             var foodCount = materialRows.Min(pair => pair.Value);
 
             if (!consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow))

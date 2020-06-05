@@ -488,7 +488,7 @@ namespace Nekoyume.Battle
                     (current, skill) =>
                         current * StatAndSkillSynergySettings.GetMultiply(statType,
                             skill.SkillRow)));
-            result *= ItemGradeSettings.GetMultiply(itemUsable.Data.Grade);
+            result *= ItemGradeSettings.GetMultiply(itemUsable.Grade);
             return DecimalToInt(result);
         }
 
