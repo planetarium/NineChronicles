@@ -14,8 +14,8 @@ namespace NineChronicles.Standalone.Exceptions
         {
         }
 
-        public PeerInvalidException(string message, Exception inner)
-            : base(message, inner)
+        public PeerInvalidException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
     }
