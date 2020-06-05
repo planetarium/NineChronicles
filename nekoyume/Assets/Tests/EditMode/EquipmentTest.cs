@@ -1,4 +1,5 @@
 using System.Linq;
+using Bencodex.Types;
 using Nekoyume;
 using Nekoyume.Game;
 using Nekoyume.Model.Item;
@@ -83,6 +84,9 @@ namespace Tests.EditMode
             Assert.AreEqual(decimal.ToInt32(stat + stat * 0.1m * level),
                 equipment.StatsMap.GetStat(equipment.UniqueStatType));
             Assert.AreEqual(expectedHp, equipment.StatsMap.AdditionalHP);
+            var serialized = (Dictionary) equipment.Serialize();
+            var actual = (Weapon) ItemFactory.Deserialize(serialized);
+            Assert.AreEqual(equipment, actual);
         }
 
         [Test, Sequential]
@@ -116,6 +120,9 @@ namespace Tests.EditMode
             Assert.AreEqual(level, equipment.level);
             Assert.AreEqual(expectedSkillChance, skill.Chance);
             Assert.AreEqual(expectedPower, skill.Power);
+            var serialized = (Dictionary) equipment.Serialize();
+            var actual = (Weapon) ItemFactory.Deserialize(serialized);
+            Assert.AreEqual(equipment, actual);
         }
     }
 }

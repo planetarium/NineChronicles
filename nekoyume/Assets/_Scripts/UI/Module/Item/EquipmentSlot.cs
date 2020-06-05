@@ -188,7 +188,7 @@ namespace Nekoyume.UI.Module
             var gradeSprite = itemBase.GetBackgroundSprite();
             if (gradeSprite is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(itemBase.Data.Grade.ToString());
+                throw new FailedToLoadResourceException<Sprite>(itemBase.Grade.ToString());
             }
 
             gradeImage.enabled = true;

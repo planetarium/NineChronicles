@@ -67,8 +67,8 @@ namespace Nekoyume.UI.Module
             if (!IsThereAnyUnlockedEmptyMaterialView)
                 return true;
 
-            var row = inventoryItem.ItemBase.Value.Data;
-            if (row.ItemType != ItemType.Equipment)
+            var item = inventoryItem.ItemBase.Value;
+            if (item.ItemType != ItemType.Equipment)
                 return true;
 
             if (!baseMaterial.IsEmpty)
@@ -77,8 +77,8 @@ namespace Nekoyume.UI.Module
                     return true;
 
                 var baseEquipment = (Equipment) baseMaterial.Model.ItemBase.Value;
-                if (baseEquipment.Data.ItemSubType != row.ItemSubType ||
-                    baseEquipment.Data.Grade != row.Grade)
+                if (baseEquipment.ItemSubType != item.ItemSubType ||
+                    baseEquipment.Grade != item.Grade)
                     return true;
 
                 var material = (Equipment) inventoryItem.ItemBase.Value;
@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Module
             out EnhancementMaterialView materialView)
         {
             if (viewModel is null ||
-                viewModel.ItemBase.Value.Data.ItemType != ItemType.Equipment)
+                viewModel.ItemBase.Value.ItemType != ItemType.Equipment)
             {
                 materialView = null;
                 return false;

@@ -18,7 +18,6 @@ namespace Nekoyume.UI.Module
         private static readonly Vector2 BtnHighlightSize = new Vector2(122f, 60f);
         private static readonly Vector2 BtnSize = new Vector2(95f, 36f);
 
-        public TextMeshProUGUI titleText;
         public Button equipmentsButton;
         public Image equipmentsButtonImage;
         public TextMeshProUGUI equipmentsButtonText;
@@ -62,7 +61,6 @@ namespace Nekoyume.UI.Module
             _switchButtonTransforms.Add(ItemType.Costume, costumesButton.GetComponent<RectTransform>());
             _switchButtonTransforms.Add(ItemType.Material, materialsButton.GetComponent<RectTransform>());
 
-            titleText.text = LocalizationManager.Localize("UI_INVENTORY");
             consumablesButtonText.text = LocalizationManager.Localize("UI_CONSUMABLES");
             consumablesButtonSelectedText.text = LocalizationManager.Localize("UI_CONSUMABLES");
             costumesButtonText.text = LocalizationManager.Localize("UI_COSTUME");

@@ -588,7 +588,7 @@ namespace Nekoyume.UI
 
             foreach (var (material, count) in materialInfoList)
             {
-                LocalStateModifier.RemoveItem(avatarAddress, material.Data.ItemId, count);
+                LocalStateModifier.RemoveItem(avatarAddress, material.ItemId, count);
             }
         }
 

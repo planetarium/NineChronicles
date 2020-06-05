@@ -14,7 +14,6 @@ namespace Nekoyume.UI
     public class CombinationSlots : XTweenWidget
     {
         public CombinationSlot[] slots;
-        public TextMeshProUGUI headerText;
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
 
@@ -25,7 +24,6 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
-            headerText.text = LocalizationManager.Localize("UI_COMBINATION");
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }
 
