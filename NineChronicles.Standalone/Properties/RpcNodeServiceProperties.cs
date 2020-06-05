@@ -1,4 +1,4 @@
-namespace NineChronicles.Standalone
+namespace NineChronicles.Standalone.Properties
 {
     public struct RpcNodeServiceProperties
     {

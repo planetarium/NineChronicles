@@ -25,6 +25,7 @@ using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using static Launcher.Common.Configuration.Path;
 using static Launcher.Common.Utils;
 using Nekoyume;
+using NineChronicles.Standalone.Properties;
 using Nekoyume.Model.State;
 using TextCopy;
 
