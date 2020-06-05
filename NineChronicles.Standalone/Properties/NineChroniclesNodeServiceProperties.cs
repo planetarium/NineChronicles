@@ -71,7 +71,8 @@ namespace NineChronicles.Standalone.Properties
                 StoreType = storeType,
                 StorePath = storePath,
                 StoreStatesCacheSize = 5000,
-                MinimumDifficulty = minimumDifficulty
+                MinimumDifficulty = minimumDifficulty,
+                Render = render
             };
         }
 
