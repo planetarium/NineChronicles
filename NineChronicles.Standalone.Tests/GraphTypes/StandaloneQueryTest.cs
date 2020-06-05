@@ -8,7 +8,7 @@ using Xunit;
 
 namespace NineChronicles.Standalone.Tests.GraphTypes
 {
-    public class QueryTest : GraphQLTestBase
+    public class StandaloneQueryTest : GraphQLTestBase
     {
         [Fact]
         public async Task GetState()

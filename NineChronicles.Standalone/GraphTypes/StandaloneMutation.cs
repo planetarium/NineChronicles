@@ -2,9 +2,9 @@ using GraphQL.Types;
 
 namespace NineChronicles.Standalone.GraphTypes
 {
-    public class Mutation : ObjectGraphType
+    public class StandaloneMutation : ObjectGraphType
     {
-        public Mutation()
+        public StandaloneMutation()
         {
             Field<BooleanGraphType>("start",
                 arguments: new QueryArguments(new QueryArgument<NonNullGraphType<StringGraphType>>

@@ -9,9 +9,9 @@ using Nekoyume.Action;
 
 namespace NineChronicles.Standalone.GraphTypes
 {
-    public class Query : ObjectGraphType
+    public class StandaloneQuery : ObjectGraphType
     {
-        public Query(StandaloneContext standaloneContext)
+        public StandaloneQuery(StandaloneContext standaloneContext)
         {
             Field<ByteStringType>(
                 name: "state",
