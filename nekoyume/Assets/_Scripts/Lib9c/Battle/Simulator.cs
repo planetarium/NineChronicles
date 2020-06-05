@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Libplanet.Action;
 using Nekoyume.Model;
@@ -26,7 +27,7 @@ namespace Nekoyume.Battle
         protected Simulator(
             IRandom random,
             AvatarState avatarState,
-            List<Consumable> foods,
+            List<Guid> foods,
             TableSheets tableSheets)
         {
             Random = random;

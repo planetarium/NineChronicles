@@ -543,7 +543,7 @@ namespace Nekoyume.UI
                 }).ToList();
 
             UpdateCurrentAvatarState(consumableCombinationPanel, materialInfoList);
-            CreateConsumableCombinationAction(materialInfoList, selectedIndex);
+            CreateConsumableCombinationAction(rowData.Id, materialInfoList, selectedIndex);
         }
 
         private void ActionEnhanceEquipment()
@@ -610,7 +610,8 @@ namespace Nekoyume.UI
         }
 
 
-        private void CreateConsumableCombinationAction(List<(Material material, int count)> materialInfoList,
+        private void CreateConsumableCombinationAction(int rowId,
+            List<(Material material, int count)> materialInfoList,
             int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotConsumable(
@@ -621,7 +622,7 @@ namespace Nekoyume.UI
             );
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
+            Game.Game.instance.ActionManager.CombinationConsumable(rowId, slotIndex)
                 .Subscribe(_ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }

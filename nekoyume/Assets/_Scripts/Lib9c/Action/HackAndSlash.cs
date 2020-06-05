@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -20,9 +19,9 @@ namespace Nekoyume.Action
     [ActionType("hack_and_slash")]
     public class HackAndSlash : GameAction
     {
-        public List<Costume> costumes;
-        public List<Equipment> equipments;
-        public List<Consumable> foods;
+        public List<int> costumes;
+        public List<Guid> equipments;
+        public List<Guid> foods;
         public int worldId;
         public int stageId;
         public Address avatarAddress;
@@ -35,8 +34,8 @@ namespace Nekoyume.Action
                 ["costumes"] = new Bencodex.Types.List(costumes.Select(e => e.Serialize())),
                 ["equipments"] = new Bencodex.Types.List(equipments.Select(e => e.Serialize())),
                 ["foods"] = new Bencodex.Types.List(foods.Select(e => e.Serialize())),
-                ["worldId"] = (Integer) worldId,
-                ["stageId"] = (Integer) stageId,
+                ["worldId"] = worldId.Serialize(),
+                ["stageId"] = stageId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
             }.ToImmutableDictionary();
@@ -45,16 +44,16 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             costumes = ((Bencodex.Types.List) plainValue["costumes"]).Select(
-                e => (Costume) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+                e => e.ToInteger()
             ).ToList();
             equipments = ((Bencodex.Types.List) plainValue["equipments"]).Select(
-                e => (Equipment) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+                e => e.ToGuid()
             ).ToList();
             foods = ((Bencodex.Types.List) plainValue["foods"]).Select(
-                e => (Consumable) ItemFactory.Deserialize((Bencodex.Types.Dictionary) e)
+                e => e.ToGuid()
             ).ToList();
-            worldId = (int) ((Integer) plainValue["worldId"]).Value;
-            stageId = (int) ((Integer) plainValue["stageId"]).Value;
+            worldId = plainValue["worldId"].ToInteger();
+            stageId = plainValue["stageId"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
         }
@@ -105,58 +104,10 @@ namespace Nekoyume.Action
             sw.Restart();
 
             // 장비가 유효한지 검사한다.
-            // FIXME: 이하의 코드 블록이 상당부분 RankingBattle.Execute()에도 중복되어 들어있습니다.
-            // 한 쪽 로직만 수정하는 실수가 일어나기 쉬우니 로직을 하나로 합쳐서 양쪽에서 공통 로직을 가져다 쓰게 하는 게
-            // 좋을 듯합니다.
+            if (!avatarState.ValidateEquipments(equipments, context.BlockIndex))
             {
-                var level = avatarState.level;
-                var ringCount = 0;
-                var failed = false;
-                foreach (var equipment in equipments)
-                {
-                    if (equipment.RequiredBlockIndex > context.BlockIndex)
-                    {
-                        failed = true;
-                        break;
-                    }
-
-                    switch (equipment.ItemSubType)
-                    {
-                        case ItemSubType.Weapon:
-                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
-                            break;
-                        case ItemSubType.Armor:
-                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
-                            break;
-                        case ItemSubType.Belt:
-                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
-                            break;
-                        case ItemSubType.Necklace:
-                            failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
-                            break;
-                        case ItemSubType.Ring:
-                            ringCount++;
-                            var requireLevel = ringCount == 1
-                                ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
-                                : ringCount == 2
-                                    ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
-                                    : int.MaxValue;
-                            failed = level < requireLevel;
-                            break;
-                        default:
-                            failed = true;
-                            break;
-                    }
-
-                    if (failed)
-                        break;
-                }
-
-                if (failed)
-                {
-                    // 장비가 유효하지 않은 에러.
-                    return LogError(context, "Aborted as the equipment is invalid.");
-                }
+                // 장비가 유효하지 않은 에러.
+                return LogError(context, "Aborted as the equipment is invalid.");
             }
 
             var tableSheetState = TableSheetsState.FromActionContext(ctx);
@@ -184,53 +135,13 @@ namespace Nekoyume.Action
 
             avatarState.actionPoint -= stage.CostAP;
 
-            // 코스튬 해제.
-            var inventoryCostumes = avatarState.inventory.Items
-                .Select(i => i.item)
-                .OfType<Costume>()
-                .Where(i => i.equipped)
-                .ToImmutableHashSet();
-            foreach (var costume in inventoryCostumes)
-            {
-                costume.equipped = false;
-            }
+            avatarState.EquipCostumes(costumes);
 
-            // 코스튬 장착.
-            foreach (var costume in costumes)
-            {
-                if (!avatarState.inventory.TryGetFungibleItem(costume, out var outItem))
-                {
-                    continue;
-                }
-
-                ((Costume) outItem.item).equipped = true;
-            }
-
-            // 장비 해제.
-            var inventoryEquipments = avatarState.inventory.Items
-                .Select(i => i.item)
-                .OfType<Equipment>()
-                .Where(i => i.equipped)
-                .ToImmutableHashSet();
-            foreach (var equipment in inventoryEquipments)
-            {
-                equipment.Unequip();
-            }
-
+            avatarState.EquipEquipments(equipments);
             sw.Stop();
             Log.Debug("HAS Unequip items: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            // 장비 장착.
-            foreach (var equipment in equipments)
-            {
-                if (!avatarState.inventory.TryGetNonFungibleItem(equipment, out ItemUsable outNonFungibleItem))
-                {
-                    continue;
-                }
-
-                ((Equipment) outNonFungibleItem).Equip();
-            }
 
             var simulator = new StageSimulator(
                 ctx.Random,
