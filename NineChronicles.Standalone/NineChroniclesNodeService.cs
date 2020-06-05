@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
+using NineChronicles.Standalone.Properties;
 using Nito.AsyncEx;
 using Serilog;
 
@@ -97,9 +97,10 @@ namespace NineChronicles.Standalone
             }
         }
 
-        public async Task Run(CancellationToken cancellationToken = default)
+        public Task Run(
+            IHostBuilder hostBuilder,
+            CancellationToken cancellationToken = default)
         {
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
             if (RpcProperties.RpcServer)
             {
                 hostBuilder = hostBuilder
@@ -116,12 +117,19 @@ namespace NineChronicles.Standalone
                     });
             }
 
-            await hostBuilder.ConfigureServices((ctx, services) =>
+            return hostBuilder.ConfigureServices((ctx, services) =>
             {
                 services.AddHostedService(provider => NodeService);
                 services.AddSingleton(provider => NodeService.Swarm);
                 services.AddSingleton(provider => NodeService.BlockChain);
             }).RunConsoleAsync(cancellationToken);
+        }
+
+        public Task Run(
+            CancellationToken cancellationToken = default)
+        {
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+            return Run(hostBuilder, cancellationToken);
         }
     }
 }
