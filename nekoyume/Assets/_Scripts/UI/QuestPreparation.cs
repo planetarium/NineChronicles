@@ -606,7 +606,13 @@ namespace Nekoyume.UI
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
-                .HackAndSlash(costumes, equipments, consumables, _worldId, _stageId.Value)
+                .HackAndSlash(
+                    costumes.Select(i => i.Id).ToList(),
+                    equipments,
+                    consumables,
+                    _worldId,
+                    _stageId.Value
+                )
                 .Subscribe(
                     _ =>
                     {
@@ -647,9 +653,9 @@ namespace Nekoyume.UI
                     $"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
             var avatarState = new AvatarState(States.Instance.CurrentAvatarState) {level = level};
-            var consumables = consumableSlots
+            List<Guid> consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Consumable) slot.Item)
+                .Select(slot => ((Consumable) slot.Item).ItemId)
                 .ToList();
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)

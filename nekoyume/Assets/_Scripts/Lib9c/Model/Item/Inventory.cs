@@ -222,6 +222,12 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        public bool TryGetFungibleItem(int id, out Item outFungibleItem)
+        {
+            outFungibleItem = _items.FirstOrDefault(i => i.item.Id == id);
+            return !(outFungibleItem is null);
+        }
+
         public bool TryGetCostume(int id, out Item outCostume)
         {
             foreach (var item in _items)

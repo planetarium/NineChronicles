@@ -60,8 +60,8 @@ namespace Nekoyume.Action
                 }.Union((Dictionary) base.Serialize()));
         }
 
-        public Dictionary<Material, int> Materials { get; private set; }
         public Address AvatarAddress;
+        public int recipeId;
         public int slotIndex;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
@@ -70,7 +70,7 @@ namespace Nekoyume.Action
             {
                 var dict = new Dictionary<string, IValue>
                 {
-                    ["Materials"] = Materials.Serialize(),
+                    ["recipeId"] = recipeId.Serialize(),
                     ["avatarAddress"] = AvatarAddress.Serialize(),
                 };
 
@@ -86,12 +86,11 @@ namespace Nekoyume.Action
 
         public CombinationConsumable()
         {
-            Materials = new Dictionary<Material, int>();
         }
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            Materials = plainValue["Materials"].ToDictionary_Material_int();
+            recipeId = plainValue["recipeId"].ToInteger();
             AvatarAddress = plainValue["avatarAddress"].ToAddress();
             if (plainValue.TryGetValue((Text) "slotIndex", out var value))
             {
@@ -166,18 +165,28 @@ namespace Nekoyume.Action
             sw.Restart();
 
             Log.Debug("Execute Combination; player: {Player}", AvatarAddress);
-
-            // 사용한 재료를 인벤토리에서 제거.
-            foreach (var pair in Materials)
+            var consumableItemSheet = tableSheets.ConsumableItemSheet;
+            var recipeRow = tableSheets.ConsumableItemRecipeSheet.Values.FirstOrDefault(r => r.Id == recipeId);
+            if (recipeRow is null)
             {
-                if (!avatarState.inventory.RemoveFungibleItem(pair.Key, pair.Value))
+                return LogError(context, "Aborted as the recipe was failed to load.");
+            }
+            var materials = new Dictionary<Material, int>();
+            foreach (var materialId in recipeRow.MaterialItemIds)
+            {
+                if (avatarState.inventory.TryGetFungibleItem(materialId, out var inventoryItem))
                 {
-                    // 재료 부족 에러.
+                    var material = (Material) inventoryItem.item;
+                    materials[material] = 1;
+                    avatarState.inventory.RemoveFungibleItem(material, 1);
+                }
+                else
+                {
                     return LogError(
                         context,
                         "Aborted as the player has no enough material ({Material} * {Quantity})",
-                        pair.Key,
-                        pair.Value
+                        materialId,
+                        1
                     );
                 }
             }
@@ -188,27 +197,12 @@ namespace Nekoyume.Action
 
             var result = new ResultModel
             {
-                materials = Materials,
+                materials = materials,
                 itemType = ItemType.Consumable,
 
             };
 
-            var materialRows = Materials.ToDictionary(pair => pair.Key, pair => pair.Value);
-            var consumableItemRecipeSheet = tableSheets.ConsumableItemRecipeSheet;
-            var consumableItemSheet = tableSheets.ConsumableItemSheet;
-            var foodMaterials = materialRows.Keys.Where(pair => pair.ItemSubType == ItemSubType.FoodMaterial).Select(pair => pair.Id);
-            var foodCount = materialRows.Min(pair => pair.Value);
-
-            if (!consumableItemRecipeSheet.TryGetValue(foodMaterials, out var recipeRow))
-            {
-                return LogError(context, "Aborted as the recipe was failed to load.");
-            }
-
-            sw.Stop();
-            Log.Debug("Combination Get Food Material rows: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
-            var costAP = recipeRow.RequiredActionPoint * foodCount;
+            var costAP = recipeRow.RequiredActionPoint;
             if (avatarState.actionPoint < costAP)
             {
                 // ap 부족 에러.
@@ -242,25 +236,22 @@ namespace Nekoyume.Action
 
             // 조합 결과 획득.
             var requiredBlockIndex = ctx.BlockIndex + recipeRow.RequiredBlockIndex;
-            for (var i = 0; i < foodCount; i++)
-            {
-                var itemId = ctx.Random.GenerateRandomGuid();
-                var itemUsable = GetFood(consumableItemRow, itemId, requiredBlockIndex);
-                // 액션 결과
-                result.itemUsable = itemUsable;
-                var mail = new CombinationMail(
-                    result,
-                    ctx.BlockIndex,
-                    ctx.Random.GenerateRandomGuid(),
-                    requiredBlockIndex
-                );
-                result.id = mail.id;
-                avatarState.Update(mail);
-                avatarState.UpdateFromCombination(itemUsable);
-                sw.Stop();
-                Log.Debug("Combination Update AvatarState: {Elapsed}", sw.Elapsed);
-                sw.Restart();
-            }
+            var itemId = ctx.Random.GenerateRandomGuid();
+            var itemUsable = GetFood(consumableItemRow, itemId, requiredBlockIndex);
+            // 액션 결과
+            result.itemUsable = itemUsable;
+            var mail = new CombinationMail(
+                result,
+                ctx.BlockIndex,
+                ctx.Random.GenerateRandomGuid(),
+                requiredBlockIndex
+            );
+            result.id = mail.id;
+            avatarState.Update(mail);
+            avatarState.UpdateFromCombination(itemUsable);
+            sw.Stop();
+            Log.Debug("Combination Update AvatarState: {Elapsed}", sw.Elapsed);
+            sw.Restart();
 
             avatarState.UpdateQuestRewards(ctx);
 
@@ -279,23 +270,6 @@ namespace Nekoyume.Action
 
         private static ItemUsable GetFood(ConsumableItemSheet.Row equipmentItemRow, Guid itemId, long ctxBlockIndex)
         {
-            // FixMe. 소모품에 랜덤 스킬을 할당했을 때, `HackAndSlash` 액션에서 예외 발생. 그래서 소모품은 랜덤 스킬을 할당하지 않음.
-            /*
-             * InvalidTxSignatureException: 8383de6800f00416bfec1be66745895134083b431bd48766f1f6c50b699f6708: The signature (3045022100c2fffb0e28150fd6ddb53116cc790f15ca595b19ba82af8c6842344bd9f6aae10220705c37401ff35c3eb471f01f384ea6a110dd7e192d436ca99b91c9bed9b6db17) is failed to verify.
-             * Libplanet.Tx.Transaction`1[T].Validate () (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
-             * Libplanet.Blocks.Block`1[T].Validate (System.DateTimeOffset currentTime) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
-             * Libplanet.Store.BlockSet`1[T].set_Item (Libplanet.HashDigest`1[T] key, Libplanet.Blocks.Block`1[T] value) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
-             * Libplanet.Blockchain.BlockChain`1[T].Append (Libplanet.Blocks.Block`1[T] block, System.DateTimeOffset currentTime, System.Boolean render) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
-             * Libplanet.Blockchain.BlockChain`1[T].Append (Libplanet.Blocks.Block`1[T] block, System.DateTimeOffset currentTime) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
-             * Libplanet.Blockchain.BlockChain`1[T].MineBlock (Libplanet.Address miner, System.DateTimeOffset currentTime) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
-             * Libplanet.Blockchain.BlockChain`1[T].MineBlock (Libplanet.Address miner) (at <7284bf7c1f1547329a0963c7fa3ab23e>:0)
-             * Nekoyume.BlockChain.Agent+<>c__DisplayClass31_0.<CoMiner>b__0 () (at Assets/_Scripts/BlockChain/Agent.cs:168)
-             * System.Threading.Tasks.Task`1[TResult].InnerInvoke () (at <1f0c1ef1ad524c38bbc5536809c46b48>:0)
-             * System.Threading.Tasks.Task.Execute () (at <1f0c1ef1ad524c38bbc5536809c46b48>:0)
-             * UnityEngine.Debug:LogException(Exception)
-             * Nekoyume.BlockChain.<CoMiner>d__31:MoveNext() (at Assets/_Scripts/BlockChain/Agent.cs:208)
-             * UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
-             */
             return ItemFactory.CreateItemUsable(equipmentItemRow, itemId, ctxBlockIndex);
         }
     }

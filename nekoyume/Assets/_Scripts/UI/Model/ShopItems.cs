@@ -201,7 +201,7 @@ namespace Nekoyume.UI.Model
                 return;
 
             var shopItems = _shopItems[sellerAgentAddress];
-            var sellerAvatarAddress = States.Instance.CurrentAvatarState.address;
+            var sellerAvatarAddress = States.Instance.CurrentAvatarState?.address;
             foreach (var shopItem in shopItems)
             {
                 if (shopItem.SellerAvatarAddress == sellerAvatarAddress)
