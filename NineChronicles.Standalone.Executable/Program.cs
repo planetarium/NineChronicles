@@ -118,6 +118,7 @@ namespace NineChronicles.Standalone.Executable
                     {
                         rpcProperties = NineChroniclesNodeServiceProperties
                             .GenerateRpcNodeServiceProperties(rpcListenHost, rpcListenPort);
+                        properties.Render = true;
                     }
                 }
                 catch (Exception e)
