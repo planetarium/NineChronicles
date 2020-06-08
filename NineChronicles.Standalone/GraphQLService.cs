@@ -56,6 +56,8 @@ namespace NineChronicles.Standalone
                     )
                 );
 
+                services.AddHealthChecks();
+
                 services.AddControllers();
 
                 var standaloneContext = new StandaloneContext
@@ -91,6 +93,7 @@ namespace NineChronicles.Standalone
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
+                    endpoints.MapHealthChecks("/health-check");
                 });
 
                 // WebSocket으로 운영합니다.

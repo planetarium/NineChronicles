@@ -22,12 +22,6 @@ namespace NineChronicles.Standalone.Controllers
             StandaloneContext = standaloneContext;
         }
 
-        [HttpGet("/health-check")]
-        public IActionResult HealthCheck()
-        {
-            return Ok("Hello!");
-        }
-
         [HttpPost("/run-standalone")]
         public IActionResult RunStandAlone(
             [FromBody] ServiceBindingProperties properties
