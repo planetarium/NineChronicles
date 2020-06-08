@@ -28,7 +28,7 @@ namespace Launcher
                 using var wc = new WebClient();
                 wc.DownloadFile(
                     // 9c-beta 클러스터 설정
-                    "https://download.nine-chronicles.com/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-launcher.json",
+                    "https://download.nine-chronicles.com/7bc7f433c8fca903f461de848bfd57d30202f1b87e4e1fd97512030a9b7a7bf0-launcher.json",
                     Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "launcher.json")
                 );
             }

@@ -28,7 +28,7 @@ namespace Launcher.Updater
 
         // NOTE: 9c-beta의 제네시스 해시을 하드코딩 해놓았습니다.
         private const string SnapshotUrl =
-            "https://download.nine-chronicles.com/latest/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot.zip";
+            "https://download.nine-chronicles.com/latest/7bc7f433c8fca903f461de848bfd57d30202f1b87e4e1fd97512030a9b7a7bf0-snapshot.zip";
 
         const string MacOSUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater";
         const string WindowsUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater.exe";
