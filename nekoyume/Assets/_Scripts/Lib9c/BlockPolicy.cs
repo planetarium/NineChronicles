@@ -22,7 +22,7 @@ namespace Nekoyume.BlockChain
 {
     public static class BlockPolicy
     {
-        private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
         private static readonly ActionRenderer ActionRenderer = new ActionRenderer(
             ActionBase.RenderSubject,
@@ -58,7 +58,7 @@ namespace Nekoyume.BlockChain
             return new DebugPolicy();
 #else
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
-                new RewardGold { Gold = 1 },
+                new RewardGold { Gold = 10 },
                 BlockInterval,
                 minimumDifficulty,
                 2048,
