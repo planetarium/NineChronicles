@@ -708,7 +708,7 @@ namespace Nekoyume.BlockChain
             }
             else
             {
-                if (eval.Exception.InnerException is InvalidOperationException)
+                if (eval.Exception.InnerException is DuplicateRedeemException)
                 {
                     key = "UI_REDEEM_CODE_ALREADY_USE";
                 }

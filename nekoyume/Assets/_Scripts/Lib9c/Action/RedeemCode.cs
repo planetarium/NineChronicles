@@ -48,12 +48,12 @@ namespace Nekoyume.Action
             {
                 redeemId = redeemState.Redeem(code, avatarAddress);
             }
-            catch (KeyNotFoundException)
+            catch (InvalidRedeemCodeException)
             {
                 Log.Error("Invalid Code");
                 throw;
             }
-            catch (InvalidOperationException e)
+            catch (DuplicateRedeemException e)
             {
                 Log.Warning(e.Message);
                 throw;

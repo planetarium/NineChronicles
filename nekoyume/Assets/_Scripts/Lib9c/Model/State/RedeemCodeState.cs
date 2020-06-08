@@ -89,18 +89,29 @@ namespace Nekoyume.Model.State
         {
             if (!_map.ContainsKey(key))
             {
-                throw new KeyNotFoundException();
+                throw new InvalidRedeemCodeException();
             }
 
             var result = _map[key];
             if (result.UserAddress.HasValue)
             {
-                throw new InvalidOperationException($"Code already used by {result.UserAddress}");
+                throw new DuplicateRedeemException($"Code already used by {result.UserAddress}");
             }
 
             result.UserAddress = userAddress;
             _map[key] = result;
             return result.RewardId;
+        }
+    }
+
+    public class InvalidRedeemCodeException : KeyNotFoundException
+    {
+    }
+
+    public class DuplicateRedeemException : InvalidOperationException
+    {
+        public DuplicateRedeemException(string s) : base(s)
+        {
         }
     }
 }
