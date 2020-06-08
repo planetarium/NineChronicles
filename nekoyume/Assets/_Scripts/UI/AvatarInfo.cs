@@ -44,7 +44,7 @@ namespace Nekoyume.UI
         private RectTransform avatarPosition = null;
 
         private EquipmentSlot _weaponSlot;
-        private bool _isBattle;
+        private bool _isShownFromBattle;
         private Player _player;
         private Vector3 _previousAvatarPosition;
         private int _previousSortingLayerID;
@@ -109,7 +109,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            _isBattle = Find<Battle>().gameObject.activeSelf;
+            _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
@@ -134,7 +134,7 @@ namespace Nekoyume.UI
         {
             if (_player is null)
             {
-                if (_isBattle)
+                if (_isShownFromBattle)
                 {
                     _player = PlayerFactory
                         .Create(avatarState)
@@ -188,7 +188,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (_isBattle)
+            if (_isShownFromBattle)
             {
                 Game.Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
                 _player = null;
@@ -265,7 +265,7 @@ namespace Nekoyume.UI
 
         private void Equip(CountableItem countableItem)
         {
-            if (_isBattle ||
+            if (_isShownFromBattle ||
                 !(countableItem is InventoryItem inventoryItem))
             {
                 return;
@@ -339,7 +339,7 @@ namespace Nekoyume.UI
 
         private void Unequip(EquipmentSlot slot, bool onlyData)
         {
-            if (_isBattle)
+            if (_isShownFromBattle)
             {
                 return;
             }
@@ -490,7 +490,7 @@ namespace Nekoyume.UI
             tooltip.Show(
                 view.RectTransform,
                 view.Model,
-                value => !view.Model.Dimmed.Value && !_isBattle,
+                value => !view.Model.Dimmed.Value && !_isShownFromBattle,
                 view.Model.EquippedEnabled.Value
                     ? LocalizationManager.Localize("UI_UNEQUIP")
                     : LocalizationManager.Localize("UI_EQUIP"),
