@@ -30,7 +30,7 @@ namespace Nekoyume.UI
             closeButton.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
-                Find<Status>()?.CloseInventory();
+                Close();
             }).AddTo(gameObject);
 
             CloseWidget = closeButton.onClick.Invoke;
