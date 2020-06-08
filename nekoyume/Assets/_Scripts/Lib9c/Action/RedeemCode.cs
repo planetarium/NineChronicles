@@ -51,12 +51,12 @@ namespace Nekoyume.Action
             catch (KeyNotFoundException)
             {
                 Log.Error("Invalid Code");
-                return states;
+                throw;
             }
             catch (InvalidOperationException e)
             {
                 Log.Warning(e.Message);
-                return states;
+                throw;
             }
 
             var tableSheets = TableSheets.FromActionContext(context);

@@ -300,7 +300,7 @@ namespace Nekoyume.BlockChain
         private void RedeemCode()
         {
             _renderer.EveryRender<Action.RedeemCode>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRedeemCode).AddTo(_disposables);
         }
@@ -679,31 +679,42 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
         {
-            var code = eval.Action.code;
-            RedeemCodeState redeemCodeState = null;
-            if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+            var key = "UI_REDEEM_CODE_INVALID_CODE";
+            if (eval.Exception is null)
             {
-                redeemCodeState = new RedeemCodeState(d);
+                var code = eval.Action.code;
+                RedeemCodeState redeemCodeState = null;
+                if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+                {
+                    redeemCodeState = new RedeemCodeState(d);
+                }
+
+                if (redeemCodeState is null)
+                {
+                    return;
+                }
+
+                if (redeemCodeState.Map.TryGetValue(code, out var reward))
+                {
+                    var tableSheets = Game.Game.instance.TableSheets;
+                    var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
+                    var rewards = row.Rewards;
+                    var chestRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+                    var chest = ItemFactory.CreateChest(chestRow, rewards);
+                    Widget.Find<RedeemRewardPopup>().Pop(chest, tableSheets);
+                    key = "UI_REDEEM_CODE_SUCCESS";
+                    UpdateCurrentAvatarState(eval);
+                }
+            }
+            else
+            {
+                if (eval.Exception.InnerException is InvalidOperationException)
+                {
+                    key = "UI_REDEEM_CODE_ALREADY_USE";
+                }
             }
 
-            if (redeemCodeState is null)
-            {
-                return;
-            }
-
-            var msg = "Invalid Redeem Code.";
-
-            if (redeemCodeState.Map.TryGetValue(code, out var reward))
-            {
-                var tableSheets = Game.Game.instance.TableSheets;
-                var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
-                var rewards = row.Rewards;
-                var chestRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
-                var chest = ItemFactory.CreateChest(chestRow, rewards);
-                Widget.Find<RedeemRewardPopup>().Pop(chest, tableSheets);
-                msg = "Response Redeem Code.";
-                UpdateCurrentAvatarState(eval);
-            }
+            var msg = LocalizationManager.Localize(key);
             UI.Notification.Push(MailType.System, msg);
         }
 
