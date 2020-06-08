@@ -46,6 +46,16 @@ namespace NineChronicles.Standalone
 
             public void ConfigureServices(IServiceCollection services)
             {
+                services.AddCors(options =>
+                    options.AddPolicy(
+                        "AllowAllOrigins",
+                        builder =>
+                            builder.AllowAnyOrigin()
+                                .AllowAnyMethod()
+                                .AllowAnyHeader()
+                    )
+                );
+
                 services.AddControllers();
 
                 var standaloneContext = new StandaloneContext
@@ -65,16 +75,6 @@ namespace NineChronicles.Standalone
                     .AddWebSockets()
                     .AddDataLoader()
                     .AddGraphTypes(typeof(StandaloneSchema));
-
-                services.AddCors(options =>
-                    options.AddPolicy(
-                        "AllowAllOrigins",
-                        builder =>
-                            builder.AllowAnyOrigin()
-                                .AllowAnyMethod()
-                                .AllowAnyHeader()
-                    )
-                );
             }
 
             public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -83,6 +83,8 @@ namespace NineChronicles.Standalone
                 {
                     app.UseDeveloperExceptionPage();
                 }
+
+                app.UseCors("AllowAllOrigins");
 
                 app.UseRouting();
 
@@ -98,8 +100,6 @@ namespace NineChronicles.Standalone
 
                 // /ui/playground 옵션을 통해서 Playground를 사용할 수 있습니다.
                 app.UseGraphQLPlayground();
-
-                app.UseCors("AllowAllOrigins");
             }
         }
 
