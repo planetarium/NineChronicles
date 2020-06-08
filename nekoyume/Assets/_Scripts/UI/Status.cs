@@ -16,14 +16,32 @@ namespace Nekoyume.UI
 {
     public class Status : Widget
     {
-        public TextMeshProUGUI textLvName;
-        public TextMeshProUGUI textHp;
-        public TextMeshProUGUI textExp;
-        public Image hpBar;
-        public Image expBar;
-        public BuffLayout buffLayout;
-        public BuffTooltip buffTooltip;
-        public BattleTimerView battleTimerView;
+        [SerializeField]
+        private FramedCharacterView characterView = null;
+
+        [SerializeField]
+        private TextMeshProUGUI textLvName = null;
+
+        [SerializeField]
+        private TextMeshProUGUI textHp = null;
+
+        [SerializeField]
+        private TextMeshProUGUI textExp = null;
+
+        [SerializeField]
+        private Image hpBar = null;
+
+        [SerializeField]
+        private Image expBar = null;
+
+        [SerializeField]
+        private BuffLayout buffLayout = null;
+
+        [SerializeField]
+        private BuffTooltip buffTooltip = null;
+
+        [SerializeField]
+        private BattleTimerView battleTimerView = null;
 
         private string _avatarName = "";
         private Player _player;
@@ -72,6 +90,11 @@ namespace Nekoyume.UI
 
             hpBar.transform.parent.gameObject.SetActive(false);
             buffLayout.SetBuff(null);
+        }
+
+        public void SetBattleTime(int timeLimit)
+        {
+            battleTimerView.Show(timeLimit);
         }
 
         private void SubscribeOnUpdatePlayerStatus(Player player)

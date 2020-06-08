@@ -534,7 +534,7 @@ namespace Nekoyume.Game
                 var stageSheet = Game.instance.TableSheets.StageSheet;
                 if (stageSheet.TryGetValue(stageId, out var row))
                 {
-                    status.battleTimerView.Show(row.TurnLimit);
+                    status.SetBattleTime(row.TurnLimit);
                 }
             }
 
