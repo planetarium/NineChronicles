@@ -83,13 +83,12 @@ namespace NineChronicles.Standalone.Controllers
 
                 var rpcServiceProperties = NineChroniclesNodeServiceProperties
                     .GenerateRpcNodeServiceProperties(
-                        properties.RpcServer,
                         properties.RpcListenHost,
                         properties.RpcListenPort);
 
                 var nineChroniclesProperties = new NineChroniclesNodeServiceProperties
                 {
-                    Rpc =  rpcServiceProperties,
+                    Rpc = rpcServiceProperties,
                     Libplanet = nodeServiceProperties
                 };
 

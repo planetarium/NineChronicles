@@ -96,7 +96,7 @@ namespace NineChronicles.Standalone.Executable
                 }
 
                 var properties = new LibplanetNodeServiceProperties<NineChroniclesActionType>();
-                var rpcProperties = new RpcNodeServiceProperties();
+                RpcNodeServiceProperties? rpcProperties = null;
                 try
                 {
                     properties = NineChroniclesNodeServiceProperties
@@ -114,11 +114,12 @@ namespace NineChronicles.Standalone.Executable
                             noTrustedStateValidators,
                             trustedAppProtocolVersionSigners,
                             noMiner);
-                    rpcProperties = NineChroniclesNodeServiceProperties
-                        .GenerateRpcNodeServiceProperties(
-                            rpcServer,
-                            rpcListenHost,
-                            rpcListenPort);
+                    if (rpcServer)
+                    {
+                        rpcProperties = NineChroniclesNodeServiceProperties
+                            .GenerateRpcNodeServiceProperties(rpcListenHost, rpcListenPort);
+                        properties.Render = true;
+                    }
                 }
                 catch (Exception e)
                 {
