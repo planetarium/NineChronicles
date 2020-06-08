@@ -106,8 +106,9 @@ namespace Nekoyume.UI.Module
             submitButton.gameObject.SetActive(true);
             OnMaterialAddedOrRemoved();
             OnMaterialCountChanged();
-            ReactiveAgentState.Gold.Subscribe(SubscribeNCG).AddTo(_disposablesAtShow);
-            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposablesAtShow);
+            submitButton.HideAP();
+            submitButton.HideNCG();
+            submitButton.HideHourglass();
             return true;
         }
 
