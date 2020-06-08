@@ -698,7 +698,9 @@ namespace Nekoyume.BlockChain
                 var tableSheets = Game.Game.instance.TableSheets;
                 var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
                 var rewards = row.Rewards;
-                Widget.Find<RedeemRewardPopup>().Pop(rewards, tableSheets);
+                var chestRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+                var chest = ItemFactory.CreateChest(chestRow, rewards);
+                Widget.Find<RedeemRewardPopup>().Pop(chest, tableSheets);
                 msg = "Response Redeem Code.";
                 UpdateCurrentAvatarState(eval);
             }

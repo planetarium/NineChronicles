@@ -62,22 +62,9 @@ namespace Nekoyume.Action
             var tableSheets = TableSheets.FromActionContext(context);
             var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == redeemId);
             var rewards = row.Rewards;
-            foreach (var info in rewards)
-            {
-                switch (info.Type)
-                {
-                    case RewardType.Item:
-                        var itemRow = tableSheets.MaterialItemSheet.Values.First(r => r.Id == info.ItemId);
-                        var material = ItemFactory.CreateMaterial(itemRow);
-                        avatarState.inventory.AddItem(material, info.Quantity);
-                        break;
-                    case RewardType.Gold:
-                        agentState.gold += info.Quantity;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(info.Type), info.Type, null);
-                }
-            }
+            var materialRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+            var chest = ItemFactory.CreateChest(materialRow, rewards);
+            avatarState.inventory.AddItem(chest, 1);
             states = states.SetState(avatarAddress, avatarState.Serialize());
             states = states.SetState(RedeemCodeState.Address, redeemState.Serialize());
             states = states.SetState(context.Signer, agentState.Serialize());
