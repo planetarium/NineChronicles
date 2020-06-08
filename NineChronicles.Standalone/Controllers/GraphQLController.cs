@@ -17,12 +17,14 @@ namespace NineChronicles.Standalone.Controllers
     {
         private StandaloneContext StandaloneContext { get; }
 
+        public const string RunStandaloneEndpoint = "/run-standalone";
+
         public GraphQLController(StandaloneContext standaloneContext)
         {
             StandaloneContext = standaloneContext;
         }
 
-        [HttpPost("/run-standalone")]
+        [HttpPost(RunStandaloneEndpoint)]
         public IActionResult RunStandAlone(
             [FromBody] ServiceBindingProperties properties
         )

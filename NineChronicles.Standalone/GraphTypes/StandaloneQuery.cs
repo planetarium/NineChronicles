@@ -6,6 +6,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Nekoyume.Action;
+using NineChronicles.Standalone.Controllers;
 
 namespace NineChronicles.Standalone.GraphTypes
 {
@@ -23,10 +24,9 @@ namespace NineChronicles.Standalone.GraphTypes
                 {
                     if (!(standaloneContext.BlockChain is BlockChain<PolymorphicAction<ActionBase>> blockChain))
                     {
-                        const string runStandaloneEndpoint = "/run-standalone";
                         throw new ExecutionError(
                             $"{nameof(StandaloneContext)}.{nameof(StandaloneContext.BlockChain)} was not set yet!" +
-                                    $"You should run standalone through {runStandaloneEndpoint} endpoint");
+                                    $"You should run standalone through {GraphQLController.RunStandaloneEndpoint} endpoint");
                     }
 
                     var address = context.GetArgument<Address>("address");
