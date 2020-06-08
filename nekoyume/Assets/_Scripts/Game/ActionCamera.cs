@@ -73,7 +73,8 @@ namespace Nekoyume.Game
         private Transform _targetTemp;
         private float _shakeDuration;
 
-        public readonly Subject<Resolution> OnScreenResolutionChange = new Subject<Resolution>();
+        public event Action<Resolution> OnScreenResolutionChange;
+        public event Action<Transform> OnTranslate;
 
         private Transform Transform => _transform
             ? _transform
@@ -110,8 +111,6 @@ namespace Nekoyume.Game
         protected override void OnDestroy()
         {
             _fsm.Kill();
-
-            OnScreenResolutionChange.Dispose();
         }
 
         #endregion
@@ -176,6 +175,7 @@ namespace Nekoyume.Game
                     chaseData.smoothSpeed * Time.deltaTime);
                 pos.x = smoothedPosX;
                 Transform.position = pos;
+                OnTranslate?.Invoke(Transform);
 
                 yield return null;
             }
@@ -195,6 +195,7 @@ namespace Nekoyume.Game
                 var y = Random.Range(-1f, 1f) * shakeData.magnitudeY;
 
                 Transform.position = new Vector3(pos.x + x, pos.y + y, pos.z);
+                OnTranslate?.Invoke(Transform);
 
                 _shakeDuration -= Time.deltaTime;
 
@@ -202,6 +203,7 @@ namespace Nekoyume.Game
             }
 
             Transform.position = pos;
+            OnTranslate?.Invoke(Transform);
 
             if (_target)
             {
@@ -229,6 +231,7 @@ namespace Nekoyume.Game
             pos.x = x;
             pos.y = y;
             Transform.position = pos;
+            OnTranslate?.Invoke(Transform);
         }
 
         /// <summary>
@@ -405,7 +408,8 @@ namespace Nekoyume.Game
                     position.z);
             }
 
-            OnScreenResolutionChange.OnNext(_resolution);
+            OnScreenResolutionChange?.Invoke(_resolution);
+            OnTranslate?.Invoke(Transform);
         }
 
         #endregion

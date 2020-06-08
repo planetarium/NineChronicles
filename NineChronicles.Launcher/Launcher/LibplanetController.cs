@@ -25,6 +25,7 @@ using static Launcher.Common.RuntimePlatform.RuntimePlatform;
 using static Launcher.Common.Configuration.Path;
 using static Launcher.Common.Utils;
 using Nekoyume;
+using NineChronicles.Standalone.Properties;
 using Nekoyume.Model.State;
 using TextCopy;
 
@@ -291,7 +292,6 @@ To start the game, you need to create your account.";
             RpcServerPort = GetFreeTcpPort();
             var rpcProperties = new RpcNodeServiceProperties
             {
-                RpcServer = true,
                 RpcListenHost = RpcListenHost,
                 RpcListenPort = RpcServerPort
             };

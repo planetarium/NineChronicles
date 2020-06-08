@@ -385,7 +385,7 @@ namespace Nekoyume
             var simulator = new StageSimulator(
                 new DebugRandom(),
                 States.Instance.CurrentAvatarState,
-                new List<Consumable>(),
+                new List<Guid>(),
                 worldRow.Id,
                 stageId,
                 Game.Game.instance.TableSheets,

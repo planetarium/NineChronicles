@@ -1,5 +1,6 @@
 // #define TEST_LOG
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
@@ -20,7 +21,7 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             AvatarState enemyAvatarState,
-            List<Consumable> foods,
+            List<Guid> foods,
             TableSheets tableSheets) : base(random, avatarState, foods, tableSheets)
         {
             _enemyPlayer = new EnemyPlayer(enemyAvatarState, this);

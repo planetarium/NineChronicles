@@ -298,10 +298,15 @@ namespace Nekoyume.Model
             Simulator.Log.Add(spawn);
         }
 
-        public void Use(List<Consumable> foods)
+        public void Use(List<Guid> consumableIds)
         {
-            Stats.SetConsumables(foods);
-            foreach (var food in foods)
+            var consumables = Inventory.Items
+                .Select(i => i.item)
+                .OfType<Consumable>()
+                .Where(i => consumableIds.Contains(i.ItemId))
+                .ToList();
+            Stats.SetConsumables(consumables);
+            foreach (var food in consumables)
             {
                 foreach (var skill in food.Skills)
                 {

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
+using NineChronicles.Standalone.Properties;
 using Nito.AsyncEx;
 using Serilog;
 
@@ -29,7 +29,7 @@ namespace NineChronicles.Standalone
 
         private LibplanetNodeServiceProperties<NineChroniclesActionType> Properties { get; }
 
-        private RpcNodeServiceProperties RpcProperties { get; }
+        private RpcNodeServiceProperties? RpcProperties { get; }
 
         public AsyncAutoResetEvent BootstrapEnded => NodeService.BootstrapEnded;
 
@@ -39,7 +39,7 @@ namespace NineChronicles.Standalone
 
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties<NineChroniclesActionType> properties,
-            RpcNodeServiceProperties rpcNodeServiceProperties,
+            RpcNodeServiceProperties? rpcNodeServiceProperties,
             Progress<PreloadState> preloadProgress = null,
             bool ignoreBootstrapFailure = false
         )
@@ -97,31 +97,39 @@ namespace NineChronicles.Standalone
             }
         }
 
-        public async Task Run(CancellationToken cancellationToken = default)
+        public Task Run(
+            IHostBuilder hostBuilder,
+            CancellationToken cancellationToken = default)
         {
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-            if (RpcProperties.RpcServer)
+            if (RpcProperties is RpcNodeServiceProperties rpcProperties)
             {
                 hostBuilder = hostBuilder
                     .UseMagicOnion(
-                        new ServerPort(RpcProperties.RpcListenHost, RpcProperties.RpcListenPort, ServerCredentials.Insecure)
+                        new ServerPort(rpcProperties.RpcListenHost, rpcProperties.RpcListenPort, ServerCredentials.Insecure)
                     )
                     .ConfigureServices((ctx, services) =>
                     {
                         services.AddHostedService(provider => new ActionEvaluationPublisher(
                             NodeService.BlockChain,
                             IPAddress.Loopback.ToString(),
-                            RpcProperties.RpcListenPort
+                            rpcProperties.RpcListenPort
                         ));
                     });
             }
 
-            await hostBuilder.ConfigureServices((ctx, services) =>
+            return hostBuilder.ConfigureServices((ctx, services) =>
             {
                 services.AddHostedService(provider => NodeService);
                 services.AddSingleton(provider => NodeService.Swarm);
                 services.AddSingleton(provider => NodeService.BlockChain);
             }).RunConsoleAsync(cancellationToken);
+        }
+
+        public Task Run(
+            CancellationToken cancellationToken = default)
+        {
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+            return Run(hostBuilder, cancellationToken);
         }
     }
 }
