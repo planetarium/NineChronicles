@@ -95,7 +95,7 @@ namespace Nekoyume.BlockChain
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
         {
-            public IAction BlockAction { get; } = new RewardGold { Gold = 1 };
+            public IAction BlockAction { get; } = new RewardGold { Gold = 10 };
 
             public InvalidBlockException ValidateNextBlock(
                 BlockChain<PolymorphicAction<ActionBase>> blocks,
