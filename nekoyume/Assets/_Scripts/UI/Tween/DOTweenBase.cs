@@ -30,11 +30,12 @@ namespace Nekoyume.UI.Tween
         [HideInInspector]
         public float CompleteDelay = 0.0f;
         public DG.Tweening.Tween currentTween;
-        public readonly Subject<DG.Tweening.Tween> onStop = new Subject<DG.Tweening.Tween>();
+        public readonly Subject<DG.Tweening.Tween> onStopSubject = new Subject<DG.Tweening.Tween>();
+        public System.Action onCompleted = null;
 
         protected virtual void Awake()
         {
-            onStop.Subscribe(_ => OnStopTweening()).AddTo(gameObject);
+            onStopSubject.Subscribe(_ => OnStopTweening()).AddTo(gameObject);
         }
 
         protected IEnumerator Start()
@@ -64,7 +65,7 @@ namespace Nekoyume.UI.Tween
                 return;
 
             currentTween.Kill();
-            onStop.OnNext(currentTween);
+            onStopSubject.OnNext(currentTween);
         }
 
         public virtual void PlayForward()
@@ -99,6 +100,8 @@ namespace Nekoyume.UI.Tween
         {
             if (!gameObject.activeInHierarchy)
                 return;
+
+            onCompleted?.Invoke();
 
             if (!string.IsNullOrEmpty(CompleteMethod) && Target)
             {
