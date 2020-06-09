@@ -9,6 +9,7 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Nekoyume.Model.State;
 using Serilog;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -77,13 +78,16 @@ namespace Nekoyume.Action
 
             public Exception Exception { get; set; }
 
+            public IAccountStateDelta PreviousStates { get; set; }
+
             public ActionEvaluation(SerializationInfo info, StreamingContext ctx)
             {
-                Action = FromBytes((byte[])info.GetValue("action", typeof(byte[])));
-                Signer = new Address((byte[])info.GetValue("signer", typeof(byte[])));
+                Action = FromBytes((byte[]) info.GetValue("action", typeof(byte[])));
+                Signer = new Address((byte[]) info.GetValue("signer", typeof(byte[])));
                 BlockIndex = info.GetInt64("blockIndex");
-                OutputStates = new AccountStateDelta((byte[])info.GetValue("outputStates", typeof(byte[])));
+                OutputStates = new AccountStateDelta((byte[]) info.GetValue("outputStates", typeof(byte[])));
                 Exception = (Exception) info.GetValue("exc", typeof(Exception));
+                PreviousStates = new AccountStateDelta((byte[]) info.GetValue("previousStates", typeof(byte[])));
             }
 
             public void GetObjectData(SerializationInfo info, StreamingContext context)
@@ -91,8 +95,9 @@ namespace Nekoyume.Action
                 info.AddValue("action", ToBytes(Action));
                 info.AddValue("signer", Signer.ToByteArray());
                 info.AddValue("blockIndex", BlockIndex);
-                info.AddValue("outputStates", ToBytes(OutputStates));
+                info.AddValue("outputStates", ToBytes(OutputStates, OutputStates.UpdatedAddresses));
                 info.AddValue("exc", Exception);
+                info.AddValue("previousStates", ToBytes(PreviousStates, OutputStates.UpdatedAddresses));
             }
 
             private static byte[] ToBytes(T action)
@@ -105,15 +110,12 @@ namespace Nekoyume.Action
                 }
             }
 
-            private static byte[] ToBytes(IAccountStateDelta delta)
+            private static byte[] ToBytes(IAccountStateDelta delta, IImmutableSet<Address> updatedAddresses)
             {
                 var bdict = new Dictionary(
-                    delta.UpdatedAddresses.Select(addr =>
-                    {
-                        return new KeyValuePair<IKey, IValue>(
-                            (Binary) addr.ToByteArray(), 
-                            delta.GetState(addr));
-                    })
+                    updatedAddresses.Select(addr => new KeyValuePair<IKey, IValue>(
+                        (Binary) addr.ToByteArray(),
+                        delta.GetState(addr) ?? new Bencodex.Types.Null()))
                 );
                 return new Codec().Encode(bdict);
             }
@@ -136,23 +138,37 @@ namespace Nekoyume.Action
 
         public void Render(IActionContext context, IAccountStateDelta nextStates)
         {
+            // var previousStates = new AccountStateDelta();
+            // foreach (var address in nextStates.UpdatedAddresses)
+            // {
+            //     previousStates.SetState(address, nextStates.GetState(address));
+            // }
+            Log.Information($"previous updated addresses: {context.PreviousStates.UpdatedAddresses.Count}");
+            Log.Information($"shopState: {context.PreviousStates.GetState(ShopState.Address)}");
             RenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = this,
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
+                PreviousStates = context.PreviousStates,
             });
         }
 
         public void Unrender(IActionContext context, IAccountStateDelta nextStates)
         {
+            // var previousStates = new AccountStateDelta();
+            // foreach (var address in nextStates.UpdatedAddresses)
+            // {
+            //     previousStates.SetState(address, nextStates.GetState(address));
+            // }
             UnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = this,
                 Signer = context.Signer,
                 BlockIndex = context.BlockIndex,
                 OutputStates = nextStates,
+                PreviousStates = context.PreviousStates,
             });
         }
 
@@ -178,6 +194,7 @@ namespace Nekoyume.Action
                     BlockIndex = context.BlockIndex,
                     OutputStates = context.PreviousStates,
                     Exception = exception,
+                    PreviousStates = context.PreviousStates,
                 }
             );
         }
@@ -192,6 +209,7 @@ namespace Nekoyume.Action
                     BlockIndex = context.BlockIndex,
                     OutputStates = context.PreviousStates,
                     Exception = exception,
+                    PreviousStates = context.PreviousStates,
                 }  
             );
         }
