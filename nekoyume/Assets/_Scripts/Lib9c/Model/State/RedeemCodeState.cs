@@ -104,10 +104,12 @@ namespace Nekoyume.Model.State
         }
     }
 
+    [Serializable]
     public class InvalidRedeemCodeException : KeyNotFoundException
     {
     }
 
+    [Serializable]
     public class DuplicateRedeemException : InvalidOperationException
     {
         public DuplicateRedeemException(string s) : base(s)
