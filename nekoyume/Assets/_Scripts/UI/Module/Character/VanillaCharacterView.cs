@@ -21,14 +21,30 @@ namespace Nekoyume.UI.Module
 
         public void SetIconByCharacterId(int characterId)
         {
-            var itemSprite = SpriteHelper.GetCharacterIcon(characterId);
-            if (itemSprite is null)
+            var image = SpriteHelper.GetCharacterIcon(characterId);
+            if (image is null)
             {
                 throw new FailedToLoadResourceException<Sprite>(characterId.ToString());
             }
 
+            SetIcon(image);
+        }
+
+        public void SetIconByArmorId(int armorId)
+        {
+            var image = SpriteHelper.GetItemIcon(armorId);
+            if (image is null)
+            {
+                throw new FailedToLoadResourceException<Sprite>(armorId.ToString());
+            }
+
+            SetIcon(image);
+        }
+
+        private void SetIcon(Sprite image)
+        {
             iconImage.enabled = true;
-            iconImage.overrideSprite = itemSprite;
+            iconImage.overrideSprite = image;
             iconImage.SetNativeSize();
         }
 

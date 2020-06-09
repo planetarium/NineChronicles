@@ -76,11 +76,27 @@ namespace Nekoyume.UI
             battleTimerView.Show(timeLimit);
         }
 
+        // NOTE: call from Hierarchy
+        public void ShowBuffTooltip(GameObject sender)
+        {
+            var icon = sender.GetComponent<BuffIcon>();
+            var iconRectTransform = icon.image.rectTransform;
+
+            buffTooltip.gameObject.SetActive(true);
+            buffTooltip.UpdateText(icon.Data);
+            buffTooltip.RectTransform.anchoredPosition =
+                iconRectTransform.anchoredPosition + Vector2.down * iconRectTransform.sizeDelta.y;
+        }
+
+        // NOTE: call from Hierarchy
+        public void HideBuffTooltip()
+        {
+            buffTooltip.gameObject.SetActive(false);
+        }
+
         public void UpdatePlayer(Player player)
         {
-            var armor = player.Equipments
-                .FirstOrDefault(equipment => equipment.ItemSubType == ItemSubType.Armor);
-            characterView.SetIconByArmorId(armor?.Id ?? 0);
+            UpdateCharacterView(player);
             Show();
 
             if (player)
@@ -89,6 +105,27 @@ namespace Nekoyume.UI
             }
 
             UpdateExp();
+        }
+
+        private void UpdateCharacterView(Player player)
+        {
+            var fullCostume = player.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.FullCostume);
+            if (!(fullCostume is null))
+            {
+                characterView.SetIconByArmorId(fullCostume.Id);
+                return;
+            }
+
+            var armor = player.Equipments.FirstOrDefault(equipment =>
+                equipment.ItemSubType == ItemSubType.Armor);
+            if (!(armor is null))
+            {
+                characterView.SetIconByArmorId(armor.Id);
+                return;
+            }
+
+            characterView.SetIconByCharacterId(player.Model.RowData.Id);
         }
 
         private void SubscribeOnUpdatePlayerStatus(Player player)
