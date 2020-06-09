@@ -16,5 +16,6 @@ namespace Launcher.Common.RuntimePlatform
         string ExecutableUpdaterBinaryPath { get; }
         string LogFilePath { get; }
         string UpdaterLogFilePath { get; }
+        void DisplayNotification(string title, string message);
     }
 }

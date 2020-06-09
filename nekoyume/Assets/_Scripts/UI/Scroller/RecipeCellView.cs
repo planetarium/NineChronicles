@@ -94,8 +94,8 @@ namespace Nekoyume.UI.Scroller
 
         protected void Set(ItemUsable itemUsable)
         {
-            ItemSubType = itemUsable.Data.ItemSubType;
-            ElementalType = itemUsable.Data.ElementalType;
+            ItemSubType = itemUsable.ItemSubType;
+            ElementalType = itemUsable.ElementalType;
 
             titleText.text = itemUsable.GetLocalizedNonColoredName();
 
@@ -103,7 +103,7 @@ namespace Nekoyume.UI.Scroller
             itemView.SetData(item);
 
             var sprite = ElementalType.GetSprite();
-            var grade = itemUsable.Data.Grade;
+            var grade = itemUsable.Grade;
 
             for (var i = 0; i < elementalTypeImages.Length; ++i)
             {

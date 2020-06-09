@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -51,6 +52,7 @@ namespace Nekoyume.UI
         private List<(int rank, ArenaInfo arenaInfo)> _arenaAvatarStates;
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
+        private Player _player;
 
         private readonly ReactiveProperty<StateType> _state =
             new ReactiveProperty<StateType>(StateType.Arena);
@@ -120,7 +122,8 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
-            stage.GetPlayer().gameObject.SetActive(false);
+            _player = stage.GetPlayer();
+            _player.gameObject.SetActive(false);
 
             _state.SetValueAndForceNotify(stateType);
 
@@ -334,7 +337,13 @@ namespace Nekoyume.UI
 
         private void OnClickChallenge(ArenaCellView info)
         {
-            Game.Game.instance.ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
+            //TODO 소모품장착
+            Game.Game.instance.ActionManager.RankingBattle(
+                info.ArenaInfo.AvatarAddress,
+                _player.Costumes.Select(i => i.Id).ToList(),
+                _player.Equipments.Select(i => i.ItemId).ToList(),
+                new List<Guid>()
+            );
             Find<ArenaBattleLoadingScreen>().Show(info.ArenaInfo);
         }
 

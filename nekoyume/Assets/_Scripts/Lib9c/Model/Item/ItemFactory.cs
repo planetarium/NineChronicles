@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 using Nekoyume.Model.Skill;
@@ -51,8 +52,7 @@ namespace Nekoyume.Model.Item
                         itemRow.Id.ToString(CultureInfo.InvariantCulture));
             }
         }
-
-        public static ItemBase Deserialize(Dictionary serialized)
+        private static ItemBase DeserializeLegacy(Dictionary serialized)
         {
             var data = (Dictionary) serialized["data"];
             var row = DeserializeRow(data);
@@ -66,6 +66,7 @@ namespace Nekoyume.Model.Item
                     }
 
                     return costume;
+                // 기존체인 호환성을 위해 이전 코드를 남겨둠.
                 case MaterialItemSheet.Row materialRow:
                     return CreateMaterial(materialRow);
             }
@@ -117,6 +118,50 @@ namespace Nekoyume.Model.Item
             return equipment;
         }
 
+        public static ItemBase Deserialize(Dictionary serialized)
+        {
+            if (serialized.TryGetValue((Text) "data", out _))
+            {
+                return DeserializeLegacy(serialized);
+            }
+
+            if (serialized.TryGetValue((Text) "item_type", out var type))
+            {
+                var itemType = type.ToEnum<ItemType>();
+                switch (itemType)
+                {
+                    case ItemType.Consumable:
+                        return new Consumable(serialized);
+                    case ItemType.Costume:
+                        return new Costume(serialized);
+                    case ItemType.Equipment:
+                        if (serialized.TryGetValue((Text) "item_sub_type", out var subType))
+                        {
+                            var itemSubType = subType.ToEnum<ItemSubType>();
+                            switch (itemSubType)
+                            {
+                                case ItemSubType.Weapon:
+                                    return new Weapon(serialized);
+                                case ItemSubType.Armor:
+                                    return new Armor(serialized);
+                                case ItemSubType.Belt:
+                                    return new Belt(serialized);
+                                case ItemSubType.Necklace:
+                                    return new Necklace(serialized);
+                                case ItemSubType.Ring:
+                                    return new Ring(serialized);
+                            }
+                        }
+                        break;
+                    case ItemType.Material:
+                        return new Material(serialized);
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(itemType));
+                }
+            }
+
+            throw new ArgumentException($"Can't Deserialize Item {serialized}");
+        }
         private static ItemSheet.Row DeserializeRow(Dictionary serialized)
         {
             var itemSubType =

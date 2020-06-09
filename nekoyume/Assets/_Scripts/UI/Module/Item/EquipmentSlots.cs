@@ -128,7 +128,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            var itemSubType = costume.Data.ItemSubType;
+            var itemSubType = costume.ItemSubType;
             var typeSlots = slots
                 .Where(e => !e.IsLock && e.ItemSubType == itemSubType)
                 .ToList();
@@ -151,7 +151,7 @@ namespace Nekoyume.UI.Module
                 return false;
             }
 
-            var itemSubType = equipment.Data.ItemSubType;
+            var itemSubType = equipment.ItemSubType;
             var typeSlots = slots
                 .Where(e => !e.IsLock && e.ItemSubType == itemSubType)
                 .ToList();

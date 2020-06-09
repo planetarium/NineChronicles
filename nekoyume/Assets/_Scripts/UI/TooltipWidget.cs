@@ -11,7 +11,7 @@ namespace Nekoyume.UI
     public abstract class TooltipWidget<T> : Widget where T : Model.Tooltip
     {
         public static readonly float2 DefaultOffsetFromTarget = new float2(10f, 0f);
-        public static readonly float2 DefaultOffsetFromParent = new float2(10f, 10f);
+        public static readonly float2 DefaultMarginFromParent = new float2(10f, 10f);
 
         public RectTransform panel;
 
@@ -21,9 +21,9 @@ namespace Nekoyume.UI
 
         public T Model { get; private set; }
 
-        public abstract PivotPresetType TargetPivotPresetType { get; }
-        public virtual float2 OffsetFromTarget => DefaultOffsetFromTarget;
-        public virtual float2 OffsetFromParent => DefaultOffsetFromParent;
+        protected abstract PivotPresetType TargetPivotPresetType { get; }
+        protected virtual float2 OffsetFromTarget => DefaultOffsetFromTarget;
+        protected virtual float2 MarginFromParent => DefaultMarginFromParent;
 
         public void Show(T value)
         {
@@ -57,7 +57,7 @@ namespace Nekoyume.UI
 
         protected virtual void UpdateAnchoredPosition()
         {
-            panel.MoveInsideOfParent(OffsetFromParent);
+            panel.MoveInsideOfParent(MarginFromParent);
         }
     }
 }

@@ -53,7 +53,7 @@ namespace Nekoyume.Model.Quest
             if (Complete)
                 return;
 
-            _current += items.Count(i => i.Data.ItemType == ItemType && i.Data.ItemSubType == ItemSubType);
+            _current += items.Count(i => i.ItemType == ItemType && i.ItemSubType == ItemSubType);
             Check();
         }
 

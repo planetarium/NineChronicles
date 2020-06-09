@@ -73,9 +73,11 @@ namespace Nekoyume.UI
         private float middleXGap = 1f;
 
         // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
+        // 행동력이 0일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
         protected override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            questButton.interactable;
+            (questButton.interactable ||
+            ReactiveAvatarState.ActionPoint.Value == 0);
 
         #region override
 
@@ -95,8 +97,8 @@ namespace Nekoyume.UI
             _weaponSlot = equipmentSlots.First(es => es.ItemSubType == ItemSubType.Weapon);
 
             inventory.SharedModel.DimmedFunc.Value = inventoryItem =>
-                inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume ||
-                inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Material;
+                inventoryItem.ItemBase.Value.ItemType == ItemType.Costume ||
+                inventoryItem.ItemBase.Value.ItemType == ItemType.Material;
             inventory.SharedModel.SelectedItemView
                 .Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(gameObject);
@@ -264,7 +266,7 @@ namespace Nekoyume.UI
 
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
             {
-                if (inventoryItem.ItemBase.Value.Data.ItemType == ItemType.Costume &&
+                if (inventoryItem.ItemBase.Value.ItemType == ItemType.Costume &&
                     inventoryItem.ItemBase.Value is Costume costume)
                 {
                     return costume.equipped;
@@ -414,7 +416,7 @@ namespace Nekoyume.UI
                 foreach (var item in inventory.SharedModel.Equipments)
                 {
                     item.GlowEnabled.Value =
-                        item.ItemBase.Value.Data.ItemSubType == slot.ItemSubType;
+                        item.ItemBase.Value.ItemSubType == slot.ItemSubType;
                 }
 
                 return;
@@ -437,7 +439,7 @@ namespace Nekoyume.UI
 
         private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
-            if (itemBase.Data.ItemType != ItemType.Equipment)
+            if (itemBase.ItemType != ItemType.Equipment)
             {
                 return;
             }
@@ -473,7 +475,7 @@ namespace Nekoyume.UI
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
         {
-            switch (item.Data.ItemType)
+            switch (item.ItemType)
             {
                 case ItemType.Consumable:
                     foreach (var consumableSlot in consumableSlots.Where(consumableSlot =>
@@ -498,7 +500,7 @@ namespace Nekoyume.UI
 
         private bool TryToFindSlotToEquip(ItemBase item, out EquipmentSlot slot)
         {
-            switch (item.Data.ItemType)
+            switch (item.ItemType)
             {
                 case ItemType.Consumable:
                     slot = consumableSlots.FirstOrDefault(s => !s.IsLock && s.IsEmpty)
@@ -514,7 +516,7 @@ namespace Nekoyume.UI
 
         private void UpdateGlowEquipSlot(ItemUsable itemUsable)
         {
-            var itemType = itemUsable.Data.ItemType;
+            var itemType = itemUsable.ItemType;
             EquipmentSlot equipmentSlot;
             switch (itemType)
             {
@@ -606,7 +608,13 @@ namespace Nekoyume.UI
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
-                .HackAndSlash(costumes, equipments, consumables, _worldId, _stageId.Value)
+                .HackAndSlash(
+                    costumes.Select(i => i.Id).ToList(),
+                    equipments,
+                    consumables,
+                    _worldId,
+                    _stageId.Value
+                )
                 .Subscribe(
                     _ =>
                     {
@@ -647,9 +655,9 @@ namespace Nekoyume.UI
                     $"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
             var avatarState = new AvatarState(States.Instance.CurrentAvatarState) {level = level};
-            var consumables = consumableSlots
+            List<Guid> consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Consumable) slot.Item)
+                .Select(slot => ((Consumable) slot.Item).ItemId)
                 .ToList();
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)

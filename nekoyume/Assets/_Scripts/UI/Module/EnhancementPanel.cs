@@ -106,8 +106,9 @@ namespace Nekoyume.UI.Module
             submitButton.gameObject.SetActive(true);
             OnMaterialAddedOrRemoved();
             OnMaterialCountChanged();
-            ReactiveAgentState.Gold.Subscribe(SubscribeNCG).AddTo(_disposablesAtShow);
-            ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposablesAtShow);
+            submitButton.HideAP();
+            submitButton.HideNCG();
+            submitButton.HideHourglass();
             return true;
         }
 
@@ -155,8 +156,8 @@ namespace Nekoyume.UI.Module
             if (!(baseMaterial is null) &&
                 !(baseMaterial.InventoryItemViewModel is null))
             {
-                if (baseMaterial.InventoryItemViewModel.ItemBase.Value.Data.Id.Equals(
-                    inventoryItem.ItemBase.Value.Data.Id))
+                if (baseMaterial.InventoryItemViewModel.ItemBase.Value.Id.Equals(
+                    inventoryItem.ItemBase.Value.Id))
                     return true;
             }
 
@@ -165,8 +166,8 @@ namespace Nekoyume.UI.Module
                 if (!(otherMaterial.InventoryItemViewModel is null) &&
                     otherMaterial.InventoryItemViewModel.ItemBase.Value is Material material &&
                     inventoryItem.ItemBase.Value is Material inventoryMaterial &&
-                    material.Data.ItemId.Equals(
-                        inventoryMaterial.Data.ItemId))
+                    material.ItemId.Equals(
+                        inventoryMaterial.ItemId))
                     return true;
             }
 
@@ -254,7 +255,7 @@ namespace Nekoyume.UI.Module
 
                 return e.Model.ItemBase.Value is Material materialA &&
                        viewModel.ItemBase.Value is Material materialB &&
-                       materialA.Data.ItemId.Equals(materialB.Data.ItemId);
+                       materialA.ItemId.Equals(materialB.ItemId);
             });
             if (sameMaterial is null)
             {
@@ -346,7 +347,7 @@ namespace Nekoyume.UI.Module
                 baseMaterial.Model?.ItemBase.Value is null ||
                 view is null ||
                 view.Model?.ItemBase.Value is null ||
-                baseMaterial.Model.ItemBase.Value.Data.Id != view.Model.ItemBase.Value.Data.Id)
+                baseMaterial.Model.ItemBase.Value.Id != view.Model.ItemBase.Value.Id)
             {
                 materialView = null;
                 return false;
@@ -375,7 +376,7 @@ namespace Nekoyume.UI.Module
                     view.Model?.ItemBase.Value is null)
                     return false;
 
-                return e.Model.ItemBase.Value.Data.Id == view.Model.ItemBase.Value.Data.Id;
+                return e.Model.ItemBase.Value.Id == view.Model.ItemBase.Value.Id;
             });
             if (sameMaterial is null)
             {

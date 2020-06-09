@@ -16,6 +16,7 @@ using Serilog;
 using Serilog.Events;
 using ShellProgressBar;
 using static Launcher.Common.RuntimePlatform.RuntimePlatform;
+using static Launcher.Common.Configuration.Path;
 using static Launcher.Common.Utils;
 
 namespace Launcher.Updater
@@ -27,7 +28,7 @@ namespace Launcher.Updater
 
         // NOTE: 9c-beta의 제네시스 해시을 하드코딩 해놓았습니다.
         private const string SnapshotUrl =
-            "https://download.nine-chronicles.com/latest/2be5da279272a3cc2ecbe329405a613c40316173773d6d2d516155d2aa67d9bb-snapshot.zip";
+            "https://download.nine-chronicles.com/latest/7bc7f433c8fca903f461de848bfd57d30202f1b87e4e1fd97512030a9b7a7bf0-snapshot.zip";
 
         const string MacOSUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater";
         const string WindowsUpdaterLatestBinaryUrl = "https://download.nine-chronicles.com/latest/NineChroniclesUpdater.exe";
@@ -35,8 +36,9 @@ namespace Launcher.Updater
 
         static async Task Main(string[] args)
         {
-            AppDomain.CurrentDomain.ProcessExit += Configuration.FlushApplicationInsightLog;
-            AppDomain.CurrentDomain.UnhandledException += Configuration.FlushApplicationInsightLog;
+            var configuration = new Configuration();
+            AppDomain.CurrentDomain.ProcessExit += Configuration.Log.FlushApplicationInsightLog;
+            AppDomain.CurrentDomain.UnhandledException += Configuration.Log.FlushApplicationInsightLog;
 
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
@@ -46,7 +48,7 @@ namespace Launcher.Updater
                     rollOnFileSizeLimit: true,
                     retainedFileCountLimit: 5)
                 .WriteTo.ApplicationInsights(
-                    Configuration.TelemetryClient,
+                    Configuration.Log.TelemetryClient,
                     TelemetryConverter.Traces,
                     LogEventLevel.Information)
                 .MinimumLevel.Debug()
@@ -218,7 +220,7 @@ namespace Launcher.Updater
 
             var cwd = new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
 
-            string settingPath = Path.Combine(cwd, Configuration.SettingFileName);
+            string settingPath = Path.Combine(cwd, SettingFileName);
             string prevSettingPath = settingPath + ".prev";
             if (File.Exists(settingPath))
             {

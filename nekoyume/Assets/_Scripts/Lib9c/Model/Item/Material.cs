@@ -1,21 +1,44 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.Security.Cryptography;
+using Bencodex;
+using Bencodex.Types;
+using Libplanet;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.Item
 {
     [Serializable]
-    public class Material : ItemBase
+    public class Material : ItemBase, ISerializable
     {
-        public new MaterialItemSheet.Row Data { get; }
+        private static Codec _codec = new Codec();
+
+        public HashDigest<SHA256> ItemId { get; }
 
         public Material(MaterialItemSheet.Row data) : base(data)
         {
-            Data = data;
+            ItemId = data.ItemId;
+        }
+
+        public Material(Dictionary serialized) : base(serialized)
+        {
+            if (serialized.TryGetValue((Text) "item_id", out var itemId))
+            {
+                ItemId = itemId.ToItemId();
+            }
+        }
+
+        protected Material(SerializationInfo info, StreamingContext _)
+            : this((Dictionary) _codec.Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
+        {
         }
 
         protected bool Equals(Material other)
         {
-            return Data.ItemId.Equals(other.Data.ItemId);
+            return base.Equals(other) && ItemId.Equals(other.ItemId);
         }
 
         public override bool Equals(object obj)
@@ -28,7 +51,21 @@ namespace Nekoyume.Model.Item
 
         public override int GetHashCode()
         {
-            return (Data != null ? Data.GetHashCode() : 0);
+            unchecked
+            {
+                return (base.GetHashCode() * 397) ^ ItemId.GetHashCode();
+            }
         }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("serialized", _codec.Encode(Serialize()));
+        }
+
+        public override IValue Serialize() =>
+            new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text) "item_id"] = ItemId.Serialize()
+            }.Union((Dictionary) base.Serialize()));
     }
 }

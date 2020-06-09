@@ -217,25 +217,25 @@ namespace Nekoyume.Action
                     );
                 }
 
-                if (materialEquipment.Data.ItemSubType != enhancementEquipment.Data.ItemSubType)
+                if (materialEquipment.ItemSubType != enhancementEquipment.ItemSubType)
                 {
                     // 서브 타입이 다른 에러.
                     return LogError(
                         context,
                         "Aborted as the material item is not a {ExpectedItemSubType}, but {MaterialSubType}.",
-                        enhancementEquipment.Data.ItemSubType,
-                        materialEquipment.Data.ItemSubType
+                        enhancementEquipment.ItemSubType,
+                        materialEquipment.ItemSubType
                     );
                 }
 
-                if (materialEquipment.Data.Grade != enhancementEquipment.Data.Grade)
+                if (materialEquipment.Grade != enhancementEquipment.Grade)
                 {
                     // 등급이 다른 에러.
                     return LogError(
                         context,
                         "Aborted as grades of the equipment to enhance ({EquipmentGrade}) and a material ({MaterialGrade}) do not match.",
-                        enhancementEquipment.Data.Grade,
-                        materialEquipment.Data.Grade
+                        enhancementEquipment.Grade,
+                        materialEquipment.Grade
                     );
                 }
 
@@ -344,7 +344,7 @@ namespace Nekoyume.Action
         {
             return 0;
             return Math.Max(GameConfig.EnhanceEquipmentCostNCG,
-                GameConfig.EnhanceEquipmentCostNCG * enhancementEquipment.Data.Grade);
+                GameConfig.EnhanceEquipmentCostNCG * enhancementEquipment.Grade);
         }
     }
 }

@@ -214,7 +214,7 @@ namespace Nekoyume.BlockChain
                                     reference_entity: "quests",
                                     reference_category_slug: "arena",
                                     reference_slug: "RankingRewardIndex" + index.ToString()
-                                    );
+                                );
                             }
                             catch
                             {
@@ -322,7 +322,7 @@ namespace Nekoyume.BlockChain
             foreach (var pair in result.cost)
             {
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveAvatarItemRequiredIndex(avatarAddress, result.itemUsable.ItemId);
 
@@ -331,16 +331,18 @@ namespace Nekoyume.BlockChain
             //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             var agentAddress = eval.Signer;
-            var agentState = eval.OutputStates.GetAgentState(agentAddress);
+            var qty = eval.OutputStates.GetAvatarState(avatarAddress).inventory.Materials
+                .Count(i => i.ItemSubType == ItemSubType.Hourglass);
+            var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
+                .Count(i => i.ItemSubType == ItemSubType.Hourglass);
             new TPStashEvent().CurrencyUse(
                 player_uuid: agentAddress.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)agentState.modifiedGold,
-                currency_total_quantity: (float)(agentState.gold),
-                //currency_total_quantity: (float)(agentState.gold - agentState.modifiedGold),
+                currency_slug: "hourglass",
+                currency_quantity: (float) (prevQty - qty),
+                currency_total_quantity: (float) qty,
                 reference_entity: "items_consumables",
                 reference_category_slug: "consumables_rapid_combination",
-                reference_slug: slot.Result.itemUsable.Data.Id.ToString());
+                reference_slug: slot.Result.itemUsable.Id.ToString());
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -360,7 +362,7 @@ namespace Nekoyume.BlockChain
             foreach (var pair in result.materials)
             {
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -369,7 +371,7 @@ namespace Nekoyume.BlockChain
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
                 MailType.Workshop,
-                string.Format(format, result.itemUsable.Data.GetLocalizedName()),
+                string.Format(format, result.itemUsable.GetLocalizedName()),
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId
             );
@@ -385,7 +387,7 @@ namespace Nekoyume.BlockChain
                 currency_total_quantity: (float)(outAgentState.gold - result.gold),
                 reference_entity: "items_equipments",
                 reference_category_slug: "equipments_combination",
-                reference_slug: result.itemUsable.Data.Id.ToString());
+                reference_slug: result.itemUsable.Id.ToString());
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -406,7 +408,7 @@ namespace Nekoyume.BlockChain
             foreach (var pair in result.materials)
             {
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
-                LocalStateModifier.AddItem(avatarAddress, pair.Key.Data.ItemId, pair.Value, false);
+                LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
@@ -415,7 +417,7 @@ namespace Nekoyume.BlockChain
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
                 MailType.Workshop,
-                string.Format(format, result.itemUsable.Data.GetLocalizedName()),
+                string.Format(format, result.itemUsable.GetLocalizedName()),
                 slot.UnlockBlockIndex,
                 result.itemUsable.ItemId
             );
@@ -431,7 +433,7 @@ namespace Nekoyume.BlockChain
                 currency_total_quantity: (float)(outAgentState.gold - result.gold),
                 reference_entity: "items_consumables",
                 reference_category_slug: "consumables_combination",
-                reference_slug: result.itemUsable.Data.Id.ToString());
+                reference_slug: result.itemUsable.Id.ToString());
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -441,12 +443,16 @@ namespace Nekoyume.BlockChain
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = eval.Action.itemUsable.ItemId;
+            var itemId = eval.Action.itemId;
 
             // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
             LocalStateModifier.AddItem(avatarAddress, itemId, false);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
+            var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
+            if (shopState.TryGet(eval.Signer, eval.Action.productId, out var pair))
+            {
+                UI.Notification.Push(MailType.Auction, string.Format(format, pair.Value.ItemUsable.GetLocalizedName()));
+            }
             UpdateCurrentAvatarState(eval);
         }
 
@@ -492,8 +498,8 @@ namespace Nekoyume.BlockChain
                     currency_total_quantity: (float) (outAgentState.gold - price),
                     reference_entity: "trades",
                     reference_category_slug: "buy",
-                    reference_slug: result.itemUsable.Data.Id.ToString() //아이템 품번
-                    );
+                    reference_slug: result.itemUsable.Id.ToString() //아이템 품번
+                );
             }
             else
             {
@@ -524,7 +530,7 @@ namespace Nekoyume.BlockChain
                     currency_total_quantity: (float)(outAgentState.gold + gold),
                     reference_entity: "trades",
                     reference_category_slug: "sell",
-                    reference_slug: result.itemUsable.Data.Id.ToString() //아이템 품번
+                    reference_slug: result.itemUsable.Id.ToString() //아이템 품번
                 );
             }
 
@@ -594,7 +600,7 @@ namespace Nekoyume.BlockChain
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,
-                string.Format(format, result.itemUsable.Data.GetLocalizedName()));
+                string.Format(format, result.itemUsable.GetLocalizedName()));
 
             //[TentuPlay] 장비강화, 골드사용
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
@@ -606,7 +612,7 @@ namespace Nekoyume.BlockChain
                 currency_total_quantity: (float)(outAgentState.gold - result.gold),
                 reference_entity: "items_equipments",     //강화가 가능하므로 장비
                 reference_category_slug: "item_enhancement",
-                reference_slug: itemUsable.Data.Id.ToString());
+                reference_slug: itemUsable.Id.ToString());
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -635,7 +641,7 @@ namespace Nekoyume.BlockChain
                 reference_entity: "quests",
                 reference_category_slug: "arena",
                 reference_slug: "WeeklyArenaEntryFee"
-                );
+            );
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);

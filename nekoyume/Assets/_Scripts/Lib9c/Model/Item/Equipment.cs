@@ -13,9 +13,10 @@ namespace Nekoyume.Model.Item
     {
         public bool equipped = false;
         public int level;
-
-        public new EquipmentItemSheet.Row Data { get; }
-        public StatType UniqueStatType => Data.Stat.Type;
+        public DecimalStat Stat { get; }
+        public int SetId { get; }
+        public string SpineResourcePath { get; }
+        public StatType UniqueStatType => Stat.Type;
 
         public decimal GetIncrementAmountOfEnhancement()
         {
@@ -25,14 +26,50 @@ namespace Nekoyume.Model.Item
         public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex)
             : base(data, id, requiredBlockIndex)
         {
-            Data = data;
+            Stat = data.Stat;
+            SetId = data.SetId;
+            SpineResourcePath = data.SpineResourcePath;
+        }
+
+        public Equipment(Dictionary serialized) : base(serialized)
+        {
+            if (serialized.TryGetValue((Text) "equipped", out var toEquipped))
+            {
+                equipped = toEquipped.ToBoolean();
+            }
+            if (serialized.TryGetValue((Text) "level", out var toLevel))
+            {
+                try
+                {
+                    level = toLevel.ToInteger();
+                }
+                catch (InvalidCastException)
+                {
+                    level = (int) ((Integer) toLevel).Value;
+                }
+            }
+            if (serialized.TryGetValue((Text) "stat", out var stat))
+            {
+                Stat = stat.ToDecimalStat();
+            }
+            if (serialized.TryGetValue((Text) "set_id", out var setId))
+            {
+                SetId = setId.ToInteger();
+            }
+            if (serialized.TryGetValue((Text) "spine_resource_path", out var spineResourcePath))
+            {
+                SpineResourcePath = (Text) spineResourcePath;
+            }
         }
 
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
                 [(Text) "equipped"] = equipped.Serialize(),
-                [(Text) "level"] = (Integer) level,
+                [(Text) "level"] = level.Serialize(),
+                [(Text) "stat"] = Stat.Serialize(),
+                [(Text) "set_id"] = SetId.Serialize(),
+                [(Text) "spine_resource_path"] = SpineResourcePath.Serialize(),
             }.Union((Dictionary) base.Serialize()));
 
         public void Equip()
@@ -92,6 +129,34 @@ namespace Nekoyume.Model.Item
                 var chance = decimal.ToInt32(skill.Chance * 1.3m);
                 var power = decimal.ToInt32(skill.Power * 1.3m);
                 skill.Update(chance, power);
+            }
+        }
+
+        protected bool Equals(Equipment other)
+        {
+            return base.Equals(other) && equipped == other.equipped && level == other.level &&
+                   Equals(Stat, other.Stat) && SetId == other.SetId && SpineResourcePath == other.SpineResourcePath;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Equipment) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hashCode = base.GetHashCode();
+                hashCode = (hashCode * 397) ^ equipped.GetHashCode();
+                hashCode = (hashCode * 397) ^ level;
+                hashCode = (hashCode * 397) ^ (Stat != null ? Stat.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ SetId;
+                hashCode = (hashCode * 397) ^ (SpineResourcePath != null ? SpineResourcePath.GetHashCode() : 0);
+                return hashCode;
             }
         }
     }

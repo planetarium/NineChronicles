@@ -85,7 +85,7 @@ namespace Nekoyume.UI
         private SpeechBubble _selectedSpeechBubble;
 
         protected override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
-            ? AnimationState == AnimationStateType.Closed
+            ? AnimationState == AnimationStateType.Shown
             : base.CanHandleInputEvent;
 
         #region Override
@@ -246,6 +246,12 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfCloseAnimationInternal()
         {
+            if (State.Value == StateType.CombinationConfirm)
+            {
+                AnimationState = AnimationStateType.Shown;
+                return;
+            }
+
             categoryTabArea.SetActive(false);
             equipmentRecipe.gameObject.SetActive(false);
             base.OnCompleteOfCloseAnimationInternal();
@@ -422,7 +428,7 @@ namespace Nekoyume.UI
             if (isElemental)
             {
                 equipmentCombinationPanel.Hide();
-                elementalCombinationPanel.TweenCellViewInOption(recipeCellView);
+                elementalCombinationPanel.TweenCellViewInOption(recipeCellView, OnRecipeTweenCompleted);
                 elementalCombinationPanel.SetData(recipeCellView.RowData);
             }
             else
@@ -516,6 +522,11 @@ namespace Nekoyume.UI
             }
         }
 
+        public void OnRecipeTweenCompleted()
+        {
+            AnimationState = AnimationStateType.Shown;
+        }
+
         private void SubscribeSlotStates(Dictionary<int, CombinationSlotState> states)
         {
             _states = states;
@@ -543,7 +554,7 @@ namespace Nekoyume.UI
                 }).ToList();
 
             UpdateCurrentAvatarState(consumableCombinationPanel, materialInfoList);
-            CreateConsumableCombinationAction(materialInfoList, selectedIndex);
+            CreateConsumableCombinationAction(rowData.Id, materialInfoList, selectedIndex);
         }
 
         private void ActionEnhanceEquipment()
@@ -588,7 +599,7 @@ namespace Nekoyume.UI
 
             foreach (var (material, count) in materialInfoList)
             {
-                LocalStateModifier.RemoveItem(avatarAddress, material.Data.ItemId, count);
+                LocalStateModifier.RemoveItem(avatarAddress, material.ItemId, count);
             }
         }
 
@@ -610,7 +621,8 @@ namespace Nekoyume.UI
         }
 
 
-        private void CreateConsumableCombinationAction(List<(Material material, int count)> materialInfoList,
+        private void CreateConsumableCombinationAction(int rowId,
+            List<(Material material, int count)> materialInfoList,
             int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotConsumable(
@@ -621,7 +633,7 @@ namespace Nekoyume.UI
             );
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
+            Game.Game.instance.ActionManager.CombinationConsumable(rowId, slotIndex)
                 .Subscribe(_ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
