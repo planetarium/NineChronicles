@@ -1,11 +1,11 @@
 using System.Linq;
 using Libplanet;
 using Nekoyume.Helper;
-using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using UnityEngine;
 using UnityEngine.UI;
+using Player = Nekoyume.Game.Character.Player;
 
 namespace Nekoyume.UI.Module
 {
@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            SetByCharacterId(player.RowData.Id);
+            SetByCharacterId(player.Model.RowData.Id);
         }
 
         public void SetByCharacterId(int characterId)

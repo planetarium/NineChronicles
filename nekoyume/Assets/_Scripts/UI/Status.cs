@@ -49,7 +49,7 @@ namespace Nekoyume.UI
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
             Game.Event.OnUpdatePlayerEquip
-                .Subscribe(player => characterView.SetByPlayer(player.Model))
+                .Subscribe(characterView.SetByPlayer)
                 .AddTo(gameObject);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
                 .AddTo(gameObject);
@@ -97,7 +97,7 @@ namespace Nekoyume.UI
 
         public void UpdatePlayer(Player player)
         {
-            characterView.SetByPlayer(player.Model);
+            characterView.SetByPlayer(player);
             Show();
 
             if (player)
