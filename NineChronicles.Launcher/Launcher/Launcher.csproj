@@ -47,6 +47,15 @@
       <Message Importance="high" Text="Copied icon: $(OutputPath)/$(CFBundleIconFile)" />
       <CallTarget Targets="BundleApp" />
       <Message Importance="high" Text="Bundled: $(PublishDir)/$(AssemblyName).app" />
+
+      <Message Importance="high" Text="Copy $(OutputPath)\NineChronicles Notifier.app..." />
+      <ItemGroup>
+        <NotifierApp Include="$(OutputPath)\NineChronicles Notifier.app\**\*" />
+      </ItemGroup>
+
+      <Copy SourceFiles="@(NotifierApp)" DestinationFolder="$(PublishDir)\$(AssemblyName).app\Contents\MacOS\NineChronicles Notifier.app\%(RecursiveDir)" SkipUnchangedFiles="true" />
+
+
       <Delete Files="$(PublishDir)/$(AssemblyName)" />
       <Delete Files="$(PublishDir)/$(AssemblyName).pdb" />
       <Exec Command="rm -rf '$(PublishDir)/qt-runtime'" />
