@@ -1,6 +1,4 @@
-using System.Linq;
 using Nekoyume.Game.Character;
-using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Timer;
