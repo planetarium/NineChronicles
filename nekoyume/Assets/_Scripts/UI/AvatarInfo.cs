@@ -196,11 +196,12 @@ namespace Nekoyume.UI
             }
 
             // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
-            var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
+            _player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            player.Set(currentAvatarState);
-            player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
-            player.gameObject.SetActive(_previousActivated);
+            _player.Set(currentAvatarState);
+            _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
+            _player.gameObject.SetActive(_previousActivated);
+            _player = null;
         }
 
         private void UpdateSlotView(AvatarState avatarState)
