@@ -487,14 +487,13 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var (submitEnabledFunc, submitText, onSubmit) = GetToolTipParams(view.Model);
             tooltip.Show(
                 view.RectTransform,
                 view.Model,
-                value => !view.Model.Dimmed.Value && !_isShownFromBattle,
-                view.Model.EquippedEnabled.Value
-                    ? LocalizationManager.Localize("UI_UNEQUIP")
-                    : LocalizationManager.Localize("UI_EQUIP"),
-                _ => Equip(tooltip.itemInformation.Model.item.Value),
+                submitEnabledFunc,
+                submitText,
+                _ => onSubmit(view.Model),
                 _ => inventory.SharedModel.DeselectItemView());
         }
 
@@ -518,6 +517,83 @@ namespace Nekoyume.UI
                     item,
                     _ => inventory.SharedModel.DeselectItemView());
             }
+        }
+
+        private (Func<CountableItem, bool>, string, Action<CountableItem>) GetToolTipParams(InventoryItem inventoryItem)
+        {
+            var item = inventoryItem.ItemBase.Value;
+            Func<CountableItem, bool> submitEnabledFunc = null;
+            string submitText = null;
+            Action<CountableItem> onSubmit = null;
+            switch (item.ItemType)
+            {
+                case ItemType.Consumable:
+                    break;
+                case ItemType.Costume:
+                case ItemType.Equipment:
+                    submitEnabledFunc = DimmedFuncForEquipments;
+                    submitText =  inventoryItem.EquippedEnabled.Value
+                        ? LocalizationManager.Localize("UI_UNEQUIP")
+                        : LocalizationManager.Localize("UI_EQUIP");
+                    onSubmit = Equip;
+                    break;
+                case ItemType.Material:
+                    switch (item.ItemSubType)
+                    {
+                        case ItemSubType.ApStone:
+                            submitEnabledFunc = DimmedFuncForChargeActionPoint;
+                            submitText = LocalizationManager.Localize("UI_CHARGE_AP");
+                            onSubmit = ChargeActionPoint;
+                            break;
+                        case ItemSubType.Chest:
+                            submitEnabledFunc = DimmedFuncForChest;
+                            submitText = "OPEN";
+                            onSubmit = OpenChest;
+                            break;
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return (submitEnabledFunc, submitText, onSubmit);
+        }
+
+        private bool DimmedFuncForChargeActionPoint(CountableItem item)
+        {
+            if (item is null || item.Count.Value < 1)
+            {
+                return false;
+            }
+
+            return States.Instance.CurrentAvatarState.actionPoint != States.Instance.GameConfigState.ActionPointMax
+                   && !_isShownFromBattle;
+        }
+
+        private bool DimmedFuncForChest(CountableItem item)
+        {
+            return !(item is null) && item.Count.Value >= 1 && !_isShownFromBattle;
+        }
+
+        private bool DimmedFuncForEquipments(CountableItem item)
+        {
+            return !item.Dimmed.Value && !_isShownFromBattle;
+        }
+
+        private static void ChargeActionPoint(CountableItem item)
+        {
+            if (item.ItemBase.Value is Nekoyume.Model.Item.Material material)
+            {
+                Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                    LocalizationManager.Localize("UI_CHARGE_AP"));
+                Game.Game.instance.ActionManager.ChargeActionPoint();
+                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, material.ItemId, 1);
+                LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                    States.Instance.GameConfigState.ActionPointMax);
+            }
+        }
+
+        private static void OpenChest(CountableItem item)
+        {
         }
     }
 }
