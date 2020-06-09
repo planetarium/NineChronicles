@@ -9,7 +9,6 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Nekoyume.Model.State;
 using Serilog;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -138,13 +137,6 @@ namespace Nekoyume.Action
 
         public void Render(IActionContext context, IAccountStateDelta nextStates)
         {
-            // var previousStates = new AccountStateDelta();
-            // foreach (var address in nextStates.UpdatedAddresses)
-            // {
-            //     previousStates.SetState(address, nextStates.GetState(address));
-            // }
-            Log.Information($"previous updated addresses: {context.PreviousStates.UpdatedAddresses.Count}");
-            Log.Information($"shopState: {context.PreviousStates.GetState(ShopState.Address)}");
             RenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = this,
@@ -157,11 +149,6 @@ namespace Nekoyume.Action
 
         public void Unrender(IActionContext context, IAccountStateDelta nextStates)
         {
-            // var previousStates = new AccountStateDelta();
-            // foreach (var address in nextStates.UpdatedAddresses)
-            // {
-            //     previousStates.SetState(address, nextStates.GetState(address));
-            // }
             UnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = this,
