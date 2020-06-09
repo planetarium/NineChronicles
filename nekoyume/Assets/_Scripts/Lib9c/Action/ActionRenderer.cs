@@ -37,6 +37,7 @@ namespace Nekoyume.Action
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
                 Exception = eval.Exception,
+                PreviousStates = eval.PreviousStates,
             });
         }
 
@@ -52,6 +53,7 @@ namespace Nekoyume.Action
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
                 Exception = eval.Exception,
+                PreviousStates = eval.PreviousStates,
             });
         }
 
@@ -66,6 +68,7 @@ namespace Nekoyume.Action
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
                 Exception = eval.Exception,
+                PreviousStates = eval.PreviousStates,
             });
         }
 
@@ -80,6 +83,7 @@ namespace Nekoyume.Action
                 BlockIndex = eval.BlockIndex,
                 OutputStates = eval.OutputStates,
                 Exception = eval.Exception,
+                PreviousStates = eval.PreviousStates,
             });
         }
     }
