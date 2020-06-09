@@ -122,10 +122,10 @@ namespace Nekoyume.UI
 
             submitButton.HideAP();
             submitButton.HideNCG();
-            submitButton.SetSubmittable(result.id != default);
             var diff = result.itemUsable.RequiredBlockIndex - Game.Game.instance.Agent.BlockIndex;
             if (diff < 0)
             {
+                submitButton.SetSubmittable(result.id != default);
                 submitButton.HideHourglass();
             }
             else
@@ -133,8 +133,10 @@ namespace Nekoyume.UI
                 _cost = Action.RapidCombination.CalculateHourglassCount(States.Instance.GameConfigState, diff);
                 _row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
                     .First(r => r.ItemSubType == ItemSubType.Hourglass);
-                submitButton.ShowHourglass(_cost,
-                    States.Instance.CurrentAvatarState.inventory.HasItem(_row.ItemId, _cost));
+                var isEnough =
+                    States.Instance.CurrentAvatarState.inventory.HasItem(_row.ItemId, _cost);
+                submitButton.SetSubmittable(result.id != default && isEnough);
+                submitButton.ShowHourglass(_cost, isEnough);
             }
 
             base.Show();
