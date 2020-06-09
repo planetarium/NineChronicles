@@ -2,7 +2,10 @@
 using System.Collections;
 using Assets.SimpleLocalization;
 using DG.Tweening;
+using DG.Tweening.Core;
+using DG.Tweening.Plugins.Options;
 using Nekoyume.Game.Controller;
+using Spine.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,11 +19,16 @@ namespace Nekoyume.UI
         {
             public enum ImageAnimationType
             {
-                Fade,
+                FadeIn,
+                FadeOut,
                 Immediately
             }
             [Tooltip("페이드 혹은 나타날 사진이 찍히는 Image컴포넌트")]
             public Image image;
+            [Tooltip("SkeletonAnimation이 들어가는 여부")]
+            public bool hasSkeletonAnimation;
+            [Tooltip("페이드 혹은 나타날 SkeletonAnimation")]
+            public SkeletonAnimation skeletonAnimation;
             [Tooltip("페이드 혹은 나타날 사진")]
             public Sprite sprite;
             [Tooltip("이미지가 나타날때 방법")]
@@ -40,7 +48,9 @@ namespace Nekoyume.UI
             [Space]
 
             [Tooltip("글씨가 나타날 TextMeshPro 컴포넌트")]
-            public TextMeshProUGUI texts;
+            public TextMeshProUGUI text;
+            [Tooltip("그림자가 나타날 TextMeshPro 컴포넌트")]
+            public TextMeshProUGUI shadowText;
             [Tooltip("대사의 LocalizationKey")]
             public string scriptsLocalizationKey;
             [NonSerialized]
@@ -64,11 +74,15 @@ namespace Nekoyume.UI
 
             foreach (var script in scripts)
             {
-                script.scripts =
-                    LocalizationManager.Localize(script.scriptsLocalizationKey);
-                script.texts.text = string.Empty;
+                if (script.text != null)
+                {
+                    script.scripts =
+                        LocalizationManager.Localize(script.scriptsLocalizationKey);
+                    script.text.text = string.Empty;
+                }
 
                 script.image.transform.parent.gameObject.SetActive(false);
+
             }
 
             CloseWidget = Skip;
@@ -93,20 +107,60 @@ namespace Nekoyume.UI
                         break;
                     case SynopsisScene.TextAnimationType.ImmediatelyAndFade:
                     case SynopsisScene.TextAnimationType.Immediately:
-                        script.texts.text = script.scripts;
+                        script.text.text = script.scripts;
+                        script.shadowText.text = script.scripts;
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
+                Color color;
+                TweenerCore<Color, Color, ColorOptions> tweener;
+                TweenerCore<float, float, FloatOptions> skeletonTweener = null;
                 switch (script.imageAnmationType)
                 {
-                    case SynopsisScene.ImageAnimationType.Fade:
-                        var color = script.image.color;
+                    case SynopsisScene.ImageAnimationType.FadeIn:
+                        color = script.image.color;
                         color.a = 0;
                         script.image.color = color;
 
-                        var tweener = script.image.DOFade(1, script.imageAnimationTime);
+                        tweener = script.image.DOFade(1, script.imageAnimationTime);
+
+                        if (script.hasSkeletonAnimation)
+                        {
+                            script.skeletonAnimation.skeleton.A = 1;
+                            skeletonTweener = DOTween.To(() => script.skeletonAnimation.skeleton.A,
+                                alpha => script.skeletonAnimation.skeleton.A = alpha, 0,
+                                script.imageAnimationTime);
+                        }
+
                         tweener.Play();
+                        skeletonTweener?.Play();
+
+                        yield return new WaitUntil(() => !tweener.IsPlaying() || skipSynopsis);
+
+                        if (skipSynopsis)
+                        {
+                            tweener.Complete();
+                        }
+                        break;
+                    case SynopsisScene.ImageAnimationType.FadeOut:
+                        color = script.image.color;
+                        color.a = 1;
+                        script.image.color = color;
+
+                        tweener = script.image.DOFade(0, script.imageAnimationTime);
+
+                        if (script.hasSkeletonAnimation)
+                        {
+                            script.skeletonAnimation.skeleton.A = 0;
+                            skeletonTweener = DOTween.To(() => script.skeletonAnimation.skeleton.A,
+                                alpha => script.skeletonAnimation.skeleton.A = alpha, 1,
+                                script.imageAnimationTime);
+                        }
+
+                        tweener.Play();
+                        skeletonTweener?.Play();
 
                         yield return new WaitUntil(() => !tweener.IsPlaying() || skipSynopsis);
 
@@ -143,11 +197,16 @@ namespace Nekoyume.UI
                     continue;
                 }
 
+                if (script.scriptsLocalizationKey == string.Empty)
+                {
+                    script.image.transform.parent.gameObject.SetActive(false);
+                    continue;
+                }
+
                 var fade = false;
 
                 switch (script.textAnimationTypes)
                 {
-
                     case SynopsisScene.TextAnimationType.TypeAndFade:
                         fade = true;
                         yield return StartCoroutine(TypingText(script));
@@ -182,14 +241,17 @@ namespace Nekoyume.UI
 
                 if (fade)
                 {
-                    var tweener = script.texts.DOFade(0, textFadeOutTime);
-                    tweener.Play();
+                    var tweener1 = script.text.DOFade(0, textFadeOutTime);
+                    var tweener2 = script.shadowText.DOFade(0, textFadeOutTime);
+                    tweener1.Play();
+                    tweener2.Play();
 
-                    yield return new WaitUntil(() => !tweener.IsPlaying() || skipSynopsis);
+                    yield return new WaitUntil(() =>
+                        (!tweener1.IsPlaying() && !tweener2.IsPlaying()) || skipSynopsis);
                 }
                 else
                 {
-                    script.texts.text = string.Empty;
+                    script.text.text = string.Empty;
                 }
 
                 if (skipSynopsis)
@@ -209,12 +271,14 @@ namespace Nekoyume.UI
             var characterPerTime =
                 script.scriptsAnimationTime / script.scripts.Length;
 
-            script.texts.text =
+            script.text.text =
                 $"<color=#ffffff00>{script.scripts}</color=#ffffff00>";
 
-            for (var j = 0; j < script.scripts.Length; j++)
+            for (var j = 0; j <= script.scripts.Length; j++)
             {
-                script.texts.text =
+                script.text.text =
+                    $"{script.scripts.Substring(0, j)}<color=#ffffff00>{script.scripts.Substring(j)}</color=#ffffff00>";
+                script.shadowText.text =
                     $"{script.scripts.Substring(0, j)}<color=#ffffff00>{script.scripts.Substring(j)}</color=#ffffff00>";
 
                 delayedTime = 0f;
@@ -229,10 +293,10 @@ namespace Nekoyume.UI
                     return false;
                 });
 
-                script.texts.text = script.scripts;
-
                 if (skipSynopsis)
                 {
+                    script.text.text = script.scripts;
+                    script.shadowText.text = script.scripts;
                     break;
                 }
             }
