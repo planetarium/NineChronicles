@@ -196,12 +196,11 @@ namespace Nekoyume.UI
             }
 
             // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
-            _player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
+            var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            _player.Set(currentAvatarState);
-            _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
-            _player.gameObject.SetActive(_previousActivated);
-            _player = null;
+            player.Set(currentAvatarState);
+            player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
+            player.gameObject.SetActive(_previousActivated);
         }
 
         private void UpdateSlotView(AvatarState avatarState)
@@ -294,12 +293,13 @@ namespace Nekoyume.UI
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
 
+            Player player = null;
             switch (itemBase)
             {
                 case Costume costume:
                 {
                     inventoryItem.EquippedEnabled.Value = true;
-                    var player = Game.Game.instance.Stage.GetPlayer();
+                    player = Game.Game.instance.Stage.GetPlayer();
                     player.EquipCostume(costume);
 
                     break;
@@ -308,7 +308,7 @@ namespace Nekoyume.UI
                 {
                     inventoryItem.EquippedEnabled.Value = true;
                     UpdateStatViews();
-                    var player = Game.Game.instance.Stage.GetPlayer();
+                    player = Game.Game.instance.Stage.GetPlayer();
                     switch (slot.ItemSubType)
                     {
                         case ItemSubType.Armor:
@@ -327,6 +327,12 @@ namespace Nekoyume.UI
                 }
             }
 
+            if (player is null)
+            {
+                return;
+            }
+
+            Game.Event.OnUpdatePlayerEquip.OnNext(player);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
@@ -361,6 +367,7 @@ namespace Nekoyume.UI
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
 
+            Player player = null;
             switch (slotItem)
             {
                 case Costume costume:
@@ -377,7 +384,7 @@ namespace Nekoyume.UI
                         break;
                     }
 
-                    var player = Game.Game.instance.Stage.GetPlayer();
+                    player = Game.Game.instance.Stage.GetPlayer();
                     player.UnequipCostume(costume);
 
                     break;
@@ -397,7 +404,7 @@ namespace Nekoyume.UI
                     }
 
                     UpdateStatViews();
-                    var player = Game.Game.instance.Stage.GetPlayer();
+                    player = Game.Game.instance.Stage.GetPlayer();
                     switch (slot.ItemSubType)
                     {
                         case ItemSubType.Armor:
@@ -415,11 +422,12 @@ namespace Nekoyume.UI
                 }
             }
 
-            if (onlyData)
+            if (player is null)
             {
                 return;
             }
 
+            Game.Event.OnUpdatePlayerEquip.OnNext(player);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);

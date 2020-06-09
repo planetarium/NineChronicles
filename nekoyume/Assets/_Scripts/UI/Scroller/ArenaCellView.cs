@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI rankText = null;
         [SerializeField]
-        private Image portraitImage = null;
+        private VanillaCharacterView characterView = null;
         [SerializeField]
         private TextMeshProUGUI levelText = null;
         [SerializeField]
@@ -93,7 +93,7 @@ namespace Nekoyume.UI.Scroller
             ArenaInfo = arenaInfo;
 
             UpdateRank(rank);
-            portraitImage.overrideSprite = SpriteHelper.GetItemIcon(arenaInfo.ArmorId);
+            characterView.SetByAvatarAddress(arenaInfo.AvatarAddress);
             levelText.text = arenaInfo.Level.ToString();
             nameText.text = arenaInfo.AvatarName;
             cpText.text = arenaInfo.CombatPoint.ToString();

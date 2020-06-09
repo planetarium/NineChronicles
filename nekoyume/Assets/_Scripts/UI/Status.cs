@@ -50,6 +50,9 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
+            Game.Event.OnUpdatePlayerEquip
+                .Subscribe(player => characterView.SetByPlayer(player.Model))
+                .AddTo(gameObject);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
                 .AddTo(gameObject);
 
@@ -96,7 +99,7 @@ namespace Nekoyume.UI
 
         public void UpdatePlayer(Player player)
         {
-            UpdateCharacterView(player);
+            characterView.SetByPlayer(player.Model);
             Show();
 
             if (player)
@@ -105,27 +108,6 @@ namespace Nekoyume.UI
             }
 
             UpdateExp();
-        }
-
-        private void UpdateCharacterView(Player player)
-        {
-            var fullCostume = player.Costumes.FirstOrDefault(costume =>
-                costume.ItemSubType == ItemSubType.FullCostume);
-            if (!(fullCostume is null))
-            {
-                characterView.SetIconByArmorId(fullCostume.Id);
-                return;
-            }
-
-            var armor = player.Equipments.FirstOrDefault(equipment =>
-                equipment.ItemSubType == ItemSubType.Armor);
-            if (!(armor is null))
-            {
-                characterView.SetIconByArmorId(armor.Id);
-                return;
-            }
-
-            characterView.SetIconByCharacterId(player.Model.RowData.Id);
         }
 
         private void SubscribeOnUpdatePlayerStatus(Player player)

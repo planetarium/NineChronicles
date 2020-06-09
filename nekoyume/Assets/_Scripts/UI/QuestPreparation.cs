@@ -466,6 +466,7 @@ namespace Nekoyume.UI
                 _player.EquipWeapon((Weapon) slot.Item);
             }
 
+            Game.Event.OnUpdatePlayerEquip.OnNext(_player);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);

@@ -336,7 +336,7 @@ namespace Nekoyume.UI
                 if (i < monsterCount)
                 {
                     characterView.Show();
-                    characterView.SetIconByCharacterId(stageWaveRow.TotalMonsterIds[i]);
+                    characterView.SetByCharacterId(stageWaveRow.TotalMonsterIds[i]);
 
                     continue;
                 }
