@@ -88,7 +88,9 @@ namespace Nekoyume.UI.Scroller
         public void Show(int rank, ArenaInfo arenaInfo, bool canChallenge, bool isCurrentUser)
         {
             if (arenaInfo is null)
+            {
                 throw new ArgumentNullException(nameof(arenaInfo));
+            }
 
             ArenaInfo = arenaInfo;
 
