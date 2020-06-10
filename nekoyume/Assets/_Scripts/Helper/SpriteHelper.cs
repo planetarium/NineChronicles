@@ -21,11 +21,7 @@ namespace Nekoyume.Helper
 
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
-
-        private const string PlayerSpineTextureEarCostumeLeftDefaultPath = "Character/PlayerSpineTexture/EarCostume/40300001_left";
-        private const string PlayerSpineTextureEarCostumeRightDefaultPath = "Character/PlayerSpineTexture/EarCostume/40300001_right";
-        private const string PlayerSpineTextureEarCostumePathFormat = "Character/PlayerSpineTexture/EarCostume/{0}";
-
+        
         private const string PlayerSpineTextureEyeCostumeOpenDefaultPath = "Character/PlayerSpineTexture/EyeCostume/eye_red_open";
         private const string PlayerSpineTextureEyeCostumeHalfDefaultPath = "Character/PlayerSpineTexture/EyeCostume/eye_red_half";
         private const string PlayerSpineTextureEyeCostumePathFormat = "Character/PlayerSpineTexture/EyeCostume/{0}";
@@ -89,28 +85,6 @@ namespace Nekoyume.Helper
 
             return Resources.Load<Sprite>(string.Format(BuffIconPathFormat, iconResource)) ??
                    Resources.Load<Sprite>(BuffIconDefaultPath);
-        }
-
-        public static Sprite GetPlayerSpineTextureEarCostumeLeft(string earCostumeLeftResource)
-        {
-            if (string.IsNullOrEmpty(earCostumeLeftResource))
-            {
-                return Resources.Load<Sprite>(PlayerSpineTextureEarCostumeLeftDefaultPath);
-            }
-
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarCostumePathFormat, earCostumeLeftResource)) ??
-                   Resources.Load<Sprite>(PlayerSpineTextureEarCostumeLeftDefaultPath);
-        }
-
-        public static Sprite GetPlayerSpineTextureEarCostumeRight(string earCostumeRightResource)
-        {
-            if (string.IsNullOrEmpty(earCostumeRightResource))
-            {
-                return Resources.Load<Sprite>(PlayerSpineTextureEarCostumeRightDefaultPath);
-            }
-
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEarCostumePathFormat, earCostumeRightResource)) ??
-                   Resources.Load<Sprite>(PlayerSpineTextureEarCostumeRightDefaultPath);
         }
 
         public static Sprite GetPlayerSpineTextureEyeCostumeOpen(string eyeCostumeOpenResource)
