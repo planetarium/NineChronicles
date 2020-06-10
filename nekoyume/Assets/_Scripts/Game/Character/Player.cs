@@ -192,7 +192,7 @@ namespace Nekoyume.Game.Character
                     UpdateHairById(costume.Id);
                     break;
                 case ItemSubType.TailCostume:
-                    // UpdateTail();
+                    UpdateTailById(costume.Id);
                     break;
             }
         }
@@ -224,7 +224,7 @@ namespace Nekoyume.Game.Character
                     UpdateHair();
                     break;
                 case ItemSubType.TailCostume:
-                    // UpdateTail();
+                    UpdateTail();
                     break;
             }
         }
@@ -286,7 +286,7 @@ namespace Nekoyume.Game.Character
             UpdateEar();
             UpdateEye();
             UpdateHair();
-            UpdateTail(Model.tailIndex);
+            UpdateTail();
         }
 
         private void UpdateEar()
@@ -459,20 +459,58 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateHair(sprites);
         }
 
-        public void UpdateTail(int index)
+        private void UpdateTail()
         {
-            UpdateTail($"tail_{index + 1:d4}");
-        }
-
-        private void UpdateTail(string tailResource)
-        {
-            if (!SpineController ||
-                string.IsNullOrEmpty(tailResource))
+            if (IsFullCostumeEquipped)
             {
                 return;
             }
 
-            var sprite = SpriteHelper.GetPlayerSpineTextureTailCostume(tailResource);
+            var tailCostume =
+                Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.TailCostume);
+            if (tailCostume is null)
+            {
+                UpdateTailByCustomizeIndex(Model.hairIndex);
+            }
+            else
+            {
+                UpdateTailById(tailCostume.Id);
+            }
+        }
+
+        public void UpdateTailByCustomizeIndex(int customizeIndex)
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var firstTailRow =
+                sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.TailCostume);
+            if (firstTailRow is null)
+            {
+                return;
+            }
+
+            UpdateTailById(firstTailRow.Id + customizeIndex);
+        }
+
+        private void UpdateTailById(int tailCostumeId)
+        {
+            if (IsFullCostumeEquipped ||
+                SpineController is null)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(tailCostumeId, out var row, true))
+            {
+                return;
+            }
+
+            var sprite = Resources.Load<Sprite>(row.SpineResourcePath);
             SpineController.UpdateTail(sprite);
         }
 

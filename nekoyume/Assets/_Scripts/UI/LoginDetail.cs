@@ -350,7 +350,7 @@ namespace Nekoyume.UI
                 throw new NullReferenceException(nameof(player));
             }
 
-            player.UpdateTail(_tail);
+            player.UpdateTailByCustomizeIndex(_tail);
         }
 
         public void BackClick()

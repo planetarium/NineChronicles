@@ -129,7 +129,7 @@ namespace Nekoyume.Game.Character
 
             TryGetSlotAndAttachment(
                 TailSlot,
-                SpriteHelper.GetPlayerSpineTextureTailCostume,
+                null,
                 out _tail);
         }
 
