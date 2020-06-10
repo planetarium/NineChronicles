@@ -28,9 +28,9 @@ namespace Libplanet.Standalone.Hosting
 
         public readonly Swarm<T> Swarm;
 
-        public AsyncAutoResetEvent BootstrapEnded { get; }
+        public AsyncManualResetEvent BootstrapEnded { get; }
 
-        public AsyncAutoResetEvent PreloadEnded { get; }
+        public AsyncManualResetEvent PreloadEnded { get; }
 
         private readonly IBlockPolicy<T> _blockPolicy;
 
@@ -81,8 +81,8 @@ namespace Libplanet.Standalone.Hosting
                 differentAppProtocolVersionEncountered: _properties.DifferentAppProtocolVersionEncountered
             );
 
-            PreloadEnded = new AsyncAutoResetEvent();
-            BootstrapEnded = new AsyncAutoResetEvent();
+            PreloadEnded = new AsyncManualResetEvent();
+            BootstrapEnded = new AsyncManualResetEvent();
 
             _preloadProgress = preloadProgress;
             _ignoreBootstrapFailure = ignoreBootstrapFailure;

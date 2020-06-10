@@ -2,11 +2,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using GraphQL;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace NineChronicles.Standalone.Tests.GraphTypes
 {
     public class StandaloneMutationTest : GraphQLTestBase
     {
+        public StandaloneMutationTest(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task CreatePrivateKey()
         {

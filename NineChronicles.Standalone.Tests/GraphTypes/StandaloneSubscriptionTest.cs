@@ -5,11 +5,16 @@ using System.Threading.Tasks;
 using GraphQL.Subscription;
 using Libplanet;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace NineChronicles.Standalone.Tests.GraphTypes
 {
     public class StandaloneSubscriptionTest : GraphQLTestBase
     {
+        public StandaloneSubscriptionTest(ITestOutputHelper output) : base(output)
+        {
+        }
+
         [Fact]
         public async Task SubscribeTipChangedEvent()
         {

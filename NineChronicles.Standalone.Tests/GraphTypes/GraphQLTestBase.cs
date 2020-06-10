@@ -11,15 +11,19 @@ using Libplanet.KeyStore;
 using Libplanet.Store;
 using Nekoyume.Action;
 using NineChronicles.Standalone.GraphTypes;
-
+using Xunit.Abstractions;
 using RewardGold = NineChronicles.Standalone.Tests.Common.Actions.RewardGold;
 
 namespace NineChronicles.Standalone.Tests.GraphTypes
 {
     public class GraphQLTestBase
     {
-        protected GraphQLTestBase()
+        protected ITestOutputHelper _output;
+
+        public GraphQLTestBase(ITestOutputHelper output)
         {
+            _output = output;
+
             var store = new DefaultStore(null);
             var genesisBlock = BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock();
 
