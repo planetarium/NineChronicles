@@ -94,32 +94,12 @@ namespace Nekoyume.Game.Character
                 SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId);
             _weaponAttachmentDefault = MakeAttachment(weaponSprite);
 
-            TryGetSlotAndAttachment(
-                EarLeftSlot,
-                null,
-                out _earLeft);
-
-            TryGetSlotAndAttachment(
-                EarRightSlot,
-                null,
-                out _earRight);
-
-            TryGetSlotAndAttachment(
-                EyeHalfSlot,
-                null,
-                out _eyeHalf);
-
-            TryGetSlotAndAttachment(
-                EyeOpenSlot,
-                null,
-                out _eyeOpen);
-
             var hairSlots = hairTypeIndex == 0
                 ? HairType0Slots
                 : HairType1Slots;
             foreach (var hairSlot in hairSlots)
             {
-                if (!TryGetSlotAndAttachment(hairSlot, null, out var result))
+                if (!TryGetSlotAndAttachment(hairSlot, out var result))
                 {
                     break;
                 }
@@ -127,15 +107,15 @@ namespace Nekoyume.Game.Character
                 _hairs.Add(result);
             }
 
-            TryGetSlotAndAttachment(
-                TailSlot,
-                null,
-                out _tail);
+            TryGetSlotAndAttachment(EarLeftSlot, out _earLeft);
+            TryGetSlotAndAttachment(EarRightSlot, out _earRight);
+            TryGetSlotAndAttachment(EyeHalfSlot, out _eyeHalf);
+            TryGetSlotAndAttachment(EyeOpenSlot, out _eyeOpen);
+            TryGetSlotAndAttachment(TailSlot, out _tail);
         }
 
         private bool TryGetSlotAndAttachment(
             string slotName,
-            Func<string, Sprite> spriteGetter,
             out SlotAndAttachment slotAndAttachment)
         {
             if (string.IsNullOrEmpty(slotName))
@@ -154,10 +134,7 @@ namespace Nekoyume.Game.Character
             }
 
             var slotIndex = SkeletonAnimation.skeleton.FindSlotIndex(slotName);
-            var attachment = spriteGetter is null
-                ? slot.Attachment
-                : RemapAttachment(slot, spriteGetter(null));
-            slotAndAttachment = new SlotAndAttachment(slotName, slot, slotIndex, attachment);
+            slotAndAttachment = new SlotAndAttachment(slotName, slot, slotIndex, slot.Attachment);
             return true;
         }
 
