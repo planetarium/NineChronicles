@@ -14,17 +14,17 @@ namespace Nekoyume.UI
     {
         [SerializeField]
         private CharacterProfile playerProfile = null;
-        
+
         [SerializeField]
         private CharacterProfile enemyProfile = null;
-        
+
         [SerializeField]
         private TextMeshProUGUI loadingText = null;
 
         public void Show(ArenaInfo enemyInfo)
         {
             var player = Game.Game.instance.Stage.GetPlayer();
-            var sprite = SpriteHelper.GetItemIcon(player.Model.armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId);
+            var sprite = SpriteHelper.GetItemIcon(player.Model.armor? .Id ?? GameConfig.DefaultAvatarArmorId);
             playerProfile.Set(player.Level, States.Instance.CurrentAvatarState.NameWithHash, sprite);
             var enemySprite = SpriteHelper.GetItemIcon(enemyInfo.ArmorId);
             enemyProfile.Set(enemyInfo.Level, enemyInfo.AvatarName, enemySprite);
