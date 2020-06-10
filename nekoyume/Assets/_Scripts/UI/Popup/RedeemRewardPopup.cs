@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -43,16 +42,16 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        public void Pop(Chest chest, TableSheets tableSheets)
+        public void Pop(List<(ItemBase, int)> items, TableSheets tableSheets)
         {
             for (var i = 0; i < itemViews.Length; i++)
             {
                 var view = itemViews[i];
                 view.gameObject.SetActive(false);
-                // 임시로 상자 1개만 설정
-                if (i == 0)
+                if (i < items.Count)
                 {
-                    var countableItem = new CountableItem(chest, 1);
+                    var (item, count) = items[i];
+                    var countableItem = new CountableItem(item, count);
                     view.SetData(countableItem);
                     view.gameObject.SetActive(true);
                 }

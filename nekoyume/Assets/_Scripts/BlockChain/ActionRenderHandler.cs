@@ -12,6 +12,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using TentuPlay.Api;
 
 namespace Nekoyume.BlockChain
@@ -60,6 +61,7 @@ namespace Nekoyume.BlockChain
             GameConfig();
             RedeemCode();
             ChargeActionPoint();
+            OpenChest();
         }
 
         public void Stop()
@@ -311,6 +313,14 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
+        }
+
+        private void OpenChest()
+        {
+            _renderer.EveryRender<OpenChest>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseOpenChest).AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
@@ -703,7 +713,7 @@ namespace Nekoyume.BlockChain
                     var rewards = row.Rewards;
                     var chestRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
                     var chest = ItemFactory.CreateChest(chestRow, rewards);
-                    Widget.Find<RedeemRewardPopup>().Pop(chest, tableSheets);
+                    Widget.Find<RedeemRewardPopup>().Pop(new List<(ItemBase, int)> { (chest, 1) }, tableSheets);
                     key = "UI_REDEEM_CODE_SUCCESS";
                     UpdateCurrentAvatarState(eval);
                 }
@@ -727,6 +737,46 @@ namespace Nekoyume.BlockChain
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
             LocalStateModifier.AddItem(avatarAddress, row.ItemId, 1);
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseOpenChest(ActionBase.ActionEvaluation<OpenChest> eval)
+        {
+            var avatarAddress = eval.Action.avatarAddress;
+            var prevAvatarState = eval.PreviousStates.GetAvatarState(avatarAddress);
+            var tableSheets = Game.Game.instance.TableSheets;
+            foreach (var pair in eval.Action.chestList)
+            {
+                var itemId = pair.Key;
+                var count = pair.Value;
+                if (prevAvatarState.inventory.TryGetMaterial(itemId, out var inventoryItem) && inventoryItem.count >= count)
+                {
+                    var chest = (Chest) inventoryItem.item;
+                    foreach (var info in chest.Rewards)
+                    {
+                        switch (info.Type)
+                        {
+                            case RewardType.Item:
+                                var itemRow =
+                                    tableSheets.MaterialItemSheet.Values.FirstOrDefault(r => r.Id == info.ItemId);
+                                if (itemRow is null)
+                                {
+                                    continue;
+                                }
+
+                                LocalStateModifier.RemoveMaterial(avatarAddress, itemRow.ItemId, info.Quantity, false);
+                                break;
+                            case RewardType.Gold:
+                                LocalStateModifier.ModifyAgentGold(eval.Signer, -info.Quantity);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException(nameof(info.Type), info.Type, null);
+                        }
+                    }
+                    LocalStateModifier.RemoveItem(avatarAddress, chest.ItemId, count);
+                }
+            }
+            UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
