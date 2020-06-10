@@ -288,7 +288,7 @@ namespace Nekoyume.UI
                 throw new NullReferenceException(nameof(player));
             }
 
-            player.UpdateEye(_lens);
+            player.UpdateEyeByCustomizeIndex(_lens);
         }
 
         public void ChangeHair(int offset)

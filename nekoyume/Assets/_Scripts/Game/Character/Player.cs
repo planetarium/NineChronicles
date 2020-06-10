@@ -183,7 +183,7 @@ namespace Nekoyume.Game.Character
                     UpdateEarById(costume.Id);
                     break;
                 case ItemSubType.EyeCostume:
-                    // UpdateEye();
+                    UpdateEyeById(costume.Id);
                     break;
                 case ItemSubType.FullCostume:
                     ChangeSpine(costume.SpineResourcePath);
@@ -211,7 +211,7 @@ namespace Nekoyume.Game.Character
                     UpdateEar();
                     break;
                 case ItemSubType.EyeCostume:
-                    // UpdateEye();
+                    UpdateEye();
                     break;
                 case ItemSubType.FullCostume:
                     var armor = (Armor) Equipments.FirstOrDefault(equipment =>
@@ -284,7 +284,7 @@ namespace Nekoyume.Game.Character
             }
 
             UpdateEar();
-            UpdateEye(Model.lensIndex);
+            UpdateEye();
             UpdateHair();
             UpdateTail(Model.tailIndex);
         }
@@ -296,15 +296,15 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var hairCostume =
+            var earCostume =
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EarCostume);
-            if (hairCostume is null)
+            if (earCostume is null)
             {
                 UpdateEarByCustomizeIndex(Model.hairIndex);
             }
             else
             {
-                UpdateEarById(hairCostume.Id);
+                UpdateEarById(earCostume.Id);
             }
         }
 
@@ -339,28 +339,60 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var spriteLeft = Resources.Load<Sprite>($"{row.SpineResourcePath}_left");
-            var spriteRight = Resources.Load<Sprite>($"{row.SpineResourcePath}_right");
-            SpineController.UpdateEar(spriteLeft, spriteRight);
+            var leftSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_left");
+            var rightSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_right");
+            SpineController.UpdateEar(leftSprite, rightSprite);
         }
 
-        public void UpdateEye(int index)
+        private void UpdateEye()
         {
-            UpdateEye(CostumeSheet.GetEyeResources(index));
-        }
-
-        private void UpdateEye(IReadOnlyList<string> eyeResources)
-        {
-            if (eyeResources is null ||
-                eyeResources.Count < 2 ||
-                !SpineController)
+            if (IsFullCostumeEquipped)
             {
                 return;
             }
 
-            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeCostumeHalf(eyeResources[0]);
-            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeCostumeOpen(eyeResources[1]);
-            SpineController.UpdateEye(eyeHalfSprite, eyeOpenSprite);
+            var eyeCostume =
+                Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EyeCostume);
+            if (eyeCostume is null)
+            {
+                UpdateEyeByCustomizeIndex(Model.hairIndex);
+            }
+            else
+            {
+                UpdateEyeById(eyeCostume.Id);
+            }
+        }
+
+        public void UpdateEyeByCustomizeIndex(int customizeIndex)
+        {
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var firstEyeRow =
+                sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EyeCostume);
+            if (firstEyeRow is null)
+            {
+                return;
+            }
+
+            UpdateEyeById(firstEyeRow.Id + customizeIndex);
+        }
+
+        private void UpdateEyeById(int eyeCostumeId)
+        {
+            if (IsFullCostumeEquipped ||
+                SpineController is null)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(eyeCostumeId, out var row, true))
+            {
+                return;
+            }
+
+            var halfSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_half");
+            var openSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_open");
+            SpineController.UpdateEye(halfSprite, openSprite);
         }
 
         private void UpdateHair()

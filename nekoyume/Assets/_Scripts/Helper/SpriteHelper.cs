@@ -21,7 +21,7 @@ namespace Nekoyume.Helper
 
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
-        
+
         private const string PlayerSpineTextureEyeCostumeOpenDefaultPath = "Character/PlayerSpineTexture/EyeCostume/eye_red_open";
         private const string PlayerSpineTextureEyeCostumeHalfDefaultPath = "Character/PlayerSpineTexture/EyeCostume/eye_red_half";
         private const string PlayerSpineTextureEyeCostumePathFormat = "Character/PlayerSpineTexture/EyeCostume/{0}";

@@ -106,12 +106,12 @@ namespace Nekoyume.Game.Character
 
             TryGetSlotAndAttachment(
                 EyeHalfSlot,
-                SpriteHelper.GetPlayerSpineTextureEyeCostumeHalf,
+                null,
                 out _eyeHalf);
 
             TryGetSlotAndAttachment(
                 EyeOpenSlot,
-                SpriteHelper.GetPlayerSpineTextureEyeCostumeOpen,
+                null,
                 out _eyeOpen);
 
             var hairSlots = hairTypeIndex == 0
