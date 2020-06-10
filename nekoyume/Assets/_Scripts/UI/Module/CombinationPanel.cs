@@ -57,11 +57,12 @@ namespace Nekoyume.UI.Module
             confirmAreaYTweener.OnComplete = null;
         }
 
-        public void TweenCellView(RecipeCellView view)
+        public void TweenCellView(RecipeCellView view, System.Action onCompleted)
         {
             var rect = view.transform as RectTransform;
 
             cellViewTweener.SetBeginRect(rect);
+            cellViewTweener.onCompleted = onCompleted;
             cellViewTweener.Play();
         }
 
