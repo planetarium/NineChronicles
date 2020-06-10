@@ -215,10 +215,11 @@ namespace Nekoyume.Game.Character
                     break;
                 case ItemSubType.FullCostume:
                 {
-                    if (CharacterModel is Model.Player model)
-                    {
-                        EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
-                    }
+                    var armor = (Armor) Equipments.FirstOrDefault(equipment =>
+                        equipment.ItemSubType == ItemSubType.Armor);
+                    var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
+                        equipment.ItemSubType == ItemSubType.Weapon);
+                    EquipEquipmentsAndUpdateCustomize(armor, weapon);
                     break;
                 }
                 case ItemSubType.HairCostume:
