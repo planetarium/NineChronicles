@@ -25,7 +25,7 @@ namespace NineChronicles.Standalone.GraphTypes
 
                     keyStore.Add(protectedPrivateKey);
                     return protectedPrivateKey;
-                });         ;
+                });
         }
     }
 }
