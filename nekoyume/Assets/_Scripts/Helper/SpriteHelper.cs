@@ -138,17 +138,6 @@ namespace Nekoyume.Helper
                    Resources.Load<Sprite>(PlayerSpineTextureEyeCostumeHalfDefaultPath);
         }
 
-        public static Sprite GetPlayerSpineTextureHairCostume(string hairCostumeResource)
-        {
-            if (string.IsNullOrEmpty(hairCostumeResource))
-            {
-                return Resources.Load<Sprite>(PlayerSpineTextureHairCostumeDefaultPath);
-            }
-
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureHairCostumePathFormat, hairCostumeResource)) ??
-                   Resources.Load<Sprite>(PlayerSpineTextureHairCostumeDefaultPath);
-        }
-
         public static Sprite GetPlayerSpineTextureTailCostume(string tailCostumeResource)
         {
             if (string.IsNullOrEmpty(tailCostumeResource))
