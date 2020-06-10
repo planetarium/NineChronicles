@@ -74,7 +74,7 @@ namespace NineChronicles.Standalone.Controllers
                     nineChroniclesProperties,
                     hostBuilder,
                     StandaloneContext,
-                    NodeCancellationContext.CancellationToken);
+                    StandaloneContext.CancellationToken);
             }
             catch (Exception e)
             {
