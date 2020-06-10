@@ -20,9 +20,12 @@ namespace Nekoyume.TableData
         private List<TValue> _orderedList;
 
         public string Name { get; }
+
         public IReadOnlyList<TValue> OrderedList => _orderedList;
+
         [CanBeNull]
         public TValue First { get; private set; }
+
         [CanBeNull]
         public TValue Last { get; private set; }
 
@@ -43,7 +46,7 @@ namespace Nekoyume.TableData
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="csv"></param>
         /// <param name="isReversed">true: csv값의 column과 row가 뒤집혀서 작성되어 있다고 판단합니다.</param>
@@ -119,13 +122,17 @@ namespace Nekoyume.TableData
             return _orderedList.GetEnumerator();
         }
 
-        public bool TryGetValue(TKey key, out TValue value, bool throwException = false)
+        public bool TryGetValue(TKey key, out TValue value, bool throwException)
         {
             if (_impl.TryGetValue(key, out value))
+            {
                 return true;
+            }
 
             if (throwException)
+            {
                 throw new SheetRowNotFoundException(Name, key.ToString());
+            }
 
             return false;
         }
