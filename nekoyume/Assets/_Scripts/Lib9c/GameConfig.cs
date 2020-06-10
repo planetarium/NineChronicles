@@ -108,7 +108,7 @@
             public const int UIBottomMenuSettings = 1;
             public const int UIBottomMenuMail = IsEditor ? 1 : 3;
             public const int UIBottomMenuChat = IsEditor ? 1 : 7;
-            public const int UIBottomMenuQuest = IsEditor ? 1 : 9;
+            public const int UIBottomMenuQuest = 1;
 
             #endregion
         }

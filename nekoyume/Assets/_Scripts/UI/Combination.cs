@@ -85,7 +85,7 @@ namespace Nekoyume.UI
         private SpeechBubble _selectedSpeechBubble;
 
         protected override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
-            ? AnimationState == AnimationStateType.Closed
+            ? AnimationState == AnimationStateType.Shown
             : base.CanHandleInputEvent;
 
         #region Override
@@ -246,6 +246,12 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfCloseAnimationInternal()
         {
+            if (State.Value == StateType.CombinationConfirm)
+            {
+                AnimationState = AnimationStateType.Shown;
+                return;
+            }
+
             categoryTabArea.SetActive(false);
             equipmentRecipe.gameObject.SetActive(false);
             base.OnCompleteOfCloseAnimationInternal();
@@ -422,7 +428,7 @@ namespace Nekoyume.UI
             if (isElemental)
             {
                 equipmentCombinationPanel.Hide();
-                elementalCombinationPanel.TweenCellViewInOption(recipeCellView);
+                elementalCombinationPanel.TweenCellViewInOption(recipeCellView, OnRecipeTweenCompleted);
                 elementalCombinationPanel.SetData(recipeCellView.RowData);
             }
             else
@@ -514,6 +520,11 @@ namespace Nekoyume.UI
                     State.SetValueAndForceNotify(StateType.SelectMenu);
                     break;
             }
+        }
+
+        public void OnRecipeTweenCompleted()
+        {
+            AnimationState = AnimationStateType.Shown;
         }
 
         private void SubscribeSlotStates(Dictionary<int, CombinationSlotState> states)
