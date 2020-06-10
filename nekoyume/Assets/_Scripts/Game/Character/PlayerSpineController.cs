@@ -96,12 +96,12 @@ namespace Nekoyume.Game.Character
 
             TryGetSlotAndAttachment(
                 EarLeftSlot,
-                SpriteHelper.GetPlayerSpineTextureEarCostumeLeft,
+                null,
                 out _earLeft);
 
             TryGetSlotAndAttachment(
                 EarRightSlot,
-                SpriteHelper.GetPlayerSpineTextureEarCostumeRight,
+                null,
                 out _earRight);
 
             TryGetSlotAndAttachment(

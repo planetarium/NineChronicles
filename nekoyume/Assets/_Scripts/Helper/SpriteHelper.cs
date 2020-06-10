@@ -22,16 +22,13 @@ namespace Nekoyume.Helper
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
 
-        private const string PlayerSpineTextureEarCostumeLeftDefaultPath = "Character/PlayerSpineTexture/EarCostume/ear_0001_left";
-        private const string PlayerSpineTextureEarCostumeRightDefaultPath = "Character/PlayerSpineTexture/EarCostume/ear_0001_right";
+        private const string PlayerSpineTextureEarCostumeLeftDefaultPath = "Character/PlayerSpineTexture/EarCostume/40300001_left";
+        private const string PlayerSpineTextureEarCostumeRightDefaultPath = "Character/PlayerSpineTexture/EarCostume/40300001_right";
         private const string PlayerSpineTextureEarCostumePathFormat = "Character/PlayerSpineTexture/EarCostume/{0}";
 
         private const string PlayerSpineTextureEyeCostumeOpenDefaultPath = "Character/PlayerSpineTexture/EyeCostume/eye_red_open";
         private const string PlayerSpineTextureEyeCostumeHalfDefaultPath = "Character/PlayerSpineTexture/EyeCostume/eye_red_half";
         private const string PlayerSpineTextureEyeCostumePathFormat = "Character/PlayerSpineTexture/EyeCostume/{0}";
-
-        private const string PlayerSpineTextureHairCostumeDefaultPath = "Character/PlayerSpineTexture/HairCostume/hair_0001_red_01";
-        private const string PlayerSpineTextureHairCostumePathFormat = "Character/PlayerSpineTexture/HairCostume/{0}";
 
         private const string PlayerSpineTextureTailCostumeDefaultPath = "Character/PlayerSpineTexture/TailCostume/tail_0001";
         private const string PlayerSpineTextureTailCostumePathFormat = "Character/PlayerSpineTexture/TailCostume/{0}";

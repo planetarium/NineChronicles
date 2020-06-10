@@ -257,7 +257,7 @@ namespace Nekoyume.UI
                 throw new NullReferenceException(nameof(player));
             }
 
-            player.UpdateEar(_ear);
+            player.UpdateEarByCustomizeIndex(_ear);
         }
 
         public void ChangeLens(int offset)

@@ -180,7 +180,7 @@ namespace Nekoyume.Game.Character
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
-                    // UpdateEar();
+                    UpdateEarById(costume.Id);
                     break;
                 case ItemSubType.EyeCostume:
                     // UpdateEye();
@@ -208,20 +208,18 @@ namespace Nekoyume.Game.Character
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
-                    // UpdateEar();
+                    UpdateEar();
                     break;
                 case ItemSubType.EyeCostume:
                     // UpdateEye();
                     break;
                 case ItemSubType.FullCostume:
-                {
                     var armor = (Armor) Equipments.FirstOrDefault(equipment =>
                         equipment.ItemSubType == ItemSubType.Armor);
                     var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
                         equipment.ItemSubType == ItemSubType.Weapon);
                     EquipEquipmentsAndUpdateCustomize(armor, weapon);
                     break;
-                }
                 case ItemSubType.HairCostume:
                     UpdateHair();
                     break;
@@ -285,28 +283,64 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateEar(Model.earIndex);
+            UpdateEar();
             UpdateEye(Model.lensIndex);
             UpdateHair();
             UpdateTail(Model.tailIndex);
         }
 
-        public void UpdateEar(int index)
+        private void UpdateEar()
         {
-            UpdateEar($"ear_{index + 1:d4}_left", $"ear_{index + 1:d4}_right");
-        }
-
-        private void UpdateEar(string earLeftResource, string earRightResource)
-        {
-            if (!SpineController ||
-                string.IsNullOrEmpty(earLeftResource) ||
-                string.IsNullOrEmpty(earRightResource))
+            if (IsFullCostumeEquipped)
             {
                 return;
             }
 
-            var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarCostumeLeft(earLeftResource);
-            var spriteRight = SpriteHelper.GetPlayerSpineTextureEarCostumeRight(earRightResource);
+            var hairCostume =
+                Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EarCostume);
+            if (hairCostume is null)
+            {
+                UpdateEarByCustomizeIndex(Model.hairIndex);
+            }
+            else
+            {
+                UpdateEarById(hairCostume.Id);
+            }
+        }
+
+        /// <summary>
+        /// 기존에 커스텀 가능한 헤어 컬러들은 헤어 코스튬 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
+        /// </summary>
+        /// <param name="customizeIndex">0~9</param>
+        public void UpdateEarByCustomizeIndex(int customizeIndex)
+        {
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var firstEarRow =
+                sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EarCostume);
+            if (firstEarRow is null)
+            {
+                return;
+            }
+
+            UpdateEarById(firstEarRow.Id + customizeIndex);
+        }
+
+        private void UpdateEarById(int earCostumeId)
+        {
+            if (IsFullCostumeEquipped ||
+                SpineController is null)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(earCostumeId, out var row, true))
+            {
+                return;
+            }
+
+            var spriteLeft = Resources.Load<Sprite>($"{row.SpineResourcePath}_left");
+            var spriteRight = Resources.Load<Sprite>($"{row.SpineResourcePath}_right");
             SpineController.UpdateEar(spriteLeft, spriteRight);
         }
 
@@ -349,7 +383,7 @@ namespace Nekoyume.Game.Character
         }
 
         /// <summary>
-        /// 기존에 커스텀 가능한 헤어 컬러들은 헤어 코스튬 중에서 첫 번째 부터 6번째까지를 대상으로 합니다.
+        /// 기존에 커스텀 가능한 헤어 컬러들은 헤어 코스튬 중에서 첫 번째 부터 6번째 까지를 대상으로 합니다.
         /// </summary>
         /// <param name="customizeIndex">0~5</param>
         public void UpdateHairByCustomizeIndex(int customizeIndex)
