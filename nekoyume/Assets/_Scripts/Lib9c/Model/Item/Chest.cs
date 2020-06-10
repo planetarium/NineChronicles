@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
+using Libplanet;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 
@@ -14,6 +15,7 @@ namespace Nekoyume.Model.Item
         public Chest(MaterialItemSheet.Row data, List<RedeemRewardSheet.RewardInfo> rewards) : base(data)
         {
             Rewards = rewards ?? new List<RedeemRewardSheet.RewardInfo>();
+            ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
         }
 
         public Chest(Dictionary serialized) : base(serialized)
@@ -24,7 +26,7 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        public override IValue Serialize() =>
+        public sealed override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>()
             {
                 [(Text) "rewards"] = new List(Rewards.Select(r => r.Serialize())),

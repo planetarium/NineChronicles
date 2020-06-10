@@ -256,6 +256,7 @@ namespace Tests.EditMode
             Assert.AreEqual(chest2, ItemFactory.Deserialize(serialized2));
             Assert.AreNotEqual(serialized, serialized2);
             Assert.AreNotEqual(chest, chest2);
+            Assert.AreNotEqual(chest.ItemId, chest2.ItemId);
         }
     }
 }
