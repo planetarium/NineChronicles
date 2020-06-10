@@ -21,11 +21,7 @@ namespace Nekoyume.Helper
 
         private const string BuffIconDefaultPath = "UI/Icons/Buff/icon_buff_resurrection";
         private const string BuffIconPathFormat = "UI/Icons/Buff/{0}";
-
-        private const string PlayerSpineTextureEyeCostumeOpenDefaultPath = "Character/PlayerSpineTexture/EyeCostume/eye_red_open";
-        private const string PlayerSpineTextureEyeCostumeHalfDefaultPath = "Character/PlayerSpineTexture/EyeCostume/eye_red_half";
-        private const string PlayerSpineTextureEyeCostumePathFormat = "Character/PlayerSpineTexture/EyeCostume/{0}";
-
+        
         private const string PlayerSpineTextureTailCostumeDefaultPath = "Character/PlayerSpineTexture/TailCostume/tail_0001";
         private const string PlayerSpineTextureTailCostumePathFormat = "Character/PlayerSpineTexture/TailCostume/{0}";
 
@@ -85,28 +81,6 @@ namespace Nekoyume.Helper
 
             return Resources.Load<Sprite>(string.Format(BuffIconPathFormat, iconResource)) ??
                    Resources.Load<Sprite>(BuffIconDefaultPath);
-        }
-
-        public static Sprite GetPlayerSpineTextureEyeCostumeOpen(string eyeCostumeOpenResource)
-        {
-            if (string.IsNullOrEmpty(eyeCostumeOpenResource))
-            {
-                return Resources.Load<Sprite>(PlayerSpineTextureEyeCostumeOpenDefaultPath);
-            }
-
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyeCostumePathFormat, eyeCostumeOpenResource)) ??
-                   Resources.Load<Sprite>(PlayerSpineTextureEyeCostumeOpenDefaultPath);
-        }
-
-        public static Sprite GetPlayerSpineTextureEyeCostumeHalf(string eyeCostumeHalfResource)
-        {
-            if (string.IsNullOrEmpty(eyeCostumeHalfResource))
-            {
-                return Resources.Load<Sprite>(PlayerSpineTextureEyeCostumeHalfDefaultPath);
-            }
-
-            return Resources.Load<Sprite>(string.Format(PlayerSpineTextureEyeCostumePathFormat, eyeCostumeHalfResource)) ??
-                   Resources.Load<Sprite>(PlayerSpineTextureEyeCostumeHalfDefaultPath);
         }
 
         public static Sprite GetPlayerSpineTextureTailCostume(string tailCostumeResource)
