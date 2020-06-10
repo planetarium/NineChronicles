@@ -273,6 +273,7 @@ namespace Nekoyume.Game.Character
 
         // TODO: 최초에 캐릭터 생성 시에만 커스터마이징하는 개념으로 개발되었으나 그 기능이 코스튬과 같기 때문에 이 둘을 적절하게 리펙토링 할 필요가 있습니다.
         // 각 부위의 코스튬을 개발할 때 진행하면 좋겠습니다.
+
         #region Customize
 
         private void UpdateCustomize()
@@ -284,7 +285,7 @@ namespace Nekoyume.Game.Character
 
             UpdateEar(Model.earIndex);
             UpdateEye(Model.lensIndex);
-            UpdateHair(Model.hairIndex);
+            UpdateHairByCustomizeIndex(Model.hairIndex);
             UpdateTail(Model.tailIndex);
         }
 
@@ -326,30 +327,41 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateEye(eyeHalfSprite, eyeOpenSprite);
         }
 
-        /// <param name="colorIndex">0~5</param>
-        public void UpdateHair(int colorIndex)
+        /// <summary>
+        /// 기존에 커스텀 가능한 헤어 컬러들은 헤어 코스튬 중에서 첫 번째 부터 6번째까지를 대상으로 합니다.
+        /// </summary>
+        /// <param name="customizeColorIndex">0~5</param>
+        public void UpdateHairByCustomizeIndex(int customizeColorIndex)
+        {
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var firstHairRow = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
+            if (firstHairRow is null)
+            {
+                return;
+            }
+
+            UpdateHairById(firstHairRow.Id + customizeColorIndex);
+        }
+
+        private void UpdateHairById(int hairCostumeId)
         {
             if (SpineController is null)
             {
                 return;
             }
 
-            UpdateHair(CostumeSheet.GetHairResources(SpineController.hairTypeIndex, colorIndex));
-        }
-
-        private void UpdateHair(IReadOnlyCollection<string> hairResources)
-        {
-            if (hairResources is null ||
-                hairResources.Count < 6 ||
-                !SpineController)
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(hairCostumeId, out var row, true))
             {
                 return;
             }
 
-            var sprites = hairResources
-                .Select(SpriteHelper.GetPlayerSpineTextureHairCostume)
+            var sprites = Enumerable
+                .Range(0, SpineController.HairSlotCount)
+                .Select(index =>
+                    $"{row.SpineResourcePath}_{SpineController.hairTypeIndex:00}_{index + 1:00}")
+                .Select(Resources.Load<Sprite>)
                 .ToList();
-
             SpineController.UpdateHair(sprites);
         }
 
