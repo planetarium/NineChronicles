@@ -309,7 +309,7 @@ namespace Nekoyume.Game.Character
         }
 
         /// <summary>
-        /// 기존에 커스텀 가능한 헤어 컬러들은 헤어 코스튬 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
+        /// 기존에 커스텀 가능한 귀 디자인들은 EarCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
         /// </summary>
         /// <param name="customizeIndex">0~9</param>
         public void UpdateEarByCustomizeIndex(int customizeIndex)
@@ -363,6 +363,10 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        /// <summary>
+        /// 기존에 커스텀 가능한 눈 디자인들은 EyeCostume 중에서 첫 번째 부터 6번째 까지를 대상으로 합니다.
+        /// </summary>
+        /// <param name="customizeIndex">0~5</param>
         public void UpdateEyeByCustomizeIndex(int customizeIndex)
         {
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
@@ -415,7 +419,7 @@ namespace Nekoyume.Game.Character
         }
 
         /// <summary>
-        /// 기존에 커스텀 가능한 헤어 컬러들은 헤어 코스튬 중에서 첫 번째 부터 6번째 까지를 대상으로 합니다.
+        /// 기존에 커스텀 가능한 머리카 디자인들은 HairCostume 중에서 첫 번째 부터 6번째 까지를 대상으로 합니다.
         /// </summary>
         /// <param name="customizeIndex">0~5</param>
         public void UpdateHairByCustomizeIndex(int customizeIndex)
@@ -478,6 +482,10 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        /// <summary>
+        /// 기존에 커스텀 가능한 꼬리 디자인들은 TailCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
+        /// </summary>
+        /// <param name="customizeIndex">0~9</param>
         public void UpdateTailByCustomizeIndex(int customizeIndex)
         {
             if (IsFullCostumeEquipped)
