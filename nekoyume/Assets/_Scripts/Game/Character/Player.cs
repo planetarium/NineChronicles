@@ -189,7 +189,7 @@ namespace Nekoyume.Game.Character
                     ChangeSpine(costume.SpineResourcePath);
                     break;
                 case ItemSubType.HairCostume:
-                    // UpdateHair();
+                    UpdateHairById(costume.Id);
                     break;
                 case ItemSubType.TailCostume:
                     // UpdateTail();
@@ -214,14 +214,15 @@ namespace Nekoyume.Game.Character
                     // UpdateEye();
                     break;
                 case ItemSubType.FullCostume:
+                {
                     if (CharacterModel is Model.Player model)
                     {
                         EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
                     }
-
                     break;
+                }
                 case ItemSubType.HairCostume:
-                    // UpdateHair();
+                    UpdateHair();
                     break;
                 case ItemSubType.TailCostume:
                     // UpdateTail();
@@ -285,7 +286,7 @@ namespace Nekoyume.Game.Character
 
             UpdateEar(Model.earIndex);
             UpdateEye(Model.lensIndex);
-            UpdateHairByCustomizeIndex(Model.hairIndex);
+            UpdateHair();
             UpdateTail(Model.tailIndex);
         }
 
@@ -327,25 +328,51 @@ namespace Nekoyume.Game.Character
             SpineController.UpdateEye(eyeHalfSprite, eyeOpenSprite);
         }
 
+        private void UpdateHair()
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
+            var hairCostume =
+                Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.HairCostume);
+            if (hairCostume is null)
+            {
+                UpdateHairByCustomizeIndex(Model.hairIndex);
+            }
+            else
+            {
+                UpdateHairById(hairCostume.Id);
+            }
+        }
+
         /// <summary>
         /// 기존에 커스텀 가능한 헤어 컬러들은 헤어 코스튬 중에서 첫 번째 부터 6번째까지를 대상으로 합니다.
         /// </summary>
-        /// <param name="customizeColorIndex">0~5</param>
-        public void UpdateHairByCustomizeIndex(int customizeColorIndex)
+        /// <param name="customizeIndex">0~5</param>
+        public void UpdateHairByCustomizeIndex(int customizeIndex)
         {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
             var sheet = Game.instance.TableSheets.CostumeItemSheet;
-            var firstHairRow = sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
+            var firstHairRow =
+                sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
             if (firstHairRow is null)
             {
                 return;
             }
 
-            UpdateHairById(firstHairRow.Id + customizeColorIndex);
+            UpdateHairById(firstHairRow.Id + customizeIndex);
         }
 
         private void UpdateHairById(int hairCostumeId)
         {
-            if (SpineController is null)
+            if (IsFullCostumeEquipped ||
+                SpineController is null)
             {
                 return;
             }
@@ -420,10 +447,11 @@ namespace Nekoyume.Game.Character
                 //[TentuPlay] 아바타 레벨업 기록
                 new TPStashEvent().CharacterLevelUp(
                     player_uuid: Game.instance.Agent.Address.ToHex(),
-                    characterarchetype_slug: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                    level_from: (int)level,
-                    level_to: (int)Level
-                    );
+                    characterarchetype_slug: States.Instance.CurrentAvatarState.address.ToHex()
+                        .Substring(0, 4),
+                    level_from: (int) level,
+                    level_to: (int) Level
+                );
 
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
                     level);
