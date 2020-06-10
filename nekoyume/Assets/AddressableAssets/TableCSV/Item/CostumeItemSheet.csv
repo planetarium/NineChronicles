@@ -4,4 +4,9 @@ _elemental_type,Normal|Fire|Water|Land|Wind
 _resource_path,값이 비어 있으면 `item_sub_type`이 `FullCostume`일 때 `Character/FullCostume/{id}`가 자동으로 적용되고, 그렇지 않을 때 `Character/PlayerSpineTexture/{item_sub_type}/{id}`가 자동으로 적용됩니다.
 40100000,발키리,FullCostume,1,Normal,
 40100001,백사자,FullCostume,1,Normal,
-40200001,머리카락1,HairCostume,1,Normal,
+40200001,갈색 머리카락,HairCostume,1,Normal,
+40200002,파란색 머리카락,HairCostume,1,Normal,
+40200003,초록색 머리카락,HairCostume,1,Normal,
+40200004,빨간색 머리카락,HairCostume,1,Normal,
+40200005,흰색 머리카락,HairCostume,1,Normal,
+40200006,노란색 머리카락,HairCostume,1,Normal,
