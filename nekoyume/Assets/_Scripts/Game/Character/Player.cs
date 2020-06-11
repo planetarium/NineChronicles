@@ -274,7 +274,7 @@ namespace Nekoyume.Game.Character
         }
 
         #endregion
-        
+
         #region Customize
 
         private void UpdateCustomize()
