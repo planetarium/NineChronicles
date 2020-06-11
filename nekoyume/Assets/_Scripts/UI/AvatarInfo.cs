@@ -294,13 +294,14 @@ namespace Nekoyume.UI
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
 
-            Player player = null;
+            var player = Game.Game.instance.Stage.GetPlayer();
             switch (itemBase)
             {
+                default:
+                    return;
                 case Costume costume:
                 {
                     inventoryItem.EquippedEnabled.Value = true;
-                    player = Game.Game.instance.Stage.GetPlayer();
                     player.EquipCostume(costume);
 
                     break;
@@ -309,7 +310,6 @@ namespace Nekoyume.UI
                 {
                     inventoryItem.EquippedEnabled.Value = true;
                     UpdateStatViews();
-                    player = Game.Game.instance.Stage.GetPlayer();
                     switch (slot.ItemSubType)
                     {
                         case ItemSubType.Armor:
@@ -328,11 +328,6 @@ namespace Nekoyume.UI
                 }
             }
 
-            if (player is null)
-            {
-                return;
-            }
-
             Game.Event.OnUpdatePlayerEquip.OnNext(player);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
@@ -344,7 +339,7 @@ namespace Nekoyume.UI
             Unequip(slot, false);
         }
 
-        private void Unequip(EquipmentSlot slot, bool onlyData)
+        private void Unequip(EquipmentSlot slot, bool ignorePlayer)
         {
             if (_isShownFromBattle)
             {
@@ -368,9 +363,13 @@ namespace Nekoyume.UI
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
 
-            Player player = null;
+            var player = ignorePlayer
+                ? null
+                : Game.Game.instance.Stage.GetPlayer();
             switch (slotItem)
             {
+                default:
+                    return;
                 case Costume costume:
                 {
                     if (!inventory.SharedModel.TryGetCostume(costume, out var inventoryItem))
@@ -380,12 +379,11 @@ namespace Nekoyume.UI
 
                     inventoryItem.EquippedEnabled.Value = false;
 
-                    if (onlyData)
+                    if (ignorePlayer)
                     {
                         break;
                     }
 
-                    player = Game.Game.instance.Stage.GetPlayer();
                     player.UnequipCostume(costume);
 
                     break;
@@ -399,13 +397,13 @@ namespace Nekoyume.UI
 
                     inventoryItem.EquippedEnabled.Value = false;
 
-                    if (onlyData)
+                    if (ignorePlayer)
                     {
                         break;
                     }
 
                     UpdateStatViews();
-                    player = Game.Game.instance.Stage.GetPlayer();
+
                     switch (slot.ItemSubType)
                     {
                         case ItemSubType.Armor:
@@ -421,11 +419,6 @@ namespace Nekoyume.UI
 
                     break;
                 }
-            }
-
-            if (player is null)
-            {
-                return;
             }
 
             Game.Event.OnUpdatePlayerEquip.OnNext(player);

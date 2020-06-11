@@ -110,7 +110,7 @@ namespace Nekoyume.UI
 
         private void SubscribeOnUpdatePlayerStatus(Player player)
         {
-            if (!player ||
+            if (player is null ||
                 player is EnemyPlayer ||
                 player.Model is null)
             {
