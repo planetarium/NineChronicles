@@ -1,5 +1,7 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Libplanet.Net;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
 
@@ -13,9 +15,19 @@ namespace NineChronicles.Standalone
             StandaloneContext standaloneContext = null,
             CancellationToken cancellationToken = default)
         {
+            Progress<PreloadState> progress = null;
+            if (!(standaloneContext is null))
+            {
+                progress = new Progress<PreloadState>(state =>
+                {
+                    standaloneContext.PreloadStateSubject.OnNext(state);
+                });
+            }
+
             var service = new NineChroniclesNodeService(
                 properties.Libplanet,
                 properties.Rpc,
+                preloadProgress: progress,
                 ignoreBootstrapFailure: true);
 
             service.ConfigureStandaloneContext(standaloneContext);
