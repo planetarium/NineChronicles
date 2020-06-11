@@ -212,16 +212,17 @@ namespace Nekoyume.UI
             var game = Game.Game.instance;
             var playerModel = game.Stage.GetPlayer().Model;
 
+            nicknameText.text = string.Format(
+                NicknameTextFormat,
+                avatarState.level,
+                avatarState.NameWithHash);
+
             var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
                 costume.ItemSubType == ItemSubType.Title &&
                 costume.equipped);
             titleText.text = title is null
                 ? ""
                 : title.GetLocalizedName();
-            nicknameText.text = string.Format(
-                NicknameTextFormat,
-                avatarState.level,
-                avatarState.NameWithHash);
 
             cpText.text = CPHelper.GetCP(avatarState, game.TableSheets.CharacterSheet)
                 .ToString();
