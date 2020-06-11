@@ -20,6 +20,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI loadingText = null;
 
         private Player player;
+        private static readonly int Close1 = Animator.StringToHash("Close");
 
         public void Show(ArenaInfo enemyInfo)
         {
@@ -32,13 +33,9 @@ namespace Nekoyume.UI
             Show();
         }
 
-        public override void Show(bool ignoreShowAnimation = false)
-        {
-            base.Show(ignoreShowAnimation);
-        }
-
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            Animator.SetTrigger(Close1);
             base.Close(ignoreCloseAnimation);
         }
 
