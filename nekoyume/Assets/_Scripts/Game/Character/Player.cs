@@ -300,7 +300,7 @@ namespace Nekoyume.Game.Character
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EarCostume);
             if (earCostume is null)
             {
-                UpdateEarByCustomizeIndex(Model.hairIndex);
+                UpdateEarByCustomizeIndex(Model.earIndex);
             }
             else
             {
@@ -355,7 +355,7 @@ namespace Nekoyume.Game.Character
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EyeCostume);
             if (eyeCostume is null)
             {
-                UpdateEyeByCustomizeIndex(Model.hairIndex);
+                UpdateEyeByCustomizeIndex(Model.lensIndex);
             }
             else
             {
@@ -474,7 +474,7 @@ namespace Nekoyume.Game.Character
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.TailCostume);
             if (tailCostume is null)
             {
-                UpdateTailByCustomizeIndex(Model.hairIndex);
+                UpdateTailByCustomizeIndex(Model.tailIndex);
             }
             else
             {
