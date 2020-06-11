@@ -144,6 +144,16 @@ namespace Nekoyume.Game.Character
             return SpineController.BoxCollider;
         }
 
+        protected override void InitializeHpBar()
+        {
+            base.InitializeHpBar();
+
+            var title = Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            HPBar.SetTitle(title);
+        }
+
         #region AttackPoint & HitPoint
 
         protected override void UpdateHitPoint()
