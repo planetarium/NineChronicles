@@ -742,40 +742,6 @@ namespace Nekoyume.BlockChain
 
         private void ResponseOpenChest(ActionBase.ActionEvaluation<OpenChest> eval)
         {
-            var avatarAddress = eval.Action.avatarAddress;
-            var prevAvatarState = eval.PreviousStates.GetAvatarState(avatarAddress);
-            var tableSheets = Game.Game.instance.TableSheets;
-            foreach (var pair in eval.Action.chestList)
-            {
-                var itemId = pair.Key;
-                var count = pair.Value;
-                if (prevAvatarState.inventory.TryGetMaterial(itemId, out var inventoryItem) && inventoryItem.count >= count)
-                {
-                    var chest = (Chest) inventoryItem.item;
-                    foreach (var info in chest.Rewards)
-                    {
-                        switch (info.Type)
-                        {
-                            case RewardType.Item:
-                                var itemRow =
-                                    tableSheets.MaterialItemSheet.Values.FirstOrDefault(r => r.Id == info.ItemId);
-                                if (itemRow is null)
-                                {
-                                    continue;
-                                }
-
-                                LocalStateModifier.RemoveMaterial(avatarAddress, itemRow.ItemId, info.Quantity, false);
-                                break;
-                            case RewardType.Gold:
-                                LocalStateModifier.ModifyAgentGold(eval.Signer, -info.Quantity);
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(info.Type), info.Type, null);
-                        }
-                    }
-                    LocalStateModifier.RemoveItem(avatarAddress, chest.ItemId, count);
-                }
-            }
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }

@@ -608,10 +608,26 @@ namespace Nekoyume.UI
                 {
                     [chest.ItemId] = 1,
                 };
-                Game.Game.instance.ActionManager.OpenChest(dict);
                 var tableSheets = Game.Game.instance.TableSheets;
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var agentAddress = States.Instance.AgentState.address;
                 var items = new List<(ItemBase, int)>();
-                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, chest.ItemId, 1);
+                Game.Game.instance.ActionManager.OpenChest(dict)
+                    .Subscribe(_ =>
+                        {
+                            foreach (var pair in items)
+                            {
+                                var (itemBase, count) = pair;
+                                var material = (Nekoyume.Model.Item.Material) itemBase;
+                                LocalStateModifier.RemoveMaterial(avatarAddress, material.ItemId, count, false);
+                            }
+                            foreach (var info in chest.Rewards.Where(info => info.Type == RewardType.Gold))
+                            {
+                                LocalStateModifier.ModifyAgentGold(agentAddress, -info.Quantity);
+                            }
+                            LocalStateModifier.AddItem(avatarAddress, chest.ItemId, 1);
+                        }
+                    );
                 foreach (var info in chest.Rewards)
                 {
                     switch (info.Type)
@@ -625,20 +641,19 @@ namespace Nekoyume.UI
                             }
 
                             var material = ItemFactory.CreateMaterial(itemRow);
-                            LocalStateModifier.AddMaterial(States.Instance.CurrentAvatarState.address, material.ItemId,
+                            LocalStateModifier.AddMaterial(avatarAddress, material.ItemId,
                                 info.Quantity, false);
                             items.Add((material, info.Quantity));
                             break;
                         case RewardType.Gold:
-                            LocalStateModifier.ModifyAgentGold(States.Instance.AgentState.address, info.Quantity);
+                            LocalStateModifier.ModifyAgentGold(agentAddress, info.Quantity);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(info.Type), info.Type, null);
                     }
                 }
-                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, chest.ItemId, 1);
-
                 Find<RedeemRewardPopup>().Pop(items, tableSheets);
+                LocalStateModifier.RemoveItem(avatarAddress, chest.ItemId, 1);
             }
         }
     }
