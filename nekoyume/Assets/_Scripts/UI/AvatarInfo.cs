@@ -44,6 +44,7 @@ namespace Nekoyume.UI
         private RectTransform avatarPosition = null;
 
         private EquipmentSlot _weaponSlot;
+        private EquipmentSlot _armorSlot;
         private bool _isShownFromBattle;
         private Player _player;
         private Vector3 _previousAvatarPosition;
@@ -62,6 +63,11 @@ namespace Nekoyume.UI
             if (!equipmentSlots.TryGetSlot(ItemSubType.Weapon, out _weaponSlot))
             {
                 throw new Exception($"Not found {ItemSubType.Weapon} slot in {equipmentSlots}");
+            }
+
+            if (!equipmentSlots.TryGetSlot(ItemSubType.Armor, out _armorSlot))
+            {
+                throw new Exception($"Not found {ItemSubType.Armor} slot in {equipmentSlots}");
             }
 
             inventory.SharedModel.State
@@ -304,7 +310,7 @@ namespace Nekoyume.UI
 
                     break;
                 }
-                case Equipment equipment:
+                case Equipment _:
                 {
                     inventoryItem.EquippedEnabled.Value = true;
                     UpdateStatViews();
@@ -313,7 +319,7 @@ namespace Nekoyume.UI
                     {
                         case ItemSubType.Armor:
                         {
-                            var armor = (Armor) equipment;
+                            var armor = (Armor) _armorSlot.Item;
                             var weapon = (Weapon) _weaponSlot.Item;
                             player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
@@ -378,7 +384,10 @@ namespace Nekoyume.UI
                     }
 
                     var player = Game.Game.instance.Stage.GetPlayer();
-                    player.UnequipCostume(costume);
+                    player.UnequipCostume(costume, true);
+                    var armor = (Armor) _armorSlot.Item;
+                    var weapon = (Weapon) _weaponSlot.Item;
+                    player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
 
                     break;
                 }
@@ -402,12 +411,13 @@ namespace Nekoyume.UI
                     {
                         case ItemSubType.Armor:
                         {
+                            var armor = (Armor) _armorSlot.Item;
                             var weapon = (Weapon) _weaponSlot.Item;
-                            player.EquipEquipmentsAndUpdateCustomize(null, weapon);
+                            player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
                         }
                         case ItemSubType.Weapon:
-                            player.EquipWeapon((Weapon) slotItem);
+                            player.EquipWeapon((Weapon) _weaponSlot.Item);
                             break;
                     }
 
