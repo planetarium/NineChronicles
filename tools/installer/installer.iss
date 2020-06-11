@@ -51,5 +51,11 @@ Filename: "{tmp}\windowsdesktop-runtime-3.1.3-win-x64.exe"
 [Run]
 Filename: "{app}\Nine Chronicles Updater.exe"
 
+[InstallDelete] 
+Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"  
+Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles Updater"
+
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
+Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"  
+Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles Updater"
