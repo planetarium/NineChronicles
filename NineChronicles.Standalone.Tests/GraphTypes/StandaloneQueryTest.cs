@@ -112,38 +112,12 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             var apv = AppProtocolVersion.Sign(apvPrivateKey, 0);
             var genesisBlock = BlockChain<EmptyAction>.MakeGenesisBlock();
 
-            LibplanetNodeService<T> CreateLibplanetNodeService<T>(Block<T> genesisBlock, AppProtocolVersion appProtocolVersion, IEnumerable<Peer> peers = null)
-                where T : IAction, new()
-            {
-                var properties = new LibplanetNodeServiceProperties<T>
-                {
-                    Host = System.Net.IPAddress.Loopback.ToString(),
-                    AppProtocolVersion = appProtocolVersion,
-                    GenesisBlock = genesisBlock,
-                    StoreStatesCacheSize = 2,
-                    PrivateKey = new PrivateKey(),
-                    Port = null,
-                    MinimumDifficulty = 1024,
-                    NoMiner = true,
-                    Render = false,
-                    Peers = peers ?? ImmutableHashSet<Peer>.Empty,
-                    TrustedAppProtocolVersionSigners = ImmutableHashSet<PublicKey>.Empty.Add(apvPrivateKey.PublicKey)
-                };
-
-                return new LibplanetNodeService<T>(
-                    properties,
-                    new BlockPolicy<T>(),
-                    async (chain, swarm, privateKey, cancellationToken) => { },
-                    null);
-            }
-
-
             // 에러로 인하여 NineChroniclesNodeService 를 사용할 수 없습니다. https://git.io/JfS0M
             // 따라서 LibplanetNodeService로 비슷한 환경을 맞춥니다.
             // 1. 노드를 생성합니다.
-            var seedNode = CreateLibplanetNodeService<EmptyAction>(genesisBlock, apv);
+            var seedNode = CreateLibplanetNodeService<EmptyAction>(genesisBlock, apv, apvPrivateKey.PublicKey);
             await StartAsync(seedNode.Swarm, cts.Token);
-            var service = CreateLibplanetNodeService<EmptyAction>(genesisBlock, apv, new [] { seedNode.Swarm.AsPeer });
+            var service = CreateLibplanetNodeService<EmptyAction>(genesisBlock, apv, apvPrivateKey.PublicKey, peers: new [] { seedNode.Swarm.AsPeer });
 
             // 2. NineChroniclesNodeService.ConfigureStandaloneContext(standaloneContext)를 호출합니다.
             // BlockChain 객체 공유 및 PreloadEnded, BootstrapEnded 이벤트 훅의 처리를 합니다.
@@ -197,17 +171,5 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             var passphrase = CreateRandomBase64String();
             return (ProtectedPrivateKey.Protect(new PrivateKey(), passphrase), passphrase);
         }
-
-        private async Task<Task> StartAsync<T>(
-            Swarm<T> swarm,
-            CancellationToken cancellationToken = default
-        )
-            where T : IAction, new()
-        {
-            Task task = swarm.StartAsync(200, 200, cancellationToken);
-            await swarm.WaitForRunningAsync();
-            return task;
-        }
-
     }
 }

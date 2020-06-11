@@ -61,41 +61,17 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             var apv = AppProtocolVersion.Sign(apvPrivateKey, 0);
             var genesisBlock = BlockChain<EmptyAction>.MakeGenesisBlock();
 
-            LibplanetNodeService<T> CreateLibplanetNodeService<T>(Block<T> genesisBlock, AppProtocolVersion appProtocolVersion, Progress<PreloadState> preloadProgress = null, IEnumerable<Peer> peers = null)
-                where T : IAction, new()
-            {
-                var properties = new LibplanetNodeServiceProperties<T>
-                {
-                    Host = System.Net.IPAddress.Loopback.ToString(),
-                    AppProtocolVersion = appProtocolVersion,
-                    GenesisBlock = genesisBlock,
-                    StoreStatesCacheSize = 2,
-                    PrivateKey = new PrivateKey(),
-                    Port = null,
-                    MinimumDifficulty = 1024,
-                    NoMiner = true,
-                    Render = false,
-                    Peers = peers ?? ImmutableHashSet<Peer>.Empty,
-                    TrustedAppProtocolVersionSigners = ImmutableHashSet<PublicKey>.Empty.Add(apvPrivateKey.PublicKey)
-                };
-
-                return new LibplanetNodeService<T>(
-                    properties,
-                    new BlockPolicy<T>(),
-                    async (chain, swarm, privateKey, cancellationToken) => { },
-                    preloadProgress);
-            }
-
             // 에러로 인하여 NineChroniclesNodeService 를 사용할 수 없습니다. https://git.io/JfS0M
             // 따라서 LibplanetNodeService로 비슷한 환경을 맞춥니다.
             // 1. 노드를 생성합니다.
-            var seedNode = CreateLibplanetNodeService<EmptyAction>(genesisBlock, apv);
+            var seedNode = CreateLibplanetNodeService<EmptyAction>(genesisBlock, apv, apvPrivateKey.PublicKey);
             await StartAsync(seedNode.Swarm, cts.Token);
 
             // 2. Progress를 넘겨 preloadProgress subscription 과 연결합니다.
             var service = CreateLibplanetNodeService<EmptyAction>(
                 genesisBlock,
                 apv,
+                apvPrivateKey.PublicKey,
                 new Progress<PreloadState>(state =>
                 {
                     StandaloneContextFx.PreloadStateSubject.OnNext(state);
@@ -146,17 +122,6 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
 
             await seedNode.StopAsync(cts.Token);
             await service.StopAsync(cts.Token);
-        }
-
-        private async Task<Task> StartAsync<T>(
-            Swarm<T> swarm,
-            CancellationToken cancellationToken = default
-        )
-            where T : IAction, new()
-        {
-            Task task = swarm.StartAsync(200, 200, cancellationToken);
-            await swarm.WaitForRunningAsync();
-            return task;
         }
     }
 }
