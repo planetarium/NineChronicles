@@ -315,7 +315,6 @@ namespace Nekoyume.UI
                 case StateType.CombineEquipment:
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
-                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
 
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -330,11 +329,11 @@ namespace Nekoyume.UI
                     equipmentRecipe.ShowCellViews();
                     Animator.Play("Show", -1, 0.0f);
                     OnTweenRecipe();
+                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
                     break;
                 case StateType.CombineConsumable:
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
-                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
 
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -349,6 +348,7 @@ namespace Nekoyume.UI
                     consumableRecipe.ShowCellViews();
                     Animator.Play("Show", -1, 0.0f);
                     OnTweenRecipe();
+                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
                     break;
                 case StateType.EnhanceEquipment:
                     _selectedSpeechBubble = speechBubbleForUpgrade;
