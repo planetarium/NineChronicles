@@ -1,7 +1,9 @@
+using System.Linq;
 using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using TMPro;
 using UniRx;
@@ -27,6 +29,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI levelText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI titleText = null;
 
         [SerializeField]
         private TextMeshProUGUI nameAndHashText = null;
@@ -79,6 +84,13 @@ namespace Nekoyume.UI
         {
             avatarImage.sprite = SpriteHelper.GetCharacterIcon(avatarState.characterId);
             levelText.text = $"<color=#B38271>LV.{avatarState.level}</color>";
+
+            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            titleText.text = title is null
+                ? ""
+                : title.GetLocalizedNonColoredName();
             nameAndHashText.text = avatarState.NameWithHash;
             _selectedAvatarState = avatarState;
             var currentAvatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
