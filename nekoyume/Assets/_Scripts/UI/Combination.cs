@@ -329,6 +329,7 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(false);
                     equipmentRecipe.ShowCellViews();
                     Animator.Play("Show", -1, 0.0f);
+                    OnTweenRecipe();
                     break;
                 case StateType.CombineConsumable:
                     _selectedSpeechBubble = speechBubbleForEquipment;
@@ -347,6 +348,7 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(true);
                     consumableRecipe.ShowCellViews();
                     Animator.Play("Show", -1, 0.0f);
+                    OnTweenRecipe();
                     break;
                 case StateType.EnhanceEquipment:
                     _selectedSpeechBubble = speechBubbleForUpgrade;
@@ -370,6 +372,11 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombinationConfirm:
+                    if (AnimationState == AnimationStateType.Showing)
+                    {
+                        break;
+                    }
+
                     _toggleGroup.SetToggledOffAll();
                     OnTweenRecipe();
 
