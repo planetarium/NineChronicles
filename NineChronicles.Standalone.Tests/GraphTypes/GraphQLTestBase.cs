@@ -11,6 +11,7 @@ using Libplanet.KeyStore;
 using Libplanet.Store;
 using Nekoyume.Action;
 using NineChronicles.Standalone.GraphTypes;
+using Serilog;
 using Xunit.Abstractions;
 using RewardGold = NineChronicles.Standalone.Tests.Common.Actions.RewardGold;
 
@@ -22,6 +23,8 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
 
         public GraphQLTestBase(ITestOutputHelper output)
         {
+            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().CreateLogger();
+
             _output = output;
 
             var store = new DefaultStore(null);

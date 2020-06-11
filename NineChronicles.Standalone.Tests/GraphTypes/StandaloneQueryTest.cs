@@ -21,7 +21,6 @@ using Libplanet.Standalone.Hosting;
 using Libplanet.Store;
 using LiteDB;
 using NineChronicles.Standalone.Tests.Common.Actions;
-using Serilog;
 using Xunit;
 using Xunit.Abstractions;
 using IPAddress = Org.BouncyCastle.Utilities.Net.IPAddress;
@@ -32,7 +31,6 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
     {
         public StandaloneQueryTest(ITestOutputHelper output) : base(output)
         {
-            Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().CreateLogger();
         }
 
         [Fact]
