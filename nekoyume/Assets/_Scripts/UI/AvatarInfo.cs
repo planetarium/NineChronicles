@@ -29,6 +29,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
+        private TextMeshProUGUI titleText = null;
+
+        [SerializeField]
         private TextMeshProUGUI cpText = null;
 
         [SerializeField]
@@ -209,6 +212,12 @@ namespace Nekoyume.UI
             var game = Game.Game.instance;
             var playerModel = game.Stage.GetPlayer().Model;
 
+            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            titleText.text = title is null
+                ? ""
+                : title.GetLocalizedName();
             nicknameText.text = string.Format(
                 NicknameTextFormat,
                 avatarState.level,
@@ -302,6 +311,11 @@ namespace Nekoyume.UI
                     var player = Game.Game.instance.Stage.GetPlayer();
                     player.EquipCostume(costume);
 
+                    if (costume.ItemSubType == ItemSubType.Title)
+                    {
+                        titleText.text = costume.GetLocalizedName();
+                    }
+
                     break;
                 }
                 case Equipment equipment:
@@ -379,6 +393,11 @@ namespace Nekoyume.UI
 
                     var player = Game.Game.instance.Stage.GetPlayer();
                     player.UnequipCostume(costume);
+
+                    if (costume.ItemSubType == ItemSubType.Title)
+                    {
+                        titleText.text = "";
+                    }
 
                     break;
                 }
