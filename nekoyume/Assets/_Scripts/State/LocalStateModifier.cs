@@ -602,7 +602,6 @@ namespace Nekoyume.State
 
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
 
-            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
         }
 
         public static void RemoveMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
