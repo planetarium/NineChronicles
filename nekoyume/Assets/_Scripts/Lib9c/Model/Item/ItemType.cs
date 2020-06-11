@@ -21,6 +21,7 @@ namespace Nekoyume.Model.Item
         EarCostume,
         EyeCostume,
         TailCostume,
+        Title,
 
         // Equipment
         Weapon,

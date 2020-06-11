@@ -177,6 +177,7 @@ namespace Nekoyume.Model.Item
                 case ItemSubType.FullCostume:
                 case ItemSubType.HairCostume:
                 case ItemSubType.TailCostume:
+                case ItemSubType.Title:
                     return new CostumeItemSheet.Row(serialized);
                 // Equipment
                 case ItemSubType.Weapon:

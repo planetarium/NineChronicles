@@ -176,7 +176,6 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
@@ -194,6 +193,9 @@ namespace Nekoyume.Game.Character
                 case ItemSubType.TailCostume:
                     UpdateTailById(costume.Id);
                     break;
+                case ItemSubType.Title:
+                    // TODO: 구현!
+                    break;
             }
         }
 
@@ -204,7 +206,6 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
@@ -225,6 +226,9 @@ namespace Nekoyume.Game.Character
                     break;
                 case ItemSubType.TailCostume:
                     UpdateTail();
+                    break;
+                case ItemSubType.Title:
+                    // TODO: 구현!
                     break;
             }
         }
@@ -270,10 +274,7 @@ namespace Nekoyume.Game.Character
         }
 
         #endregion
-
-        // TODO: 최초에 캐릭터 생성 시에만 커스터마이징하는 개념으로 개발되었으나 그 기능이 코스튬과 같기 때문에 이 둘을 적절하게 리펙토링 할 필요가 있습니다.
-        // 각 부위의 코스튬을 개발할 때 진행하면 좋겠습니다.
-
+        
         #region Customize
 
         private void UpdateCustomize()

@@ -58,6 +58,7 @@
             public const int CharacterEarCostumeSlot = IsEditor ? 1 : 2;
             public const int CharacterEyeCostumeSlot = IsEditor ? 1 : 2;
             public const int CharacterTailCostumeSlot = IsEditor ? 1 : 2;
+            public const int CharacterTitleSlot = 1;
 
             #endregion
 
