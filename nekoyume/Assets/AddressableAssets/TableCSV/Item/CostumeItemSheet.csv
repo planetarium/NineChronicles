@@ -1,10 +1,10 @@
-id,_name,item_sub_type,grade,elemental_type,resource_path
+id,_name,item_sub_type,grade,elemental_type,spine_resource_path
 _item_sub_type,FullCostume|HairCostume|EarCostume|EyeCostume|TailCostume|Title
 _elemental_type,Normal|Fire|Water|Land|Wind
-_resource_path,값이 비어 있으면 `item_sub_type`에 따라서 자동 설정됩니다.
-_resource_path,`FullCostume`: `Character/{item_sub_type}/{id}`
-_resource_path,`Title`: ``
-_resource_path,`default`: `Character/PlayerSpineTexture/{item_sub_type}/{id}`
+_spine_resource_path,값이 비어 있으면 `item_sub_type`에 따라서 자동 설정됩니다.
+_spine_resource_path,`FullCostume`: `Character/{item_sub_type}/{id}`
+_spine_resource_path,`Title`: ``
+_spine_resource_path,`default`: `Character/PlayerSpineTexture/{item_sub_type}/{id}`
 40100000,발키리,FullCostume,1,Normal,
 40100001,백사자,FullCostume,1,Normal,
 40200001,갈색 머리카락,HairCostume,1,Normal,
