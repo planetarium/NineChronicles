@@ -58,11 +58,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void TweenCellViewInOption(RecipeCellView view)
+        public void TweenCellViewInOption(RecipeCellView view, System.Action onCompleted)
         {
             var rect = view.transform as RectTransform;
 
             optionCellViewTweener.SetBeginRect(rect);
+            optionCellViewTweener.onCompleted = onCompleted;
             optionCellViewTweener.Play();
         }
     }

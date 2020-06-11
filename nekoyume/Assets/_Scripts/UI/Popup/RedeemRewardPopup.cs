@@ -43,23 +43,18 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        public void Pop(List<RedeemRewardSheet.RewardInfo> rewards, TableSheets tableSheets)
+        public void Pop(Chest chest, TableSheets tableSheets)
         {
             for (var i = 0; i < itemViews.Length; i++)
             {
                 var view = itemViews[i];
                 view.gameObject.SetActive(false);
-                if (i < rewards.Count)
+                // 임시로 상자 1개만 설정
+                if (i == 0)
                 {
-                    var info = rewards[i];
-                    if (info.Type == RewardType.Item)
-                    {
-                        var itemRow = tableSheets.MaterialItemSheet.Values.First(r => r.Id == info.ItemId);
-                        var item = ItemFactory.CreateMaterial(itemRow);
-                        var countableItem = new CountableItem(item, info.Quantity);
-                        view.SetData(countableItem);
-                        view.gameObject.SetActive(true);
-                    }
+                    var countableItem = new CountableItem(chest, 1);
+                    view.SetData(countableItem);
+                    view.gameObject.SetActive(true);
                 }
             }
 
