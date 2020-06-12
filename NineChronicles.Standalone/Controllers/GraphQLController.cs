@@ -15,38 +15,16 @@ namespace NineChronicles.Standalone.Controllers
     [ApiController]
     public class GraphQLController : ControllerBase
     {
-        [HttpPost("/graphql/")]
-        public async Task<IActionResult> GetGraphQLResult(
-            [FromBody] GraphQLBody body
-        )
+        private StandaloneContext StandaloneContext { get; }
+
+        public const string RunStandaloneEndpoint = "/run-standalone";
+
+        public GraphQLController(StandaloneContext standaloneContext)
         {
-            var schema = new Schema
-            {
-                Mutation = new Mutation(),
-                Query = new Query(),
-            };
-
-            var json = await schema.ExecuteAsync(_ =>
-            {
-                // _.UserContext = _context;
-                _.Query = body.Query;
-                _.ThrowOnUnhandledException = true;
-                if (body.Variables != null)
-                {
-                    _.Inputs = body.Variables.ToString(Newtonsoft.Json.Formatting.None).ToInputs();
-                }
-            });
-            return Ok(json);
-
+            StandaloneContext = standaloneContext;
         }
 
-        [HttpGet("/health-check")]
-        public IActionResult HealthCheck()
-        {
-            return Ok("Hello!");
-        }
-
-        [HttpPost("/run-standalone")]
+        [HttpPost(RunStandaloneEndpoint)]
         public IActionResult RunStandAlone(
             [FromBody] ServiceBindingProperties properties
         )
@@ -95,7 +73,8 @@ namespace NineChronicles.Standalone.Controllers
                 StandaloneServices.RunHeadlessAsync(
                     nineChroniclesProperties,
                     hostBuilder,
-                    NodeCancellationContext.CancellationToken);
+                    StandaloneContext,
+                    StandaloneContext.CancellationToken);
             }
             catch (Exception e)
             {
