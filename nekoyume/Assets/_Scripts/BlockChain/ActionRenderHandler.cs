@@ -300,7 +300,7 @@ namespace Nekoyume.BlockChain
         private void RedeemCode()
         {
             _renderer.EveryRender<Action.RedeemCode>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRedeemCode).AddTo(_disposables);
         }
@@ -331,13 +331,15 @@ namespace Nekoyume.BlockChain
             //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             var agentAddress = eval.Signer;
-            var agentState = eval.OutputStates.GetAgentState(agentAddress);
+            var qty = eval.OutputStates.GetAvatarState(avatarAddress).inventory.Materials
+                .Count(i => i.ItemSubType == ItemSubType.Hourglass);
+            var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
+                .Count(i => i.ItemSubType == ItemSubType.Hourglass);
             new TPStashEvent().CurrencyUse(
                 player_uuid: agentAddress.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)agentState.modifiedGold,
-                currency_total_quantity: (float)(agentState.gold),
-                //currency_total_quantity: (float)(agentState.gold - agentState.modifiedGold),
+                currency_slug: "hourglass",
+                currency_quantity: (float) (prevQty - qty),
+                currency_total_quantity: (float) qty,
                 reference_entity: "items_consumables",
                 reference_category_slug: "consumables_rapid_combination",
                 reference_slug: slot.Result.itemUsable.Id.ToString());
@@ -679,29 +681,42 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
         {
-            var code = eval.Action.code;
-            RedeemCodeState redeemCodeState = null;
-            if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+            var key = "UI_REDEEM_CODE_INVALID_CODE";
+            if (eval.Exception is null)
             {
-                redeemCodeState = new RedeemCodeState(d);
+                var code = eval.Action.code;
+                RedeemCodeState redeemCodeState = null;
+                if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+                {
+                    redeemCodeState = new RedeemCodeState(d);
+                }
+
+                if (redeemCodeState is null)
+                {
+                    return;
+                }
+
+                if (redeemCodeState.Map.TryGetValue(code, out var reward))
+                {
+                    var tableSheets = Game.Game.instance.TableSheets;
+                    var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
+                    var rewards = row.Rewards;
+                    var chestRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+                    var chest = ItemFactory.CreateChest(chestRow, rewards);
+                    Widget.Find<RedeemRewardPopup>().Pop(chest, tableSheets);
+                    key = "UI_REDEEM_CODE_SUCCESS";
+                    UpdateCurrentAvatarState(eval);
+                }
+            }
+            else
+            {
+                if (eval.Exception.InnerException is DuplicateRedeemException)
+                {
+                    key = "UI_REDEEM_CODE_ALREADY_USE";
+                }
             }
 
-            if (redeemCodeState is null)
-            {
-                return;
-            }
-
-            var msg = "Invalid Redeem Code.";
-
-            if (redeemCodeState.Map.TryGetValue(code, out var reward))
-            {
-                var tableSheets = Game.Game.instance.TableSheets;
-                var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
-                var rewards = row.Rewards;
-                Widget.Find<RedeemRewardPopup>().Pop(rewards, tableSheets);
-                msg = "Response Redeem Code.";
-                UpdateCurrentAvatarState(eval);
-            }
+            var msg = LocalizationManager.Localize(key);
             UI.Notification.Push(MailType.System, msg);
         }
 

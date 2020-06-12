@@ -392,7 +392,7 @@ namespace Nekoyume.BlockChain
         {
             var action = new ChargeActionPoint
             {
-                avatarAddress = States.Instance.CurrentAvatarState.agentAddress
+                avatarAddress = States.Instance.CurrentAvatarState.address
             };
             ProcessAction(action);
 

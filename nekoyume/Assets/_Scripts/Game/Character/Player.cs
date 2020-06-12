@@ -197,7 +197,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UnequipCostume(Costume costume)
+        public void UnequipCostume(Costume costume, bool ignoreEquipmentsAndCustomize = false)
         {
             if (costume is null)
             {
@@ -214,7 +214,8 @@ namespace Nekoyume.Game.Character
                     // UpdateEye();
                     break;
                 case ItemSubType.FullCostume:
-                    if (CharacterModel is Model.Player model)
+                    if (!ignoreEquipmentsAndCustomize &&
+                        CharacterModel is Model.Player model)
                     {
                         EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
                     }

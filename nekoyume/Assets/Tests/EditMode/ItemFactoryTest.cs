@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Nekoyume;
@@ -53,6 +54,21 @@ namespace Tests.EditMode
             Assert.IsNotNull(consumable);
             Assert.AreEqual(consumable.ItemId, guid);
             Assert.AreEqual(consumable.RequiredBlockIndex, 1);
+        }
+
+        [Test]
+        public void CreateChest()
+        {
+            var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+            var chest = ItemFactory.CreateChest(row, null);
+            Assert.IsNotNull(chest);
+            Assert.AreEqual(chest.Rewards, new List<RedeemRewardSheet.RewardInfo>());
+
+            var rewards = _tableSheets.RedeemRewardSheet.Values.First().Rewards;
+            var chest2 = ItemFactory.CreateChest(row, rewards);
+            Assert.IsNotNull(chest2);
+            Assert.AreEqual(chest2.Rewards, rewards);
+            Assert.AreNotEqual(chest, chest2);
         }
 
         [Test]
@@ -218,6 +234,28 @@ namespace Tests.EditMode
             var deserialize = ItemFactory.Deserialize(legacy);
             Assert.AreEqual(costume, deserialize);
             Assert.AreEqual(costume, ItemFactory.Deserialize(serialized));
+        }
+
+        [Test]
+        public void SerializeChest()
+        {
+            var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+            var chest = ItemFactory.CreateChest(row, null);
+            Assert.IsNotNull(chest);
+            Assert.AreEqual(chest.Rewards, new List<RedeemRewardSheet.RewardInfo>());
+            var serialized = (Dictionary) chest.Serialize();
+            Assert.IsTrue(serialized.ContainsKey((Text) "rewards"));
+            Assert.AreEqual(chest, ItemFactory.Deserialize(serialized));
+
+            var rewards = _tableSheets.RedeemRewardSheet.Values.First().Rewards;
+            var chest2 = ItemFactory.CreateChest(row, rewards);
+            Assert.IsNotNull(chest2);
+            Assert.AreEqual(chest2.Rewards, rewards);
+            var serialized2 = (Dictionary) chest2.Serialize();
+            Assert.IsTrue(serialized2.ContainsKey((Text) "rewards"));
+            Assert.AreEqual(chest2, ItemFactory.Deserialize(serialized2));
+            Assert.AreNotEqual(serialized, serialized2);
+            Assert.AreNotEqual(chest, chest2);
         }
     }
 }
