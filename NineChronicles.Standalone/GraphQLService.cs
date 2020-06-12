@@ -1,10 +1,13 @@
 using System.Threading;
 using System.Threading.Tasks;
+using GraphQL.Server;
+using Libplanet.KeyStore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NineChronicles.Standalone.GraphTypes;
 using NineChronicles.Standalone.Properties;
 
 namespace NineChronicles.Standalone
@@ -27,7 +30,15 @@ namespace NineChronicles.Standalone
 
             await hostBuilder.ConfigureWebHostDefaults(builder =>
             {
+                var standaloneContext = new StandaloneContext
+                {
+                    KeyStore = Web3KeyStore.DefaultKeyStore,
+                    CancellationToken = cancellationToken,
+                };
+
                 builder.UseStartup<GraphQLStartup>();
+                builder.ConfigureServices(
+                    services => services.AddSingleton(standaloneContext));
                 builder.UseUrls($"http://{listenHost}:{listenPort}/");
             }).RunConsoleAsync(cancellationToken);
         }
@@ -43,8 +54,6 @@ namespace NineChronicles.Standalone
 
             public void ConfigureServices(IServiceCollection services)
             {
-                services.AddControllers();
-
                 services.AddCors(options =>
                     options.AddPolicy(
                         "AllowAllOrigins",
@@ -54,6 +63,22 @@ namespace NineChronicles.Standalone
                                 .AllowAnyHeader()
                     )
                 );
+
+                services.AddHealthChecks();
+
+                services.AddControllers();
+
+                services
+                    .AddSingleton<StandaloneSchema>()
+                    .AddGraphQL((provider, options) =>
+                    {
+                        options.EnableMetrics = true;
+                        options.ExposeExceptions = true;
+                    })
+                    .AddSystemTextJson()
+                    .AddWebSockets()
+                    .AddDataLoader()
+                    .AddGraphTypes(typeof(StandaloneSchema));
             }
 
             public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -70,7 +95,16 @@ namespace NineChronicles.Standalone
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.MapControllers();
+                    endpoints.MapHealthChecks("/health-check");
                 });
+
+                // WebSocket으로 운영합니다.
+                app.UseWebSockets();
+                app.UseGraphQLWebSockets<StandaloneSchema>("/graphql");
+                app.UseGraphQL<StandaloneSchema>("/graphql");
+
+                // /ui/playground 옵션을 통해서 Playground를 사용할 수 있습니다.
+                app.UseGraphQLPlayground();
             }
         }
 
