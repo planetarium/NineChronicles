@@ -40,12 +40,12 @@ namespace Tests.EditMode
         }
 
         [Test]
-        public void RedeemThrowKeyNotFoundException()
+        public void RedeemThrowInvalidRedeemCodeException()
         {
             var state = new RedeemCodeState(_sheet);
             var key = new PrivateKey().PublicKey;
             Assert.IsFalse(state.Map.ContainsKey(key));
-            Assert.Throws<KeyNotFoundException>(() => state.Redeem(new PrivateKey().PublicKey, new Address()));
+            Assert.Throws<InvalidRedeemCodeException>(() => state.Redeem(new PrivateKey().PublicKey, new Address()));
         }
 
         [Test]
@@ -58,14 +58,14 @@ namespace Tests.EditMode
         }
 
         [Test]
-        public void RedeemThrowInvalidOperationException()
+        public void RedeemThrowDuplicateRedeemException()
         {
             var state = new RedeemCodeState(_sheet);
             var key = state.Map.Keys.First();
             var address = new Address();
             state.Redeem(key, address);
 
-            var exc = Assert.Throws<InvalidOperationException>(() => state.Redeem(key, new Address()));
+            var exc = Assert.Throws<DuplicateRedeemException>(() => state.Redeem(key, new Address()));
             Assert.AreEqual(exc.Message, $"Code already used by {address}");
         }
     }

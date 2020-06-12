@@ -197,7 +197,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UnequipCostume(Costume costume)
+        public void UnequipCostume(Costume costume, bool ignoreEquipmentsAndCustomize = false)
         {
             if (costume is null)
             {
@@ -214,11 +214,15 @@ namespace Nekoyume.Game.Character
                     UpdateEye();
                     break;
                 case ItemSubType.FullCostume:
-                    var armor = (Armor) Equipments.FirstOrDefault(equipment =>
-                        equipment.ItemSubType == ItemSubType.Armor);
-                    var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
-                        equipment.ItemSubType == ItemSubType.Weapon);
-                    EquipEquipmentsAndUpdateCustomize(armor, weapon);
+                    if (!ignoreEquipmentsAndCustomize)
+                    {
+                        var armor = (Armor) Equipments.FirstOrDefault(equipment =>
+                            equipment.ItemSubType == ItemSubType.Armor);
+                        var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
+                            equipment.ItemSubType == ItemSubType.Weapon);
+                        EquipEquipmentsAndUpdateCustomize(armor, weapon);
+                    }
+
                     break;
                 case ItemSubType.HairCostume:
                     UpdateHair();

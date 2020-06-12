@@ -1,5 +1,6 @@
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 
@@ -17,7 +18,7 @@ namespace Nekoyume.UI
     {
         public TextMeshProUGUI title;
         public TextMeshProUGUI content;
-        public TextMeshProUGUI labelYes;
+        public SubmitButton submitButton;
         public TextMeshProUGUI labelNo;
         public GameObject titleBorder;
         public ConfirmDelegate CloseCallback { get; set; }
@@ -44,7 +45,7 @@ namespace Nekoyume.UI
         }
 
         public void Show(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, float blurRadius = 1)
+            bool localize = true, float blurRadius = 1, bool submittable = true)
         {
             if (gameObject.activeSelf)
             {
@@ -53,12 +54,12 @@ namespace Nekoyume.UI
                 return;
             }
 
-            Set(title, content, labelYes, labelNo, localize, blurRadius);
+            Set(title, content, labelYes, labelNo, localize, blurRadius, submittable);
             Show();
         }
 
         public void Set(string title, string content, string labelYes = "UI_OK", string labelNo = "UI_CANCEL",
-            bool localize = true, float blurRadius = 1)
+            bool localize = true, float blurRadius = 1, bool submittable = true)
         {
             bool titleExists = !string.IsNullOrEmpty(title);
             if (localize)
@@ -66,20 +67,21 @@ namespace Nekoyume.UI
                 if (titleExists)
                     this.title.text = LocalizationManager.Localize(title);
                 this.content.text = LocalizationManager.Localize(content);
-                this.labelYes.text = LocalizationManager.Localize(labelYes);
+                submitButton.SetSubmitText(LocalizationManager.Localize(labelYes));
                 this.labelNo.text = LocalizationManager.Localize(labelNo);
             }
             else
             {
                 this.title.text = title;
                 this.content.text = content;
-                this.labelYes.text = labelYes;
+                submitButton.SetSubmitText(labelYes);
                 this.labelNo.text = labelNo;
             }
 
             this.title.gameObject.SetActive(titleExists);
             titleBorder.SetActive(titleExists);
             this.blurRadius = blurRadius;
+            submitButton.SetSubmittableWithoutInteractable(submittable);
         }
 
         public void Yes()
