@@ -16,7 +16,7 @@ namespace Nekoyume.Model.Item
     {
         private static Codec _codec = new Codec();
 
-        public HashDigest<SHA256> ItemId { get; }
+        public HashDigest<SHA256> ItemId { get; protected set; }
 
         public Material(MaterialItemSheet.Row data) : base(data)
         {
