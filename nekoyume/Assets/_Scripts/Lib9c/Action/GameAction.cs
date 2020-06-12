@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Libplanet;
+using Libplanet.Action;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -34,5 +36,22 @@ namespace Nekoyume.Action
         }
         
         protected abstract void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue);
+
+        protected bool IsGranted(IActionContext ctx)
+        {
+            IAccountStateDelta prevState = ctx.PreviousStates;
+            IValue rawState = prevState.GetState(AdminState.Address);
+
+            if (rawState is Bencodex.Types.Dictionary asDict)
+            {
+                var adminAddress = new AdminState(asDict);
+
+                return
+                    ctx.BlockIndex <= adminAddress.ValidUntil &&
+                    adminAddress.AdminAddress == ctx.Signer;
+            }
+
+            return false;
+        }
     }
 }

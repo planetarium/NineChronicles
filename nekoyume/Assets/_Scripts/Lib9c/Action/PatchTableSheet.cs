@@ -28,6 +28,12 @@ namespace Nekoyume.Action
                     .SetState(TableSheetsState.Address, MarkChanged)
                     .SetState(GameConfigState.Address, MarkChanged);
             }
+
+            if (!IsGranted(context))
+            {
+                throw new PermissionDeniedException();
+            }
+
             var tableSheetsState = TableSheetsState.FromActionContext(ctx);
             Log.Debug($"[{ctx.BlockIndex}] {TableName} was patched by {ctx.Signer.ToHex()}\n" +
                       "before:\n" +
