@@ -24,6 +24,12 @@ namespace Nekoyume.Model.Item
             {
                 Rewards = rewards.ToList(i => new RedeemRewardSheet.RewardInfo((Dictionary) i));
             }
+            // ItemFactory.CreateMaterial로 생성된 케이스
+            else
+            {
+                Rewards = new List<RedeemRewardSheet.RewardInfo>();
+                ItemId = Hashcash.Hash(Serialize().EncodeIntoChunks().SelectMany(b => b).ToArray());
+            }
         }
 
         public sealed override IValue Serialize() =>

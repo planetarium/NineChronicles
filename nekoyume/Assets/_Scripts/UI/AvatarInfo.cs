@@ -50,6 +50,7 @@ namespace Nekoyume.UI
         private RectTransform avatarPosition = null;
 
         private EquipmentSlot _weaponSlot;
+        private EquipmentSlot _armorSlot;
         private bool _isShownFromBattle;
         private Player _player;
         private Vector3 _previousAvatarPosition;
@@ -68,6 +69,11 @@ namespace Nekoyume.UI
             if (!equipmentSlots.TryGetSlot(ItemSubType.Weapon, out _weaponSlot))
             {
                 throw new Exception($"Not found {ItemSubType.Weapon} slot in {equipmentSlots}");
+            }
+
+            if (!equipmentSlots.TryGetSlot(ItemSubType.Armor, out _armorSlot))
+            {
+                throw new Exception($"Not found {ItemSubType.Armor} slot in {equipmentSlots}");
             }
 
             inventory.SharedModel.State
@@ -149,7 +155,8 @@ namespace Nekoyume.UI
                 else
                 {
                     var stage = Game.Game.instance.Stage;
-                    _previousActivated = stage.selectedPlayer && stage.selectedPlayer.gameObject.activeSelf;
+                    _previousActivated = stage.selectedPlayer &&
+                                         stage.selectedPlayer.gameObject.activeSelf;
                     _player = stage.GetPlayer();
                     _player.Set(avatarState);
                     _previousAvatarPosition = _player.transform.position;
@@ -159,7 +166,7 @@ namespace Nekoyume.UI
             }
 
             _player.transform.position = avatarPosition.position;
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 3;
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
             _player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
 
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
@@ -300,26 +307,27 @@ namespace Nekoyume.UI
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
 
+            var player = Game.Game.instance.Stage.GetPlayer();
             switch (itemBase)
             {
+                default:
+                    return;
                 case Costume costume:
                 {
                     inventoryItem.EquippedEnabled.Value = true;
-                    var player = Game.Game.instance.Stage.GetPlayer();
                     player.EquipCostume(costume);
 
                     break;
                 }
-                case Equipment equipment:
+                case Equipment _:
                 {
                     inventoryItem.EquippedEnabled.Value = true;
                     UpdateStatViews();
-                    var player = Game.Game.instance.Stage.GetPlayer();
                     switch (slot.ItemSubType)
                     {
                         case ItemSubType.Armor:
                         {
-                            var armor = (Armor) equipment;
+                            var armor = (Armor) _armorSlot.Item;
                             var weapon = (Weapon) _weaponSlot.Item;
                             player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
@@ -333,6 +341,7 @@ namespace Nekoyume.UI
                 }
             }
 
+            Game.Event.OnUpdatePlayerEquip.OnNext(player);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
@@ -343,7 +352,7 @@ namespace Nekoyume.UI
             Unequip(slot, false);
         }
 
-        private void Unequip(EquipmentSlot slot, bool onlyData)
+        private void Unequip(EquipmentSlot slot, bool ignorePlayer)
         {
             if (_isShownFromBattle)
             {
@@ -367,8 +376,13 @@ namespace Nekoyume.UI
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
 
+            var player = ignorePlayer
+                ? null
+                : Game.Game.instance.Stage.GetPlayer();
             switch (slotItem)
             {
+                default:
+                    return;
                 case Costume costume:
                 {
                     if (!inventory.SharedModel.TryGetCostume(costume, out var inventoryItem))
@@ -378,14 +392,16 @@ namespace Nekoyume.UI
 
                     inventoryItem.EquippedEnabled.Value = false;
 
-                    if (onlyData)
+                    if (ignorePlayer)
                     {
                         break;
                     }
 
-                    var player = Game.Game.instance.Stage.GetPlayer();
-                    player.UnequipCostume(costume);
-
+                    var armor = (Armor) _armorSlot.Item;
+                    var weapon = (Weapon) _weaponSlot.Item;
+                    player.UnequipCostume(costume, true);
+                    player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
+                    Game.Event.OnUpdatePlayerEquip.OnNext(player);
                     break;
                 }
                 case Equipment equipment:
@@ -397,33 +413,30 @@ namespace Nekoyume.UI
 
                     inventoryItem.EquippedEnabled.Value = false;
 
-                    if (onlyData)
+                    if (ignorePlayer)
                     {
                         break;
                     }
 
                     UpdateStatViews();
-                    var player = Game.Game.instance.Stage.GetPlayer();
+
                     switch (slot.ItemSubType)
                     {
                         case ItemSubType.Armor:
                         {
+                            var armor = (Armor) _armorSlot.Item;
                             var weapon = (Weapon) _weaponSlot.Item;
-                            player.EquipEquipmentsAndUpdateCustomize(null, weapon);
+                            player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
                         }
                         case ItemSubType.Weapon:
-                            player.EquipWeapon((Weapon) slotItem);
+                            player.EquipWeapon((Weapon) _weaponSlot.Item);
                             break;
                     }
 
+                    Game.Event.OnUpdatePlayerEquip.OnNext(player);
                     break;
                 }
-            }
-
-            if (onlyData)
-            {
-                return;
             }
 
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
@@ -525,7 +538,8 @@ namespace Nekoyume.UI
             }
         }
 
-        private (Func<CountableItem, bool>, string, Action<CountableItem>) GetToolTipParams(InventoryItem inventoryItem)
+        private (Func<CountableItem, bool>, string, Action<CountableItem>) GetToolTipParams(
+            InventoryItem inventoryItem)
         {
             var item = inventoryItem.ItemBase.Value;
             Func<CountableItem, bool> submitEnabledFunc = null;
@@ -538,7 +552,7 @@ namespace Nekoyume.UI
                 case ItemType.Costume:
                 case ItemType.Equipment:
                     submitEnabledFunc = DimmedFuncForEquipments;
-                    submitText =  inventoryItem.EquippedEnabled.Value
+                    submitText = inventoryItem.EquippedEnabled.Value
                         ? LocalizationManager.Localize("UI_UNEQUIP")
                         : LocalizationManager.Localize("UI_EQUIP");
                     onSubmit = Equip;
@@ -557,10 +571,12 @@ namespace Nekoyume.UI
                             onSubmit = OpenChest;
                             break;
                     }
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
             return (submitEnabledFunc, submitText, onSubmit);
         }
 
@@ -571,7 +587,8 @@ namespace Nekoyume.UI
                 return false;
             }
 
-            return States.Instance.CurrentAvatarState.actionPoint != States.Instance.GameConfigState.ActionPointMax
+            return States.Instance.CurrentAvatarState.actionPoint !=
+                   States.Instance.GameConfigState.ActionPointMax
                    && !_isShownFromBattle;
         }
 
@@ -592,8 +609,10 @@ namespace Nekoyume.UI
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
                     LocalizationManager.Localize("UI_CHARGE_AP"));
                 Game.Game.instance.ActionManager.ChargeActionPoint();
-                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address, material.ItemId, 1);
-                LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
+                    material.ItemId, 1);
+                LocalStateModifier.ModifyAvatarActionPoint(
+                    States.Instance.CurrentAvatarState.address,
                     States.Instance.GameConfigState.ActionPointMax);
             }
         }
