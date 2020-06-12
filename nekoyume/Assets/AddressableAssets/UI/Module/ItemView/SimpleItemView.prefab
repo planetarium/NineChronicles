@@ -57,7 +57,7 @@ MonoBehaviour:
   m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: cb73f1984e98fa24596cc2b036abdedc, type: 2}
+  m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
@@ -290,7 +290,8 @@ MonoBehaviour:
   m_text: +9
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 619077c5916b69c4494b3d0ef8aadce2, type: 2}
+  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -509,11 +510,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 147892081c584a24a43178f1822491f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gradeImage: {fileID: 6286694391520092373}
+  iconImage: {fileID: 6469081157424432497}
   touchHandler: {fileID: 4911447013500509633}
   itemButton: {fileID: 2424157741892017904}
   backgroundImage: {fileID: 1996050214494677549}
-  gradeImage: {fileID: 6286694391520092373}
-  iconImage: {fileID: 6469081157424432497}
   enhancementText: {fileID: 5119783568601332889}
   selectionImage: {fileID: 5014130152458077508}
 --- !u!114 &4660487413905793083

@@ -26,7 +26,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI rankText = null;
         [SerializeField]
-        private Image portraitImage = null;
+        private VanillaCharacterView characterView = null;
         [SerializeField]
         private TextMeshProUGUI levelText = null;
         [SerializeField]
@@ -63,6 +63,8 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
+        private bool _isCurrentUser;
+
         public ArenaInfo ArenaInfo { get; private set; }
 
         private void Awake()
@@ -78,6 +80,11 @@ namespace Nekoyume.UI.Scroller
                 AudioController.PlayClick();
                 onClickInfo?.Invoke((RectTransform, ArenaInfo.AvatarAddress));
             }).AddTo(gameObject);
+
+            Game.Event.OnUpdatePlayerEquip
+                .Where(_ => _isCurrentUser)
+                .Subscribe(characterView.SetByPlayer)
+                .AddTo(gameObject);
         }
 
         public void Show()
@@ -87,27 +94,37 @@ namespace Nekoyume.UI.Scroller
 
         public void Show(int rank, ArenaInfo arenaInfo, bool canChallenge, bool isCurrentUser)
         {
-            if (arenaInfo is null)
-                throw new ArgumentNullException(nameof(arenaInfo));
-
-            ArenaInfo = arenaInfo;
+            ArenaInfo = arenaInfo ?? throw new ArgumentNullException(nameof(arenaInfo));
+            _isCurrentUser = isCurrentUser;
 
             UpdateRank(rank);
-            portraitImage.overrideSprite = SpriteHelper.GetItemIcon(arenaInfo.ArmorId);
             levelText.text = arenaInfo.Level.ToString();
             nameText.text = arenaInfo.AvatarName;
             cpText.text = arenaInfo.CombatPoint.ToString();
             scoreText.text = arenaInfo.Score.ToString();
-            challengeCountTextContainer.SetActive(isCurrentUser);
-            challengeButton.gameObject.SetActive(!isCurrentUser);
+            challengeCountTextContainer.SetActive(_isCurrentUser);
+            challengeButton.gameObject.SetActive(!_isCurrentUser);
 
-            if (isCurrentUser)
+            if (_isCurrentUser)
             {
+                var player = Game.Game.instance.Stage.selectedPlayer;
+                if (player is null)
+                {
+                    player = Game.Game.instance.Stage.GetPlayer();
+                    characterView.SetByPlayer(player);
+                    player.gameObject.SetActive(false);
+                }
+                else
+                {
+                    characterView.SetByPlayer(player);
+                }
+
                 rank = 1;
                 challengeCountText.text = $"{arenaInfo.DailyChallengeCount}/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {
+                characterView.SetByAvatarAddress(arenaInfo.AvatarAddress);
                 challengeButton.SetSubmittable(canChallenge);
             }
 
