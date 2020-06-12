@@ -218,7 +218,7 @@ namespace Nekoyume.Game
                 Widget.Find<Menu>().Close();
             };
             confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT",
-                blurRadius: 2);
+                blurRadius: 2, submittable: false);
         }
 
         private void PlayMouseOnClickVFX(Vector3 position)
