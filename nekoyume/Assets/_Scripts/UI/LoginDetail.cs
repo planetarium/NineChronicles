@@ -257,7 +257,7 @@ namespace Nekoyume.UI
                 throw new NullReferenceException(nameof(player));
             }
 
-            player.UpdateEar(_ear);
+            player.UpdateEarByCustomizeIndex(_ear);
         }
 
         public void ChangeLens(int offset)
@@ -288,7 +288,7 @@ namespace Nekoyume.UI
                 throw new NullReferenceException(nameof(player));
             }
 
-            player.UpdateEye(_lens);
+            player.UpdateEyeByCustomizeIndex(_lens);
         }
 
         public void ChangeHair(int offset)
@@ -319,7 +319,7 @@ namespace Nekoyume.UI
                 throw new NullReferenceException(nameof(player));
             }
 
-            player.UpdateHair(_hair);
+            player.UpdateHairByCustomizeIndex(_hair);
         }
 
         public void ChangeTail(int offset)
@@ -350,7 +350,7 @@ namespace Nekoyume.UI
                 throw new NullReferenceException(nameof(player));
             }
 
-            player.UpdateTail(_tail);
+            player.UpdateTailByCustomizeIndex(_tail);
         }
 
         public void BackClick()
