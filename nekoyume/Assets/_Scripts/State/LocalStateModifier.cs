@@ -562,6 +562,72 @@ namespace Nekoyume.State
             LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
         }
 
+        public static void AddMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
+        {
+            if (count is 0)
+            {
+                return;
+            }
+
+            var modifier = new AvatarInventoryMaterialModifier(
+                new Dictionary<HashDigest<SHA256>, int>
+                {
+                    [itemId] = count,
+                }
+            );
+
+            LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
+
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
+                return;
+            }
+
+            modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+            {
+                return;
+            }
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+
+        }
+
+        public static void RemoveMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
+        {
+            if (count is 0)
+            {
+                return;
+            }
+
+            var modifier = new AvatarInventoryMaterialModifier(
+                new Dictionary<HashDigest<SHA256>, int>
+                {
+                    [itemId] = count,
+                }
+            );
+
+            LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+        }
+
         #endregion
 
         #region WeeklyArena
