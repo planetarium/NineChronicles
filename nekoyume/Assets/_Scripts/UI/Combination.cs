@@ -248,7 +248,6 @@ namespace Nekoyume.UI
         {
             if (State.Value == StateType.CombinationConfirm)
             {
-                AnimationState = AnimationStateType.Shown;
                 return;
             }
 
@@ -316,7 +315,6 @@ namespace Nekoyume.UI
                 case StateType.CombineEquipment:
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
-                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
 
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -330,11 +328,12 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(false);
                     equipmentRecipe.ShowCellViews();
                     Animator.Play("Show", -1, 0.0f);
+                    OnTweenRecipe();
+                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
                     break;
                 case StateType.CombineConsumable:
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
-                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
 
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -348,6 +347,8 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(true);
                     consumableRecipe.ShowCellViews();
                     Animator.Play("Show", -1, 0.0f);
+                    OnTweenRecipe();
+                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
                     break;
                 case StateType.EnhanceEquipment:
                     _selectedSpeechBubble = speechBubbleForUpgrade;
@@ -371,7 +372,13 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombinationConfirm:
+                    if (AnimationState == AnimationStateType.Showing)
+                    {
+                        break;
+                    }
+
                     _toggleGroup.SetToggledOffAll();
+                    OnTweenRecipe();
 
                     var rectTransform = selectedRecipe.transform as RectTransform;
                     recipeClickVFX.transform.position = rectTransform
@@ -411,7 +418,7 @@ namespace Nekoyume.UI
             consumableRecipe.HideCellviews();
 
             var recipeCellView = selectedRecipe as ConsumableRecipeCellView;
-            consumableCombinationPanel.TweenCellView(recipeCellView);
+            consumableCombinationPanel.TweenCellView(recipeCellView, OnTweenRecipeCompleted);
             consumableCombinationPanel.SetData(recipeCellView.RowData);
         }
 
@@ -428,12 +435,12 @@ namespace Nekoyume.UI
             if (isElemental)
             {
                 equipmentCombinationPanel.Hide();
-                elementalCombinationPanel.TweenCellViewInOption(recipeCellView, OnRecipeTweenCompleted);
+                elementalCombinationPanel.TweenCellViewInOption(recipeCellView, OnTweenRecipeCompleted);
                 elementalCombinationPanel.SetData(recipeCellView.RowData);
             }
             else
             {
-                equipmentCombinationPanel.TweenCellView(recipeCellView);
+                equipmentCombinationPanel.TweenCellView(recipeCellView, OnTweenRecipeCompleted);
                 equipmentCombinationPanel.SetData(recipeCellView.RowData);
                 elementalCombinationPanel.Hide();
             }
@@ -522,7 +529,12 @@ namespace Nekoyume.UI
             }
         }
 
-        public void OnRecipeTweenCompleted()
+        public void OnTweenRecipe()
+        {
+            AnimationState = AnimationStateType.Showing;
+        }
+
+        public void OnTweenRecipeCompleted()
         {
             AnimationState = AnimationStateType.Shown;
         }

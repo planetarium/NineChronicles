@@ -14,7 +14,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private EquipmentOptionRecipeView[] equipmentOptionRecipeViews = null;
 
-        public readonly Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)> OnOptionClick =
+        public readonly Subject<Unit> OnOptionClick = new Subject<Unit>();
+
+        public readonly Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)> OnOptionClickVFXCompleted =
             new Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)>();
 
         private void Awake()
@@ -26,15 +28,16 @@ namespace Nekoyume.UI.Module
                     throw new SerializeFieldNullException();
                 }
 
-                view.OnClick
-                    .Subscribe(item => OnOptionClick.OnNext((equipmentRecipeCellView, item)))
+                view.OnClick.Subscribe(_ => OnOptionClick.OnNext(_));
+                view.OnClickVFXCompleted
+                    .Subscribe(item => OnOptionClickVFXCompleted.OnNext((equipmentRecipeCellView, item)))
                     .AddTo(gameObject);
             }
         }
 
         private void OnDestroy()
         {
-            OnOptionClick.Dispose();
+            OnOptionClickVFXCompleted.Dispose();
         }
 
         public void Show()
