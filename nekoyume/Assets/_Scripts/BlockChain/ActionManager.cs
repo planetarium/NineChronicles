@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Action;
@@ -397,6 +398,23 @@ namespace Nekoyume.BlockChain
             ProcessAction(action);
 
             return _renderer.EveryRender<ChargeActionPoint>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<OpenChest>> OpenChest(
+            Dictionary<HashDigest<SHA256>, int> chestList)
+        {
+            var action = new OpenChest
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                chestList = chestList
+            };
+            ProcessAction(action);
+            return _renderer.EveryRender<OpenChest>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

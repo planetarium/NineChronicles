@@ -12,12 +12,19 @@ namespace NineChronicles.Standalone
         public static Task RunHeadlessAsync(
             NineChroniclesNodeServiceProperties properties,
             IHostBuilder hostBuilder,
+            StandaloneContext standaloneContext = null,
             CancellationToken cancellationToken = default)
         {
             var service = new NineChroniclesNodeService(
                 properties.Libplanet,
                 properties.Rpc,
                 ignoreBootstrapFailure: true);
+
+            if (!(standaloneContext is null))
+            {
+                standaloneContext.BlockChain = service.Swarm.BlockChain;
+            }
+
             return service.Run(hostBuilder, cancellationToken);
         }
 

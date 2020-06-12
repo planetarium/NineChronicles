@@ -92,7 +92,7 @@ namespace Nekoyume.UI
             {
                 blur.Close();
             }
-            
+
             base.Close(ignoreCloseAnimation);
             equipmentSlots.Clear();
         }
@@ -115,7 +115,7 @@ namespace Nekoyume.UI
         public void CloseClick()
         {
             AudioController.PlayClick();
-            Find<Status>()?.CloseStatusDetail();
+            Close();
         }
     }
 }

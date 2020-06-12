@@ -180,19 +180,19 @@ namespace Nekoyume.Game.Character
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
-                    // UpdateEar();
+                    UpdateEarById(costume.Id);
                     break;
                 case ItemSubType.EyeCostume:
-                    // UpdateEye();
+                    UpdateEyeById(costume.Id);
                     break;
                 case ItemSubType.FullCostume:
                     ChangeSpine(costume.SpineResourcePath);
                     break;
                 case ItemSubType.HairCostume:
-                    // UpdateHair();
+                    UpdateHairById(costume.Id);
                     break;
                 case ItemSubType.TailCostume:
-                    // UpdateTail();
+                    UpdateTailById(costume.Id);
                     break;
             }
         }
@@ -208,24 +208,27 @@ namespace Nekoyume.Game.Character
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
-                    // UpdateEar();
+                    UpdateEar();
                     break;
                 case ItemSubType.EyeCostume:
-                    // UpdateEye();
+                    UpdateEye();
                     break;
                 case ItemSubType.FullCostume:
-                    if (!ignoreEquipmentsAndCustomize &&
-                        CharacterModel is Model.Player model)
+                    if (!ignoreEquipmentsAndCustomize)
                     {
-                        EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
+                        var armor = (Armor) Equipments.FirstOrDefault(equipment =>
+                            equipment.ItemSubType == ItemSubType.Armor);
+                        var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
+                            equipment.ItemSubType == ItemSubType.Weapon);
+                        EquipEquipmentsAndUpdateCustomize(armor, weapon);
                     }
 
                     break;
                 case ItemSubType.HairCostume:
-                    // UpdateHair();
+                    UpdateHair();
                     break;
                 case ItemSubType.TailCostume:
-                    // UpdateTail();
+                    UpdateTail();
                     break;
             }
         }
@@ -274,6 +277,7 @@ namespace Nekoyume.Game.Character
 
         // TODO: 최초에 캐릭터 생성 시에만 커스터마이징하는 개념으로 개발되었으나 그 기능이 코스튬과 같기 때문에 이 둘을 적절하게 리펙토링 할 필요가 있습니다.
         // 각 부위의 코스튬을 개발할 때 진행하면 좋겠습니다.
+
         #region Customize
 
         private void UpdateCustomize()
@@ -283,91 +287,242 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            UpdateEar(Model.earIndex);
-            UpdateEye(Model.lensIndex);
-            UpdateHair(Model.hairIndex);
-            UpdateTail(Model.tailIndex);
+            UpdateEar();
+            UpdateEye();
+            UpdateHair();
+            UpdateTail();
         }
 
-        public void UpdateEar(int index)
+        private void UpdateEar()
         {
-            UpdateEar($"ear_{index + 1:d4}_left", $"ear_{index + 1:d4}_right");
-        }
-
-        private void UpdateEar(string earLeftResource, string earRightResource)
-        {
-            if (!SpineController ||
-                string.IsNullOrEmpty(earLeftResource) ||
-                string.IsNullOrEmpty(earRightResource))
+            if (IsFullCostumeEquipped)
             {
                 return;
             }
 
-            var spriteLeft = SpriteHelper.GetPlayerSpineTextureEarCostumeLeft(earLeftResource);
-            var spriteRight = SpriteHelper.GetPlayerSpineTextureEarCostumeRight(earRightResource);
-            SpineController.UpdateEar(spriteLeft, spriteRight);
+            var earCostume =
+                Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EarCostume);
+            if (earCostume is null)
+            {
+                UpdateEarByCustomizeIndex(Model.earIndex);
+            }
+            else
+            {
+                UpdateEarById(earCostume.Id);
+            }
         }
 
-        public void UpdateEye(int index)
+        /// <summary>
+        /// 기존에 커스텀 가능한 귀 디자인들은 EarCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
+        /// </summary>
+        /// <param name="customizeIndex">0~9</param>
+        public void UpdateEarByCustomizeIndex(int customizeIndex)
         {
-            UpdateEye(CostumeSheet.GetEyeResources(index));
-        }
-
-        private void UpdateEye(IReadOnlyList<string> eyeResources)
-        {
-            if (eyeResources is null ||
-                eyeResources.Count < 2 ||
-                !SpineController)
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var firstEarRow =
+                sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EarCostume);
+            if (firstEarRow is null)
             {
                 return;
             }
 
-            var eyeHalfSprite = SpriteHelper.GetPlayerSpineTextureEyeCostumeHalf(eyeResources[0]);
-            var eyeOpenSprite = SpriteHelper.GetPlayerSpineTextureEyeCostumeOpen(eyeResources[1]);
-            SpineController.UpdateEye(eyeHalfSprite, eyeOpenSprite);
+            UpdateEarById(firstEarRow.Id + customizeIndex);
         }
 
-        /// <param name="colorIndex">0~5</param>
-        public void UpdateHair(int colorIndex)
+        private void UpdateEarById(int earCostumeId)
         {
-            if (SpineController is null)
+            if (IsFullCostumeEquipped ||
+                SpineController is null)
             {
                 return;
             }
 
-            UpdateHair(CostumeSheet.GetHairResources(SpineController.hairTypeIndex, colorIndex));
-        }
-
-        private void UpdateHair(IReadOnlyCollection<string> hairResources)
-        {
-            if (hairResources is null ||
-                hairResources.Count < 6 ||
-                !SpineController)
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(earCostumeId, out var row, true))
             {
                 return;
             }
 
-            var sprites = hairResources
-                .Select(SpriteHelper.GetPlayerSpineTextureHairCostume)
+            var leftSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_left");
+            var rightSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_right");
+            SpineController.UpdateEar(leftSprite, rightSprite);
+        }
+
+        private void UpdateEye()
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
+            var eyeCostume =
+                Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EyeCostume);
+            if (eyeCostume is null)
+            {
+                UpdateEyeByCustomizeIndex(Model.lensIndex);
+            }
+            else
+            {
+                UpdateEyeById(eyeCostume.Id);
+            }
+        }
+
+        /// <summary>
+        /// 기존에 커스텀 가능한 눈 디자인들은 EyeCostume 중에서 첫 번째 부터 6번째 까지를 대상으로 합니다.
+        /// </summary>
+        /// <param name="customizeIndex">0~5</param>
+        public void UpdateEyeByCustomizeIndex(int customizeIndex)
+        {
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var firstEyeRow =
+                sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.EyeCostume);
+            if (firstEyeRow is null)
+            {
+                return;
+            }
+
+            UpdateEyeById(firstEyeRow.Id + customizeIndex);
+        }
+
+        private void UpdateEyeById(int eyeCostumeId)
+        {
+            if (IsFullCostumeEquipped ||
+                SpineController is null)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(eyeCostumeId, out var row, true))
+            {
+                return;
+            }
+
+            var halfSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_half");
+            var openSprite = Resources.Load<Sprite>($"{row.SpineResourcePath}_open");
+            SpineController.UpdateEye(halfSprite, openSprite);
+        }
+
+        private void UpdateHair()
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
+            var hairCostume =
+                Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.HairCostume);
+            if (hairCostume is null)
+            {
+                UpdateHairByCustomizeIndex(Model.hairIndex);
+            }
+            else
+            {
+                UpdateHairById(hairCostume.Id);
+            }
+        }
+
+        /// <summary>
+        /// 기존에 커스텀 가능한 머리카 디자인들은 HairCostume 중에서 첫 번째 부터 6번째 까지를 대상으로 합니다.
+        /// </summary>
+        /// <param name="customizeIndex">0~5</param>
+        public void UpdateHairByCustomizeIndex(int customizeIndex)
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var firstHairRow =
+                sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.HairCostume);
+            if (firstHairRow is null)
+            {
+                return;
+            }
+
+            UpdateHairById(firstHairRow.Id + customizeIndex);
+        }
+
+        private void UpdateHairById(int hairCostumeId)
+        {
+            if (IsFullCostumeEquipped ||
+                SpineController is null)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(hairCostumeId, out var row, true))
+            {
+                return;
+            }
+
+            var sprites = Enumerable
+                .Range(0, SpineController.HairSlotCount)
+                .Select(index =>
+                    $"{row.SpineResourcePath}_{SpineController.hairTypeIndex:00}_{index + 1:00}")
+                .Select(Resources.Load<Sprite>)
                 .ToList();
-
             SpineController.UpdateHair(sprites);
         }
 
-        public void UpdateTail(int index)
+        private void UpdateTail()
         {
-            UpdateTail($"tail_{index + 1:d4}");
-        }
-
-        private void UpdateTail(string tailResource)
-        {
-            if (!SpineController ||
-                string.IsNullOrEmpty(tailResource))
+            if (IsFullCostumeEquipped)
             {
                 return;
             }
 
-            var sprite = SpriteHelper.GetPlayerSpineTextureTailCostume(tailResource);
+            var tailCostume =
+                Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.TailCostume);
+            if (tailCostume is null)
+            {
+                UpdateTailByCustomizeIndex(Model.tailIndex);
+            }
+            else
+            {
+                UpdateTailById(tailCostume.Id);
+            }
+        }
+
+        /// <summary>
+        /// 기존에 커스텀 가능한 꼬리 디자인들은 TailCostume 중에서 첫 번째 부터 10번째 까지를 대상으로 합니다.
+        /// </summary>
+        /// <param name="customizeIndex">0~9</param>
+        public void UpdateTailByCustomizeIndex(int customizeIndex)
+        {
+            if (IsFullCostumeEquipped)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            var firstTailRow =
+                sheet.OrderedList.FirstOrDefault(row => row.ItemSubType == ItemSubType.TailCostume);
+            if (firstTailRow is null)
+            {
+                return;
+            }
+
+            UpdateTailById(firstTailRow.Id + customizeIndex);
+        }
+
+        private void UpdateTailById(int tailCostumeId)
+        {
+            if (IsFullCostumeEquipped ||
+                SpineController is null)
+            {
+                return;
+            }
+
+            var sheet = Game.instance.TableSheets.CostumeItemSheet;
+            if (!sheet.TryGetValue(tailCostumeId, out var row, true))
+            {
+                return;
+            }
+
+            var sprite = Resources.Load<Sprite>(row.SpineResourcePath);
             SpineController.UpdateTail(sprite);
         }
 
@@ -409,10 +564,11 @@ namespace Nekoyume.Game.Character
                 //[TentuPlay] 아바타 레벨업 기록
                 new TPStashEvent().CharacterLevelUp(
                     player_uuid: Game.instance.Agent.Address.ToHex(),
-                    characterarchetype_slug: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                    level_from: (int)level,
-                    level_to: (int)Level
-                    );
+                    characterarchetype_slug: States.Instance.CurrentAvatarState.address.ToHex()
+                        .Substring(0, 4),
+                    level_from: (int) level,
+                    level_to: (int) Level
+                );
 
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
                     level);

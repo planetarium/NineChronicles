@@ -24,7 +24,9 @@ namespace Nekoyume.Model.Item
 
         public static Material CreateMaterial(MaterialItemSheet.Row row)
         {
-            return new Material(row);
+            return row.ItemSubType == ItemSubType.Chest
+                ? CreateChest(row, null)
+                : new Material(row);
         }
 
         public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id,
