@@ -256,6 +256,20 @@ namespace Tests.EditMode
             Assert.AreEqual(chest2, ItemFactory.Deserialize(serialized2));
             Assert.AreNotEqual(serialized, serialized2);
             Assert.AreNotEqual(chest, chest2);
+            Assert.AreNotEqual(chest.ItemId, chest2.ItemId);
+        }
+
+        [Test]
+        public void SerializeChestDoesNotThrowArgumentNullException()
+        {
+            var row = _tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+            var chestMaterial = ItemFactory.CreateMaterial(row);
+            var chest = ItemFactory.CreateChest(row, null);
+            Assert.IsNotNull(chestMaterial);
+            Assert.DoesNotThrow(() => chestMaterial.Serialize());
+            var serialized = (Dictionary) chestMaterial.Serialize();
+            Assert.IsFalse(serialized.ContainsKey((Text) "rewards"));
+            Assert.AreEqual(chest, ItemFactory.Deserialize(serialized));
         }
     }
 }
