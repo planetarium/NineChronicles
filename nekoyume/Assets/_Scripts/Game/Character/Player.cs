@@ -100,12 +100,16 @@ namespace Nekoyume.Game.Character
 
         public void Set(Model.Player model, bool updateCurrentHP)
         {
+            // NOTE: InitStats()를 호출한 후에 base.Set()을 호출합니다.
+            // 이는 InitStats()내에서 Inventory가 할당되기 때문입니다.
+            // base.Set()에서 updateCurrentHP 파라메터가 true일 때 내부적으로 InitializeHpBar()가 호출되는데,
+            // 이때 Inventory가 채워져 있어야 하기 때문입니다.
+            InitStats(model);
             base.Set(model, updateCurrentHP);
 
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
 
-            InitStats(model);
             EquipCostumes(model.Costumes);
             EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
 
