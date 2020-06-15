@@ -24,8 +24,6 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI stage = null;
         [SerializeField]
-        private Image flag = null;
-        [SerializeField]
         private Tween.DOTweenRectTransformMoveBy tweenMove = null;
         [SerializeField]
         private Tween.DOTweenGroupAlpha tweenAlpha = null;
