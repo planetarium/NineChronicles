@@ -420,7 +420,7 @@ namespace Nekoyume.Game
             var apNotEnough = avatarState.actionPoint < stage.CostAP;
             _battleResultModel.ActionPointNotEnough = apNotEnough;
             _battleResultModel.ShouldExit = apNotEnough || isExitReserved;
-            _battleResultModel.ShouldRepeat = !apNotEnough && (repeatStage || passed);
+            _battleResultModel.ShouldRepeat = !apNotEnough && (repeatStage || !passed);
 
             if (!_battleResultModel.ShouldRepeat)
             {
