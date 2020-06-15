@@ -59,7 +59,6 @@ namespace NineChronicles.Standalone.Executable
                 .MinimumLevel.Debug().CreateLogger();
 
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-            NodeCancellationContext.CancellationToken = Context.CancellationToken;
 
             // GraphQL 서비스를 실행할 때는 런처를 통해 실행 된 GraphQL을 이용하여 노드 서비스가 실행되게 설계되었습니다.
             // 따라서 graphQLServer가 true라면, 노드 서비스가 실행되지 않는 것이 의도된 사항입니다.
@@ -136,7 +135,7 @@ namespace NineChronicles.Standalone.Executable
                 await StandaloneServices.RunHeadlessAsync(
                     nineChroniclesProperties,
                     hostBuilder,
-                    Context.CancellationToken);
+                    cancellationToken: Context.CancellationToken);
             }
         }
     }

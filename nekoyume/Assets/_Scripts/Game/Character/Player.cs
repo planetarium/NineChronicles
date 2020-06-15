@@ -209,7 +209,7 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public void UnequipCostume(Costume costume)
+        public void UnequipCostume(Costume costume, bool ignoreEquipmentsAndCustomize = false)
         {
             if (costume is null)
             {
@@ -225,11 +225,15 @@ namespace Nekoyume.Game.Character
                     UpdateEye();
                     break;
                 case ItemSubType.FullCostume:
-                    var armor = (Armor) Equipments.FirstOrDefault(equipment =>
-                        equipment.ItemSubType == ItemSubType.Armor);
-                    var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
-                        equipment.ItemSubType == ItemSubType.Weapon);
-                    EquipEquipmentsAndUpdateCustomize(armor, weapon);
+                    if (!ignoreEquipmentsAndCustomize)
+                    {
+                        var armor = (Armor) Equipments.FirstOrDefault(equipment =>
+                            equipment.ItemSubType == ItemSubType.Armor);
+                        var weapon = (Weapon) Equipments.FirstOrDefault(equipment =>
+                            equipment.ItemSubType == ItemSubType.Weapon);
+                        EquipEquipmentsAndUpdateCustomize(armor, weapon);
+                    }
+
                     break;
                 case ItemSubType.HairCostume:
                     UpdateHair();
@@ -311,7 +315,7 @@ namespace Nekoyume.Game.Character
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EarCostume);
             if (earCostume is null)
             {
-                UpdateEarByCustomizeIndex(Model.hairIndex);
+                UpdateEarByCustomizeIndex(Model.earIndex);
             }
             else
             {
@@ -366,7 +370,7 @@ namespace Nekoyume.Game.Character
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.EyeCostume);
             if (eyeCostume is null)
             {
-                UpdateEyeByCustomizeIndex(Model.hairIndex);
+                UpdateEyeByCustomizeIndex(Model.lensIndex);
             }
             else
             {
@@ -485,7 +489,7 @@ namespace Nekoyume.Game.Character
                 Costumes.FirstOrDefault(costume => costume.ItemSubType == ItemSubType.TailCostume);
             if (tailCostume is null)
             {
-                UpdateTailByCustomizeIndex(Model.hairIndex);
+                UpdateTailByCustomizeIndex(Model.tailIndex);
             }
             else
             {

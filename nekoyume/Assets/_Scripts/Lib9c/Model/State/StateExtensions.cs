@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 using Bencodex.Types;
@@ -217,6 +218,27 @@ namespace Nekoyume.Model.State
                 .Cast<Dictionary>()
                 .ToDictionary(
                     value => (Material)ItemFactory.Deserialize((Dictionary)value["material"]),
+                    value => value["count"].ToInteger()
+                );
+        }
+
+        public static IValue Serialize(this Dictionary<HashDigest<SHA256>, int> value)
+        {
+            return new List(
+                value.Select(
+                    pair => (IValue) Dictionary.Empty
+                        .Add("item_id", pair.Key.Serialize())
+                        .Add("count", pair.Value.Serialize())
+                )
+            );
+        }
+
+        public static Dictionary<HashDigest<SHA256>, int> Deserialize(this IValue serialized)
+        {
+            return ((List)serialized)
+                .Cast<Dictionary>()
+                .ToDictionary(
+                    value => value["item_id"].ToItemId(),
                     value => value["count"].ToInteger()
                 );
         }

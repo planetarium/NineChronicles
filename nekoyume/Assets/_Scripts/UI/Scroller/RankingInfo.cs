@@ -1,6 +1,7 @@
 using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -10,15 +11,24 @@ namespace Nekoyume.UI.Scroller
 {
     public class RankingInfo : MonoBehaviour
     {
-        public Button button;
-        public TextMeshProUGUI rank;
-        public Image icon;
-        public TextMeshProUGUI level;
-        public TextMeshProUGUI id;
-        public TextMeshProUGUI stage;
-        public Image flag;
-        public Tween.DOTweenRectTransformMoveBy tweenMove;
-        public Tween.DOTweenGroupAlpha tweenAlpha;
+        [SerializeField]
+        private Button button = null;
+        [SerializeField]
+        private TextMeshProUGUI rank = null;
+        [SerializeField]
+        private VanillaCharacterView characterView = null;
+        [SerializeField]
+        private TextMeshProUGUI level = null;
+        [SerializeField]
+        private TextMeshProUGUI id = null;
+        [SerializeField]
+        private TextMeshProUGUI stage = null;
+        [SerializeField]
+        private Image flag = null;
+        [SerializeField]
+        private Tween.DOTweenRectTransformMoveBy tweenMove = null;
+        [SerializeField]
+        private Tween.DOTweenGroupAlpha tweenAlpha = null;
 
         public System.Action<(RectTransform rectTransform, Address avatarAddress)> onClick;
 
@@ -52,8 +62,7 @@ namespace Nekoyume.UI.Scroller
             AvatarInfo = avatarState;
 
             rank.text = ranking.ToString();
-            icon.sprite = SpriteHelper.GetItemIcon(avatarState.ArmorId);
-            icon.SetNativeSize();
+            characterView.SetByAvatarAddress(avatarState.AvatarAddress);
             level.text = avatarState.Level.ToString();
             id.text = avatarState.AvatarName;
             stage.text = avatarState.Exp.ToString();

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -43,23 +42,18 @@ namespace Nekoyume.UI
             CloseWidget = null;
         }
 
-        public void Pop(List<RedeemRewardSheet.RewardInfo> rewards, TableSheets tableSheets)
+        public void Pop(List<(ItemBase, int)> items, TableSheets tableSheets)
         {
             for (var i = 0; i < itemViews.Length; i++)
             {
                 var view = itemViews[i];
                 view.gameObject.SetActive(false);
-                if (i < rewards.Count)
+                if (i < items.Count)
                 {
-                    var info = rewards[i];
-                    if (info.Type == RewardType.Item)
-                    {
-                        var itemRow = tableSheets.MaterialItemSheet.Values.First(r => r.Id == info.ItemId);
-                        var item = ItemFactory.CreateMaterial(itemRow);
-                        var countableItem = new CountableItem(item, info.Quantity);
-                        view.SetData(countableItem);
-                        view.gameObject.SetActive(true);
-                    }
+                    var (item, count) = items[i];
+                    var countableItem = new CountableItem(item, count);
+                    view.SetData(countableItem);
+                    view.gameObject.SetActive(true);
                 }
             }
 

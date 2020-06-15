@@ -12,6 +12,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using TentuPlay.Api;
 
 namespace Nekoyume.BlockChain
@@ -60,6 +61,7 @@ namespace Nekoyume.BlockChain
             GameConfig();
             RedeemCode();
             ChargeActionPoint();
+            OpenChest();
         }
 
         public void Stop()
@@ -300,7 +302,7 @@ namespace Nekoyume.BlockChain
         private void RedeemCode()
         {
             _renderer.EveryRender<Action.RedeemCode>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRedeemCode).AddTo(_disposables);
         }
@@ -311,6 +313,14 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
+        }
+
+        private void OpenChest()
+        {
+            _renderer.EveryRender<OpenChest>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseOpenChest).AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
@@ -681,29 +691,42 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
         {
-            var code = eval.Action.code;
-            RedeemCodeState redeemCodeState = null;
-            if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+            var key = "UI_REDEEM_CODE_INVALID_CODE";
+            if (eval.Exception is null)
             {
-                redeemCodeState = new RedeemCodeState(d);
+                var code = eval.Action.code;
+                RedeemCodeState redeemCodeState = null;
+                if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+                {
+                    redeemCodeState = new RedeemCodeState(d);
+                }
+
+                if (redeemCodeState is null)
+                {
+                    return;
+                }
+
+                if (redeemCodeState.Map.TryGetValue(code, out var reward))
+                {
+                    var tableSheets = Game.Game.instance.TableSheets;
+                    var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
+                    var rewards = row.Rewards;
+                    var chestRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+                    var chest = ItemFactory.CreateChest(chestRow, rewards);
+                    Widget.Find<RedeemRewardPopup>().Pop(new List<(ItemBase, int)> { (chest, 1) }, tableSheets);
+                    key = "UI_REDEEM_CODE_SUCCESS";
+                    UpdateCurrentAvatarState(eval);
+                }
+            }
+            else
+            {
+                if (eval.Exception.InnerException is DuplicateRedeemException)
+                {
+                    key = "UI_REDEEM_CODE_ALREADY_USE";
+                }
             }
 
-            if (redeemCodeState is null)
-            {
-                return;
-            }
-
-            var msg = "Invalid Redeem Code.";
-
-            if (redeemCodeState.Map.TryGetValue(code, out var reward))
-            {
-                var tableSheets = Game.Game.instance.TableSheets;
-                var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
-                var rewards = row.Rewards;
-                Widget.Find<RedeemRewardPopup>().Pop(rewards, tableSheets);
-                msg = "Response Redeem Code.";
-                UpdateCurrentAvatarState(eval);
-            }
+            var msg = LocalizationManager.Localize(key);
             UI.Notification.Push(MailType.System, msg);
         }
 
@@ -714,6 +737,12 @@ namespace Nekoyume.BlockChain
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
             LocalStateModifier.AddItem(avatarAddress, row.ItemId, 1);
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseOpenChest(ActionBase.ActionEvaluation<OpenChest> eval)
+        {
+            UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
