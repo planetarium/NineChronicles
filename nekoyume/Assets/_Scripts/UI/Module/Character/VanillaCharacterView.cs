@@ -31,7 +31,7 @@ namespace Nekoyume.UI.Module
             SetByAvatarState(avatarState);
         }
 
-        public void SetByAvatarState(AvatarState avatarState)
+        public virtual void SetByAvatarState(AvatarState avatarState)
         {
             var fullCostume = avatarState.inventory.Costumes
                 .FirstOrDefault(costume =>
@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Module
             SetByCharacterId(avatarState.characterId);
         }
 
-        public void SetByPlayer(Player player)
+        public virtual void SetByPlayer(Player player)
         {
             var fullCostume = player.Costumes
                 .FirstOrDefault(costume => costume.ItemSubType == ItemSubType.FullCostume);
@@ -99,13 +99,6 @@ namespace Nekoyume.UI.Module
             SetIcon(image);
         }
 
-        private void SetIcon(Sprite image)
-        {
-            iconImage.enabled = true;
-            iconImage.overrideSprite = image;
-            iconImage.SetNativeSize();
-        }
-
         protected virtual void SetDim(bool isDim)
         {
             var alpha = isDim ? .3f : 1f;
@@ -115,6 +108,13 @@ namespace Nekoyume.UI.Module
         protected static Color GetColor(Color color, float alpha)
         {
             return new Color(color.r, color.g, color.b, alpha);
+        }
+
+        private void SetIcon(Sprite image)
+        {
+            iconImage.overrideSprite = image;
+            iconImage.SetNativeSize();
+            iconImage.enabled = true;
         }
     }
 }
