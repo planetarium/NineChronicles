@@ -16,7 +16,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI rank = null;
         [SerializeField]
-        private VanillaCharacterView characterView = null;
+        private FramedCharacterView characterView = null;
         [SerializeField]
         private TextMeshProUGUI level = null;
         [SerializeField]
