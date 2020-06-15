@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Lib9c.Tests.Model.State
 {
-    public class ActivationKeyStateTest
+    public class PendingActivationStateTest
     {
         [Fact]
         public void Serialize()
@@ -17,10 +17,10 @@ namespace Lib9c.Tests.Model.State
             var pubKey = new PublicKey(
                 ByteUtil.ParseHex("02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1")
             );
-            var state = new ActivationKeyState(nonce, pubKey);
+            var state = new PendingActivationState(nonce, pubKey);
 
             var serialized = (Dictionary) state.Serialize();
-            var deserialized = new ActivationKeyState(serialized);
+            var deserialized = new PendingActivationState(serialized);
 
             Assert.Equal(
                 new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7"),
@@ -37,7 +37,7 @@ namespace Lib9c.Tests.Model.State
             var pubKey = new PublicKey(
                 ByteUtil.ParseHex("02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1")
             );
-            var state = new ActivationKeyState(nonce, pubKey);
+            var state = new PendingActivationState(nonce, pubKey);
 
             var formatter = new BinaryFormatter();
             using (var ms = new MemoryStream())
@@ -45,7 +45,7 @@ namespace Lib9c.Tests.Model.State
                 formatter.Serialize(ms, state);
                 ms.Seek(0, SeekOrigin.Begin);
 
-                var deserialized = (ActivationKeyState) formatter.Deserialize(ms);
+                var deserialized = (PendingActivationState) formatter.Deserialize(ms);
 
                 Assert.Equal(
                     new Address("8d9f76aF8Dc5A812aCeA15d8bf56E2F790F47fd7"),

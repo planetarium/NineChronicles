@@ -9,29 +9,29 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Action
 {
     [Serializable]
-    [ActionType("create_activation_key")]
-    public class CreateActivationKey : ActionBase
+    [ActionType("create_pending_activation")]
+    public class CreatePendingActivation : ActionBase
     {
-        public ActivationKeyState ActivationKey { get; private set; }
+        public PendingActivationState PendingActivation { get; private set; }
 
         public override IValue PlainValue
             => new Dictionary(
                 new[]
                 {
                     new KeyValuePair<IKey, IValue>(
-                        (Text)"activation_key",
-                        ActivationKey.Serialize()
+                        (Text)"pending_activation",
+                        PendingActivation.Serialize()
                     ),
                 }
             );
 
-        public CreateActivationKey()
+        public CreatePendingActivation()
         {
         }
 
-        public CreateActivationKey(ActivationKeyState activationKey)
+        public CreatePendingActivation(PendingActivationState activationKey)
         {
-            ActivationKey = activationKey;
+            PendingActivation = activationKey;
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -39,15 +39,15 @@ namespace Nekoyume.Action
             CheckPermission(context);
 
             return context.PreviousStates.SetState(
-                ActivationKey.address,
-                ActivationKey.Serialize()
+                PendingActivation.address,
+                PendingActivation.Serialize()
             );
         }
 
         public override void LoadPlainValue(IValue plainValue)
         {
             var asDict = ((Bencodex.Types.Dictionary) plainValue);
-            ActivationKey = new ActivationKeyState((Dictionary) asDict["activation_key"]);
+            PendingActivation = new PendingActivationState((Dictionary) asDict["pending_activation"]);
         }
     }
 }

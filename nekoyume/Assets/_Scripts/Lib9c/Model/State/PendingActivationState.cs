@@ -11,7 +11,7 @@ using Nekoyume.Action;
 namespace Nekoyume.Model.State
 {
     [Serializable]
-    public class ActivationKeyState : State, ISerializable
+    public class PendingActivationState : State, ISerializable
     {
         private static Address BaseAddress = new Address(new byte[]
         {
@@ -25,7 +25,7 @@ namespace Nekoyume.Model.State
 
         public PublicKey PublicKey { get; }
 
-        public ActivationKeyState(byte[] nonce, PublicKey publicKey)
+        public PendingActivationState(byte[] nonce, PublicKey publicKey)
             : base (DeriveAddress(nonce, publicKey))
         {
             Nonce = nonce;
@@ -37,14 +37,14 @@ namespace Nekoyume.Model.State
             return BaseAddress.Derive(nonce.Concat(publicKey.Format(true)).ToArray());
         }
 
-        public ActivationKeyState(Dictionary serialized) 
+        public PendingActivationState(Dictionary serialized) 
             : base(serialized)
         {
             Nonce = (Binary)serialized["nonce"];
             PublicKey = serialized["public_key"].ToPublicKey();
         }
 
-        protected ActivationKeyState(SerializationInfo info, StreamingContext context)
+        protected PendingActivationState(SerializationInfo info, StreamingContext context)
             : this((Dictionary) new Codec().Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }

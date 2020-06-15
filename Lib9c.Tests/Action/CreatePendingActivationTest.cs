@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Lib9c.Tests.Action
 {
-    public class CreateActivationKeyTest
+    public class CreatePendingActivationTest
     {
         [Fact]
         public void Execute()
@@ -18,8 +18,8 @@ namespace Lib9c.Tests.Action
             var pubKey = new PublicKey(
                 ByteUtil.ParseHex("02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1")
             );
-            var key = new ActivationKeyState(nonce, pubKey);
-            var action = new CreateActivationKey(key);
+            var pendingActivation = new PendingActivationState(nonce, pubKey);
+            var action = new CreatePendingActivation(pendingActivation);
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
             var state = new State(ImmutableDictionary<Address, IValue>.Empty
@@ -33,7 +33,10 @@ namespace Lib9c.Tests.Action
             };
 
             var nextState = action.Execute(actionContext);
-            Assert.Equal(key.Serialize(), nextState.GetState(key.address));
+            Assert.Equal(
+                pendingActivation.Serialize(),
+                nextState.GetState(pendingActivation.address)
+            );
         }
 
         [Fact]
@@ -43,8 +46,8 @@ namespace Lib9c.Tests.Action
             var pubKey = new PublicKey(
                 ByteUtil.ParseHex("02ed49dbe0f2c34d9dff8335d6dd9097f7a3ef17dfb5f048382eebc7f451a50aa1")
             );
-            var key = new ActivationKeyState(nonce, pubKey);
-            var action = new CreateActivationKey(key);
+            var pendingActivation = new PendingActivationState(nonce, pubKey);
+            var action = new CreatePendingActivation(pendingActivation);
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
             var state = new State(ImmutableDictionary<Address, IValue>.Empty
