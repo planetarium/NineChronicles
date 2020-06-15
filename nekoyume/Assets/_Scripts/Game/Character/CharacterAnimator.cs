@@ -166,14 +166,32 @@ namespace Nekoyume.Game.Character
             Animator.Play(nameof(CharacterAnimation.Type.Hit), BaseLayerIndex, 0f);
         }
 
-        public void Win()
+        public void Win(int score = 3)
         {
             if (!ValidateAnimator())
             {
                 return;
             }
 
-            Animator.Play(nameof(CharacterAnimation.Type.Win), BaseLayerIndex, 0f);
+            var animationType = CharacterAnimation.Type.Win_03;
+
+            switch (score)
+            {
+                case 1:
+                    animationType = CharacterAnimation.Type.Win;
+                    break;
+                case 2:
+                    animationType = CharacterAnimation.Type.Win_02;
+                    break;
+                case 3:
+                    animationType = CharacterAnimation.Type.Win_03;
+                    break;
+                default:
+                    animationType = CharacterAnimation.Type.Win;
+                    break;
+            }
+
+            Animator.Play(animationType.ToString(), BaseLayerIndex, 0f);
             ColorTween();
         }
 
