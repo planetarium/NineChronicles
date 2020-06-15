@@ -177,9 +177,6 @@ namespace Nekoyume.Game.Character
 
             switch (score)
             {
-                case 1:
-                    animationType = CharacterAnimation.Type.Win;
-                    break;
                 case 2:
                     animationType = CharacterAnimation.Type.Win_02;
                     break;
