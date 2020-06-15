@@ -1,25 +1,18 @@
+using Libplanet;
+using Nekoyume.Model.State;
 using System;
-using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
 {
     [Serializable]
-    public class PermissionDeniedException : Exception
+    public class PermissionDeniedException : AdminPermissionException
     {
-        public PermissionDeniedException()
-        {
-        }
+        public Address Signer { get; }
 
-        public PermissionDeniedException(string message) : base(message)
+        public PermissionDeniedException(AdminState policy, Address signer)
+            : base(policy)
         {
-        }
-
-        public PermissionDeniedException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected PermissionDeniedException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
+            Signer = signer;
         }
     }
 }

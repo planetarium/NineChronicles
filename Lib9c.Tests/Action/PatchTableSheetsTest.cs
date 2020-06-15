@@ -65,7 +65,7 @@ namespace Lib9c.Tests.Action
                 TableCsv = "New Value"
             };
 
-            Assert.Throws<PermissionDeniedException>(() =>
+            PolicyExpiredException exc1 = Assert.Throws<PolicyExpiredException>(() =>
             {
                 action.Execute(
                     new ActionContext()
@@ -76,8 +76,9 @@ namespace Lib9c.Tests.Action
                     }
                 );
             });
+            Assert.Equal(101, exc1.BlockIndex);
 
-            Assert.Throws<PermissionDeniedException>(() =>
+            PermissionDeniedException exc2 = Assert.Throws<PermissionDeniedException>(() =>
             {
                 action.Execute(
                     new ActionContext()
@@ -88,6 +89,7 @@ namespace Lib9c.Tests.Action
                     }
                 );
             });
+            Assert.Equal(new Address("019101FEec7ed4f918D396827E1277DEda1e20D4"), exc2.Signer);
         }
     }
 }

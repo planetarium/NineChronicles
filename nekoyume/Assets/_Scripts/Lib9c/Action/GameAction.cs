@@ -37,21 +37,25 @@ namespace Nekoyume.Action
         
         protected abstract void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue);
 
-        protected bool IsGranted(IActionContext ctx)
+        protected void CheckPermission(IActionContext ctx)
         {
             IAccountStateDelta prevState = ctx.PreviousStates;
             IValue rawState = prevState.GetState(AdminState.Address);
 
             if (rawState is Bencodex.Types.Dictionary asDict)
             {
-                var adminAddress = new AdminState(asDict);
+                var policy = new AdminState(asDict);
 
-                return
-                    ctx.BlockIndex <= adminAddress.ValidUntil &&
-                    adminAddress.AdminAddress == ctx.Signer;
+                if (ctx.BlockIndex > policy.ValidUntil)
+                {
+                    throw new PolicyExpiredException(policy, ctx.BlockIndex);
+                }
+
+                if (policy.AdminAddress != ctx.Signer)
+                {
+                    throw new PermissionDeniedException(policy, ctx.Signer);
+                }
             }
-
-            return false;
         }
     }
 }
