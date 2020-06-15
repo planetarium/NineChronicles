@@ -11,42 +11,6 @@ namespace Lib9c.Tests.Action
 {
     public class PatchTableSheetsTest
     {
-        class State : IAccountStateDelta
-        {
-            private readonly ImmutableDictionary<Address, IValue> _state;
-            public IImmutableSet<Address> UpdatedAddresses =>
-                _state.Keys.ToImmutableHashSet();
-
-            public State(ImmutableDictionary<Address, IValue> state)
-            {
-                _state = state;
-            }
-
-            public IValue GetState(Address address)
-            {
-                return _state[address];
-            }
-
-            public IAccountStateDelta SetState(Address address, IValue state)
-            {
-                return new State(_state.SetItem(address, state));
-            }
-        }
-        public class ActionContext : IActionContext
-        {
-            public Address Signer { get; set; }
-
-            public Address Miner { get; set; }
-
-            public long BlockIndex { get; set; }
-
-            public bool Rehearsal { get; set; }
-
-            public IAccountStateDelta PreviousStates { get; set; }
-
-            public IRandom Random => throw new System.NotImplementedException();
-        }
-
         [Fact]
         public void CheckPermission()
         {
