@@ -1,6 +1,6 @@
+using System;
 using Libplanet;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -28,9 +28,11 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Tween.DOTweenGroupAlpha tweenAlpha = null;
 
-        public System.Action<(RectTransform rectTransform, Address avatarAddress)> onClick;
+        public Action<(RectTransform rectTransform, Address avatarAddress)> onClick;
 
         private RectTransform _rectTransform;
+        private bool _isCurrentUser;
+
         public RectTransform RectTransform
         {
             get
@@ -53,17 +55,42 @@ namespace Nekoyume.UI.Scroller
                 AudioController.PlayClick();
                 onClick?.Invoke((RectTransform, AvatarInfo.AvatarAddress));
             }).AddTo(gameObject);
+
+            Game.Event.OnUpdatePlayerEquip
+                .Where(_ => _isCurrentUser)
+                .Subscribe(characterView.SetByPlayer)
+                .AddTo(gameObject);
         }
 
-        public void Set(int ranking, Nekoyume.Model.State.RankingInfo avatarState)
+        public void Set(int ranking, Nekoyume.Model.State.RankingInfo rankingInfo, bool isCurrentUser)
         {
-            AvatarInfo = avatarState;
+            AvatarInfo = rankingInfo ?? throw new ArgumentNullException(nameof(rankingInfo));
+            _isCurrentUser = isCurrentUser;
 
             rank.text = ranking.ToString();
-            characterView.SetByAvatarAddress(avatarState.AvatarAddress);
-            level.text = avatarState.Level.ToString();
-            id.text = avatarState.AvatarName;
-            stage.text = avatarState.Exp.ToString();
+            level.text = AvatarInfo.Level.ToString();
+            id.text = AvatarInfo.AvatarName;
+            stage.text = AvatarInfo.Exp.ToString();
+
+            if (_isCurrentUser)
+            {
+                var player = Game.Game.instance.Stage.selectedPlayer;
+                if (player is null)
+                {
+                    player = Game.Game.instance.Stage.GetPlayer();
+                    characterView.SetByPlayer(player);
+                    player.gameObject.SetActive(false);
+                }
+                else
+                {
+                    characterView.SetByPlayer(player);
+                }
+            }
+            else
+            {
+                characterView.SetByAvatarAddress(AvatarInfo.AvatarAddress);
+            }
+
             tweenMove.StartDelay = ranking * 0.16f;
             tweenAlpha.StartDelay = ranking * 0.16f;
         }
