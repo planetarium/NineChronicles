@@ -85,6 +85,9 @@ namespace Nekoyume.UI.Module
                 case ItemSubType.TailCostume:
                     _requireLevel = GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
                     break;
+                case ItemSubType.Title:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                    break;
                 case ItemSubType.Weapon:
                     _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
                     break;

@@ -35,6 +35,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
+        private TextMeshProUGUI titleText = null;
+
+        [SerializeField]
         private TextMeshProUGUI cpText = null;
 
         [SerializeField]
@@ -227,6 +230,13 @@ namespace Nekoyume.UI
                 avatarState.level,
                 avatarState.NameWithHash);
 
+            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            titleText.text = title is null
+                ? ""
+                : title.GetLocalizedName();
+
             cpText.text = CPHelper.GetCP(avatarState, game.TableSheets.CharacterSheet)
                 .ToString();
 
@@ -317,6 +327,11 @@ namespace Nekoyume.UI
                     inventoryItem.EquippedEnabled.Value = true;
                     player.EquipCostume(costume);
 
+                    if (costume.ItemSubType == ItemSubType.Title)
+                    {
+                        titleText.text = costume.GetLocalizedName();
+                    }
+
                     break;
                 }
                 case Equipment _:
@@ -352,7 +367,7 @@ namespace Nekoyume.UI
             Unequip(slot, false);
         }
 
-        private void Unequip(EquipmentSlot slot, bool ignorePlayer)
+        private void Unequip(EquipmentSlot slot, bool considerInventoryOnly)
         {
             if (_isShownFromBattle)
             {
@@ -376,7 +391,7 @@ namespace Nekoyume.UI
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
 
-            var player = ignorePlayer
+            var player = considerInventoryOnly
                 ? null
                 : Game.Game.instance.Stage.GetPlayer();
             switch (slotItem)
@@ -392,7 +407,7 @@ namespace Nekoyume.UI
 
                     inventoryItem.EquippedEnabled.Value = false;
 
-                    if (ignorePlayer)
+                    if (considerInventoryOnly)
                     {
                         break;
                     }
@@ -402,6 +417,12 @@ namespace Nekoyume.UI
                     player.UnequipCostume(costume, true);
                     player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                     Game.Event.OnUpdatePlayerEquip.OnNext(player);
+
+                    if (costume.ItemSubType == ItemSubType.Title)
+                    {
+                        titleText.text = "";
+                    }
+
                     break;
                 }
                 case Equipment equipment:
@@ -413,7 +434,7 @@ namespace Nekoyume.UI
 
                     inventoryItem.EquippedEnabled.Value = false;
 
-                    if (ignorePlayer)
+                    if (considerInventoryOnly)
                     {
                         break;
                     }

@@ -100,12 +100,16 @@ namespace Nekoyume.Game.Character
 
         public void Set(Model.Player model, bool updateCurrentHP)
         {
+            // NOTE: InitStats()를 호출한 후에 base.Set()을 호출합니다.
+            // 이는 InitStats()내에서 Inventory가 할당되기 때문입니다.
+            // base.Set()에서 updateCurrentHP 파라메터가 true일 때 내부적으로 InitializeHpBar()가 호출되는데,
+            // 이때 Inventory가 채워져 있어야 하기 때문입니다.
+            InitStats(model);
             base.Set(model, updateCurrentHP);
 
             _disposablesForModel.DisposeAllAndClear();
             CharacterModel = model;
 
-            InitStats(model);
             EquipCostumes(model.Costumes);
             EquipEquipmentsAndUpdateCustomize(model.armor, model.weapon);
 
@@ -144,6 +148,16 @@ namespace Nekoyume.Game.Character
             return SpineController.BoxCollider;
         }
 
+        protected override void InitializeHpBar()
+        {
+            base.InitializeHpBar();
+
+            var title = Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            HPBar.SetTitle(title);
+        }
+
         #region AttackPoint & HitPoint
 
         protected override void UpdateHitPoint()
@@ -176,7 +190,6 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
@@ -194,6 +207,9 @@ namespace Nekoyume.Game.Character
                 case ItemSubType.TailCostume:
                     UpdateTailById(costume.Id);
                     break;
+                case ItemSubType.Title:
+                    // TODO: 구현!
+                    break;
             }
         }
 
@@ -204,7 +220,6 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            // TODO: FullCostume 이외의 코스튬은 추가 구현한다.
             switch (costume.ItemSubType)
             {
                 case ItemSubType.EarCostume:
@@ -229,6 +244,9 @@ namespace Nekoyume.Game.Character
                     break;
                 case ItemSubType.TailCostume:
                     UpdateTail();
+                    break;
+                case ItemSubType.Title:
+                    // TODO: 구현!
                     break;
             }
         }
@@ -274,9 +292,6 @@ namespace Nekoyume.Game.Character
         }
 
         #endregion
-
-        // TODO: 최초에 캐릭터 생성 시에만 커스터마이징하는 개념으로 개발되었으나 그 기능이 코스튬과 같기 때문에 이 둘을 적절하게 리펙토링 할 필요가 있습니다.
-        // 각 부위의 코스튬을 개발할 때 진행하면 좋겠습니다.
 
         #region Customize
 

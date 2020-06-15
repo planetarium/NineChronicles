@@ -26,6 +26,9 @@ namespace Nekoyume.Helper
 
         private const string RankIconPath = "UI/Textures/UI_icon_ranking_{0}";
 
+        private const string TitleFramePathFormat = "UI/Textures/TitleFrames/{0}";
+        private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 4990001);
+
         public static Sprite GetCharacterIcon(int characterId)
         {
             return Resources.Load<Sprite>(string.Format(CharacterIconPathFormat, characterId)) ??
@@ -89,6 +92,12 @@ namespace Nekoyume.Helper
         public static Sprite GetRankIcon(int rank)
         {
             return Resources.Load<Sprite>(string.Format(RankIconPath, rank.ToString("D2")));
+        }
+
+        public static Sprite GetTitleFrame(int titleId)
+        {
+            return Resources.Load<Sprite>(string.Format(TitleFramePathFormat, titleId)) ??
+                   Resources.Load<Sprite>(TitleFrameDefaultPath);
         }
     }
 }

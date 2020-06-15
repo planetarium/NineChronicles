@@ -261,7 +261,9 @@ namespace Nekoyume.UI
                 SetArenaInfos();
 
                 if (States.Instance.CurrentAvatarState is null)
+                {
                     return;
+                }
 
                 var weeklyArenaState = States.Instance.WeeklyArenaState;
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -287,7 +289,7 @@ namespace Nekoyume.UI
                         bg.enabled = false;
                     }
 
-                    bool isCurrentUser = avatarState.AvatarAddress.Equals(avatarAddress);
+                    var isCurrentUser = avatarState.AvatarAddress.Equals(avatarAddress);
 
                     rankingInfo.Show(index + 1, avatarState, canChallenge, isCurrentUser);
                     rankingInfo.onClickChallenge = OnClickChallenge;
@@ -306,6 +308,13 @@ namespace Nekoyume.UI
                     SetAvatars(null);
                 }
 
+                if (States.Instance.CurrentAvatarState is null)
+                {
+                    return;
+                }
+
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+
                 for (var index = 0; index < _avatarRankingStates.Length; index++)
                 {
                     var avatarState = _avatarRankingStates[index];
@@ -314,14 +323,16 @@ namespace Nekoyume.UI
                         continue;
                     }
 
-                    RankingInfo rankingInfo = Instantiate(rankingCellViewPrefab, board.content);
+                    var rankingInfo = Instantiate(rankingCellViewPrefab, board.content);
                     var bg = rankingInfo.GetComponent<Image>();
                     if (index % 2 == 1)
                     {
                         bg.enabled = false;
                     }
 
-                    rankingInfo.Set(index + 1, avatarState);
+                    bool isCurrentUser = avatarState.AvatarAddress.Equals(avatarAddress);
+
+                    rankingInfo.Set(index + 1, avatarState, isCurrentUser);
                     rankingInfo.onClick = OnClickAvatarInfo;
                     rankingInfo.gameObject.SetActive(true);
                 }

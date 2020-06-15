@@ -27,6 +27,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
+        private TextMeshProUGUI titleText = null;
+
+        [SerializeField]
         private TextMeshProUGUI cpText = null;
 
         [SerializeField]
@@ -148,6 +151,13 @@ namespace Nekoyume.UI
                 avatarState.level,
                 avatarState.NameWithHash);
 
+            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            titleText.text = title is null
+                ? ""
+                : title.GetLocalizedName();
+            
             cpText.text = CPHelper
                 .GetCP(avatarState, game.TableSheets.CharacterSheet)
                 .ToString();

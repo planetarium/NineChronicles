@@ -154,6 +154,12 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        protected virtual void InitializeHpBar()
+        {
+            HPBar = Widget.FindOrCreate<HpBar>();
+            HPBar.SetTitle(null);
+        }
+
         public virtual void UpdateHpBar()
         {
             if (!Game.instance.Stage.IsInStage)
@@ -161,7 +167,7 @@ namespace Nekoyume.Game.Character
 
             if (!HPBar)
             {
-                HPBar = Widget.FindOrCreate<HpBar>();
+                InitializeHpBar();
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
