@@ -18,7 +18,12 @@ namespace Lib9c.Tests.Action
 
         public IValue GetState(Address address)
         {
-            return _state[address];
+            if (_state.TryGetValue(address, out IValue value))
+            {
+                return value;
+            }
+
+            return null;
         }
 
         public IAccountStateDelta SetState(Address address, IValue state)
