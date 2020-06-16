@@ -51,7 +51,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b84bdfec043c426b8ebd30c5efcfca28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  titleText: {fileID: 5441257221903390171}
   cells:
   - {fileID: 7185411724208008434}
   - {fileID: 3004171136901069816}
@@ -66,6 +65,7 @@ GameObject:
   - component: {fileID: 7430149908744061199}
   - component: {fileID: 6208323756639607102}
   - component: {fileID: 5441257221903390171}
+  - component: {fileID: 9211084286303382359}
   m_Layer: 5
   m_Name: TitleText
   m_TagString: Untagged
@@ -212,6 +212,20 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &9211084286303382359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8255882223613627113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51191e1399da544f688fdf1540b818be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  localizationKey: UI_QUEST
+  text: {fileID: 5441257221903390171}
 --- !u!1001 &1825986775385556299
 PrefabInstance:
   m_ObjectHideFlags: 0
