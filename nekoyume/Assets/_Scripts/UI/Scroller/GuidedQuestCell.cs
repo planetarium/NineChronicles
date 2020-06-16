@@ -1,26 +1,94 @@
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Game.Controller;
+using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
+using NUnit.Framework;
 using TMPro;
+using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
     public class GuidedQuestCell : MonoBehaviour
     {
+        private const string MainContentFormat = "<color=red>[Main]</color> {0}";
+        private const string SubContentFormat = "<color=red>[Sub]</color> {0}";
+
         [SerializeField]
-        private TextMeshProUGUI nameText = null;
+        private TextMeshProUGUI contentText = null;
 
         [SerializeField]
         private List<VanillaItemView> rewards = null;
 
-        public void Show()
+        [SerializeField]
+        private Button bodyButton = null;
+
+        public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
+
+        private void Awake()
         {
+            bodyButton.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    onClick.OnNext(this);
+                })
+                .AddTo(gameObject);
+        }
+
+        public void Show(Nekoyume.Model.Quest.Quest quest)
+        {
+            if (quest is null)
+            {
+                return;
+            }
+
+            SetContent(quest);
+            SetRewards(quest.Reward.ItemMap);
             gameObject.SetActive(true);
         }
 
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        private void SetContent(Nekoyume.Model.Quest.Quest quest)
+        {
+            switch (quest)
+            {
+                default:
+                    contentText.text = string.Format(SubContentFormat, quest.GetContent());
+                    break;
+                case WorldQuest _:
+                    contentText.text = string.Format(MainContentFormat, quest.GetContent());
+                    break;
+            }
+        }
+
+        private void SetRewards(IReadOnlyDictionary<int, int> rewardMap)
+        {
+            var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            for (var i = 0; i < rewards.Count; i++)
+            {
+                var reward = rewards[i];
+                if (i < rewardMap.Count)
+                {
+                    var pair = rewardMap.ElementAt(i);
+                    var row = sheet.OrderedList.FirstOrDefault(itemRow => itemRow.Id == pair.Key);
+                    Assert.NotNull(row);
+
+                    reward.SetData(row);
+                    // reward.iconImage.rectTransform.sizeDelta *= 0.7f;
+                    reward.Show();
+                }
+                else
+                {
+                    reward.Hide();
+                }
+            }
         }
     }
 }
