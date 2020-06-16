@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        public void Show(Nekoyume.Model.Quest.Quest quest)
+        public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreAnimation = false)
         {
             if (quest is null)
             {

@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Show(QuestList questList)
+        public void Show(QuestList questList, bool ignoreAnimation = false)
         {
             if (questList is null)
             {
@@ -38,7 +38,7 @@ namespace Nekoyume.UI.Module
                 .FirstOrDefault(quest => !quest.Complete);
             if (!(worldQuest is null))
             {
-                cells[cellIndex++].Show(worldQuest);
+                cells[cellIndex++].Show(worldQuest, ignoreAnimation);
             }
 
             for (var i = cellIndex; i < cells.Count; i++)
