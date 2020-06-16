@@ -22,6 +22,8 @@ namespace Nekoyume.Game.Character
             Hit,
             Die,
             Win,
+            Win_02,
+            Win_03,
             Greeting,
             Emotion,
         }
