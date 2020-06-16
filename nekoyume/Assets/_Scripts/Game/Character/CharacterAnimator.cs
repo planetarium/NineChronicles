@@ -173,7 +173,7 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var animationType = CharacterAnimation.Type.Win_03;
+            var animationType = CharacterAnimation.Type.Win;
 
             switch (score)
             {
@@ -182,9 +182,6 @@ namespace Nekoyume.Game.Character
                     break;
                 case 3:
                     animationType = CharacterAnimation.Type.Win_03;
-                    break;
-                default:
-                    animationType = CharacterAnimation.Type.Win;
                     break;
             }
 
