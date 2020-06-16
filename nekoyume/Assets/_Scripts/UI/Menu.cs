@@ -52,6 +52,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject questExclamationMark = null;
 
+        [SerializeField]
+        private GuidedQuest guidedQuest = null;
+
         private Coroutine _coLazyClose;
         private Player _player;
 
@@ -210,6 +213,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             arenaPendingNCG.Show();
+            guidedQuest.Show();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
