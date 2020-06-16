@@ -22,32 +22,49 @@ namespace Nekoyume.UI
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
 
-        public MainMenu btnQuest;
-        public MainMenu btnCombination;
-        public MainMenu btnShop;
-        public MainMenu btnRanking;
-        public ArenaPendingNCG arenaPendingNCG;
-        public SpeechBubble[] SpeechBubbles;
-        public GameObject shopExclamationMark;
-        public GameObject combinationExclamationMark;
-        public GameObject rankingExclamationMark;
-        public GameObject questExclamationMark;
+        [SerializeField]
+        private MainMenu btnQuest = null;
 
-        private Coroutine _coroutine;
-        private Player _player;
+        [SerializeField]
+        private MainMenu btnCombination = null;
+
+        [SerializeField]
+        private MainMenu btnShop = null;
+
+        [SerializeField]
+        private MainMenu btnRanking = null;
+
+        [SerializeField]
+        private ArenaPendingNCG arenaPendingNCG = null;
+
+        [SerializeField]
+        private SpeechBubble[] speechBubbles = null;
+
+        [SerializeField]
+        private GameObject shopExclamationMark = null;
+
+        [SerializeField]
+        private GameObject combinationExclamationMark = null;
+
+        [SerializeField]
+        private GameObject rankingExclamationMark = null;
+
+        [SerializeField]
+        private GameObject questExclamationMark = null;
 
         private Coroutine _coLazyClose;
+        private Player _player;
 
         protected override void Awake()
         {
             base.Awake();
 
-            SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
+            speechBubbles = GetComponentsInChildren<SpeechBubble>();
             Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
         }
-        
+
         private void UpdateButtons()
         {
             btnQuest.Update();
@@ -202,7 +219,6 @@ namespace Nekoyume.UI
             Find<Inventory>().Close(ignoreCloseAnimation);
             Find<StatusDetail>().Close(ignoreCloseAnimation);
             Find<Quest>().Close(ignoreCloseAnimation);
-
             Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
@@ -215,7 +231,6 @@ namespace Nekoyume.UI
             Find<Inventory>().Close(ignoreCloseAnimation);
             Find<StatusDetail>().Close(ignoreCloseAnimation);
             Find<Quest>().Close(ignoreCloseAnimation);
-
             Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             yield return new WaitForSeconds(duration);
@@ -226,19 +241,19 @@ namespace Nekoyume.UI
         {
             yield return new WaitForSeconds(2.0f);
 
-            while (true)
+            while (AnimationState == AnimationStateType.Shown)
             {
-                var n = SpeechBubbles.Length;
+                var n = speechBubbles.Length;
                 while (n > 1)
                 {
                     n--;
                     var k = Mathf.FloorToInt(Random.value * (n + 1));
-                    var value = SpeechBubbles[k];
-                    SpeechBubbles[k] = SpeechBubbles[n];
-                    SpeechBubbles[n] = value;
+                    var value = speechBubbles[k];
+                    speechBubbles[k] = speechBubbles[n];
+                    speechBubbles[n] = value;
                 }
 
-                foreach (var bubble in SpeechBubbles)
+                foreach (var bubble in speechBubbles)
                 {
                     yield return StartCoroutine(bubble.CoShowText());
                     yield return new WaitForSeconds(Random.Range(2.0f, 4.0f));
@@ -249,7 +264,7 @@ namespace Nekoyume.UI
         private void StopSpeeches()
         {
             StopCoroutine(CoStartSpeeches());
-            foreach (var bubble in SpeechBubbles)
+            foreach (var bubble in speechBubbles)
             {
                 bubble.Hide();
             }
