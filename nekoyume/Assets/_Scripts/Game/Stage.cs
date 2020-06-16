@@ -386,17 +386,25 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             yield return StartCoroutine(CoUnlockAlert());
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
-            var failed = _battleResultModel.ClearedWaveNumber < log.waveCount;
+            var passed = _battleResultModel.ClearedWaveNumber == log.waveCount;
             yield return new WaitForSeconds(0.75f);
-            if (log.result == BattleLog.Result.Win && !failed)
+            if (log.result == BattleLog.Result.Win)
             {
                 var playerCharacter = GetPlayer();
                 playerCharacter.DisableHUD();
-                yield return StartCoroutine(CoDialog(log.stageId));
-                playerCharacter.Animator.Win();
+                if (passed)
+                {
+                    yield return StartCoroutine(CoDialog(log.stageId));
+                }
+
+                playerCharacter.Animator.Win(log.clearedWaveNumber);
                 playerCharacter.ShowSpeech("PLAYER_WIN");
                 yield return new WaitForSeconds(2.2f);
-                StartCoroutine(CoSlideBg());
+                objectPool.ReleaseExceptForPlayer();
+                if (passed)
+                {
+                    StartCoroutine(CoSlideBg());
+                }
             }
             else
             {
@@ -412,7 +420,7 @@ namespace Nekoyume.Game
             var apNotEnough = avatarState.actionPoint < stage.CostAP;
             _battleResultModel.ActionPointNotEnough = apNotEnough;
             _battleResultModel.ShouldExit = apNotEnough || isExitReserved;
-            _battleResultModel.ShouldRepeat = !apNotEnough && (repeatStage || failed);
+            _battleResultModel.ShouldRepeat = !apNotEnough && (repeatStage || !passed);
 
             if (!_battleResultModel.ShouldRepeat)
             {
@@ -822,6 +830,11 @@ namespace Nekoyume.Game
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             var character = GetCharacter(model);
+
+            var isPlayerCleared = model is Player && _battleLog.clearedWaveNumber > 0;
+            if (isPlayerCleared)
+                yield break;
+
             character.Dead();
         }
 

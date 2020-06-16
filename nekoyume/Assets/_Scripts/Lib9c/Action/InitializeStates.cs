@@ -20,6 +20,8 @@ namespace Nekoyume.Action
         public GameConfigState GameConfigState { get; set; }
         public RedeemCodeState RedeemCodeState { get; set; }
 
+        public AdminState AdminAddressState { get; set; }
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;
@@ -33,6 +35,7 @@ namespace Nekoyume.Action
                     (current, address) => current.SetState(address, MarkChanged));
                 states = states.SetState(GameConfigState.Address, MarkChanged);
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);
+                states = states.SetState(AdminState.Address, MarkChanged);
                 return states;
             }
 
@@ -48,7 +51,8 @@ namespace Nekoyume.Action
                 .SetState(ShopState.Address, ShopState.Serialize())
                 .SetState(TableSheetsState.Address, TableSheetsState.Serialize())
                 .SetState(GameConfigState.Address, GameConfigState.Serialize())
-                .SetState(RedeemCodeState.Address, RedeemCodeState.Serialize());
+                .SetState(RedeemCodeState.Address, RedeemCodeState.Serialize())
+                .SetState(AdminState.Address, AdminAddressState.Serialize());
             return states;
         }
 
@@ -63,7 +67,8 @@ namespace Nekoyume.Action
                     .Add("table_sheets_state", TableSheetsState.Serialize())
                     .Add("weekly_arena_addresses", addresses.Serialize())
                     .Add("game_config_state", GameConfigState.Serialize())
-                    .Add("redeem_code_state", RedeemCodeState.Serialize());
+                    .Add("redeem_code_state", RedeemCodeState.Serialize())
+                    .Add("admin_address_state", AdminAddressState.Serialize());
             }
         }
 
@@ -76,6 +81,7 @@ namespace Nekoyume.Action
             WeeklyArenaAddresses = addressList.Select(d => d.ToAddress()).ToList();
             GameConfigState = new GameConfigState((Bencodex.Types.Dictionary) plainValue["game_config_state"]);
             RedeemCodeState = new RedeemCodeState((Bencodex.Types.Dictionary) plainValue["redeem_code_state"]);
+            AdminAddressState = new AdminState((Bencodex.Types.Dictionary)plainValue["admin_address_state"]);
         }
     }
 }

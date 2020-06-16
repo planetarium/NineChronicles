@@ -71,6 +71,10 @@ namespace Nekoyume.BlockChain
                 WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                 GameConfigState = gameConfigState,
                 RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
+                AdminAddressState = new AdminState(
+                    new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
+                    1500000
+                ),
             };
             var actions = new PolymorphicAction<ActionBase>[]
             {

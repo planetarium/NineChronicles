@@ -27,6 +27,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
+        private TextMeshProUGUI titleText = null;
+
+        [SerializeField]
         private TextMeshProUGUI cpText = null;
 
         [SerializeField]
@@ -98,7 +101,7 @@ namespace Nekoyume.UI
             _previousAvatarSortingLayerOrder = player.sortingGroup.sortingOrder;
 
             playerTransform.position = avatarPosition.position;
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 3;
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
             player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
 
             _tempStats = player.Model.Stats.Clone() as CharacterStats;
@@ -148,6 +151,13 @@ namespace Nekoyume.UI
                 avatarState.level,
                 avatarState.NameWithHash);
 
+            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            titleText.text = title is null
+                ? ""
+                : title.GetLocalizedName();
+            
             cpText.text = CPHelper
                 .GetCP(avatarState, game.TableSheets.CharacterSheet)
                 .ToString();

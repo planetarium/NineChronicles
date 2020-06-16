@@ -44,7 +44,8 @@ namespace Nekoyume.UI.Module
                 state.UnlockStage);
             _data = state;
             _slotIndex = slotIndex;
-            var unlock = States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(state.UnlockStage);
+            var unlock = States.Instance.CurrentAvatarState?.worldInformation.IsStageCleared(state.UnlockStage)
+                ?? false;
             lockText.gameObject.SetActive(!unlock);
             lockImage.gameObject.SetActive(!unlock);
             unlockText.gameObject.SetActive(false);

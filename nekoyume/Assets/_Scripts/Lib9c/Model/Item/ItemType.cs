@@ -37,6 +37,9 @@ namespace Nekoyume.Model.Item
         Hourglass,
         ApStone,
         Chest,
+
+        // Costume
+        Title,
     }
 
     public class ItemTypeComparer : IEqualityComparer<ItemType>
