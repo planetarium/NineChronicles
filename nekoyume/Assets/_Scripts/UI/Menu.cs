@@ -216,11 +216,7 @@ namespace Nekoyume.UI
         {
             StopSpeeches();
 
-            Find<Inventory>().Close(ignoreCloseAnimation);
-            Find<StatusDetail>().Close(ignoreCloseAnimation);
-            Find<Quest>().Close(ignoreCloseAnimation);
             Find<BottomMenu>().Close(true);
-            Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -228,11 +224,7 @@ namespace Nekoyume.UI
         {
             StopSpeeches();
 
-            Find<Inventory>().Close(ignoreCloseAnimation);
-            Find<StatusDetail>().Close(ignoreCloseAnimation);
-            Find<Quest>().Close(ignoreCloseAnimation);
             Find<BottomMenu>().Close(true);
-            Find<Status>().Close(true);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
         }
