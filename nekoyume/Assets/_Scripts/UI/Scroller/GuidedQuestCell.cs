@@ -81,7 +81,6 @@ namespace Nekoyume.UI.Scroller
                     Assert.NotNull(row);
 
                     reward.SetData(row);
-                    // reward.iconImage.rectTransform.sizeDelta *= 0.7f;
                     reward.Show();
                 }
                 else

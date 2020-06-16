@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Quest;
-using Nekoyume.Model.State;
 using Nekoyume.UI.Scroller;
 using NUnit.Framework;
 using UniRx;
