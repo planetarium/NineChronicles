@@ -36,6 +36,11 @@ namespace Nekoyume.Action
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
+            if (context.Rehearsal)
+            {
+                return context.PreviousStates.SetState(PendingActivation.address, MarkChanged);
+            }
+
             CheckPermission(context);
 
             return context.PreviousStates.SetState(

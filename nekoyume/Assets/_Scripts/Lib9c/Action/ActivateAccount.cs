@@ -38,6 +38,13 @@ namespace Nekoyume.Action
         {
             IAccountStateDelta state = context.PreviousStates;
 
+            if (context.Rehearsal)
+            {
+                return state
+                    .SetState(ActivatedAccountsState.Address, MarkChanged)
+                    .SetState(PendingAddress, MarkChanged);
+            }
+
             if (!state.TryGetState(ActivatedAccountsState.Address, out Dictionary accountsAsDict))
             {
                 throw new ActivatedAccountsDoesNotExistsException();
