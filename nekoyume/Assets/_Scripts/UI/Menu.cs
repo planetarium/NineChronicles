@@ -213,7 +213,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             arenaPendingNCG.Show();
-            guidedQuest.Show();
+            guidedQuest.Show(States.Instance.CurrentAvatarState?.questList);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
