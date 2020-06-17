@@ -161,6 +161,13 @@ public class SpineAttachmentNotFoundException : Exception
     }
 }
 
+public class SerializeFieldException : Exception
+{
+    public SerializeFieldException(string message) : base(message)
+    {
+    }
+}
+
 public class SerializeFieldNullException : Exception
 {
     public SerializeFieldNullException()
