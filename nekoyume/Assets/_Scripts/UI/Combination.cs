@@ -214,7 +214,6 @@ namespace Nekoyume.UI
                 _npc01 = go.GetComponent<NPC>();
             }
 
-            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
 
@@ -255,6 +254,13 @@ namespace Nekoyume.UI
             categoryTabArea.SetActive(false);
             equipmentRecipe.gameObject.SetActive(false);
             base.OnCompleteOfCloseAnimationInternal();
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
+            
+            base.OnCompleteOfShowAnimationInternal();
         }
 
         #endregion
