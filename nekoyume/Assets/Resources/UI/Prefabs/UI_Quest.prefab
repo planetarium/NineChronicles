@@ -1704,7 +1704,7 @@ MonoBehaviour:
   scrollDirection: 0
   movementType: 1
   elasticity: 0.1
-  scrollSensitivity: 10
+  scrollSensitivity: 20
   inertia: 1
   decelerationRate: 0.03
   snap:
@@ -1737,6 +1737,7 @@ MonoBehaviour:
   cellPrefab: {fileID: 8553884987421549240, guid: 95933a86cd1c843859ee9d5e2a311cd0,
     type: 3}
   cellSize: 69
+  forcedScrollSensitivity: 20
 --- !u!1 &5689516741694287758
 GameObject:
   m_ObjectHideFlags: 0
