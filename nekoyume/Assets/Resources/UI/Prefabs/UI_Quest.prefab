@@ -1075,7 +1075,7 @@ GameObject:
   - component: {fileID: 3106393234482413173}
   - component: {fileID: 3916613368127252229}
   m_Layer: 5
-  m_Name: UI_Quest backup
+  m_Name: UI_Quest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1704,7 +1704,7 @@ MonoBehaviour:
   scrollDirection: 0
   movementType: 1
   elasticity: 0.1
-  scrollSensitivity: 2
+  scrollSensitivity: 10
   inertia: 1
   decelerationRate: 0.03
   snap:
