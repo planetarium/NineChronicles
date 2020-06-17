@@ -366,7 +366,7 @@ namespace Nekoyume.Game
 
             _battleResultModel = new BattleResult.Model();
 
-            zone = data.Background;
+            zone = "PVP";
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
