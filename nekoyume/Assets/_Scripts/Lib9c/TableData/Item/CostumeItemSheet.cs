@@ -37,11 +37,25 @@ namespace Nekoyume.TableData
             public override void Set(IReadOnlyList<string> fields)
             {
                 base.Set(fields);
-                SpineResourcePath = string.IsNullOrEmpty(fields[4])
-                    ? ItemSubType == ItemSubType.FullCostume
-                        ? $"Character/FullCostume/{Id}"
-                        : $"Character/PlayerSpineTexture/{ItemSubType}/{Id}"
-                    : fields[4];
+                if (string.IsNullOrEmpty(fields[4]))
+                {
+                    switch (ItemSubType)
+                    {
+                        default:
+                            SpineResourcePath = $"Character/PlayerSpineTexture/{ItemSubType}/{Id}";
+                            break;
+                        case ItemSubType.FullCostume:
+                            SpineResourcePath = $"Character/{ItemSubType}/{Id}";
+                            break;
+                        case ItemSubType.Title:
+                            SpineResourcePath = "";
+                            break;
+                    }
+                }
+                else
+                {
+                    SpineResourcePath = fields[4];
+                }
             }
         }
 

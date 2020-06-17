@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -85,7 +86,7 @@ namespace Nekoyume.UI
         private SpeechBubble _selectedSpeechBubble;
 
         protected override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
-            ? AnimationState == AnimationStateType.Closed
+            ? AnimationState == AnimationStateType.Shown
             : base.CanHandleInputEvent;
 
         #region Override
@@ -213,7 +214,6 @@ namespace Nekoyume.UI
                 _npc01 = go.GetComponent<NPC>();
             }
 
-            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
 
@@ -246,9 +246,21 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfCloseAnimationInternal()
         {
+            if (State.Value == StateType.CombinationConfirm)
+            {
+                return;
+            }
+
             categoryTabArea.SetActive(false);
             equipmentRecipe.gameObject.SetActive(false);
             base.OnCompleteOfCloseAnimationInternal();
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
+            
+            base.OnCompleteOfShowAnimationInternal();
         }
 
         #endregion
@@ -310,7 +322,6 @@ namespace Nekoyume.UI
                 case StateType.CombineEquipment:
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
-                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
 
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -323,12 +334,13 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(true);
                     consumableRecipe.gameObject.SetActive(false);
                     equipmentRecipe.ShowCellViews();
-                    Animator.Play("Show", -1, 0.0f);
+                    Animator.Play("ShowLeftArea", -1, 0.0f);
+                    OnTweenRecipe();
+                    _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
                     break;
                 case StateType.CombineConsumable:
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
-                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
 
                     enhanceEquipment.Hide();
                     equipmentCombinationPanel.Hide();
@@ -341,7 +353,9 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(false);
                     consumableRecipe.gameObject.SetActive(true);
                     consumableRecipe.ShowCellViews();
-                    Animator.Play("Show", -1, 0.0f);
+                    Animator.Play("ShowLeftArea", -1, 0.0f);
+                    OnTweenRecipe();
+                    _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
                     break;
                 case StateType.EnhanceEquipment:
                     _selectedSpeechBubble = speechBubbleForUpgrade;
@@ -365,7 +379,13 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombinationConfirm:
+                    if (AnimationState == AnimationStateType.Showing)
+                    {
+                        break;
+                    }
+
                     _toggleGroup.SetToggledOffAll();
+                    OnTweenRecipe();
 
                     var rectTransform = selectedRecipe.transform as RectTransform;
                     recipeClickVFX.transform.position = rectTransform
@@ -393,7 +413,7 @@ namespace Nekoyume.UI
 
             enhanceEquipment.Hide();
             inventory.gameObject.SetActive(false);
-            Animator.Play("Close");
+            Animator.Play("CloseLeftArea");
         }
 
         private void OnClickConsumableRecipe()
@@ -405,7 +425,7 @@ namespace Nekoyume.UI
             consumableRecipe.HideCellviews();
 
             var recipeCellView = selectedRecipe as ConsumableRecipeCellView;
-            consumableCombinationPanel.TweenCellView(recipeCellView);
+            consumableCombinationPanel.TweenCellView(recipeCellView, OnTweenRecipeCompleted);
             consumableCombinationPanel.SetData(recipeCellView.RowData);
         }
 
@@ -422,12 +442,12 @@ namespace Nekoyume.UI
             if (isElemental)
             {
                 equipmentCombinationPanel.Hide();
-                elementalCombinationPanel.TweenCellViewInOption(recipeCellView);
+                elementalCombinationPanel.TweenCellViewInOption(recipeCellView, OnTweenRecipeCompleted);
                 elementalCombinationPanel.SetData(recipeCellView.RowData);
             }
             else
             {
-                equipmentCombinationPanel.TweenCellView(recipeCellView);
+                equipmentCombinationPanel.TweenCellView(recipeCellView, OnTweenRecipeCompleted);
                 equipmentCombinationPanel.SetData(recipeCellView.RowData);
                 elementalCombinationPanel.Hide();
             }
@@ -516,6 +536,16 @@ namespace Nekoyume.UI
             }
         }
 
+        public void OnTweenRecipe()
+        {
+            AnimationState = AnimationStateType.Showing;
+        }
+
+        public void OnTweenRecipeCompleted()
+        {
+            AnimationState = AnimationStateType.Shown;
+        }
+
         private void SubscribeSlotStates(Dictionary<int, CombinationSlotState> states)
         {
             _states = states;
@@ -543,7 +573,7 @@ namespace Nekoyume.UI
                 }).ToList();
 
             UpdateCurrentAvatarState(consumableCombinationPanel, materialInfoList);
-            CreateConsumableCombinationAction(materialInfoList, selectedIndex);
+            CreateConsumableCombinationAction(rowData.Id, materialInfoList, selectedIndex);
         }
 
         private void ActionEnhanceEquipment()
@@ -610,7 +640,8 @@ namespace Nekoyume.UI
         }
 
 
-        private void CreateConsumableCombinationAction(List<(Material material, int count)> materialInfoList,
+        private void CreateConsumableCombinationAction(int rowId,
+            List<(Material material, int count)> materialInfoList,
             int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotConsumable(
@@ -621,7 +652,7 @@ namespace Nekoyume.UI
             );
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.CombinationConsumable(materialInfoList, slotIndex)
+            Game.Game.instance.ActionManager.CombinationConsumable(rowId, slotIndex)
                 .Subscribe(_ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
@@ -729,6 +760,19 @@ namespace Nekoyume.UI
             _lockSlotIndex = false;
             _selectedSpeechBubble.onGoing = false;
             Find<CombinationLoadingScreen>().Close();
+        }
+
+        private void SetNPCAlphaZero()
+        {
+            _npc01.SpineController.SkeletonAnimation.skeleton.A = 0;
+        }
+
+        private void NPCShowAnimation()
+        {
+            var skeletonTweener = DOTween.To(() => _npc01.SpineController.SkeletonAnimation.skeleton.A,
+                alpha => _npc01.SpineController.SkeletonAnimation.skeleton.A = alpha, 1,
+                1f);
+            skeletonTweener.Play();
         }
     }
 }

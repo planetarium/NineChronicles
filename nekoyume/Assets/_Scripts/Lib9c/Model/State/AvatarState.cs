@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
@@ -336,6 +337,106 @@ namespace Nekoyume.Model.State
         {
             var armor = inventory.Items.Select(i => i.item).OfType<Armor>().FirstOrDefault(e => e.equipped);
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
+        }
+
+        public bool ValidateEquipments(List<Guid> equipmentIds, long blockIndex)
+        {
+            var ringCount = 0;
+            var failed = false;
+            foreach (var itemId in equipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(itemId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                var equipment = (Equipment) outNonFungibleItem;
+                if (equipment.RequiredBlockIndex > blockIndex)
+                {
+                    failed = true;
+                    break;
+                }
+
+                switch (equipment.ItemSubType)
+                {
+                    case ItemSubType.Weapon:
+                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                        break;
+                    case ItemSubType.Armor:
+                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                        break;
+                    case ItemSubType.Belt:
+                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                        break;
+                    case ItemSubType.Necklace:
+                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                        break;
+                    case ItemSubType.Ring:
+                        ringCount++;
+                        var requireLevel = ringCount == 1
+                            ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
+                            : ringCount == 2
+                                ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
+                                : int.MaxValue;
+                        failed = level < requireLevel;
+                        break;
+                    default:
+                        failed = true;
+                        break;
+                }
+            }
+
+            return !failed;
+        }
+
+        public void EquipCostumes(List<int> costumeIds)
+        {
+            // 코스튬 해제.
+            var inventoryCostumes = inventory.Items
+                .Select(i => i.item)
+                .OfType<Costume>()
+                .Where(i => i.equipped)
+                .ToImmutableHashSet();
+            foreach (var costume in inventoryCostumes)
+            {
+                costume.equipped = false;
+            }
+
+            // 코스튬 장착.
+            foreach (var costumeId in costumeIds)
+            {
+                if (!inventory.TryGetCostume(costumeId, out var outItem))
+                {
+                    continue;
+                }
+
+                ((Costume) outItem.item).equipped = true;
+            }
+        }
+
+        public void EquipEquipments(List<Guid> equipmentIds)
+        {
+            // 장비 해제.
+            var inventoryEquipments = inventory.Items
+                .Select(i => i.item)
+                .OfType<Equipment>()
+                .Where(i => i.equipped)
+                .ToImmutableHashSet();
+            foreach (var equipment in inventoryEquipments)
+            {
+                equipment.Unequip();
+            }
+
+            // 장비 장착.
+            foreach (var equipmentId in equipmentIds)
+            {
+                if (!inventory.TryGetNonFungibleItem(equipmentId, out ItemUsable outNonFungibleItem))
+                {
+                    continue;
+                }
+
+                ((Equipment) outNonFungibleItem).Equip();
+            }
         }
 
         public override IValue Serialize() =>

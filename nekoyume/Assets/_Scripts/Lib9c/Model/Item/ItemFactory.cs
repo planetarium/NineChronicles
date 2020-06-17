@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
-using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.TableData;
 using Nekoyume.Model.Skill;
@@ -24,7 +24,9 @@ namespace Nekoyume.Model.Item
 
         public static Material CreateMaterial(MaterialItemSheet.Row row)
         {
-            return new Material(row);
+            return row.ItemSubType == ItemSubType.Chest
+                ? CreateChest(row, null)
+                : new Material(row);
         }
 
         public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id,
@@ -52,6 +54,12 @@ namespace Nekoyume.Model.Item
                         itemRow.Id.ToString(CultureInfo.InvariantCulture));
             }
         }
+
+        public static Chest CreateChest(MaterialItemSheet.Row row, List<RedeemRewardSheet.RewardInfo> rewards)
+        {
+            return new Chest(row, rewards);
+        }
+
         private static ItemBase DeserializeLegacy(Dictionary serialized)
         {
             var data = (Dictionary) serialized["data"];
@@ -125,9 +133,12 @@ namespace Nekoyume.Model.Item
                 return DeserializeLegacy(serialized);
             }
 
-            if (serialized.TryGetValue((Text) "item_type", out var type))
+            if (serialized.TryGetValue((Text) "item_type", out var type) &&
+                serialized.TryGetValue((Text) "item_sub_type", out var subType))
             {
                 var itemType = type.ToEnum<ItemType>();
+                var itemSubType = subType.ToEnum<ItemSubType>();
+
                 switch (itemType)
                 {
                     case ItemType.Consumable:
@@ -135,26 +146,22 @@ namespace Nekoyume.Model.Item
                     case ItemType.Costume:
                         return new Costume(serialized);
                     case ItemType.Equipment:
-                        if (serialized.TryGetValue((Text) "item_sub_type", out var subType))
+                        switch (itemSubType)
                         {
-                            var itemSubType = subType.ToEnum<ItemSubType>();
-                            switch (itemSubType)
-                            {
-                                case ItemSubType.Weapon:
-                                    return new Weapon(serialized);
-                                case ItemSubType.Armor:
-                                    return new Armor(serialized);
-                                case ItemSubType.Belt:
-                                    return new Belt(serialized);
-                                case ItemSubType.Necklace:
-                                    return new Necklace(serialized);
-                                case ItemSubType.Ring:
-                                    return new Ring(serialized);
-                            }
+                            case ItemSubType.Weapon:
+                                return new Weapon(serialized);
+                            case ItemSubType.Armor:
+                                return new Armor(serialized);
+                            case ItemSubType.Belt:
+                                return new Belt(serialized);
+                            case ItemSubType.Necklace:
+                                return new Necklace(serialized);
+                            case ItemSubType.Ring:
+                                return new Ring(serialized);
                         }
                         break;
                     case ItemType.Material:
-                        return new Material(serialized);
+                        return itemSubType == ItemSubType.Chest ? new Chest(serialized) : new Material(serialized);
                     default:
                         throw new ArgumentOutOfRangeException(nameof(itemType));
                 }
@@ -177,6 +184,7 @@ namespace Nekoyume.Model.Item
                 case ItemSubType.FullCostume:
                 case ItemSubType.HairCostume:
                 case ItemSubType.TailCostume:
+                case ItemSubType.Title:
                     return new CostumeItemSheet.Row(serialized);
                 // Equipment
                 case ItemSubType.Weapon:

@@ -12,6 +12,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using TentuPlay.Api;
 
 namespace Nekoyume.BlockChain
@@ -60,6 +61,7 @@ namespace Nekoyume.BlockChain
             GameConfig();
             RedeemCode();
             ChargeActionPoint();
+            OpenChest();
         }
 
         public void Stop()
@@ -214,7 +216,7 @@ namespace Nekoyume.BlockChain
                                     reference_entity: "quests",
                                     reference_category_slug: "arena",
                                     reference_slug: "RankingRewardIndex" + index.ToString()
-                                    );
+                                );
                             }
                             catch
                             {
@@ -300,7 +302,7 @@ namespace Nekoyume.BlockChain
         private void RedeemCode()
         {
             _renderer.EveryRender<Action.RedeemCode>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRedeemCode).AddTo(_disposables);
         }
@@ -311,6 +313,14 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
+        }
+
+        private void OpenChest()
+        {
+            _renderer.EveryRender<OpenChest>()
+                .Where(ValidateEvaluationForCurrentAvatarState)
+                .ObserveOnMainThread()
+                .Subscribe(ResponseOpenChest).AddTo(_disposables);
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
@@ -331,13 +341,15 @@ namespace Nekoyume.BlockChain
             //[TentuPlay] RapidCombinationConsumable 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             var agentAddress = eval.Signer;
-            var agentState = eval.OutputStates.GetAgentState(agentAddress);
+            var qty = eval.OutputStates.GetAvatarState(avatarAddress).inventory.Materials
+                .Count(i => i.ItemSubType == ItemSubType.Hourglass);
+            var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
+                .Count(i => i.ItemSubType == ItemSubType.Hourglass);
             new TPStashEvent().CurrencyUse(
                 player_uuid: agentAddress.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)agentState.modifiedGold,
-                currency_total_quantity: (float)(agentState.gold),
-                //currency_total_quantity: (float)(agentState.gold - agentState.modifiedGold),
+                currency_slug: "hourglass",
+                currency_quantity: (float) (prevQty - qty),
+                currency_total_quantity: (float) qty,
                 reference_entity: "items_consumables",
                 reference_category_slug: "consumables_rapid_combination",
                 reference_slug: slot.Result.itemUsable.Id.ToString());
@@ -441,12 +453,16 @@ namespace Nekoyume.BlockChain
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
         {
             var avatarAddress = eval.Action.sellerAvatarAddress;
-            var itemId = eval.Action.itemUsable.ItemId;
+            var itemId = eval.Action.itemId;
 
             // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
             LocalStateModifier.AddItem(avatarAddress, itemId, false);
             var format = LocalizationManager.Localize("NOTIFICATION_SELL_COMPLETE");
-            UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.itemUsable.GetLocalizedName()));
+            var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
+            if (shopState.TryGet(eval.Signer, eval.Action.productId, out var pair))
+            {
+                UI.Notification.Push(MailType.Auction, string.Format(format, pair.Value.ItemUsable.GetLocalizedName()));
+            }
             UpdateCurrentAvatarState(eval);
         }
 
@@ -493,7 +509,7 @@ namespace Nekoyume.BlockChain
                     reference_entity: "trades",
                     reference_category_slug: "buy",
                     reference_slug: result.itemUsable.Id.ToString() //아이템 품번
-                    );
+                );
             }
             else
             {
@@ -635,7 +651,7 @@ namespace Nekoyume.BlockChain
                 reference_entity: "quests",
                 reference_category_slug: "arena",
                 reference_slug: "WeeklyArenaEntryFee"
-                );
+            );
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -675,29 +691,42 @@ namespace Nekoyume.BlockChain
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
         {
-            var code = eval.Action.code;
-            RedeemCodeState redeemCodeState = null;
-            if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+            var key = "UI_REDEEM_CODE_INVALID_CODE";
+            if (eval.Exception is null)
             {
-                redeemCodeState = new RedeemCodeState(d);
+                var code = eval.Action.code;
+                RedeemCodeState redeemCodeState = null;
+                if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
+                {
+                    redeemCodeState = new RedeemCodeState(d);
+                }
+
+                if (redeemCodeState is null)
+                {
+                    return;
+                }
+
+                if (redeemCodeState.Map.TryGetValue(code, out var reward))
+                {
+                    var tableSheets = Game.Game.instance.TableSheets;
+                    var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
+                    var rewards = row.Rewards;
+                    var chestRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
+                    var chest = ItemFactory.CreateChest(chestRow, rewards);
+                    Widget.Find<RedeemRewardPopup>().Pop(new List<(ItemBase, int)> { (chest, 1) }, tableSheets);
+                    key = "UI_REDEEM_CODE_SUCCESS";
+                    UpdateCurrentAvatarState(eval);
+                }
+            }
+            else
+            {
+                if (eval.Exception.InnerException is DuplicateRedeemException)
+                {
+                    key = "UI_REDEEM_CODE_ALREADY_USE";
+                }
             }
 
-            if (redeemCodeState is null)
-            {
-                return;
-            }
-
-            var msg = "Invalid Redeem Code.";
-
-            if (redeemCodeState.Map.TryGetValue(code, out var reward))
-            {
-                var tableSheets = Game.Game.instance.TableSheets;
-                var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
-                var rewards = row.Rewards;
-                Widget.Find<RedeemRewardPopup>().Pop(rewards, tableSheets);
-                msg = "Response Redeem Code.";
-                UpdateCurrentAvatarState(eval);
-            }
+            var msg = LocalizationManager.Localize(key);
             UI.Notification.Push(MailType.System, msg);
         }
 
@@ -708,6 +737,12 @@ namespace Nekoyume.BlockChain
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
             LocalStateModifier.AddItem(avatarAddress, row.ItemId, 1);
+            UpdateCurrentAvatarState(eval);
+        }
+
+        private void ResponseOpenChest(ActionBase.ActionEvaluation<OpenChest> eval)
+        {
+            UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)

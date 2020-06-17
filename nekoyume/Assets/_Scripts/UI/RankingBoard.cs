@@ -7,6 +7,7 @@ using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -51,6 +52,7 @@ namespace Nekoyume.UI
         private List<(int rank, ArenaInfo arenaInfo)> _arenaAvatarStates;
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
+        private Player _player;
 
         private readonly ReactiveProperty<StateType> _state =
             new ReactiveProperty<StateType>(StateType.Arena);
@@ -120,7 +122,8 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
-            stage.GetPlayer().gameObject.SetActive(false);
+            _player = stage.GetPlayer();
+            _player.gameObject.SetActive(false);
 
             _state.SetValueAndForceNotify(stateType);
 
@@ -258,7 +261,9 @@ namespace Nekoyume.UI
                 SetArenaInfos();
 
                 if (States.Instance.CurrentAvatarState is null)
+                {
                     return;
+                }
 
                 var weeklyArenaState = States.Instance.WeeklyArenaState;
                 var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -284,7 +289,7 @@ namespace Nekoyume.UI
                         bg.enabled = false;
                     }
 
-                    bool isCurrentUser = avatarState.AvatarAddress.Equals(avatarAddress);
+                    var isCurrentUser = avatarState.AvatarAddress.Equals(avatarAddress);
 
                     rankingInfo.Show(index + 1, avatarState, canChallenge, isCurrentUser);
                     rankingInfo.onClickChallenge = OnClickChallenge;
@@ -303,6 +308,13 @@ namespace Nekoyume.UI
                     SetAvatars(null);
                 }
 
+                if (States.Instance.CurrentAvatarState is null)
+                {
+                    return;
+                }
+
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+
                 for (var index = 0; index < _avatarRankingStates.Length; index++)
                 {
                     var avatarState = _avatarRankingStates[index];
@@ -311,14 +323,16 @@ namespace Nekoyume.UI
                         continue;
                     }
 
-                    RankingInfo rankingInfo = Instantiate(rankingCellViewPrefab, board.content);
+                    var rankingInfo = Instantiate(rankingCellViewPrefab, board.content);
                     var bg = rankingInfo.GetComponent<Image>();
                     if (index % 2 == 1)
                     {
                         bg.enabled = false;
                     }
 
-                    rankingInfo.Set(index + 1, avatarState);
+                    bool isCurrentUser = avatarState.AvatarAddress.Equals(avatarAddress);
+
+                    rankingInfo.Set(index + 1, avatarState, isCurrentUser);
                     rankingInfo.onClick = OnClickAvatarInfo;
                     rankingInfo.gameObject.SetActive(true);
                 }
@@ -334,9 +348,14 @@ namespace Nekoyume.UI
 
         private void OnClickChallenge(ArenaCellView info)
         {
-            Game.Game.instance.ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
-            Find<LoadingScreen>().Show();
-            Find<RankingBattleLoadingScreen>().Show(info.ArenaInfo);
+            //TODO 소모품장착
+            Game.Game.instance.ActionManager.RankingBattle(
+                info.ArenaInfo.AvatarAddress,
+                _player.Costumes.Select(i => i.Id).ToList(),
+                _player.Equipments.Select(i => i.ItemId).ToList(),
+                new List<Guid>()
+            );
+            Find<ArenaBattleLoadingScreen>().Show(info.ArenaInfo);
         }
 
         private void SetAvatars(DateTimeOffset? dt)
@@ -410,8 +429,7 @@ namespace Nekoyume.UI
         public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
         {
             Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
-            Find<LoadingScreen>().Close();
-            Find<RankingBattleLoadingScreen>().Close();
+            Find<ArenaBattleLoadingScreen>().Close();
             Close();
         }
     }

@@ -22,6 +22,7 @@ namespace Nekoyume.Game
         }
         public static readonly EnemyDead OnEnemyDeadStart = new EnemyDead();
 
+        public static readonly Subject<Player> OnUpdatePlayerEquip = new Subject<Player>();
         public static readonly Subject<Player> OnUpdatePlayerStatus = new Subject<Player>();
 
         public class GetItem : UnityEvent<DropItem>

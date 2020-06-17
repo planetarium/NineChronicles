@@ -70,6 +70,9 @@ namespace Nekoyume.UI
         public MailTabState tabState;
         public MailScrollerController scroller;
         public TabButton[] tabButtons;
+        public GameObject emptyImage;
+        public TextMeshProUGUI emptyText;
+        public string LocalizationKey;
         public Blur blur;
 
         private static Sprite _selectedButtonSprite;
@@ -94,6 +97,8 @@ namespace Nekoyume.UI
             tabButtons[2].Init("UI_SHOP");
             tabButtons[3].Init("SYSTEM");
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
+
+            emptyText.text = LocalizationManager.Localize(LocalizationKey);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -163,6 +168,7 @@ namespace Nekoyume.UI
             }
 
             scroller.SetData(list);
+            emptyImage.SetActive(list.Count == 0);
         }
 
         private void SetList(MailBox mailBox)

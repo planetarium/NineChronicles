@@ -12,6 +12,7 @@ using Bencodex.Types;
 using Grpc.Core;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using MagicOnion.Client;
@@ -43,6 +44,8 @@ namespace Nekoyume.BlockChain
         private Codec _codec = new Codec();
         private Subject<ActionEvaluation<ActionBase>> _renderSubject;
         private Subject<ActionEvaluation<ActionBase>> _unrenderSubject;
+
+        private Block<PolymorphicAction<ActionBase>> _genseis;
 
         public ActionRenderer ActionRenderer { get; private set; }
 
@@ -80,6 +83,8 @@ namespace Nekoyume.BlockChain
             StartCoroutine(CoJoin(callback));
 
             OnDisconnected = new UnityEvent();
+
+            _genseis = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPath);
         }
 
         public IValue GetState(Address address)
@@ -218,6 +223,7 @@ namespace Nekoyume.BlockChain
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     nonce,
                     PrivateKey,
+                    _genseis?.Hash,
                     actions
                 );
             await _service.PutTransaction(tx.Serialize(true));

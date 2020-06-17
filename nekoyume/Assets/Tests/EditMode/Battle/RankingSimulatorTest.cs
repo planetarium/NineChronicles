@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -31,7 +32,7 @@ namespace Tests.EditMode.Battle
                 new Cheat.DebugRandom(),
                 avatarState,
                 avatarState,
-                new List<Consumable>(),
+                new List<Guid>(),
                 _tableSheets
             );
             simulator.Simulate();

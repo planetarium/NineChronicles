@@ -1,6 +1,7 @@
+using System;
 using Libplanet;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -10,19 +11,28 @@ namespace Nekoyume.UI.Scroller
 {
     public class RankingInfo : MonoBehaviour
     {
-        public Button button;
-        public TextMeshProUGUI rank;
-        public Image icon;
-        public TextMeshProUGUI level;
-        public TextMeshProUGUI id;
-        public TextMeshProUGUI stage;
-        public Image flag;
-        public Tween.DOTweenRectTransformMoveBy tweenMove;
-        public Tween.DOTweenGroupAlpha tweenAlpha;
+        [SerializeField]
+        private Button button = null;
+        [SerializeField]
+        private TextMeshProUGUI rank = null;
+        [SerializeField]
+        private FramedCharacterView characterView = null;
+        [SerializeField]
+        private TextMeshProUGUI level = null;
+        [SerializeField]
+        private TextMeshProUGUI id = null;
+        [SerializeField]
+        private TextMeshProUGUI stage = null;
+        [SerializeField]
+        private Tween.DOTweenRectTransformMoveBy tweenMove = null;
+        [SerializeField]
+        private Tween.DOTweenGroupAlpha tweenAlpha = null;
 
-        public System.Action<(RectTransform rectTransform, Address avatarAddress)> onClick;
+        public Action<(RectTransform rectTransform, Address avatarAddress)> onClick;
 
         private RectTransform _rectTransform;
+        private bool _isCurrentUser;
+
         public RectTransform RectTransform
         {
             get
@@ -45,18 +55,42 @@ namespace Nekoyume.UI.Scroller
                 AudioController.PlayClick();
                 onClick?.Invoke((RectTransform, AvatarInfo.AvatarAddress));
             }).AddTo(gameObject);
+
+            Game.Event.OnUpdatePlayerEquip
+                .Where(_ => _isCurrentUser)
+                .Subscribe(characterView.SetByPlayer)
+                .AddTo(gameObject);
         }
 
-        public void Set(int ranking, Nekoyume.Model.State.RankingInfo avatarState)
+        public void Set(int ranking, Nekoyume.Model.State.RankingInfo rankingInfo, bool isCurrentUser)
         {
-            AvatarInfo = avatarState;
+            AvatarInfo = rankingInfo ?? throw new ArgumentNullException(nameof(rankingInfo));
+            _isCurrentUser = isCurrentUser;
 
             rank.text = ranking.ToString();
-            icon.sprite = SpriteHelper.GetItemIcon(avatarState.ArmorId);
-            icon.SetNativeSize();
-            level.text = avatarState.Level.ToString();
-            id.text = avatarState.AvatarName;
-            stage.text = avatarState.Exp.ToString();
+            level.text = AvatarInfo.Level.ToString();
+            id.text = AvatarInfo.AvatarName;
+            stage.text = AvatarInfo.Exp.ToString();
+
+            if (_isCurrentUser)
+            {
+                var player = Game.Game.instance.Stage.selectedPlayer;
+                if (player is null)
+                {
+                    player = Game.Game.instance.Stage.GetPlayer();
+                    characterView.SetByPlayer(player);
+                    player.gameObject.SetActive(false);
+                }
+                else
+                {
+                    characterView.SetByPlayer(player);
+                }
+            }
+            else
+            {
+                characterView.SetByAvatarAddress(AvatarInfo.AvatarAddress);
+            }
+
             tweenMove.StartDelay = ranking * 0.16f;
             tweenAlpha.StartDelay = ranking * 0.16f;
         }

@@ -1,22 +1,52 @@
+using System;
 using System.Collections.Generic;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.Buff;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.UI.Module;
 using TMPro;
 using Unity.Mathematics;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
     public class HpBar : ProgressBar
     {
-        public BuffLayout buffLayout;
-        public TextMeshProUGUI levelText;
-        public Slider additionalSlider;
+        [Serializable]
+        public struct TitleContainer
+        {
+            public GameObject root;
+            public TextMeshProUGUI titleText;
+        }
+
+        [SerializeField]
+        private BuffLayout buffLayout = null;
+
+        [SerializeField]
+        private TextMeshProUGUI levelText = null;
+
+        [SerializeField]
+        private Slider additionalSlider = null;
+
+        [SerializeField]
+        private TitleContainer titleContainer;
 
         public HpBarVFX HpVFX { get; protected set; }
+
+        public void SetTitle(Costume title)
+        {
+            if (title is null)
+            {
+                titleContainer.root.SetActive(false);
+                return;
+            }
+
+            titleContainer.titleText.text = title.GetLocalizedNonColoredName();
+            titleContainer.root.SetActive(true);
+        }
 
         public void SetBuffs(IReadOnlyDictionary<int, Buff> buffs)
         {
@@ -28,7 +58,7 @@ namespace Nekoyume.UI
                 {
                     HpVFX.Stop();
                 }
-                
+
                 var rectTransform = bar.rectTransform;
                 HpVFX = VFXController.instance.CreateAndChaseRectTransform<HpBarVFX>(rectTransform);
                 HpVFX.Play();
@@ -64,7 +94,7 @@ namespace Nekoyume.UI
             {
                 HpVFX.Stop();
             }
-            
+
             base.OnDestroy();
         }
     }

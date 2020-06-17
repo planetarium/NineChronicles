@@ -30,6 +30,9 @@ namespace Nekoyume.UI.Module
             base.Awake();
 
             equipmentOptionRecipe.OnOptionClick
+                .Subscribe(_ => Widget.Find<Combination>()?.OnTweenRecipe());
+
+            equipmentOptionRecipe.OnOptionClickVFXCompleted
                 .Subscribe(tuple => OnSelectOption(tuple.Item1, tuple.Item2))
                 .AddTo(gameObject);
         }
@@ -50,7 +53,7 @@ namespace Nekoyume.UI.Module
             equipmentOptionRecipe.gameObject.SetActive(false);
             SetData(recipeView.RowData, SelectedSubRecipeId);
             confirmArea.SetActive(true);
-            TweenCellView(recipeView);
+            TweenCellView(recipeView, null);
 
             if (materialPanel is ElementalCombinationMaterialPanel panel)
             {
@@ -58,11 +61,12 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void TweenCellViewInOption(RecipeCellView view)
+        public void TweenCellViewInOption(RecipeCellView view, System.Action onCompleted)
         {
             var rect = view.transform as RectTransform;
 
             optionCellViewTweener.SetBeginRect(rect);
+            optionCellViewTweener.onCompleted = onCompleted;
             optionCellViewTweener.Play();
         }
     }

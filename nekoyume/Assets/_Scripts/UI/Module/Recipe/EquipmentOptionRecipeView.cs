@@ -36,7 +36,9 @@ namespace Nekoyume.UI.Module
 
         private EquipmentItemSubRecipeSheet.Row _rowData;
 
-        public readonly Subject<EquipmentOptionRecipeView> OnClick =
+        public readonly Subject<Unit> OnClick = new Subject<Unit>();
+
+        public readonly Subject<EquipmentOptionRecipeView> OnClickVFXCompleted =
             new Subject<EquipmentOptionRecipeView>();
 
         private bool IsLocked => lockParent.activeSelf;
@@ -44,7 +46,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            recipeClickVFX.OnTerminated = () => OnClick.OnNext(this);
+            recipeClickVFX.OnTerminated = () => OnClickVFXCompleted.OnNext(this);
 
             button.OnClickAsObservable().Subscribe(_ =>
             {
@@ -53,6 +55,7 @@ namespace Nekoyume.UI.Module
                     return;
                 }
 
+                OnClick.OnNext(Unit.Default);
                 recipeClickVFX.Play();
             }).AddTo(gameObject);
         }
@@ -64,7 +67,7 @@ namespace Nekoyume.UI.Module
 
         private void OnDestroy()
         {
-            OnClick.Dispose();
+            OnClickVFXCompleted.Dispose();
         }
 
         public void Show(

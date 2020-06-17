@@ -320,7 +320,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoCompleteCloseAnimation()
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
             if (!IsCloseAnimationCompleted)
             {
                 IsCloseAnimationCompleted = true;

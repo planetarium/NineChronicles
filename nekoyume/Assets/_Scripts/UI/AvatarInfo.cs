@@ -1,13 +1,21 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Assets.SimpleLocalization;
+using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Battle;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.State.Subjects;
+using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -27,6 +35,9 @@ namespace Nekoyume.UI
         private TextMeshProUGUI nicknameText = null;
 
         [SerializeField]
+        private TextMeshProUGUI titleText = null;
+
+        [SerializeField]
         private TextMeshProUGUI cpText = null;
 
         [SerializeField]
@@ -42,11 +53,13 @@ namespace Nekoyume.UI
         private RectTransform avatarPosition = null;
 
         private EquipmentSlot _weaponSlot;
+        private EquipmentSlot _armorSlot;
+        private bool _isShownFromBattle;
+        private Player _player;
         private Vector3 _previousAvatarPosition;
         private int _previousSortingLayerID;
         private int _previousSortingLayerOrder;
-        private bool _previousActivated = false;
-        private bool _isCurrentAvatar = false;
+        private bool _previousActivated;
         private CharacterStats _tempStats;
         private Coroutine _constraintsPlayerToUI;
 
@@ -59,6 +72,11 @@ namespace Nekoyume.UI
             if (!equipmentSlots.TryGetSlot(ItemSubType.Weapon, out _weaponSlot))
             {
                 throw new Exception($"Not found {ItemSubType.Weapon} slot in {equipmentSlots}");
+            }
+
+            if (!equipmentSlots.TryGetSlot(ItemSubType.Armor, out _armorSlot))
+            {
+                throw new Exception($"Not found {ItemSubType.Armor} slot in {equipmentSlots}");
             }
 
             inventory.SharedModel.State
@@ -79,7 +97,8 @@ namespace Nekoyume.UI
                         case ItemType.Material:
                             break;
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(inventoryState), inventoryState, null);
+                            throw new ArgumentOutOfRangeException(nameof(inventoryState),
+                                inventoryState, null);
                     }
                 })
                 .AddTo(gameObject);
@@ -105,6 +124,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
@@ -127,27 +147,39 @@ namespace Nekoyume.UI
 
         private void ReplacePlayer(AvatarState avatarState)
         {
-            var stage = Game.Game.instance.Stage;
-            _previousActivated = stage.selectedPlayer && stage.selectedPlayer.gameObject.activeSelf;
-            var player = stage.GetPlayer();
-            player.Set(avatarState);
-            var playerTransform = player.transform;
-            _previousAvatarPosition = playerTransform.position;
-            _previousSortingLayerID = player.sortingGroup.sortingLayerID;
-            _previousSortingLayerOrder = player.sortingGroup.sortingOrder;
+            if (_player is null)
+            {
+                if (_isShownFromBattle)
+                {
+                    _player = PlayerFactory
+                        .Create(avatarState)
+                        .GetComponent<Player>();
+                }
+                else
+                {
+                    var stage = Game.Game.instance.Stage;
+                    _previousActivated = stage.selectedPlayer &&
+                                         stage.selectedPlayer.gameObject.activeSelf;
+                    _player = stage.GetPlayer();
+                    _player.Set(avatarState);
+                    _previousAvatarPosition = _player.transform.position;
+                    _previousSortingLayerID = _player.sortingGroup.sortingLayerID;
+                    _previousSortingLayerOrder = _player.sortingGroup.sortingOrder;
+                }
+            }
 
-            playerTransform.position = avatarPosition.position;
-            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 3;
-            player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
+            _player.transform.position = avatarPosition.position;
+            var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
+            _player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
 
-            _tempStats = player.Model.Stats.Clone() as CharacterStats;
+            _tempStats = _player.Model.Stats.Clone() as CharacterStats;
 
             if (!(_constraintsPlayerToUI is null))
             {
                 StopCoroutine(_constraintsPlayerToUI);
             }
 
-            _constraintsPlayerToUI = StartCoroutine(CoConstraintsPlayerToUI(playerTransform));
+            _constraintsPlayerToUI = StartCoroutine(CoConstraintsPlayerToUI(_player.transform));
         }
 
         private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
@@ -167,12 +199,25 @@ namespace Nekoyume.UI
                 _constraintsPlayerToUI = null;
             }
 
+            if (_player is null)
+            {
+                return;
+            }
+
+            if (_isShownFromBattle)
+            {
+                Game.Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
+                _player = null;
+                return;
+            }
+
             // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
-            var player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
+            _player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            player.Set(currentAvatarState);
-            player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
-            player.gameObject.SetActive(_previousActivated);
+            _player.Set(currentAvatarState);
+            _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
+            _player.gameObject.SetActive(_previousActivated);
+            _player = null;
         }
 
         private void UpdateSlotView(AvatarState avatarState)
@@ -184,6 +229,13 @@ namespace Nekoyume.UI
                 NicknameTextFormat,
                 avatarState.level,
                 avatarState.NameWithHash);
+
+            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            titleText.text = title is null
+                ? ""
+                : title.GetLocalizedName();
 
             cpText.text = CPHelper.GetCP(avatarState, game.TableSheets.CharacterSheet)
                 .ToString();
@@ -199,12 +251,10 @@ namespace Nekoyume.UI
                 // 따라서 강제로 상태를 설정한다.
                 inventory.gameObject.SetActive(true);
                 SubscribeInventoryResetItems(inventory);
-                _isCurrentAvatar = true;
             }
             else
             {
                 inventory.gameObject.SetActive(false);
-                _isCurrentAvatar = false;
             }
         }
 
@@ -238,7 +288,8 @@ namespace Nekoyume.UI
 
         private void Equip(CountableItem countableItem)
         {
-            if (!(countableItem is InventoryItem inventoryItem))
+            if (_isShownFromBattle ||
+                !(countableItem is InventoryItem inventoryItem))
             {
                 return;
             }
@@ -263,35 +314,35 @@ namespace Nekoyume.UI
                 Unequip(slot, true);
             }
 
-            if (!_isCurrentAvatar)
-            {
-                slot.Set(itemBase, ShowTooltip, null);
-                return;
-            }
-
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
 
+            var player = Game.Game.instance.Stage.GetPlayer();
             switch (itemBase)
             {
+                default:
+                    return;
                 case Costume costume:
                 {
                     inventoryItem.EquippedEnabled.Value = true;
-                    var player = Game.Game.instance.Stage.GetPlayer();
                     player.EquipCostume(costume);
+
+                    if (costume.ItemSubType == ItemSubType.Title)
+                    {
+                        titleText.text = costume.GetLocalizedName();
+                    }
 
                     break;
                 }
-                case Equipment equipment:
+                case Equipment _:
                 {
                     inventoryItem.EquippedEnabled.Value = true;
                     UpdateStatViews();
-                    var player = Game.Game.instance.Stage.GetPlayer();
                     switch (slot.ItemSubType)
                     {
                         case ItemSubType.Armor:
                         {
-                            var armor = (Armor) equipment;
+                            var armor = (Armor) _armorSlot.Item;
                             var weapon = (Weapon) _weaponSlot.Item;
                             player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
@@ -305,6 +356,7 @@ namespace Nekoyume.UI
                 }
             }
 
+            Game.Event.OnUpdatePlayerEquip.OnNext(player);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
@@ -315,9 +367,9 @@ namespace Nekoyume.UI
             Unequip(slot, false);
         }
 
-        private void Unequip(EquipmentSlot slot, bool onlyData)
+        private void Unequip(EquipmentSlot slot, bool considerInventoryOnly)
         {
-            if (!_isCurrentAvatar)
+            if (_isShownFromBattle)
             {
                 return;
             }
@@ -339,8 +391,13 @@ namespace Nekoyume.UI
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
 
+            var player = considerInventoryOnly
+                ? null
+                : Game.Game.instance.Stage.GetPlayer();
             switch (slotItem)
             {
+                default:
+                    return;
                 case Costume costume:
                 {
                     if (!inventory.SharedModel.TryGetCostume(costume, out var inventoryItem))
@@ -350,13 +407,21 @@ namespace Nekoyume.UI
 
                     inventoryItem.EquippedEnabled.Value = false;
 
-                    if (onlyData)
+                    if (considerInventoryOnly)
                     {
                         break;
                     }
 
-                    var player = Game.Game.instance.Stage.GetPlayer();
-                    player.UnequipCostume(costume);
+                    var armor = (Armor) _armorSlot.Item;
+                    var weapon = (Weapon) _weaponSlot.Item;
+                    player.UnequipCostume(costume, true);
+                    player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
+                    Game.Event.OnUpdatePlayerEquip.OnNext(player);
+
+                    if (costume.ItemSubType == ItemSubType.Title)
+                    {
+                        titleText.text = "";
+                    }
 
                     break;
                 }
@@ -369,33 +434,30 @@ namespace Nekoyume.UI
 
                     inventoryItem.EquippedEnabled.Value = false;
 
-                    if (onlyData)
+                    if (considerInventoryOnly)
                     {
                         break;
                     }
 
                     UpdateStatViews();
-                    var player = Game.Game.instance.Stage.GetPlayer();
+
                     switch (slot.ItemSubType)
                     {
                         case ItemSubType.Armor:
                         {
+                            var armor = (Armor) _armorSlot.Item;
                             var weapon = (Weapon) _weaponSlot.Item;
-                            player.EquipEquipmentsAndUpdateCustomize(null, weapon);
+                            player.EquipEquipmentsAndUpdateCustomize(armor, weapon);
                             break;
                         }
                         case ItemSubType.Weapon:
-                            player.EquipWeapon((Weapon) slotItem);
+                            player.EquipWeapon((Weapon) _weaponSlot.Item);
                             break;
                     }
 
+                    Game.Event.OnUpdatePlayerEquip.OnNext(player);
                     break;
                 }
-            }
-
-            if (onlyData)
-            {
-                return;
             }
 
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
@@ -465,14 +527,13 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var (submitEnabledFunc, submitText, onSubmit) = GetToolTipParams(view.Model);
             tooltip.Show(
                 view.RectTransform,
                 view.Model,
-                value => !view.Model.Dimmed.Value,
-                view.Model.EquippedEnabled.Value
-                    ? LocalizationManager.Localize("UI_UNEQUIP")
-                    : LocalizationManager.Localize("UI_EQUIP"),
-                _ => Equip(tooltip.itemInformation.Model.item.Value),
+                submitEnabledFunc,
+                submitText,
+                _ => onSubmit(view.Model),
                 _ => inventory.SharedModel.DeselectItemView());
         }
 
@@ -487,23 +548,152 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (_isCurrentAvatar)
-            {
-                if (inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out var item) ||
-                    inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
-                    inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
-                {
-                    tooltip.Show(
-                        slot.RectTransform,
-                        item,
-                        _ => inventory.SharedModel.DeselectItemView());
-                }
-            }
-            else
+            if (inventory.SharedModel.TryGetConsumable(slot.Item as Consumable, out var item) ||
+                inventory.SharedModel.TryGetCostume(slot.Item as Costume, out item) ||
+                inventory.SharedModel.TryGetEquipment(slot.Item as Equipment, out item))
             {
                 tooltip.Show(
                     slot.RectTransform,
-                    new InventoryItem(slot.Item, 1));
+                    item,
+                    _ => inventory.SharedModel.DeselectItemView());
+            }
+        }
+
+        private (Func<CountableItem, bool>, string, Action<CountableItem>) GetToolTipParams(
+            InventoryItem inventoryItem)
+        {
+            var item = inventoryItem.ItemBase.Value;
+            Func<CountableItem, bool> submitEnabledFunc = null;
+            string submitText = null;
+            Action<CountableItem> onSubmit = null;
+            switch (item.ItemType)
+            {
+                case ItemType.Consumable:
+                    break;
+                case ItemType.Costume:
+                case ItemType.Equipment:
+                    submitEnabledFunc = DimmedFuncForEquipments;
+                    submitText = inventoryItem.EquippedEnabled.Value
+                        ? LocalizationManager.Localize("UI_UNEQUIP")
+                        : LocalizationManager.Localize("UI_EQUIP");
+                    onSubmit = Equip;
+                    break;
+                case ItemType.Material:
+                    switch (item.ItemSubType)
+                    {
+                        case ItemSubType.ApStone:
+                            submitEnabledFunc = DimmedFuncForChargeActionPoint;
+                            submitText = LocalizationManager.Localize("UI_CHARGE_AP");
+                            onSubmit = ChargeActionPoint;
+                            break;
+                        case ItemSubType.Chest:
+                            submitEnabledFunc = DimmedFuncForChest;
+                            submitText = "OPEN";
+                            onSubmit = OpenChest;
+                            break;
+                    }
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return (submitEnabledFunc, submitText, onSubmit);
+        }
+
+        private bool DimmedFuncForChargeActionPoint(CountableItem item)
+        {
+            if (item is null || item.Count.Value < 1)
+            {
+                return false;
+            }
+
+            return States.Instance.CurrentAvatarState.actionPoint !=
+                   States.Instance.GameConfigState.ActionPointMax
+                   && !_isShownFromBattle;
+        }
+
+        private bool DimmedFuncForChest(CountableItem item)
+        {
+            return !(item is null) && item.Count.Value >= 1 && !_isShownFromBattle;
+        }
+
+        private bool DimmedFuncForEquipments(CountableItem item)
+        {
+            return !item.Dimmed.Value && !_isShownFromBattle;
+        }
+
+        private static void ChargeActionPoint(CountableItem item)
+        {
+            if (item.ItemBase.Value is Nekoyume.Model.Item.Material material)
+            {
+                Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                    LocalizationManager.Localize("UI_CHARGE_AP"));
+                Game.Game.instance.ActionManager.ChargeActionPoint();
+                LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
+                    material.ItemId, 1);
+                LocalStateModifier.ModifyAvatarActionPoint(
+                    States.Instance.CurrentAvatarState.address,
+                    States.Instance.GameConfigState.ActionPointMax);
+            }
+        }
+
+        private static void OpenChest(CountableItem item)
+        {
+            if (item.ItemBase.Value is Chest chest)
+            {
+                Notification.Push(Nekoyume.Model.Mail.MailType.System,
+                    LocalizationManager.Localize("UI_OPEN_CHEST"));
+                var dict = new Dictionary<HashDigest<SHA256>, int>
+                {
+                    [chest.ItemId] = 1,
+                };
+                var tableSheets = Game.Game.instance.TableSheets;
+                var avatarAddress = States.Instance.CurrentAvatarState.address;
+                var agentAddress = States.Instance.AgentState.address;
+                var items = new List<(ItemBase, int)>();
+                Game.Game.instance.ActionManager.OpenChest(dict)
+                    .Subscribe(_ =>
+                        {
+                            foreach (var pair in items)
+                            {
+                                var (itemBase, count) = pair;
+                                var material = (Nekoyume.Model.Item.Material) itemBase;
+                                LocalStateModifier.RemoveMaterial(avatarAddress, material.ItemId, count, false);
+                            }
+                            foreach (var info in chest.Rewards.Where(info => info.Type == RewardType.Gold))
+                            {
+                                LocalStateModifier.ModifyAgentGold(agentAddress, -info.Quantity);
+                            }
+                            LocalStateModifier.AddItem(avatarAddress, chest.ItemId, 1);
+                        }
+                    );
+                foreach (var info in chest.Rewards)
+                {
+                    switch (info.Type)
+                    {
+                        case RewardType.Item:
+                            var itemRow =
+                                tableSheets.MaterialItemSheet.Values.FirstOrDefault(r => r.Id == info.ItemId);
+                            if (itemRow is null)
+                            {
+                                continue;
+                            }
+
+                            var material = ItemFactory.CreateMaterial(itemRow);
+                            LocalStateModifier.AddMaterial(avatarAddress, material.ItemId,
+                                info.Quantity, false);
+                            items.Add((material, info.Quantity));
+                            break;
+                        case RewardType.Gold:
+                            LocalStateModifier.ModifyAgentGold(agentAddress, info.Quantity);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(info.Type), info.Type, null);
+                    }
+                }
+                Find<RedeemRewardPopup>().Pop(items, tableSheets);
+                LocalStateModifier.RemoveItem(avatarAddress, chest.ItemId, 1);
             }
         }
     }

@@ -157,6 +157,11 @@ namespace Nekoyume.UI.Module
             SetPanelDimmed(value);
         }
 
+        public void OnAnimationCompleted()
+        {
+            Widget.Find<Combination>().OnTweenRecipeCompleted();
+        }
+
         protected void SetPanelDimmed(bool isDimmed)
         {
             decoration.color = isDimmed ? DimmedColor : Color.white;

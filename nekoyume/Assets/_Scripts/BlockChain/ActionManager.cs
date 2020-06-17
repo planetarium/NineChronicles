@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Action;
@@ -87,7 +88,7 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
-            List<Costume> costumes,
+            List<int> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
             int worldId,
@@ -107,8 +108,8 @@ namespace Nekoyume.BlockChain
             var action = new HackAndSlash
             {
                 costumes = costumes,
-                equipments = equipments,
-                foods = foods,
+                equipments = equipments.Select(e => e.ItemId).ToList(),
+                foods = foods.Select(f => f.ItemId).ToList(),
                 worldId = worldId,
                 stageId = stageId,
                 avatarAddress = avatarAddress,
@@ -127,25 +128,16 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<CombinationConsumable>> CombinationConsumable(
-            List<(Material material, int count)> materialInfoList, int slotIndex)
+            int recipeId, int slotIndex)
         {
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionCombination);
 
-            var action = new CombinationConsumable();
-            materialInfoList.ForEach(info =>
+            var action = new CombinationConsumable
             {
-                var (material, count) = info;
-                if (action.Materials.ContainsKey(material))
-                {
-                    action.Materials[material] += count;
-                }
-                else
-                {
-                    action.Materials.Add(material, count);
-                }
-            });
-            action.AvatarAddress = States.Instance.CurrentAvatarState.address;
-            action.slotIndex = slotIndex;
+                recipeId = recipeId,
+                AvatarAddress = States.Instance.CurrentAvatarState.address,
+                slotIndex = slotIndex,
+            };
             ProcessAction(action);
 
             return _renderer.EveryRender<CombinationConsumable>()
@@ -167,7 +159,7 @@ namespace Nekoyume.BlockChain
             {
                 sellerAvatarAddress = avatarAddress,
                 productId = Guid.NewGuid(),
-                itemUsable = itemUsable,
+                itemId = itemUsable.ItemId,
                 price = price
             };
             ProcessAction(action);
@@ -286,7 +278,12 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(Address enemyAddress)
+        public IObservable<ActionBase.ActionEvaluation<RankingBattle>> RankingBattle(
+            Address enemyAddress,
+            List<int> costumeIds,
+            List<Guid> equipmentIds,
+            List<Guid> consumableIds
+        )
         {
             if (!ArenaHelper.TryGetThisWeekAddress(out var weeklyArenaAddress))
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
@@ -296,6 +293,9 @@ namespace Nekoyume.BlockChain
                 AvatarAddress = States.Instance.CurrentAvatarState.address,
                 EnemyAddress = enemyAddress,
                 WeeklyArenaAddress = weeklyArenaAddress,
+                costumeIds = costumeIds,
+                equipmentIds = equipmentIds,
+                consumableIds = consumableIds
             };
             ProcessAction(action);
 
@@ -393,11 +393,28 @@ namespace Nekoyume.BlockChain
         {
             var action = new ChargeActionPoint
             {
-                avatarAddress = States.Instance.CurrentAvatarState.agentAddress
+                avatarAddress = States.Instance.CurrentAvatarState.address
             };
             ProcessAction(action);
 
             return _renderer.EveryRender<ChargeActionPoint>()
+                .Where(eval => eval.Action.Id.Equals(action.Id))
+                .Take(1)
+                .Last()
+                .ObserveOnMainThread()
+                .Timeout(ActionTimeout);
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<OpenChest>> OpenChest(
+            Dictionary<HashDigest<SHA256>, int> chestList)
+        {
+            var action = new OpenChest
+            {
+                avatarAddress = States.Instance.CurrentAvatarState.address,
+                chestList = chestList
+            };
+            ProcessAction(action);
+            return _renderer.EveryRender<OpenChest>()
                 .Where(eval => eval.Action.Id.Equals(action.Id))
                 .Take(1)
                 .Last()

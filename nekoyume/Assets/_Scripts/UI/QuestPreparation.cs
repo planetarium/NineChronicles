@@ -73,9 +73,11 @@ namespace Nekoyume.UI
         private float middleXGap = 1f;
 
         // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
+        // 행동력이 0일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
         protected override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
-            questButton.interactable;
+            (questButton.interactable ||
+            ReactiveAvatarState.ActionPoint.Value == 0);
 
         #region override
 
@@ -466,6 +468,7 @@ namespace Nekoyume.UI
                 _player.EquipWeapon((Weapon) slot.Item);
             }
 
+            Game.Event.OnUpdatePlayerEquip.OnNext(_player);
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
@@ -606,7 +609,13 @@ namespace Nekoyume.UI
             _stage.repeatStage = repeat;
             ActionRenderHandler.Instance.Pending = true;
             Game.Game.instance.ActionManager
-                .HackAndSlash(costumes, equipments, consumables, _worldId, _stageId.Value)
+                .HackAndSlash(
+                    costumes.Select(i => i.Id).ToList(),
+                    equipments,
+                    consumables,
+                    _worldId,
+                    _stageId.Value
+                )
                 .Subscribe(
                     _ =>
                     {
@@ -647,9 +656,9 @@ namespace Nekoyume.UI
                     $"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
             var avatarState = new AvatarState(States.Instance.CurrentAvatarState) {level = level};
-            var consumables = consumableSlots
+            List<Guid> consumables = consumableSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)
-                .Select(slot => (Consumable) slot.Item)
+                .Select(slot => ((Consumable) slot.Item).ItemId)
                 .ToList();
             var equipments = equipmentSlots
                 .Where(slot => !slot.IsLock && !slot.IsEmpty)

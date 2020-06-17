@@ -1,8 +1,11 @@
+using System.Linq;
 using Libplanet;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
-using Nekoyume.Helper;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
+using Nekoyume.State;
+using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using Unity.Mathematics;
@@ -23,10 +26,13 @@ namespace Nekoyume.UI
         }
 
         [SerializeField]
-        private Image avatarImage = null;
+        private FramedCharacterView characterView = null;
 
         [SerializeField]
         private TextMeshProUGUI levelText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI titleText = null;
 
         [SerializeField]
         private TextMeshProUGUI nameAndHashText = null;
@@ -77,12 +83,43 @@ namespace Nekoyume.UI
 
         public void Show(RectTransform target, AvatarState avatarState)
         {
-            avatarImage.sprite = SpriteHelper.GetCharacterIcon(avatarState.characterId);
+            var isCurrentAvatar =
+                States.Instance.CurrentAvatarState?.address.Equals(avatarState.address)
+                ?? false;
+            Show(target, avatarState, isCurrentAvatar);
+        }
+
+        public void Show(RectTransform target, AvatarState avatarState, bool isCurrentAvatar)
+        {
+            if (isCurrentAvatar)
+            {
+                var player = Game.Game.instance.Stage.selectedPlayer;
+                if (player is null)
+                {
+                    player = Game.Game.instance.Stage.GetPlayer();
+                    characterView.SetByPlayer(player);
+                    player.gameObject.SetActive(false);
+                }
+                else
+                {
+                    characterView.SetByPlayer(player);
+                }
+            }
+            else
+            {
+                characterView.SetByAvatarAddress(avatarState.address);
+            }
+
             levelText.text = $"<color=#B38271>LV.{avatarState.level}</color>";
+
+            var title = avatarState.inventory.Costumes.FirstOrDefault(costume =>
+                costume.ItemSubType == ItemSubType.Title &&
+                costume.equipped);
+            titleText.text = title is null
+                ? ""
+                : title.GetLocalizedNonColoredName();
             nameAndHashText.text = avatarState.NameWithHash;
             _selectedAvatarState = avatarState;
-            var currentAvatarAddress = Game.Game.instance.States.CurrentAvatarState.address;
-            var isCurrentAvatar = currentAvatarAddress.Equals(_selectedAvatarState.address);
             avatarInfoButton.gameObject.SetActive(!isCurrentAvatar);
             Show(new ViewModel(target));
         }
