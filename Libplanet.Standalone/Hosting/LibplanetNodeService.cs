@@ -64,6 +64,15 @@ namespace Libplanet.Standalone.Hosting
                 _properties.StorePath,
                 _properties.StoreType,
                 _properties.StoreStatesCacheSize);
+
+            var chainIds = Store.ListChainIds().ToList();
+            Log.Debug($"Number of chain ids: {chainIds.Count()}");
+
+            foreach (var chainId in chainIds)
+            {
+                Log.Debug($"chainId: {chainId}");
+            }
+
             _blockPolicy = blockPolicy;
             BlockChain = new BlockChain<T>(_blockPolicy, Store, genesisBlock, _properties.Render);
             _privateKey = _properties.PrivateKey;
