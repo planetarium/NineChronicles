@@ -9,6 +9,10 @@ namespace Nekoyume.UI
     public class Battle : Widget, IToggleListener
     {
         public StageTitle stageTitle;
+
+        [SerializeField]
+        private GuidedQuest guidedQuest = null;
+
         public BossStatus bossStatus;
         public ToggleableButton repeatButton;
         public BossStatus enemyPlayerStatus;
@@ -28,6 +32,7 @@ namespace Nekoyume.UI
         {
             base.Show();
             stageTitle.Show(stageId);
+            guidedQuest.Show(States.Instance.CurrentAvatarState.questList);
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
@@ -101,7 +106,6 @@ namespace Nekoyume.UI
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>().Close(ignoreCloseAnimation);
-            Find<Status>().Close(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
         }
