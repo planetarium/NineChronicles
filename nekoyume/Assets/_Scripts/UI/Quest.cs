@@ -1,5 +1,4 @@
 ﻿using Assets.SimpleLocalization;
-using Nekoyume.BlockChain;
 using Nekoyume.Helper;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -17,7 +16,7 @@ namespace Nekoyume.UI
 {
     public class Quest : XTweenWidget
     {
-        public enum QuestTabState
+        private enum QuestTabState
         {
             Adventure = 0,
             Obtain,
@@ -28,9 +27,15 @@ namespace Nekoyume.UI
         [Serializable]
         public class TabButton
         {
-            private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
-            private static readonly Vector2 _leftBottom = new Vector2(-13f, -11f);
-            private static readonly Vector2 _minusRightTop = new Vector2(13f, 13f);
+            private static readonly Color HighlightedColor = ColorHelper.HexToColorRGB("a35400");
+            private static readonly Vector2 LeftBottom = new Vector2(-13f, -11f);
+            private static readonly Vector2 MinusRightTop = new Vector2(13f, 13f);
+            private static Sprite _selectedButtonSprite;
+
+            private static Sprite SelectedButtonSprite => _selectedButtonSprite
+                ? _selectedButtonSprite
+                : _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
+
             public Sprite highlightedSprite;
             public Button button;
             public Image hasNotificationImage;
@@ -41,7 +46,11 @@ namespace Nekoyume.UI
 
             public void Init(string localizationKey)
             {
-                if (!button) return;
+                if (!button)
+                {
+                    throw new SerializeFieldNullException(nameof(button));
+                }
+
                 var localized = LocalizationManager.Localize(localizationKey);
                 var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
                 text.text = content;
@@ -50,21 +59,27 @@ namespace Nekoyume.UI
 
             public void ChangeColor(bool isHighlighted = false)
             {
-                image.overrideSprite = isHighlighted ? _selectedButtonSprite : null;
-                image.rectTransform.offsetMin = isHighlighted ? _leftBottom : Vector2.zero;
-                image.rectTransform.offsetMax = isHighlighted ? _minusRightTop : Vector2.zero;
+                image.overrideSprite = isHighlighted ? SelectedButtonSprite : null;
+                image.rectTransform.offsetMin = isHighlighted ? LeftBottom : Vector2.zero;
+                image.rectTransform.offsetMax = isHighlighted ? MinusRightTop : Vector2.zero;
                 icon.overrideSprite = isHighlighted ? highlightedSprite : null;
                 text.gameObject.SetActive(!isHighlighted);
                 textSelected.gameObject.SetActive(isHighlighted);
             }
         }
 
-        public QuestTabState tabState;
-        public QuestScrollerController scroller;
-        public TabButton[] tabButtons;
-        public Blur blur;
+        [SerializeField]
+        private QuestTabState tabState;
 
-        private static Sprite _selectedButtonSprite;
+        [SerializeField]
+        private QuestScroll scroll = null;
+
+        [SerializeField]
+        private TabButton[] tabButtons = null;
+
+        [SerializeField]
+        private Blur blur = null;
+
         private QuestList _questList;
 
         #region override
@@ -72,7 +87,6 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
 
             tabButtons[0].Init("ADVENTURE");
             tabButtons[1].Init("OBTAIN");
@@ -100,7 +114,7 @@ namespace Nekoyume.UI
             {
                 blur.Close();
             }
-            
+
             base.Close(ignoreCloseAnimation);
         }
 
@@ -110,24 +124,27 @@ namespace Nekoyume.UI
         {
             tabState = (QuestTabState) state;
 
-            for (int i = 0; i < tabButtons.Length; ++i)
+            for (var i = 0; i < tabButtons.Length; ++i)
             {
                 tabButtons[i].ChangeColor(i == state);
             }
 
-            var list = _questList.ToList();
-            list = list.FindAll(e => e.QuestType == (QuestType) state)
+            var list = _questList
+                .ToList()
+                .FindAll(e => e.QuestType == (QuestType) state)
                 .OrderBy(e => e, new QuestOrderComparer())
                 .ToList();
-
-            scroller.SetData(list);
+            scroll.UpdateData(list);
         }
 
         public void UpdateTabs()
         {
-            for (int i = 0; i < tabButtons.Length; ++i)
+            for (var i = 0; i < tabButtons.Length; ++i)
             {
-                int cnt = _questList.Where(quest => quest.QuestType == (QuestType) i && quest.Complete && quest.isReceivable).Count();
+                var cnt = _questList.Count(quest =>
+                    quest.QuestType == (QuestType) i &&
+                    quest.Complete &&
+                    quest.isReceivable);
                 tabButtons[i].hasNotificationImage.enabled = cnt > 0;
             }
         }
@@ -135,12 +152,13 @@ namespace Nekoyume.UI
         public void SetList(QuestList list)
         {
             if (list is null)
+            {
                 return;
+            }
+
             _questList = list;
 
-            float pos = scroller.scroller.ScrollPosition;
             ChangeState((int) tabState);
-            scroller.scroller.ScrollPosition = pos;
         }
     }
 
@@ -150,22 +168,30 @@ namespace Nekoyume.UI
         {
             // null
             if (x is null)
+            {
                 return y is null ? 0 : 1;
+            }
 
             if (y is null)
-                return -1;
-
-            if(x.Complete && y.Complete)
             {
-                if(x.isReceivable)
+                return -1;
+            }
+
+            if (x.Complete && y.Complete)
+            {
+                if (x.isReceivable)
                 {
                     if (!y.isReceivable)
+                    {
                         return -1;
+                    }
                 }
                 else
                 {
                     if (y.isReceivable)
+                    {
                         return 1;
+                    }
                 }
 
                 return CompareId(x.Id, y.Id);
@@ -173,30 +199,32 @@ namespace Nekoyume.UI
 
             if (x.Complete)
             {
-                if (x.isReceivable)
-                    return -1;
-                else
-                    return 1;
+                return x.isReceivable
+                    ? -1
+                    : 1;
             }
 
             if (y.Complete)
             {
-                if (y.isReceivable)
-                    return 1;
-                else
-                    return -1;
+                return y.isReceivable
+                    ? 1
+                    : -1;
             }
 
             return CompareId(x.Id, y.Id);
         }
 
-        private int CompareId(int x, int y)
+        private static int CompareId(int x, int y)
         {
             if (x > y)
+            {
                 return 1;
+            }
 
             if (x == y)
+            {
                 return 0;
+            }
 
             return -1;
         }
