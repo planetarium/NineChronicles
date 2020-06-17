@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Helper;
@@ -85,6 +86,14 @@ namespace Nekoyume.UI
                         return LocalizationManager.Localize("QUEST_WORLD_TITLE");;
                     }
                     throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
+                case CombinationEquipmentQuest combinationEquipmentQuest:
+                    var unlockFormat = LocalizationManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
+                    var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
+                        .First(r => r.Id == combinationEquipmentQuest.RecipeId).ResultEquipmentId;
+                    return string.Format(
+                        unlockFormat,
+                        LocalizationManager.LocalizeItemName(itemId)
+                    );
                 default:
                     throw new NotSupportedException(
                         $"Given quest[{quest}] doesn't support {nameof(GetTitle)}() method."
@@ -147,6 +156,14 @@ namespace Nekoyume.UI
                         return string.Format(format, worldRow.GetLocalizedName());
                     }
                     throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
+                case CombinationEquipmentQuest combinationEquipmentQuest:
+                    var unlockFormat = LocalizationManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
+                    var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
+                        .First(r => r.Id == combinationEquipmentQuest.RecipeId).ResultEquipmentId;
+                    return string.Format(
+                        unlockFormat,
+                        LocalizationManager.LocalizeItemName(itemId)
+                    );
                 default:
                     throw new NotSupportedException(
                         $"Given quest[{quest}] doesn't support {nameof(GetContent)}() method."
