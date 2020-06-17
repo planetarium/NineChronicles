@@ -131,6 +131,16 @@ namespace Nekoyume.Game.Util
                 }
             }
 
+            public void ReleaseExceptForPlayer()
+            {
+                foreach (var go in _objects
+                    .Select(pair => pair.Value)
+                    .SelectMany(l => l.Where(go => go != null && !go.GetComponent<Character.Player>())))
+                {
+                    go.SetActive(false);
+                }
+            }
+
             public GameObject Get(string objName, bool create, Vector3 position = default(Vector3))
             {
                 if (_objects.TryGetValue(objName, out var gameObjects))
@@ -206,6 +216,11 @@ namespace Nekoyume.Game.Util
         public void ReleaseAll()
         {
             _impl.ReleaseAll();
+        }
+
+        public void ReleaseExceptForPlayer()
+        {
+            _impl.ReleaseExceptForPlayer();
         }
 
         public GameObject Get(string objName, bool create, Vector3 position = default)
