@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -213,7 +214,6 @@ namespace Nekoyume.UI
                 _npc01 = go.GetComponent<NPC>();
             }
 
-            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
         }
 
@@ -254,6 +254,13 @@ namespace Nekoyume.UI
             categoryTabArea.SetActive(false);
             equipmentRecipe.gameObject.SetActive(false);
             base.OnCompleteOfCloseAnimationInternal();
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
+            
+            base.OnCompleteOfShowAnimationInternal();
         }
 
         #endregion
@@ -327,7 +334,7 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(true);
                     consumableRecipe.gameObject.SetActive(false);
                     equipmentRecipe.ShowCellViews();
-                    Animator.Play("Show", -1, 0.0f);
+                    Animator.Play("ShowLeftArea", -1, 0.0f);
                     OnTweenRecipe();
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
                     break;
@@ -346,7 +353,7 @@ namespace Nekoyume.UI
                     equipmentRecipe.gameObject.SetActive(false);
                     consumableRecipe.gameObject.SetActive(true);
                     consumableRecipe.ShowCellViews();
-                    Animator.Play("Show", -1, 0.0f);
+                    Animator.Play("ShowLeftArea", -1, 0.0f);
                     OnTweenRecipe();
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
                     break;
@@ -406,7 +413,7 @@ namespace Nekoyume.UI
 
             enhanceEquipment.Hide();
             inventory.gameObject.SetActive(false);
-            Animator.Play("Close");
+            Animator.Play("CloseLeftArea");
         }
 
         private void OnClickConsumableRecipe()
@@ -753,6 +760,19 @@ namespace Nekoyume.UI
             _lockSlotIndex = false;
             _selectedSpeechBubble.onGoing = false;
             Find<CombinationLoadingScreen>().Close();
+        }
+
+        private void SetNPCAlphaZero()
+        {
+            _npc01.SpineController.SkeletonAnimation.skeleton.A = 0;
+        }
+
+        private void NPCShowAnimation()
+        {
+            var skeletonTweener = DOTween.To(() => _npc01.SpineController.SkeletonAnimation.skeleton.A,
+                alpha => _npc01.SpineController.SkeletonAnimation.skeleton.A = alpha, 1,
+                1f);
+            skeletonTweener.Play();
         }
     }
 }
