@@ -26,6 +26,12 @@ namespace Nekoyume.UI.Scroller
 
         public void UpdateData(IList<QuestModel> items, bool jumpToFirst = true)
         {
+            if (!initialized)
+            {
+                Initialize();
+                initialized = true;
+            }
+
             UpdateContents(items);
 
             if (!jumpToFirst)
