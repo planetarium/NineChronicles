@@ -1,7 +1,5 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using System;
 using System.Linq;
@@ -29,7 +27,7 @@ namespace Nekoyume.UI.Scroller
             StatType = equipment.UniqueStatType;
             var text = $"{equipment.Stat.Type} +{equipment.Stat.Value}";
             optionText.text = text;
-            SetLocked(false);
+            SetLocked(false, RowData.UnlockStage);
         }
 
         public void Set(AvatarState avatarState)
@@ -40,11 +38,11 @@ namespace Nekoyume.UI.Scroller
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(RowData.UnlockStage))
             {
-                SetLocked(true);
+                SetLocked(true, RowData.UnlockStage);
                 return;
             }
 
-            SetLocked(false);
+            SetLocked(false, RowData.UnlockStage);
 
             // 메인 재료 검사.
             var inventory = avatarState.inventory;
@@ -94,52 +92,6 @@ namespace Nekoyume.UI.Scroller
             {
                 SetDimmed(true);
             }
-        }
-
-        protected void SetLocked(bool value)
-        {
-            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
-            if (value)
-            {
-                unlockConditionText.enabled = true;
-
-                if (RowData is null)
-                {
-                    unlockConditionText.text = string.Format(
-                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                        "???");
-                }
-
-                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
-                    out var stageId))
-                {
-                    var diff = RowData.UnlockStage - stageId;
-                    if (diff > 50)
-                    {
-                        unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                            "???");
-                    }
-                    else
-                    {
-                        unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                            RowData.UnlockStage.ToString());
-                    }
-                }
-                else
-                {
-                    unlockConditionText.text = string.Format(
-                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                        "???");
-                }
-            }
-            else
-            {
-                unlockConditionText.enabled = false;
-            }
-
-            SetCellViewLocked(value);
         }
     }
 }

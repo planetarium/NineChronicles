@@ -1,3 +1,4 @@
+using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -7,6 +8,7 @@ using TMPro;
 using UnityEngine.UI;
 using UniRx;
 using Nekoyume.Model.Stat;
+using Nekoyume.State;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -162,6 +164,45 @@ namespace Nekoyume.UI.Scroller
             panelImageLeft.color = color;
             panelImageRight.color = color;
             backgroundImage.color = color;
+        }
+
+        protected void SetLocked(bool value, int unlockStage)
+        {
+            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
+            if (value)
+            {
+                unlockConditionText.enabled = true;
+
+                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var stageId))
+                {
+                    var diff =  unlockStage- stageId;
+                    if (diff > 50)
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            "???");
+                    }
+                    else
+                    {
+                        unlockConditionText.text = string.Format(
+                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            unlockStage.ToString());
+                    }
+                }
+                else
+                {
+                    unlockConditionText.text = string.Format(
+                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
+                }
+            }
+            else
+            {
+                unlockConditionText.enabled = false;
+            }
+
+            SetCellViewLocked(value);
         }
     }
 }
