@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Libplanet;
 using Nekoyume.Model.Quest;
-using Nekoyume.State;
+using Nekoyume.Model.State;
 using Nekoyume.UI.Scroller;
 using NUnit.Framework;
 using UniRx;
@@ -11,15 +12,42 @@ namespace Nekoyume.UI.Module
 {
     public class GuidedQuest : MonoBehaviour
     {
+        private enum ViewState
+        {
+            /// <summary>
+            /// 최초 상태입니다.
+            /// </summary>
+            None = -1,
+
+            /// <summary>
+            /// AvatarState가 설정되어 있는 유휴 상태입니다.
+            /// </summary>
+            Idle,
+
+            /// <summary>
+            /// 새로운 가이드 퀘스트를 더하는 연출 상태입니다.
+            /// </summary>
+            AddNewGuidedQuest,
+
+            /// <summary>
+            /// 기존 가이드 퀘스트를 완료하는 연출 상태입니다.
+            /// 보상 연출을 포함합니다.
+            /// </summary>
+            ClearExistGuidedQuest,
+        }
+
         private class ViewModel
         {
+            public ViewState state = ViewState.None;
+
+            public Address avatarAddress;
+
             public readonly ReactiveProperty<WorldQuest> worldQuest =
                 new ReactiveProperty<WorldQuest>();
 
             public readonly ReactiveProperty<CombinationEquipmentQuest> combinationEquipmentQuest =
                 new ReactiveProperty<CombinationEquipmentQuest>();
         }
-
         private readonly ViewModel _viewModel = new ViewModel();
 
         [SerializeField]
@@ -58,23 +86,62 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        public void Show(bool ignoreAnimation = false)
+        public void Show(AvatarState avatarState, bool ignoreAnimation = false)
         {
-            var questList = States.Instance.CurrentAvatarState?.questList;
-            if (questList is null)
+            if (avatarState is null)
             {
                 return;
             }
 
-            _viewModel.worldQuest.Value = questList
-                .OfType<WorldQuest>()
-                .FirstOrDefault(quest => !quest.Complete);
-
-            _viewModel.combinationEquipmentQuest.Value = questList
-                .OfType<CombinationEquipmentQuest>()
-                .FirstOrDefault(quest => !quest.Complete);
+            switch (_viewModel.state)
+            {
+                default:
+                    Debug.LogWarning($"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Idle}");
+                    break;
+                case ViewState.None:
+                    Initialize(avatarState);
+                    break;
+                case ViewState.Idle:
+                    UpdateAvatarState(avatarState, ignoreAnimation);
+                    break;
+            }
 
             gameObject.SetActive(true);
+        }
+
+        private void Initialize(AvatarState avatarState)
+        {
+            var questList = avatarState.questList;
+            if (questList is null)
+            {
+                _viewModel.worldQuest.Value = null;
+                _viewModel.combinationEquipmentQuest.Value = null;
+            }
+            else
+            {
+                _viewModel.worldQuest.Value = questList
+                    .OfType<WorldQuest>()
+                    .FirstOrDefault(quest => !quest.Complete);
+
+                _viewModel.combinationEquipmentQuest.Value = questList
+                    .OfType<CombinationEquipmentQuest>()
+                    .FirstOrDefault(quest => !quest.Complete);
+            }
+
+            _viewModel.avatarAddress = avatarState.address;
+            _viewModel.state = ViewState.Idle;
+        }
+
+        private void UpdateAvatarState(AvatarState avatarState, bool ignoreAnimation)
+        {
+            if (!avatarState.address.Equals(_viewModel.avatarAddress))
+            {
+                Initialize(avatarState);
+                return;
+            }
+
+            var questList = avatarState.questList;
+            // TODO: 퀘스트 변화가 있다면 뷰상태를 AddNewGuidedQuest나 ClearExistGuidedQuest로 전환합니다.
         }
 
         /// <summary>
