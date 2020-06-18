@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6482507596812157862}
   - component: {fileID: 8824049992684031751}
+  - component: {fileID: 3982321114777984548}
   m_Layer: 5
   m_Name: GuidedQuest
   m_TagString: Untagged
@@ -54,6 +55,26 @@ MonoBehaviour:
   cells:
   - {fileID: 7185411724208008434}
   - {fileID: 3004171136901069816}
+  showAndHideTweener: {fileID: 3982321114777984548}
+--- !u!114 &3982321114777984548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7506226364245500700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bacfffa52c78040a2ae4c658801044b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startDelay: 1
+  end: -300
+  duration: 0.5
+  snapping: 0
+  showEase: 27
+  closeEase: 26
+  isFrom: 1
 --- !u!1 &8255882223613627113
 GameObject:
   m_ObjectHideFlags: 0

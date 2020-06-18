@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Libplanet;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Scroller;
+using Nekoyume.UI.Tween;
 using NUnit.Framework;
 using UniRx;
 using UnityEngine;
@@ -82,6 +84,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<GuidedQuestCell> cells = null;
 
+        [SerializeField]
+        private AnchoredPositionXTweener showAndHideTweener = null;
+
         public readonly ISubject<(GuidedQuestCell cell, WorldQuest quest)> onClickWorldQuestCell =
             new Subject<(GuidedQuestCell cell, WorldQuest quest)>();
 
@@ -143,6 +148,7 @@ namespace Nekoyume.UI.Module
                         $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.None} or {ViewState.Shown}");
                     break;
                 case ViewState.None:
+                case ViewState.Hidden:
                     EnterToShowing(avatarState, ignoreAnimation);
                     break;
                 case ViewState.Shown:
@@ -218,13 +224,15 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                EnterToHiding();
+                EnterToHiding(ignoreAnimation);
             }
         }
 
         #endregion
 
         #region ViewState
+
+        private Tweener _showAndHideTweener;
 
         private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
         {
@@ -235,11 +243,17 @@ namespace Nekoyume.UI.Module
                 EnterToShown(avatarState);
                 return;
             }
+
+            _showAndHideTweener?.Kill();
+            _showAndHideTweener = showAndHideTweener.StartShowTween();
+            _showAndHideTweener.OnComplete(() => EnterToShown(avatarState));
         }
 
         private void EnterToShown(AvatarState avatarState)
         {
             _viewModel.state = ViewState.Shown;
+            _showAndHideTweener = null;
+
             var questList = avatarState.questList;
             if (questList is null)
             {
@@ -343,18 +357,25 @@ namespace Nekoyume.UI.Module
             // TODO: 완료하는 연출!
         }
 
-        private void EnterToHiding()
+        private void EnterToHiding(bool ignoreAnimation)
         {
             _viewModel.state = ViewState.Hiding;
 
-            // TODO: 사라지는 연출!
+            if (ignoreAnimation)
+            {
+                EnterToHidden();
+                return;
+            }
 
-            EnterToHidden();
+            _showAndHideTweener?.Kill();
+            _showAndHideTweener = showAndHideTweener.StartHideTween();
+            _showAndHideTweener.OnComplete(EnterToHidden);
         }
 
         private void EnterToHidden()
         {
             _viewModel.state = ViewState.Hidden;
+            _showAndHideTweener = null;
             gameObject.SetActive(false);
         }
 
