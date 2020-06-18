@@ -41,6 +41,14 @@ namespace Nekoyume.UI.Module
                 cells[cellIndex++].Show(worldQuest, ignoreAnimation);
             }
 
+            var combinationEquipmentQuest = questList
+                .OfType<CombinationEquipmentQuest>()
+                .FirstOrDefault(quest => !quest.Complete);
+            if (!(combinationEquipmentQuest is null))
+            {
+                cells[cellIndex++].Show(combinationEquipmentQuest, ignoreAnimation);
+            }
+
             for (var i = cellIndex; i < cells.Count; i++)
             {
                 var cell = cells[cellIndex];
