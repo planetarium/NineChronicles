@@ -25,7 +25,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private List<GuidedQuestCell> cells = null;
 
-        public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
+        public readonly ISubject<(GuidedQuestCell cell, WorldQuest quest)> onClickWorldQuestCell =
+            new Subject<(GuidedQuestCell cell, WorldQuest quest)>();
+
+        public readonly ISubject<(GuidedQuestCell cell, CombinationEquipmentQuest quest)>
+            onClickCombinationEquipmentQuestCell =
+                new Subject<(GuidedQuestCell cell, CombinationEquipmentQuest quest)>();
 
         private GuidedQuestCell WorldQuestCell => cells[0];
 
@@ -33,6 +38,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
+            // NOTE: 지금은 딱 두 줄만 표시합니다.
             Assert.AreEqual(cells.Count, 2);
 
             _viewModel.worldQuest
@@ -42,10 +48,14 @@ namespace Nekoyume.UI.Module
                 .Subscribe(SubscribeCombinationEquipmentQuest)
                 .AddTo(gameObject);
 
-            foreach (var cell in cells)
-            {
-                cell.onClick.Subscribe(onClick).AddTo(gameObject);
-            }
+            WorldQuestCell.onClick
+                .Select(cell => (cell, _viewModel.worldQuest.Value))
+                .Subscribe(onClickWorldQuestCell)
+                .AddTo(gameObject);
+            CombinationEquipmentQuestCell.onClick
+                .Select(cell => (cell, _viewModel.combinationEquipmentQuest.Value))
+                .Subscribe(onClickCombinationEquipmentQuestCell)
+                .AddTo(gameObject);
         }
 
         public void Show(bool ignoreAnimation = false)
