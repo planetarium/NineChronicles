@@ -20,10 +20,8 @@ namespace Nekoyume.Game.Entrance
             {
                 Widget.Find<LoadingScreen>().Show();
             }
-            Widget.Find<BottomMenu>().Close();
-            Widget.Find<UI.Inventory>().Close();
-            Widget.Find<StatusDetail>().Close();
-            Widget.Find<Quest>().Close();
+
+            Widget.Find<BottomMenu>().Close(true);
 
             stage.stageId = 0;
             stage.LoadBackground("room");

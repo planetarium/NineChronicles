@@ -10,6 +10,7 @@
     "com.unity.quicksearch": "1.4.1",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.0.0",
+    "jp.setchi.fancyscrollview": "https://github.com/setchi/FancyScrollView.git#upm",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
     "com.unity.modules.assetbundle": "1.0.0",
@@ -45,6 +46,10 @@
     "com.neuecc.unirx": {
       "hash": "f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
       "revision": "f93af89f2aafeccfc7aff9dee2cecc6d60ede06b"
+    },
+    "jp.setchi.fancyscrollview": {
+      "hash": "18c1db90a91f5965260e6a216d9ec6aea51c4968",
+      "revision": "upm"
     }
   }
 }

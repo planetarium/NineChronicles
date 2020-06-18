@@ -161,8 +161,22 @@ public class SpineAttachmentNotFoundException : Exception
     }
 }
 
+public class SerializeFieldException : Exception
+{
+    public SerializeFieldException(string message) : base(message)
+    {
+    }
+}
+
 public class SerializeFieldNullException : Exception
 {
+    public SerializeFieldNullException()
+    {
+    }
+
+    public SerializeFieldNullException(string message) : base(message)
+    {
+    }
 }
 
 public class AddOutOfSpecificRangeException<T> : Exception
@@ -235,7 +249,7 @@ public class FailedToInstantiateStateException<T> : Exception where T : State
     public FailedToInstantiateStateException() : base(string.Format(MessageFormat, typeof(T).Name))
     {
     }
-    
+
     public FailedToInstantiateStateException(Address address) : base(string.Format(MessageFormatWithAddress, typeof(T).Name, address))
     {
     }

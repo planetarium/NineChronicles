@@ -76,7 +76,9 @@ namespace Nekoyume.Model.State
             questList = new QuestList(
                 sheets.QuestSheet,
                 sheets.QuestRewardSheet,
-                sheets.QuestItemRewardSheet
+                sheets.QuestItemRewardSheet,
+                sheets.EquipmentItemRecipeSheet,
+                sheets.EquipmentItemSubRecipeSheet
             );
             mailBox = new MailBox();
             this.blockIndex = blockIndex;
