@@ -5,7 +5,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
-using Nekoyume.Model.Item;
 using UniRx;
 using UnityEngine;
 using Player = Nekoyume.Game.Character.Player;
@@ -68,6 +67,7 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
 
+            guidedQuest.Hide();
             guidedQuest.onClickWorldQuestCell
                 .Subscribe(_ => Debug.LogWarning("TODO: 스테이지 전투 전환."))
                 .AddTo(gameObject);
@@ -221,6 +221,11 @@ namespace Nekoyume.UI
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             arenaPendingNCG.Show();
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
             guidedQuest.Show(States.Instance.CurrentAvatarState);
         }
 
