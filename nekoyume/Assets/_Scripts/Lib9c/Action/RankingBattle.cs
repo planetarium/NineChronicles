@@ -17,6 +17,8 @@ namespace Nekoyume.Action
     [ActionType("ranking_battle")]
     public class RankingBattle : GameAction
     {
+        public const int StageId = 999999;
+
         public Address AvatarAddress;
         public Address EnemyAddress;
         public Address WeeklyArenaAddress;
@@ -138,7 +140,8 @@ namespace Nekoyume.Action
                 avatarState,
                 enemyAvatarState,
                 consumableIds,
-                tableSheets);
+                tableSheets,
+                StageId);
 
             simulator.Simulate();
 

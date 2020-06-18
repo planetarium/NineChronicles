@@ -16,16 +16,19 @@ namespace Nekoyume.Battle
     public class RankingSimulator : Simulator
     {
         private readonly EnemyPlayer _enemyPlayer;
+        private readonly int stageId;
 
         public RankingSimulator(
             IRandom random,
             AvatarState avatarState,
             AvatarState enemyAvatarState,
             List<Guid> foods,
-            TableSheets tableSheets) : base(random, avatarState, foods, tableSheets)
+            TableSheets tableSheets,
+            int stageId) : base(random, avatarState, foods, tableSheets)
         {
             _enemyPlayer = new EnemyPlayer(enemyAvatarState, this);
             _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
+            this.stageId = stageId;
         }
 
         public override Player Simulate()
@@ -33,6 +36,7 @@ namespace Nekoyume.Battle
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
 #endif
+            Log.stageId = stageId;
             Spawn();
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);

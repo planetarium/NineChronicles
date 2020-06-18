@@ -358,15 +358,16 @@ namespace Nekoyume.Game
         {
             waveCount = log.waveCount;
             waveTurn = 1;
+            stageId = log.stageId;
 #if TEST_LOG
             Debug.LogWarning($"{nameof(waveTurn)}: {waveTurn} / {nameof(CoRankingBattleEnter)}");
 #endif
-            if (!Game.instance.TableSheets.StageSheet.TryGetValue(1, out var data))
+            if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
             _battleResultModel = new BattleResult.Model();
 
-            zone = "PVP";
+            zone = data.Background;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
