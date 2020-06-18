@@ -10,6 +10,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Serilog;
+using Nekoyume.Model.State;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -199,6 +200,27 @@ namespace Nekoyume.Action
                     PreviousStates = context.PreviousStates,
                 }  
             );
+        }
+
+        protected void CheckPermission(IActionContext ctx)
+        {
+            IAccountStateDelta prevState = ctx.PreviousStates;
+            IValue rawState = prevState.GetState(AdminState.Address);
+
+            if (rawState is Bencodex.Types.Dictionary asDict)
+            {
+                var policy = new AdminState(asDict);
+
+                if (ctx.BlockIndex > policy.ValidUntil)
+                {
+                    throw new PolicyExpiredException(policy, ctx.BlockIndex);
+                }
+
+                if (policy.AdminAddress != ctx.Signer)
+                {
+                    throw new PermissionDeniedException(policy, ctx.Signer);
+                }
+            }
         }
     }
 }
