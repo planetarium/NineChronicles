@@ -48,6 +48,7 @@ namespace Nekoyume.UI.Module
             public readonly ReactiveProperty<CombinationEquipmentQuest> combinationEquipmentQuest =
                 new ReactiveProperty<CombinationEquipmentQuest>();
         }
+
         private readonly ViewModel _viewModel = new ViewModel();
 
         [SerializeField]
@@ -63,6 +64,8 @@ namespace Nekoyume.UI.Module
         private GuidedQuestCell WorldQuestCell => cells[0];
 
         private GuidedQuestCell CombinationEquipmentQuestCell => cells[1];
+
+        #region MonoBehaviour
 
         private void Awake()
         {
@@ -86,6 +89,10 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
+        #endregion
+
+        #region Controll
+
         public void Show(AvatarState avatarState, bool ignoreAnimation = false)
         {
             if (avatarState is null)
@@ -96,7 +103,8 @@ namespace Nekoyume.UI.Module
             switch (_viewModel.state)
             {
                 default:
-                    Debug.LogWarning($"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Idle}");
+                    Debug.LogWarning(
+                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Idle}");
                     break;
                 case ViewState.None:
                     Initialize(avatarState);
@@ -107,41 +115,6 @@ namespace Nekoyume.UI.Module
             }
 
             gameObject.SetActive(true);
-        }
-
-        private void Initialize(AvatarState avatarState)
-        {
-            var questList = avatarState.questList;
-            if (questList is null)
-            {
-                _viewModel.worldQuest.Value = null;
-                _viewModel.combinationEquipmentQuest.Value = null;
-            }
-            else
-            {
-                _viewModel.worldQuest.Value = questList
-                    .OfType<WorldQuest>()
-                    .FirstOrDefault(quest => !quest.Complete);
-
-                _viewModel.combinationEquipmentQuest.Value = questList
-                    .OfType<CombinationEquipmentQuest>()
-                    .FirstOrDefault(quest => !quest.Complete);
-            }
-
-            _viewModel.avatarAddress = avatarState.address;
-            _viewModel.state = ViewState.Idle;
-        }
-
-        private void UpdateAvatarState(AvatarState avatarState, bool ignoreAnimation)
-        {
-            if (!avatarState.address.Equals(_viewModel.avatarAddress))
-            {
-                Initialize(avatarState);
-                return;
-            }
-
-            var questList = avatarState.questList;
-            // TODO: 퀘스트 변화가 있다면 뷰상태를 AddNewGuidedQuest나 ClearExistGuidedQuest로 전환합니다.
         }
 
         /// <summary>
@@ -190,6 +163,60 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(false);
         }
 
+        #endregion
+
+        #region ViewState
+
+        private void Initialize(AvatarState avatarState)
+        {
+            var questList = avatarState.questList;
+            if (questList is null)
+            {
+                _viewModel.worldQuest.Value = null;
+                _viewModel.combinationEquipmentQuest.Value = null;
+            }
+            else
+            {
+                _viewModel.worldQuest.Value = GetTargetWorldQuest(questList);
+                _viewModel.combinationEquipmentQuest.Value =
+                    GetTargetCombinationEquipmentQuest(questList);
+            }
+
+            _viewModel.avatarAddress = avatarState.address;
+            _viewModel.state = ViewState.Idle;
+        }
+
+        private void UpdateAvatarState(AvatarState avatarState, bool ignoreAnimation)
+        {
+            if (!avatarState.address.Equals(_viewModel.avatarAddress))
+            {
+                Initialize(avatarState);
+                return;
+            }
+
+            var questList = avatarState.questList;
+            var worldQuest = GetTargetWorldQuest(questList);
+            var combinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
+            // TODO: 퀘스트 변화가 있다면 뷰상태를 AddNewGuidedQuest나 ClearExistGuidedQuest로 전환합니다.
+        }
+
+        #endregion
+
+        #region Getter
+
+        private static WorldQuest GetTargetWorldQuest(QuestList questList) => questList
+            .OfType<WorldQuest>()
+            .FirstOrDefault(quest => !quest.Complete);
+
+        private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(QuestList questList) =>
+            questList
+                .OfType<CombinationEquipmentQuest>()
+                .FirstOrDefault(quest => !quest.Complete);
+
+        #endregion
+
+        #region Subscribe
+
         private void SubscribeWorldQuest(WorldQuest worldQuest)
         {
             if (worldQuest is null)
@@ -214,5 +241,7 @@ namespace Nekoyume.UI.Module
                 CombinationEquipmentQuestCell.Show(combinationEquipmentQuest);
             }
         }
+
+        #endregion
     }
 }
