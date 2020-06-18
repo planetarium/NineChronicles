@@ -64,7 +64,7 @@ namespace Nekoyume.Action
                     accounts.AddAccount(context.Signer).Serialize()
                 ).SetState(
                     pending.address,
-                    new Null()
+                    null
                 );
             }
             else
