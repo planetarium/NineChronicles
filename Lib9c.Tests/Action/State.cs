@@ -22,15 +22,8 @@ namespace Lib9c.Tests.Action
         public IImmutableSet<Address> UpdatedAddresses =>
             _state.Keys.ToImmutableHashSet();
 
-        public IValue GetState(Address address)
-        {
-            if (_state.TryGetValue(address, out IValue value))
-            {
-                return value;
-            }
-
-            return null;
-        }
+        public IValue GetState(Address address) =>
+            _state.TryGetValue(address, out IValue value) ? value : null;
 
         public IAccountStateDelta SetState(Address address, IValue state)
         {
