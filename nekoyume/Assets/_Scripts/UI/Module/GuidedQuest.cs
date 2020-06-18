@@ -67,6 +67,47 @@ namespace Nekoyume.UI.Module
             gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// 스테이지 전투 종료 후 결과창이 뜨기 전에 호출합니다.
+        /// 현재 노출된 스테이지 가이드 퀘스트 정보와 같은 스테이지일 경우에 동작합니다.
+        /// </summary>
+        /// <param name="stageId"></param>
+        /// <param name="onComplete">함께 전달 받은 `stageId` 인자가 현재 노출된 스테이지 가이드 퀘스트와 같다면 보상 연출이
+        /// 끝난 후에 `true` 인자와 함께 `onComplete`가 호출됩니다. 그렇지 않다면 `false` 인자와 함께 호출됩니다.</param>
+        public void ClearWorldQuest(int stageId, System.Action<bool> onComplete)
+        {
+            if (stageId != _viewModel.worldQuest.Value.Goal)
+            {
+                onComplete(false);
+                return;
+            }
+
+            onComplete(true);
+        }
+
+        /// <summary>
+        /// 메인 메뉴에 진입 후에 Shown 상태가 되었을 때와.. 호출합니다.
+        /// 현재 노출된 장비 조합 가이드 퀘스트 정보와 같은 레시피일 경우에 동작합니다.
+        /// </summary>
+        /// <param name="recipeId"></param>
+        /// <param name="subRecipeId"></param>
+        /// <param name="onComplete">함께 전달 받은 `stageId` 인자가 현재 노출된 스테이지 가이드 퀘스트와 같다면 보상 연출이
+        /// 끝난 후에 `true` 인자와 함께 `onComplete`가 호출됩니다. 그렇지 않다면 `false` 인자와 함께 호출됩니다.</param>
+        public void ClearCombinationEquipmentQuest(
+            int recipeId,
+            int? subRecipeId,
+            System.Action<bool> onComplete)
+        {
+            if (recipeId != _viewModel.combinationEquipmentQuest.Value.RecipeId ||
+                subRecipeId != _viewModel.combinationEquipmentQuest.Value.SubRecipeId)
+            {
+                onComplete(false);
+                return;
+            }
+
+            onComplete(true);
+        }
+
         public void Hide()
         {
             gameObject.SetActive(false);
