@@ -30,22 +30,28 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private bool isFrom = false;
 
-        private RectTransform _rectTransform;
-        private TweenerCore<Vector2, Vector2, VectorOptions> _tween;
+        private RectTransform _rectTransformCache;
+        private Vector2? _originAnchoredPositionCache;
+        private Tweener _tweener;
 
-        private Vector2 _originAnchoredPosition;
+        public RectTransform RectTransform => _rectTransformCache
+            ? _rectTransformCache
+            : _rectTransformCache = GetComponent<RectTransform>();
+
+        private Vector2 OriginAnchoredPosition =>
+            _originAnchoredPositionCache
+            ?? (_originAnchoredPositionCache = RectTransform.anchoredPosition).Value;
 
         private void Awake()
         {
-            _rectTransform = GetComponent<RectTransform>();
-            _originAnchoredPosition = _rectTransform.anchoredPosition;
+            _originAnchoredPositionCache = RectTransform.anchoredPosition;
         }
 
         public Tweener StartShowTween(bool reverse = false)
         {
-            _tween?.Kill();
-            _rectTransform.anchoredPosition = _originAnchoredPosition;
-            _tween = _rectTransform
+            _tweener?.Kill();
+            RectTransform.anchoredPosition = OriginAnchoredPosition;
+            _tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
                 .SetDelay(startDelay)
                 .SetEase(showEase);
@@ -56,17 +62,17 @@ namespace Nekoyume.UI.Tween
 
             if (isFrom)
             {
-                _tween = _tween.From();
+                _tweener = _tweener.From();
             }
 
-            return _tween;
+            return _tweener;
         }
 
         public Tweener StartHideTween(bool reverse = false)
         {
-            _tween?.Kill();
-            _rectTransform.anchoredPosition = _originAnchoredPosition;
-            _tween = _rectTransform
+            _tweener?.Kill();
+            RectTransform.anchoredPosition = OriginAnchoredPosition;
+            _tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
                 .SetEase(closeEase);
 
@@ -76,10 +82,10 @@ namespace Nekoyume.UI.Tween
 
             if (!isFrom)
             {
-                _tween = _tween.From();
+                _tweener = _tweener.From();
             }
 
-            return _tween;
+            return _tweener;
         }
     }
 }
