@@ -35,6 +35,25 @@ namespace NineChronicles.Standalone
             return service.Run(hostBuilder, cancellationToken);
         }
 
+        public static Task RunHeadlessAsync(
+            IHostBuilder hostBuilder,
+            NineChroniclesNodeService service,
+            CancellationToken cancellationToken = default)
+        {
+            return service.Run(hostBuilder, cancellationToken);
+        }
+
+        public static NineChroniclesNodeService CreateHeadless(
+            NineChroniclesNodeServiceProperties properties)
+        {
+            var service = new NineChroniclesNodeService(
+                properties.Libplanet,
+                properties.Rpc,
+                ignoreBootstrapFailure: true);
+
+            return service;
+        }
+
         public static Task RunGraphQLAsync(
             GraphQLNodeServiceProperties graphQLProperties,
             IHostBuilder hostBuilder,
