@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
@@ -10,6 +12,10 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    /// <summary>
+    /// Show()를 통해 전달 받은 AvatarState의 퀘스트 리스트를 기반으로 가이드 퀘스트를 노출합니다.
+    /// 가이드 퀘스트 목록에 새로운 것이 추가되거나 목록의 것이 완료될 때의 연출을 책임집니다.
+    /// </summary>
     public class GuidedQuest : MonoBehaviour
     {
         private enum ViewState
@@ -49,6 +55,13 @@ namespace Nekoyume.UI.Module
                 new ReactiveProperty<CombinationEquipmentQuest>();
         }
 
+        public class UnexpectedException : Exception
+        {
+            public UnexpectedException(string message) : base(message)
+            {
+            }
+        }
+
         private readonly ViewModel _viewModel = new ViewModel();
 
         [SerializeField]
@@ -72,6 +85,7 @@ namespace Nekoyume.UI.Module
             // NOTE: 지금은 딱 두 줄만 표시합니다.
             Assert.AreEqual(cells.Count, 2);
 
+            // 뷰 모델을 구독합니다.
             _viewModel.worldQuest
                 .Subscribe(SubscribeWorldQuest)
                 .AddTo(gameObject);
@@ -79,6 +93,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(SubscribeCombinationEquipmentQuest)
                 .AddTo(gameObject);
 
+            // 뷰 오브젝트를 구독합니다.
             WorldQuestCell.onClick
                 .Select(cell => (cell, _viewModel.worldQuest.Value))
                 .Subscribe(onClickWorldQuestCell)
@@ -107,10 +122,10 @@ namespace Nekoyume.UI.Module
                         $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Idle}");
                     break;
                 case ViewState.None:
-                    Initialize(avatarState);
+                    EnterToIdle(avatarState);
                     break;
                 case ViewState.Idle:
-                    UpdateAvatarState(avatarState, ignoreAnimation);
+                    StartCoroutine(CoUpdateAvatarState(avatarState, ignoreAnimation));
                     break;
             }
 
@@ -167,8 +182,9 @@ namespace Nekoyume.UI.Module
 
         #region ViewState
 
-        private void Initialize(AvatarState avatarState)
+        private void EnterToIdle(AvatarState avatarState)
         {
+            _viewModel.state = ViewState.Idle;
             var questList = avatarState.questList;
             if (questList is null)
             {
@@ -183,21 +199,71 @@ namespace Nekoyume.UI.Module
             }
 
             _viewModel.avatarAddress = avatarState.address;
-            _viewModel.state = ViewState.Idle;
         }
 
-        private void UpdateAvatarState(AvatarState avatarState, bool ignoreAnimation)
+        private IEnumerator CoUpdateAvatarState(AvatarState avatarState, bool ignoreAnimation)
         {
             if (!avatarState.address.Equals(_viewModel.avatarAddress))
             {
-                Initialize(avatarState);
-                return;
+                EnterToIdle(avatarState);
+                yield break;
             }
 
             var questList = avatarState.questList;
-            var worldQuest = GetTargetWorldQuest(questList);
-            var combinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
-            // TODO: 퀘스트 변화가 있다면 뷰상태를 AddNewGuidedQuest나 ClearExistGuidedQuest로 전환합니다.
+            var newWorldQuest = GetTargetWorldQuest(questList);
+            var currentWorldQuest = _viewModel.worldQuest.Value;
+            if (TryAddNewGuidedQuest(WorldQuestCell, currentWorldQuest, newWorldQuest))
+            {
+                yield return null;
+            }
+
+            var newCombinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
+            var currentCombinationEquipmentQuest = _viewModel.combinationEquipmentQuest.Value;
+            if (TryAddNewGuidedQuest(
+                CombinationEquipmentQuestCell,
+                currentCombinationEquipmentQuest,
+                newCombinationEquipmentQuest))
+            {
+                yield return null;
+            }
+        }
+
+        private bool TryAddNewGuidedQuest(
+            GuidedQuestCell cell,
+            Nekoyume.Model.Quest.Quest currentQuest,
+            Nekoyume.Model.Quest.Quest newQuest)
+        {
+            if (newQuest is null)
+            {
+                if (!(currentQuest is null))
+                {
+                    // NOTE: 값이 비워지는 경우입니다. 이는 ClearExistGuidedQuest 상태로 처리되어야 합니다.
+                    throw new UnexpectedException($"Clearing guided quest must proceed in {ViewState.ClearExistGuidedQuest} state.");
+                }
+            }
+            else
+            {
+                if (currentQuest is null)
+                {
+                    AddNewGuidedQuest(cell, newQuest);
+                    return true;
+                }
+
+                if (!currentQuest.Id.Equals(newQuest.Id))
+                {
+                    // NOTE: 값이 바뀌는 경우입니다. 이는 ClearExistGuidedQuest 상태를 거치지 않았다는 말입니다.
+                    throw new UnexpectedException($"Clearing exist guided quest first before add new guided quest.");
+                }
+            }
+
+            return false;
+        }
+
+        private void AddNewGuidedQuest(GuidedQuestCell cell, Nekoyume.Model.Quest.Quest newQuest)
+        {
+            _viewModel.state = ViewState.AddNewGuidedQuest;
+
+            // TODO: 더하는 연출!
         }
 
         #endregion
@@ -208,7 +274,8 @@ namespace Nekoyume.UI.Module
             .OfType<WorldQuest>()
             .FirstOrDefault(quest => !quest.Complete);
 
-        private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(QuestList questList) =>
+        private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
+            QuestList questList) =>
             questList
                 .OfType<CombinationEquipmentQuest>()
                 .FirstOrDefault(quest => !quest.Complete);
