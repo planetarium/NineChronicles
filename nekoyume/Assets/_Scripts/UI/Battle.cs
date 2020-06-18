@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         {
             base.Show();
             stageTitle.Show(stageId);
-            guidedQuest.Show(States.Instance.CurrentAvatarState.questList);
+            guidedQuest.Show();
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();

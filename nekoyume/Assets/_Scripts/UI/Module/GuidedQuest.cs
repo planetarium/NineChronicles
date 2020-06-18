@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Quest;
+using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using NUnit.Framework;
 using UniRx;
@@ -25,8 +26,9 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void Show(QuestList questList, bool ignoreAnimation = false)
+        public void Show(bool ignoreAnimation = false)
         {
+            var questList = States.Instance.CurrentAvatarState?.questList;
             if (questList is null)
             {
                 return;
