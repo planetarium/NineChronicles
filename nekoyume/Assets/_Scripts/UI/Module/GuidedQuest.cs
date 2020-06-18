@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Quest;
@@ -11,14 +12,31 @@ namespace Nekoyume.UI.Module
 {
     public class GuidedQuest : MonoBehaviour
     {
+        private class ViewModel
+        {
+            public readonly ISubject<WorldQuest> worldQuest = new Subject<WorldQuest>();
+
+            public readonly ISubject<CombinationEquipmentQuest> combinationEquipmentQuest =
+                new Subject<CombinationEquipmentQuest>();
+        }
+
+        private readonly ViewModel _viewModel = new ViewModel();
+
         [SerializeField]
         private List<GuidedQuestCell> cells = null;
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
-
+        
         private void Awake()
         {
             Assert.GreaterOrEqual(cells.Count, 2);
+
+            _viewModel.worldQuest
+                .Subscribe(SubscribeWorldQuest)
+                .AddTo(gameObject);
+            _viewModel.combinationEquipmentQuest
+                .Subscribe(SubscribeCombinationEquipmentQuest)
+                .AddTo(gameObject);
 
             foreach (var cell in cells)
             {
@@ -63,6 +81,15 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        private void SubscribeWorldQuest(WorldQuest worldQuest)
+        {
+        }
+
+        private void SubscribeCombinationEquipmentQuest(
+            CombinationEquipmentQuest combinationEquipmentQuest)
+        {
         }
     }
 }
