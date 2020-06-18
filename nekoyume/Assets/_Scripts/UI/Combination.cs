@@ -574,6 +574,7 @@ namespace Nekoyume.UI
 
             UpdateCurrentAvatarState(consumableCombinationPanel, materialInfoList);
             CreateConsumableCombinationAction(rowData.Id, materialInfoList, selectedIndex);
+            consumableRecipe.UpdateRecipes();
         }
 
         private void ActionEnhanceEquipment()

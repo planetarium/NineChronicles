@@ -170,6 +170,13 @@ public class SerializeFieldException : Exception
 
 public class SerializeFieldNullException : Exception
 {
+    public SerializeFieldNullException()
+    {
+    }
+
+    public SerializeFieldNullException(string message) : base(message)
+    {
+    }
 }
 
 public class AddOutOfSpecificRangeException<T> : Exception
