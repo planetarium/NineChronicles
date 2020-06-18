@@ -31,9 +31,9 @@ namespace NineChronicles.Standalone
 
         private RpcNodeServiceProperties? RpcProperties { get; }
 
-        public AsyncAutoResetEvent BootstrapEnded => NodeService.BootstrapEnded;
+        public AsyncManualResetEvent BootstrapEnded => NodeService.BootstrapEnded;
 
-        public AsyncAutoResetEvent PreloadEnded => NodeService.PreloadEnded;
+        public AsyncManualResetEvent PreloadEnded => NodeService.PreloadEnded;
 
         public Swarm<NineChroniclesActionType> Swarm => NodeService?.Swarm;
 

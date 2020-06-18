@@ -45,6 +45,15 @@ namespace NineChronicles.Standalone.GraphTypes
                 name: "keyStore",
                 resolve: context => standaloneContext.KeyStore
             );
+
+            Field<NodeStatusType>(
+                name: "nodeStatus",
+                resolve: context => new NodeStatusType
+                {
+                    BootstrapEnded = standaloneContext.BootstrapEnded,
+                    PreloadEnded = standaloneContext.PreloadEnded,
+                }
+            );
         }
     }
 }

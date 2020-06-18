@@ -10,6 +10,7 @@ using GraphQL.Subscription;
 using GraphQL.Types;
 using Libplanet;
 using Libplanet.Blockchain;
+using Libplanet.Net;
 using Log = Serilog.Log;
 
 namespace NineChronicles.Standalone.GraphTypes
@@ -29,6 +30,70 @@ namespace NineChronicles.Standalone.GraphTypes
             }
         }
 
+        class PreloadStateType : ObjectGraphType<PreloadState>
+        {
+            private class PreloadStateExtra
+            {
+                public string Type { get; set; }
+                public long CurrentCount { get; set; }
+                public long TotalCount { get; set; }
+            }
+
+            private class PreloadStateExtraType : ObjectGraphType<PreloadStateExtra>
+            {
+                public PreloadStateExtraType()
+                {
+                    Field<NonNullGraphType<StringGraphType>>(nameof(PreloadStateExtra.Type));
+                    Field<NonNullGraphType<LongGraphType>>(nameof(PreloadStateExtra.CurrentCount));
+                    Field<NonNullGraphType<LongGraphType>>(nameof(PreloadStateExtra.TotalCount));
+                }
+            }
+
+            public PreloadStateType()
+            {
+                Field<NonNullGraphType<LongGraphType>>(name: "currentPhase", resolve: context => context.Source.CurrentPhase);
+                Field<NonNullGraphType<LongGraphType>>(name: "totalPhase", resolve: context => PreloadState.TotalPhase);
+                Field<NonNullGraphType<PreloadStateExtraType>>(name: "extra", resolve: context =>
+                {
+                    var preloadState = context.Source;
+                    return preloadState switch
+                    {
+                        ActionExecutionState actionExecutionState => new PreloadStateExtra
+                        {
+                            Type = nameof(ActionExecutionState),
+                            CurrentCount = actionExecutionState.ExecutedBlockCount,
+                            TotalCount = actionExecutionState.TotalBlockCount,
+                        },
+                        BlockDownloadState blockDownloadState => new PreloadStateExtra
+                        {
+                            Type = nameof(BlockDownloadState),
+                            CurrentCount = blockDownloadState.ReceivedBlockCount,
+                            TotalCount = blockDownloadState.TotalBlockCount,
+                        },
+                        BlockHashDownloadState blockHashDownloadState => new PreloadStateExtra
+                        {
+                            Type = nameof(BlockHashDownloadState),
+                            CurrentCount = blockHashDownloadState.ReceivedBlockHashCount,
+                            TotalCount = blockHashDownloadState.EstimatedTotalBlockHashCount,
+                        },
+                        BlockVerificationState blockVerificationState => new PreloadStateExtra
+                        {
+                            Type = nameof(BlockVerificationState),
+                            CurrentCount = blockVerificationState.VerifiedBlockCount,
+                            TotalCount = blockVerificationState.TotalBlockCount,
+                        },
+                        StateDownloadState stateDownloadState => new PreloadStateExtra
+                        {
+                            Type = nameof(StateDownloadState),
+                            CurrentCount = stateDownloadState.ReceivedIterationCount,
+                            TotalCount = stateDownloadState.TotalIterationCount,
+                        },
+                        _ => throw new ExecutionError($"Not supported preload state. {preloadState.GetType()}"),
+                    };
+                });
+            }
+        }
+
         private ISubject<TipChanged> _subject = new ReplaySubject<TipChanged>();
 
         private StandaloneContext StandaloneContext { get; }
@@ -39,8 +104,14 @@ namespace NineChronicles.Standalone.GraphTypes
             AddField(new EventStreamFieldType {
                 Name = "tipChanged",
                 Type = typeof(TipChanged),
-                Resolver = new FuncFieldResolver<TipChanged>(Resolve),
-                Subscriber = new EventStreamResolver<TipChanged>(Subscribe),
+                Resolver = new FuncFieldResolver<TipChanged>(ResolveTipChanged),
+                Subscriber = new EventStreamResolver<TipChanged>(SubscribeTipChanged),
+            });
+            AddField(new EventStreamFieldType {
+                Name = "preloadProgress",
+                Type = typeof(PreloadStateType),
+                Resolver = new FuncFieldResolver<PreloadState>(context => context.Source as PreloadState),
+                Subscriber = new EventStreamResolver<PreloadState>(context => StandaloneContext.PreloadStateSubject.AsObservable()),
             });
         }
 
@@ -64,12 +135,12 @@ namespace NineChronicles.Standalone.GraphTypes
             };
         }
 
-        private TipChanged Resolve(IResolveFieldContext context)
+        private TipChanged ResolveTipChanged(IResolveFieldContext context)
         {
             return context.Source as TipChanged;
         }
 
-        private IObservable<TipChanged> Subscribe(IResolveEventStreamContext context)
+        private IObservable<TipChanged> SubscribeTipChanged(IResolveEventStreamContext context)
         {
             return _subject.AsObservable();
         }
