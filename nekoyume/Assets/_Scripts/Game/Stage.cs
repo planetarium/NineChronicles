@@ -553,8 +553,6 @@ namespace Nekoyume.Game
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
             }
-
-            ActionCamera.instance.ChaseX(player.transform);
             yield return null;
         }
 
@@ -771,7 +769,7 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().enemyPlayerStatus.Close();
             var playerCharacter = GetPlayer();
-            playerCharacter.StartRun();
+            RunAndChasePlayer(playerCharacter);
 
             if (hasBoss)
             {
@@ -878,14 +876,14 @@ namespace Nekoyume.Game
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
-            player.StartRun();
+            RunAndChasePlayer(player);
             return player;
         }
 
         public Character.Player RunPlayer(Vector2 position)
         {
             var player = GetPlayer(position);
-            player.StartRun();
+            RunAndChasePlayer(player);
             return player;
         }
 
@@ -951,6 +949,12 @@ namespace Nekoyume.Game
             var w = Widget.Find<Alert>();
             w.Show("UI_UNLOCK_TITLE", key);
             yield return new WaitWhile(() => w.isActiveAndEnabled);
+        }
+
+        private static void RunAndChasePlayer(Character.Player player)
+        {
+            player.StartRun();
+            ActionCamera.instance.ChaseX(player.transform);
         }
     }
 }
