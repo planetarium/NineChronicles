@@ -6,6 +6,7 @@ using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
 using Nekoyume.Model.Item;
+using UniRx;
 using UnityEngine;
 using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
@@ -66,6 +67,13 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
+
+            guidedQuest.onClickWorldQuestCell
+                .Subscribe(_ => Debug.LogWarning("TODO: 스테이지 전투 전환."))
+                .AddTo(gameObject);
+            guidedQuest.onClickCombinationEquipmentQuestCell
+                .Subscribe(_ => Debug.LogWarning("TODO: 장비 조합 전환."))
+                .AddTo(gameObject);
         }
 
         private void UpdateButtons()
