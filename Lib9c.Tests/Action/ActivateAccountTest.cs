@@ -1,15 +1,15 @@
-using Bencodex.Types;
-using Libplanet;
-using Libplanet.Action;
-using Libplanet.Crypto;
-using Nekoyume.Action;
-using Nekoyume.Model;
-using Nekoyume.Model.State;
-using System.Collections.Immutable;
-using Xunit;
-
 namespace Lib9c.Tests.Action
 {
+    using System.Collections.Immutable;
+    using Bencodex.Types;
+    using Libplanet;
+    using Libplanet.Action;
+    using Libplanet.Crypto;
+    using Nekoyume.Action;
+    using Nekoyume.Model;
+    using Nekoyume.Model.State;
+    using Xunit;
+
     public class ActivateAccountTest
     {
         [Fact]
@@ -21,24 +21,22 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
             var state = new State(ImmutableDictionary<Address, IValue>.Empty
                 .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-                .Add(pendingActivation.address, pendingActivation.Serialize())
-            );
+                .Add(pendingActivation.address, pendingActivation.Serialize()));
 
             ActivateAccount action = activationKey.CreateActivateAccount(nonce);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
-                Signer = new Address(),
+                Signer = default,
                 BlockIndex = 1,
             });
 
             var activatedAccounts = new ActivatedAccountsState(
-                (Dictionary) nextState.GetState(ActivatedAccountsState.Address)
+                (Dictionary)nextState.GetState(ActivatedAccountsState.Address)
             );
             Assert.Equal(
-                new[] { new Address() }.ToImmutableHashSet(),
-                activatedAccounts.Accounts
-            );
+                new[] { default(Address) }.ToImmutableHashSet(),
+                activatedAccounts.Accounts);
         }
 
         [Fact]
@@ -53,7 +51,7 @@ namespace Lib9c.Tests.Action
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = new State(ImmutableDictionary<Address, IValue>.Empty),
-                Signer = new Address(),
+                Signer = default,
                 Rehearsal = true,
                 BlockIndex = 1,
             });
@@ -86,7 +84,7 @@ namespace Lib9c.Tests.Action
                 action.Execute(new ActionContext()
                 {
                     PreviousStates = state,
-                    Signer = new Address(),
+                    Signer = default,
                     BlockIndex = 1,
                 });
             });
@@ -102,8 +100,7 @@ namespace Lib9c.Tests.Action
 
             // state에는 pendingActivation에 해당하는 대기가 없는 상태를 가정합니다.
             var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-            );
+                .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize()));
 
             ActivateAccount action = activationKey.CreateActivateAccount(nonce);
             Assert.Throws<PendingActivationDoesNotExistsException>(() =>
@@ -111,7 +108,7 @@ namespace Lib9c.Tests.Action
                 action.Execute(new ActionContext()
                 {
                     PreviousStates = state,
-                    Signer = new Address(),
+                    Signer = default,
                     BlockIndex = 1,
                 });
             });
@@ -134,7 +131,7 @@ namespace Lib9c.Tests.Action
                 action.Execute(new ActionContext()
                 {
                     PreviousStates = state,
-                    Signer = new Address(),
+                    Signer = default,
                     BlockIndex = 1,
                 });
             });
@@ -149,14 +146,13 @@ namespace Lib9c.Tests.Action
                 ActivationKey.Create(privateKey, nonce);
             var state = new State(ImmutableDictionary<Address, IValue>.Empty
                 .Add(ActivatedAccountsState.Address, new ActivatedAccountsState().Serialize())
-                .Add(pendingActivation.address, pendingActivation.Serialize())
-            );
+                .Add(pendingActivation.address, pendingActivation.Serialize()));
 
             ActivateAccount action = activationKey.CreateActivateAccount(nonce);
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
-                Signer = new Address(),
+                Signer = default,
                 BlockIndex = 1,
             });
 

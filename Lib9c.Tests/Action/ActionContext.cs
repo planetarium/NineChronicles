@@ -1,8 +1,8 @@
-using Libplanet;
-using Libplanet.Action;
-
 namespace Lib9c.Tests.Action
 {
+    using Libplanet;
+    using Libplanet.Action;
+
     public class ActionContext : IActionContext
     {
         public Address Signer { get; set; }

@@ -1,14 +1,14 @@
-using Bencodex.Types;
-using Libplanet;
-using Libplanet.Action;
-using Nekoyume.Action;
-using Nekoyume.Model.State;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using Xunit;
-
 namespace Lib9c.Tests.Action
 {
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using Bencodex.Types;
+    using Libplanet;
+    using Libplanet.Action;
+    using Nekoyume.Action;
+    using Nekoyume.Model.State;
+    using Xunit;
+
     public class PatchTableSheetsTest
     {
         [Fact]
@@ -26,7 +26,7 @@ namespace Lib9c.Tests.Action
             var action = new PatchTableSheet()
             {
                 TableName = "TestTable",
-                TableCsv = "New Value"
+                TableCsv = "New Value",
             };
 
             PolicyExpiredException exc1 = Assert.Throws<PolicyExpiredException>(() =>
@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Action
                     {
                         BlockIndex = 101,
                         PreviousStates = state,
-                        Signer = adminAddress
+                        Signer = adminAddress,
                     }
                 );
             });
@@ -49,7 +49,7 @@ namespace Lib9c.Tests.Action
                     {
                         BlockIndex = 5,
                         PreviousStates = state,
-                        Signer = new Address("019101FEec7ed4f918D396827E1277DEda1e20D4")
+                        Signer = new Address("019101FEec7ed4f918D396827E1277DEda1e20D4"),
                     }
                 );
             });

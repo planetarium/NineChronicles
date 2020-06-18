@@ -1,15 +1,15 @@
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using Bencodex.Types;
-using Libplanet;
-using Libplanet.Action;
-using Libplanet.Crypto;
-using Nekoyume.Action;
-using Nekoyume.Model.State;
-using Xunit;
-
 namespace Lib9c.Tests.Action
 {
+    using System.Collections.Generic;
+    using System.Collections.Immutable;
+    using Bencodex.Types;
+    using Libplanet;
+    using Libplanet.Action;
+    using Libplanet.Crypto;
+    using Nekoyume.Action;
+    using Nekoyume.Model.State;
+    using Xunit;
+
     public class CreatePendingActivationTest
     {
         [Fact]
@@ -30,7 +30,7 @@ namespace Lib9c.Tests.Action
             {
                 BlockIndex = 1,
                 PreviousStates = state,
-                Signer = adminAddress
+                Signer = adminAddress,
             };
 
             var nextState = action.Execute(actionContext);
@@ -60,7 +60,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 101,
                     PreviousStates = state,
-                    Signer = adminAddress
+                    Signer = adminAddress,
                 })
             );
 
@@ -69,7 +69,7 @@ namespace Lib9c.Tests.Action
                 {
                     BlockIndex = 1,
                     PreviousStates = state,
-                    Signer = new Address()
+                    Signer = default,
                 })
             );
         }
@@ -87,7 +87,7 @@ namespace Lib9c.Tests.Action
                 new ActionContext()
                 {
                     BlockIndex = 101,
-                    Signer = new Address(),
+                    Signer = default,
                     Rehearsal = true,
                     PreviousStates = new State(ImmutableDictionary<Address, IValue>.Empty),
                 }
