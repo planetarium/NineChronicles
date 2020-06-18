@@ -235,6 +235,7 @@ namespace Nekoyume.Action
                 requiredBlockIndex);
             result.id = mail.id;
             avatarState.Update(mail);
+            avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId, SubRecipeId);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(ctx);
             return states

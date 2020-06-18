@@ -56,6 +56,7 @@ namespace Nekoyume.TableData
         public GameConfigSheet GameConfigSheet { get; private set; }
         public RedeemRewardSheet RedeemRewardSheet { get; private set; }
         public RedeemCodeListSheet RedeemCodeListSheet { get; private set; }
+        public CombinationEquipmentQuestSheet CombinationEquipmentQuestSheet { get; private set; }
 
         #endregion
 
@@ -141,7 +142,8 @@ namespace Nekoyume.TableData
             QuestSheet.Set(GeneralQuestSheet, false);
             QuestSheet.Set(ItemGradeQuestSheet, false);
             QuestSheet.Set(ItemTypeCollectQuestSheet, false);
-            QuestSheet.Set(GoldQuestSheet);
+            QuestSheet.Set(GoldQuestSheet, false);
+            QuestSheet.Set(CombinationEquipmentQuestSheet);
         }
     }
 }

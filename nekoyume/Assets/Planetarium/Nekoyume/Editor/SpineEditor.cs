@@ -196,6 +196,14 @@ namespace Planetarium.Nekoyume.Editor
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
                                 assetPath);
                             break;
+                        case CharacterAnimation.Type.Win_02:
+                        case CharacterAnimation.Type.Win_03:
+                            assetPath = Path.Combine(
+                                animationAssetsPath,
+                                $"{nameof(CharacterAnimation.Type.Win)}.asset");
+                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
+                                assetPath);
+                            break;
                         case CharacterAnimation.Type.Touch:
                         case CharacterAnimation.Type.CastingAttack:
                         case CharacterAnimation.Type.CriticalAttack:

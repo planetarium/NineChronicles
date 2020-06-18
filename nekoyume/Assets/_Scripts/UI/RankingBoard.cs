@@ -355,8 +355,7 @@ namespace Nekoyume.UI
                 _player.Equipments.Select(i => i.ItemId).ToList(),
                 new List<Guid>()
             );
-            Find<LoadingScreen>().Show();
-            Find<RankingBattleLoadingScreen>().Show(info.ArenaInfo);
+            Find<ArenaBattleLoadingScreen>().Show(info.ArenaInfo);
         }
 
         private void SetAvatars(DateTimeOffset? dt)
@@ -430,8 +429,7 @@ namespace Nekoyume.UI
         public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
         {
             Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
-            Find<LoadingScreen>().Close();
-            Find<RankingBattleLoadingScreen>().Close();
+            Find<ArenaBattleLoadingScreen>().Close();
             Close();
         }
     }
