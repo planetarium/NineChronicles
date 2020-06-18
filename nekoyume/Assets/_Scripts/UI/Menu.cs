@@ -67,7 +67,7 @@ namespace Nekoyume.UI
 
             CloseWidget = null;
 
-            guidedQuest.Hide();
+            guidedQuest.Hide(true);
             guidedQuest.onClickWorldQuestCell
                 .Subscribe(_ => Debug.LogWarning("TODO: 스테이지 전투 전환."))
                 .AddTo(gameObject);
@@ -221,18 +221,14 @@ namespace Nekoyume.UI
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             arenaPendingNCG.Show();
-        }
-
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            base.OnCompleteOfShowAnimationInternal();
-            guidedQuest.Show(States.Instance.CurrentAvatarState);
+            guidedQuest.Show(States.Instance.CurrentAvatarState, ignoreShowAnimation);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             StopSpeeches();
 
+            guidedQuest.Hide(ignoreCloseAnimation);
             Find<BottomMenu>().Close(true);
             base.Close(ignoreCloseAnimation);
         }

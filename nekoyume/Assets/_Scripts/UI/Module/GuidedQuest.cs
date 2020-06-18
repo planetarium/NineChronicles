@@ -26,9 +26,14 @@ namespace Nekoyume.UI.Module
             None = -1,
 
             /// <summary>
-            /// AvatarState가 설정되어 있는 유휴 상태입니다.
+            /// 보여지는 연출 상태입니다.
             /// </summary>
-            Idle,
+            Showing,
+
+            /// <summary>
+            /// 보여진 상태입니다. AvatarState가 설정되어 있는 유휴 상태이기도 합니다.
+            /// </summary>
+            Shown,
 
             /// <summary>
             /// 새로운 가이드 퀘스트를 더하는 연출 상태입니다.
@@ -40,6 +45,16 @@ namespace Nekoyume.UI.Module
             /// 보상 연출을 포함합니다.
             /// </summary>
             ClearExistGuidedQuest,
+
+            /// <summary>
+            /// 사라지는 연출 상태입니다.
+            /// </summary>
+            Hiding,
+
+            /// <summary>
+            /// 사라진 상태입니다.
+            /// </summary>
+            Hidden,
         }
 
         private class ViewModel
@@ -108,6 +123,12 @@ namespace Nekoyume.UI.Module
 
         #region Controll
 
+        /// <summary>
+        /// GuidedQuest를 초기화하면서 노출시킵니다.
+        /// 이미 초기화되어 있다면 `avatarState` 인자에 따라 재초기화를 하거나 새로운 가이드 퀘스트를 더하는 AddNewGuidedQuest 상태로 진입합니다.
+        /// </summary>
+        /// <param name="avatarState"></param>
+        /// <param name="ignoreAnimation"></param>
         public void Show(AvatarState avatarState, bool ignoreAnimation = false)
         {
             if (avatarState is null)
@@ -119,12 +140,12 @@ namespace Nekoyume.UI.Module
             {
                 default:
                     Debug.LogWarning(
-                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Idle}");
+                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.None} or {ViewState.Shown}");
                     break;
                 case ViewState.None:
-                    EnterToIdle(avatarState);
+                    EnterToShowing(avatarState, ignoreAnimation);
                     break;
-                case ViewState.Idle:
+                case ViewState.Shown:
                     StartCoroutine(CoUpdateAvatarState(avatarState, ignoreAnimation));
                     break;
             }
@@ -141,10 +162,10 @@ namespace Nekoyume.UI.Module
         /// 끝난 후에 `true` 인자와 함께 `onComplete`가 호출됩니다. 그렇지 않다면 `false` 인자와 함께 호출됩니다.</param>
         public void ClearWorldQuest(int stageId, Action<bool> onComplete)
         {
-            if (_viewModel.state != ViewState.Idle)
+            if (_viewModel.state != ViewState.Shown)
             {
                 Debug.LogWarning(
-                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Idle}");
+                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Shown}");
                 onComplete(false);
                 return;
             }
@@ -171,10 +192,10 @@ namespace Nekoyume.UI.Module
             int? subRecipeId,
             Action<bool> onComplete)
         {
-            if (_viewModel.state != ViewState.Idle)
+            if (_viewModel.state != ViewState.Shown)
             {
                 Debug.LogWarning(
-                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Idle}");
+                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Shown}");
                 onComplete(false);
                 return;
             }
@@ -189,18 +210,36 @@ namespace Nekoyume.UI.Module
             onComplete(true);
         }
 
-        public void Hide()
+        public void Hide(bool ignoreAnimation = false)
         {
-            gameObject.SetActive(false);
+            if (ignoreAnimation)
+            {
+                EnterToHidden();
+            }
+            else
+            {
+                EnterToHiding();
+            }
         }
 
         #endregion
 
         #region ViewState
 
-        private void EnterToIdle(AvatarState avatarState)
+        private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
         {
-            _viewModel.state = ViewState.Idle;
+            _viewModel.state = ViewState.Showing;
+
+            if (ignoreAnimation)
+            {
+                EnterToShown(avatarState);
+                return;
+            }
+        }
+
+        private void EnterToShown(AvatarState avatarState)
+        {
+            _viewModel.state = ViewState.Shown;
             var questList = avatarState.questList;
             if (questList is null)
             {
@@ -221,7 +260,7 @@ namespace Nekoyume.UI.Module
         {
             if (!avatarState.address.Equals(_viewModel.avatarAddress))
             {
-                EnterToIdle(avatarState);
+                EnterToShown(avatarState);
                 yield break;
             }
 
@@ -302,6 +341,21 @@ namespace Nekoyume.UI.Module
             _viewModel.state = ViewState.ClearExistGuidedQuest;
 
             // TODO: 완료하는 연출!
+        }
+
+        private void EnterToHiding()
+        {
+            _viewModel.state = ViewState.Hiding;
+
+            // TODO: 사라지는 연출!
+
+            EnterToHidden();
+        }
+
+        private void EnterToHidden()
+        {
+            _viewModel.state = ViewState.Hidden;
+            gameObject.SetActive(false);
         }
 
         #endregion
