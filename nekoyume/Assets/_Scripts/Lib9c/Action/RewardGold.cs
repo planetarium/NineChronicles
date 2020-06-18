@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Model.State;
@@ -10,7 +11,7 @@ namespace Nekoyume.Action
     [ActionType("reward_gold")]
     public class RewardGold : ActionBase
     {
-        public decimal Gold;
+        public BigInteger Gold;
 
         public override IValue PlainValue =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
@@ -21,7 +22,7 @@ namespace Nekoyume.Action
         public override void LoadPlainValue(IValue plainValue)
         {
             var dict = (Bencodex.Types.Dictionary) plainValue;
-            Gold = dict["gold"].ToDecimal();
+            Gold = dict["gold"].ToBigInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -32,9 +33,6 @@ namespace Nekoyume.Action
             {
                 return states.SetState(ctx.Miner, MarkChanged);
             }
-
-            var agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);
-            agentState.gold += Gold;
 
             var index = (int) ctx.BlockIndex / GameConfig.WeeklyArenaInterval;
             var weekly = states.GetWeeklyArenaState(WeeklyArenaState.Addresses[index]);
@@ -51,7 +49,9 @@ namespace Nekoyume.Action
                 weekly.ResetCount(ctx.BlockIndex);
                 states = states.SetState(weekly.address, weekly.Serialize());
             }
-            return states.SetState(ctx.Miner, agentState.Serialize());
+
+            // FIXME: 사실 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
+            return states.MintAsset(ctx.Miner, Currencies.Gold, Gold);
         }
     }
 }

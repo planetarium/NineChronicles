@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using Bencodex;
 using Bencodex.Types;
 using Libplanet;
@@ -32,35 +33,143 @@ namespace Nekoyume.Action
         private struct AccountStateDelta : IAccountStateDelta
         {
             private IImmutableDictionary<Address, IValue> _states;
-            
+            private IImmutableDictionary<(Address, Currency), BigInteger> _balances;
+
             public IImmutableSet<Address> UpdatedAddresses => _states.Keys.ToImmutableHashSet();
 
-            public AccountStateDelta(IImmutableDictionary<Address, IValue> states)
+            public IImmutableSet<Address> StateUpdatedAddresses => _states.Keys.ToImmutableHashSet();
+
+            public IImmutableDictionary<Address, IImmutableSet<Currency>> UpdatedFungibleAssets =>
+                _balances.GroupBy(kv => kv.Key.Item1).ToImmutableDictionary(
+                    g => g.Key,
+                    g => (IImmutableSet<Currency>)g.Select(kv => kv.Key.Item2).ToImmutableHashSet()
+                );
+
+            public AccountStateDelta(
+                IImmutableDictionary<Address, IValue> states,
+                IImmutableDictionary<(Address, Currency), BigInteger> balances
+            )
             {
                 _states = states;
+                _balances = balances;
             }
 
-            public AccountStateDelta(Dictionary states)
+            public AccountStateDelta(Dictionary states, Dictionary balances)
             {
                 _states = states.ToImmutableDictionary(
                     kv => new Address(kv.Key.EncodeAsByteArray()),
                     kv => kv.Value
                 );
+                _balances = balances.ToImmutableDictionary(
+                    kv => (
+                        new Address(kv.Key.EncodeAsByteArray()),
+                        CurrencyExtensions.Deserialize((Dictionary) kv.Value)
+                    ),
+                    kv =>
+                    {
+                        var serialized = (Dictionary) kv.Value;
+                        var balance = (Bencodex.Types.Integer) serialized.GetValueOrDefault(
+                            (Text) "amount",
+                            (Bencodex.Types.Integer) 0
+                        );
+                        return balance.Value;
+                    }
+                );
             }
 
-            public AccountStateDelta(byte[] bytes) 
+            public AccountStateDelta(IValue serialized)
+                : this(
+                    (Dictionary)((Dictionary)serialized)["states"],
+                    (Dictionary)((Dictionary)serialized)["balances"]
+                )
+            {
+            }
+
+            public AccountStateDelta(byte[] bytes)
                 : this((Dictionary)new Codec().Decode(bytes))
             {
             }
 
-            public IValue GetState(Address address)
+            public IValue GetState(Address address) =>
+                _states.GetValueOrDefault(address, null);
+
+            public IAccountStateDelta SetState(Address address, IValue state) =>
+                new AccountStateDelta(_states.SetItem(address, state), _balances);
+
+            public BigInteger GetBalance(Address address, Currency currency) =>
+                _balances.GetValueOrDefault((address, currency), 0);
+
+            public IAccountStateDelta MintAsset(Address recipient, Currency currency, BigInteger amount)
             {
-                return _states.GetValueOrDefault(address, new Null());
+                // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
+                // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
+
+                if (amount <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(amount));
+                }
+
+                return new AccountStateDelta(
+                    _states,
+                    _balances.SetItem((recipient, currency),
+                        GetBalance(recipient, currency) + amount)
+                );
             }
 
-            public IAccountStateDelta SetState(Address address, IValue state)
+            public IAccountStateDelta TransferAsset(
+                Address sender,
+                Address recipient,
+                Currency currency,
+                BigInteger amount,
+                bool allowNegativeBalance = false)
             {
-                return new AccountStateDelta(_states.Add(address, state));
+                if (amount <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(amount));
+                }
+
+                BigInteger senderBalance = GetBalance(sender, currency);
+                if (senderBalance < amount)
+                {
+                    throw new InsufficientBalanceException(
+                        sender,
+                        currency,
+                        senderBalance,
+                        $"There is no sufficient balance for {sender}: {senderBalance} {currency} < {amount} {currency}"
+                    );
+                }
+
+                var balances = _balances
+                    .SetItem((sender, currency), senderBalance - amount)
+                    .SetItem((recipient, currency), GetBalance(recipient, currency) + amount);
+                return new AccountStateDelta(_states, balances);
+            }
+
+            public IAccountStateDelta BurnAsset(Address owner, Currency currency, BigInteger amount)
+            {
+                // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
+                // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
+
+                if (amount <= 0)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(amount));
+                }
+
+                BigInteger balance = GetBalance(owner, currency);
+                if (balance < amount)
+                {
+                    throw new InsufficientBalanceException(
+                        owner,
+                        currency,
+                        balance,
+                        $"There is no sufficient balance for {owner}: {balance} {currency} < {amount} {currency}"
+                    );
+                }
+
+                return new AccountStateDelta(
+                    _states,
+                    _balances.SetItem((owner, currency), balance - amount)
+                );
             }
         }
 
@@ -198,7 +307,7 @@ namespace Nekoyume.Action
                     OutputStates = context.PreviousStates,
                     Exception = exception,
                     PreviousStates = context.PreviousStates,
-                }  
+                }
             );
         }
 

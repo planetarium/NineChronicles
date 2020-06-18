@@ -17,6 +17,7 @@ namespace Tests.EditMode
     {
         private TableSheets _tableSheets;
         private AgentState _agentState;
+        private GoldBalanceState _goldBalanceState;
         private AvatarState _avatarState;
 
         [SetUp]
@@ -24,6 +25,7 @@ namespace Tests.EditMode
         {
             _tableSheets = TableSheetsHelper.MakeTableSheets();
             _agentState = new AgentState(new Address());
+            _goldBalanceState = new GoldBalanceState(_agentState.address, 0);
             _avatarState = new AvatarState(new Address(), _agentState.address, 0, _tableSheets, new GameConfigState());
         }
 
@@ -31,6 +33,7 @@ namespace Tests.EditMode
         public void TearDown()
         {
             _avatarState = null;
+            _goldBalanceState = null;
             _agentState = null;
             _tableSheets = null;
         }
@@ -38,10 +41,10 @@ namespace Tests.EditMode
         [Test]
         public void AgentGoldModifier()
         {
-            var gold = _agentState.gold;
+            var gold = _goldBalanceState.gold;
             var modifier = JsonTest(new AgentGoldModifier(100));
-            modifier.Modify(_agentState);
-            Assert.AreEqual(gold + 100, _agentState.gold);
+            modifier.Modify(_goldBalanceState);
+            Assert.AreEqual(gold + 100, _goldBalanceState.gold);
         }
 
         [Test]

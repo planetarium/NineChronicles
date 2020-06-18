@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -12,9 +13,9 @@ namespace Nekoyume.Action
     [ActionType("ranking_reward")]
     public class RankingReward : ActionBase
     {
-        public decimal gold1;
-        public decimal gold2;
-        public decimal gold3;
+        public BigInteger gold1;
+        public BigInteger gold2;
+        public BigInteger gold3;
         public Address[] agentAddresses;
 
         public override IValue PlainValue =>
@@ -29,9 +30,9 @@ namespace Nekoyume.Action
         public override void LoadPlainValue(IValue plainValue)
         {
             var dict = (Bencodex.Types.Dictionary) plainValue;
-            gold1 = dict["gold1"].ToDecimal();
-            gold2 = dict["gold2"].ToDecimal();
-            gold3 = dict["gold3"].ToDecimal();
+            gold1 = dict["gold1"].ToBigInteger();
+            gold2 = dict["gold2"].ToBigInteger();
+            gold3 = dict["gold3"].ToBigInteger();
             agentAddresses = dict["agentAddresses"].ToArray(StateExtensions.ToAddress);
         }
 
@@ -41,8 +42,7 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                states = agentAddresses.Aggregate(states, (current, address) => current.SetState(address, MarkChanged));
-                return states.SetState(ctx.Miner, MarkChanged);
+                return states.MarkBalanceChanged(Currencies.Gold, agentAddresses);
             }
 
             if (ctx.Signer != ctx.Miner)
@@ -50,7 +50,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var rewards = new List<decimal>
+            var rewards = new List<BigInteger>
             {
                 gold1,
                 gold2,
@@ -65,16 +65,20 @@ namespace Nekoyume.Action
                 {
                     continue;
                 }
+
+                BigInteger reward;
                 try
                 {
-                    agentState.gold += rewards[index];
+                    reward = rewards[index];
                 }
                 catch (IndexOutOfRangeException)
                 {
                     break;
                 }
 
-                states = states.SetState(address, agentState.Serialize());
+                // FIXME: 사실 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
+                // 근데 RankingBattle 액션에서 입장료 받아다 WeeklyArenaAddress에다 쌓아두는데 그거 빼서 주면 안되는지?
+                states = states.MintAsset(address, Currencies.Gold, reward);
             }
 
             return states;

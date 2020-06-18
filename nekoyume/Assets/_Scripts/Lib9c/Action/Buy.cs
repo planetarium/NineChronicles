@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -56,7 +57,7 @@ namespace Nekoyume.Action
         {
             public ShopItem shopItem;
             public Guid id;
-            public decimal gold;
+            public BigInteger gold;
 
             protected override string TypeId => "buy.sellerResult";
 
@@ -68,7 +69,7 @@ namespace Nekoyume.Action
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
                 id = serialized["id"].ToGuid();
-                gold = serialized["gold"].ToDecimal();
+                gold = serialized["gold"].ToBigInteger();
             }
 
             public override IValue Serialize() =>
@@ -102,10 +103,11 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                states = states.SetState(buyerAvatarAddress, MarkChanged);
-                states = states.SetState(ctx.Signer, MarkChanged);
-                states = states.SetState(sellerAvatarAddress, MarkChanged);
-                states = states.SetState(sellerAgentAddress, MarkChanged);
+                states = states
+                    .SetState(buyerAvatarAddress, MarkChanged)
+                    .SetState(ctx.Signer, MarkChanged)
+                    .SetState(sellerAvatarAddress, MarkChanged)
+                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer, sellerAgentAddress);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
 
@@ -182,23 +184,22 @@ namespace Nekoyume.Action
             sw.Restart();
 
             // 돈은 있냐?
-            if (buyerAgentState.gold < outPair.Value.Price)
+            BigInteger buyerBalance = states.GetBalance(context.Signer, Currencies.Gold);
+            if (buyerBalance < outPair.Value.Price)
             {
                 return LogError(
                     context,
                     "Aborted as the buyer ({Buyer}) has no sufficient gold: {BuyerBalance} < {ItemPrice}",
                     ctx.Signer,
-                    buyerAgentState.gold,
+                    buyerBalance,
                     outPair.Value.Price
                 );
             }
 
-            var taxedPrice = decimal.Round(outPair.Value.Price * 0.92m);
+            var taxedPrice = (BigInteger)decimal.Round((decimal)outPair.Value.Price * 0.92m);
 
-            // 구매자의 돈을 감소시킨다.
-            buyerAgentState.gold -= outPair.Value.Price;
-            // 판매자의 돈을 증가시킨다.
-            sellerAgentState.gold += taxedPrice;
+            // 구매자의 돈을 판매자에게 송금한다.
+            states = states.TransferAsset(context.Signer, sellerAgentAddress, Currencies.Gold, outPair.Value.Price);
 
             // 상점에서 구매할 아이템을 제거한다.
             if (!shopState.Unregister(sellerAgentAddress, outPair.Value))
@@ -263,9 +264,7 @@ namespace Nekoyume.Action
             Log.Debug("Buy Set ShopState: {Elapsed}", sw.Elapsed);
             Log.Debug("Buy Total Executed Time: {Elapsed}", ended - started);
 
-            return states
-                .SetState(ctx.Signer, buyerAgentState.Serialize())
-                .SetState(sellerAgentAddress, sellerAgentState.Serialize());
+            return states.SetState(ctx.Signer, buyerAgentState.Serialize());
         }
     }
 }

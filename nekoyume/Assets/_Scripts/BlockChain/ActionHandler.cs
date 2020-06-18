@@ -40,12 +40,19 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetAgentState(agentAddress);
         }
 
+        protected GoldBalanceState GetGoldBalanceState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            return evaluation.OutputStates.GetGoldBalanceState(agentAddress);
+        }
+
         protected void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             var state = GetAgentState(evaluation);
-            UpdateAgentState(state);
+            var balanceState = GetGoldBalanceState(evaluation);
+            UpdateAgentState(state, balanceState);
         }
 
         protected void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
@@ -102,9 +109,9 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        private static void UpdateAgentState(AgentState state)
+        private static void UpdateAgentState(AgentState state, GoldBalanceState balanceState)
         {
-            States.Instance.SetAgentState(state);
+            States.Instance.SetAgentState(state, balanceState);
         }
 
         private void UpdateAvatarState(AvatarState avatarState, int index)

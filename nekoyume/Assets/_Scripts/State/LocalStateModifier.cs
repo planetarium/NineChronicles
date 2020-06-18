@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Security.Cryptography;
 using Libplanet;
 using Nekoyume.Action;
@@ -24,13 +25,15 @@ namespace Nekoyume.State
         #region Agent, Avatar / Currency
 
         /// <summary>
-        /// 에이전트의 골드를 변경한다.(휘발성)
+        /// 에이전트의 골드를 증가시킨다.(휘발성)
         /// </summary>
         /// <param name="agentAddress"></param>
-        /// <param name="gold"></param>
-        public static void ModifyAgentGold(Address agentAddress, decimal gold)
+        /// <param name="gold">더할 NCG. 음수일 경우 감소시킨다.</param>
+        // FIXME: 이름이 헷갈리니 IncrementAgentGold() 정도로 이름을 바꾸는 게 좋겠습니다.
+        // (현재는 이름만 보면 더하는 게 아니라 그냥 덮어씌우는 것처럼 여겨짐.)
+        public static void ModifyAgentGold(Address agentAddress, BigInteger gold)
         {
-            if (gold is 0m)
+            if (gold == 0)
             {
                 return;
             }
@@ -38,9 +41,8 @@ namespace Nekoyume.State
             var modifier = new AgentGoldModifier(gold);
             LocalStateSettings.Instance.Add(agentAddress, modifier, true);
 
-            var state = States.Instance.AgentState;
-            if (state is null ||
-                !state.address.Equals(agentAddress))
+            var state = States.Instance.GoldBalanceState;
+            if (state is null || !state.address.Equals(agentAddress))
             {
                 return;
             }
@@ -50,10 +52,12 @@ namespace Nekoyume.State
         }
 
         /// <summary>
-        /// 아바타의 행동력을 변경한다.(휘발성)
+        /// 아바타의 행동력을 증가시킨다.(휘발성)
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="actionPoint"></param>
+        /// <param name="actionPoint">더할 행동력. 음수일 경우 감소시킨다.</param>
+        // FIXME: 이름이 헷갈리니 IncrementAvatarActionPoint() 정도로 이름을 바꾸는 게 좋겠습니다.
+        // (현재는 이름만 보면 더하는 게 아니라 그냥 덮어씌우는 것처럼 여겨짐.)
         public static void ModifyAvatarActionPoint(Address avatarAddress, int actionPoint)
         {
             if (actionPoint is 0)

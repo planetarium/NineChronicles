@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -18,7 +19,7 @@ namespace Nekoyume.Action
         public Address sellerAvatarAddress;
         public Guid productId;
         public Guid itemId;
-        public decimal price;
+        public BigInteger price;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -33,7 +34,7 @@ namespace Nekoyume.Action
             sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
             productId = plainValue["productId"].ToGuid();
             itemId = plainValue["itemId"].ToGuid();
-            price = plainValue["price"].ToDecimal();
+            price = plainValue["price"].ToBigInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -64,7 +65,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug("Sell Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
-            
+
             if (!avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var world))
             {
                 return LogError(context, "Aborted as the WorldInformation was failed to load.");

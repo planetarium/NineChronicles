@@ -21,10 +21,10 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                return states.SetState(ctx.Signer, MarkChanged);
+                return states.MarkBalanceChanged(Currencies.Gold, ctx.Signer);
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState, out _))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState _, out _))
             {
                 return states;
             }
@@ -51,9 +51,9 @@ namespace Nekoyume.Action
 
             var gold = weeklyArenaState.GetReward(tier);
 
-            agentState.gold += gold;
-
-            return states.SetState(ctx.Signer, agentState.Serialize());
+            // FIXME: 사실 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
+            // 근데 RankingBattle 액션에서 입장료 받아다 WeeklyArenaAddress에다 쌓아두는데 그거 빼서 주면 안되는지?
+            return states.MintAsset(ctx.Signer, Currencies.Gold, gold);
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>

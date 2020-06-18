@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Assets.SimpleLocalization;
 using Nekoyume.TableData;
 using UniRx;
@@ -19,11 +20,11 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> SubmitButtonText = new ReactiveProperty<string>(null);
 
         public readonly ReactiveProperty<bool> PriceEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<decimal> Price = new ReactiveProperty<decimal>(0m);
+        public readonly ReactiveProperty<BigInteger> Price = new ReactiveProperty<BigInteger>(0);
 
         public readonly Subject<UI.ItemInformationTooltip> OnSubmitClick = new Subject<UI.ItemInformationTooltip>();
         public readonly Subject<UI.ItemInformationTooltip> OnCloseClick = new Subject<UI.ItemInformationTooltip>();
-        
+
         public readonly ReadOnlyReactiveProperty<bool> FooterRootActive;
 
         public ItemInformationTooltip(CountableItem countableItem = null)
@@ -79,7 +80,7 @@ namespace Nekoyume.UI.Model
             OnCloseClick.Dispose();
 
             FooterRootActive.Dispose();
-            
+
             base.Dispose();
         }
 
