@@ -97,9 +97,13 @@ namespace Nekoyume.UI.Scroller
                 }
             }
 
-            var quest = Widget.Find<Quest>();
+            var rewards = rewardViews
+                .Select(view => view.Model)
+                .Where(item => !(item is null))
+                .ToList();
+            Widget.Find<QuestResult>().Show(rewards);
             RequestReward();
-            quest.UpdateTabs();
+            Widget.Find<Quest>().UpdateTabs();
             onClickSubmitButton?.Invoke();
         }
 
