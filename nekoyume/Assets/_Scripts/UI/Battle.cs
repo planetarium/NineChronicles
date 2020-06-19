@@ -67,7 +67,19 @@ namespace Nekoyume.UI
             }
         }
 
-        public void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
+            enemyPlayerStatus.Close(ignoreCloseAnimation);
+            base.Close(ignoreCloseAnimation);
+        }
+
+        public void ClearStage(int stageId, System.Action<bool> onComplete)
+        {
+            guidedQuest.ClearWorldQuest(stageId, onComplete);
+        }
+
+        private void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
         {
             if (!CanClose)
             {
@@ -103,14 +115,7 @@ namespace Nekoyume.UI
             }
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-            enemyPlayerStatus.Close(ignoreCloseAnimation);
-            base.Close(ignoreCloseAnimation);
-        }
-
-        private void SetExitButtonToggledOff()
+        private static void SetExitButtonToggledOff()
         {
             Game.Game.instance.Stage.isExitReserved = false;
             Find<BottomMenu>().exitButton.SharedModel.IsEnabled.Value = false;

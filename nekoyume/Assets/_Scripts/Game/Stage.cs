@@ -310,18 +310,26 @@ namespace Nekoyume.Game
                 .Where(i => i.StageId == worldStage)
                 .OrderBy(i => i.DialogId)
                 .ToArray();
-            if (stageDialogs.Any())
+            if (!stageDialogs.Any())
             {
-                var dialog = Widget.Find<Dialog>();
-
-                foreach (var stageDialog in stageDialogs)
-                {
-                    dialog.Show(stageDialog.DialogId);
-                    yield return new WaitWhile(() => dialog.gameObject.activeSelf);
-                }
+                yield break;
             }
 
-            yield return null;
+            var dialog = Widget.Find<Dialog>();
+
+            foreach (var stageDialog in stageDialogs)
+            {
+                dialog.Show(stageDialog.DialogId);
+                yield return new WaitWhile(() => dialog.gameObject.activeSelf);
+            }
+        }
+
+        private static IEnumerator CoGuidedQuest(int worldStage)
+        {
+            var done = false;
+            var battle = Widget.Find<UI.Battle>();
+            battle.ClearStage(worldStage, cleared => done = true);
+            yield return new WaitUntil(() => done);
         }
 
         private IEnumerator CoStageEnter(BattleLog log)
@@ -395,6 +403,7 @@ namespace Nekoyume.Game
                 if (passed)
                 {
                     yield return StartCoroutine(CoDialog(log.stageId));
+                    yield return StartCoroutine(CoGuidedQuest(log.stageId));
                 }
 
                 playerCharacter.Animator.Win(log.clearedWaveNumber);
