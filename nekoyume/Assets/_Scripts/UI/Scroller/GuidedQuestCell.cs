@@ -95,6 +95,8 @@ namespace Nekoyume.UI.Scroller
                     .StartHideTween()
                     .OnComplete(() => gameObject.SetActive(false));
             }
+
+            Quest = null;
         }
 
         #endregion

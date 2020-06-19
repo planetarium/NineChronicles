@@ -252,10 +252,9 @@ namespace Nekoyume.UI.Module
 
         private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
         {
-            _viewModel.state.Value = ViewState.None;
-            _viewModel.worldQuest.Value = null;
-            _viewModel.combinationEquipmentQuest.Value = null;
             _viewModel.state.Value = ViewState.Showing;
+            WorldQuestCell.Hide(true);
+            CombinationEquipmentQuestCell.Hide(true);
 
             if (ignoreAnimation)
             {
@@ -283,7 +282,8 @@ namespace Nekoyume.UI.Module
             if (TryAddNewGuidedQuest(
                 _viewModel.worldQuest,
                 currentWorldQuest,
-                newWorldQuest))
+                newWorldQuest,
+                WorldQuestCell))
             {
                 yield return new WaitForSeconds(.5f);
             }
@@ -293,7 +293,8 @@ namespace Nekoyume.UI.Module
             if (TryAddNewGuidedQuest(
                 _viewModel.combinationEquipmentQuest,
                 currentCombinationEquipmentQuest,
-                newCombinationEquipmentQuest))
+                newCombinationEquipmentQuest,
+                CombinationEquipmentQuestCell))
             {
                 yield return new WaitForSeconds(.5f);
             }
@@ -302,9 +303,10 @@ namespace Nekoyume.UI.Module
         }
 
         private bool TryAddNewGuidedQuest<TQuestModel>(
-            IReactiveProperty<TQuestModel> questReactiveProperty,
+            ReactiveProperty<TQuestModel> questReactiveProperty,
             TQuestModel currentQuest,
-            TQuestModel newQuest)
+            TQuestModel newQuest,
+            GuidedQuestCell cell)
             where TQuestModel : Nekoyume.Model.Quest.Quest
         {
             if (newQuest is null)
@@ -333,16 +335,23 @@ namespace Nekoyume.UI.Module
                     $"Clearing exist guided quest first before add new guided quest.");
             }
 
+            // NOTE: 연출을 위해서 강제로 cell.Hide()를 호출했던 경우에 다시 보여주도록 합니다.
+            if (cell.Quest is null)
+            {
+                EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
+                return true;
+            }
+
             return false;
         }
 
         private void EnterToAddNewGuidedQuest<TQuestModel>(
-            IReactiveProperty<TQuestModel> questReactiveProperty,
+            ReactiveProperty<TQuestModel> questReactiveProperty,
             TQuestModel quest)
             where TQuestModel : Nekoyume.Model.Quest.Quest
         {
             _viewModel.state.Value = ViewState.AddNewGuidedQuest;
-            questReactiveProperty.Value = quest;
+            questReactiveProperty.SetValueAndForceNotify(quest);
         }
 
         private void EnterToClearExistGuidedQuest<TQuestModel>(
