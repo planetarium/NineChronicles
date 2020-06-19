@@ -92,12 +92,17 @@ namespace Nekoyume.UI
             _timerCoroutine = null;
 
             base.Close(ignoreCloseAnimation);
+        }
+
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
             _npc.gameObject.SetActive(false);
             foreach (var tweener in _tweeners)
             {
                 tweener.Kill();
             }
             _tweeners.Clear();
+            base.OnCompleteOfCloseAnimationInternal();
         }
 
         #endregion
