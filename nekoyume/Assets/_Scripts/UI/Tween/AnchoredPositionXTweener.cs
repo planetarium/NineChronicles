@@ -50,41 +50,35 @@ namespace Nekoyume.UI.Tween
         public Tweener StartShowTween(bool reverse = false)
         {
             KillTween();
-            RectTransform.anchoredPosition = OriginAnchoredPosition;
             _tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
                 .SetDelay(startDelay)
                 .SetEase(showEase);
 
-            isFrom = reverse
-                ? !isFrom
-                : isFrom;
-
-            if (isFrom)
+            if (isFrom &&
+                !reverse)
             {
                 _tweener = _tweener.From();
             }
 
+            RectTransform.anchoredPosition = OriginAnchoredPosition;
             return _tweener;
         }
 
         public Tweener StartHideTween(bool reverse = false)
         {
             KillTween();
-            RectTransform.anchoredPosition = OriginAnchoredPosition;
             _tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
                 .SetEase(closeEase);
 
-            isFrom = reverse
-                ? !isFrom
-                : isFrom;
-
-            if (!isFrom)
+            if (isFrom &&
+                !reverse)
             {
                 _tweener = _tweener.From();
             }
 
+            RectTransform.anchoredPosition = OriginAnchoredPosition;
             return _tweener;
         }
 
