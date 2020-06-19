@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Quest;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Tween;
 using NUnit.Framework;
 using TMPro;
 using UniRx;
@@ -16,6 +19,7 @@ namespace Nekoyume.UI.Scroller
         private const string MainContentFormat = "<color=red>[Main]</color> {0}";
         private const string SubContentFormat = "<color=red>[Sub]</color> {0}";
 
+        // NOTE: 콘텐츠 텍스트의 길이가 UI를 넘어갈 수 있기 때문에 flowing text 처리를 해주는 것이 좋겠습니다.
         [SerializeField]
         private TextMeshProUGUI contentText = null;
 
@@ -25,7 +29,14 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Button bodyButton = null;
 
+        [SerializeField]
+        private AnchoredPositionXTweener showTweener = null;
+
+        private Tweener _showTweener;
+
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
+
+        #region MonoBehaviour
 
         private void Awake()
         {
@@ -38,6 +49,16 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
+        private void OnDisable()
+        {
+            _showTweener?.Kill();
+            _showTweener = null;
+        }
+
+        #endregion
+
+        #region Controll
+
         public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreAnimation = false)
         {
             if (quest is null)
@@ -46,14 +67,36 @@ namespace Nekoyume.UI.Scroller
             }
 
             SetContent(quest);
-            SetRewards(quest.Reward.ItemMap);
+
+            if (ignoreAnimation)
+            {
+                SetRewards(quest.Reward.ItemMap, ignoreAnimation);
+            }
+            else
+            {
+                ClearRewards();
+                _showTweener?.Kill();
+                _showTweener = showTweener.StartShowTween();
+                _showTweener.OnComplete(() => SetRewards(quest.Reward.ItemMap, ignoreAnimation));
+            }
+
             gameObject.SetActive(true);
         }
 
-        public void Hide()
+        public void Hide(bool ignoreAnimation = false)
         {
-            gameObject.SetActive(false);
+            if (ignoreAnimation)
+            {
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                // TODO: 바로 사라지지 말고 애니메이션을 재생합니다.
+                gameObject.SetActive(false);
+            }
         }
+
+        #endregion
 
         private void SetContent(Nekoyume.Model.Quest.Quest quest)
         {
@@ -68,7 +111,7 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void SetRewards(IReadOnlyDictionary<int, int> rewardMap)
+        private void SetRewards(IReadOnlyDictionary<int, int> rewardMap, bool ignoreAnimation = false)
         {
             var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             for (var i = 0; i < rewards.Count; i++)
@@ -81,12 +124,29 @@ namespace Nekoyume.UI.Scroller
                     Assert.NotNull(row);
 
                     reward.SetData(row);
-                    reward.Show();
+
+                    if (ignoreAnimation)
+                    {
+                        reward.Show();
+                    }
+                    else
+                    {
+                        // TODO: 바로 reward.Show()를 호출하지 말고 애니메이션을 재생합니다.
+                        reward.Show();
+                    }
                 }
                 else
                 {
                     reward.Hide();
                 }
+            }
+        }
+
+        private void ClearRewards()
+        {
+            foreach (var reward in rewards)
+            {
+                reward.Hide();
             }
         }
     }
