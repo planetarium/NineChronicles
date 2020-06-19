@@ -386,15 +386,20 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
+            var passed = _battleResultModel.ClearedWaveNumber == log.waveCount;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(1f);
             Boss = null;
+            if (passed)
+            {
+                yield return StartCoroutine(CoGuidedQuest(log.stageId));
+                yield return new WaitForSeconds(1f);
+            }
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().Close();
             yield return StartCoroutine(CoUnlockAlert());
-            _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
-            var passed = _battleResultModel.ClearedWaveNumber == log.waveCount;
             yield return new WaitForSeconds(0.75f);
             if (log.result == BattleLog.Result.Win)
             {
@@ -403,7 +408,6 @@ namespace Nekoyume.Game
                 if (passed)
                 {
                     yield return StartCoroutine(CoDialog(log.stageId));
-                    yield return StartCoroutine(CoGuidedQuest(log.stageId));
                 }
 
                 playerCharacter.Animator.Win(log.clearedWaveNumber);
