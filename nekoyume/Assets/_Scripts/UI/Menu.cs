@@ -66,8 +66,7 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
-
-            guidedQuest.Hide(true);
+            
             guidedQuest.OnClickWorldQuestCell
                 .Subscribe(_ => Debug.LogWarning("TODO: 스테이지 전투 전환."))
                 .AddTo(gameObject);
@@ -216,6 +215,7 @@ namespace Nekoyume.UI
                 _coLazyClose = null;
             }
 
+            guidedQuest.Hide(true);
             base.Show(ignoreShowAnimation);
 
             StartCoroutine(CoStartSpeeches());

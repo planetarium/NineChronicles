@@ -286,17 +286,15 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoUpdateAvatarState(AvatarState avatarState, System.Action onComplete)
         {
-            var isAvatarStateChange = !avatarState.address.Equals(_viewModel.avatarAddress);
             _viewModel.avatarAddress = avatarState.address;
 
             var questList = avatarState.questList;
             var newWorldQuest = GetTargetWorldQuest(questList);
             var currentWorldQuest = _viewModel.worldQuest.Value;
             if (TryAddNewGuidedQuest(
-                    _viewModel.worldQuest,
-                    currentWorldQuest,
-                    newWorldQuest) &&
-                !isAvatarStateChange)
+                _viewModel.worldQuest,
+                currentWorldQuest,
+                newWorldQuest))
             {
                 yield return new WaitForSeconds(.5f);
             }
@@ -304,10 +302,9 @@ namespace Nekoyume.UI.Module
             var newCombinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
             var currentCombinationEquipmentQuest = _viewModel.combinationEquipmentQuest.Value;
             if (TryAddNewGuidedQuest(
-                    _viewModel.combinationEquipmentQuest,
-                    currentCombinationEquipmentQuest,
-                    newCombinationEquipmentQuest) &&
-                !isAvatarStateChange)
+                _viewModel.combinationEquipmentQuest,
+                currentCombinationEquipmentQuest,
+                newCombinationEquipmentQuest))
             {
                 yield return new WaitForSeconds(.5f);
             }
