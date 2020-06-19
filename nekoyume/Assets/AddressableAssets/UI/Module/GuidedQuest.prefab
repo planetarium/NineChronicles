@@ -68,7 +68,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bacfffa52c78040a2ae4c658801044b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startDelay: 1
+  startDelay: 0
   end: -300
   duration: 0.5
   snapping: 0
