@@ -32,8 +32,6 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private AnchoredPositionXTweener showTweener = null;
 
-        private Tweener _showTweener;
-
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
 
         #region MonoBehaviour
@@ -51,8 +49,8 @@ namespace Nekoyume.UI.Scroller
 
         private void OnDisable()
         {
-            _showTweener?.Kill();
-            _showTweener = null;
+            Debug.LogWarning("GuidedQuestCell.OnDisable() called.");
+            showTweener.KillTween();
         }
 
         #endregion
@@ -61,6 +59,7 @@ namespace Nekoyume.UI.Scroller
 
         public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreAnimation = false)
         {
+            Debug.LogWarning("GuidedQuestCell.Show() called.");
             if (quest is null)
             {
                 return;
@@ -75,9 +74,9 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 ClearRewards();
-                _showTweener?.Kill();
-                _showTweener = showTweener.StartShowTween();
-                _showTweener.OnComplete(() => SetRewards(quest.Reward.ItemMap));
+                showTweener
+                    .StartShowTween()
+                    .OnComplete(() => SetRewards(quest.Reward.ItemMap));
             }
 
             gameObject.SetActive(true);

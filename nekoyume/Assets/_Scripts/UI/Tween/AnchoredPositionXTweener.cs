@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Tween
 
         public Tweener StartShowTween(bool reverse = false)
         {
-            _tweener?.Kill();
+            KillTween();
             RectTransform.anchoredPosition = OriginAnchoredPosition;
             _tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Tween
 
         public Tweener StartHideTween(bool reverse = false)
         {
-            _tweener?.Kill();
+            KillTween();
             RectTransform.anchoredPosition = OriginAnchoredPosition;
             _tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
@@ -86,6 +86,12 @@ namespace Nekoyume.UI.Tween
             }
 
             return _tweener;
+        }
+
+        public void KillTween()
+        {
+            _tweener?.Kill();
+            _tweener = null;
         }
     }
 }
