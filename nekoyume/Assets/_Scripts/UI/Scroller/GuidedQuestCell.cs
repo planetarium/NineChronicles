@@ -28,6 +28,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Button bodyButton = null;
 
+        // NOTE: 셀이 더해지고 빠지는 연출이 정해지면 더욱 개선됩니다.
         [SerializeField]
         private AnchoredPositionXTweener showTweener = null;
 
@@ -77,10 +78,9 @@ namespace Nekoyume.UI.Scroller
                 ClearRewards();
                 showTweener
                     .StartShowTween()
+                    .OnPlay(() => gameObject.SetActive(true))
                     .OnComplete(() => SetRewards(quest.Reward.ItemMap));
             }
-
-            gameObject.SetActive(true);
         }
 
         public void Hide(bool ignoreAnimation = false)
@@ -91,8 +91,9 @@ namespace Nekoyume.UI.Scroller
             }
             else
             {
-                // TODO: 바로 사라지지 말고 애니메이션을 재생합니다.
-                gameObject.SetActive(false);
+                showTweener
+                    .StartHideTween()
+                    .OnComplete(() => gameObject.SetActive(false));
             }
         }
 

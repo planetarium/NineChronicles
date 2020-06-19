@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Libplanet;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.UI.Scroller;
@@ -20,7 +19,7 @@ namespace Nekoyume.UI.Module
     /// </summary>
     public class GuidedQuest : MonoBehaviour
     {
-        public enum ViewState
+        private enum ViewState
         {
             /// <summary>
             /// 최초 상태입니다.
@@ -64,8 +63,6 @@ namespace Nekoyume.UI.Module
             public readonly ReactiveProperty<ViewState> state =
                 new ReactiveProperty<ViewState>(ViewState.None);
 
-            public Address avatarAddress;
-
             public readonly ReactiveProperty<WorldQuest> worldQuest =
                 new ReactiveProperty<WorldQuest>();
 
@@ -103,11 +100,7 @@ namespace Nekoyume.UI.Module
 
         private GuidedQuestCell CombinationEquipmentQuestCell => cells[1];
 
-        public ViewState State => _viewModel.state.Value;
-
         #region Events
-
-        public IObservable<ViewState> OnStateChange => _viewModel.state;
 
         public IObservable<(GuidedQuestCell cell, WorldQuest quest)>
             OnClickWorldQuestCell => _onClickWorldQuestCell;
@@ -161,7 +154,6 @@ namespace Nekoyume.UI.Module
         /// <param name="ignoreAnimation"></param>
         public void Show(AvatarState avatarState, bool ignoreAnimation = false)
         {
-            Debug.LogWarning("GuidedQuest.Show() called.");
             if (avatarState is null)
             {
                 return;
@@ -181,6 +173,11 @@ namespace Nekoyume.UI.Module
                     StartCoroutine(CoUpdateAvatarState(avatarState, null));
                     break;
             }
+        }
+
+        public void Hide(bool ignoreAnimation = false)
+        {
+            EnterToHiding(ignoreAnimation);
         }
 
         /// <summary>
@@ -249,12 +246,6 @@ namespace Nekoyume.UI.Module
             EnterToClearExistGuidedQuest(_viewModel.combinationEquipmentQuest);
         }
 
-        public void Hide(bool ignoreAnimation = false)
-        {
-            Debug.LogWarning("GuidedQuest.Hide() called.");
-            EnterToHiding(ignoreAnimation);
-        }
-
         #endregion
 
         #region ViewState
@@ -286,8 +277,6 @@ namespace Nekoyume.UI.Module
 
         private IEnumerator CoUpdateAvatarState(AvatarState avatarState, System.Action onComplete)
         {
-            _viewModel.avatarAddress = avatarState.address;
-
             var questList = avatarState.questList;
             var newWorldQuest = GetTargetWorldQuest(questList);
             var currentWorldQuest = _viewModel.worldQuest.Value;
@@ -412,11 +401,12 @@ namespace Nekoyume.UI.Module
             var state = _viewModel.state.Value;
             if (worldQuest is null)
             {
-                if (state == ViewState.ClearExistGuidedQuest)
+                if (state == ViewState.ClearExistGuidedQuest &&
+                    WorldQuestCell.Quest is WorldQuest quest)
                 {
                     // TODO: 완료하는 연출!
                     WorldQuestCell.Hide();
-                    // _onClearWorldQuestComplete.OnNext();
+                    _onClearWorldQuestComplete.OnNext(quest);
                     EnterToShown();
                 }
                 else
@@ -428,7 +418,6 @@ namespace Nekoyume.UI.Module
             {
                 if (state == ViewState.AddNewGuidedQuest)
                 {
-                    // TODO: 더하는 연출!
                     WorldQuestCell.Show(worldQuest);
                     EnterToShown();
                 }
@@ -445,11 +434,12 @@ namespace Nekoyume.UI.Module
             var state = _viewModel.state.Value;
             if (combinationEquipmentQuest is null)
             {
-                if (state == ViewState.ClearExistGuidedQuest)
+                if (state == ViewState.ClearExistGuidedQuest &&
+                    CombinationEquipmentQuestCell.Quest is CombinationEquipmentQuest quest)
                 {
                     // TODO: 완료하는 연출!
                     CombinationEquipmentQuestCell.Hide();
-                    // _onClearCombinationEquipmentQuestComplete.OnNext();
+                    _onClearCombinationEquipmentQuestComplete.OnNext(quest);
                     EnterToShown();
                 }
                 else
@@ -461,7 +451,6 @@ namespace Nekoyume.UI.Module
             {
                 if (state == ViewState.AddNewGuidedQuest)
                 {
-                    // TODO: 더하는 연출!
                     CombinationEquipmentQuestCell.Show(combinationEquipmentQuest);
                     EnterToShown();
                 }

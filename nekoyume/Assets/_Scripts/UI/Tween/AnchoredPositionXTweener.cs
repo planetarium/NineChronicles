@@ -42,49 +42,46 @@ namespace Nekoyume.UI.Tween
             _originAnchoredPositionCache
             ?? (_originAnchoredPositionCache = RectTransform.anchoredPosition).Value;
 
-        private void Awake()
-        {
-            _originAnchoredPositionCache = RectTransform.anchoredPosition;
-        }
-
-        public Tweener StartShowTween(bool reverse = false)
+        public Tweener StartShowTween()
         {
             KillTween();
+            RectTransform.anchoredPosition = OriginAnchoredPosition;
             _tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
                 .SetDelay(startDelay)
                 .SetEase(showEase);
 
-            if (isFrom &&
-                !reverse)
+            if (isFrom)
             {
-                _tweener = _tweener.From();
+                _tweener.From();
             }
 
-            RectTransform.anchoredPosition = OriginAnchoredPosition;
-            return _tweener;
+            return _tweener.Play();
         }
 
-        public Tweener StartHideTween(bool reverse = false)
+        public Tweener StartHideTween()
         {
             KillTween();
+            RectTransform.anchoredPosition = OriginAnchoredPosition;
             _tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
                 .SetEase(closeEase);
 
-            if (isFrom &&
-                !reverse)
+            if (!isFrom)
             {
-                _tweener = _tweener.From();
+                _tweener.From();
             }
 
-            RectTransform.anchoredPosition = OriginAnchoredPosition;
-            return _tweener;
+            return _tweener.Play();
         }
 
         public void KillTween()
         {
-            _tweener?.Kill();
+            if (_tweener?.IsPlaying() ?? false)
+            {
+                _tweener?.Kill();
+            }
+
             _tweener = null;
         }
     }
