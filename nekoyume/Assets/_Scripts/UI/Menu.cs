@@ -68,10 +68,10 @@ namespace Nekoyume.UI
             CloseWidget = null;
 
             guidedQuest.Hide(true);
-            guidedQuest.onClickWorldQuestCell
+            guidedQuest.OnClickWorldQuestCell
                 .Subscribe(_ => Debug.LogWarning("TODO: 스테이지 전투 전환."))
                 .AddTo(gameObject);
-            guidedQuest.onClickCombinationEquipmentQuestCell
+            guidedQuest.OnClickCombinationEquipmentQuestCell
                 .Subscribe(_ => Debug.LogWarning("TODO: 장비 조합 전환."))
                 .AddTo(gameObject);
         }
@@ -233,7 +233,7 @@ namespace Nekoyume.UI
         {
             StopSpeeches();
 
-            guidedQuest.Hide(ignoreCloseAnimation);
+            guidedQuest.Hide(true);
             Find<BottomMenu>().Close(true);
             base.Close(ignoreCloseAnimation);
         }

@@ -70,14 +70,14 @@ namespace Nekoyume.UI.Scroller
 
             if (ignoreAnimation)
             {
-                SetRewards(quest.Reward.ItemMap, ignoreAnimation);
+                SetRewards(quest.Reward.ItemMap, true);
             }
             else
             {
                 ClearRewards();
                 _showTweener?.Kill();
                 _showTweener = showTweener.StartShowTween();
-                _showTweener.OnComplete(() => SetRewards(quest.Reward.ItemMap, ignoreAnimation));
+                _showTweener.OnComplete(() => SetRewards(quest.Reward.ItemMap));
             }
 
             gameObject.SetActive(true);
