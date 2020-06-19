@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6482507596812157862}
   - component: {fileID: 8824049992684031751}
   - component: {fileID: 3982321114777984548}
-  - component: {fileID: 7002493256268487634}
   m_Layer: 5
   m_Name: GuidedQuest
   m_TagString: Untagged
@@ -76,31 +75,6 @@ MonoBehaviour:
   showEase: 27
   closeEase: 26
   isFrom: 1
---- !u!114 &7002493256268487634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7506226364245500700}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1297475563, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 0
-  m_Spacing: 5
-  m_ChildForceExpandWidth: 0
-  m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
 --- !u!1 &8255882223613627113
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,8 +108,8 @@ RectTransform:
   m_Father: {fileID: 6482507596812157862}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 300, y: 20}
   m_Pivot: {x: 0, y: 1}
@@ -353,7 +327,7 @@ PrefabInstance:
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -25
       objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -373,7 +347,7 @@ PrefabInstance:
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -383,7 +357,7 @@ PrefabInstance:
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -490,7 +464,7 @@ PrefabInstance:
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -70
       objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -510,7 +484,7 @@ PrefabInstance:
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
@@ -520,7 +494,7 @@ PrefabInstance:
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
