@@ -33,6 +33,8 @@ namespace Nekoyume.UI.Scroller
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
 
+        public Nekoyume.Model.Quest.Quest Quest { get; private set; }
+
         #region MonoBehaviour
 
         private void Awake()
@@ -48,7 +50,6 @@ namespace Nekoyume.UI.Scroller
 
         private void OnDisable()
         {
-            Debug.LogWarning("GuidedQuestCell.OnDisable() called.");
             showTweener.KillTween();
         }
 
@@ -58,11 +59,12 @@ namespace Nekoyume.UI.Scroller
 
         public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreAnimation = false)
         {
-            Debug.LogWarning("GuidedQuestCell.Show() called.");
             if (quest is null)
             {
                 return;
             }
+
+            Quest = quest;
 
             SetContent(quest);
 
