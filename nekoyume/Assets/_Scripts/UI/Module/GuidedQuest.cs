@@ -333,16 +333,17 @@ namespace Nekoyume.UI.Module
                 // NOTE: 값이 바뀌는 경우입니다. 이는 ClearExistGuidedQuest 상태를 거치지 않았다는 말입니다.
                 Debug.LogError(
                     $"Clearing exist guided quest first before add new guided quest.");
+                return false;
+            }
+
+            if (!(cell.Quest is null))
+            {
+                return false;
             }
 
             // NOTE: 연출을 위해서 강제로 cell.Hide()를 호출했던 경우에 다시 보여주도록 합니다.
-            if (cell.Quest is null)
-            {
-                EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
-                return true;
-            }
-
-            return false;
+            EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
+            return true;
         }
 
         private void EnterToAddNewGuidedQuest<TQuestModel>(
