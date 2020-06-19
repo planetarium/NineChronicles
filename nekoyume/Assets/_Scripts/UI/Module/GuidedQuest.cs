@@ -384,6 +384,7 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetWorldQuest(QuestList questList) => questList?
             .OfType<WorldQuest>()
+            .OrderBy(quest => quest.Goal)
             .FirstOrDefault(quest => !quest.Complete);
 
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
