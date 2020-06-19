@@ -366,10 +366,11 @@ namespace Nekoyume.Game
         {
             waveCount = log.waveCount;
             waveTurn = 1;
+            stageId = log.stageId;
 #if TEST_LOG
             Debug.LogWarning($"{nameof(waveTurn)}: {waveTurn} / {nameof(CoRankingBattleEnter)}");
 #endif
-            if (!Game.instance.TableSheets.StageSheet.TryGetValue(1, out var data))
+            if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
             _battleResultModel = new BattleResult.Model();
@@ -565,8 +566,6 @@ namespace Nekoyume.Game
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
             }
-
-            ActionCamera.instance.ChaseX(player.transform);
             yield return null;
         }
 
@@ -783,7 +782,7 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().bossStatus.Close();
             Widget.Find<UI.Battle>().enemyPlayerStatus.Close();
             var playerCharacter = GetPlayer();
-            playerCharacter.StartRun();
+            RunAndChasePlayer(playerCharacter);
 
             if (hasBoss)
             {
@@ -890,14 +889,14 @@ namespace Nekoyume.Game
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
-            player.StartRun();
+            RunAndChasePlayer(player);
             return player;
         }
 
         public Character.Player RunPlayer(Vector2 position)
         {
             var player = GetPlayer(position);
-            player.StartRun();
+            RunAndChasePlayer(player);
             return player;
         }
 
@@ -963,6 +962,12 @@ namespace Nekoyume.Game
             var w = Widget.Find<Alert>();
             w.Show("UI_UNLOCK_TITLE", key);
             yield return new WaitWhile(() => w.isActiveAndEnabled);
+        }
+
+        private static void RunAndChasePlayer(Character.Player player)
+        {
+            player.StartRun();
+            ActionCamera.instance.ChaseX(player.transform);
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Nekoyume.Action
 {
     public static class AddressExtension
     {
-        private static Address Derive(this Address address, byte[] key)
+        public static Address Derive(this Address address, byte[] key)
         {
             var bytes = address.ToByteArray();
             byte[] hashed;

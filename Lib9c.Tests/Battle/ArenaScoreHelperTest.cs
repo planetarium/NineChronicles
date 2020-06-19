@@ -1,10 +1,10 @@
-using System;
-using Nekoyume.Battle;
-using Nekoyume.Model.BattleStatus;
-using Xunit;
-
 namespace Lib9c.Tests
 {
+    using System;
+    using Nekoyume.Battle;
+    using Nekoyume.Model.BattleStatus;
+    using Xunit;
+
     public class ArenaScoreHelperTest
     {
         [Fact]

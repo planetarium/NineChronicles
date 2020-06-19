@@ -33,7 +33,8 @@ namespace Tests.EditMode.Battle
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets
+                _tableSheets,
+                999999
             );
             simulator.Simulate();
 
