@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6e3e95a05e4c9774397eeeb7bdee8ccb, type: 3}
-  m_Name: Attack
+  m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
+  m_Name: 10241001-original_Atlas
   m_EditorClassIdentifier: 
-  skeletonDataAsset: {fileID: 11400000, guid: c40f3fdc123d7401b91583a0222e7193, type: 2}
-  animationName: Attack
+  atlasFile: {fileID: 4900000, guid: 0c0de820ee11f4fdba5c28447de4c09c, type: 3}
+  materials:
+  - {fileID: 2100000, guid: ba5678f606ff86e4fa60306088f5dbc4, type: 2}
