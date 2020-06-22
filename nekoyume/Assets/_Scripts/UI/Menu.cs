@@ -1,13 +1,14 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
+using Nekoyume.Model.BattleStatus;
 using UniRx;
 using UnityEngine;
-using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
 
 namespace Nekoyume.UI
@@ -56,7 +57,6 @@ namespace Nekoyume.UI
         private GuidedQuest guidedQuest = null;
 
         private Coroutine _coLazyClose;
-        private Player _player;
 
         protected override void Awake()
         {
@@ -66,13 +66,72 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
-            
+
             guidedQuest.OnClickWorldQuestCell
-                .Subscribe(_ => Debug.LogWarning("TODO: 스테이지 전투 전환."))
+                .Subscribe(_ => HackAndSlash())
                 .AddTo(gameObject);
             guidedQuest.OnClickCombinationEquipmentQuestCell
                 .Subscribe(_ => Debug.LogWarning("TODO: 장비 조합 전환."))
                 .AddTo(gameObject);
+        }
+
+        // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
+        private void HackAndSlash()
+        {
+            var worldQuest = guidedQuest.WorldQuest;
+            if (worldQuest is null)
+            {
+                return;
+            }
+
+            var stageId = worldQuest.Goal;
+            var sheets = Game.Game.instance.TableSheets;
+            var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
+            if (stageRow is null)
+            {
+                return;
+            }
+
+            var requiredCost = stageRow.CostAP;
+            if (States.Instance.AgentState.gold < requiredCost)
+            {
+                // NOTE: 골드가 부족합니다.
+                return;
+            }
+
+            if (!sheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+            {
+                return;
+            }
+
+            var worldId = worldRow.Id;
+
+            Find<BottomMenu>().Close(true);
+            Find<LoadingScreen>().Show();
+
+            var stage = Game.Game.instance.Stage;
+            stage.isExitReserved = false;
+            stage.repeatStage = false;
+            var player = stage.GetPlayer();
+            player.StartRun();
+            ActionCamera.instance.ChaseX(player.transform);
+            ActionRenderHandler.Instance.Pending = true;
+            Game.Game.instance.ActionManager
+                .HackAndSlash(player, worldId, stageId)
+                .Subscribe(_ =>
+                {
+                    LocalStateModifier.ModifyAvatarActionPoint(
+                        States.Instance.CurrentAvatarState.address,
+                        requiredCost);
+                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+                .AddTo(this);
+        }
+
+        public void GoToStage(BattleLog battleLog)
+        {
+            Game.Event.OnStageStart.Invoke(battleLog);
+            Find<LoadingScreen>().Close();
+            Close(true);
         }
 
         private void UpdateButtons()
