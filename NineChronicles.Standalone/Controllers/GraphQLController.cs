@@ -94,10 +94,7 @@ namespace NineChronicles.Standalone.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, errorMessage);
             }
 
-            StandaloneServices.RunHeadlessAsync(
-                    hostBuilder,
-                    StandaloneContext.NineChroniclesNodeService,
-                    StandaloneContext.CancellationToken);
+            StandaloneContext.NineChroniclesNodeService.Run(hostBuilder, StandaloneContext.CancellationToken);
             return Ok("Node service started.");
         }
     }
