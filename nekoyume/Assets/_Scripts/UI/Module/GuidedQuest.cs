@@ -96,6 +96,8 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
+        private ViewState State => _viewModel.state.Value;
+
         private GuidedQuestCell WorldQuestCell => cells[0];
 
         private GuidedQuestCell CombinationEquipmentQuestCell => cells[1];
@@ -138,7 +140,6 @@ namespace Nekoyume.UI.Module
 
         private void OnDisable()
         {
-            Debug.LogWarning("GuidedQuest.OnDisable() called.");
             showAndHideTweener.KillTween();
         }
 
@@ -159,11 +160,11 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            switch (_viewModel.state.Value)
+            switch (State)
             {
                 default:
                     Debug.LogWarning(
-                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.None} or {ViewState.Shown}");
+                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
                     break;
                 case ViewState.None:
                 case ViewState.Hidden:
@@ -189,7 +190,7 @@ namespace Nekoyume.UI.Module
         /// 끝난 후에 `true` 인자와 함께 `onComplete`가 호출됩니다. 그렇지 않다면 `false` 인자와 함께 호출됩니다.</param>
         public void ClearWorldQuest(int stageId, Action<bool> onComplete)
         {
-            if (_viewModel.state.Value != ViewState.Shown)
+            if (State != ViewState.Shown)
             {
                 Debug.LogWarning(
                     $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Shown}");
@@ -203,6 +204,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            // NOTE: 이 라인까지 로직이 흐르면 `EnterToClearExistGuidedQuest()` 호출을 통해서
+            // `_onClearWorldQuestComplete`가 반드시 호출되는 것을 기대합니다.
             _onClearWorldQuestComplete
                 .Where(quest => quest.Goal == stageId)
                 .First()
@@ -224,7 +227,7 @@ namespace Nekoyume.UI.Module
             int? subRecipeId,
             Action<bool> onComplete)
         {
-            if (_viewModel.state.Value != ViewState.Shown)
+            if (State != ViewState.Shown)
             {
                 Debug.LogWarning(
                     $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Shown}");
@@ -237,6 +240,8 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            // NOTE: 이 라인까지 로직이 흐르면 `EnterToClearExistGuidedQuest()` 호출을 통해서
+            // `_onClearCombinationEquipmentQuestComplete`가 반드시 호출되는 것을 기대합니다.
             _onClearCombinationEquipmentQuestComplete
                 .Where(quest => quest.RecipeId == recipeId &&
                                 quest.SubRecipeId == subRecipeId)
