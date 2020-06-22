@@ -48,6 +48,7 @@ namespace Nekoyume.Model.State
         public const int CombinationSlotCapacity = 4;
 
         public string NameWithHash { get; private set; }
+        public int Nonce { get; private set; }
 
         public static Address CreateAvatarAddress()
         {
@@ -168,6 +169,10 @@ namespace Nekoyume.Model.State
             ear = (int)((Integer)serialized["ear"]).Value;
             tail = (int)((Integer)serialized["tail"]).Value;
             combinationSlotAddresses = serialized["combinationSlotAddresses"].ToList(StateExtensions.ToAddress);
+            if (serialized.TryGetValue((Text) "nonce", out var nonceValue))
+            {
+                Nonce = nonceValue.ToInteger();
+            }
             PostConstructor();
         }
 
@@ -441,6 +446,14 @@ namespace Nekoyume.Model.State
             }
         }
 
+        public int GetRandomSeed()
+        {
+            var bytes = address.ToByteArray().Concat(BitConverter.GetBytes(Nonce)).ToArray();
+            var hash = Hashcash.Hash(bytes);
+            Nonce++;
+            return BitConverter.ToInt32(hash.ToByteArray(), 0);
+        }
+
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
@@ -466,6 +479,7 @@ namespace Nekoyume.Model.State
                 [(Text)"ear"] = (Integer)ear,
                 [(Text)"tail"] = (Integer)tail,
                 [(Text)"combinationSlotAddresses"] = combinationSlotAddresses.Select(i => i.Serialize()).Serialize(),
+                [(Text) "nonce"] = Nonce.Serialize(),
             }.Union((Dictionary)base.Serialize()));
     }
 }
