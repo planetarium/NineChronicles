@@ -98,7 +98,12 @@ namespace Nekoyume.UI.Module
 
         private ViewState State => _viewModel.state.Value;
 
+        public WorldQuest WorldQuest => _viewModel.worldQuest.Value;
+
         private GuidedQuestCell WorldQuestCell => cells[0];
+
+        public CombinationEquipmentQuest CombinationEquipmentQuest =>
+            _viewModel.combinationEquipmentQuest.Value;
 
         private GuidedQuestCell CombinationEquipmentQuestCell => cells[1];
 
