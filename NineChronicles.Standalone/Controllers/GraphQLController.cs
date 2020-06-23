@@ -91,7 +91,7 @@ namespace NineChronicles.Standalone.Controllers
                 var errorMessage =
                     $"{nameof(StandaloneContext)}.{nameof(StandaloneContext.NineChroniclesNodeService)} is null. " +
                     $"You should request {InitializeStandaloneEndpoint} before this action.";
-                return StatusCode(StatusCodes.Status500InternalServerError, errorMessage);
+                return StatusCode(StatusCodes.Status412PreconditionFailed, errorMessage);
             }
 
             StandaloneContext.NineChroniclesNodeService.Run(hostBuilder, StandaloneContext.CancellationToken);
