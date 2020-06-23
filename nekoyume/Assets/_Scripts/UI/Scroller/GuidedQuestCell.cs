@@ -22,6 +22,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI contentText = null;
 
+        // NOTE: 가이드 퀘스트 보상 아이콘의 연출 스펙에 따라서 별도로 XxxItemView를 만들어서 사용합니다.
         [SerializeField]
         private List<VanillaItemView> rewards = null;
 
@@ -30,7 +31,7 @@ namespace Nekoyume.UI.Scroller
 
         // NOTE: 셀이 더해지고 빠지는 연출이 정해지면 더욱 개선됩니다.
         [SerializeField]
-        private AnchoredPositionXTweener showTweener = null;
+        private AnchoredPositionXTweener showingAndHidingTweener = null;
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
 
@@ -51,7 +52,7 @@ namespace Nekoyume.UI.Scroller
 
         private void OnDisable()
         {
-            showTweener.KillTween();
+            showingAndHidingTweener.KillTween();
         }
 
         #endregion
@@ -76,7 +77,7 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 ClearRewards();
-                showTweener
+                showingAndHidingTweener
                     .StartShowTween()
                     .OnPlay(() => gameObject.SetActive(true))
                     .OnComplete(() => SetRewards(quest.Reward.ItemMap));
@@ -91,9 +92,12 @@ namespace Nekoyume.UI.Scroller
             }
             else
             {
-                showTweener
+                showingAndHidingTweener
                     .StartHideTween()
-                    .OnComplete(() => gameObject.SetActive(false));
+                    .OnComplete(() =>
+                    {
+                        gameObject.SetActive(false);
+                    });
             }
 
             Quest = null;

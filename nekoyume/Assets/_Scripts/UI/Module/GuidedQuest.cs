@@ -74,7 +74,7 @@ namespace Nekoyume.UI.Module
         private List<GuidedQuestCell> cells = null;
 
         [SerializeField]
-        private AnchoredPositionXTweener showAndHideTweener = null;
+        private AnchoredPositionXTweener showingAndHidingTweener = null;
 
         private readonly ViewModel _viewModel = new ViewModel();
 
@@ -145,7 +145,7 @@ namespace Nekoyume.UI.Module
 
         private void OnDisable()
         {
-            showAndHideTweener.KillTween();
+            showingAndHidingTweener.KillTween();
         }
 
         #endregion
@@ -273,7 +273,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            showAndHideTweener
+            showingAndHidingTweener
                 .StartShowTween()
                 .OnPlay(() => gameObject.SetActive(true))
                 .OnComplete(() => StartCoroutine(CoUpdateAvatarState(avatarState, EnterToShown)));
@@ -384,7 +384,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            showAndHideTweener
+            showingAndHidingTweener
                 .StartHideTween()
                 .OnComplete(() =>
                 {

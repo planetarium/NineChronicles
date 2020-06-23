@@ -55,7 +55,7 @@ MonoBehaviour:
   cells:
   - {fileID: 7185411724208008434}
   - {fileID: 3004171136901069816}
-  showAndHideTweener: {fileID: 3982321114777984548}
+  showingAndHidingTweener: {fileID: 3982321114777984548}
 --- !u!114 &3982321114777984548
 MonoBehaviour:
   m_ObjectHideFlags: 0
