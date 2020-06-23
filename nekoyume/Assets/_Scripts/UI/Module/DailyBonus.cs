@@ -32,6 +32,9 @@ namespace Nekoyume.UI.Module
         private Image[] additiveImages = null;
 
         [SerializeField]
+        private Image hasNotificationImage = null;
+
+        [SerializeField]
         private Animator animator = null;
 
         [SerializeField, CanBeNull]
@@ -139,6 +142,7 @@ namespace Nekoyume.UI.Module
             {
                 additiveImage.enabled = _isFull;
             }
+            hasNotificationImage.enabled = _isFull;
 
             animator.SetBool(IsFull, _isFull);
         }
