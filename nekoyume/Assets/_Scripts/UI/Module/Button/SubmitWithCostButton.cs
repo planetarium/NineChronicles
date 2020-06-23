@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Numerics;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,7 +28,7 @@ namespace Nekoyume.UI.Module
         public TextMeshProUGUI costHourglassTextForSubmittable;
         public HorizontalLayoutGroup layoutGroup;
 
-        public void ShowNCG(decimal ncg, bool isEnough)
+        public void ShowNCG(BigInteger ncg, bool isEnough)
         {
             costNCG.SetActive(true);
             SetText(costNCGText, costNCGTextForSubmittable, isEnough, ncg);
@@ -40,7 +41,7 @@ namespace Nekoyume.UI.Module
             costNCG.SetActive(false);
             UpdateSpace();
         }
-        
+
         public void ShowAP(int ap, bool isEnough)
         {
             costAP.SetActive(true);
@@ -99,14 +100,10 @@ namespace Nekoyume.UI.Module
             layoutGroup.spacing = costAP.activeSelf ^ costNCG.activeSelf ^ costHourglass.activeSelf ? 15 : 5;
         }
 
-        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, int cost)
-        {
-            textField.text = cost.ToString(CultureInfo.InvariantCulture);
-            submitField.text = textField.text;
-            SetTextColor(textField, submitField, isEnough);
-        }
+        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, int cost) =>
+            SetText(textField, submitField, isEnough, (BigInteger)cost);
 
-        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, decimal cost)
+        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, BigInteger cost)
         {
             textField.text = cost.ToString(CultureInfo.InvariantCulture);
             submitField.text = textField.text;

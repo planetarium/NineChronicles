@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.State;
@@ -12,9 +13,9 @@ namespace Nekoyume.Model.Item
         public readonly Address SellerAvatarAddress;
         public readonly Guid ProductId;
         public readonly ItemUsable ItemUsable;
-        public readonly decimal Price;
+        public readonly BigInteger Price;
 
-        public ShopItem(Address sellerAvatarAddress, Guid productId, ItemUsable itemUsable, decimal price)
+        public ShopItem(Address sellerAvatarAddress, Guid productId, ItemUsable itemUsable, BigInteger price)
         {
             SellerAvatarAddress = sellerAvatarAddress;
             ProductId = productId;
@@ -29,7 +30,7 @@ namespace Nekoyume.Model.Item
             ItemUsable = (ItemUsable)ItemFactory.Deserialize(
                 (Dictionary)serialized["itemUsable"]
             );
-            Price = serialized["price"].ToDecimal();
+            Price = serialized["price"].ToBigInteger();
         }
 
         protected bool Equals(ShopItem other)

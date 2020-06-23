@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System.Collections.Generic;
     using System.Collections.Immutable;
+    using System.Numerics;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
@@ -16,13 +17,14 @@ namespace Lib9c.Tests.Action
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
+            var initStates = ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, adminState.Serialize())
                 .Add(TableSheetsState.Address, new TableSheetsState(new Dictionary<string, string>()
                 {
                     ["TestTable"] = "Initial",
-                }).Serialize())
-            );
+                }).Serialize());
+            var state =
+                new State(initStates, ImmutableDictionary<(Address, Currency), BigInteger>.Empty);
             var action = new PatchTableSheet()
             {
                 TableName = "TestTable",

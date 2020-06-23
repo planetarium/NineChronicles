@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -25,7 +26,7 @@ namespace Nekoyume.Action
         {
             public Dictionary<Material, int> materials;
             public Guid id;
-            public decimal gold;
+            public BigInteger gold;
             public int actionPoint;
             public int recipeId;
             public int? subRecipeId;
@@ -41,7 +42,7 @@ namespace Nekoyume.Action
             {
                 materials = serialized["materials"].ToDictionary_Material_int();
                 id = serialized["id"].ToGuid();
-                gold = serialized["gold"].ToDecimal();
+                gold = serialized["gold"].ToBigInteger();
                 actionPoint = serialized["actionPoint"].ToInteger();
                 recipeId = serialized["recipeId"].ToInteger();
                 subRecipeId = serialized["subRecipeId"].ToNullableInteger();
@@ -74,7 +75,7 @@ namespace Nekoyume.Action
                     ["avatarAddress"] = AvatarAddress.Serialize(),
                 };
 
-                // slotIndex가 포함되지 않은채 나간 버전과 호환을 위해, 0번째 슬롯을 쓰는 경우엔 보내지 않습니다. 
+                // slotIndex가 포함되지 않은채 나간 버전과 호환을 위해, 0번째 슬롯을 쓰는 경우엔 보내지 않습니다.
                 if (slotIndex != 0)
                 {
                     dict["slotIndex"] = slotIndex.Serialize();

@@ -41,6 +41,8 @@ namespace Nekoyume.State
 
         private ModifierInfo<AgentStateModifier> _agentModifierInfo;
 
+        private ModifierInfo<AgentGoldModifier> _agentGoldModifierInfo;
+
         private readonly List<ModifierInfo<AvatarStateModifier>> _avatarModifierInfos =
             new List<ModifierInfo<AvatarStateModifier>>();
 
@@ -97,6 +99,9 @@ namespace Nekoyume.State
                 new ModifierInfo<AgentStateModifier>(
                     agentAddress,
                     LoadModifiers<AgentStateModifier>(agentAddress));
+            _agentGoldModifierInfo = new ModifierInfo<AgentGoldModifier>(
+                agentAddress,
+                LoadModifiers<AgentGoldModifier>(agentAddress));
             foreach (var avatarAddress in agentState.avatarAddresses.Values)
             {
                 _avatarModifierInfos.Add(new ModifierInfo<AvatarStateModifier>(
@@ -125,6 +130,7 @@ namespace Nekoyume.State
         /// <param name="isVolatile"></param>
         public void Add(Address agentAddress, AgentStateModifier modifier, bool isVolatile = false)
         {
+            // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
                 modifier.IsEmpty)
             {
@@ -167,6 +173,46 @@ namespace Nekoyume.State
             PostAdd(agentAddress, modifier, isVolatile);
         }
 
+        public void Add(Address agentAddress, AgentGoldModifier modifier, bool isVolatile = false)
+        {
+            // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
+            if (modifier is null || modifier.IsEmpty)
+            {
+                return;
+            }
+
+            if (agentAddress.Equals(_agentGoldModifierInfo.Address))
+            {
+                var modifiers = isVolatile
+                    ? _agentGoldModifierInfo.VolatileModifiers
+                    : _agentGoldModifierInfo.NonVolatileModifiers;
+                if (TryGetSameTypeModifier(modifier, modifiers, out var outModifier))
+                {
+                    outModifier.Add(modifier);
+                    if (outModifier.IsEmpty)
+                    {
+                        modifiers.Remove(outModifier);
+                    }
+
+                    modifier = outModifier;
+                }
+                else
+                {
+                    modifiers.Add(modifier);
+                }
+            }
+            else if (!isVolatile)
+            {
+                if (TryLoadModifier<AgentGoldModifier>(agentAddress, modifier.GetType(), out var outModifier))
+                {
+                    outModifier.Add(modifier);
+                    modifier = outModifier;
+                }
+            }
+
+            PostAdd(agentAddress, modifier, isVolatile);
+        }
+
         /// <summary>
         /// 인자로 받은 아바타에 대한 상태 변경자를 더한다.
         /// </summary>
@@ -178,6 +224,7 @@ namespace Nekoyume.State
             AvatarStateModifier modifier,
             bool isVolatile = false)
         {
+            // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
                 modifier.IsEmpty)
             {
@@ -232,6 +279,7 @@ namespace Nekoyume.State
             WeeklyArenaStateModifier modifier,
             bool isVolatile = false)
         {
+            // FIXME: 다른 Add() 오버로드와 겹치는 로직이 아주 많음.
             if (modifier is null ||
                 modifier.IsEmpty)
             {
@@ -534,6 +582,20 @@ namespace Nekoyume.State
             }
 
             return PostModify(state, _agentModifierInfo);
+        }
+
+        /// <summary>
+        /// 인자로 받은 잔고 상태에 로컬 세팅을 반영한다.
+        /// </summary>
+        public GoldBalanceState Modify(GoldBalanceState state)
+        {
+            if (state is null ||
+                !state.address.Equals(_agentGoldModifierInfo.Address))
+            {
+                return state;
+            }
+
+            return PostModify(state, _agentGoldModifierInfo);
         }
 
         /// <summary>

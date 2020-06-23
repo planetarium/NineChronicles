@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using DecimalMath;
 using Libplanet;
@@ -47,7 +48,7 @@ namespace Nekoyume.Model.State
         public long ResetIndex;
 
         private readonly Dictionary<Address, ArenaInfo> _map;
-        private Dictionary<TierType, decimal> _rewardMap = new Dictionary<TierType, decimal>();
+        private Dictionary<TierType, BigInteger> _rewardMap = new Dictionary<TierType, BigInteger>();
 
         public WeeklyArenaState(Address address) : base(address)
         {
@@ -67,7 +68,7 @@ namespace Nekoyume.Model.State
             {
                 _rewardMap = ((Dictionary)serialized["rewardMap"]).ToDictionary(
                     kv => (TierType)((Binary)kv.Key).First(),
-                    kv => kv.Value.ToDecimal());
+                    kv => kv.Value.ToBigInteger());
             }
 
             Gold = serialized.GetDecimal("gold");
@@ -204,17 +205,17 @@ namespace Nekoyume.Model.State
 
         private void SetRewardMap()
         {
-            var map = new Dictionary<TierType, decimal>
+            var map = new Dictionary<TierType, BigInteger>
             {
-                [TierType.Platinum] = 200m,
-                [TierType.Gold] = 150m,
-                [TierType.Silver] = 100m,
-                [TierType.Bronze] = 80m,
-                [TierType.Rookie] = 70m
+                [TierType.Platinum] = 200,
+                [TierType.Gold] = 150,
+                [TierType.Silver] = 100,
+                [TierType.Bronze] = 80,
+                [TierType.Rookie] = 70,
             };
             _rewardMap = map;
         }
-        public decimal GetReward(TierType tier)
+        public BigInteger GetReward(TierType tier)
         {
             return _rewardMap[tier];
         }

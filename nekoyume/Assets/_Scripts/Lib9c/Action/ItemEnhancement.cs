@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -19,6 +20,12 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
+        public static readonly Address BlacksmithAddress = new Address(new byte[]
+        {
+            0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+            0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x9,
+        });
+
         public Guid itemId;
         public IEnumerable<Guid> materialIds;
         public Address avatarAddress;
@@ -30,7 +37,7 @@ namespace Nekoyume.Action
             protected override string TypeId => "itemEnhancement.result";
             public Guid id;
             public IEnumerable<Guid> materialItemIdList;
-            public decimal gold;
+            public BigInteger gold;
             public int actionPoint;
 
             public ResultModel()
@@ -42,7 +49,7 @@ namespace Nekoyume.Action
             {
                 id = serialized["id"].ToGuid();
                 materialItemIdList = serialized["materialItemIdList"].ToList(StateExtensions.ToGuid);
-                gold = serialized["gold"].ToDecimal();
+                gold = serialized["gold"].ToBigInteger();
                 actionPoint = serialized["actionPoint"].ToInteger();
             }
 
@@ -70,8 +77,8 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 return states
+                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer, BlacksmithAddress)
                     .SetState(avatarAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
             var sw = new Stopwatch();
@@ -79,7 +86,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug("ItemEnhancement exec started.");
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState _,
                 out AvatarState avatarState))
             {
                 return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
@@ -149,19 +156,6 @@ namespace Nekoyume.Action
             avatarState.actionPoint -= requiredAP;
             result.actionPoint = requiredAP;
 
-            var requiredNCG = GetRequiredGold(enhancementEquipment);
-            if (agentState.gold < requiredNCG)
-            {
-                // NCG 부족 에러.
-                return LogError(
-                    context,
-                    "Aborted due to insufficient gold: {Balance} < {Cost}",
-                    agentState.gold,
-                    requiredNCG
-                );
-            }
-
-            var tableSheets = TableSheets.FromActionContext(ctx);
             sw.Stop();
             Log.Debug("ItemEnhancement Get TableSheets: {Elapsed}", sw.Elapsed);
             sw.Restart();
@@ -263,8 +257,7 @@ namespace Nekoyume.Action
             Log.Debug("ItemEnhancement Upgrade Equipment: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            agentState.gold -= requiredNCG;
-            result.gold = requiredNCG;
+            result.gold = 0;
 
             foreach (var material in materials)
             {
@@ -292,9 +285,7 @@ namespace Nekoyume.Action
             Log.Debug("ItemEnhancement Set AvatarState: {Elapsed}", sw.Elapsed);
             var ended = DateTimeOffset.UtcNow;
             Log.Debug("ItemEnhancement Total Executed Time: {Elapsed}", ended - started);
-            return states
-                .SetState(slotAddress, slotState.Serialize())
-                .SetState(ctx.Signer, agentState.Serialize());
+            return states.SetState(slotAddress, slotState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal
@@ -308,7 +299,7 @@ namespace Nekoyume.Action
                     ["avatarAddress"] = avatarAddress.Serialize(),
                 };
 
-                // slotIndex가 포함되지 않은채 나간 버전과 호환을 위해, 0번째 슬롯을 쓰는 경우엔 보내지 않습니다. 
+                // slotIndex가 포함되지 않은채 나간 버전과 호환을 위해, 0번째 슬롯을 쓰는 경우엔 보내지 않습니다.
                 if (slotIndex != 0)
                 {
                     dict["slotIndex"] = slotIndex.Serialize();
@@ -338,13 +329,6 @@ namespace Nekoyume.Action
         public static int GetRequiredAp()
         {
             return GameConfig.EnhanceEquipmentCostAP;
-        }
-
-        public static decimal GetRequiredGold(Equipment enhancementEquipment)
-        {
-            return 0;
-            return Math.Max(GameConfig.EnhanceEquipmentCostNCG,
-                GameConfig.EnhanceEquipmentCostNCG * enhancementEquipment.Grade);
         }
     }
 }

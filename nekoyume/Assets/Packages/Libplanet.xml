@@ -4,26 +4,60 @@
         <name>Libplanet</name>
     </assembly>
     <members>
+        <member name="T:Libplanet.Action.AccountBalanceGetter">
+            <summary>
+            An delegate to provide read-only view of account balances.
+            <para>Gets <paramref name="address"/>' balance of the given <paramref name="currency"/>.
+            </para>
+            </summary>
+            <param name="address">An address of the account to query its balance of
+            the <paramref name="currency"/>.</param>
+            <param name="currency">The currency type to query <paramref name="address"/>' balance.
+            </param>
+            <returns>
+            The <paramref name="address"/>'s balance of the <paramref name="currency"/>.
+            </returns>
+        </member>
         <member name="T:Libplanet.Action.AccountStateDeltaImpl">
             <summary>
             An internal implementation of <see cref="T:Libplanet.Action.IAccountStateDelta"/>.
             </summary>
         </member>
-        <member name="M:Libplanet.Action.AccountStateDeltaImpl.#ctor(Libplanet.Action.AccountStateGetter)">
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.#ctor(Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter,Libplanet.Address)">
             <summary>
-            Creates a null delta from the given
-            <paramref name="accountStateGetter"/>.
+            Creates a null delta from the given <paramref name="accountStateGetter"/>.
             </summary>
-            <param name="accountStateGetter">A view to the &#x201c;epoch&#x201d;
-            states.</param>
+            <param name="accountStateGetter">A view to the &#x201c;epoch&#x201d; states.</param>
+            <param name="accountBalanceGetter">A view to the &#x201c;epoch&#x201d; asset balances.
+            </param>
+            <param name="signer">A signer address. Used for authenticating if a signer is allowed
+            to mint a currency.</param>
         </member>
         <member name="P:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#UpdatedAddresses">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#StateUpdatedAddresses">
+            <inheritdoc/>
+        </member>
+        <member name="P:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#UpdatedFungibleAssets">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#GetState(Libplanet.Address)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Action.AccountStateDeltaImpl.Libplanet#Action#IAccountStateDelta#SetState(Libplanet.Address,Bencodex.Types.IValue)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.GetBalance(Libplanet.Address,Libplanet.Currency)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.MintAsset(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger,System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Libplanet.Action.AccountStateDeltaImpl.BurnAsset(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Action.AccountStateGetter">
@@ -144,6 +178,37 @@
             <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.  If it's not annotated returns
             <c>null</c>.</returns>
         </member>
+        <member name="T:Libplanet.Action.CurrencyPermissionException">
+            <summary>
+            The exception that is thrown when a <see cref="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner"/> has no rights
+            to mint a <see cref="P:Libplanet.Action.CurrencyPermissionException.Currency"/> or burn assets of a <see cref="P:Libplanet.Action.CurrencyPermissionException.Currency"/>.
+            </summary>
+            <seealso cref="M:Libplanet.Action.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger)"/>
+            <seealso cref="M:Libplanet.Action.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger)"/>
+        </member>
+        <member name="M:Libplanet.Action.CurrencyPermissionException.#ctor(Libplanet.Address,Libplanet.Currency,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.CurrencyPermissionException"/> object.
+            </summary>
+            <param name="transactionSigner"> The address of the account who tried to mint or burn
+            assets of a <paramref name="currency"/>.  Corresponds to
+            the <see cref="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner"/> property.</param>
+            <param name="currency"> The <see cref="T:Libplanet.Currency"/> to be tried to be minted
+            or burned by the <paramref name="transactionSigner"/>.  Corresponds to
+            the <see cref="P:Libplanet.Action.CurrencyPermissionException.Currency"/> property.</param>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
+        </member>
+        <member name="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner">
+            <summary>
+            The address of the account who tried to mint or burn assets of a <see cref="P:Libplanet.Action.CurrencyPermissionException.Currency"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.CurrencyPermissionException.Currency">
+            <summary>
+            The <see cref="T:Libplanet.Currency"/> to be tried to be minted or burned by
+            the <see cref="P:Libplanet.Action.CurrencyPermissionException.TransactionSigner"/>.
+            </summary>
+        </member>
         <member name="T:Libplanet.Action.IAccountStateDelta">
             <summary>
             An interface to manipulate account states with
@@ -180,6 +245,20 @@
             been updated since then.
             </summary>
         </member>
+        <member name="P:Libplanet.Action.IAccountStateDelta.StateUpdatedAddresses">
+            <summary>
+            <see cref="T:Libplanet.Address"/>es of the accounts whose states have been updated since then.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.IAccountStateDelta.UpdatedFungibleAssets">
+            <summary>
+            <see cref="T:Libplanet.Address"/>es and sets of <see cref="T:Libplanet.Currency"/> whose fungible assets have
+            been updated since then.
+            <para>For example, if A transfers 10 FOO to B and B transfers 20 BAR to C,
+            <see cref="P:Libplanet.Action.IAccountStateDelta.UpdatedFungibleAssets"/> become likes
+            <c>{ [A] = { FOO }, [B] = { FOO, BAR }, [C] = { BAR } }</c>.</para>
+            </summary>
+        </member>
         <member name="M:Libplanet.Action.IAccountStateDelta.GetState(Libplanet.Address)">
             <summary>
             Gets the account state of the given <paramref name="address"/>.
@@ -207,6 +286,76 @@
             but returns a new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance
             with updated states instead.
             </remarks>
+        </member>
+        <member name="M:Libplanet.Action.IAccountStateDelta.GetBalance(Libplanet.Address,Libplanet.Currency)">
+            <summary>
+            Queries <paramref name="address"/>'s balance of the <paramref name="currency"/>.
+            </summary>
+            <param name="address">The owner address to query.</param>
+            <param name="currency">The currency type to query.</param>
+            <returns>
+            The <paramref name="address"/>'s balance of the <paramref name="currency"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Action.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger)">
+            <summary>
+            Mints the <paramref name="amount"/> of a new <paramref name="currency"/>, fungible asset
+            (i.e., in-game monetary), and give it to the <paramref name="recipient"/>.
+            </summary>
+            <param name="recipient">The address who receives the minted asset.</param>
+            <param name="currency">The currency type to mint.</param>
+            <param name="amount">The amount of the <paramref name="currency"/> to mint.</param>
+            <returns>A new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance that
+            the given <paramref name="amount"/> of the <paramref name="currency"/> is added to
+            <paramref name="recipient"/>'s balance.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the <paramref name="amount"/>
+            is less than or equal to 0.</exception>
+            <exception cref="T:Libplanet.Action.CurrencyPermissionException">Thrown when a transaction signer
+            (or a miner in case of block actions) is not a member of <paramref name="currency"/>'s
+            <see cref="F:Libplanet.Currency.Minters"/>.</exception>
+        </member>
+        <member name="M:Libplanet.Action.IAccountStateDelta.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger,System.Boolean)">
+            <summary>
+            Transfers the <paramref name="amount"/> of a new <paramref name="currency"/>,
+            fungible asset (i.e., in-game monetary), from the <paramref name="sender"/>
+            to the <paramref name="recipient"/>.
+            </summary>
+            <param name="sender">The address who sends the fungible asset to
+            the <paramref name="recipient"/>.</param>
+            <param name="recipient">The address who receives the fungible asset from
+            the <paramref name="sender"/>.</param>
+            <param name="currency">The currency type to transfer.</param>
+            <param name="amount">The amount of the <paramref name="currency"/> to transfer.</param>
+            <param name="allowNegativeBalance">Turn on to allow <paramref name="sender"/>'s balance
+            less than zero of the <paramref name="currency"/>.  Turned off by default.</param>
+            <returns>A new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance that
+            the given <paramref name="amount"/> of the <paramref name="currency"/> is subtracted
+            from <paramref name="sender"/>'s balance and added to <paramref name="recipient"/>'s
+            balance.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the <paramref name="amount"/>
+            is less than or equal to 0.</exception>
+            <exception cref="T:Libplanet.Action.InsufficientBalanceException">Thrown when the <paramref name="sender"/>
+            has insufficient balance than <paramref name="amount"/> to transfer and
+            the <paramref name="allowNegativeBalance"/> option is turned off.</exception>
+        </member>
+        <member name="M:Libplanet.Action.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger)">
+            <summary>
+            Burns the <paramref name="amount"/> of the <paramref name="currency"/>, fungible asset
+            (i.e., in-game monetary), from <paramref name="owner"/>'s balance.
+            </summary>
+            <param name="owner">The address who owns the fungible asset to burn.</param>
+            <param name="currency">The currency type to burn.</param>
+            <param name="amount">The amount of the <paramref name="currency"/> to burn.</param>
+            <returns>A new <see cref="T:Libplanet.Action.IAccountStateDelta"/> instance that
+            the given <paramref name="amount"/> of the <paramref name="currency"/> is subtracted
+            from <paramref name="owner"/>'s balance.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the <paramref name="amount"/>
+            is less than or equal to 0.</exception>
+            <exception cref="T:Libplanet.Action.CurrencyPermissionException">Thrown when a transaction signer
+            (or a miner in case of block actions) is not a member of <paramref name="currency"/>'s
+            <see cref="F:Libplanet.Currency.Minters"/>.</exception>
+            <exception cref="T:Libplanet.Action.InsufficientBalanceException">Thrown when the <paramref name="owner"/>
+            has insufficient balance than <paramref name="amount"/> to burn.</exception>
         </member>
         <member name="T:Libplanet.Action.IAction">
             <summary>
@@ -627,6 +776,41 @@
             </summary>
             <returns>A random object that shares interface mostly equivalent
             to <see cref="T:System.Random"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Action.InsufficientBalanceException">
+            <summary>
+            The exception that is thrown when a sender has less <see cref="P:Libplanet.Action.InsufficientBalanceException.Balance"/> than amount to
+            transfer or an owner has less <see cref="P:Libplanet.Action.InsufficientBalanceException.Balance"/> than amount to burn.
+            </summary>
+            <seealso cref="M:Libplanet.Action.IAccountStateDelta.TransferAsset(Libplanet.Address,Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger,System.Boolean)"/>
+            <seealso cref="M:Libplanet.Action.IAccountStateDelta.BurnAsset(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger)"/>
+        </member>
+        <member name="M:Libplanet.Action.InsufficientBalanceException.#ctor(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger,System.String)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Action.InsufficientBalanceException"/> object.
+            </summary>
+            <param name="address">The owner of the insufficient <paramref name="balance"/>.
+            Corresponds to the <see cref="P:Libplanet.Action.InsufficientBalanceException.Address"/> property.</param>
+            <param name="currency">The <see cref="T:Libplanet.Currency"/> of the insufficient
+            <paramref name="balance"/>.  Corresponds to the <see cref="P:Libplanet.Action.InsufficientBalanceException.Currency"/> property.</param>
+            <param name="balance">The account's current balance of the <paramref name="currency"/>.
+            Corresponds to the <see cref="P:Libplanet.Action.InsufficientBalanceException.Balance"/> property.</param>
+            <param name="message">Specifies a <see cref="P:System.Exception.Message"/>.</param>
+        </member>
+        <member name="P:Libplanet.Action.InsufficientBalanceException.Address">
+            <summary>
+            The owner of the insufficient <see cref="P:Libplanet.Action.InsufficientBalanceException.Balance"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.InsufficientBalanceException.Currency">
+            <summary>
+            The <see cref="T:Libplanet.Currency"/> of the insufficient <see cref="P:Libplanet.Action.InsufficientBalanceException.Balance"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Action.InsufficientBalanceException.Balance">
+            <summary>
+            The account's current balance of the <see cref="P:Libplanet.Action.InsufficientBalanceException.Currency"/>.
+            </summary>
         </member>
         <member name="T:Libplanet.Action.IRandom">
             <summary>
@@ -1396,6 +1580,34 @@
             and filled on the fly instead.
             </exception>
         </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Currency,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Boolean)">
+            <summary>
+            Queries <paramref name="address"/>'s balance of the <paramref name="currency"/> in the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>.
+            </summary>
+            <param name="address">The owner <see cref="T:Libplanet.Address"/> to query.</param>
+            <param name="currency">The currency type to query.</param>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
+            start finding the state. It will be the tip of the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> if it is <c>null</c>.</param>
+            <param name="completeStates">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
+            contain states dirty of the block which lastly updated states of a requested address,
+            this option makes the incomplete states calculated and filled on the fly.
+            If this option is turned off (which is default) this method throws
+            <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead for the same situation.
+            Just-in-time calculation of states could take a long time so that the overall latency of
+            an application may rise.</param>
+            <returns>The <paramref name="address"/>'s current balance (or balance as of the given
+            <paramref name="offset"/>) of the <paramref name="currency"/>.
+            </returns>
+            <exception cref="T:Libplanet.Blockchain.IncompleteBlockStatesException">Thrown when the
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not contain states dirty of the block which
+            lastly updated states of a requested address, because actions in the block have never
+            been executed.
+            If <paramref name="completeStates"/> option is turned on this exception is not thrown
+            and incomplete states are calculated and filled on the fly instead.
+            </exception>
+        </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0})">
             <summary>
             Adds a <paramref name="block"/> to the end of this chain.
@@ -1753,7 +1965,7 @@
             <returns>A decoded <see cref="T:Libplanet.Blocks.Block`1"/> object.</returns>
             <seealso cref="M:Libplanet.Blocks.Block`1.Serialize"/>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter)">
+        <member name="M:Libplanet.Blocks.Block`1.EvaluateActionsPerTx(Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter)">
             <summary>
             Executes every <see cref="T:Libplanet.Action.IAction"/> in the
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> step by step, and emits a pair of
@@ -1764,6 +1976,10 @@
             delegate to get a previous state.
             A <c>null</c> value, which is default, means a constant function
             that returns <c>null</c>.</param>
+            <param name="accountBalanceGetter">An <see cref="T:Libplanet.Action.AccountBalanceGetter"/> delegate to
+            get previous account balance.
+            A <c>null</c> value, which is default, means a constant function that returns zero.
+            </param>
             <returns>Enumerates pair of a transaction, and
             <see cref="T:Libplanet.Action.ActionEvaluation"/> for each action.
             The order of pairs are the same to
@@ -1775,7 +1991,7 @@
             a unconsumed state.
             </returns>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.Evaluate(System.DateTimeOffset,Libplanet.Action.AccountStateGetter)">
+        <member name="M:Libplanet.Blocks.Block`1.Evaluate(System.DateTimeOffset,Libplanet.Action.AccountStateGetter,Libplanet.Action.AccountBalanceGetter)">
             <summary>
             Executes every <see cref="T:Libplanet.Action.IAction"/> in the
             <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> and gets result states of each step of
@@ -1788,7 +2004,14 @@
             </summary>
             <param name="currentTime">The current time to validate
             time-wise conditions.</param>
-            <param name="accountStateGetter">The getter of previous states.
+            <param name="accountStateGetter">An <see cref="T:Libplanet.Action.AccountStateGetter"/> delegate to get
+            a previous state.  A <c>null</c> value, which is default, means a constant function
+            that returns <c>null</c>.
+            This affects the execution of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
+            </param>
+            <param name="accountBalanceGetter">An <see cref="T:Libplanet.Action.AccountBalanceGetter"/> delegate to
+            get previous account balance.
+            A <c>null</c> value, which is default, means a constant function that returns zero.
             This affects the execution of <see cref="P:Libplanet.Tx.Transaction`1.Actions"/>.
             </param>
             <returns>An <see cref="T:Libplanet.Action.ActionEvaluation"/> for each
@@ -2381,6 +2604,63 @@
             object.</returns>
             <seealso cref="P:Libplanet.Crypto.SymmetricKey.ByteArray"/>
             <seealso cref="M:Libplanet.Crypto.SymmetricKey.#ctor(System.Byte[])"/>
+        </member>
+        <member name="T:Libplanet.Currency">
+            <summary>
+            Represents a currency type.  Every single value of <see cref="T:Libplanet.Currency"/> defines
+            a distinct currency type.  To draw a parallel with real world monetary,
+            each <see cref="T:Libplanet.Currency"/> value represents such currencies as USD (US Dollar) or
+            EUR (Euro), <em>not values</em> like $100 or €100.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Currency.Ticker">
+            <summary>
+            The ticker symbol, e.g., <c>&quot;USD&quot;</c>.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Currency.Minters">
+            <summary>
+            The <see cref="T:Libplanet.Address"/>es who can mint the currency.
+            If this is <c>null</c> <em>anyone</em> can mint the currency.
+            </summary>
+            <remarks>
+            Unlike <c>null</c>, an empty set means <em>no one</em> can mint the currency.
+            </remarks>
+            <seealso cref="M:Libplanet.Action.IAccountStateDelta.MintAsset(Libplanet.Address,Libplanet.Currency,System.Numerics.BigInteger)"/>
+        </member>
+        <member name="F:Libplanet.Currency.Hash">
+            <summary>
+            The deterministic hash derived from other fields.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Currency.#ctor(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address})">
+            <summary>
+            Defines a <see cref="T:Libplanet.Currency"/> type.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="minters">The <see cref="T:Libplanet.Address"/>es who can mint the currency.
+            See also <see cref="F:Libplanet.Currency.Minters"/> field which corresponds to this.</param>
+            <exception cref="T:System.ArgumentException">Thrown when the given <paramref name="ticker"/>
+            is an empty string.</exception>
+        </member>
+        <member name="M:Libplanet.Currency.#ctor(System.String,System.Nullable{Libplanet.Address})">
+            <summary>
+            Defines a <see cref="T:Libplanet.Currency"/> type.
+            </summary>
+            <param name="ticker">The ticker symbol, e.g., <c>&quot;USD&quot;</c>.</param>
+            <param name="minter">The address who can mint the currency.  To specify multiple
+            minters, use the <see cref="M:Libplanet.Currency.#ctor(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/> constructor
+            instead.  See also <see cref="F:Libplanet.Currency.Minters"/> field which corresponds to this.</param>
+            <seealso cref="M:Libplanet.Currency.#ctor(System.String,System.Collections.Immutable.IImmutableSet{Libplanet.Address})"/>
+        </member>
+        <member name="M:Libplanet.Currency.AllowsToMint(Libplanet.Address)">
+            <summary>
+            Returns <c>true</c> if and only if the given <paramref name="address"/> is allowed
+            to mint or burn assets of this currency.
+            </summary>
+            <param name="address">The account address to test.</param>
+            <returns><c>true</c> if and only if the given <paramref name="address"/> is allowed to
+            mint or burn assets of this currency.</returns>
         </member>
         <member name="T:Libplanet.FixedSizedQueue`1">
             <summary>

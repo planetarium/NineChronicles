@@ -23,14 +23,17 @@ namespace Nekoyume.Action
             var states = context.PreviousStates;
             if (context.Rehearsal)
             {
-                states = states.SetState(context.Signer, MarkChanged);
-                states = states.SetState(avatarAddress, MarkChanged);
+                states = states
+                    .SetState(context.Signer, MarkChanged)
+                    .SetState(avatarAddress, MarkChanged)
+                    .MarkBalanceChanged(Currencies.Gold, context.Signer);
                 return states;
             }
 
-            if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState agentState,
+            if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState _,
                 out AvatarState avatarState))
             {
+                // FIXME: 오류 처리 필요하지 않나요?
             }
 
             var tableSheets = TableSheets.FromActionContext(context);
@@ -57,7 +60,8 @@ namespace Nekoyume.Action
                                 avatarState.inventory.AddItem(material, info.Quantity);
                                 break;
                             case RewardType.Gold:
-                                agentState.gold += info.Quantity;
+                                // FIXME: 사실 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
+                                states = states.MintAsset(context.Signer, Currencies.Gold, info.Quantity);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(info.Type), info.Type, null);
@@ -68,7 +72,6 @@ namespace Nekoyume.Action
                 }
             }
 
-            states = states.SetState(context.Signer, agentState.Serialize());
             states = states.SetState(avatarAddress, avatarState.Serialize());
             return states;
         }
