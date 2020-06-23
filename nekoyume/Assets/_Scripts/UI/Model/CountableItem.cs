@@ -1,5 +1,4 @@
 using System;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
 using UniRx;
 

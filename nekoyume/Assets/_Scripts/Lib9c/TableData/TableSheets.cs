@@ -16,8 +16,6 @@ namespace Nekoyume.TableData
             new LruCache<TableSheetsState, TableSheets>();
 
         #region sheets
-
-        public ActivationSheet ActivationSheet { get; private set; }
         public WorldSheet WorldSheet { get; private set; }
         public StageWaveSheet StageWaveSheet { get; private set; }
         public StageSheet StageSheet { get; private set; }

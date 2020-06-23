@@ -11,6 +11,7 @@ using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Libplanet;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -32,28 +33,25 @@ namespace Nekoyume.BlockChain
         static BlockPolicy()
         {
             ActionRenderer
-                .EveryRender(TableSheetsState.Address)
+                .EveryRender(ActivatedAccountsState.Address)
                 .Subscribe(UpdateActivationSet);
 
             ActionRenderer
-                .EveryUnrender(TableSheetsState.Address)
+                .EveryUnrender(ActivatedAccountsState.Address)
                 .Subscribe(UpdateActivationSet);
         }
 
-        public static ImmutableHashSet<PublicKey> ActivationSet { get; private set; }
+        public static IImmutableSet<Address> ActivatedAccounts { get; private set; }
 
         public static void UpdateActivationSet(IValue state)
         {
-            var activationSheet = GetActivationSheet(state);
-
-            ActivationSet = activationSheet?.Values
-                .Select(row => row.PublicKey)
-                .ToImmutableHashSet();
+            ActivatedAccounts = new ActivatedAccountsState((Dictionary)state).Accounts;
         }
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
         public static IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy(int minimumDifficulty)
         {
+            ActivatedAccounts = ActivatedAccounts?.Clear();
 #if UNITY_EDITOR
             return new DebugPolicy();
 #else
@@ -67,30 +65,16 @@ namespace Nekoyume.BlockChain
 #endif
         }
 
-        private static ActivationSheet GetActivationSheet(IValue state)
-        {
-            if (state is null)
-            {
-                return null;
-            }
-
-            var tableSheetsState = new TableSheetsState((Dictionary)state);
-            return TableSheets.FromTableSheetsState(tableSheetsState).ActivationSheet;
-        }
-
         private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
-            var signerPublicKey = transaction.PublicKey;
-
-            return ActivationSet is null
-                   || ActivationSet.Count == 0
-                   || ActivationSet.Contains(signerPublicKey);
+            return ActivatedAccounts is null
+                   || !ActivatedAccounts.Any()
+                   || ActivatedAccounts.Contains(transaction.Signer);
         }
 
         private static void UpdateActivationSet(ActionBase.ActionEvaluation<ActionBase> evaluation)
         {
-            var state = evaluation.OutputStates.GetState(TableSheetsState.Address);
-            UpdateActivationSet(state);
+            UpdateActivationSet(evaluation.OutputStates.GetState(ActivatedAccountsState.Address));
         }
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
