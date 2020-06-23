@@ -71,7 +71,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ => HackAndSlash())
                 .AddTo(gameObject);
             guidedQuest.OnClickCombinationEquipmentQuestCell
-                .Subscribe(_ => Debug.LogWarning("TODO: 장비 조합 전환."))
+                .Subscribe(_ => GoToCombinationEquipmentRecipe())
                 .AddTo(gameObject);
         }
 
@@ -132,6 +132,20 @@ namespace Nekoyume.UI
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);
+        }
+
+        private void GoToCombinationEquipmentRecipe()
+        {
+            var combinationEquipmentQuest = guidedQuest.CombinationEquipmentQuest;
+            if (combinationEquipmentQuest is null)
+            {
+                return;
+            }
+
+            var recipeId = combinationEquipmentQuest.RecipeId;
+            var subRecipeId = combinationEquipmentQuest.SubRecipeId;
+            
+            Find<Combination>().ShowByEquipmentRecipe(recipeId, subRecipeId);
         }
 
         private void UpdateButtons()
