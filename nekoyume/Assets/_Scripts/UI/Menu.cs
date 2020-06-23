@@ -9,6 +9,7 @@ using Nekoyume.Model.Item;
 using UnityEngine;
 using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -103,6 +104,7 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
+            Mixpanel.Track("Unity/Enter Dungeon");
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);

@@ -25,6 +25,7 @@ using Nekoyume.UI.Model;
 using Spine.Unity;
 using UnityEngine;
 using TentuPlay.Api;
+using mixpanel;
 
 namespace Nekoyume.Game
 {
@@ -451,6 +452,7 @@ namespace Nekoyume.Game
                 stage_playtime: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
                 );
+            Mixpanel.Track("Unity/Stage End");
         }
 
         private IEnumerator CoSlideBg()
