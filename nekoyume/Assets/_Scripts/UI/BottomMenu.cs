@@ -400,8 +400,12 @@ namespace Nekoyume.UI.Module
             var combinationSlots = Game.Game.instance.States.CombinationSlotStates.Values;
             var hasNotification = combinationSlots.Any(slot =>
             {
-                var diff = slot.RequiredBlockIndex - _blockIndex;
-                if (slot.Result is null || diff <= 0)
+                if (slot.Result is null)
+                    return false;
+
+                var diff = slot.Result.itemUsable.RequiredBlockIndex - _blockIndex;
+
+                if (diff <= 0)
                     return false;
 
                 var gameConfigState = Game.Game.instance.States.GameConfigState;
