@@ -15,6 +15,15 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
+    - run: |
+        # TentuPlay 설정 파일 만들기
+        sed 's|__API_KEY__|${{ secrets.TENTU_API_KEY }}|' \
+          .github/data/TentuPlaySettings.asset.template \
+          | sed 's|__SECRET__|${{ secrets.TENTU_SECRET }}|' \
+          | sed 's|__DEBUG__|0|' \
+          | sed 's|__USE_PERSIST_DB_CONN__|0|' \
+          | sed 's|__AUTO_UPLOAD__|1|' \
+          > nekoyume/Assets/TentuPlay/Resources/TentuPlaySettings.asset
     - uses: docker://gableroux/unity3d:2019.1.0f2
       env:
         ULF: ${{ secrets.ULF }}
@@ -33,15 +42,6 @@ jobs:
     # 그런 파일 속성들을 보존할 수 있는 타볼 형식으로 한 번 감싸야 함.
     # https://github.com/actions/upload-artifact/issues/38
     - run: |
-        # TentuPlay 설정 파일 만들기
-        sed 's|__API_KEY__|${{ secrets.TENTU_API_KEY }}|' \
-          .github/data/TentuPlaySettings.asset.template \
-          | sed 's|__SECRET__|${{ secrets.TENTU_SECRET }}|' \
-          | sed 's|__DEBUG__|0|' \
-          | sed 's|__USE_PERSIST_DB_CONN__|0|' \
-          | sed 's|__AUTO_UPLOAD__|1|' \
-          > nekoyume/Assets/TentuPlay/Resources/TentuPlaySettings.asset
-        
         pushd nekoyume/Build/
         tar cvf /tmp/unity.tar ./*
         popd
