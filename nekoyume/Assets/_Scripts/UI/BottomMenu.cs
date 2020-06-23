@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -389,15 +391,33 @@ namespace Nekoyume.UI.Module
         {
             _blockIndex = blockIndex;
             var mailBox = Find<Mail>().MailBox;
-            if (mailBox is null)
+            if (!(mailBox is null))
             {
-                return;
+                HasNotificationInMail.OnNext(mailBox.Any(i =>
+                    i.New && i.requiredBlockIndex <= _blockIndex));
             }
 
-            HasNotificationInMail.OnNext(mailBox.Any(i =>
-                i.New && i.requiredBlockIndex <= _blockIndex));
-        }
+            var combinationSlots = Game.Game.instance.States.CombinationSlotStates.Values;
+            var hasNotification = combinationSlots.Any(slot =>
+            {
+                var diff = slot.RequiredBlockIndex - _blockIndex;
+                if (slot.Result is null || diff <= 0)
+                    return false;
 
+                var gameConfigState = Game.Game.instance.States.GameConfigState;
+                var cost = RapidCombination.CalculateHourglassCount(gameConfigState, diff);
+
+                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
+                    .First(r => r.ItemSubType == ItemSubType.Hourglass);
+                var isEnough =
+                    States.Instance.CurrentAvatarState.inventory.HasItem(row.ItemId, cost);
+                
+                return isEnough;
+            });
+
+            HasNotificationInCombination.OnNext(hasNotification);
+        }
+        
         #endregion
 
         #region show button
