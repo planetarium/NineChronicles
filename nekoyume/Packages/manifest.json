@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.mixpanel.unity": "https://github.com/mixpanel/mixpanel-unity.git#v2.2.0",
     "com.neuecc.unirx": "https://github.com/starikcetin/unirx.git#f93af89f2aafeccfc7aff9dee2cecc6d60ede06b",
     "com.unity.addressables": "1.1.10",
     "com.unity.analytics": "3.3.2",
@@ -50,6 +51,10 @@
     "jp.setchi.fancyscrollview": {
       "hash": "18c1db90a91f5965260e6a216d9ec6aea51c4968",
       "revision": "upm"
+    },
+    "com.mixpanel.unity": {
+      "hash": "7518e7202d655ab6d70d1a65c189f0374417f725",
+      "revision": "v2.2.0"
     }
   }
 }
