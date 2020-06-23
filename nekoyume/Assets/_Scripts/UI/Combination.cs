@@ -224,6 +224,11 @@ namespace Nekoyume.UI
             Show();
         }
 
+        public void ShowByEquipmentRecipe(int recipeId, int? subRecipeId)
+        {
+            Show();
+        }
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             Find<BottomMenu>().Close(ignoreCloseAnimation);
@@ -259,7 +264,7 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
-            
+
             base.OnCompleteOfShowAnimationInternal();
         }
 
