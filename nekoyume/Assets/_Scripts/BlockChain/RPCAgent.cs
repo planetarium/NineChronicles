@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Bencodex;
@@ -52,9 +53,9 @@ namespace Nekoyume.BlockChain
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         public long BlockIndex { get; private set; }
-        
+
         public PrivateKey PrivateKey { get; private set; }
-        
+
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
         public bool Connected { get; private set; }
@@ -92,6 +93,19 @@ namespace Nekoyume.BlockChain
             byte[] raw = _service.GetState(address.ToByteArray()).ResponseAsync.Result;
             return _codec.Decode(raw);
         }
+
+        public BigInteger GetBalance(Address address, Currency currency)
+        {
+            var result = _service.GetBalance(
+                address.ToByteArray(),
+                _codec.Encode(currency.Serialize())
+            );
+            byte[] raw = result.ResponseAsync.Result;
+            return (Bencodex.Types.Integer) _codec.Decode(raw);
+        }
+
+        public BigInteger GetBalance(Address address) =>
+            GetBalance(address, Currencies.Gold);
 
         public void EnqueueAction(GameAction action)
         {
@@ -171,7 +185,9 @@ namespace Nekoyume.BlockChain
             States.Instance.SetAgentState(
                 GetState(Address) is Bencodex.Types.Dictionary agentDict
                     ? new AgentState(agentDict)
-                    : new AgentState(Address));
+                    : new AgentState(Address),
+                new GoldBalanceState(Address, GetBalance(Address))
+            );
 
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
             ActionRenderHandler.Instance.Start(ActionRenderer);
@@ -253,7 +269,7 @@ namespace Nekoyume.BlockChain
             BlockIndex = index;
             BlockIndexSubject.OnNext(index);
         }
-        
+
         private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
         {
             try

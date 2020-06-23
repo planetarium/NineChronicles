@@ -29,7 +29,7 @@ namespace Nekoyume.UI.Module
 
             if (CostNCG > 0)
             {
-                submitButton.ShowNCG(CostNCG, States.Instance.AgentState.gold >= CostNCG);
+                submitButton.ShowNCG(CostNCG, States.Instance.GoldBalanceState.gold >= CostNCG);
             }
             else
             {

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
@@ -262,7 +263,7 @@ namespace Nekoyume.Model.Quest
             }
         }
 
-        public void UpdateTradeQuest(TradeType type, decimal price)
+        public void UpdateTradeQuest(TradeType type, BigInteger price)
         {
             var tradeQuests = _quests
                 .OfType<TradeQuest>()
