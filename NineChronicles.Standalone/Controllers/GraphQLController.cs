@@ -17,6 +17,8 @@ namespace NineChronicles.Standalone.Controllers
     {
         private StandaloneContext StandaloneContext { get; }
 
+        public const string InitializeStandaloneEndpoint = "/initialize-standalone";
+
         public const string RunStandaloneEndpoint = "/run-standalone";
 
         public GraphQLController(StandaloneContext standaloneContext)
@@ -24,13 +26,11 @@ namespace NineChronicles.Standalone.Controllers
             StandaloneContext = standaloneContext;
         }
 
-        [HttpPost(RunStandaloneEndpoint)]
-        public IActionResult RunStandAlone(
+        [HttpPost(InitializeStandaloneEndpoint)]
+        public IActionResult InitializeStandAlone(
             [FromBody] ServiceBindingProperties properties
         )
         {
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-
             if (properties.AppProtocolVersion is null)
             {
                 BadRequest($"{nameof(properties.AppProtocolVersion)} must be present.");
@@ -70,17 +70,32 @@ namespace NineChronicles.Standalone.Controllers
                     Libplanet = nodeServiceProperties
                 };
 
-                StandaloneServices.RunHeadlessAsync(
-                    nineChroniclesProperties,
-                    hostBuilder,
-                    StandaloneContext,
-                    StandaloneContext.CancellationToken);
+                var nineChroniclesNodeService = StandaloneServices.CreateHeadless(nineChroniclesProperties);
+                StandaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
+                StandaloneContext.BlockChain = nineChroniclesNodeService.Swarm.BlockChain;
             }
             catch (Exception e)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, e.ToString());
             }
-            return Ok("Node services start.");
+            return Ok("Node service was initialized.");
+        }
+
+        [HttpPost(RunStandaloneEndpoint)]
+        public IActionResult RunStandAlone()
+        {
+            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+
+            if (StandaloneContext.NineChroniclesNodeService is null)
+            {
+                var errorMessage =
+                    $"{nameof(StandaloneContext)}.{nameof(StandaloneContext.NineChroniclesNodeService)} is null. " +
+                    $"You should request {InitializeStandaloneEndpoint} before this action.";
+                return StatusCode(StatusCodes.Status412PreconditionFailed, errorMessage);
+            }
+
+            StandaloneContext.NineChroniclesNodeService.Run(hostBuilder, StandaloneContext.CancellationToken);
+            return Ok("Node service started.");
         }
     }
 }

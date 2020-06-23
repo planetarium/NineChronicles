@@ -17,5 +17,6 @@ namespace NineChronicles.Standalone
         public bool BootstrapEnded { get; set; }
         public bool PreloadEnded { get; set; }
         public ReplaySubject<PreloadState> PreloadStateSubject { get; } = new ReplaySubject<PreloadState>();
+        public NineChroniclesNodeService NineChroniclesNodeService { get; set; }
     }
 }
