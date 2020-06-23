@@ -387,7 +387,7 @@ namespace Nekoyume.Game
             Widget.Find<UI.Battle>().Close();
             yield return StartCoroutine(CoUnlockAlert());
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
-            var passed = _battleResultModel.ClearedWaveNumber == log.waveCount;
+            var passed = log.IsClear;
             yield return new WaitForSeconds(0.75f);
             if (log.result == BattleLog.Result.Win)
             {

@@ -20,11 +20,12 @@ namespace Nekoyume.Model.BattleStatus
         public int worldId;
         public int stageId;
         public int waveCount;
-        public Result result;
+        public Result result = Result.Lose;
         public int score;
         public int diffScore;
         public int clearedWaveNumber;
         public bool newlyCleared;
+        public bool IsClear => result == Result.Win && clearedWaveNumber == waveCount;
 
         public void Add(EventBase e)
         {

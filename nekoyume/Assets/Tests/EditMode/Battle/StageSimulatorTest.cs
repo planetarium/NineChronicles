@@ -1,36 +1,30 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Libplanet;
 using Nekoyume;
 using Nekoyume.Battle;
-using Nekoyume.Game;
+using Nekoyume.Helper;
+using Nekoyume.Model.BattleStatus;
+using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace Tests.EditMode.Battle
 {
     public class StageSimulatorTest
     {
         private TableSheets _tableSheets;
+        private AgentState _agentState;
+        private AvatarState _avatarState;
 
         [OneTimeSetUp]
         public void Init()
         {
-            _tableSheets = new TableSheets();
-            var request = Resources.Load<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-            if (!(request is AddressableAssetsContainer addressableAssetsContainer))
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-
-            var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            foreach (var asset in csvAssets)
-            {
-                _tableSheets.SetToSheet(asset.name, asset.text);
-            }
-
-            _tableSheets.ItemSheetInitialize();
-            _tableSheets.QuestSheetInitialize();
-
+            _tableSheets = TableSheetsHelper.MakeTableSheets();
+            _agentState = new AgentState(new Address());
+            _avatarState = new AvatarState(new Address(), _agentState.address, 0, _tableSheets, new GameConfigState());
         }
 
         [Test]
@@ -92,6 +86,25 @@ namespace Tests.EditMode.Battle
             var reward = StageSimulator.SetReward(row, new Cheat.DebugRandom(), _tableSheets);
             Assert.IsTrue(reward.Count <= 2);
             Assert.IsNotEmpty(reward);
+        }
+
+        [Test]
+        public void IsClearBeforeSimulate()
+        {
+            var agentState = new AgentState(new Address());
+            var avatarState = new AvatarState(new Address(), agentState.address, 0, _tableSheets, new GameConfigState());
+            var simulator = new StageSimulator(new Cheat.DebugRandom(), avatarState, new List<Guid>(), 1, 1, _tableSheets);
+            Assert.IsFalse(simulator.Log.IsClear);
+        }
+
+        [Test, Sequential]
+        public void IsClear([Values(true, false)] bool expected, [Values(1, 10)] int stage)
+        {
+            var simulator = new StageSimulator(new Cheat.DebugRandom(), _avatarState, new List<Guid>(), 1, stage,
+                _tableSheets);
+            simulator.Simulate();
+            Assert.AreEqual(BattleLog.Result.Win, simulator.Result);
+            Assert.AreEqual(expected, simulator.Log.IsClear);
         }
     }
 }
