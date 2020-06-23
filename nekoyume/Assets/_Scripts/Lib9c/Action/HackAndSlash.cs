@@ -168,12 +168,12 @@ namespace Nekoyume.Action
                 avatarAddress,
                 worldId,
                 stageId,
-                simulator.Log?.result,
-                simulator.Log?.clearedWaveNumber,
-                simulator.Log?.waveCount
+                simulator.Log.result,
+                simulator.Log.clearedWaveNumber,
+                simulator.Log.waveCount
             );
 
-            if (simulator.Result == BattleLog.Result.Win && simulator.Log?.clearedWaveNumber == simulator.Log?.waveCount)
+            if (simulator.Log.IsClear)
             {
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
@@ -197,7 +197,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug("HAS Set AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
-            if (states.TryGetState(RankingState.Address, out Dictionary d) && simulator.Result == BattleLog.Result.Win)
+            if (states.TryGetState(RankingState.Address, out Dictionary d) && simulator.Log.IsClear)
             {
                 var ranking = new RankingState(d);
                 ranking.Update(avatarState);

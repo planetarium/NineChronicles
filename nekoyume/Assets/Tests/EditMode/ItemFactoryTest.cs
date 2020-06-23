@@ -268,7 +268,7 @@ namespace Tests.EditMode
             Assert.IsNotNull(chestMaterial);
             Assert.DoesNotThrow(() => chestMaterial.Serialize());
             var serialized = (Dictionary) chestMaterial.Serialize();
-            Assert.IsFalse(serialized.ContainsKey((Text) "rewards"));
+            Assert.IsTrue(serialized.ContainsKey((Text) "rewards"));
             Assert.AreEqual(chest, ItemFactory.Deserialize(serialized));
         }
     }
