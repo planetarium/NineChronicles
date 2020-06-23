@@ -58,7 +58,7 @@ namespace Nekoyume.UI.Scroller
 
         #region Controll
 
-        public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreAnimation = false)
+        public void ShowAsNew(Nekoyume.Model.Quest.Quest quest, bool ignoreAnimation = false)
         {
             if (quest is null)
             {
@@ -83,7 +83,7 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        public void Hide(bool ignoreAnimation = false)
+        public void HideAsClear(bool ignoreAnimation = false)
         {
             if (ignoreAnimation)
             {

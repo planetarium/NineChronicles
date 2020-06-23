@@ -263,8 +263,8 @@ namespace Nekoyume.UI.Module
         private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
         {
             _viewModel.state.Value = ViewState.Showing;
-            WorldQuestCell.Hide(true);
-            CombinationEquipmentQuestCell.Hide(true);
+            WorldQuestCell.HideAsClear(true);
+            CombinationEquipmentQuestCell.HideAsClear(true);
 
             if (ignoreAnimation)
             {
@@ -426,25 +426,25 @@ namespace Nekoyume.UI.Module
                     WorldQuestCell.Quest is WorldQuest quest)
                 {
                     // TODO: 완료하는 연출!
-                    WorldQuestCell.Hide();
+                    WorldQuestCell.HideAsClear();
                     _onClearWorldQuestComplete.OnNext(quest);
                     EnterToShown();
                 }
                 else
                 {
-                    WorldQuestCell.Hide(true);
+                    WorldQuestCell.HideAsClear(true);
                 }
             }
             else
             {
                 if (state == ViewState.AddNewGuidedQuest)
                 {
-                    WorldQuestCell.Show(worldQuest);
+                    WorldQuestCell.ShowAsNew(worldQuest);
                     EnterToShown();
                 }
                 else
                 {
-                    WorldQuestCell.Show(worldQuest, true);
+                    WorldQuestCell.ShowAsNew(worldQuest, true);
                 }
             }
         }
@@ -459,25 +459,25 @@ namespace Nekoyume.UI.Module
                     CombinationEquipmentQuestCell.Quest is CombinationEquipmentQuest quest)
                 {
                     // TODO: 완료하는 연출!
-                    CombinationEquipmentQuestCell.Hide();
+                    CombinationEquipmentQuestCell.HideAsClear();
                     _onClearCombinationEquipmentQuestComplete.OnNext(quest);
                     EnterToShown();
                 }
                 else
                 {
-                    CombinationEquipmentQuestCell.Hide(true);
+                    CombinationEquipmentQuestCell.HideAsClear(true);
                 }
             }
             else
             {
                 if (state == ViewState.AddNewGuidedQuest)
                 {
-                    CombinationEquipmentQuestCell.Show(combinationEquipmentQuest);
+                    CombinationEquipmentQuestCell.ShowAsNew(combinationEquipmentQuest);
                     EnterToShown();
                 }
                 else
                 {
-                    CombinationEquipmentQuestCell.Show(combinationEquipmentQuest, true);
+                    CombinationEquipmentQuestCell.ShowAsNew(combinationEquipmentQuest, true);
                 }
             }
         }
