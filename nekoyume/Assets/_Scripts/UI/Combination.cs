@@ -473,7 +473,23 @@ namespace Nekoyume.UI
                     _toggleGroup.SetToggledOffAll();
                     OnTweenRecipe();
 
-                    var rectTransform = selectedRecipe.transform as RectTransform;
+                    if (_shouldGoToEquipmentRecipe.HasValue)
+                    {
+                        if (selectedRecipe.ItemSubType == ItemSubType.Food)
+                        {
+                            OnClickConsumableRecipe();
+                        }
+                        else
+                        {
+                            var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
+                            OnClickEquipmentRecipe(isElemental);
+                        }
+
+                        _shouldGoToEquipmentRecipe = null;
+                        break;
+                    }
+
+                    var rectTransform = (RectTransform) selectedRecipe.transform;
                     recipeClickVFX.transform.position = rectTransform
                         .TransformPoint(rectTransform.rect.center);
 
