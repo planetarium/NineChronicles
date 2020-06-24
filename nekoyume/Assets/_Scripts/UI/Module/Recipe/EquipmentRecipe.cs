@@ -137,25 +137,6 @@ namespace Nekoyume.UI.Module
                     cellView.Hide();
                 }
             }
-
-            switch (itemSubType)
-            {
-                case ItemSubType.Weapon:
-                    _toggleGroup.SetToggledOn(weaponTabButton);
-                    break;
-                case ItemSubType.Armor:
-                    _toggleGroup.SetToggledOn(armorTabButton);
-                    break;
-                case ItemSubType.Belt:
-                    _toggleGroup.SetToggledOn(beltTabButton);
-                    break;
-                case ItemSubType.Necklace:
-                    _toggleGroup.SetToggledOn(necklaceTabButton);
-                    break;
-                case ItemSubType.Ring:
-                    _toggleGroup.SetToggledOn(ringTabButton);
-                    break;
-            }
         }
 
         private void SubscribeOnToggledOn(IToggleable toggleable)

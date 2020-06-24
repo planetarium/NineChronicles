@@ -106,7 +106,7 @@ namespace Nekoyume.UI.Module
                 cellViews[idx] = cellView;
                 ++idx;
             }
-            
+
             UpdateRecipes();
         }
 
@@ -136,25 +136,6 @@ namespace Nekoyume.UI.Module
                 {
                     cellView.Hide();
                 }
-            }
-
-            switch (statType)
-            {
-                case StatType.HP:
-                    _toggleGroup.SetToggledOn(hpTabButton);
-                    break;
-                case StatType.ATK:
-                    _toggleGroup.SetToggledOn(atkTabButton);
-                    break;
-                case StatType.CRI:
-                    _toggleGroup.SetToggledOn(criTabButton);
-                    break;
-                case StatType.HIT:
-                    _toggleGroup.SetToggledOn(hitTabButton);
-                    break;
-                case StatType.DEF:
-                    _toggleGroup.SetToggledOn(defTabButton);
-                    break;
             }
         }
 
