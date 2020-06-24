@@ -238,7 +238,33 @@ namespace Nekoyume.UI
 
             if (_shouldGoToEquipmentRecipe.HasValue)
             {
-                State.SetValueAndForceNotify(StateType.CombineEquipment);
+                equipmentRecipe.UpdateRecipes();
+                if (_shouldGoToEquipmentRecipe.Value.subRecipeId.HasValue)
+                {
+                    if (equipmentRecipe.TryGetCellView(
+                        _shouldGoToEquipmentRecipe.Value.recipeId,
+                        out var cellView))
+                    {
+                        if (cellView.IsLocked)
+                        {
+                            State.SetValueAndForceNotify(StateType.CombineEquipment);
+                        }
+                        else
+                        {
+                            selectedRecipe = cellView;
+                            State.SetValueAndForceNotify(StateType.CombinationConfirm);
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError($"Not found cell view with {_shouldGoToEquipmentRecipe.Value.recipeId} in {nameof(equipmentRecipe)}");
+                        State.SetValueAndForceNotify(StateType.CombineEquipment);
+                    }
+                }
+                else
+                {
+                    State.SetValueAndForceNotify(StateType.CombineEquipment);
+                }
             }
             else
             {
@@ -397,7 +423,8 @@ namespace Nekoyume.UI
                     inventory.gameObject.SetActive(false);
                     equipmentRecipe.gameObject.SetActive(true);
                     consumableRecipe.gameObject.SetActive(false);
-                    equipmentRecipe.ShowCellViews();
+                    equipmentRecipe.ShowCellViews(_shouldGoToEquipmentRecipe?.recipeId);
+                    _shouldGoToEquipmentRecipe = null;
                     Animator.Play("ShowLeftArea", -1, 0.0f);
                     OnTweenRecipe();
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
