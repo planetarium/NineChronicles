@@ -1,14 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Nekoyume.UI.Scroller;
-using Nekoyume.Model.Item;
 using UniRx;
 using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
-using System.Collections;
-using DG.Tweening;
 using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Module
@@ -119,11 +116,10 @@ namespace Nekoyume.UI.Module
             if (avatarState is null)
                 return;
 
-            // FIXME : 소모품 해금도 대응시켜야 함.
-            //foreach (var cellView in cellViews)
-            //{
-            //    cellView.Set(avatarState);
-            //}
+            foreach (var cellView in cellViews)
+            {
+                cellView.Set(avatarState);
+            }
         }
 
         private void SubScribeFilterType(StatType statType)

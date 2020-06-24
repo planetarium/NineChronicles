@@ -169,7 +169,6 @@ namespace Nekoyume.UI
                 btnRanking.JingleTheCat();
                 return;
             }
-
             if (rankingExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
