@@ -4,6 +4,7 @@ using Cocona;
 using Libplanet.Standalone.Hosting;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
+using Sentry;
 using Serilog;
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
@@ -11,9 +12,24 @@ namespace NineChronicles.Standalone.Executable
 {
     public class Program : CoconaLiteConsoleAppBase
     {
+        const string SentryDsn = "https://ceac97d4a7d34e7b95e4c445b9b5669e@o195672.ingest.sentry.io/5287621";
+
         static async Task Main(string[] args)
         {
+#if SENTRY || ! DEBUG
+            using var _ = SentrySdk.Init(ConfigureSentryOptions);
+#endif
             await CoconaLiteApp.RunAsync<Program>(args);
+        }
+
+        static void ConfigureSentryOptions(SentryOptions o)
+        {
+            o.Dsn = new Dsn(SentryDsn);
+            // TODO: o.Release 설정하면 좋을 것 같은데 빌드 버전 체계가 아직 없어서 어떻게 해야 할 지...
+            // https://docs.sentry.io/workflow/releases/?platform=csharp
+#if DEBUG
+            o.Debug = true;
+#endif
         }
 
         [Command(Description = "Run standalone application with options.")]
@@ -53,10 +69,22 @@ namespace NineChronicles.Standalone.Executable
             int? graphQLPort = null
         )
         {
+#if SENTRY || ! DEBUG
+            try
+            {
+#endif
             // Setup logger.
-            Log.Logger = new LoggerConfiguration()
+            var loggerConf = new LoggerConfiguration()
                 .WriteTo.Console()
-                .MinimumLevel.Debug().CreateLogger();
+                .MinimumLevel.Debug();
+#if SENTRY || ! DEBUG
+            loggerConf = loggerConf
+                .WriteTo.Sentry(o =>
+                {
+                    o.InitializeSdk = false;
+                });
+#endif
+            Log.Logger = loggerConf.CreateLogger();
 
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
 
@@ -137,6 +165,18 @@ namespace NineChronicles.Standalone.Executable
                     hostBuilder,
                     cancellationToken: Context.CancellationToken);
             }
+#if SENTRY || ! DEBUG
+            }
+            catch (CommandExitedException)
+            {
+                throw;
+            }
+            catch (Exception exceptionToCapture)
+            {
+                SentrySdk.CaptureException(exceptionToCapture);
+                throw;
+            }
+#endif
         }
     }
 }
