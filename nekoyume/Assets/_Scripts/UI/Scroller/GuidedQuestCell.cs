@@ -25,6 +25,12 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Button bodyButton = null;
 
+        [SerializeField]
+        private Image mainQuestImage = null;
+
+        [SerializeField]
+        private Image subQuestImage = null;
+
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
 
         private void Awake()
@@ -57,13 +63,17 @@ namespace Nekoyume.UI.Scroller
 
         private void SetContent(Nekoyume.Model.Quest.Quest quest)
         {
+            mainQuestImage.gameObject.SetActive(false);
+            subQuestImage.gameObject.SetActive(false);
             switch (quest)
             {
                 default:
                     contentText.text = string.Format(SubContentFormat, quest.GetContent());
+                    subQuestImage.gameObject.SetActive(true);
                     break;
                 case WorldQuest _:
                     contentText.text = string.Format(MainContentFormat, quest.GetContent());
+                    mainQuestImage.gameObject.SetActive(true);
                     break;
             }
         }
