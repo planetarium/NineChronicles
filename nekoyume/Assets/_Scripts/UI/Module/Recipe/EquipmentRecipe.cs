@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Nekoyume.UI.Scroller;
 using Nekoyume.Model.Item;
 using UniRx;
@@ -94,8 +95,22 @@ namespace Nekoyume.UI.Module
             _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
         }
 
-        public void ShowCellViews()
+        public void ShowCellViews(int? recipeId = null)
         {
+            if (recipeId.HasValue &&
+                TryGetCellView(recipeId.Value, out var cellView) &&
+                Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(
+                    cellView.RowData.ResultEquipmentId,
+                    out var row))
+            {
+                SetToggledOnType(row.ItemSubType);
+                var content = scrollRect.content;
+                var localPositionX = content.localPosition.x;
+                content.localPosition = new Vector2(
+                    localPositionX,
+                    -cellView.transform.localPosition.y);
+            }
+
             scrollAlphaTweener.Play();
             scrollPositionTweener.StartTween();
 
@@ -128,10 +143,10 @@ namespace Nekoyume.UI.Module
             {
                 var cellView = Instantiate(cellViewPrefab, cellViewParent);
                 cellView.Set(recipeRow);
-                cellView.OnClick.Subscribe(SubscribeOnClickCellView)
+                cellView.OnClick
+                    .Subscribe(SubscribeOnClickCellView)
                     .AddTo(_disposablesAtLoadRecipeList);
-                cellViews[idx] = cellView;
-                ++idx;
+                cellViews[idx++] = cellView;
             }
 
             if (!shouldUpdateRecipes)
@@ -156,10 +171,42 @@ namespace Nekoyume.UI.Module
             }
         }
 
+        public bool TryGetCellView(int recipeId, out EquipmentRecipeCellView cellView)
+        {
+            cellView = cellViews.FirstOrDefault(item => item.RowData.Id == recipeId);
+            return !(cellView is null);
+        }
+
+        private void SetToggledOnType(ItemSubType itemSubType)
+        {
+            IToggleable toggleable;
+            switch (itemSubType)
+            {
+                case ItemSubType.Weapon:
+                    toggleable = weaponTabButton;
+                    break;
+                case ItemSubType.Armor:
+                    toggleable = armorTabButton;
+                    break;
+                case ItemSubType.Belt:
+                    toggleable = beltTabButton;
+                    break;
+                case ItemSubType.Necklace:
+                    toggleable = necklaceTabButton;
+                    break;
+                case ItemSubType.Ring:
+                    toggleable = ringTabButton;
+                    break;
+                default:
+                    return;
+            }
+
+            _toggleGroup.SetToggledOn(toggleable);
+            SubscribeOnToggledOn(toggleable);
+        }
+
         private void SubScribeFilterType(ItemSubType itemSubType)
         {
-            scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
-
             foreach (var cellView in cellViews)
             {
                 if (cellView.ItemSubType == itemSubType)
@@ -171,6 +218,8 @@ namespace Nekoyume.UI.Module
                     cellView.Hide();
                 }
             }
+
+            scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
         }
 
         private void SubscribeOnToggledOn(IToggleable toggleable)
@@ -200,7 +249,7 @@ namespace Nekoyume.UI.Module
         private static void SubscribeOnClickCellView(RecipeCellView cellView)
         {
             var combination = Widget.Find<Combination>();
-            combination.selectedRecipe = cellView as EquipmentRecipeCellView;
+            combination.selectedRecipe = cellView;
             combination.State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }
