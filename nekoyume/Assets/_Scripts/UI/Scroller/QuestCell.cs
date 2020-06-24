@@ -44,6 +44,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private SubmitButton receiveButton = null;
 
+        [SerializeField]
+        private Animator animator;
+
         [Header("ItemMoveAnimation")]
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;
@@ -103,8 +106,7 @@ namespace Nekoyume.UI.Scroller
                 .Where(item => !(item is null))
                 .ToList();
             Widget.Find<QuestResult>().Show(rewards);
-            RequestReward();
-            Widget.Find<Quest>().UpdateTabs();
+            animator.Play("Disappear");
             onClickSubmitButton?.Invoke();
         }
 
@@ -214,6 +216,12 @@ namespace Nekoyume.UI.Scroller
                     rewardViews[i].gameObject.SetActive(false);
                 }
             }
+        }
+
+        private void UpdateTab()
+        {
+            RequestReward();
+            Widget.Find<Quest>().UpdateTabs();
         }
     }
 }
