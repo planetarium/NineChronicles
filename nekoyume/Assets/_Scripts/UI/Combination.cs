@@ -452,7 +452,7 @@ namespace Nekoyume.UI
 
             equipmentCombinationPanel.Hide();
             ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
-            consumableRecipe.HideCellviews();
+            consumableRecipe.HideCellViews();
 
             var recipeCellView = selectedRecipe as ConsumableRecipeCellView;
             consumableCombinationPanel.TweenCellView(recipeCellView, OnTweenRecipeCompleted);
