@@ -522,7 +522,7 @@ MonoBehaviour:
   bodyButton: {fileID: 1879522505491201657}
   mainQuestImage: {fileID: 6455638471359797591}
   subQuestImage: {fileID: 4713780751525779946}
-  showTweener: {fileID: 757733392472840590}
+  showingAndHidingTweener: {fileID: 757733392472840590}
 --- !u!114 &757733392472840590
 MonoBehaviour:
   m_ObjectHideFlags: 0
