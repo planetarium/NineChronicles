@@ -89,6 +89,8 @@ namespace Nekoyume.UI.Scroller
 
         public void HideAsClear(bool ignoreAnimation = false)
         {
+            Quest = null;
+
             if (ignoreAnimation)
             {
                 gameObject.SetActive(false);
@@ -102,8 +104,6 @@ namespace Nekoyume.UI.Scroller
                         gameObject.SetActive(false);
                     });
             }
-
-            Quest = null;
         }
 
         #endregion

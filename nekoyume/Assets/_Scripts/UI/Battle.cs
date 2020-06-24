@@ -30,6 +30,7 @@ namespace Nekoyume.UI
 
         public void Show(int stageId, bool isRepeat, bool isExitReserved)
         {
+            guidedQuest.Hide(true);
             base.Show();
             stageTitle.Show(stageId);
             guidedQuest.Show(States.Instance.CurrentAvatarState);
@@ -69,6 +70,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            guidedQuest.Hide(ignoreCloseAnimation);
             Find<BottomMenu>().Close(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
