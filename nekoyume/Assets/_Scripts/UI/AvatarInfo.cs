@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using Assets.SimpleLocalization;
 using Libplanet;
-using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -14,7 +13,6 @@ using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
 using Nekoyume.State;
-using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -26,6 +24,10 @@ namespace Nekoyume.UI
 {
     public class AvatarInfo : XTweenWidget
     {
+        public bool HasNotification =>
+            inventory.SharedModel.Equipments
+            .Any(item => item.HasNotification.Value);
+
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
         [SerializeField]
@@ -282,6 +284,7 @@ namespace Nekoyume.UI
         {
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
                 TryToFindSlotAlreadyEquip(inventoryItem.ItemBase.Value, out _));
+            inventory.SharedModel.UpdateNotification();
         }
 
         #endregion
@@ -357,9 +360,7 @@ namespace Nekoyume.UI
             }
 
             Game.Event.OnUpdatePlayerEquip.OnNext(player);
-            AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
-                ? AudioController.SfxCode.ChainMail2
-                : AudioController.SfxCode.Equipment);
+            PostEquipOrUnequip(slot);
         }
 
         private void Unequip(EquipmentSlot slot)
@@ -460,9 +461,16 @@ namespace Nekoyume.UI
                 }
             }
 
+            PostEquipOrUnequip(slot);
+        }
+
+        private void PostEquipOrUnequip(EquipmentSlot slot)
+        {
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
+            inventory.SharedModel.UpdateNotification();
+            Find<BottomMenu>().UpdateInventoryNotification();
         }
 
         private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)

@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.Game.Controller;
 using Nekoyume.UI.Scroller;
-using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI.Module
 {
@@ -15,6 +12,7 @@ namespace Nekoyume.UI.Module
         public Image effectImage;
         public Image glowImage;
         public Image equippedIcon;
+        public Image hasNotificationImage;
 
         protected override ImageSizeType imageSizeType => ImageSizeType.Middle;
 
@@ -55,6 +53,7 @@ namespace Nekoyume.UI.Module
             Model.EffectEnabled.SubscribeTo(effectImage).AddTo(_disposablesAtSetData);
             Model.GlowEnabled.SubscribeTo(glowImage).AddTo(_disposablesAtSetData);
             Model.EquippedEnabled.SubscribeTo(equippedIcon).AddTo(_disposablesAtSetData);
+            Model.HasNotification.SubscribeTo(hasNotificationImage).AddTo(_disposablesAtSetData);
             Model.View = this;
             UpdateView();
         }
