@@ -96,7 +96,6 @@ namespace Nekoyume.UI
                     {
                         stage.isExitReserved = true;
                         bottomMenu.exitButton.SharedModel.IsEnabled.Value = true;
-                        bottomMenu.exitButton.SetToggledOn();
                         repeatButton.SetToggledOff();
                     }
                 };
