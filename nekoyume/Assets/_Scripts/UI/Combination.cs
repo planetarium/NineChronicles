@@ -443,11 +443,6 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombinationConfirm:
-                    if (AnimationState == AnimationStateType.Showing)
-                    {
-                        break;
-                    }
-
                     _toggleGroup.SetToggledOffAll();
                     OnTweenRecipe();
 

@@ -249,6 +249,11 @@ namespace Nekoyume.UI.Module
         private static void SubscribeOnClickCellView(RecipeCellView cellView)
         {
             var combination = Widget.Find<Combination>();
+            if (!combination.CanHandleInputEvent)
+            {
+                return;
+            }
+
             combination.selectedRecipe = cellView;
             combination.State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
