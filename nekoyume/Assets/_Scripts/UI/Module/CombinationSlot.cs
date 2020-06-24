@@ -69,6 +69,7 @@ namespace Nekoyume.UI.Module
             {
                 resultView.Clear();
                 UpdateHasNotification(_blockIndex);
+                Widget.Find<BottomMenu>()?.UpdateCombinationNotification();
                 var canUse = state.Validate(States.Instance.CurrentAvatarState, blockIndex);
                 if (!(state.Result is null))
                 {

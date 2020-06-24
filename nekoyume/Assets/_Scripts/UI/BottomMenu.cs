@@ -397,9 +397,7 @@ namespace Nekoyume.UI.Module
                     i.New && i.requiredBlockIndex <= _blockIndex));
             }
 
-            var combinationSlots = Find<CombinationSlots>().slots;
-            var hasNotification = combinationSlots.Any(slot => slot.HasNotification.Value);
-            HasNotificationInCombination.OnNext(hasNotification);
+            UpdateCombinationNotification();
         }
         
         #endregion
@@ -573,6 +571,13 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType,
                         null);
             }
+        }
+
+        public void UpdateCombinationNotification()
+        {
+            var combinationSlots = Find<CombinationSlots>().slots;
+            var hasNotification = combinationSlots.Any(slot => slot.HasNotification.Value);
+            HasNotificationInCombination.OnNext(hasNotification);
         }
     }
 }
