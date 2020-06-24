@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
+using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -389,15 +391,15 @@ namespace Nekoyume.UI.Module
         {
             _blockIndex = blockIndex;
             var mailBox = Find<Mail>().MailBox;
-            if (mailBox is null)
+            if (!(mailBox is null))
             {
-                return;
+                HasNotificationInMail.OnNext(mailBox.Any(i =>
+                    i.New && i.requiredBlockIndex <= _blockIndex));
             }
 
-            HasNotificationInMail.OnNext(mailBox.Any(i =>
-                i.New && i.requiredBlockIndex <= _blockIndex));
+            UpdateCombinationNotification();
         }
-
+        
         #endregion
 
         #region show button
@@ -569,6 +571,13 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException(nameof(toggleableType), toggleableType,
                         null);
             }
+        }
+
+        public void UpdateCombinationNotification()
+        {
+            var combinationSlots = Find<CombinationSlots>().slots;
+            var hasNotification = combinationSlots.Any(slot => slot.HasNotification.Value);
+            HasNotificationInCombination.OnNext(hasNotification);
         }
     }
 }

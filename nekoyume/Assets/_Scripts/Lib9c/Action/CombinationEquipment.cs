@@ -225,7 +225,10 @@ namespace Nekoyume.Action
             }
 
             // FIXME: BlacksmithAddress 계좌로 돈이 쌓이기만 하는데 이걸 어떻게 순환시킬지 기획이 필요.
-            states = states.TransferAsset(ctx.Signer, BlacksmithAddress, Currencies.Gold, requiredGold);
+            if (requiredGold > 0)
+            {
+                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, Currencies.Gold, requiredGold);
+            }
 
             var result = new CombinationConsumable.ResultModel
             {
