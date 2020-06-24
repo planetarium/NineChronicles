@@ -20,6 +20,7 @@ using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 using Nekoyume.Game.VFX;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -147,6 +148,7 @@ namespace Nekoyume.UI
 
             equipmentCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
+                Mixpanel.Track("Unity/Craft Sword");
                 ActionEnhancedCombinationEquipment(equipmentCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
@@ -314,6 +316,7 @@ namespace Nekoyume.UI
                     consumableRecipe.gameObject.SetActive(false);
                     break;
                 case StateType.CombineEquipment:
+                    Mixpanel.Track("Unity/Combine Equipment");
                     _selectedSpeechBubble = speechBubbleForEquipment;
                     speechBubbleForUpgrade.gameObject.SetActive(false);
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);

@@ -29,6 +29,7 @@ using NineChronicles.Standalone.Properties;
 using Nekoyume.Model.State;
 using TextCopy;
 
+using static Launcher.Program;
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Launcher
@@ -184,6 +185,8 @@ To start the game, you need to create your account.";
                 PrivateKey = protectedPrivateKey.Unprotect(passphrase);
                 this.ActivateProperty(ctrl => ctrl.PrivateKey);
 
+                MixpanelClient.Alias(addressHex);
+                MixpanelClient.Track("Launcher/Login", null);
                 return true;
             }
             catch (Exception e) when (e is IncorrectPassphraseException ||
@@ -365,6 +368,8 @@ To start the game, you need to create your account.";
                     PreloadStatus = "Connecting to the network...";
                     this.ActivateProperty(ctrl => ctrl.PreloadStatus);
 
+                    MixpanelClient.Track("Launcher/IBD Start", null);
+
                     if (properties.Peers.Any())
                     {
                         await service.BootstrapEnded.WaitAsync(cancellationToken);
@@ -442,6 +447,8 @@ To start the game, you need to create your account.";
                     this.ActivateProperty(ctrl => ctrl.GameRunning);
                 };
                 GameProcess.EnableRaisingEvents = true;
+
+                MixpanelClient.Track("Launcher/Unity Player Start", null);
 
                 return true;
             }

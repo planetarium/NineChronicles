@@ -8,6 +8,7 @@ using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using UniRx;
+using mixpanel;
 
 namespace Nekoyume.BlockChain
 {
@@ -97,6 +98,8 @@ namespace Nekoyume.BlockChain
             {
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
+
+            Mixpanel.Track("Unity/Create HackAndSlash");
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
@@ -336,6 +339,8 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             int recipeId, int slotIndex, int? subRecipeId = null)
         {
+            Mixpanel.Track("Unity/Create CombinationEquipment");
+
             // 결과 주소도 고정되게 바꿔야함
             var action = new CombinationEquipment
             {
