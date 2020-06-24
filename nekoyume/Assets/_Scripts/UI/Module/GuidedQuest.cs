@@ -327,7 +327,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 // NOTE: 값이 비워지는 경우입니다. 이는 ClearExistGuidedQuest 상태로 처리되어야 합니다.
-                Debug.LogError(
+                Debug.LogWarning(
                     $"Clearing guided quest must proceed in {ViewState.ClearExistGuidedQuest} state.");
                 return false;
             }
@@ -341,9 +341,10 @@ namespace Nekoyume.UI.Module
             if (!currentQuest.Id.Equals(newQuest.Id))
             {
                 // NOTE: 값이 바뀌는 경우입니다. 이는 ClearExistGuidedQuest 상태를 거치지 않았다는 말입니다.
-                Debug.LogError(
+                Debug.LogWarning(
                     $"Clearing exist guided quest first before add new guided quest.");
-                return false;
+                EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
+                return true;
             }
 
             if (!(cell.Quest is null))
