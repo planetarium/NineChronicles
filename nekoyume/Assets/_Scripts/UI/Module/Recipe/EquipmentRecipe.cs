@@ -13,23 +13,37 @@ namespace Nekoyume.UI.Module
     public class EquipmentRecipe : MonoBehaviour
     {
         [SerializeField]
-        private EquipmentRecipeCellView cellViewPrefab;
+        private EquipmentRecipeCellView cellViewPrefab = null;
+
         [SerializeField]
-        private EquipmentRecipeCellView[] cellViews;
+        private EquipmentRecipeCellView[] cellViews = null;
+
         [SerializeField]
-        private TabButton weaponTabButton;
+        private TabButton weaponTabButton = null;
+
         [SerializeField]
-        private TabButton armorTabButton;
+        private TabButton armorTabButton = null;
+
         [SerializeField]
-        private TabButton beltTabButton;
+        private TabButton beltTabButton = null;
+
         [SerializeField]
-        private TabButton necklaceTabButton;
+        private TabButton necklaceTabButton = null;
+
         [SerializeField]
-        private TabButton ringTabButton;
+        private TabButton ringTabButton = null;
+
         [SerializeField]
-        private Transform cellViewParent;
+        private Transform cellViewParent = null;
+
         [SerializeField]
-        private ScrollRect scrollRect;
+        private ScrollRect scrollRect = null;
+
+        [SerializeField]
+        private DOTweenGroupAlpha scrollAlphaTweener = null;
+
+        [SerializeField]
+        private AnchoredPositionYTweener scrollPositionTweener = null;
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
@@ -37,9 +51,6 @@ namespace Nekoyume.UI.Module
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
 
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
-
-        public DOTweenGroupAlpha scrollAlphaTweener;
-        public AnchoredPositionYTweener scrollPositionTweener;
 
         private void Awake()
         {
@@ -50,14 +61,16 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(necklaceTabButton);
             _toggleGroup.RegisterToggleable(ringTabButton);
 
-            LoadRecipes();
+            LoadRecipes(false);
             _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
         }
 
         private void OnEnable()
         {
             if (States.Instance.CurrentAvatarState is null)
+            {
                 return;
+            }
 
             UpdateRecipes();
         }
@@ -89,7 +102,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void LoadRecipes()
+        private void LoadRecipes(bool shouldUpdateRecipes = true)
         {
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
 
@@ -102,9 +115,15 @@ namespace Nekoyume.UI.Module
             {
                 var cellView = Instantiate(cellViewPrefab, cellViewParent);
                 cellView.Set(recipeRow);
-                cellView.OnClick.Subscribe(SubscribeOnClickCellView).AddTo(_disposablesAtLoadRecipeList);
+                cellView.OnClick.Subscribe(SubscribeOnClickCellView)
+                    .AddTo(_disposablesAtLoadRecipeList);
                 cellViews[idx] = cellView;
                 ++idx;
+            }
+
+            if (!shouldUpdateRecipes)
+            {
+                return;
             }
 
             UpdateRecipes();
@@ -114,7 +133,9 @@ namespace Nekoyume.UI.Module
         {
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
+            {
                 return;
+            }
 
             foreach (var cellView in cellViews)
             {
@@ -163,7 +184,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SubscribeOnClickCellView(RecipeCellView cellView)
+        private static void SubscribeOnClickCellView(RecipeCellView cellView)
         {
             var combination = Widget.Find<Combination>();
             combination.selectedRecipe = cellView as EquipmentRecipeCellView;
