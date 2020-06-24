@@ -74,7 +74,7 @@ namespace Nekoyume.UI
 
         // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
         // 행동력이 0일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
-        protected override bool CanHandleInputEvent =>
+        public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
             (questButton.interactable ||
             ReactiveAvatarState.ActionPoint.Value == 0);
