@@ -397,28 +397,8 @@ namespace Nekoyume.UI.Module
                     i.New && i.requiredBlockIndex <= _blockIndex));
             }
 
-            var combinationSlots = Game.Game.instance.States.CombinationSlotStates.Values;
-            var hasNotification = combinationSlots.Any(slot =>
-            {
-                if (slot.Result is null)
-                    return false;
-
-                var diff = slot.Result.itemUsable.RequiredBlockIndex - _blockIndex;
-
-                if (diff <= 0)
-                    return false;
-
-                var gameConfigState = Game.Game.instance.States.GameConfigState;
-                var cost = RapidCombination.CalculateHourglassCount(gameConfigState, diff);
-
-                var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values
-                    .First(r => r.ItemSubType == ItemSubType.Hourglass);
-                var isEnough =
-                    States.Instance.CurrentAvatarState.inventory.HasItem(row.ItemId, cost);
-                
-                return isEnough;
-            });
-
+            var combinationSlots = Find<CombinationSlots>().slots;
+            var hasNotification = combinationSlots.Any(slot => slot.HasNotification.Value);
             HasNotificationInCombination.OnNext(hasNotification);
         }
         
