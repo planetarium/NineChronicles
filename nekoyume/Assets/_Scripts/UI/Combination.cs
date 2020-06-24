@@ -44,7 +44,7 @@ namespace Nekoyume.UI
             public CategoryButton enhanceEquipmentButton;
         }
 
-        private struct ShouldGoToEquipmentRecipe
+        public struct RecipeIdSet
         {
             public int recipeId;
             public int? subRecipeId;
@@ -90,7 +90,7 @@ namespace Nekoyume.UI
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
         private SpeechBubble _selectedSpeechBubble;
-        private ShouldGoToEquipmentRecipe? _shouldGoToEquipmentRecipe;
+        private RecipeIdSet? _shouldGoToEquipmentRecipe;
 
         protected override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
             ? AnimationState == AnimationStateType.Shown
@@ -244,7 +244,7 @@ namespace Nekoyume.UI
 
         public void ShowByEquipmentRecipe(int recipeId, int? subRecipeId)
         {
-            _shouldGoToEquipmentRecipe = new ShouldGoToEquipmentRecipe
+            _shouldGoToEquipmentRecipe = new RecipeIdSet
             {
                 recipeId = recipeId,
                 subRecipeId = subRecipeId
