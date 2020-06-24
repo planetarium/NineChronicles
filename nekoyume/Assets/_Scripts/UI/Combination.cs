@@ -44,6 +44,12 @@ namespace Nekoyume.UI
             public CategoryButton enhanceEquipmentButton;
         }
 
+        private struct ShouldGoToEquipmentRecipe
+        {
+            public int recipeId;
+            public int? subRecipeId;
+        }
+
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.SelectMenu);
 
@@ -84,6 +90,7 @@ namespace Nekoyume.UI
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
         private SpeechBubble _selectedSpeechBubble;
+        private ShouldGoToEquipmentRecipe? _shouldGoToEquipmentRecipe;
 
         protected override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
             ? AnimationState == AnimationStateType.Shown
@@ -187,10 +194,18 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("combination");
+
             var player = stage.GetPlayer();
             player.gameObject.SetActive(false);
 
-            State.SetValueAndForceNotify(StateType.SelectMenu);
+            if (_shouldGoToEquipmentRecipe.HasValue)
+            {
+                State.SetValueAndForceNotify(StateType.CombineEquipment);
+            }
+            else
+            {
+                State.SetValueAndForceNotify(StateType.SelectMenu);
+            }
 
             Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Back,
@@ -226,6 +241,12 @@ namespace Nekoyume.UI
 
         public void ShowByEquipmentRecipe(int recipeId, int? subRecipeId)
         {
+            _shouldGoToEquipmentRecipe = new ShouldGoToEquipmentRecipe
+            {
+                recipeId = recipeId,
+                subRecipeId = subRecipeId
+            };
+
             Show();
         }
 
@@ -405,6 +426,7 @@ namespace Nekoyume.UI
                         var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
                         recipeClickVFX.OnFinished = () => OnClickEquipmentRecipe(isElemental);
                     }
+
                     recipeClickVFX.Play();
                     break;
                 default:
@@ -447,7 +469,9 @@ namespace Nekoyume.UI
             if (isElemental)
             {
                 equipmentCombinationPanel.Hide();
-                elementalCombinationPanel.TweenCellViewInOption(recipeCellView, OnTweenRecipeCompleted);
+                elementalCombinationPanel.TweenCellViewInOption(
+                    recipeCellView,
+                    OnTweenRecipeCompleted);
                 elementalCombinationPanel.SetData(recipeCellView.RowData);
             }
             else
@@ -572,7 +596,9 @@ namespace Nekoyume.UI
             var materialInfoList = rowData.MaterialItemIds
                 .Select(id =>
                 {
-                    var material = ItemFactory.CreateMaterial(Game.Game.instance.TableSheets.MaterialItemSheet, id);
+                    var material = ItemFactory.CreateMaterial(
+                        Game.Game.instance.TableSheets.MaterialItemSheet,
+                        id);
                     // FIXME : 재료 소모 갯수 대응이 되어있지 않은 상태입니다.
                     return (material, 1);
                 }).ToList();
@@ -775,7 +801,8 @@ namespace Nekoyume.UI
 
         private void NPCShowAnimation()
         {
-            var skeletonTweener = DOTween.To(() => _npc01.SpineController.SkeletonAnimation.skeleton.A,
+            var skeletonTweener = DOTween.To(
+                () => _npc01.SpineController.SkeletonAnimation.skeleton.A,
                 alpha => _npc01.SpineController.SkeletonAnimation.skeleton.A = alpha, 1,
                 1f);
             skeletonTweener.Play();
