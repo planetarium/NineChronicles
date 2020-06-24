@@ -12,12 +12,13 @@ namespace Nekoyume.Model.Quest
     {
         public readonly int RecipeId;
         public readonly int StageId;
-        private readonly int? _subRecipeId;
+        public readonly int? SubRecipeId;
+
         public CombinationEquipmentQuest(QuestSheet.Row data, QuestReward reward, int stageId) : base(data, reward)
         {
             var row = (CombinationEquipmentQuestSheet.Row) data;
             RecipeId = row.RecipeId;
-            _subRecipeId = row.SubRecipeId;
+            SubRecipeId = row.SubRecipeId;
             StageId = stageId;
         }
 
@@ -27,7 +28,7 @@ namespace Nekoyume.Model.Quest
             StageId = serialized["stage_id"].ToInteger();
             if (serialized.TryGetValue((Text) "sub_recipe_id", out var value))
             {
-                _subRecipeId = value.ToNullableInteger();
+                SubRecipeId = value.ToNullableInteger();
             }
         }
 
@@ -54,7 +55,7 @@ namespace Nekoyume.Model.Quest
             if (Complete)
                 return;
 
-            if (recipeId == RecipeId && subRecipeId == _subRecipeId)
+            if (recipeId == RecipeId && subRecipeId == SubRecipeId)
             {
                 _current++;
             }
@@ -68,9 +69,9 @@ namespace Nekoyume.Model.Quest
                 [(Text) "recipe_id"] = RecipeId.Serialize(),
                 [(Text) "stage_id"] = StageId.Serialize(),
             };
-            if (_subRecipeId.HasValue)
+            if (SubRecipeId.HasValue)
             {
-                dict[(Text) "sub_recipe_id"] = _subRecipeId.Serialize();
+                dict[(Text) "sub_recipe_id"] = SubRecipeId.Serialize();
             }
             return new Dictionary(dict.Union((Dictionary) base.Serialize()));
         }

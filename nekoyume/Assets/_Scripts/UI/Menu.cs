@@ -5,7 +5,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
-using Nekoyume.Model.Item;
+using UniRx;
 using UnityEngine;
 using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
@@ -66,6 +66,13 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
+            
+            guidedQuest.OnClickWorldQuestCell
+                .Subscribe(_ => Debug.LogWarning("TODO: 스테이지 전투 전환."))
+                .AddTo(gameObject);
+            guidedQuest.OnClickCombinationEquipmentQuestCell
+                .Subscribe(_ => Debug.LogWarning("TODO: 장비 조합 전환."))
+                .AddTo(gameObject);
         }
 
         private void UpdateButtons()
@@ -207,18 +214,25 @@ namespace Nekoyume.UI
                 _coLazyClose = null;
             }
 
+            guidedQuest.Hide(true);
             base.Show(ignoreShowAnimation);
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             arenaPendingNCG.Show();
-            guidedQuest.Show(States.Instance.CurrentAvatarState?.questList);
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            guidedQuest.Show(States.Instance.CurrentAvatarState);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             StopSpeeches();
 
+            guidedQuest.Hide(true);
             Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
