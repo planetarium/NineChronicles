@@ -44,7 +44,7 @@ namespace Nekoyume.UI
             public CategoryButton enhanceEquipmentButton;
         }
 
-        public struct RecipeIdSet
+        private struct RecipeIdSet
         {
             public int recipeId;
             public int? subRecipeId;
@@ -55,37 +55,72 @@ namespace Nekoyume.UI
 
         private const int NPCId = 300001;
 
-        public SelectionArea selectionArea;
+        [SerializeField]
+        private SelectionArea selectionArea = default;
+
+        [SerializeField]
+        private CategoryButton combineEquipmentCategoryButton = null;
+
+        [SerializeField]
+        private CategoryButton combineConsumableCategoryButton = null;
+
+        [SerializeField]
+        private CategoryButton enhanceEquipmentCategoryButton = null;
+
+        [SerializeField]
+        private GameObject leftArea = null;
+
+        [SerializeField]
+        private GameObject categoryTabArea = null;
+
+        [SerializeField]
+        private EquipmentRecipe equipmentRecipe = null;
+
+        [SerializeField]
+        private ConsumableRecipe consumableRecipe = null;
+
+        [SerializeField]
+        private Module.Inventory inventory = null;
+
+        [SerializeField]
+        private EnhanceEquipment enhanceEquipment = null;
+
+        [SerializeField]
+        private EquipmentCombinationPanel equipmentCombinationPanel = null;
+
+        [SerializeField]
+        private ElementalCombinationPanel elementalCombinationPanel = null;
+
+        [SerializeField]
+        private ConsumableCombinationPanel consumableCombinationPanel = null;
+
+        [SerializeField]
+        private SpeechBubble speechBubbleForEquipment = null;
+
+        [SerializeField]
+        private SpeechBubble speechBubbleForUpgrade = null;
+
+        [SerializeField]
+        private Transform npcPosition01 = null;
+
+        [SerializeField]
+        private Transform npcPosition02 = null;
+
+        [SerializeField]
+        private CanvasGroup canvasGroup = null;
+
+        [SerializeField]
+        private ModuleBlur blur = null;
+
+        [SerializeField]
+        private RecipeClickVFX recipeClickVFX = null;
+
+        public RecipeCellView selectedRecipe;
+        public int selectedIndex;
 
         private ToggleGroup _toggleGroup;
-        public CategoryButton combineEquipmentCategoryButton;
-        public CategoryButton combineConsumableCategoryButton;
-        public CategoryButton enhanceEquipmentCategoryButton;
-
-        public GameObject leftArea;
-        public GameObject categoryTabArea;
-        public EquipmentRecipe equipmentRecipe;
-        public ConsumableRecipe consumableRecipe;
-
-        public Module.Inventory inventory;
-
-        public EnhanceEquipment enhanceEquipment;
-        public EquipmentCombinationPanel equipmentCombinationPanel;
-        public ElementalCombinationPanel elementalCombinationPanel;
-        public ConsumableCombinationPanel consumableCombinationPanel;
-        public SpeechBubble speechBubbleForEquipment;
-        public SpeechBubble speechBubbleForUpgrade;
-        public Transform npcPosition01;
-        public Transform npcPosition02;
-        public CanvasGroup canvasGroup;
-        public ModuleBlur blur;
-        public RecipeCellView selectedRecipe;
-
-        public RecipeClickVFX recipeClickVFX;
-
         private NPC _npc01;
         private NPC _npc02;
-        public int selectedIndex;
         private bool _lockSlotIndex;
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
