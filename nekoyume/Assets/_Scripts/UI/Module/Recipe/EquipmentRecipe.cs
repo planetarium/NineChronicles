@@ -62,11 +62,6 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            if (States.Instance.CurrentAvatarState is null)
-            {
-                return;
-            }
-
             UpdateRecipes();
         }
 
