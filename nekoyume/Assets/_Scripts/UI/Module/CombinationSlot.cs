@@ -43,6 +43,11 @@ namespace Nekoyume.UI.Module
                 AudioController.PlayClick();
                 SelectSlot();
             }).AddTo(gameObject);
+            resultView.OnClick.Subscribe(pointerEventData =>
+            {
+                AudioController.PlayClick();
+                SelectSlot();
+            }).AddTo(gameObject);
             unlockText.text = LocalizationManager.Localize("UI_COMBINATION_SLOT_AVAILABLE");
             HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
         }
