@@ -112,7 +112,7 @@ namespace Nekoyume.UI.Module
             }
 
             scrollAlphaTweener.Play();
-            scrollPositionTweener.StartTween();
+            scrollPositionTweener.PlayTween();
 
             foreach (var view in cellViews)
             {

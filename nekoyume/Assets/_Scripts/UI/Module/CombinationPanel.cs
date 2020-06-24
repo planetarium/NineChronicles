@@ -56,7 +56,7 @@ namespace Nekoyume.UI.Module
         {
             cellViewFrontVfx.SetActive(false);
             cellViewBackVfx.SetActive(false);
-            confirmAreaYTweener.OnComplete = null;
+            confirmAreaYTweener.onComplete = null;
         }
 
         public void TweenCellView(RecipeCellView view, System.Action onCompleted)

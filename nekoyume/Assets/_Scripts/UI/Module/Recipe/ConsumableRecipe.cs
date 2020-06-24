@@ -98,7 +98,7 @@ namespace Nekoyume.UI.Module
         public void ShowCellViews()
         {
             scrollAlphaTweener.Play();
-            scrollPositionTweener.StartTween();
+            scrollPositionTweener.PlayTween();
 
             foreach (var view in cellViews)
             {
