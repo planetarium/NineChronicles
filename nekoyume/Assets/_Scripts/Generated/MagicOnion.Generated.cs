@@ -81,8 +81,9 @@ namespace MagicOnion.Resolvers
 
         static MagicOnionResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(0)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(1)
             {
+                {typeof(global::MagicOnion.DynamicArgumentTuple<byte[], byte[]>), 0 },
             };
         }
 
@@ -96,6 +97,7 @@ namespace MagicOnion.Resolvers
 
             switch (key)
             {
+                case 0: return new global::MagicOnion.DynamicArgumentTupleFormatter<byte[], byte[]>(default(byte[]), default(byte[]));
                 default: return null;
             }
         }
@@ -129,6 +131,8 @@ namespace Nekoyume.Shared.Services {
         static readonly Func<RequestContext, ResponseContext> GetNextTxNonceDelegate;
         static readonly Method<byte[], byte[]> GetStateMethod;
         static readonly Func<RequestContext, ResponseContext> GetStateDelegate;
+        static readonly Method<byte[], byte[]> GetBalanceMethod;
+        static readonly Func<RequestContext, ResponseContext> GetBalanceDelegate;
 
         static BlockChainServiceClient()
         {
@@ -138,6 +142,8 @@ namespace Nekoyume.Shared.Services {
             GetNextTxNonceDelegate = _GetNextTxNonce;
             GetStateMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "GetState", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
             GetStateDelegate = _GetState;
+            GetBalanceMethod = new Method<byte[], byte[]>(MethodType.Unary, "IBlockChainService", "GetBalance", MagicOnionMarshallers.ThroughMarshaller, MagicOnionMarshallers.ThroughMarshaller);
+            GetBalanceDelegate = _GetBalance;
         }
 
         BlockChainServiceClient()
@@ -211,6 +217,15 @@ namespace Nekoyume.Shared.Services {
         public global::MagicOnion.UnaryResult<byte[]> GetState(byte[] addressBytes)
         {
             return InvokeAsync<byte[], byte[]>("IBlockChainService/GetState", addressBytes, GetStateDelegate);
+        }
+        static ResponseContext _GetBalance(RequestContext __context)
+        {
+            return CreateResponseContext<DynamicArgumentTuple<byte[], byte[]>, byte[]>(__context, GetBalanceMethod);
+        }
+
+        public global::MagicOnion.UnaryResult<byte[]> GetBalance(byte[] addressBytes, byte[] currencyBytes)
+        {
+            return InvokeAsync<DynamicArgumentTuple<byte[], byte[]>, byte[]>("IBlockChainService/GetBalance", new DynamicArgumentTuple<byte[], byte[]>(addressBytes, currencyBytes), GetBalanceDelegate);
         }
     }
 }

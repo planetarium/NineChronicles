@@ -199,7 +199,7 @@ namespace Nekoyume.Model.State
                 eventMap.Add(pair);
             }
 
-            if (stageSimulator.Result == BattleLog.Result.Win)
+            if (stageSimulator.Log.IsClear)
             {
                 stageMap.Add(new KeyValuePair<int, int>(stageSimulator.StageId, 1));
             }

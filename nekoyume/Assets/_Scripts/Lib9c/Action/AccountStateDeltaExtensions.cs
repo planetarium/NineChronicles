@@ -10,6 +10,29 @@ namespace Nekoyume.Action
 {
     public static class AccountStateDeltaExtensions
     {
+        public static IAccountStateDelta MarkBalanceChanged(
+            this IAccountStateDelta states,
+            Currency currency,
+            params Address[] accounts
+        )
+        {
+            if (accounts.Length == 1)
+            {
+                return states.MintAsset(accounts[0], currency, 1);
+            }
+            else if (accounts.Length < 1)
+            {
+                return states;
+            }
+
+            for (int i = 1; i < accounts.Length; i++)
+            {
+                states = states.TransferAsset(accounts[i - 1], accounts[i], currency, 1, true);
+            }
+
+            return states;
+        }
+
         public static bool TryGetState<T>(this IAccountStateDelta states, Address address, out T result)
             where T : IValue
         {
@@ -52,9 +75,14 @@ namespace Nekoyume.Action
                     address.ToHex(),
                     serializedAgent
                 );
-                
+
                 return null;
             }
+        }
+
+        public static GoldBalanceState GetGoldBalanceState(this IAccountStateDelta states, Address address)
+        {
+            return new GoldBalanceState(address, states.GetBalance(address, Currencies.Gold));
         }
 
         public static AvatarState GetAvatarState(this IAccountStateDelta states, Address address)
@@ -104,7 +132,7 @@ namespace Nekoyume.Action
                     avatarAddress.ToHex(),
                     agentAddress.ToHex()
                 );
-                
+
                 return false;
             }
 

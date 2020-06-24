@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Numerics;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;
@@ -26,9 +28,9 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
-        private void SetGold(decimal gold)
+        private void SetGold(BigInteger gold)
         {
-            text.text = gold.ToString("n0");
+            text.text = gold.ToString("n0", CultureInfo.InvariantCulture);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Globalization;
+using System.Numerics;
 using Nekoyume.JsonConvertibles;
 using Nekoyume.Model.State;
 using UnityEngine;
@@ -6,46 +8,48 @@ using UnityEngine;
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AgentGoldModifier : AgentStateModifier
+    public class AgentGoldModifier : IAccumulatableStateModifier<GoldBalanceState>
     {
         [SerializeField]
-        private JsonConvertibleDecimal gold;
+        private string goldString;
 
-        public override bool IsEmpty => gold == 0m;
-        
-        public AgentGoldModifier(decimal gold)
+        public bool dirty { get; set; }
+
+        public bool IsEmpty => Gold == 0;
+
+        private BigInteger Gold
         {
-            this.gold = new JsonConvertibleDecimal(gold);
+            get => BigInteger.Parse(goldString, CultureInfo.InvariantCulture);
+            set => goldString = Gold.ToString(CultureInfo.InvariantCulture);
         }
 
-        public override void Add(IAccumulatableStateModifier<AgentState> modifier)
+        public AgentGoldModifier(BigInteger gold)
+        {
+            Gold = gold;
+        }
+
+        public void Add(IAccumulatableStateModifier<GoldBalanceState> modifier)
         {
             if (!(modifier is AgentGoldModifier m))
                 return;
-            
-            gold += m.gold;
+
+            Gold += m.Gold;
         }
 
-        public override void Remove(IAccumulatableStateModifier<AgentState> modifier)
+        public void Remove(IAccumulatableStateModifier<GoldBalanceState> modifier)
         {
             if (!(modifier is AgentGoldModifier m))
                 return;
 
-            gold -= m.gold;
+            Gold -= m.Gold;
         }
 
-        public override AgentState Modify(AgentState state)
-        {
-            if (state is null)
-                return null;
-            
-            state.gold += gold.Value;
-            return state;
-        }
+        public GoldBalanceState Modify(GoldBalanceState state) =>
+            state?.Add(Gold);
 
         public override string ToString()
         {
-            return $"{nameof(gold)}: {gold.Value}";
+            return $"{nameof(Gold)}: {Gold}";
         }
     }
 }

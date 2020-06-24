@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Model.Item;
@@ -20,7 +21,7 @@ namespace Nekoyume.UI.Module
 
         public override bool IsSubmittable =>
             !(States.Instance.AgentState is null) &&
-            States.Instance.AgentState.gold >= CostNCG &&
+            States.Instance.GoldBalanceState.gold >= CostNCG &&
             !(States.Instance.CurrentAvatarState is null) &&
             States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
             !(baseMaterial is null) &&
@@ -89,13 +90,7 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected override decimal GetCostNCG()
-        {
-            if (baseMaterial.IsEmpty)
-                return 0m;
-            var baseEquipment = (Equipment) baseMaterial.Model.ItemBase.Value;
-            return (int) ItemEnhancement.GetRequiredGold(baseEquipment);
-        }
+        protected override BigInteger GetCostNCG() => 0;
 
         protected override int GetCostAP()
         {

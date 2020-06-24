@@ -235,6 +235,7 @@ namespace Nekoyume.UI
 
             guidedQuest.Hide(true);
             Find<BottomMenu>().Close(true);
+            Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -243,6 +244,7 @@ namespace Nekoyume.UI
             StopSpeeches();
 
             Find<BottomMenu>().Close(true);
+            Find<Status>().Close(true);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
         }

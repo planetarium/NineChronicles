@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -18,6 +19,7 @@ namespace Nekoyume.Action
     public class RankingBattle : GameAction
     {
         public const int StageId = 999999;
+        public static readonly BigInteger EntranceFee = 100;
 
         public Address AvatarAddress;
         public Address EnemyAddress;
@@ -36,7 +38,8 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Signer, MarkChanged)
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(WeeklyArenaAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged);
+                    .SetState(ctx.Signer, MarkChanged)
+                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer, WeeklyArenaAddress);
             }
 
             if (AvatarAddress.Equals(EnemyAddress))
@@ -103,11 +106,15 @@ namespace Nekoyume.Action
 
             if (!arenaInfo.Active)
             {
-                const decimal EntranceFee = 100;
-                if (agentState.gold >= EntranceFee)
+                BigInteger agentBalance = states.GetBalance(ctx.Signer, Currencies.Gold);
+
+                if (agentBalance >= EntranceFee)
                 {
-                    agentState.gold -= EntranceFee;
-                    weeklyArenaState.Gold += EntranceFee;
+                    states = states.TransferAsset(
+                        ctx.Signer,
+                        WeeklyArenaAddress,
+                        Currencies.Gold,
+                        EntranceFee);
                     arenaInfo.Activate();
                 }
                 else
@@ -115,7 +122,7 @@ namespace Nekoyume.Action
                     return LogError(
                         context,
                         "Aborted as the signer's balance ({Balance}) is insufficient to pay entrance fee/stake ({EntranceFee}).",
-                        agentState.gold,
+                        agentBalance,
                         EntranceFee
                     );
                 }
