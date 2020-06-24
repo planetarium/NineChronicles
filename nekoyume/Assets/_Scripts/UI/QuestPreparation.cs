@@ -184,6 +184,7 @@ namespace Nekoyume.UI
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
+            inventory.SharedModel.UpdateNotification();
             questButton.gameObject.SetActive(true);
         }
 
@@ -274,6 +275,8 @@ namespace Nekoyume.UI
 
                 return TryToFindSlotAlreadyEquip(inventoryItem.ItemBase.Value, out _);
             });
+
+            inventory.SharedModel.UpdateNotification();
         }
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
@@ -472,6 +475,8 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
+            inventory.SharedModel.UpdateNotification();
+            Find<BottomMenu>().UpdateInventoryNotification();
         }
 
         private bool TryToFindSlotAlreadyEquip(ItemBase item, out EquipmentSlot slot)
