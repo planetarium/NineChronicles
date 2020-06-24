@@ -15,9 +15,6 @@ namespace Nekoyume.UI.Scroller
 {
     public class GuidedQuestCell : MonoBehaviour
     {
-        private const string MainContentFormat = "<color=red>[Main]</color> {0}";
-        private const string SubContentFormat = "<color=red>[Sub]</color> {0}";
-
         // NOTE: 콘텐츠 텍스트의 길이가 UI를 넘어갈 수 있기 때문에 flowing text 처리를 해주는 것이 좋겠습니다.
         [SerializeField]
         private TextMeshProUGUI contentText = null;
@@ -28,6 +25,12 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         private Button bodyButton = null;
+
+        [SerializeField]
+        private Image mainQuestImage = null;
+
+        [SerializeField]
+        private Image subQuestImage = null;
 
         // NOTE: 셀이 더해지고 빠지는 연출이 정해지면 더욱 개선됩니다.
         [SerializeField]
@@ -107,13 +110,16 @@ namespace Nekoyume.UI.Scroller
 
         private void SetContent(Nekoyume.Model.Quest.Quest quest)
         {
+            contentText.text = quest.GetContent();
+            mainQuestImage.gameObject.SetActive(false);
+            subQuestImage.gameObject.SetActive(false);
             switch (quest)
             {
                 default:
-                    contentText.text = string.Format(SubContentFormat, quest.GetContent());
+                    subQuestImage.gameObject.SetActive(true);
                     break;
                 case WorldQuest _:
-                    contentText.text = string.Format(MainContentFormat, quest.GetContent());
+                    mainQuestImage.gameObject.SetActive(true);
                     break;
             }
         }

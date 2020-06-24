@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -116,6 +117,22 @@ namespace Nekoyume.Model.State
 
         public static long? ToNullableLong(this IValue serialized) =>
             Deserialize(ToInteger, serialized);
+
+        #endregion
+
+        #region BigInteger
+
+        public static IValue Serialize(this BigInteger number) =>
+            (Bencodex.Types.Integer)number;
+
+        public static IValue Serialize(this BigInteger? number) =>
+            Serialize(Serialize, number);
+
+        public static BigInteger ToBigInteger(this IValue serialized) =>
+            ((Bencodex.Types.Integer)serialized).Value;
+
+        public static BigInteger? ToNullableBigInteger(this IValue serialized) =>
+            Deserialize(ToBigInteger, serialized);
 
         #endregion
 

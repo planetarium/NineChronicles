@@ -1,3 +1,4 @@
+using System.Numerics;
 using Assets.SimpleLocalization;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
@@ -10,13 +11,13 @@ namespace Nekoyume.UI.Module
 {
     public interface ICombinationPanel
     {
-        decimal CostNCG { get; }
+        BigInteger CostNCG { get; }
         int CostAP { get; }
     }
 
     public class CombinationPanel : MonoBehaviour, ICombinationPanel
     {
-        public decimal CostNCG { get; protected set; }
+        public BigInteger CostNCG { get; protected set; }
         public int CostAP { get; protected set; }
         public Subject<long> RequiredBlockIndexSubject { get; } = new Subject<long>();
 

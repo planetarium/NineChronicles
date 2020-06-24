@@ -60,9 +60,6 @@ namespace Nekoyume.UI.Module
 
         private class ViewModel
         {
-            public readonly ReactiveProperty<ViewState> state =
-                new ReactiveProperty<ViewState>(ViewState.None);
-
             public readonly ReactiveProperty<WorldQuest> worldQuest =
                 new ReactiveProperty<WorldQuest>();
 
@@ -70,13 +67,13 @@ namespace Nekoyume.UI.Module
                 new ReactiveProperty<CombinationEquipmentQuest>();
         }
 
+        private static readonly ViewModel SharedViewModel = new ViewModel();
+
         [SerializeField]
         private List<GuidedQuestCell> cells = null;
 
         [SerializeField]
         private AnchoredPositionXTweener showingAndHidingTweener = null;
-
-        private readonly ViewModel _viewModel = new ViewModel();
 
         #region Subjects
 
@@ -96,14 +93,15 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        private ViewState State => _viewModel.state.Value;
+        private readonly ReactiveProperty<ViewState> _state =
+            new ReactiveProperty<ViewState>(ViewState.None);
 
-        public WorldQuest WorldQuest => _viewModel.worldQuest.Value;
+        public WorldQuest WorldQuest => SharedViewModel.worldQuest.Value;
 
         private GuidedQuestCell WorldQuestCell => cells[0];
 
         public CombinationEquipmentQuest CombinationEquipmentQuest =>
-            _viewModel.combinationEquipmentQuest.Value;
+            SharedViewModel.combinationEquipmentQuest.Value;
 
         private GuidedQuestCell CombinationEquipmentQuestCell => cells[1];
 
@@ -125,20 +123,20 @@ namespace Nekoyume.UI.Module
             Assert.AreEqual(cells.Count, 2);
 
             // 뷰 모델을 구독합니다.
-            _viewModel.worldQuest
+            SharedViewModel.worldQuest
                 .Subscribe(SubscribeWorldQuest)
                 .AddTo(gameObject);
-            _viewModel.combinationEquipmentQuest
+            SharedViewModel.combinationEquipmentQuest
                 .Subscribe(SubscribeCombinationEquipmentQuest)
                 .AddTo(gameObject);
 
             // 뷰 오브젝트를 구독합니다.
             WorldQuestCell.onClick
-                .Select(cell => (cell, _viewModel.worldQuest.Value))
+                .Select(cell => (cell, SharedViewModel.worldQuest.Value))
                 .Subscribe(_onClickWorldQuestCell)
                 .AddTo(gameObject);
             CombinationEquipmentQuestCell.onClick
-                .Select(cell => (cell, _viewModel.combinationEquipmentQuest.Value))
+                .Select(cell => (cell, SharedViewModel.combinationEquipmentQuest.Value))
                 .Subscribe(_onClickCombinationEquipmentQuestCell)
                 .AddTo(gameObject);
         }
@@ -165,11 +163,11 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            switch (State)
+            switch (_state.Value)
             {
                 default:
                     Debug.LogWarning(
-                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
+                        $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.None}, {ViewState.Hidden} or {ViewState.Shown}");
                     break;
                 case ViewState.None:
                 case ViewState.Hidden:
@@ -195,15 +193,15 @@ namespace Nekoyume.UI.Module
         /// 끝난 후에 `true` 인자와 함께 `onComplete`가 호출됩니다. 그렇지 않다면 `false` 인자와 함께 호출됩니다.</param>
         public void ClearWorldQuest(int stageId, Action<bool> onComplete)
         {
-            if (State != ViewState.Shown)
+            if (_state.Value != ViewState.Shown)
             {
                 Debug.LogWarning(
-                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Shown}");
+                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
                 onComplete?.Invoke(false);
                 return;
             }
 
-            if (stageId != _viewModel.worldQuest.Value.Goal)
+            if (stageId != SharedViewModel.worldQuest.Value.Goal)
             {
                 onComplete?.Invoke(false);
                 return;
@@ -216,7 +214,7 @@ namespace Nekoyume.UI.Module
                 .First()
                 .Subscribe(_ => onComplete?.Invoke(true));
 
-            EnterToClearExistGuidedQuest(_viewModel.worldQuest);
+            EnterToClearExistGuidedQuest(SharedViewModel.worldQuest);
         }
 
         /// <summary>
@@ -232,15 +230,15 @@ namespace Nekoyume.UI.Module
             int? subRecipeId,
             Action<bool> onComplete)
         {
-            if (State != ViewState.Shown)
+            if (_state.Value != ViewState.Shown)
             {
                 Debug.LogWarning(
-                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_viewModel.state}. Try when state is {ViewState.Shown}");
+                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
                 return;
             }
 
-            if (recipeId != _viewModel.combinationEquipmentQuest.Value.RecipeId ||
-                subRecipeId != _viewModel.combinationEquipmentQuest.Value.SubRecipeId)
+            if (recipeId != SharedViewModel.combinationEquipmentQuest.Value.RecipeId ||
+                subRecipeId != SharedViewModel.combinationEquipmentQuest.Value.SubRecipeId)
             {
                 return;
             }
@@ -253,7 +251,7 @@ namespace Nekoyume.UI.Module
                 .First()
                 .Subscribe(_ => onComplete?.Invoke(true));
 
-            EnterToClearExistGuidedQuest(_viewModel.combinationEquipmentQuest);
+            EnterToClearExistGuidedQuest(SharedViewModel.combinationEquipmentQuest);
         }
 
         #endregion
@@ -262,7 +260,7 @@ namespace Nekoyume.UI.Module
 
         private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
         {
-            _viewModel.state.Value = ViewState.Showing;
+            _state.Value = ViewState.Showing;
             WorldQuestCell.HideAsClear(true);
             CombinationEquipmentQuestCell.HideAsClear(true);
 
@@ -281,16 +279,16 @@ namespace Nekoyume.UI.Module
 
         private void EnterToShown()
         {
-            _viewModel.state.Value = ViewState.Shown;
+            _state.Value = ViewState.Shown;
         }
 
         private IEnumerator CoUpdateAvatarState(AvatarState avatarState, System.Action onComplete)
         {
             var questList = avatarState.questList;
             var newWorldQuest = GetTargetWorldQuest(questList);
-            var currentWorldQuest = _viewModel.worldQuest.Value;
+            var currentWorldQuest = SharedViewModel.worldQuest.Value;
             if (TryAddNewGuidedQuest(
-                _viewModel.worldQuest,
+                SharedViewModel.worldQuest,
                 currentWorldQuest,
                 newWorldQuest,
                 WorldQuestCell))
@@ -299,9 +297,9 @@ namespace Nekoyume.UI.Module
             }
 
             var newCombinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
-            var currentCombinationEquipmentQuest = _viewModel.combinationEquipmentQuest.Value;
+            var currentCombinationEquipmentQuest = SharedViewModel.combinationEquipmentQuest.Value;
             if (TryAddNewGuidedQuest(
-                _viewModel.combinationEquipmentQuest,
+                SharedViewModel.combinationEquipmentQuest,
                 currentCombinationEquipmentQuest,
                 newCombinationEquipmentQuest,
                 CombinationEquipmentQuestCell))
@@ -362,7 +360,7 @@ namespace Nekoyume.UI.Module
             TQuestModel quest)
             where TQuestModel : Nekoyume.Model.Quest.Quest
         {
-            _viewModel.state.Value = ViewState.AddNewGuidedQuest;
+            _state.Value = ViewState.AddNewGuidedQuest;
             questReactiveProperty.SetValueAndForceNotify(quest);
         }
 
@@ -370,13 +368,13 @@ namespace Nekoyume.UI.Module
             IReactiveProperty<TQuestModel> questReactiveProperty)
             where TQuestModel : Nekoyume.Model.Quest.Quest
         {
-            _viewModel.state.Value = ViewState.ClearExistGuidedQuest;
+            _state.Value = ViewState.ClearExistGuidedQuest;
             questReactiveProperty.Value = null;
         }
 
         private void EnterToHiding(bool ignoreAnimation)
         {
-            _viewModel.state.Value = ViewState.Hiding;
+            _state.Value = ViewState.Hiding;
 
             if (ignoreAnimation)
             {
@@ -396,7 +394,7 @@ namespace Nekoyume.UI.Module
 
         private void EnterToHidden()
         {
-            _viewModel.state.Value = ViewState.Hidden;
+            _state.Value = ViewState.Hidden;
         }
 
         #endregion
@@ -420,7 +418,7 @@ namespace Nekoyume.UI.Module
 
         private void SubscribeWorldQuest(WorldQuest worldQuest)
         {
-            var state = _viewModel.state.Value;
+            var state = _state.Value;
             if (worldQuest is null)
             {
                 if (state == ViewState.ClearExistGuidedQuest &&
@@ -453,7 +451,7 @@ namespace Nekoyume.UI.Module
         private void SubscribeCombinationEquipmentQuest(
             CombinationEquipmentQuest combinationEquipmentQuest)
         {
-            var state = _viewModel.state.Value;
+            var state = _state.Value;
             if (combinationEquipmentQuest is null)
             {
                 if (state == ViewState.ClearExistGuidedQuest &&

@@ -6,6 +6,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -190,10 +191,10 @@ namespace Nekoyume.BlockChain
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
 
-            if (BlockPolicy.ActivationSet is null)
+            if (BlockPolicy.ActivatedAccounts is null)
             {
-                var tableSheetState = blocks?.GetState(TableSheetsState.Address);
-                BlockPolicy.UpdateActivationSet(tableSheetState);
+                var rawState = blocks?.GetState(ActivatedAccountsState.Address);
+                BlockPolicy.UpdateActivationSet(rawState);
             }
 
 #if BLOCK_LOG_USE
@@ -270,6 +271,12 @@ namespace Nekoyume.BlockChain
         {
             return blocks.GetState(address);
         }
+
+        public BigInteger GetBalance(Address address, Currency currency) =>
+            blocks.GetBalance(address, currency);
+
+        public BigInteger GetBalance(Address address) =>
+            blocks.GetBalance(address, currency: Currencies.Gold);
 
         #region Mono
 
@@ -381,7 +388,9 @@ namespace Nekoyume.BlockChain
                 States.Instance.SetAgentState(
                     GetState(Address) is Bencodex.Types.Dictionary agentDict
                         ? new AgentState(agentDict)
-                        : new AgentState(Address));
+                        : new AgentState(Address),
+                    new GoldBalanceState(Address, GetBalance(Address))
+                );
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 ActionRenderHandler.Instance.Start(_actionRenderer);

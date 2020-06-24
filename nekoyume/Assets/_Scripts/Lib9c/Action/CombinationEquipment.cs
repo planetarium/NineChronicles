@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -20,6 +21,8 @@ namespace Nekoyume.Action
     [ActionType("combination_equipment")]
     public class CombinationEquipment : GameAction
     {
+        public static readonly Address BlacksmithAddress = ItemEnhancement.BlacksmithAddress;
+
         public Address AvatarAddress;
         public int RecipeId;
         public int SlotIndex;
@@ -41,7 +44,8 @@ namespace Nekoyume.Action
                 return states
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged)
-                    .SetState(ctx.Signer, MarkChanged);
+                    .SetState(ctx.Signer, MarkChanged)
+                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer, BlacksmithAddress);
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
@@ -120,7 +124,7 @@ namespace Nekoyume.Action
             var equipmentMaterial = ItemFactory.CreateMaterial(materialSheet, material.Id);
             materials[equipmentMaterial] = recipe.MaterialCount;
 
-            var requiredGold = recipe.RequiredGold;
+            BigInteger requiredGold = recipe.RequiredGold;
             var requiredActionPoint = recipe.RequiredActionPoint;
 
             // 장비 제작
@@ -200,7 +204,8 @@ namespace Nekoyume.Action
             }
 
             // 자원 검증
-            if (agentState.gold < requiredGold || avatarState.actionPoint < requiredActionPoint)
+            BigInteger agentBalance = states.GetBalance(ctx.Signer, Currencies.Gold);
+            if (agentBalance < requiredGold || avatarState.actionPoint < requiredActionPoint)
             {
                 return LogError(
                     context,
@@ -211,13 +216,18 @@ namespace Nekoyume.Action
             }
 
             avatarState.actionPoint -= requiredActionPoint;
-            agentState.gold -= requiredGold;
             if (!(optionIds is null))
             {
                 foreach (var id in optionIds)
                 {
                     agentState.unlockedOptions.Add(id);
                 }
+            }
+
+            // FIXME: BlacksmithAddress 계좌로 돈이 쌓이기만 하는데 이걸 어떻게 순환시킬지 기획이 필요.
+            if (requiredGold > 0)
+            {
+                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, Currencies.Gold, requiredGold);
             }
 
             var result = new CombinationConsumable.ResultModel

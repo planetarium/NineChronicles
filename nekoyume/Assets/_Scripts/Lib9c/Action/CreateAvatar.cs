@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using Bencodex.Types;
 using Libplanet;
@@ -19,6 +20,9 @@ namespace Nekoyume.Action
     [ActionType("create_avatar")]
     public class CreateAvatar : GameAction
     {
+        // 계정당 기본 소지 골드
+        public static readonly BigInteger InitialGoldBalance = 1500;
+
         public Address avatarAddress;
         public int index;
         public int hair;
@@ -67,7 +71,9 @@ namespace Nekoyume.Action
                     );
                     states = states.SetState(slotAddress, MarkChanged);
                 }
-                return states.SetState(avatarAddress, MarkChanged);
+                return states
+                    .SetState(avatarAddress, MarkChanged)
+                    .MarkBalanceChanged(Currencies.Gold, context.Signer);
             }
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
@@ -83,7 +89,8 @@ namespace Nekoyume.Action
             sw.Start();
             var started = DateTimeOffset.UtcNow;
             Log.Debug("CreateAvatar exec started.");
-            var agentState = states.GetAgentState(ctx.Signer) ?? new AgentState(ctx.Signer);
+            AgentState existingAgentState = states.GetAgentState(ctx.Signer);
+            var agentState = existingAgentState ?? new AgentState(ctx.Signer);
             var avatarState = states.GetAvatarState(avatarAddress);
             if (!(avatarState is null))
             {
@@ -97,6 +104,13 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug("CreateAvatar Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
             sw.Restart();
+
+            if (existingAgentState is null)
+            {
+                // 첫 아바타 생성이면 계정당 기본 소지금 부여.
+                // FIXME: 그런데 제대로 하려면 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
+                states = states.MintAsset(ctx.Signer, Currencies.Gold, InitialGoldBalance);
+            }
 
             Log.Debug("Execute CreateAvatar; player: {AvatarAddress}", avatarAddress);
 

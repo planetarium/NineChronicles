@@ -1,4 +1,4 @@
-﻿using Nekoyume.Game.Controller;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.State;

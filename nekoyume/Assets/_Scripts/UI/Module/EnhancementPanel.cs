@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using JetBrains.Annotations;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
@@ -30,10 +31,10 @@ namespace Nekoyume.UI.Module
         public readonly Subject<EnhancementPanel<TMaterialView>> OnMaterialChange =
             new Subject<EnhancementPanel<TMaterialView>>();
 
-        public readonly Subject<decimal> OnCostNCGChange = new Subject<decimal>();
+        public readonly Subject<BigInteger> OnCostNCGChange = new Subject<BigInteger>();
         public readonly Subject<int> OnCostAPChange = new Subject<int>();
 
-        public decimal CostNCG { get; private set; }
+        public BigInteger CostNCG { get; private set; }
         public int CostAP { get; private set; }
 
         public bool IsThereAnyUnlockedEmptyMaterialView { get; private set; }
@@ -101,7 +102,7 @@ namespace Nekoyume.UI.Module
         {
             if (!forced && gameObject.activeSelf)
                 return false;
-            
+
             gameObject.SetActive(true);
             submitButton.gameObject.SetActive(true);
             OnMaterialAddedOrRemoved();
@@ -116,7 +117,7 @@ namespace Nekoyume.UI.Module
         {
             if (!forced && !gameObject.activeSelf)
                 return false;
-            
+
             _disposablesAtShow.DisposeAllAndClear();
             RemoveMaterialsAll();
             gameObject.SetActive(false);
@@ -174,7 +175,7 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected virtual decimal GetCostNCG()
+        protected virtual BigInteger GetCostNCG()
         {
             return CostNCG;
         }
@@ -291,12 +292,12 @@ namespace Nekoyume.UI.Module
                 toView.IsLocked ||
                 !toView.IsEmpty)
                 return false;
-            
+
             toView.Set(fromView.InventoryItemViewModel, fromView.Model.Count.Value);
             fromView.Clear();
             OnMaterialMoved();
             return true;
-        } 
+        }
 
         #endregion
 
@@ -413,8 +414,8 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-        
-        private void SubscribeNCG(decimal ncg)
+
+        private void SubscribeNCG(BigInteger ncg)
         {
             if (CostNCG > 0)
             {
@@ -465,7 +466,7 @@ namespace Nekoyume.UI.Module
         private void OnMaterialAddedOrRemoved()
         {
             UpdateOtherMaterialsEffect();
-            
+
             if (!(baseMaterial is null) &&
                 baseMaterial.IsEmpty)
             {
@@ -493,7 +494,7 @@ namespace Nekoyume.UI.Module
             OnCostAPChange.OnNext(CostAP);
             OnMaterialChange.OnNext(this);
         }
-        
+
         private void UpdateOtherMaterialsEffect()
         {
             var hasBaseMaterial = !(baseMaterial is null);
@@ -507,9 +508,9 @@ namespace Nekoyume.UI.Module
                 {
                     baseMaterial.SetTwinkled(false);
                     baseMaterial.effectImage.enabled = true;
-                }   
+                }
             }
-            
+
             var setTwinkledOnIfEmpty = true;
             foreach (var otherMaterial in otherMaterials)
             {

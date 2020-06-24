@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -76,7 +77,7 @@ namespace Nekoyume
             return source.SubscribeWithState(text, (x, t) => t.SetSubmitText(x));
         }
 
-        public static IDisposable SubscribeToPrice(this IObservable<decimal> source,
+        public static IDisposable SubscribeToPrice(this IObservable<BigInteger> source,
             TextMeshProUGUI text)
         {
             return source.SubscribeWithState(text, (x, t) => t.text = x.ToString("N0"));

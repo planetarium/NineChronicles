@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Security.Cryptography;
 using Libplanet;
 using Libplanet.Crypto;
@@ -169,7 +170,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, decimal price)
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, BigInteger price)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 

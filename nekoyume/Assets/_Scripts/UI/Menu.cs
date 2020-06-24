@@ -93,7 +93,7 @@ namespace Nekoyume.UI
             }
 
             var requiredCost = stageRow.CostAP;
-            if (States.Instance.AgentState.gold < requiredCost)
+            if (States.Instance.GoldBalanceState.gold < requiredCost)
             {
                 // NOTE: 골드가 부족합니다.
                 return;
@@ -281,7 +281,6 @@ namespace Nekoyume.UI
                 btnRanking.JingleTheCat();
                 return;
             }
-
             if (rankingExclamationMark.gameObject.activeSelf)
             {
                 var addressHax = ReactiveAvatarState.Address.Value.ToHex();
@@ -322,6 +321,7 @@ namespace Nekoyume.UI
 
             guidedQuest.Hide(true);
             Find<BottomMenu>().Close(true);
+            Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
         }
 
@@ -330,6 +330,7 @@ namespace Nekoyume.UI
             StopSpeeches();
 
             Find<BottomMenu>().Close(true);
+            Find<Status>().Close(true);
             yield return new WaitForSeconds(duration);
             base.Close(ignoreCloseAnimation);
         }

@@ -388,7 +388,7 @@ namespace Nekoyume.Game
         private IEnumerator CoStageEnd(BattleLog log)
         {
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
-            var passed = _battleResultModel.ClearedWaveNumber == log.waveCount;
+            var passed = log.IsClear;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(1f);

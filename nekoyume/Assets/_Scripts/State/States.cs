@@ -24,6 +24,8 @@ namespace Nekoyume.State
 
         public AgentState AgentState { get; private set; }
 
+        public GoldBalanceState GoldBalanceState { get; private set; }
+
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
 
@@ -93,7 +95,7 @@ namespace Nekoyume.State
         /// 최초로 할당하거나 기존과 다른 주소의 에이전트를 할당하면, 모든 아바타 상태를 새롭게 할당된다.
         /// </summary>
         /// <param name="state"></param>
-        public void SetAgentState(AgentState state)
+        public void SetAgentState(AgentState state, GoldBalanceState balanceState)
         {
             if (state is null)
             {
@@ -107,7 +109,8 @@ namespace Nekoyume.State
 
             LocalStateSettings.Instance.InitializeAgentAndAvatars(state);
             AgentState = LocalStateSettings.Instance.Modify(state);
-            ReactiveAgentState.Initialize(AgentState);
+            GoldBalanceState = LocalStateSettings.Instance.Modify(balanceState);
+            ReactiveAgentState.Initialize(AgentState, GoldBalanceState);
 
             if (!getAllOfAvatarStates)
                 return;

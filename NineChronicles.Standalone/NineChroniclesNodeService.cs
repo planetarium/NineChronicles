@@ -90,10 +90,11 @@ namespace NineChronicles.Standalone
                 ignoreBootstrapFailure
             );
 
-            if (BlockPolicy.ActivationSet is null)
+            // FIXME: Agent.cs와 중복된 코드입니다.
+            if (BlockPolicy.ActivatedAccounts is null)
             {
-                var tableSheetState = NodeService?.BlockChain?.GetState(TableSheetsState.Address);
-                BlockPolicy.UpdateActivationSet(tableSheetState);
+                var rawState = NodeService?.BlockChain?.GetState(ActivatedAccountsState.Address);
+                BlockPolicy.UpdateActivationSet(rawState);
             }
         }
 
