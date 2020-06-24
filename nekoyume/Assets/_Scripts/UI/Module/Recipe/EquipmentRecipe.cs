@@ -10,6 +10,7 @@ using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Module
 {
+    // FIXME: `ConsumableRecipe`과 거의 똑같은 구조입니다.
     public class EquipmentRecipe : MonoBehaviour
     {
         [SerializeField]
@@ -45,6 +46,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private AnchoredPositionYTweener scrollPositionTweener = null;
 
+        private bool _initialized = false;
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
         private readonly ReactiveProperty<ItemSubType> _filterType =
@@ -54,15 +56,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
-            _toggleGroup.RegisterToggleable(weaponTabButton);
-            _toggleGroup.RegisterToggleable(armorTabButton);
-            _toggleGroup.RegisterToggleable(beltTabButton);
-            _toggleGroup.RegisterToggleable(necklaceTabButton);
-            _toggleGroup.RegisterToggleable(ringTabButton);
-
-            LoadRecipes(false);
-            _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
+            Initialize();
         }
 
         private void OnEnable()
@@ -79,6 +73,25 @@ namespace Nekoyume.UI.Module
         {
             _filterType.Dispose();
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
+        }
+
+        public void Initialize()
+        {
+            if (_initialized)
+            {
+                return;
+            }
+
+            _initialized = true;
+            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
+            _toggleGroup.RegisterToggleable(weaponTabButton);
+            _toggleGroup.RegisterToggleable(armorTabButton);
+            _toggleGroup.RegisterToggleable(beltTabButton);
+            _toggleGroup.RegisterToggleable(necklaceTabButton);
+            _toggleGroup.RegisterToggleable(ringTabButton);
+
+            LoadRecipes(false);
+            _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
         }
 
         public void ShowCellViews()
