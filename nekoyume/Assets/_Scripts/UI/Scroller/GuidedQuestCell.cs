@@ -78,7 +78,7 @@ namespace Nekoyume.UI.Scroller
             {
                 ClearRewards();
                 showingAndHidingTweener
-                    .StartShowTween()
+                    .PlayTween()
                     .OnPlay(() => gameObject.SetActive(true))
                     .OnComplete(() => SetRewards(quest.Reward.ItemMap));
             }
@@ -93,7 +93,7 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 showingAndHidingTweener
-                    .StartHideTween()
+                    .PlayReverse()
                     .OnComplete(() =>
                     {
                         gameObject.SetActive(false);

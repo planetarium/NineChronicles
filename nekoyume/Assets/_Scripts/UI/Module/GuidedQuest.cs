@@ -274,7 +274,7 @@ namespace Nekoyume.UI.Module
             }
 
             showingAndHidingTweener
-                .StartShowTween()
+                .PlayTween()
                 .OnPlay(() => gameObject.SetActive(true))
                 .OnComplete(() => StartCoroutine(CoUpdateAvatarState(avatarState, EnterToShown)));
         }
@@ -385,7 +385,7 @@ namespace Nekoyume.UI.Module
             }
 
             showingAndHidingTweener
-                .StartHideTween()
+                .PlayReverse()
                 .OnComplete(() =>
                 {
                     gameObject.SetActive(false);
