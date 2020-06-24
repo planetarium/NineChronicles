@@ -144,8 +144,9 @@ namespace Nekoyume.UI
 
             var recipeId = combinationEquipmentQuest.RecipeId;
             var subRecipeId = combinationEquipmentQuest.SubRecipeId;
-            
-            Find<Combination>().ShowByEquipmentRecipe(recipeId, subRecipeId);
+
+            CombinationClickInternal(() =>
+                Find<Combination>().ShowByEquipmentRecipe(recipeId, subRecipeId));
         }
 
         private void UpdateButtons()
@@ -233,6 +234,26 @@ namespace Nekoyume.UI
 
         public void CombinationClick(int slotIndex = -1)
         {
+            CombinationClickInternal(() =>
+            {
+                if (slotIndex >= 0)
+                {
+                    Find<Combination>().Show(slotIndex);
+                }
+                else
+                {
+                    Find<Combination>().Show();
+                }
+            });
+        }
+
+        private void CombinationClickInternal(System.Action showAction)
+        {
+            if (showAction is null)
+            {
+                return;
+            }
+
             if (!btnCombination.IsUnlocked)
             {
                 btnCombination.JingleTheCat();
@@ -247,14 +268,7 @@ namespace Nekoyume.UI
             }
 
             Close();
-            if (slotIndex >= 0)
-            {
-                Find<Combination>().Show(slotIndex);
-            }
-            else
-            {
-                Find<Combination>().Show();
-            }
+            showAction();
 
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
