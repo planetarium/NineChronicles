@@ -1731,8 +1731,8 @@ MonoBehaviour:
   loop: 0
   cellContainer: {fileID: 5437261362768753071}
   reuseCellMarginCount: 0
-  paddingHead: -34.5
-  paddingTail: 34.5
+  paddingHead: 34.5
+  paddingTail: -34.5
   spacing: 0
   cellPrefab: {fileID: 8553884987421549240, guid: 95933a86cd1c843859ee9d5e2a311cd0,
     type: 3}

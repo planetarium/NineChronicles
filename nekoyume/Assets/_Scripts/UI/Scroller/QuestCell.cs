@@ -2,6 +2,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using FancyScrollView;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -84,29 +85,35 @@ namespace Nekoyume.UI.Scroller
         {
             AudioController.PlayClick();
             AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
-            // 퀘스트 보상 창 위젯이 현재 퀘스트 완료 시 표시되므로 잠시 주석 처리합니다.
-            //foreach (var view in rewardViews)
-            //{
-            //    if (!(view.Model is null) &&
-            //        view.gameObject.activeSelf)
-            //    {
-            //        ItemMoveAnimation.Show(
-            //            SpriteHelper.GetItemIcon(view.Model.ItemBase.Value.Id),
-            //            view.transform.position,
-            //            Widget.Find<BottomMenu>().characterButton.transform.position,
-            //            moveToLeft,
-            //            animationTime,
-            //            middleXGap,
-            //            true);
-            //    }
-            //}
 
-            var rewards = rewardViews
-                .Select(view => view.Model)
-                .Where(item => !(item is null))
-                .ToList();
-            Widget.Find<QuestResult>().Show(rewards);
-            animator.Play("Disappear");
+            ItemMoveVFX vfx = null;
+            foreach (var view in rewardViews)
+            {
+                if (!(view.Model is null) &&
+                    view.gameObject.activeSelf)
+                {
+                    vfx = VFXController.instance.Create<ItemMoveVFX>(transform.position);
+                }
+            }
+
+            if (vfx != null)
+            {
+                vfx.OnFinished = () =>
+                {
+                    fillImage.color = ColorHelper.HexToColorRGB("282828");
+                    background.color = ColorHelper.HexToColorRGB("7b7b7b");
+                    titleText.color = ColorHelper.HexToColorRGB("614037");
+                    contentText.color = ColorHelper.HexToColorRGB("38251e");
+                    progressText.color = ColorHelper.HexToColorRGB("282828");
+                    receiveButton.Hide();
+                    var rewards = rewardViews
+                        .Select(view => view.Model)
+                        .Where(item => !(item is null))
+                        .ToList();
+                    Widget.Find<QuestResult>().Show(rewards);
+                    animator.Play("Disappear");
+                };
+            }
             onClickSubmitButton?.Invoke();
         }
 
