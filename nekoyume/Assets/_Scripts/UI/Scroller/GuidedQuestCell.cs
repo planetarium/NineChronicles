@@ -1,8 +1,12 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
+using Nekoyume.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -100,14 +104,19 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        public void HideAsClear(System.Action<GuidedQuestCell> onComplete = null, bool ignoreAnimation = false)
+        public void Show(Nekoyume.Model.Quest.Quest quest)
         {
-            Quest = null;
+            ShowAsNew(quest, null, true);
+        }
 
+        public void HideAsClear(
+            System.Action<GuidedQuestCell> onComplete = null,
+            bool ignoreAnimation = false,
+            bool ignoreQuestResult = false)
+        {
             if (ignoreAnimation)
             {
-                gameObject.SetActive(false);
-                onComplete?.Invoke(this);
+                PostHideAsClear(onComplete);
             }
             else
             {
@@ -115,13 +124,76 @@ namespace Nekoyume.UI.Scroller
                     .PlayReverse()
                     .OnComplete(() =>
                     {
-                        gameObject.SetActive(false);
-                        onComplete?.Invoke(this);
+                        if (ignoreQuestResult)
+                        {
+                            PostHideAsClear(onComplete);
+                            return;
+                        }
+
+                        StartCoroutine(CoShowQuestResult(() =>
+                            PostHideAsClear(onComplete)));
                     });
             }
         }
 
+        public void Hide()
+        {
+            HideAsClear(null, true, true);
+        }
+
+        private void PostHideAsClear(System.Action<GuidedQuestCell> onComplete)
+        {
+            Quest = null;
+            gameObject.SetActive(false);
+            onComplete?.Invoke(this);
+        }
+
         #endregion
+
+        private IEnumerator CoShowQuestResult(System.Action onComplete)
+        {
+            var rewardModels = Quest.Reward.ItemMap
+                .Select(pair =>
+                {
+                    var itemRow = Game.Game.instance.TableSheets.MaterialItemSheet.OrderedList
+                        .First(row => row.Id == pair.Key);
+                    var material = ItemFactory.CreateMaterial(itemRow);
+                    return new CountableItem(material, pair.Value);
+                })
+                .ToList();
+            var questResult = Widget.Find<QuestResult>();
+            questResult.Show(rewardModels);
+            yield return new WaitWhile(() => questResult.IsActive());
+
+            // NOTE: QuestCell.RequestReward() 안의 로직과 겹칩니다.
+            // 로컬 아바타의 퀘스트 상태 업데이트.
+            var quest =
+                States.Instance.CurrentAvatarState.questList.FirstOrDefault(q => q == Quest);
+            if (quest is null)
+            {
+                yield break;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var rewardMap = quest.Reward.ItemMap;
+            foreach (var reward in rewardMap)
+            {
+                var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
+                    .First(pair => pair.Key == reward.Key);
+
+                LocalStateModifier.AddItem(
+                    avatarAddress,
+                    materialRow.Value.ItemId,
+                    reward.Value,
+                    false);
+            }
+
+            LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
+
+            onComplete?.Invoke();
+        }
+
+        #region Update view objects
 
         private void SetContent(Nekoyume.Model.Quest.Quest quest)
         {
@@ -139,7 +211,9 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void SetRewards(IReadOnlyDictionary<int, int> rewardMap, bool ignoreAnimation = false)
+        private void SetRewards(
+            IReadOnlyDictionary<int, int> rewardMap,
+            bool ignoreAnimation = false)
         {
             var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             for (var i = 0; i < rewards.Count; i++)
@@ -177,5 +251,7 @@ namespace Nekoyume.UI.Scroller
                 reward.Hide();
             }
         }
+
+        #endregion
     }
 }

@@ -116,6 +116,7 @@ namespace Nekoyume.UI.Scroller
             var msg = string.Format(format, _quest.GetContent());
             Notification.Push(MailType.System, msg);
 
+            // NOTE: GuidedQuestCell.CoShowQuestResult() 안의 로직과 겹칩니다.
             // 로컬 아바타의 퀘스트 상태 업데이트.
             var quest =
                 States.Instance.CurrentAvatarState.questList.FirstOrDefault(q => q == _quest);
