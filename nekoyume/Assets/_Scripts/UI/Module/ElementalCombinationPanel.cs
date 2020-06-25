@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
             equipmentOptionRecipe.Show(recipeRow);
 
             optionAlphaTweener.PlayDelayed(0.2f);
-            optionYTweener.StartTween();
+            optionYTweener.PlayTween();
         }
 
         private void OnSelectOption(EquipmentRecipeCellView recipeView, EquipmentOptionRecipeView optionRecipeView)
