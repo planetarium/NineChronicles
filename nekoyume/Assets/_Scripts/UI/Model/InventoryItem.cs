@@ -9,6 +9,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<bool> EffectEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> GlowEnabled = new ReactiveProperty<bool>(false);
         public readonly ReactiveProperty<bool> EquippedEnabled = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         public InventoryItemView View;
         
