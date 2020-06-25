@@ -62,10 +62,14 @@ namespace Nekoyume.UI.Scroller
 
         #region Controll
 
-        public void ShowAsNew(Nekoyume.Model.Quest.Quest quest, bool ignoreAnimation = false)
+        public void ShowAsNew(
+            Nekoyume.Model.Quest.Quest quest,
+            System.Action<GuidedQuestCell> onComplete = null,
+            bool ignoreAnimation = false)
         {
             if (quest is null)
             {
+                onComplete?.Invoke(this);
                 return;
             }
 
@@ -76,6 +80,7 @@ namespace Nekoyume.UI.Scroller
             if (ignoreAnimation)
             {
                 SetRewards(quest.Reward.ItemMap, true);
+                onComplete?.Invoke(this);
             }
             else
             {
@@ -83,17 +88,22 @@ namespace Nekoyume.UI.Scroller
                 showingAndHidingTweener
                     .PlayTween()
                     .OnPlay(() => gameObject.SetActive(true))
-                    .OnComplete(() => SetRewards(quest.Reward.ItemMap));
+                    .OnComplete(() =>
+                    {
+                        SetRewards(quest.Reward.ItemMap);
+                        onComplete?.Invoke(this);
+                    });
             }
         }
 
-        public void HideAsClear(bool ignoreAnimation = false)
+        public void HideAsClear(System.Action<GuidedQuestCell> onComplete = null, bool ignoreAnimation = false)
         {
             Quest = null;
 
             if (ignoreAnimation)
             {
                 gameObject.SetActive(false);
+                onComplete?.Invoke(this);
             }
             else
             {
@@ -102,6 +112,7 @@ namespace Nekoyume.UI.Scroller
                     .OnComplete(() =>
                     {
                         gameObject.SetActive(false);
+                        onComplete?.Invoke(this);
                     });
             }
         }
