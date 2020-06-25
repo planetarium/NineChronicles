@@ -57,7 +57,8 @@ namespace NineChronicles.Standalone.Controllers
                         properties.PeerStrings,
                         properties.NoTrustedStateValidators,
                         properties.TrustedAppProtocolVersionSigners,
-                        properties.NoMiner);
+                        properties.NoMiner,
+                        true);
 
                 var rpcServiceProperties = NineChroniclesNodeServiceProperties
                     .GenerateRpcNodeServiceProperties(
