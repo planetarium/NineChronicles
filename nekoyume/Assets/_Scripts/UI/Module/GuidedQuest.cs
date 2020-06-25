@@ -289,31 +289,30 @@ namespace Nekoyume.UI.Module
             var questList = avatarState.questList;
             var newWorldQuest = GetTargetWorldQuest(questList);
             var currentWorldQuest = SharedViewModel.worldQuest.Value;
-            if (TryAddNewGuidedQuest(
-                SharedViewModel.worldQuest,
+            if (CanEnterToAddNewGuidedQuest(
                 currentWorldQuest,
                 newWorldQuest,
                 WorldQuestCell))
             {
-                yield return new WaitForSeconds(.5f);
+                EnterToAddNewGuidedQuest(SharedViewModel.worldQuest, newWorldQuest);
+                yield return new WaitUntil(() => _state.Value == ViewState.Shown);
             }
 
             var newCombinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
             var currentCombinationEquipmentQuest = SharedViewModel.combinationEquipmentQuest.Value;
-            if (TryAddNewGuidedQuest(
-                SharedViewModel.combinationEquipmentQuest,
+            if (CanEnterToAddNewGuidedQuest(
                 currentCombinationEquipmentQuest,
                 newCombinationEquipmentQuest,
                 CombinationEquipmentQuestCell))
             {
-                yield return new WaitForSeconds(.5f);
+                EnterToAddNewGuidedQuest(SharedViewModel.combinationEquipmentQuest, newCombinationEquipmentQuest);
+                yield return new WaitUntil(() => _state.Value == ViewState.Shown);
             }
 
             onComplete?.Invoke();
         }
 
-        private bool TryAddNewGuidedQuest<TQuestModel>(
-            ReactiveProperty<TQuestModel> questReactiveProperty,
+        private static bool CanEnterToAddNewGuidedQuest<TQuestModel>(
             TQuestModel currentQuest,
             TQuestModel newQuest,
             GuidedQuestCell cell)
@@ -327,6 +326,7 @@ namespace Nekoyume.UI.Module
                 }
 
                 // NOTE: 값이 비워지는 경우입니다. 이는 ClearExistGuidedQuest 상태로 처리되어야 합니다.
+                // 의도하지 않은 흐름이기도 하고, 이 라인에서 동작 시키기 어렵기 때문에 false를 반환합니다.
                 Debug.LogWarning(
                     $"Clearing guided quest must proceed in {ViewState.ClearExistGuidedQuest} state.");
                 return false;
@@ -334,26 +334,22 @@ namespace Nekoyume.UI.Module
 
             if (currentQuest is null)
             {
-                EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
                 return true;
             }
 
-            if (!currentQuest.Id.Equals(newQuest.Id))
+
+            if (currentQuest.Id.Equals(newQuest.Id))
             {
-                // NOTE: 값이 바뀌는 경우입니다. 이는 ClearExistGuidedQuest 상태를 거치지 않았다는 말입니다.
-                Debug.LogWarning(
-                    $"Clearing exist guided quest first before add new guided quest.");
-                EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
-                return true;
+                // NOTE: 연출을 위해서 강제로 cell.Hide()를 호출했던 경우에는 cell.Quest가 null이 됩니다.
+                // cell.Quest가 null일 때에는 다시 보여주도록 true를 반환합니다.
+                // cell.Quest가 null이 아닐 때에는 이미 보여지고 있으니 false를 반환해서 다시 보여지는 연출을 무시합니다.
+                return cell.Quest is null;
             }
 
-            if (!(cell.Quest is null))
-            {
-                return false;
-            }
-
-            // NOTE: 연출을 위해서 강제로 cell.Hide()를 호출했던 경우에 다시 보여주도록 합니다.
-            EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
+            // NOTE: 값이 바뀌는 경우입니다. 이는 ClearExistGuidedQuest 상태를 거치지 않았다는 말입니다.
+            // 의도하지 않은 흐름이지만 동작은 시키기 위해서 true를 반환합니다.
+            Debug.LogWarning(
+                $"Clearing exist guided quest first before add new guided quest.");
             return true;
         }
 
