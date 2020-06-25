@@ -57,7 +57,7 @@ namespace Nekoyume.UI
                     );
             }
         }
-        
+
         public static string GetTitle(this QuestModel quest)
         {
             switch (quest)
@@ -120,40 +120,48 @@ namespace Nekoyume.UI
                     return LocalizationManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT");
                 case GoldQuest goldQuest:
                     return string.Format(
-                        LocalizationManager.Localize($"QUEST_GOLD_{goldQuest.Type}_FORMAT"), 
+                        LocalizationManager.Localize($"QUEST_GOLD_{goldQuest.Type}_FORMAT"),
                         goldQuest.Goal
                     );
                 case ItemEnhancementQuest itemEnhancementQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT"), 
+                        LocalizationManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT"),
                         itemEnhancementQuest.Grade,
                         itemEnhancementQuest.Goal
                     );
                 case ItemGradeQuest itemGradeQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_ITEM_GRADE_FORMAT"), 
+                        LocalizationManager.Localize("QUEST_ITEM_GRADE_FORMAT"),
                         itemGradeQuest.Grade
                     );
                 case ItemTypeCollectQuest itemTypeCollectQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_ITEM_TYPE_FORMAT"), 
+                        LocalizationManager.Localize("QUEST_ITEM_TYPE_FORMAT"),
                         itemTypeCollectQuest.ItemType.GetLocalizedString()
                     );
                 case MonsterQuest monsterQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_MONSTER_FORMAT"), 
+                        LocalizationManager.Localize("QUEST_MONSTER_FORMAT"),
                         LocalizationManager.LocalizeCharacterName(monsterQuest.MonsterId)
                     );
                 case TradeQuest tradeQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT"), 
+                        LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT"),
                         tradeQuest.Type.GetLocalizedString()
                     );
                 case WorldQuest worldQuest:
                     if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal, out var worldRow))
                     {
-                        var format = LocalizationManager.Localize("QUEST_WORLD_FORMAT");
-                        return string.Format(format, worldRow.GetLocalizedName());
+                        if (worldQuest.Goal == worldRow.StageBegin)
+                        {
+                            var format = LocalizationManager.Localize("QUEST_WORLD_FORMAT");
+                            return string.Format(format, worldRow.GetLocalizedName());
+                        }
+                        else
+                        {
+                            var format = LocalizationManager.Localize("QUEST_CLEAR_STAGE_FORMAT");
+                            return string.Format(format, worldQuest.Goal);
+                        }
                     }
                     throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
                 case CombinationEquipmentQuest combinationEquipmentQuest:
