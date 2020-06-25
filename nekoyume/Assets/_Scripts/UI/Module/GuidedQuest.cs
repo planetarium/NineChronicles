@@ -185,7 +185,6 @@ namespace Nekoyume.UI.Module
         }
 
         /// <summary>
-        /// 스테이지 전투 종료 후 결과창이 뜨기 전에 호출합니다.
         /// 현재 노출된 스테이지 가이드 퀘스트 정보와 같은 스테이지일 경우에 동작합니다.
         /// 클리어 처리가 될 때에는 `QuestResult`를 띄우는 것을 포함하는 연출을 책임집니다.
         /// </summary>
@@ -219,7 +218,6 @@ namespace Nekoyume.UI.Module
         }
 
         /// <summary>
-        /// `QuestCell`에서 보상을 받은 후에 `GuidedQuest`가 보일 때 호출해야 합니다.
         /// 현재 노출된 장비 조합 가이드 퀘스트 정보와 같은 레시피일 경우에 동작합니다.
         /// `ClearWorldQuest`와는 다르게 `QuestResult`를 띄우지 않습니다.
         /// </summary>
@@ -315,7 +313,7 @@ namespace Nekoyume.UI.Module
             where TQuestModel : Nekoyume.Model.Quest.Quest
         {
             var currentQuest = questReactiveProperty.Value;
-            
+
             if (newQuest is null)
             {
                 if (currentQuest is null)
@@ -343,8 +341,10 @@ namespace Nekoyume.UI.Module
                     return false;
                 }
 
-                // NOTE: 연출을 위해서 강제로 cell.Hide()를 호출했던 경우에는 cell.Quest가 null이 됩니다.
-                // cell.Quest가 null일 때에는 다시 보여주도록 EnterToAddNewGuidedQuest를 호출하고 true를 반환합니다.
+                // NOTE: 연출을 위해서 강제로 cell.Hide()를 호출했던 경우에는 뷰 모델인 currentQuest의 값과는 상관 없이
+                // 뷰 오브젝트인 GuidedQuestCell에서 도출된 cellHasQuest가 false가 됩니다.
+                // cellHasQuest가 false일 때에는 다시 보여주도록 EnterToAddNewGuidedQuest를 호출하고 true를 반환해야 합니다.
+                // 따라서 이후 라인으로 그대로 흐르게 둡니다.
             }
 
             EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
