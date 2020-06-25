@@ -263,8 +263,8 @@ namespace Nekoyume.UI.Module
         private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
         {
             _state.Value = ViewState.Showing;
-            WorldQuestCell.HideAsClear(null, true);
-            CombinationEquipmentQuestCell.HideAsClear(null, true);
+            WorldQuestCell.Hide();
+            CombinationEquipmentQuestCell.Hide();
 
             if (ignoreAnimation)
             {
@@ -430,7 +430,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    WorldQuestCell.HideAsClear(null, true);
+                    WorldQuestCell.Hide();
                 }
             }
             else
@@ -441,7 +441,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    WorldQuestCell.ShowAsNew(worldQuest, null, true);
+                    WorldQuestCell.Show(worldQuest);
                 }
             }
         }
@@ -464,7 +464,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    CombinationEquipmentQuestCell.HideAsClear(null, true);
+                    CombinationEquipmentQuestCell.Hide();
                 }
             }
             else
@@ -477,10 +477,7 @@ namespace Nekoyume.UI.Module
                 }
                 else
                 {
-                    CombinationEquipmentQuestCell.ShowAsNew(
-                        combinationEquipmentQuest,
-                        null,
-                        true);
+                    CombinationEquipmentQuestCell.Show(combinationEquipmentQuest);
                 }
             }
         }
