@@ -70,6 +70,11 @@ namespace Nekoyume.UI
 
         public void Skip()
         {
+            if (!CanHandleInputEvent)
+            {
+                return;
+            }
+
             if (_coroutine != null)
             {
                 StopCoroutine(_coroutine);
