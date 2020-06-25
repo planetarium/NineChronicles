@@ -15,7 +15,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            xTweener.StartTween();
+            xTweener.StartShowTween();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -30,7 +30,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoClose(bool ignoreCloseAnimation)
         {
-            yield return new WaitWhile(xTweener.StopTween().IsPlaying);
+            yield return new WaitWhile(xTweener.StartHideTween().IsPlaying);
             base.Close(ignoreCloseAnimation);
         }
     }
