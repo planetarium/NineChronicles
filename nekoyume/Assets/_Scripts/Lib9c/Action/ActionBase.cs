@@ -231,8 +231,8 @@ namespace Nekoyume.Action
 
                 var bdict = new Dictionary(new []
                 {
-                    new KeyValuePair<IKey, IValue>((Text) "state", state),
-                    new KeyValuePair<IKey, IValue>((Text) "balance", balance),
+                    new KeyValuePair<IKey, IValue>((Text) "states", state),
+                    new KeyValuePair<IKey, IValue>((Text) "balances", balance),
                 });
 
                 return new Codec().Encode(bdict);
