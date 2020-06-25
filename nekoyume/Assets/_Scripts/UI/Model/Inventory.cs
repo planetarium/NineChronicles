@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using Libplanet;
-using Nekoyume.EnumType;
+using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -41,6 +42,16 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<InventoryItemView> OnDoubleClickItemView =
             new Subject<InventoryItemView>();
+
+        private ItemSubType[] _itemSubTypesForNotification =
+        {
+            ItemSubType.Weapon,
+            ItemSubType.Armor,
+            ItemSubType.Belt,
+            ItemSubType.Necklace,
+            ItemSubType.Ring,
+            ItemSubType.Ring
+        };
 
         public Inventory(ItemType stateType = ItemType.Equipment)
         {
@@ -561,6 +572,39 @@ namespace Nekoyume.UI.Model
         }
 
         #endregion
+
+        public void UpdateNotification()
+        {
+            var equipments = Equipments;
+
+            foreach (var item in equipments)
+            {
+                item.HasNotification.Value = false;
+            }
+
+            foreach (var type in _itemSubTypesForNotification)
+            {
+                var orderedEquipments =
+                    equipments.Where(x => x.ItemBase.Value.ItemSubType == type)
+                    .Select(x => (item: x, cp: CPHelper.GetCP((ItemUsable)x.ItemBase.Value)))
+                    .OrderByDescending(tuple => tuple.cp);
+
+                if (orderedEquipments.Count() <= 0)
+                    continue;
+
+                var highestCP = orderedEquipments.First().cp;
+                var strongestEquipments = orderedEquipments
+                    .TakeWhile(x => x.cp == highestCP);
+                var equippedCount = strongestEquipments.Count(x => x.item.EquippedEnabled.Value);
+                var isEquipped = equippedCount == (type != ItemSubType.Ring ? 1 : 2);
+
+                foreach (var (item, cp) in strongestEquipments)
+                {
+                    if (!item.EquippedEnabled.Value)
+                        item.HasNotification.Value = !isEquipped;
+                }
+            }
+        }
 
         private static bool DefaultDimmedFunc(InventoryItem inventoryItem)
         {

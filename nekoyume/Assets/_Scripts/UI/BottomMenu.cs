@@ -219,6 +219,9 @@ namespace Nekoyume.UI.Module
             ReactiveAvatarState.QuestList?
                 .Subscribe(SubscribeAvatarQuestList)
                 .AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.Inventory?
+                .Subscribe(_ => UpdateInventoryNotification())
+                .AddTo(_disposablesAtOnEnable);
         }
 
         protected override void OnDisable()
@@ -399,7 +402,7 @@ namespace Nekoyume.UI.Module
 
             UpdateCombinationNotification();
         }
-        
+
         #endregion
 
         #region show button
@@ -578,6 +581,14 @@ namespace Nekoyume.UI.Module
             var combinationSlots = Find<CombinationSlots>().slots;
             var hasNotification = combinationSlots.Any(slot => slot.HasNotification.Value);
             HasNotificationInCombination.OnNext(hasNotification);
+        }
+
+        public void UpdateInventoryNotification()
+        {
+            var avatarInfo = Find<AvatarInfo>();
+
+            var hasNotification = avatarInfo.HasNotification;
+            HasNotificationInCharacter.OnNext(hasNotification);
         }
     }
 }
