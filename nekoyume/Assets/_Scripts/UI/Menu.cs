@@ -93,9 +93,9 @@ namespace Nekoyume.UI
             }
 
             var requiredCost = stageRow.CostAP;
-            if (States.Instance.GoldBalanceState.gold < requiredCost)
+            if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
             {
-                // NOTE: 골드가 부족합니다.
+                // NOTE: AP가 부족합니다.
                 return;
             }
 

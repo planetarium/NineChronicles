@@ -330,6 +330,7 @@ namespace Nekoyume.UI
             }
 
             _lockSlotIndex = false;
+            _shouldGoToEquipmentRecipe = null;
 
             base.Close(ignoreCloseAnimation);
         }
