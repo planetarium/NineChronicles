@@ -587,7 +587,7 @@ namespace Nekoyume.UI.Module
         {
             var avatarInfo = Find<AvatarInfo>();
 
-            var hasNotification = avatarInfo.HasNotification();
+            var hasNotification = avatarInfo.HasNotification;
             HasNotificationInCharacter.OnNext(hasNotification);
         }
     }
