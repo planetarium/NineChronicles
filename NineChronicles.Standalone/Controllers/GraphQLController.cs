@@ -53,6 +53,7 @@ namespace NineChronicles.Standalone.Controllers
                         properties.PrivateKeyString,
                         properties.StoreType,
                         properties.StorePath,
+                        100,
                         properties.IceServerStrings,
                         properties.PeerStrings,
                         properties.NoTrustedStateValidators,
