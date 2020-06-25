@@ -32,10 +32,13 @@ namespace Nekoyume.UI
         [SerializeField]
         private DOTweenTextAlpha _textAlphaTweener = null;
 
+        private readonly List<Tweener> _tweeners = new List<Tweener>();
+        private readonly WaitForSeconds _waitOneSec = new WaitForSeconds(1f);
+        private readonly WaitForSeconds _waitForDisappear = new WaitForSeconds(.3f);
+
         private NPC _npc = null;
         private Coroutine _timerCoroutine = null;
-        private WaitForSeconds _waitForDisappear = new WaitForSeconds(.3f);
-        private List<Tweener> _tweeners = new List<Tweener>();
+        private List<CountableItem> _rewards = null;
 
         private const float ContinueTime = 10f;
         private const int NPCId = 300001;
@@ -50,28 +53,13 @@ namespace Nekoyume.UI
 
         public void Show(List<CountableItem> rewards, bool ignoreShowAnimation = false)
         {
+            foreach (var view in itemViews)
+                view.Hide();
+
             questCompletedText.text = LocalizationManager.Localize("UI_QUEST_COMPLETED");
-            for (int i = 0; i < itemViews.Length; ++i)
-            {
-                var itemView = itemViews[i];
-                if (i < rewards.Count)
-                {
-                    itemView.SetData(rewards[i]);
-                    itemView.Show();
-                    var rectTransform = itemView.iconImage.rectTransform;
-                    var originalScale = rectTransform.localScale;
-                    rectTransform.localScale = Vector3.zero;
-                    var tweener = rectTransform
-                                    .DOScale(originalScale, 1f)
-                                    .SetEase(Ease.OutElastic);
-                    tweener.onKill = () => rectTransform.localScale = originalScale;
-                    _tweeners.Add(tweener);
-                }
-                else
-                {
-                    itemView.Hide();
-                }
-            }
+            continueText.alpha = 0f;
+
+            _rewards = rewards;
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
                 NPCId,
@@ -83,7 +71,6 @@ namespace Nekoyume.UI
             _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
 
             base.Show(ignoreShowAnimation);
-            StartContinueTimer();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -94,6 +81,12 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            StartCoroutine(CoShowRewards(_rewards));
+            base.OnCompleteOfShowAnimationInternal();
+        }
+
         protected override void OnCompleteOfCloseAnimationInternal()
         {
             _npc.gameObject.SetActive(false);
@@ -102,10 +95,42 @@ namespace Nekoyume.UI
                 tweener.Kill();
             }
             _tweeners.Clear();
+            _rewards.Clear();
             base.OnCompleteOfCloseAnimationInternal();
         }
 
         #endregion
+
+        private IEnumerator CoShowRewards(List<CountableItem> rewards)
+        {
+            for (int i = 0; i < itemViews.Length; ++i)
+            {
+                var itemView = itemViews[i];
+
+                if (i < rewards.Count)
+                {
+                    itemView.SetData(rewards[i]);
+                    itemView.Show();
+                    var rectTransform = itemView.GetComponent<RectTransform>();
+                    var originalScale = rectTransform.localScale;
+                    rectTransform.localScale = Vector3.zero;
+                    var tweener = rectTransform
+                                    .DOScale(originalScale, 1f)
+                                    .SetEase(Ease.OutElastic);
+                    tweener.onKill = () => rectTransform.localScale = originalScale;
+                    _tweeners.Add(tweener);
+                    yield return _waitOneSec;
+                }
+                else
+                {
+                    itemView.Hide();
+                }
+            }
+
+            _textAlphaTweener.PlayReverse();
+            yield return _waitForDisappear;
+            StartContinueTimer();
+        }
 
         private void StartContinueTimer()
         {
