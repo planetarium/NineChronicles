@@ -19,9 +19,12 @@ namespace Nekoyume
 
         public static Currency Deserialize(Bencodex.Types.Dictionary serialized)
         {
-            var minters = ((Bencodex.Types.List) serialized["minters"])
-                .Select(b => new Address((Binary) b))
-                .ToImmutableHashSet();
+            IImmutableSet<Address> minters = null;
+            if (serialized["minters"] is Bencodex.Types.List mintersAsList)
+            {
+                minters = mintersAsList.Select(b => new Address((Binary) b)).ToImmutableHashSet();
+            }
+
             return new Currency((Text) serialized["ticker"], minters);
         }
     }
