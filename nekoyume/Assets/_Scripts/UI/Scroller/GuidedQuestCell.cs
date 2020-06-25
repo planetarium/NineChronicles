@@ -13,6 +13,10 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
+    /// <summary>
+    /// 새로운 퀘스트이 추가되거나 목록의 것이 완료될 때의 연출을 책임집니다.
+    /// 이때 연출은 QuestResult를 다루는 것까지 포함합니다.
+    /// </summary>
     public class GuidedQuestCell : MonoBehaviour
     {
         // NOTE: 콘텐츠 텍스트의 길이가 UI를 넘어갈 수 있기 때문에 flowing text 처리를 해주는 것이 좋겠습니다.
