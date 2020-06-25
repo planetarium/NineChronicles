@@ -8,6 +8,7 @@ using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -80,6 +81,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            Mixpanel.Track("Unity/LoginImpression");
 
             for (var i = 0; i < slots.Length; i++)
             {

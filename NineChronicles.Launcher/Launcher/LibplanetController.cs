@@ -454,6 +454,7 @@ To start the game, you need to create your account.";
             }
             catch (Exception e)
             {
+                MixpanelClient.Track("Launcher/RunGameProcessException", null);
                 Log.Error(e, "Unexpected exception: {msg}", e.Message);
 
                 return false;
@@ -490,6 +491,7 @@ To start the game, you need to create your account.";
             }
             catch (Exception e)
             {
+                MixpanelClient.Track("Launcher/ClearStoreException", null);
                 Log.Error(e, "Unexpected exception happened during clearing store.");
             }
 
@@ -526,6 +528,7 @@ To start the game, you need to create your account.";
 
         public void CreatePrivateKey(string passphrase)
         {
+            MixpanelClient.Track("Launcher/CreatePrivateKey", null);
             PrivateKey = PreparedPrivateKey;
             ProtectedPrivateKey ppk = ProtectedPrivateKey.Protect(PrivateKey, passphrase);
             KeyStore.Add(ppk);
@@ -552,6 +555,7 @@ To start the game, you need to create your account.";
 
         private void FatalError(Exception exception, string message, bool retryable)
         {
+            MixpanelClient.Track("Launcher/FatalError", null);
             ActivateFatalErrorSignal(message, retryable);
             Log.Error(exception, message);
         }
