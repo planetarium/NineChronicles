@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Tween
             _originAnchoredPositionCache
             ?? (_originAnchoredPositionCache = RectTransform.anchoredPosition).Value;
 
-        public Tweener StartShowTween()
+        public Tweener PlayTween()
         {
             KillTween();
             RectTransform.anchoredPosition = OriginAnchoredPosition;
@@ -59,15 +59,15 @@ namespace Nekoyume.UI.Tween
             return _tweener.Play();
         }
 
-        public Tweener StartHideTween()
+        public Tweener PlayReverse()
         {
             KillTween();
-            RectTransform.anchoredPosition = OriginAnchoredPosition;
+            RectTransform.anchoredPosition = OriginAnchoredPosition + new Vector2(end, 0f);
             _tweener = RectTransform
-                .DOAnchorPosX(end, duration, snapping)
+                .DOAnchorPosX(OriginAnchoredPosition.x, duration, snapping)
                 .SetEase(closeEase);
 
-            if (!isFrom)
+            if (isFrom)
             {
                 _tweener.From();
             }

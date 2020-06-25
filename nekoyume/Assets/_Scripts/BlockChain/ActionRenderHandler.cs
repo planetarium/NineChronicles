@@ -569,13 +569,19 @@ namespace Nekoyume.BlockChain
             actionFailPopup.CloseCallback = null;
             actionFailPopup.Close();
 
-            if (Widget.Find<QuestPreparation>().IsActive() &&
-                Widget.Find<LoadingScreen>().IsActive())
+            if (Widget.Find<LoadingScreen>().IsActive())
             {
-                Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
+                if (Widget.Find<QuestPreparation>().IsActive())
+                {
+                    Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
+                }
+                else if (Widget.Find<Menu>().IsActive())
+                {
+                    Widget.Find<Menu>().GoToStage(eval.Action.Result);
+                }
             }
-            else if (Widget.Find<BattleResult>().IsActive() &&
-                     Widget.Find<StageLoadingScreen>().IsActive())
+            else if (Widget.Find<StageLoadingScreen>().IsActive() &&
+                     Widget.Find<BattleResult>().IsActive())
             {
                 Widget.Find<BattleResult>().NextStage(eval);
             }

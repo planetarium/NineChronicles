@@ -10,26 +10,43 @@ using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Module
 {
+    // FIXME: `EquipmentRecipe`과 거의 똑같은 구조입니다.
     public class ConsumableRecipe : MonoBehaviour
     {
         [SerializeField]
-        private ConsumableRecipeCellView cellViewPrefab;
+        private ConsumableRecipeCellView cellViewPrefab = null;
+
         [SerializeField]
-        private ConsumableRecipeCellView[] cellViews;
+        private ConsumableRecipeCellView[] cellViews = null;
+
         [SerializeField]
-        private TabButton hpTabButton;
+        private TabButton hpTabButton = null;
+
         [SerializeField]
-        private TabButton atkTabButton;
+        private TabButton atkTabButton = null;
+
         [SerializeField]
-        private TabButton criTabButton;
+        private TabButton criTabButton = null;
+
         [SerializeField]
-        private TabButton hitTabButton;
+        private TabButton hitTabButton = null;
+
         [SerializeField]
-        private TabButton defTabButton;
+        private TabButton defTabButton = null;
+
         [SerializeField]
-        private Transform cellViewParent;
+        private Transform cellViewParent = null;
+
         [SerializeField]
-        private ScrollRect scrollRect;
+        private ScrollRect scrollRect = null;
+
+        [SerializeField]
+        private DOTweenGroupAlpha scrollAlphaTweener = null;
+
+        [SerializeField]
+        private AnchoredPositionYTweener scrollPositionTweener = null;
+
+        private bool _initialized = false;
 
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
@@ -38,26 +55,17 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
 
-        public DOTweenGroupAlpha scrollAlphaTweener;
-        public AnchoredPositionYTweener scrollPositionTweener;
-
         private void Awake()
         {
-            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
-            _toggleGroup.RegisterToggleable(hpTabButton);
-            _toggleGroup.RegisterToggleable(atkTabButton);
-            _toggleGroup.RegisterToggleable(criTabButton);
-            _toggleGroup.RegisterToggleable(hitTabButton);
-            _toggleGroup.RegisterToggleable(defTabButton);
-
-            LoadRecipes();
-            _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
+            Initialize();
         }
 
         private void OnEnable()
         {
             if (States.Instance.CurrentAvatarState is null)
+            {
                 return;
+            }
 
             UpdateRecipes();
         }
@@ -68,10 +76,29 @@ namespace Nekoyume.UI.Module
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
         }
 
+        public void Initialize()
+        {
+            if (_initialized)
+            {
+                return;
+            }
+
+            _initialized = true;
+            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
+            _toggleGroup.RegisterToggleable(hpTabButton);
+            _toggleGroup.RegisterToggleable(atkTabButton);
+            _toggleGroup.RegisterToggleable(criTabButton);
+            _toggleGroup.RegisterToggleable(hitTabButton);
+            _toggleGroup.RegisterToggleable(defTabButton);
+
+            LoadRecipes(false);
+            _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
+        }
+
         public void ShowCellViews()
         {
             scrollAlphaTweener.Play();
-            scrollPositionTweener.StartTween();
+            scrollPositionTweener.PlayTween();
 
             foreach (var view in cellViews)
             {
@@ -79,7 +106,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void HideCellviews()
+        public void HideCellViews()
         {
             scrollAlphaTweener.PlayReverse();
             scrollPositionTweener.PlayReverse();
@@ -89,7 +116,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void LoadRecipes()
+        private void LoadRecipes(bool shouldUpdateRecipes = true)
         {
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
 
@@ -102,11 +129,17 @@ namespace Nekoyume.UI.Module
             {
                 var cellView = Instantiate(cellViewPrefab, cellViewParent);
                 cellView.Set(recipeRow);
-                cellView.OnClick.Subscribe(SubscribeOnClickCellView).AddTo(_disposablesAtLoadRecipeList);
+                cellView.OnClick.Subscribe(SubscribeOnClickCellView)
+                    .AddTo(_disposablesAtLoadRecipeList);
                 cellViews[idx] = cellView;
                 ++idx;
             }
-            
+
+            if (!shouldUpdateRecipes)
+            {
+                return;
+            }
+
             UpdateRecipes();
         }
 
@@ -114,7 +147,9 @@ namespace Nekoyume.UI.Module
         {
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
+            {
                 return;
+            }
 
             foreach (var cellView in cellViews)
             {
@@ -136,25 +171,6 @@ namespace Nekoyume.UI.Module
                 {
                     cellView.Hide();
                 }
-            }
-
-            switch (statType)
-            {
-                case StatType.HP:
-                    _toggleGroup.SetToggledOn(hpTabButton);
-                    break;
-                case StatType.ATK:
-                    _toggleGroup.SetToggledOn(atkTabButton);
-                    break;
-                case StatType.CRI:
-                    _toggleGroup.SetToggledOn(criTabButton);
-                    break;
-                case StatType.HIT:
-                    _toggleGroup.SetToggledOn(hitTabButton);
-                    break;
-                case StatType.DEF:
-                    _toggleGroup.SetToggledOn(defTabButton);
-                    break;
             }
         }
 
@@ -182,10 +198,10 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void SubscribeOnClickCellView(RecipeCellView cellView)
+        private static void SubscribeOnClickCellView(RecipeCellView cellView)
         {
             var combination = Widget.Find<Combination>();
-            combination.selectedRecipe = cellView as ConsumableRecipeCellView;
+            combination.selectedRecipe = cellView;
             combination.State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
         }
     }

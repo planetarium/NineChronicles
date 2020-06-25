@@ -13,11 +13,15 @@ namespace Nekoyume.UI.Scroller
         public void Set(EquipmentItemRecipeSheet.Row recipeRow)
         {
             if (recipeRow is null)
+            {
                 return;
+            }
 
             var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             if (!equipmentSheet.TryGetValue(recipeRow.ResultEquipmentId, out var row))
+            {
                 return;
+            }
 
             RowData = recipeRow;
 
@@ -33,7 +37,9 @@ namespace Nekoyume.UI.Scroller
         public void Set(AvatarState avatarState)
         {
             if (RowData is null)
+            {
                 return;
+            }
 
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(RowData.UnlockStage))
