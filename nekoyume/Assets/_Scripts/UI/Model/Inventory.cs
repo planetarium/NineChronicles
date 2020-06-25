@@ -592,7 +592,7 @@ namespace Nekoyume.UI.Model
                 if (orderedEquipments.Count() <= 0)
                     continue;
 
-                var highestCP = orderedEquipments.Max(x => x.cp);
+                var highestCP = orderedEquipments.First().cp;
                 var strongestEquipments = orderedEquipments
                     .TakeWhile(x => x.cp == highestCP);
                 var equippedCount = strongestEquipments.Count(x => x.item.EquippedEnabled.Value);
