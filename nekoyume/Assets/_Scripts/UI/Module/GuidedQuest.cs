@@ -5,6 +5,7 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -397,16 +398,52 @@ namespace Nekoyume.UI.Module
 
         #region Getter
 
-        private static WorldQuest GetTargetWorldQuest(QuestList questList) => questList?
-            .OfType<WorldQuest>()
-            .OrderBy(quest => quest.Goal)
-            .FirstOrDefault(quest => !quest.Complete);
+        private static WorldQuest GetTargetWorldQuest(QuestList questList)
+        {
+            if (States.Instance.CurrentAvatarState is null ||
+                !States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var lastClearedStageId) ||
+                lastClearedStageId < GameConfig.RequireClearedStageLevel.UIMainMenuStage)
+            {
+                return null;
+            }
+
+            return questList?
+                .OfType<WorldQuest>()
+                .OrderBy(quest => quest.Goal)
+                .FirstOrDefault(quest => !quest.Complete);
+        }
 
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
-            QuestList questList) =>
-            questList?
+            QuestList questList)
+        {
+            if (States.Instance.CurrentAvatarState is null ||
+                !States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var lastClearedStageId) ||
+                lastClearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            {
+                return null;
+            }
+
+            return questList?
                 .OfType<CombinationEquipmentQuest>()
-                .FirstOrDefault(quest => !quest.Complete);
+                .FirstOrDefault(quest =>
+                {
+                    if (quest.Complete)
+                    {
+                        return false;
+                    }
+
+                    if (!Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(
+                        quest.RecipeId,
+                        out var row))
+                    {
+                        return false;
+                    }
+
+                    return row.UnlockStage <= lastClearedStageId;
+                });
+        }
 
         #endregion
 
