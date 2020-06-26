@@ -262,6 +262,22 @@ namespace Nekoyume.UI.Module
             EnterToClearExistGuidedQuest(SharedViewModel.combinationEquipmentQuest);
         }
 
+        /// <summary>
+        /// SharedViewModel.avatarState를 사용해서 리스트를 업데이트 합니다.
+        /// </summary>
+        /// <param name="onComplete"></param>
+        public void UpdateList(System.Action onComplete)
+        {
+            if (_state.Value != ViewState.Shown)
+            {
+                Debug.LogWarning(
+                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
+                return;
+            }
+
+            StartCoroutine(CoUpdateList(onComplete));
+        }
+
         #endregion
 
         #region ViewState
