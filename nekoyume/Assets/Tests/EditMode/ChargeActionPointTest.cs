@@ -17,7 +17,7 @@ namespace Tests.EditMode
                 avatarAddress = address
             };
             var serialized = (Dictionary) action.PlainValue;
-            Assert.IsTrue(serialized.ContainsKey((Text) "avatarAddress"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "avatarAddress"));
             Assert.AreEqual(address, serialized["avatarAddress"].ToAddress());
             Assert.DoesNotThrow(() => ByteSerializer.Serialize(action));
         }
