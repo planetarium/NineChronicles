@@ -136,6 +136,7 @@ namespace NineChronicles.Standalone.Executable
                             privateKeyString,
                             storeType,
                             storePath,
+                            3000,
                             iceServerStrings,
                             peerStrings,
                             noTrustedStateValidators,

@@ -53,6 +53,7 @@ namespace NineChronicles.Standalone.Controllers
                         properties.PrivateKeyString,
                         properties.StoreType,
                         properties.StorePath,
+                        100,
                         properties.IceServerStrings,
                         properties.PeerStrings,
                         properties.NoTrustedStateValidators,
@@ -71,7 +72,10 @@ namespace NineChronicles.Standalone.Controllers
                     Libplanet = nodeServiceProperties
                 };
 
-                var nineChroniclesNodeService = StandaloneServices.CreateHeadless(nineChroniclesProperties);
+                NineChroniclesNodeService nineChroniclesNodeService = StandaloneServices.CreateHeadless(
+                    nineChroniclesProperties,
+                    StandaloneContext
+                );
                 StandaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
                 StandaloneContext.BlockChain = nineChroniclesNodeService.Swarm.BlockChain;
             }
