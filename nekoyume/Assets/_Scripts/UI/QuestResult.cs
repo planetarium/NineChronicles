@@ -18,6 +18,9 @@ namespace Nekoyume.UI
 {
     public class QuestResult : Widget
     {
+        private const float ContinueTime = 10f;
+        private const int NPCId = 300001;
+
         [SerializeField]
         private TextMeshProUGUI questCompletedText = null;
 
@@ -44,8 +47,7 @@ namespace Nekoyume.UI
         private Coroutine _timerCoroutine = null;
         private List<CountableItem> _rewards = null;
 
-        private const float ContinueTime = 10f;
-        private const int NPCId = 300001;
+        protected override WidgetType WidgetType => WidgetType.Popup;
 
         #region override
 
