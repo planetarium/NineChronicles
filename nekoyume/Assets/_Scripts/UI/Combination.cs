@@ -511,6 +511,12 @@ namespace Nekoyume.UI
             }
         }
 
+        public void UpdateRecipe()
+        {
+            equipmentRecipe.UpdateRecipes();
+            consumableRecipe.UpdateRecipes();
+        }
+
         private void OnClickRecipe()
         {
             _toggleGroup.SetToggledOffAll();

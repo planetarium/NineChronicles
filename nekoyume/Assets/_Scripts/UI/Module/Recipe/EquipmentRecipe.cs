@@ -8,6 +8,7 @@ using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
+using Nekoyume.Model.Quest;
 
 namespace Nekoyume.UI.Module
 {
@@ -160,9 +161,17 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var quest = Game.Game.instance
+                .States.CurrentAvatarState.questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.RecipeId)
+                .FirstOrDefault();
+
             foreach (var cellView in cellViews)
             {
-                cellView.Set(avatarState);
+                var hasNotification = !(quest is null) && quest.RecipeId == cellView.RowData.Id;
+                cellView.Set(avatarState, hasNotification);
             }
         }
 

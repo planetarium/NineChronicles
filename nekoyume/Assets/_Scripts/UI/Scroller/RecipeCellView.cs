@@ -49,6 +49,11 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         protected CanvasGroup canvasGroup;
 
+        [SerializeField]
+        protected Image hasNotificationImage;
+
+        protected readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+
         public readonly Subject<RecipeCellView> OnClick =
             new Subject<RecipeCellView>();
 
@@ -76,6 +81,10 @@ namespace Nekoyume.UI.Scroller
                     OnClick.OnNext(this);
                 })
                 .AddTo(gameObject);
+
+            if (hasNotificationImage)
+                HasNotification.SubscribeTo(hasNotificationImage)
+                    .AddTo(gameObject);
         }
 
         private void OnDestroy()
@@ -171,6 +180,7 @@ namespace Nekoyume.UI.Scroller
             // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
             if (value)
             {
+                HasNotification.Value = false;
                 unlockConditionText.enabled = true;
 
                 if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
