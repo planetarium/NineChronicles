@@ -108,6 +108,12 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            if (((CombinationConsumable.ResultModel) _data.Result).id == default)
+            {
+                HasNotification.Value = false;
+                return;
+            }
+
             var diff = _data.Result.itemUsable.RequiredBlockIndex - blockIndex;
 
             if (diff <= 0)
