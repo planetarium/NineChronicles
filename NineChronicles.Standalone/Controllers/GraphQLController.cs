@@ -71,7 +71,10 @@ namespace NineChronicles.Standalone.Controllers
                     Libplanet = nodeServiceProperties
                 };
 
-                var nineChroniclesNodeService = StandaloneServices.CreateHeadless(nineChroniclesProperties);
+                NineChroniclesNodeService nineChroniclesNodeService = StandaloneServices.CreateHeadless(
+                    nineChroniclesProperties,
+                    StandaloneContext
+                );
                 StandaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
                 StandaloneContext.BlockChain = nineChroniclesNodeService.Swarm.BlockChain;
             }
