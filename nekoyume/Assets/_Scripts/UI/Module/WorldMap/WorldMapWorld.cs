@@ -175,14 +175,15 @@ namespace Nekoyume.UI.Module
                     stageState = WorldMapStage.State.Disabled;
                 }
 
-                stage.SharedViewModel.state.Value = stageState;
-                stage.SharedViewModel.selected.Value = stageId == selectedStageId;
+                stage.SharedViewModel.State.Value = stageState;
+                stage.SharedViewModel.Selected.Value = stageId == selectedStageId;
             }
         }
 
-        public void ShowByStageId(int value)
+        public void ShowByStageId(int value, int stageIdToNotify)
         {
             ShowByPageNumber(GetPageNumber(value));
+            SetNotifiedStageId(stageIdToNotify);
             SetSelectedStageId(value);
 
             gameObject.SetActive(true);
@@ -222,11 +223,19 @@ namespace Nekoyume.UI.Module
             return pageNumber;
         }
 
+        private void SetNotifiedStageId(int value)
+        {
+            foreach (var stage in pages.SelectMany(page => page.stages))
+            {
+                stage.SharedViewModel.HasNotification.Value = stage.SharedViewModel.stageId == value;
+            }
+        }
+
         private void SetSelectedStageId(int value)
         {
             foreach (var stage in pages.SelectMany(page => page.stages))
             {
-                stage.SharedViewModel.selected.Value = stage.SharedViewModel.stageId == value;
+                stage.SharedViewModel.Selected.Value = stage.SharedViewModel.stageId == value;
             }
         }
 

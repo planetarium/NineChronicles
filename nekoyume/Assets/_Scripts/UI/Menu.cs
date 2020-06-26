@@ -175,9 +175,15 @@ namespace Nekoyume.UI
             rankingExclamationMark.gameObject.SetActive(
                 btnRanking.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
+
+            var worldMap = Find<WorldMap>();
+            worldMap.UpdateNotificationInfo();
+            var hasNotificationInWorldmap = worldMap.hasNotification;
+
             questExclamationMark.gameObject.SetActive(
-                btnQuest.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
+                (btnQuest.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
+                hasNotificationInWorldmap);
         }
 
         private void HideButtons()
