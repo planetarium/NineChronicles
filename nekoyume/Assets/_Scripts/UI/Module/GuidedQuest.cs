@@ -61,6 +61,8 @@ namespace Nekoyume.UI.Module
 
         private class ViewModel
         {
+            public AvatarState avatarState;
+
             public readonly ReactiveProperty<WorldQuest> worldQuest =
                 new ReactiveProperty<WorldQuest>();
 
@@ -161,8 +163,13 @@ namespace Nekoyume.UI.Module
         {
             if (avatarState is null)
             {
+                SharedViewModel.avatarState = null;
+                SharedViewModel.worldQuest.Value = null;
+                SharedViewModel.combinationEquipmentQuest.Value = null;
                 return;
             }
+
+            SharedViewModel.avatarState = avatarState;
 
             switch (_state.Value)
             {
@@ -172,10 +179,10 @@ namespace Nekoyume.UI.Module
                     break;
                 case ViewState.None:
                 case ViewState.Hidden:
-                    EnterToShowing(avatarState, ignoreAnimation);
+                    EnterToShowing(ignoreAnimation);
                     break;
                 case ViewState.Shown:
-                    StartCoroutine(CoUpdateAvatarState(avatarState, null));
+                    StartCoroutine(CoUpdateAvatarState(null));
                     break;
             }
         }
@@ -259,23 +266,26 @@ namespace Nekoyume.UI.Module
 
         #region ViewState
 
-        private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
+        private void EnterToShowing(bool ignoreAnimation = false)
         {
             _state.Value = ViewState.Showing;
+
+            // NOTE: SharedViewModel.worldQuest.Value에 null을 넣지 않고 WorldQuestCell.Hide()를 호출합니다.
+            // 이는 뷰 모델과 상관없이 연출을 위해서 뷰 오브젝트만 숨기기 위해서 입니다.
             WorldQuestCell.Hide();
             CombinationEquipmentQuestCell.Hide();
 
             if (ignoreAnimation)
             {
                 gameObject.SetActive(true);
-                StartCoroutine(CoUpdateAvatarState(avatarState, EnterToShown));
+                StartCoroutine(CoUpdateAvatarState(EnterToShown));
                 return;
             }
 
             showingAndHidingTweener
                 .PlayTween()
                 .OnPlay(() => gameObject.SetActive(true))
-                .OnComplete(() => StartCoroutine(CoUpdateAvatarState(avatarState, EnterToShown)));
+                .OnComplete(() => StartCoroutine(CoUpdateAvatarState(EnterToShown)));
         }
 
         private void EnterToShown()
@@ -283,9 +293,9 @@ namespace Nekoyume.UI.Module
             _state.Value = ViewState.Shown;
         }
 
-        private IEnumerator CoUpdateAvatarState(AvatarState avatarState, System.Action onComplete)
+        private IEnumerator CoUpdateAvatarState(System.Action onComplete)
         {
-            var questList = avatarState.questList;
+            var questList = SharedViewModel.avatarState?.questList;
             var newWorldQuest = GetTargetWorldQuest(questList);
             if (TryEnterToAddNewGuidedQuest(
                 SharedViewModel.worldQuest,
@@ -400,8 +410,8 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetWorldQuest(QuestList questList)
         {
-            if (States.Instance.CurrentAvatarState is null ||
-                !States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+            if (SharedViewModel.avatarState is null ||
+                !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
                     out var lastClearedStageId) ||
                 lastClearedStageId < GameConfig.RequireClearedStageLevel.UIMainMenuStage)
             {
@@ -417,8 +427,8 @@ namespace Nekoyume.UI.Module
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
             QuestList questList)
         {
-            if (States.Instance.CurrentAvatarState is null ||
-                !States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+            if (SharedViewModel.avatarState is null ||
+                !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
                     out var lastClearedStageId) ||
                 lastClearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
