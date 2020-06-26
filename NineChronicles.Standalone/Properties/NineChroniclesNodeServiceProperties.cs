@@ -27,6 +27,7 @@ namespace NineChronicles.Standalone.Properties
                 string privateKeyString = null,
                 string storeType = null,
                 string storePath = null,
+                int storeStateCacheSize = 100,
                 string[] iceServerStrings = null,
                 string[] peerStrings = null,
                 bool noTrustedStateValidators = false,
@@ -70,7 +71,7 @@ namespace NineChronicles.Standalone.Properties
                 TrustedStateValidators = trustedStateValidators,
                 StoreType = storeType,
                 StorePath = storePath,
-                StoreStatesCacheSize = 5000,
+                StoreStatesCacheSize = storeStateCacheSize,
                 MinimumDifficulty = minimumDifficulty,
                 Render = render
             };
