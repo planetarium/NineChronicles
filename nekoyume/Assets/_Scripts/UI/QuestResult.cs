@@ -71,6 +71,7 @@ namespace Nekoyume.UI
             _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
 
             base.Show(ignoreShowAnimation);
+            StartCoroutine(CoConstraintNPCToUI());
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -100,6 +101,15 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private IEnumerator CoConstraintNPCToUI()
+        {
+            while (enabled)
+            {
+                _npc.transform.position = npcPosition.position;
+                yield return null;
+            }
+        }
 
         private IEnumerator CoShowRewards(List<CountableItem> rewards)
         {
