@@ -193,6 +193,9 @@ namespace Nekoyume.UI
 
             equipmentCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
+                if (State.Value == StateType.CombinationConfirm)
+                    return;
+
                 ActionEnhancedCombinationEquipment(equipmentCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
@@ -202,12 +205,18 @@ namespace Nekoyume.UI
 
             elementalCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
+                if (State.Value == StateType.CombinationConfirm)
+                    return;
+
                 ActionEnhancedCombinationEquipment(elementalCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
 
             consumableCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
+                if (State.Value == StateType.CombinationConfirm)
+                    return;
+
                 ActionCombineConsumable();
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);

@@ -168,10 +168,19 @@ namespace Nekoyume.UI.Module
                 .OrderBy(x => x.RecipeId)
                 .FirstOrDefault();
 
+            weaponTabButton.HasNotification.Value = false;
+            armorTabButton.HasNotification.Value = false;
+            beltTabButton.HasNotification.Value = false;
+            necklaceTabButton.HasNotification.Value = false;
+            ringTabButton.HasNotification.Value = false;
+
             foreach (var cellView in cellViews)
             {
                 var hasNotification = !(quest is null) && quest.RecipeId == cellView.RowData.Id;
                 cellView.Set(avatarState, hasNotification);
+                var btn = GetButton(cellView.ItemSubType);
+                if (hasNotification)
+                    btn.HasNotification.Value = hasNotification;
             }
         }
 
@@ -181,29 +190,37 @@ namespace Nekoyume.UI.Module
             return !(cellView is null);
         }
 
-        private void SetToggledOnType(ItemSubType itemSubType)
+        private TabButton GetButton(ItemSubType itemSubType)
         {
-            IToggleable toggleable;
+            TabButton btn = null;
+
             switch (itemSubType)
             {
                 case ItemSubType.Weapon:
-                    toggleable = weaponTabButton;
+                    btn = weaponTabButton;
                     break;
                 case ItemSubType.Armor:
-                    toggleable = armorTabButton;
+                    btn = armorTabButton;
                     break;
                 case ItemSubType.Belt:
-                    toggleable = beltTabButton;
+                    btn = beltTabButton;
                     break;
                 case ItemSubType.Necklace:
-                    toggleable = necklaceTabButton;
+                    btn = necklaceTabButton;
                     break;
                 case ItemSubType.Ring:
-                    toggleable = ringTabButton;
+                    btn = ringTabButton;
                     break;
                 default:
-                    return;
+                    break;
             }
+
+            return btn;
+        }
+
+        private void SetToggledOnType(ItemSubType itemSubType)
+        {
+            IToggleable toggleable = GetButton(itemSubType);
 
             _toggleGroup.SetToggledOn(toggleable);
             SubscribeOnToggledOn(toggleable);

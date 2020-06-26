@@ -57,6 +57,7 @@ namespace Nekoyume.UI.Module
 
             if (materialPanel is ElementalCombinationMaterialPanel panel)
             {
+                Widget.Find<Combination>().OnTweenRecipe();
                 panel.TweenPanel(optionRecipeView);
             }
         }
