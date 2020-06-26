@@ -122,6 +122,11 @@ namespace Libplanet.Standalone.Hosting
                 );
                 PreloadEnded.Set();
             }
+            else
+            {
+                BootstrapEnded.Set();
+                PreloadEnded.Set();
+            }
 
             var tasks = new List<Task>
             {

@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Net;
 using Microsoft.Extensions.Hosting;
+using NineChronicles.Standalone.GraphTypes;
 using NineChronicles.Standalone.Properties;
 
 namespace NineChronicles.Standalone
@@ -17,8 +18,6 @@ namespace NineChronicles.Standalone
         {
 
             NineChroniclesNodeService service = CreateHeadless(properties, standaloneContext);
-            service.ConfigureStandaloneContext(standaloneContext);
-
             return service.Run(hostBuilder, cancellationToken);
         }
 
@@ -36,11 +35,14 @@ namespace NineChronicles.Standalone
                 });
             }
 
-            return new NineChroniclesNodeService(
+            var service = new NineChroniclesNodeService(
                 properties.Libplanet,
                 properties.Rpc,
                 preloadProgress: progress,
                 ignoreBootstrapFailure: true);
+            service.ConfigureStandaloneContext(standaloneContext);
+
+            return service;
         }
 
         public static Task RunGraphQLAsync(
@@ -60,10 +62,12 @@ namespace NineChronicles.Standalone
                 service.BootstrapEnded.WaitAsync().ContinueWith((task) =>
                 {
                     standaloneContext.BootstrapEnded = true;
+                    standaloneContext.NodeStatusSubject.OnNext(standaloneContext.NodeStatus);
                 });
                 service.PreloadEnded.WaitAsync().ContinueWith((task) =>
                 {
                     standaloneContext.PreloadEnded = true;
+                    standaloneContext.NodeStatusSubject.OnNext(standaloneContext.NodeStatus);
                 });
             }
         }

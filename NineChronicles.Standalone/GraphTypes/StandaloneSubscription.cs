@@ -113,6 +113,13 @@ namespace NineChronicles.Standalone.GraphTypes
                 Resolver = new FuncFieldResolver<PreloadState>(context => context.Source as PreloadState),
                 Subscriber = new EventStreamResolver<PreloadState>(context => StandaloneContext.PreloadStateSubject.AsObservable()),
             });
+            AddField(new EventStreamFieldType
+            {
+                Name = "nodeStatus",
+                Type = typeof(NodeStatusType),
+                Resolver = new FuncFieldResolver<NodeStatusType>(context => context.Source as NodeStatusType),
+                Subscriber = new EventStreamResolver<NodeStatusType>(context => StandaloneContext.NodeStatusSubject.AsObservable()),
+            });
         }
 
         public void RegisterTipChangedSubscription()
