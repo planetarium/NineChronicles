@@ -1,8 +1,12 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
+using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
+using Nekoyume.State;
+using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -13,6 +17,10 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
+    /// <summary>
+    /// 새로운 퀘스트가 추가하거나 이미 설정된 퀘스트를 완료할 때의 연출을 책임집니다.
+    /// 이때 연출은 QuestResult를 다루는 것까지 포함합니다.
+    /// </summary>
     public class GuidedQuestCell : MonoBehaviour
     {
         // NOTE: 콘텐츠 텍스트의 길이가 UI를 넘어갈 수 있기 때문에 flowing text 처리를 해주는 것이 좋겠습니다.
@@ -62,10 +70,14 @@ namespace Nekoyume.UI.Scroller
 
         #region Controll
 
-        public void ShowAsNew(Nekoyume.Model.Quest.Quest quest, bool ignoreAnimation = false)
+        public void ShowAsNew(
+            Nekoyume.Model.Quest.Quest quest,
+            System.Action<GuidedQuestCell> onComplete = null,
+            bool ignoreAnimation = false)
         {
             if (quest is null)
             {
+                onComplete?.Invoke(this);
                 return;
             }
 
@@ -76,6 +88,7 @@ namespace Nekoyume.UI.Scroller
             if (ignoreAnimation)
             {
                 SetRewards(quest.Reward.ItemMap, true);
+                onComplete?.Invoke(this);
             }
             else
             {
@@ -83,17 +96,27 @@ namespace Nekoyume.UI.Scroller
                 showingAndHidingTweener
                     .PlayTween()
                     .OnPlay(() => gameObject.SetActive(true))
-                    .OnComplete(() => SetRewards(quest.Reward.ItemMap));
+                    .OnComplete(() =>
+                    {
+                        SetRewards(quest.Reward.ItemMap);
+                        onComplete?.Invoke(this);
+                    });
             }
         }
 
-        public void HideAsClear(bool ignoreAnimation = false)
+        public void Show(Nekoyume.Model.Quest.Quest quest)
         {
-            Quest = null;
+            ShowAsNew(quest, null, true);
+        }
 
+        public void HideAsClear(
+            System.Action<GuidedQuestCell> onComplete = null,
+            bool ignoreAnimation = false,
+            bool ignoreQuestResult = false)
+        {
             if (ignoreAnimation)
             {
-                gameObject.SetActive(false);
+                PostHideAsClear(onComplete);
             }
             else
             {
@@ -101,12 +124,41 @@ namespace Nekoyume.UI.Scroller
                     .PlayReverse()
                     .OnComplete(() =>
                     {
-                        gameObject.SetActive(false);
+                        if (ignoreQuestResult)
+                        {
+                            PostHideAsClear(onComplete);
+                            return;
+                        }
+
+                        StartCoroutine(CoShowQuestResult(() =>
+                            PostHideAsClear(onComplete)));
                     });
             }
         }
 
+        public void Hide()
+        {
+            HideAsClear(null, true, true);
+        }
+
+        private void PostHideAsClear(System.Action<GuidedQuestCell> onComplete)
+        {
+            Quest = null;
+            gameObject.SetActive(false);
+            onComplete?.Invoke(this);
+        }
+
         #endregion
+
+        private IEnumerator CoShowQuestResult(System.Action onComplete)
+        {
+            var questResult = Widget.Find<QuestResult>();
+            questResult.Show(Quest);
+            yield return new WaitWhile(() => questResult.IsActive());
+            onComplete?.Invoke();
+        }
+
+        #region Update view objects
 
         private void SetContent(Nekoyume.Model.Quest.Quest quest)
         {
@@ -124,7 +176,9 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void SetRewards(IReadOnlyDictionary<int, int> rewardMap, bool ignoreAnimation = false)
+        private void SetRewards(
+            IReadOnlyDictionary<int, int> rewardMap,
+            bool ignoreAnimation = false)
         {
             var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             for (var i = 0; i < rewards.Count; i++)
@@ -162,5 +216,7 @@ namespace Nekoyume.UI.Scroller
                 reward.Hide();
             }
         }
+
+        #endregion
     }
 }

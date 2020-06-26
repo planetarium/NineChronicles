@@ -7,6 +7,10 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
+using Nekoyume.State;
 using TMPro;
 using UnityEngine;
 
@@ -14,6 +18,9 @@ namespace Nekoyume.UI
 {
     public class QuestResult : Widget
     {
+        private const float ContinueTime = 10f;
+        private const int NPCId = 300001;
+
         [SerializeField]
         private TextMeshProUGUI questCompletedText = null;
 
@@ -40,8 +47,7 @@ namespace Nekoyume.UI
         private Coroutine _timerCoroutine = null;
         private List<CountableItem> _rewards = null;
 
-        private const float ContinueTime = 10f;
-        private const int NPCId = 300001;
+        protected override WidgetType WidgetType => WidgetType.Popup;
 
         #region override
 
@@ -59,7 +65,22 @@ namespace Nekoyume.UI
             _npc.transform.position = npcPosition.position;
         }
 
-        public void Show(List<CountableItem> rewards, bool ignoreShowAnimation = false)
+        public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreShowAnimation = false)
+        {
+            var rewardModels = quest.Reward.ItemMap
+                .Select(pair =>
+                {
+                    var itemRow = Game.Game.instance.TableSheets.MaterialItemSheet.OrderedList
+                        .First(row => row.Id == pair.Key);
+                    var material = ItemFactory.CreateMaterial(itemRow);
+                    return new CountableItem(material, pair.Value);
+                })
+                .ToList();
+            Show(quest, rewardModels, ignoreShowAnimation);
+        }
+
+        private void Show(Nekoyume.Model.Quest.Quest quest, List<CountableItem> rewards,
+            bool ignoreShowAnimation = false)
         {
             foreach (var view in itemViews)
                 view.Hide();
@@ -79,6 +100,8 @@ namespace Nekoyume.UI
             _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
 
             base.Show(ignoreShowAnimation);
+            MakeNotification(quest);
+            UpdateLocalState(quest);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -105,6 +128,7 @@ namespace Nekoyume.UI
             {
                 tweener.Kill();
             }
+
             _tweeners.Clear();
             _rewards.Clear();
             base.OnCompleteOfCloseAnimationInternal();
@@ -112,9 +136,45 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private IEnumerator CoShowRewards(List<CountableItem> rewards)
+        private static void MakeNotification(Nekoyume.Model.Quest.Quest quest)
         {
-            for (int i = 0; i < itemViews.Length; ++i)
+            if (quest is null)
+            {
+                return;
+            }
+
+            var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
+            var msg = string.Format(format, quest.GetContent());
+            Notification.Push(MailType.System, msg);
+        }
+
+        private static void UpdateLocalState(Nekoyume.Model.Quest.Quest quest)
+        {
+            if (quest is null)
+            {
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var rewardMap = quest.Reward.ItemMap;
+            foreach (var reward in rewardMap)
+            {
+                var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
+                    .First(pair => pair.Key == reward.Key);
+
+                LocalStateModifier.AddItem(
+                    avatarAddress,
+                    materialRow.Value.ItemId,
+                    reward.Value,
+                    false);
+            }
+
+            LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
+        }
+
+        private IEnumerator CoShowRewards(IReadOnlyList<CountableItem> rewards)
+        {
+            for (var i = 0; i < itemViews.Length; ++i)
             {
                 var itemView = itemViews[i];
 
@@ -126,8 +186,8 @@ namespace Nekoyume.UI
                     var originalScale = rectTransform.localScale;
                     rectTransform.localScale = Vector3.zero;
                     var tweener = rectTransform
-                                    .DOScale(originalScale, 1f)
-                                    .SetEase(Ease.OutElastic);
+                        .DOScale(originalScale, 1f)
+                        .SetEase(Ease.OutElastic);
                     tweener.onKill = () => rectTransform.localScale = originalScale;
                     _tweeners.Add(tweener);
                     yield return _waitOneSec;

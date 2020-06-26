@@ -25,6 +25,7 @@ using Nekoyume.UI.Model;
 using Spine.Unity;
 using UnityEngine;
 using TentuPlay.Api;
+using UniRx;
 
 namespace Nekoyume.Game
 {
@@ -73,6 +74,13 @@ namespace Nekoyume.Game
         public Vector3 SelectPositionEnd(int index) => new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
         public bool showLoadingScreen;
+
+        #region Events
+
+        private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
+        public IObservable<Stage> onEnterToStageEnd => _onEnterToStageEnd;
+
+        #endregion
 
         protected void Awake()
         {
@@ -387,6 +395,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            _onEnterToStageEnd.OnNext(this);
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var passed = log.IsClear;
             var characters = GetComponentsInChildren<Character.CharacterBase>();

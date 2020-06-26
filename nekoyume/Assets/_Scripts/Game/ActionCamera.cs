@@ -54,10 +54,10 @@ namespace Nekoyume.Game
 
         [Header("Direction")]
         [SerializeField]
-        private ChaseData chaseData;
+        private ChaseData chaseData = default;
 
         [SerializeField]
-        private ShakeData shakeData;
+        private ShakeData shakeData = default;
 
         private Transform _transform;
         private Camera _cam;

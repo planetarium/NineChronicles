@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Scroller
         private GameObject cellPrefab = null;
 
         [SerializeField]
-        private float cellSize;
+        private float cellSize = default;
 
         /// <summary>
         /// `FancyScrollRect`는 `Scroller.ScrollSensitivity`를 강제로 바꿔버립니다.

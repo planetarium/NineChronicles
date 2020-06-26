@@ -185,8 +185,8 @@ namespace Nekoyume.UI.Module
         }
 
         /// <summary>
-        /// 스테이지 전투 종료 후 결과창이 뜨기 전에 호출합니다.
         /// 현재 노출된 스테이지 가이드 퀘스트 정보와 같은 스테이지일 경우에 동작합니다.
+        /// 클리어 처리가 될 때에는 `QuestResult`를 띄우는 것을 포함하는 연출을 책임집니다.
         /// </summary>
         /// <param name="stageId"></param>
         /// <param name="onComplete">함께 전달 받은 `stageId` 인자가 현재 노출된 스테이지 가이드 퀘스트와 같다면 보상 연출이
@@ -218,8 +218,8 @@ namespace Nekoyume.UI.Module
         }
 
         /// <summary>
-        /// 메인 메뉴에 진입 후에 Shown 상태가 되었을 때와.. 호출합니다.
         /// 현재 노출된 장비 조합 가이드 퀘스트 정보와 같은 레시피일 경우에 동작합니다.
+        /// `ClearWorldQuest`와는 다르게 `QuestResult`를 띄우지 않습니다.
         /// </summary>
         /// <param name="recipeId"></param>
         /// <param name="subRecipeId"></param>
@@ -261,8 +261,8 @@ namespace Nekoyume.UI.Module
         private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
         {
             _state.Value = ViewState.Showing;
-            WorldQuestCell.HideAsClear(true);
-            CombinationEquipmentQuestCell.HideAsClear(true);
+            WorldQuestCell.Hide();
+            CombinationEquipmentQuestCell.Hide();
 
             if (ignoreAnimation)
             {
@@ -286,37 +286,34 @@ namespace Nekoyume.UI.Module
         {
             var questList = avatarState.questList;
             var newWorldQuest = GetTargetWorldQuest(questList);
-            var currentWorldQuest = SharedViewModel.worldQuest.Value;
-            if (TryAddNewGuidedQuest(
+            if (TryEnterToAddNewGuidedQuest(
                 SharedViewModel.worldQuest,
-                currentWorldQuest,
                 newWorldQuest,
-                WorldQuestCell))
+                !(WorldQuestCell.Quest is null)))
             {
-                yield return new WaitForSeconds(.5f);
+                yield return new WaitUntil(() => _state.Value == ViewState.Shown);
             }
 
             var newCombinationEquipmentQuest = GetTargetCombinationEquipmentQuest(questList);
-            var currentCombinationEquipmentQuest = SharedViewModel.combinationEquipmentQuest.Value;
-            if (TryAddNewGuidedQuest(
+            if (TryEnterToAddNewGuidedQuest(
                 SharedViewModel.combinationEquipmentQuest,
-                currentCombinationEquipmentQuest,
                 newCombinationEquipmentQuest,
-                CombinationEquipmentQuestCell))
+                !(CombinationEquipmentQuestCell.Quest is null)))
             {
-                yield return new WaitForSeconds(.5f);
+                yield return new WaitUntil(() => _state.Value == ViewState.Shown);
             }
 
             onComplete?.Invoke();
         }
 
-        private bool TryAddNewGuidedQuest<TQuestModel>(
+        private bool TryEnterToAddNewGuidedQuest<TQuestModel>(
             ReactiveProperty<TQuestModel> questReactiveProperty,
-            TQuestModel currentQuest,
             TQuestModel newQuest,
-            GuidedQuestCell cell)
+            bool cellHasQuest)
             where TQuestModel : Nekoyume.Model.Quest.Quest
         {
+            var currentQuest = questReactiveProperty.Value;
+
             if (newQuest is null)
             {
                 if (currentQuest is null)
@@ -324,9 +321,9 @@ namespace Nekoyume.UI.Module
                     return false;
                 }
 
-                // NOTE: 값이 비워지는 경우입니다. 이는 ClearExistGuidedQuest 상태로 처리되어야 합니다.
-                Debug.LogWarning(
-                    $"Clearing guided quest must proceed in {ViewState.ClearExistGuidedQuest} state.");
+                // NOTE: ClearExistGuidedQuest 상태로 처리되지 않았는데, 셀이 비워져야 하는 상태입니다.
+                // 이때에는 해당 프로퍼티에 null을 할당해서 셀이 아무런 연출 없이 Hide() 되도록 합니다.
+                questReactiveProperty.Value = null;
                 return false;
             }
 
@@ -336,21 +333,20 @@ namespace Nekoyume.UI.Module
                 return true;
             }
 
-            if (!currentQuest.Id.Equals(newQuest.Id))
+
+            if (currentQuest.Id.Equals(newQuest.Id))
             {
-                // NOTE: 값이 바뀌는 경우입니다. 이는 ClearExistGuidedQuest 상태를 거치지 않았다는 말입니다.
-                Debug.LogWarning(
-                    $"Clearing exist guided quest first before add new guided quest.");
-                EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
-                return true;
+                if (cellHasQuest)
+                {
+                    return false;
+                }
+
+                // NOTE: 연출을 위해서 강제로 cell.Hide()를 호출했던 경우에는 뷰 모델인 currentQuest의 값과는 상관 없이
+                // 뷰 오브젝트인 GuidedQuestCell에서 도출된 cellHasQuest가 false가 됩니다.
+                // cellHasQuest가 false일 때에는 다시 보여주도록 EnterToAddNewGuidedQuest를 호출하고 true를 반환해야 합니다.
+                // 따라서 이후 라인으로 그대로 흐르게 둡니다.
             }
 
-            if (!(cell.Quest is null))
-            {
-                return false;
-            }
-
-            // NOTE: 연출을 위해서 강제로 cell.Hide()를 호출했던 경우에 다시 보여주도록 합니다.
             EnterToAddNewGuidedQuest(questReactiveProperty, newQuest);
             return true;
         }
@@ -424,26 +420,26 @@ namespace Nekoyume.UI.Module
                 if (state == ViewState.ClearExistGuidedQuest &&
                     WorldQuestCell.Quest is WorldQuest quest)
                 {
-                    // TODO: 완료하는 연출!
-                    WorldQuestCell.HideAsClear();
-                    _onClearWorldQuestComplete.OnNext(quest);
-                    EnterToShown();
+                    WorldQuestCell.HideAsClear(cell =>
+                    {
+                        EnterToShown();
+                        _onClearWorldQuestComplete.OnNext(quest);
+                    });
                 }
                 else
                 {
-                    WorldQuestCell.HideAsClear(true);
+                    WorldQuestCell.Hide();
                 }
             }
             else
             {
                 if (state == ViewState.AddNewGuidedQuest)
                 {
-                    WorldQuestCell.ShowAsNew(worldQuest);
-                    EnterToShown();
+                    WorldQuestCell.ShowAsNew(worldQuest, cell => EnterToShown());
                 }
                 else
                 {
-                    WorldQuestCell.ShowAsNew(worldQuest, true);
+                    WorldQuestCell.Show(worldQuest);
                 }
             }
         }
@@ -458,25 +454,28 @@ namespace Nekoyume.UI.Module
                     CombinationEquipmentQuestCell.Quest is CombinationEquipmentQuest quest)
                 {
                     // TODO: 완료하는 연출!
-                    CombinationEquipmentQuestCell.HideAsClear();
-                    _onClearCombinationEquipmentQuestComplete.OnNext(quest);
-                    EnterToShown();
+                    CombinationEquipmentQuestCell.HideAsClear(cell =>
+                    {
+                        EnterToShown();
+                        _onClearCombinationEquipmentQuestComplete.OnNext(quest);
+                    });
                 }
                 else
                 {
-                    CombinationEquipmentQuestCell.HideAsClear(true);
+                    CombinationEquipmentQuestCell.Hide();
                 }
             }
             else
             {
                 if (state == ViewState.AddNewGuidedQuest)
                 {
-                    CombinationEquipmentQuestCell.ShowAsNew(combinationEquipmentQuest);
-                    EnterToShown();
+                    CombinationEquipmentQuestCell.ShowAsNew(
+                        combinationEquipmentQuest,
+                        cell => EnterToShown());
                 }
                 else
                 {
-                    CombinationEquipmentQuestCell.ShowAsNew(combinationEquipmentQuest, true);
+                    CombinationEquipmentQuestCell.Show(combinationEquipmentQuest);
                 }
             }
         }

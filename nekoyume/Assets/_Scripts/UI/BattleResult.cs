@@ -87,9 +87,6 @@ namespace Nekoyume.UI
         private readonly WaitForSeconds _battleWinVFXYield = new WaitForSeconds(0.2f);
         public Model SharedModel { get; private set; }
 
-        public Subject<bool> BattleEndedSubject = new Subject<bool>();
-        public IDisposable battleEndedStream;
-
         public GameObject[] victoryResultTexts;
         private Animator _victoryImageAnimator;
 
@@ -128,7 +125,6 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            BattleEndedSubject.OnNext(IsActive());
             canvasGroup.alpha = 1f;
             SharedModel = model;
             foreach (var reward in rewardsArea.rewards)

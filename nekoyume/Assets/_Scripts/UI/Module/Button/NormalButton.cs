@@ -10,16 +10,16 @@ namespace Nekoyume.UI.Module
     public class NormalButton : MonoBehaviour
     {
         [SerializeField]
-        private Button button;
+        private Button button = null;
 
         [SerializeField]
-        private Image image;
+        private Image image = null;
 
         [SerializeField]
-        private TextMeshProUGUI text;
+        private TextMeshProUGUI text = null;
 
         [SerializeField]
-        private string localizationKey;
+        private string localizationKey = null;
 
         public readonly Subject<NormalButton> OnClick = new Subject<NormalButton>();
 
