@@ -43,13 +43,21 @@ namespace Nekoyume.UI
         private const float ContinueTime = 10f;
         private const int NPCId = 300001;
 
+        #region override
+
         protected override void Awake()
         {
             base.Awake();
             blur.onClick = DisappearNPC;
         }
 
-        #region override
+        protected override void Update()
+        {
+            base.Update();
+
+            // UI에 플레이어 고정.
+            _npc.transform.position = npcPosition.position;
+        }
 
         public void Show(List<CountableItem> rewards, bool ignoreShowAnimation = false)
         {
