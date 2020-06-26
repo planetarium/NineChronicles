@@ -180,7 +180,44 @@ namespace Nekoyume.UI.Module
                 cellView.Set(avatarState, hasNotification);
                 var btn = GetButton(cellView.ItemSubType);
                 if (hasNotification)
-                    btn.HasNotification.Value = hasNotification;
+                    btn.HasNotification.Value = cellView.HasNotification.Value;
+            }
+        }
+
+        public bool HasNotification()
+        {
+            var quest = Game.Game.instance
+                .States.CurrentAvatarState.questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.RecipeId)
+                .FirstOrDefault();
+
+            if (quest is null)
+                return false;
+
+            var recipeRow = Game.Game.instance.TableSheets
+                .EquipmentItemRecipeSheet[quest.RecipeId];
+
+            var isMainRecipeUnlocked = Game.Game.instance.States.CurrentAvatarState
+                    .worldInformation.IsStageCleared(recipeRow.UnlockStage);
+
+            var isElemental = !(quest.SubRecipeId is null);
+
+            if (!isMainRecipeUnlocked)
+                return false;
+
+            if (!isElemental)
+                return true;
+            else
+            {
+                var subRecipeRow = Game.Game.instance.TableSheets
+                    .EquipmentItemSubRecipeSheet[quest.SubRecipeId.Value];
+
+                var isSubRecipeUnlocked = Game.Game.instance.States.CurrentAvatarState
+                    .worldInformation.IsStageCleared(subRecipeRow.UnlockStage);
+
+                return isSubRecipeUnlocked;
             }
         }
 

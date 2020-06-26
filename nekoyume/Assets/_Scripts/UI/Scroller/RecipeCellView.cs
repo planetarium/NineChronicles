@@ -52,7 +52,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         protected Image hasNotificationImage;
 
-        protected readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         public readonly Subject<RecipeCellView> OnClick =
             new Subject<RecipeCellView>();

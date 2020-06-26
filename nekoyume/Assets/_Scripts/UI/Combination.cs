@@ -127,6 +127,8 @@ namespace Nekoyume.UI
         private SpeechBubble _selectedSpeechBubble;
         private RecipeIdSet? _shouldGoToEquipmentRecipe;
 
+        public bool HasNotification => equipmentRecipe.HasNotification();
+
         public override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
             ? AnimationState == AnimationStateType.Shown
             : base.CanHandleInputEvent;
