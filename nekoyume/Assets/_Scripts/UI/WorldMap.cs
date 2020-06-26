@@ -5,6 +5,7 @@ using Assets.SimpleLocalization;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model;
+using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
@@ -50,6 +51,10 @@ namespace Nekoyume.UI
         public GameObject stage;
         public StageInformation stageInformation;
         public SubmitButton submitButton;
+
+        public bool hasNotification = false;
+
+        private int _stageIdToNotify = 0;
 
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
@@ -155,6 +160,7 @@ namespace Nekoyume.UI
 
         public void Show(WorldInformation worldInformation)
         {
+            hasNotification = false;
             SharedViewModel.WorldInformation = worldInformation;
             if (worldInformation is null)
             {
@@ -172,8 +178,14 @@ namespace Nekoyume.UI
                 if (!worldInformation.TryGetWorld(worldId, out var worldModel))
                     throw new Exception(nameof(worldId));
 
+                UpdateNotificationInfo();
+
+                var rowData = world.SharedViewModel.RowData;
+                var isIncludedInQuest = _stageIdToNotify >= rowData.StageBegin && _stageIdToNotify <= rowData.StageEnd;
+
                 if (worldModel.IsUnlocked)
                 {
+                    world.worldButton.HasNotification.Value = isIncludedInQuest;
                     UnlockWorld(
                         world,
                         worldModel.GetNextStageIdForPlay(),
@@ -266,13 +278,27 @@ namespace Nekoyume.UI
             {
                 if (world.SharedViewModel.RowData.Id.Equals(SelectedWorldId))
                 {
-                    world.ShowByStageId(SelectedStageId);
+                    world.ShowByStageId(SelectedStageId, _stageIdToNotify);
                 }
                 else
                 {
                     world.Hide();
                 }
             }
+        }
+
+        public void UpdateNotificationInfo()
+        {
+            var questStageId = Game.Game.instance.States
+                .CurrentAvatarState.questList
+                .OfType<WorldQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.Goal)
+                .FirstOrDefault()?
+                .Goal ?? -1;
+            _stageIdToNotify = questStageId;
+
+            hasNotification = questStageId > 0;
         }
 
         private void CallByShowUpdateWorld()

@@ -34,7 +34,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected RecipeClickVFX recipeClickVFX = null;
 
-        private EquipmentItemSubRecipeSheet.Row _rowData;
+        [SerializeField]
+        protected Image hasNotificationImage = null;
+
+        protected readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+
+        public EquipmentItemSubRecipeSheet.Row rowData;
 
         public readonly Subject<Unit> OnClick = new Subject<Unit>();
 
@@ -58,6 +63,10 @@ namespace Nekoyume.UI.Module
                 OnClick.OnNext(Unit.Default);
                 recipeClickVFX.Play();
             }).AddTo(gameObject);
+
+            if (hasNotificationImage)
+                HasNotification.SubscribeTo(hasNotificationImage)
+                    .AddTo(gameObject);
         }
 
         private void OnDisable()
@@ -78,9 +87,9 @@ namespace Nekoyume.UI.Module
         )
         {
             if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId,
-                out _rowData))
+                out rowData))
             {
-                requiredItemRecipeView.SetData(baseMaterialInfo, _rowData.Materials,
+                requiredItemRecipeView.SetData(baseMaterialInfo, rowData.Materials,
                     checkInventory);
             }
             else
@@ -94,25 +103,27 @@ namespace Nekoyume.UI.Module
             Show(recipeName, subRecipeId);
         }
 
-        public void Set(AvatarState avatarState)
+        public void Set(AvatarState avatarState, bool hasNotification = false)
         {
-            if (_rowData is null)
+            if (rowData is null)
             {
                 return;
             }
 
             // 해금 검사.
-            if (!avatarState.worldInformation.IsStageCleared(_rowData.UnlockStage))
+            if (!avatarState.worldInformation.IsStageCleared(rowData.UnlockStage))
             {
                 SetLocked(true);
                 return;
             }
 
+            HasNotification.Value = hasNotification;
+
             // 재료 검사.
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
             var inventory = avatarState.inventory;
             var shouldDimmed = false;
-            foreach (var info in _rowData.Materials)
+            foreach (var info in rowData.Materials)
             {
                 if (materialSheet.TryGetValue(info.Id, out var materialRow) &&
                     inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
@@ -141,7 +152,7 @@ namespace Nekoyume.UI.Module
             {
                 unlockConditionText.enabled = true;
 
-                if (_rowData is null)
+                if (rowData is null)
                 {
                     unlockConditionText.text = string.Format(
                         LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
@@ -151,7 +162,7 @@ namespace Nekoyume.UI.Module
                 if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
                     out var stageId))
                 {
-                    var diff = _rowData.UnlockStage - stageId;
+                    var diff = rowData.UnlockStage - stageId;
                     if (diff > 50)
                     {
                         unlockConditionText.text = string.Format(
@@ -162,7 +173,7 @@ namespace Nekoyume.UI.Module
                     {
                         unlockConditionText.text = string.Format(
                             LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                            _rowData.UnlockStage.ToString());
+                            rowData.UnlockStage.ToString());
                     }
                 }
                 else

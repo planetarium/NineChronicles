@@ -404,6 +404,7 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
+            Widget.Find<Combination>().UpdateRecipe();
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
