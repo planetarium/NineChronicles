@@ -152,17 +152,8 @@ namespace Nekoyume.UI.Scroller
 
         private IEnumerator CoShowQuestResult(System.Action onComplete)
         {
-            var rewardModels = Quest.Reward.ItemMap
-                .Select(pair =>
-                {
-                    var itemRow = Game.Game.instance.TableSheets.MaterialItemSheet.OrderedList
-                        .First(row => row.Id == pair.Key);
-                    var material = ItemFactory.CreateMaterial(itemRow);
-                    return new CountableItem(material, pair.Value);
-                })
-                .ToList();
             var questResult = Widget.Find<QuestResult>();
-            questResult.Show(rewardModels);
+            questResult.Show(Quest);
             yield return new WaitWhile(() => questResult.IsActive());
 
             // NOTE: QuestCell.RequestReward() 안의 로직과 겹칩니다.

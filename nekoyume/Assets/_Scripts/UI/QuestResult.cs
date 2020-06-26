@@ -7,6 +7,9 @@ using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Model.Item;
+using Nekoyume.State;
 using TMPro;
 using UnityEngine;
 
@@ -35,7 +38,7 @@ namespace Nekoyume.UI
         private NPC _npc = null;
         private Coroutine _timerCoroutine = null;
         private WaitForSeconds _waitForDisappear = new WaitForSeconds(.3f);
-        private List<Tweener> _tweeners = new List<Tweener>();
+        private readonly List<Tweener> _tweeners = new List<Tweener>();
 
         private const float ContinueTime = 10f;
         private const int NPCId = 300001;
@@ -48,10 +51,24 @@ namespace Nekoyume.UI
 
         #region override
 
+        public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreShowAnimation = false)
+        {
+            var rewardModels = quest.Reward.ItemMap
+                .Select(pair =>
+                {
+                    var itemRow = Game.Game.instance.TableSheets.MaterialItemSheet.OrderedList
+                        .First(row => row.Id == pair.Key);
+                    var material = ItemFactory.CreateMaterial(itemRow);
+                    return new CountableItem(material, pair.Value);
+                })
+                .ToList();
+            Show(rewardModels, ignoreShowAnimation);
+        }
+
         public void Show(List<CountableItem> rewards, bool ignoreShowAnimation = false)
         {
             questCompletedText.text = LocalizationManager.Localize("UI_QUEST_COMPLETED");
-            for (int i = 0; i < itemViews.Length; ++i)
+            for (var i = 0; i < itemViews.Length; ++i)
             {
                 var itemView = itemViews[i];
                 if (i < rewards.Count)
@@ -62,8 +79,8 @@ namespace Nekoyume.UI
                     var originalScale = rectTransform.localScale;
                     rectTransform.localScale = Vector3.zero;
                     var tweener = rectTransform
-                                    .DOScale(originalScale, 1f)
-                                    .SetEase(Ease.OutElastic);
+                        .DOScale(originalScale, 1f)
+                        .SetEase(Ease.OutElastic);
                     tweener.onKill = () => rectTransform.localScale = originalScale;
                     _tweeners.Add(tweener);
                 }
