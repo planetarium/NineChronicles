@@ -20,8 +20,8 @@ namespace Tests.EditMode
                 avatarAddress = address
             };
             var serialized = (Dictionary) action.PlainValue;
-            Assert.IsTrue(serialized.ContainsKey((Text) "code"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "avatarAddress"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "code"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "avatarAddress"));
             Assert.AreEqual(redeemCode, serialized["code"].ToPublicKey());
             Assert.AreEqual(address, serialized["avatarAddress"].ToAddress());
         }
