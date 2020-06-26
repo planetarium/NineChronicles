@@ -155,32 +155,6 @@ namespace Nekoyume.UI.Scroller
             var questResult = Widget.Find<QuestResult>();
             questResult.Show(Quest);
             yield return new WaitWhile(() => questResult.IsActive());
-
-            // NOTE: QuestCell.RequestReward() 안의 로직과 겹칩니다.
-            // 로컬 아바타의 퀘스트 상태 업데이트.
-            var quest =
-                States.Instance.CurrentAvatarState.questList.FirstOrDefault(q => q == Quest);
-            if (quest is null)
-            {
-                yield break;
-            }
-
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var rewardMap = quest.Reward.ItemMap;
-            foreach (var reward in rewardMap)
-            {
-                var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
-                    .First(pair => pair.Key == reward.Key);
-
-                LocalStateModifier.AddItem(
-                    avatarAddress,
-                    materialRow.Value.ItemId,
-                    reward.Value,
-                    false);
-            }
-
-            LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
-
             onComplete?.Invoke();
         }
 

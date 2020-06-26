@@ -9,6 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;
@@ -62,10 +63,10 @@ namespace Nekoyume.UI
                     return new CountableItem(material, pair.Value);
                 })
                 .ToList();
-            Show(rewardModels, ignoreShowAnimation);
+            Show(quest, rewardModels, ignoreShowAnimation);
         }
 
-        public void Show(List<CountableItem> rewards, bool ignoreShowAnimation = false)
+        private void Show(Nekoyume.Model.Quest.Quest quest, IReadOnlyList<CountableItem> rewards, bool ignoreShowAnimation = false)
         {
             questCompletedText.text = LocalizationManager.Localize("UI_QUEST_COMPLETED");
             for (var i = 0; i < itemViews.Length; ++i)
@@ -101,12 +102,17 @@ namespace Nekoyume.UI
 
             base.Show(ignoreShowAnimation);
             StartContinueTimer();
+            MakeNotification(quest);
+            UpdateLocalState(quest);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            StopCoroutine(_timerCoroutine);
-            _timerCoroutine = null;
+            if (!(_timerCoroutine is null))
+            {
+                StopCoroutine(_timerCoroutine);
+                _timerCoroutine = null;
+            }
 
             base.Close(ignoreCloseAnimation);
         }
@@ -123,6 +129,42 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        private static void MakeNotification(Nekoyume.Model.Quest.Quest quest)
+        {
+            if (quest is null)
+            {
+                return;
+            }
+
+            var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
+            var msg = string.Format(format, quest.GetContent());
+            Notification.Push(MailType.System, msg);
+        }
+
+        private static void UpdateLocalState(Nekoyume.Model.Quest.Quest quest)
+        {
+            if (quest is null)
+            {
+                return;
+            }
+
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var rewardMap = quest.Reward.ItemMap;
+            foreach (var reward in rewardMap)
+            {
+                var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
+                    .First(pair => pair.Key == reward.Key);
+
+                LocalStateModifier.AddItem(
+                    avatarAddress,
+                    materialRow.Value.ItemId,
+                    reward.Value,
+                    false);
+            }
+
+            LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
+        }
 
         private void StartContinueTimer()
         {
