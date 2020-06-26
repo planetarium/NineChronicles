@@ -15,6 +15,18 @@ namespace NineChronicles.Standalone
             StandaloneContext standaloneContext = null,
             CancellationToken cancellationToken = default)
         {
+
+            NineChroniclesNodeService service = CreateHeadless(properties, standaloneContext);
+            service.ConfigureStandaloneContext(standaloneContext);
+
+            return service.Run(hostBuilder, cancellationToken);
+        }
+
+        public static NineChroniclesNodeService CreateHeadless(
+            NineChroniclesNodeServiceProperties properties,
+            StandaloneContext standaloneContext = null
+        )
+        {
             Progress<PreloadState> progress = null;
             if (!(standaloneContext is null))
             {
@@ -24,23 +36,12 @@ namespace NineChronicles.Standalone
                 });
             }
 
-            var service = new NineChroniclesNodeService(
+            return new NineChroniclesNodeService(
                 properties.Libplanet,
                 properties.Rpc,
                 preloadProgress: progress,
                 ignoreBootstrapFailure: true);
-
-            service.ConfigureStandaloneContext(standaloneContext);
-
-            return service.Run(hostBuilder, cancellationToken);
         }
-
-        public static NineChroniclesNodeService CreateHeadless(
-            NineChroniclesNodeServiceProperties properties)
-            => new NineChroniclesNodeService(
-                properties.Libplanet,
-                properties.Rpc,
-                ignoreBootstrapFailure: true);
 
         public static Task RunGraphQLAsync(
             GraphQLNodeServiceProperties graphQLProperties,
