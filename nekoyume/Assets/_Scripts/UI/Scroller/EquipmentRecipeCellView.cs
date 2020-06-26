@@ -34,7 +34,7 @@ namespace Nekoyume.UI.Scroller
             SetLocked(false, RowData.UnlockStage);
         }
 
-        public void Set(AvatarState avatarState)
+        public void Set(AvatarState avatarState, bool hasNotification = false)
         {
             if (RowData is null)
             {
@@ -49,6 +49,8 @@ namespace Nekoyume.UI.Scroller
             }
 
             SetLocked(false, RowData.UnlockStage);
+
+            HasNotification.Value = hasNotification;
 
             // 메인 재료 검사.
             var inventory = avatarState.inventory;
