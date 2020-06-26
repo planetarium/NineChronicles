@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
@@ -24,8 +24,9 @@ namespace Nekoyume.UI.Module
             public readonly int stageId;
             public readonly string stageNumber;
             public readonly bool hasBoss;
-            public readonly ReactiveProperty<State> state = new ReactiveProperty<State>();
-            public readonly ReactiveProperty<bool> selected = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<State> State = new ReactiveProperty<State>();
+            public readonly ReactiveProperty<bool> Selected = new ReactiveProperty<bool>();
+            public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
             public ViewModel(StageWaveSheet.Row stageRow, string stageNumber, State state) :
                 this(stageRow.StageId, stageNumber, stageRow.HasBoss, state)
@@ -41,24 +42,38 @@ namespace Nekoyume.UI.Module
                 this.stageId = stageId;
                 this.stageNumber = stageNumber;
                 this.hasBoss = hasBoss;
-                this.state.Value = state;
+                this.State.Value = state;
             }
 
             public void Dispose()
             {
-                state.Dispose();
-                selected.Dispose();
+                State.Dispose();
+                Selected.Dispose();
             }
         }
 
         public float bossScale = 1.4f;
 
-        public Image normalImage;
-        public Image disabledImage;
-        public Image selectedImage;
-        public Image bossImage;
-        public Button button;
-        public TextMeshProUGUI buttonText;
+        [SerializeField]
+        private Image normalImage = null;
+
+        [SerializeField]
+        private Image disabledImage = null;
+
+        [SerializeField]
+        private Image selectedImage = null;
+
+        [SerializeField]
+        private Image bossImage = null;
+
+        [SerializeField]
+        private Button button = null;
+
+        [SerializeField]
+        private TextMeshProUGUI buttonText = null;
+
+        [SerializeField]
+        private Image hasNotificationImage = null;
 
         private Vector3 _normalImageScale;
         private Vector3 _disabledImageScale;
@@ -86,7 +101,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            SubscribeSelect(SharedViewModel?.selected.Value ?? false);
+            SubscribeSelect(SharedViewModel?.Selected.Value ?? false);
         }
 
         private void OnDisable()
@@ -106,8 +121,9 @@ namespace Nekoyume.UI.Module
 
             _disposablesForModel.DisposeAllAndClear();
             SharedViewModel = viewModel;
-            SharedViewModel.state.Subscribe(SubscribeState).AddTo(_disposablesForModel);
-            SharedViewModel.selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
+            SharedViewModel.State.Subscribe(SubscribeState).AddTo(_disposablesForModel);
+            SharedViewModel.Selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
+            SharedViewModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(_disposablesForModel);
 
             SetBoss(SharedViewModel.hasBoss);
             buttonText.text = SharedViewModel.stageNumber;
@@ -115,12 +131,12 @@ namespace Nekoyume.UI.Module
 
         public void Hide()
         {
-            SharedViewModel.state.Value = State.Hidden;
+            SharedViewModel.State.Value = State.Hidden;
         }
 
         private void SubscribeState(State value)
         {
-            if (SharedViewModel?.selected.Value ?? false)
+            if (SharedViewModel?.Selected.Value ?? false)
             {
                 return;
             }
@@ -157,7 +173,7 @@ namespace Nekoyume.UI.Module
 
             if (!value)
             {
-                SubscribeState(SharedViewModel?.state.Value ?? State.Normal);
+                SubscribeState(SharedViewModel?.State.Value ?? State.Normal);
                 return;
             }
 

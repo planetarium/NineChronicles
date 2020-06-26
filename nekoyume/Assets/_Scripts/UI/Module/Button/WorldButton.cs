@@ -47,6 +47,9 @@ namespace Nekoyume.UI.Module
         [SerializeField, Tooltip("마우스 호버 상태일 때 월드 버튼이 스케일 되는 속도")]
         private float hoverScaleSpeed = 0.7f;
 
+        [SerializeField]
+        private Image hasNotificationImage = null;
+
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Locked);
 
         private readonly ReactiveProperty<AnimationState> _animationState =
@@ -55,6 +58,7 @@ namespace Nekoyume.UI.Module
         private Tweener _tweener;
 
         public readonly Subject<WorldButton> OnClickSubject = new Subject<WorldButton>();
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         private bool IsLocked => _state.Value == State.Locked;
 
@@ -82,7 +86,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(go);
 
             button.OnClickAsObservable().Subscribe(OnClick).AddTo(go);
-
+            HasNotification.SubscribeTo(hasNotificationImage).AddTo(go);
             _state.Subscribe(OnState).AddTo(go);
             _animationState.Subscribe(OnAnimationState).AddTo(go);
         }

@@ -83,8 +83,11 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            StopCoroutine(_timerCoroutine);
-            _timerCoroutine = null;
+            if (!(_timerCoroutine is null))
+            {
+                StopCoroutine(_timerCoroutine);
+                _timerCoroutine = null;
+            }
 
             base.Close(ignoreCloseAnimation);
         }

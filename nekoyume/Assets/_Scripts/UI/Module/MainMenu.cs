@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using DG.Tweening;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
 using Nekoyume.State;
@@ -31,6 +30,7 @@ namespace Nekoyume.UI.Module
         public Transform bgTransform;
         private Vector3 _originLocalScale;
         public MenuType type;
+        public Image hasNotificationImage;
         public GameObject[] lockObjects;
         public GameObject[] unLockObjects;
 
