@@ -1,6 +1,8 @@
+using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -87,9 +89,17 @@ namespace Nekoyume.UI.Module
             if (avatarState is null)
                 return;
 
+            var quest = Game.Game.instance
+                .States.CurrentAvatarState.questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete && !(x.SubRecipeId is null))
+                .OrderBy(x => x.RecipeId)
+                .FirstOrDefault();
+
             foreach (var recipeView in equipmentOptionRecipeViews)
             {
-                recipeView.Set(avatarState);
+                var hasNotification = !(quest is null) && quest.SubRecipeId == recipeView.rowData.Id;
+                recipeView.Set(avatarState, hasNotification);
             }
         }
 

@@ -156,14 +156,19 @@ namespace Nekoyume.UI
             btnShop.Update();
             btnRanking.Update();
 
-            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
-            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHex);
-            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHex);
-            var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHex);
-            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHex);
+            var addressHax = ReactiveAvatarState.Address.Value.ToHex();
+            var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHax);
+            var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
+            var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
+            var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
+
+            var combination = Find<Combination>();
+            var hasNotificationOnCombination = combination.HasNotification;
+
             combinationExclamationMark.gameObject.SetActive(
-                btnCombination.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
+                (btnCombination.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0)
+                || hasNotificationOnCombination);
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);

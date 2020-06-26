@@ -127,6 +127,8 @@ namespace Nekoyume.UI
         private SpeechBubble _selectedSpeechBubble;
         private RecipeIdSet? _shouldGoToEquipmentRecipe;
 
+        public bool HasNotification => equipmentRecipe.HasNotification();
+
         public override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
             ? AnimationState == AnimationStateType.Shown
             : base.CanHandleInputEvent;
@@ -193,6 +195,9 @@ namespace Nekoyume.UI
 
             equipmentCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
+                if (State.Value == StateType.CombinationConfirm)
+                    return;
+
                 ActionEnhancedCombinationEquipment(equipmentCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
@@ -202,12 +207,18 @@ namespace Nekoyume.UI
 
             elementalCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
+                if (State.Value == StateType.CombinationConfirm)
+                    return;
+
                 ActionEnhancedCombinationEquipment(elementalCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
 
             consumableCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
+                if (State.Value == StateType.CombinationConfirm)
+                    return;
+
                 ActionCombineConsumable();
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
@@ -509,6 +520,12 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
+        }
+
+        public void UpdateRecipe()
+        {
+            equipmentRecipe.UpdateRecipes();
+            consumableRecipe.UpdateRecipes();
         }
 
         private void OnClickRecipe()

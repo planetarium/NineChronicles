@@ -8,6 +8,7 @@ using Nekoyume.State;
 using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
+using Nekoyume.Model.Quest;
 
 namespace Nekoyume.UI.Module
 {
@@ -160,9 +161,63 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            var quest = Game.Game.instance
+                .States.CurrentAvatarState.questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.RecipeId)
+                .FirstOrDefault();
+
+            weaponTabButton.HasNotification.Value = false;
+            armorTabButton.HasNotification.Value = false;
+            beltTabButton.HasNotification.Value = false;
+            necklaceTabButton.HasNotification.Value = false;
+            ringTabButton.HasNotification.Value = false;
+
             foreach (var cellView in cellViews)
             {
-                cellView.Set(avatarState);
+                var hasNotification = !(quest is null) && quest.RecipeId == cellView.RowData.Id;
+                cellView.Set(avatarState, hasNotification);
+                var btn = GetButton(cellView.ItemSubType);
+                if (hasNotification)
+                    btn.HasNotification.Value = cellView.HasNotification.Value;
+            }
+        }
+
+        public bool HasNotification()
+        {
+            var quest = Game.Game.instance
+                .States.CurrentAvatarState.questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.RecipeId)
+                .FirstOrDefault();
+
+            if (quest is null)
+                return false;
+
+            var recipeRow = Game.Game.instance.TableSheets
+                .EquipmentItemRecipeSheet[quest.RecipeId];
+
+            var isMainRecipeUnlocked = Game.Game.instance.States.CurrentAvatarState
+                    .worldInformation.IsStageCleared(recipeRow.UnlockStage);
+
+            var isElemental = !(quest.SubRecipeId is null);
+
+            if (!isMainRecipeUnlocked)
+                return false;
+
+            if (!isElemental)
+                return true;
+            else
+            {
+                var subRecipeRow = Game.Game.instance.TableSheets
+                    .EquipmentItemSubRecipeSheet[quest.SubRecipeId.Value];
+
+                var isSubRecipeUnlocked = Game.Game.instance.States.CurrentAvatarState
+                    .worldInformation.IsStageCleared(subRecipeRow.UnlockStage);
+
+                return isSubRecipeUnlocked;
             }
         }
 
@@ -172,29 +227,37 @@ namespace Nekoyume.UI.Module
             return !(cellView is null);
         }
 
-        private void SetToggledOnType(ItemSubType itemSubType)
+        private TabButton GetButton(ItemSubType itemSubType)
         {
-            IToggleable toggleable;
+            TabButton btn = null;
+
             switch (itemSubType)
             {
                 case ItemSubType.Weapon:
-                    toggleable = weaponTabButton;
+                    btn = weaponTabButton;
                     break;
                 case ItemSubType.Armor:
-                    toggleable = armorTabButton;
+                    btn = armorTabButton;
                     break;
                 case ItemSubType.Belt:
-                    toggleable = beltTabButton;
+                    btn = beltTabButton;
                     break;
                 case ItemSubType.Necklace:
-                    toggleable = necklaceTabButton;
+                    btn = necklaceTabButton;
                     break;
                 case ItemSubType.Ring:
-                    toggleable = ringTabButton;
+                    btn = ringTabButton;
                     break;
                 default:
-                    return;
+                    break;
             }
+
+            return btn;
+        }
+
+        private void SetToggledOnType(ItemSubType itemSubType)
+        {
+            IToggleable toggleable = GetButton(itemSubType);
 
             _toggleGroup.SetToggledOn(toggleable);
             SubscribeOnToggledOn(toggleable);

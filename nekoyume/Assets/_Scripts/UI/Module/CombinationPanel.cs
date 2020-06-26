@@ -76,12 +76,20 @@ namespace Nekoyume.UI.Module
 
         protected virtual void SubscribeOnClickCancel()
         {
-            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
+            var combination = Widget.Find<Combination>();
+            if (!combination.CanHandleInputEvent)
+                return;
+
+            combination.State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
         }
 
         protected virtual void SubscribeOnClickSubmit()
         {
-            Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
+            var combination = Widget.Find<Combination>();
+            if (!combination.CanHandleInputEvent)
+                return;
+
+            combination.State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
         }
 
         protected void OnTweenCompleted()
