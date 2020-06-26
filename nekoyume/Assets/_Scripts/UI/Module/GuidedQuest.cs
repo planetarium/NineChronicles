@@ -182,7 +182,7 @@ namespace Nekoyume.UI.Module
                     EnterToShowing(ignoreAnimation);
                     break;
                 case ViewState.Shown:
-                    StartCoroutine(CoUpdateAvatarState(null));
+                    StartCoroutine(CoUpdateListByAvatarState(null));
                     break;
             }
         }
@@ -278,14 +278,14 @@ namespace Nekoyume.UI.Module
             if (ignoreAnimation)
             {
                 gameObject.SetActive(true);
-                StartCoroutine(CoUpdateAvatarState(EnterToShown));
+                StartCoroutine(CoUpdateListByAvatarState(EnterToShown));
                 return;
             }
 
             showingAndHidingTweener
                 .PlayTween()
                 .OnPlay(() => gameObject.SetActive(true))
-                .OnComplete(() => StartCoroutine(CoUpdateAvatarState(EnterToShown)));
+                .OnComplete(() => StartCoroutine(CoUpdateListByAvatarState(EnterToShown)));
         }
 
         private void EnterToShown()
@@ -293,7 +293,7 @@ namespace Nekoyume.UI.Module
             _state.Value = ViewState.Shown;
         }
 
-        private IEnumerator CoUpdateAvatarState(System.Action onComplete)
+        private IEnumerator CoUpdateListByAvatarState(System.Action onComplete)
         {
             var questList = SharedViewModel.avatarState?.questList;
             var newWorldQuest = GetTargetWorldQuest(questList);
