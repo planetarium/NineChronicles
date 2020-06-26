@@ -156,10 +156,6 @@ namespace Nekoyume.UI
             btnShop.Update();
             btnRanking.Update();
 
-            var worldMap = Find<WorldMap>();
-            worldMap.UpdateNotificationInfo();
-            btnQuest.hasNotificationImage.enabled = worldMap.hasNotification;
-
             var addressHex = ReactiveAvatarState.Address.Value.ToHex();
             var firstOpenCombinationKey = string.Format(FirstOpenCombinationKeyFormat, addressHex);
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHex);
@@ -174,9 +170,15 @@ namespace Nekoyume.UI
             rankingExclamationMark.gameObject.SetActive(
                 btnRanking.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
+
+            var worldMap = Find<WorldMap>();
+            worldMap.UpdateNotificationInfo();
+            var hasNotificationInWorldmap = worldMap.hasNotification;
+
             questExclamationMark.gameObject.SetActive(
-                btnQuest.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
+                (btnQuest.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
+                hasNotificationInWorldmap);
         }
 
         private void HideButtons()

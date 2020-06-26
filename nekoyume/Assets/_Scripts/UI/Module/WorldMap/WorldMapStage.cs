@@ -73,7 +73,7 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI buttonText = null;
 
         [SerializeField]
-        private Image hasNotificationImage = null;
+        private GameObject hasNotificationImage = null;
 
         private Vector3 _normalImageScale;
         private Vector3 _disabledImageScale;

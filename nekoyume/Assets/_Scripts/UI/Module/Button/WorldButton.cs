@@ -48,7 +48,7 @@ namespace Nekoyume.UI.Module
         private float hoverScaleSpeed = 0.7f;
 
         [SerializeField]
-        private Image hasNotificationImage = null;
+        private GameObject hasNotificationImage = null;
 
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Locked);
 
