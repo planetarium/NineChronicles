@@ -26,8 +26,8 @@ namespace Tests.EditMode
         {
             var state = new RedeemCodeState(_sheet);
             var serialized = (Dictionary) state.Serialize();
-            Assert.IsTrue(serialized.ContainsKey((Text) "address"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "map"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "address"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "map"));
             var deserialized = new RedeemCodeState(serialized);
             Assert.AreEqual(state.address, deserialized.address);
             foreach (var pair in state.Map)
