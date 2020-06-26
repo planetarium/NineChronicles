@@ -266,7 +266,17 @@ namespace Nekoyume.UI.Module
         /// SharedViewModel.avatarState를 사용해서 리스트를 업데이트 합니다.
         /// </summary>
         /// <param name="onComplete"></param>
-        public void UpdateList(System.Action onComplete)
+        public void UpdateList(System.Action onComplete = null)
+        {
+            UpdateList(SharedViewModel.avatarState, onComplete);
+        }
+
+        /// <summary>
+        /// avatarState 인자를 사용해서 리스트를 업데이트 합니다.
+        /// </summary>
+        /// <param name="avatarState"></param>
+        /// <param name="onComplete"></param>
+        public void UpdateList(AvatarState avatarState, System.Action onComplete = null)
         {
             if (_state.Value != ViewState.Shown)
             {
@@ -275,6 +285,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            SharedViewModel.avatarState = avatarState;
             StartCoroutine(CoUpdateList(onComplete));
         }
 
