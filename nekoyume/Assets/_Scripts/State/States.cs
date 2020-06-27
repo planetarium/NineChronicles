@@ -238,6 +238,10 @@ namespace Nekoyume.State
         private void UpdateCurrentAvatarState(AvatarState state, bool initializeReactiveState = true)
         {
             CurrentAvatarState = state;
+            if (!(state is null))
+            {
+                SetCombinationSlotStates(state);
+            }
 
             if (!initializeReactiveState)
                 return;
