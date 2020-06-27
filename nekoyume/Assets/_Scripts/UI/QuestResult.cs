@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.Quest;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using TMPro;
 using UnityEngine;
 
@@ -65,8 +67,29 @@ namespace Nekoyume.UI
             _npc.transform.position = npcPosition.position;
         }
 
+        public void Show(
+            CombinationEquipmentQuestSheet.Row questRow,
+            bool ignoreShowAnimation = false)
+        {
+            if (questRow is null)
+            {
+                return;
+            }
+
+            var quest = States.Instance.CurrentAvatarState?.questList
+                .OfType<CombinationEquipmentQuest>()
+                .FirstOrDefault(item =>
+                    item.Id == questRow.Id);
+            Show(quest, ignoreShowAnimation);
+        }
+
         public void Show(Nekoyume.Model.Quest.Quest quest, bool ignoreShowAnimation = false)
         {
+            if (quest is null)
+            {
+                return;
+            }
+
             var rewardModels = quest.Reward.ItemMap
                 .Select(pair =>
                 {
@@ -79,7 +102,9 @@ namespace Nekoyume.UI
             Show(quest, rewardModels, ignoreShowAnimation);
         }
 
-        private void Show(Nekoyume.Model.Quest.Quest quest, List<CountableItem> rewards,
+        private void Show(
+            Nekoyume.Model.Quest.Quest quest,
+            List<CountableItem> rewards,
             bool ignoreShowAnimation = false)
         {
             foreach (var view in itemViews)
@@ -100,8 +125,8 @@ namespace Nekoyume.UI
             _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
 
             base.Show(ignoreShowAnimation);
-            MakeNotification(quest);
-            UpdateLocalState(quest);
+            MakeNotification(quest.GetContent());
+            UpdateLocalState(quest.Id, quest.Reward.ItemMap);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -136,28 +161,24 @@ namespace Nekoyume.UI
 
         #endregion
 
-        private static void MakeNotification(Nekoyume.Model.Quest.Quest quest)
+        private static void MakeNotification(string questContent)
         {
-            if (quest is null)
-            {
-                return;
-            }
-
             var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
-            var msg = string.Format(format, quest.GetContent());
+            var msg = string.IsNullOrEmpty(questContent)
+                ? string.Empty
+                : string.Format(format, questContent);
             Notification.Push(MailType.System, msg);
         }
 
-        private static void UpdateLocalState(Nekoyume.Model.Quest.Quest quest)
+        private static void UpdateLocalState(int questId, Dictionary<int, int> rewards)
         {
-            if (quest is null)
+            if (rewards is null)
             {
                 return;
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var rewardMap = quest.Reward.ItemMap;
-            foreach (var reward in rewardMap)
+            foreach (var reward in rewards)
             {
                 var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
                     .First(pair => pair.Key == reward.Key);
@@ -169,7 +190,7 @@ namespace Nekoyume.UI
                     false);
             }
 
-            LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
+            LocalStateModifier.RemoveReceivableQuest(avatarAddress, questId);
         }
 
         private IEnumerator CoShowRewards(IReadOnlyList<CountableItem> rewards)
