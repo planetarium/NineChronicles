@@ -182,6 +182,8 @@ namespace Nekoyume.UI
             shopItems.SharedModel.DeselectItemView();
             buyButton.SetInteractable(false, true);
             sellButton.SetInteractable(false, true);
+            buyImage.gameObject.SetActive(false);
+            sellImage.gameObject.SetActive(false);
             switch (stateType)
             {
                 case StateType.Show:
@@ -201,6 +203,7 @@ namespace Nekoyume.UI
                         shopItems.SharedModel.State.Value = stateType;
                         buyButton.SetInteractable(false, true);
                         sellButton.SetInteractable(true, true);
+                        buyImage.gameObject.SetActive(true);
                         return;
                     }
                     break;
@@ -232,6 +235,9 @@ namespace Nekoyume.UI
                         _sequenceOfShopItems = null;
                         buyButton.SetInteractable(stateType == StateType.Sell, true);
                         sellButton.SetInteractable(stateType == StateType.Buy, true);
+                        var isSell = stateType == StateType.Sell;
+                        buyImage.gameObject.SetActive(!isSell);
+                        sellImage.gameObject.SetActive(isSell);
                     });
                 });
             }
@@ -590,12 +596,6 @@ namespace Nekoyume.UI
                         var p = bg1.anchoredPosition;
                         p.x = value;
                         bg1.anchoredPosition = p;
-                        if (!isGoOut)
-                        {
-                            buyImage.gameObject.SetActive(SharedModel.State.Value == StateType.Buy);
-                            sellImage.gameObject.SetActive(
-                                SharedModel.State.Value == StateType.Sell);
-                        }
                     },
                     isGoOut
                         ? _defaultAnchoredPositionXOfBg1 + GoOutTweenX
