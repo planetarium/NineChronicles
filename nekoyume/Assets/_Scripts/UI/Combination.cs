@@ -198,7 +198,7 @@ namespace Nekoyume.UI
                 if (State.Value == StateType.CombinationConfirm)
                     return;
 
-                ActionEnhancedCombinationEquipment(equipmentCombinationPanel);
+                ActionCombinationEquipment(equipmentCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
 
@@ -210,7 +210,7 @@ namespace Nekoyume.UI
                 if (State.Value == StateType.CombinationConfirm)
                     return;
 
-                ActionEnhancedCombinationEquipment(elementalCombinationPanel);
+                ActionCombinationEquipment(elementalCombinationPanel);
                 StartCoroutine(CoCombineNPCAnimation());
             }).AddTo(gameObject);
 
@@ -702,20 +702,7 @@ namespace Nekoyume.UI
             consumableRecipe.UpdateRecipes();
         }
 
-        private void ActionEnhanceEquipment()
-        {
-            var baseEquipmentGuid =
-                ((Equipment) enhanceEquipment.baseMaterial.Model.ItemBase.Value).ItemId;
-            var otherEquipmentGuidList = enhanceEquipment.otherMaterials
-                .Select(e => ((Equipment) e.Model.ItemBase.Value).ItemId)
-                .ToList();
-
-            UpdateCurrentAvatarState(enhanceEquipment, baseEquipmentGuid, otherEquipmentGuidList);
-            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList, selectedIndex);
-            enhanceEquipment.RemoveMaterialsAll();
-        }
-
-        private void ActionEnhancedCombinationEquipment(CombinationPanel combinationPanel)
+        private void ActionCombinationEquipment(CombinationPanel combinationPanel)
         {
             var cellview = (combinationPanel.recipeCellView as EquipmentRecipeCellView);
             var model = cellview.RowData;
@@ -731,6 +718,19 @@ namespace Nekoyume.UI
                 combinationPanel
             );
             equipmentRecipe.UpdateRecipes();
+        }
+
+        private void ActionEnhanceEquipment()
+        {
+            var baseEquipmentGuid =
+                ((Equipment) enhanceEquipment.baseMaterial.Model.ItemBase.Value).ItemId;
+            var otherEquipmentGuidList = enhanceEquipment.otherMaterials
+                .Select(e => ((Equipment) e.Model.ItemBase.Value).ItemId)
+                .ToList();
+
+            UpdateCurrentAvatarState(enhanceEquipment, baseEquipmentGuid, otherEquipmentGuidList);
+            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList, selectedIndex);
+            enhanceEquipment.RemoveMaterialsAll();
         }
 
         private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
