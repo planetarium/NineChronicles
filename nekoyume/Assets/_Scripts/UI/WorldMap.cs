@@ -54,7 +54,7 @@ namespace Nekoyume.UI
 
         public bool hasNotification = false;
 
-        private int _stageIdToNotify = 0;
+        public int stageIdToNotify = 0;
 
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
@@ -181,7 +181,7 @@ namespace Nekoyume.UI
                 UpdateNotificationInfo();
 
                 var rowData = world.SharedViewModel.RowData;
-                var isIncludedInQuest = _stageIdToNotify >= rowData.StageBegin && _stageIdToNotify <= rowData.StageEnd;
+                var isIncludedInQuest = stageIdToNotify >= rowData.StageBegin && stageIdToNotify <= rowData.StageEnd;
 
                 if (worldModel.IsUnlocked)
                 {
@@ -278,7 +278,7 @@ namespace Nekoyume.UI
             {
                 if (world.SharedViewModel.RowData.Id.Equals(SelectedWorldId))
                 {
-                    world.ShowByStageId(SelectedStageId, _stageIdToNotify);
+                    world.ShowByStageId(SelectedStageId, stageIdToNotify);
                 }
                 else
                 {
@@ -296,7 +296,7 @@ namespace Nekoyume.UI
                 .OrderBy(x => x.Goal)
                 .FirstOrDefault()?
                 .Goal ?? -1;
-            _stageIdToNotify = questStageId;
+            stageIdToNotify = questStageId;
 
             hasNotification = questStageId > 0;
         }
