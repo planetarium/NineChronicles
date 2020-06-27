@@ -183,7 +183,6 @@ namespace Nekoyume.UI.Module
         public void SetInteractable(bool interactable, bool ignoreImageColor = false)
         {
             button.interactable = interactable;
-            Toggleable = button.interactable;
 
             if (ignoreImageColor)
             {
