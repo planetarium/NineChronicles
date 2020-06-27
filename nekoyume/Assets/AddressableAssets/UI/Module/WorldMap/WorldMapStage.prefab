@@ -746,11 +746,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8481963920892601554}
     m_Modifications:
-    - target: {fileID: 1600884221499168615, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
-        type: 3}
-      propertyPath: m_Name
-      value: ExclamationMarkImage
-      objectReference: {fileID: 0}
     - target: {fileID: 3502085939140762763, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -855,6 +850,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1600884221499168615, guid: cc8b8626f2b35e3469e6330b2b6d79c2,
+        type: 3}
+      propertyPath: m_Name
+      value: ExclamationMarkImage
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cc8b8626f2b35e3469e6330b2b6d79c2, type: 3}
