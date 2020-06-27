@@ -710,7 +710,7 @@ namespace Nekoyume.UI
                 ? elementalPanel.SelectedSubRecipeId
                 : (int?) null;
             UpdateCurrentAvatarState(combinationPanel, combinationPanel.materialPanel.MaterialList);
-            CreateEnhancedCombinationEquipmentAction(
+            CreateCombinationEquipmentAction(
                 model.Id,
                 subRecipeId,
                 selectedIndex,
@@ -748,7 +748,8 @@ namespace Nekoyume.UI
             }
         }
 
-        private static void UpdateCurrentAvatarState(ICombinationPanel combinationPanel,
+        private static void UpdateCurrentAvatarState(
+            ICombinationPanel combinationPanel,
             Guid baseItemGuid,
             IEnumerable<Guid> otherItemGuidList)
         {
@@ -757,7 +758,6 @@ namespace Nekoyume.UI
 
             LocalStateModifier.ModifyAgentGold(agentAddress, -combinationPanel.CostNCG);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -combinationPanel.CostAP);
-
             LocalStateModifier.RemoveItem(avatarAddress, baseItemGuid);
             foreach (var itemGuid in otherItemGuidList)
             {
@@ -766,7 +766,8 @@ namespace Nekoyume.UI
         }
 
 
-        private void CreateConsumableCombinationAction(int rowId,
+        private void CreateConsumableCombinationAction(
+            int rowId,
             List<(Material material, int count)> materialInfoList,
             int slotIndex)
         {
@@ -779,12 +780,33 @@ namespace Nekoyume.UI
             var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationConsumable(rowId, slotIndex)
-                .Subscribe(_ => { },
+                .Subscribe(
+                    _ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));
         }
 
-        private void CreateItemEnhancementAction(Guid baseItemGuid,
-            List<Guid> otherItemGuidList, int slotIndex)
+        private void CreateCombinationEquipmentAction(
+            int recipeId,
+            int? subRecipeId,
+            int slotIndex,
+            EquipmentItemRecipeSheet.Row model,
+            CombinationPanel panel)
+        {
+            LocalStateModifier.ModifyCombinationSlot(
+                Game.Game.instance.TableSheets,
+                model,
+                panel,
+                slotIndex,
+                subRecipeId);
+            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
+            Notification.Push(MailType.Workshop, msg);
+            Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
+        }
+
+        private void CreateItemEnhancementAction(
+            Guid baseItemGuid,
+            List<Guid> otherItemGuidList,
+            int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotItemEnhancement(
                 enhanceEquipment,
@@ -795,18 +817,9 @@ namespace Nekoyume.UI
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
-                .Subscribe(_ => { },
+                .Subscribe(
+                    _ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
-        }
-
-        private void CreateEnhancedCombinationEquipmentAction(int recipeId, int? subRecipeId,
-            int slotIndex, EquipmentItemRecipeSheet.Row model, CombinationPanel panel)
-        {
-            LocalStateModifier.ModifyCombinationSlot(Game.Game.instance.TableSheets, model, panel,
-                slotIndex, subRecipeId);
-            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
-            Notification.Push(MailType.Workshop, msg);
-            Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
         }
 
         #endregion
