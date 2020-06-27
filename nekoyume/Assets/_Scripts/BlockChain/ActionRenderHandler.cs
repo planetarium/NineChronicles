@@ -381,6 +381,14 @@ namespace Nekoyume.BlockChain
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+            var quest = Game.Game.instance.TableSheets.CombinationEquipmentQuestSheet.OrderedList
+                .FirstOrDefault(row =>
+                    row.RecipeId == eval.Action.RecipeId &&
+                    row.SubRecipeId == eval.Action.SubRecipeId);
+            if (!(quest is null))
+            {
+                Widget.Find<QuestResult>().Show(quest);
+            }
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
