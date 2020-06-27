@@ -24,6 +24,13 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private TextMeshProUGUI contentText = null;
 
+        // NOTE: 콘텐츠 텍스트의 길이가 UI를 넘어갈 수 있기 때문에 flowing text 처리를 해주는 것이 좋겠습니다.
+        [SerializeField]
+        private TextMeshProUGUI effectedContentText = null;
+
+        [SerializeField]
+        private Image effectedBodyImage = null;
+
         // NOTE: 가이드 퀘스트 보상 아이콘의 연출 스펙에 따라서 별도로 XxxItemView를 만들어서 사용합니다.
         [SerializeField]
         private List<VanillaItemView> rewards = null;
@@ -42,7 +49,7 @@ namespace Nekoyume.UI.Scroller
         private AnchoredPositionXTweener showingAndHidingTweener = null;
 
         [SerializeField]
-        private DOTweenRectTransformSize inProgressTweener = null;
+        private TransformLocalScaleTweener inProgressTweener = null;
 
         private bool _inProgress = false;
 
@@ -116,12 +123,19 @@ namespace Nekoyume.UI.Scroller
             _inProgress = inProgress;
             if (_inProgress)
             {
+                contentText.gameObject.SetActive(false);
+                effectedContentText.gameObject.SetActive(true);
+                effectedBodyImage.gameObject.SetActive(true);
                 showingAndHidingTweener.KillTween();
-                inProgressTweener.PlayForward();
+                inProgressTweener.PlayTween();
             }
             else
             {
-                inProgressTweener.Stop();
+                contentText.gameObject.SetActive(true);
+                effectedContentText.gameObject.SetActive(false);
+                effectedBodyImage.gameObject.SetActive(false);
+                inProgressTweener.KillTween();
+                inProgressTweener.ResetToOriginalLocalScale();
             }
         }
 
@@ -180,7 +194,7 @@ namespace Nekoyume.UI.Scroller
 
         private void SetContent(Nekoyume.Model.Quest.Quest quest)
         {
-            contentText.text = quest.GetContent();
+            contentText.text = effectedContentText.text = quest.GetContent();
             mainQuestImage.gameObject.SetActive(false);
             subQuestImage.gameObject.SetActive(false);
             switch (quest)
