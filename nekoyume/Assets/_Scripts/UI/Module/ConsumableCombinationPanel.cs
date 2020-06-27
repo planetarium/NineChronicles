@@ -9,7 +9,7 @@ namespace Nekoyume.UI.Module
         public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
         {
             (recipeCellView as ConsumableRecipeCellView).Set(recipeRow);
-            materialPanel.SetData(recipeRow);
+            materialPanel.SetData(recipeRow, Widget.Find<Combination>().selectedIndex >= 0);
 
             gameObject.SetActive(true);
             confirmAreaYTweener.onComplete = OnTweenCompleted;
