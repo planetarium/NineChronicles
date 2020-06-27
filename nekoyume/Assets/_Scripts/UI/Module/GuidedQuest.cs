@@ -192,6 +192,27 @@ namespace Nekoyume.UI.Module
             EnterToHiding(ignoreAnimation);
         }
 
+        public void SetWorldQuestToInProgress(int stageId)
+        {
+            if (SharedViewModel.worldQuest.Value?.Goal != stageId)
+            {
+                return;
+            }
+
+            WorldQuestCell.SetToInProgress(true);
+        }
+
+        public void SetCombinationEquipmentToInProgress(int recipeId, int? subRecipeId)
+        {
+            if (SharedViewModel.combinationEquipmentQuest.Value?.RecipeId != recipeId ||
+                SharedViewModel.combinationEquipmentQuest.Value?.SubRecipeId != subRecipeId)
+            {
+                return;
+            }
+
+            CombinationEquipmentQuestCell.SetToInProgress(true);
+        }
+
         /// <summary>
         /// 현재 노출된 스테이지 가이드 퀘스트 정보와 같은 스테이지일 경우에 동작합니다.
         /// 클리어 처리가 될 때에는 `QuestResult`를 띄우는 것을 포함하는 연출을 책임집니다.
