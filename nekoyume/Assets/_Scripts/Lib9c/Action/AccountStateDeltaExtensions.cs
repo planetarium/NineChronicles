@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using Bencodex.Types;
 using Libplanet;
@@ -80,9 +81,17 @@ namespace Nekoyume.Action
             }
         }
 
+        // FIXME NRE를 유발할 수 있는 위험한 방식. null 없이도 돌아가게 고쳐야 합니다.
         public static GoldBalanceState GetGoldBalanceState(this IAccountStateDelta states, Address address)
         {
-            return new GoldBalanceState(address, states.GetBalance(address, Currencies.Gold));
+            try
+            {
+                return new GoldBalanceState(address, states.GetBalance(address, Currencies.Gold));
+            }
+            catch (BalanceDoesNotExistsException)
+            {
+                return null;
+            }
         }
 
         public static AvatarState GetAvatarState(this IAccountStateDelta states, Address address)
