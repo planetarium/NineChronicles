@@ -268,7 +268,7 @@ namespace Nekoyume.Model.State
 
         public static T GetValue<T>(this Dictionary serialized, string key, T defaultValue, IValueTryParseDelegate<T> tryParser)
         {
-            if (serialized.ContainsKey((Text) key) &&
+            if (serialized.ContainsKey((IKey)(Text) key) &&
                 tryParser(serialized[key], out var value))
             {
                 return value;
@@ -279,63 +279,63 @@ namespace Nekoyume.Model.State
 
         public static Address GetAddress(this Dictionary serialized, string key, Address defaultValue = default)
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? serialized[key].ToAddress()
                 : defaultValue;
         }
 
         public static bool GetBoolean(this Dictionary serialized, string key, bool defaultValue = false)
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? serialized[key].ToBoolean()
                 : defaultValue;
         }
 
         public static int GetInteger(this Dictionary serialized, string key, int defaultValue = 0)
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? serialized[key].ToInteger()
                 : defaultValue;
         }
 
         public static long GetLong(this Dictionary serialized, string key, long defaultValue = 0L)
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? serialized[key].ToLong()
                 : defaultValue;
         }
 
         public static decimal GetDecimal(this Dictionary serialized, string key, decimal defaultValue = 0M)
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? serialized[key].ToDecimal()
                 : defaultValue;
         }
 
         public static string GetString(this Dictionary serialized, string key, string defaultValue = "")
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? ToString(serialized[key])
                 : defaultValue;
         }
 
         public static DateTimeOffset GetDateTimeOffset(this Dictionary serialized, string key, DateTimeOffset defaultValue = default)
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? serialized[key].ToDateTimeOffset()
                 : defaultValue;
         }
 
         public static Guid GetGuid(this Dictionary serialized, string key, Guid defaultValue = default)
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? serialized[key].ToGuid()
                 : defaultValue;
         }
 
         public static DecimalStat GetDecimalStat(this Dictionary serialized, string key, DecimalStat defaultValue = default)
         {
-            return serialized.ContainsKey((Text)key)
+            return serialized.ContainsKey((IKey)(Text)key)
                 ? serialized[key].ToDecimalStat()
                 : defaultValue;
         }

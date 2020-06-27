@@ -24,16 +24,16 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
-        private Button button;
+        private Button button = null;
 
         [SerializeField]
-        private Image grayImage;
+        private Image grayImage = null;
 
         [SerializeField]
-        private Image colorImage;
+        private Image colorImage = null;
 
         [SerializeField]
-        private Image nameImage;
+        private Image nameImage = null;
 
         [SerializeField, Header("Direction"), Tooltip("대기 상태일 때 월드 이름이 스케일 되는 크기")]
         private float idleNameScaleTo = 1.1f;
@@ -47,6 +47,9 @@ namespace Nekoyume.UI.Module
         [SerializeField, Tooltip("마우스 호버 상태일 때 월드 버튼이 스케일 되는 속도")]
         private float hoverScaleSpeed = 0.7f;
 
+        [SerializeField]
+        private GameObject hasNotificationImage = null;
+
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Locked);
 
         private readonly ReactiveProperty<AnimationState> _animationState =
@@ -55,6 +58,7 @@ namespace Nekoyume.UI.Module
         private Tweener _tweener;
 
         public readonly Subject<WorldButton> OnClickSubject = new Subject<WorldButton>();
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         private bool IsLocked => _state.Value == State.Locked;
 
@@ -82,7 +86,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(go);
 
             button.OnClickAsObservable().Subscribe(OnClick).AddTo(go);
-
+            HasNotification.SubscribeTo(hasNotificationImage).AddTo(go);
             _state.Subscribe(OnState).AddTo(go);
             _animationState.Subscribe(OnAnimationState).AddTo(go);
         }
@@ -163,7 +167,7 @@ namespace Nekoyume.UI.Module
                     break;
                 case AnimationState.Hover:
                     _tweener = transform
-                        .DOScale(hoverScaleTo, 1f / hoverScaleTo)
+                        .DOScale(hoverScaleTo, 1f / hoverScaleSpeed)
                         .SetEase(Ease.Linear)
                         .SetLoops(-1, LoopType.Yoyo);
                     break;

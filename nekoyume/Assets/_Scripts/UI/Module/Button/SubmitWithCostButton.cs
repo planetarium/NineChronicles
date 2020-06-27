@@ -8,25 +8,62 @@ namespace Nekoyume.UI.Module
 {
     public class SubmitWithCostButton : SubmitButton
     {
-        public Image costBackgroundImage;
-        public Image costBackgroundImageForSubmittable;
-        public GameObject costs;
-        public GameObject costNCG;
-        public Image costNCGImage;
-        public Image costNCGImageForSubmittable;
-        public TextMeshProUGUI costNCGText;
-        public TextMeshProUGUI costNCGTextForSubmittable;
-        public GameObject costAP;
-        public Image costAPImage;
-        public Image costAPImageForSubmittable;
-        public TextMeshProUGUI costAPText;
-        public TextMeshProUGUI costAPTextForSubmittable;
-        public GameObject costHourglass;
-        public Image costHourglassImage;
-        public Image costHourGlassImageForSubmittable;
-        public TextMeshProUGUI costHourglassText;
-        public TextMeshProUGUI costHourglassTextForSubmittable;
-        public HorizontalLayoutGroup layoutGroup;
+        [SerializeField]
+        private Image costBackgroundImage = null;
+
+        [SerializeField]
+        private Image costBackgroundImageForSubmittable = null;
+
+        [SerializeField]
+        private GameObject costs = null;
+
+        [SerializeField]
+        private GameObject costNCG = null;
+
+        [SerializeField]
+        private Image costNCGImage = null;
+
+        [SerializeField]
+        private Image costNCGImageForSubmittable = null;
+
+        [SerializeField]
+        private TextMeshProUGUI costNCGText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI costNCGTextForSubmittable = null;
+
+        [SerializeField]
+        private GameObject costAP = null;
+
+        [SerializeField]
+        private Image costAPImage = null;
+
+        [SerializeField]
+        private Image costAPImageForSubmittable = null;
+
+        [SerializeField]
+        private TextMeshProUGUI costAPText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI costAPTextForSubmittable = null;
+
+        [SerializeField]
+        private GameObject costHourglass = null;
+
+        [SerializeField]
+        private Image costHourglassImage = null;
+
+        [SerializeField]
+        private Image costHourGlassImageForSubmittable = null;
+
+        [SerializeField]
+        private TextMeshProUGUI costHourglassText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI costHourglassTextForSubmittable = null;
+
+        [SerializeField]
+        private HorizontalLayoutGroup layoutGroup = null;
 
         public void ShowNCG(BigInteger ncg, bool isEnough)
         {
@@ -34,7 +71,6 @@ namespace Nekoyume.UI.Module
             SetText(costNCGText, costNCGTextForSubmittable, isEnough, ncg);
             UpdateSpace();
         }
-
 
         public void HideNCG()
         {
@@ -93,7 +129,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateSpace()
         {
-            bool hasNoCost = !costAP.activeSelf && !costNCG.activeSelf && !costHourglass.activeSelf;
+            var hasNoCost = !costAP.activeSelf && !costNCG.activeSelf && !costHourglass.activeSelf;
 
             costs.SetActive(!hasNoCost);
             layoutGroup.childAlignment = hasNoCost ? TextAnchor.MiddleCenter : TextAnchor.MiddleLeft;

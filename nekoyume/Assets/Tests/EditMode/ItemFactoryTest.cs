@@ -78,8 +78,8 @@ namespace Tests.EditMode
             var material = ItemFactory.CreateMaterial(row);
             Assert.IsNotNull(material);
             var serialized = (Dictionary) material.Serialize();
-            Assert.IsFalse(serialized.ContainsKey((Text) "data"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "item_id"));
+            Assert.IsFalse(serialized.ContainsKey((IKey)(Text) "data"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "item_id"));
             var deserialize = ItemFactory.Deserialize(serialized);
             Assert.AreEqual(deserialize, material);
         }
@@ -95,7 +95,7 @@ namespace Tests.EditMode
                 Dictionary.Empty
                     .Add("data", row.Serialize())
             );
-            Assert.IsTrue(legacy.ContainsKey((Text) "data"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "data"));
             var deserialize = ItemFactory.Deserialize(legacy);
             Assert.AreEqual(material, deserialize);
             Assert.AreEqual(material, ItemFactory.Deserialize(serialized));
@@ -108,12 +108,12 @@ namespace Tests.EditMode
             var consumable = ItemFactory.CreateItemUsable(row, Guid.Empty, default);
             Assert.IsNotNull(consumable);
             var serialized = (Dictionary) consumable.Serialize();
-            Assert.IsFalse(serialized.ContainsKey((Text) "data"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "itemId"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "statsMap"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "skills"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "buffSkills"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "requiredBlockIndex"));
+            Assert.IsFalse(serialized.ContainsKey((IKey)(Text) "data"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "itemId"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "statsMap"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "skills"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "buffSkills"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "requiredBlockIndex"));
             var deserialize = ItemFactory.Deserialize(serialized);
             Assert.AreEqual(deserialize, consumable);
         }
@@ -129,7 +129,7 @@ namespace Tests.EditMode
                 Dictionary.Empty
                     .Add("data", row.Serialize())
             );
-            Assert.IsTrue(legacy.ContainsKey((Text) "data"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "data"));
             var deserialize = ItemFactory.Deserialize(legacy);
             Assert.AreEqual(consumable, deserialize);
             Assert.AreEqual(consumable, ItemFactory.Deserialize(serialized));
@@ -154,14 +154,14 @@ namespace Tests.EditMode
             Assert.IsNotNull(equipment);
             equipment.equipped = equip;
             var serialized = (Dictionary) equipment.Serialize();
-            Assert.IsFalse(serialized.ContainsKey((Text) "data"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "itemId"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "statsMap"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "skills"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "buffSkills"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "requiredBlockIndex"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "equipped"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "level"));
+            Assert.IsFalse(serialized.ContainsKey((IKey)(Text) "data"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "itemId"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "statsMap"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "skills"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "buffSkills"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "requiredBlockIndex"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "equipped"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "level"));
             var deserialize = ItemFactory.Deserialize(serialized);
             Assert.AreEqual(equipment, deserialize);
         }
@@ -184,13 +184,13 @@ namespace Tests.EditMode
                     .Add("requiredBlockIndex", equipment.RequiredBlockIndex.Serialize())
             );
             var serialized = (Dictionary) equipment.Serialize();
-            Assert.IsTrue(legacy.ContainsKey((Text) "data"));
-            Assert.IsTrue(legacy.ContainsKey((Text) "equipped"));
-            Assert.IsTrue(legacy.ContainsKey((Text) "level"));
-            Assert.IsTrue(legacy.ContainsKey((Text) "statsMap"));
-            Assert.IsTrue(legacy.ContainsKey((Text) "skills"));
-            Assert.IsTrue(legacy.ContainsKey((Text) "buffSkills"));
-            Assert.IsTrue(legacy.ContainsKey((Text) "requiredBlockIndex"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "data"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "equipped"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "level"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "statsMap"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "skills"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "buffSkills"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "requiredBlockIndex"));
             var deserialize = ItemFactory.Deserialize(legacy);
             Assert.AreEqual(equipment, deserialize);
             Assert.AreEqual(equipment, ItemFactory.Deserialize(serialized));
@@ -204,14 +204,14 @@ namespace Tests.EditMode
             Assert.IsNotNull(costume);
             costume.equipped = equip;
             var serialized = (Dictionary) costume.Serialize();
-            Assert.IsFalse(serialized.ContainsKey((Text) "data"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "id"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "item_type"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "item_sub_type"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "grade"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "elemental_type"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "equipped"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "spine_resource_path"));
+            Assert.IsFalse(serialized.ContainsKey((IKey)(Text) "data"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "id"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "item_type"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "item_sub_type"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "grade"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "elemental_type"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "equipped"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "spine_resource_path"));
             var deserialize = ItemFactory.Deserialize(serialized);
             Assert.AreEqual(costume, deserialize);
         }
@@ -229,8 +229,8 @@ namespace Tests.EditMode
                     .Add("data", row.Serialize())
                     .Add("equipped", costume.equipped.Serialize())
             );
-            Assert.IsTrue(legacy.ContainsKey((Text) "data"));
-            Assert.IsTrue(legacy.ContainsKey((Text) "equipped"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "data"));
+            Assert.IsTrue(legacy.ContainsKey((IKey)(Text) "equipped"));
             var deserialize = ItemFactory.Deserialize(legacy);
             Assert.AreEqual(costume, deserialize);
             Assert.AreEqual(costume, ItemFactory.Deserialize(serialized));
@@ -244,7 +244,7 @@ namespace Tests.EditMode
             Assert.IsNotNull(chest);
             Assert.AreEqual(chest.Rewards, new List<RedeemRewardSheet.RewardInfo>());
             var serialized = (Dictionary) chest.Serialize();
-            Assert.IsTrue(serialized.ContainsKey((Text) "rewards"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "rewards"));
             Assert.AreEqual(chest, ItemFactory.Deserialize(serialized));
 
             var rewards = _tableSheets.RedeemRewardSheet.Values.First().Rewards;
@@ -252,7 +252,7 @@ namespace Tests.EditMode
             Assert.IsNotNull(chest2);
             Assert.AreEqual(chest2.Rewards, rewards);
             var serialized2 = (Dictionary) chest2.Serialize();
-            Assert.IsTrue(serialized2.ContainsKey((Text) "rewards"));
+            Assert.IsTrue(serialized2.ContainsKey((IKey)(Text) "rewards"));
             Assert.AreEqual(chest2, ItemFactory.Deserialize(serialized2));
             Assert.AreNotEqual(serialized, serialized2);
             Assert.AreNotEqual(chest, chest2);
@@ -268,7 +268,7 @@ namespace Tests.EditMode
             Assert.IsNotNull(chestMaterial);
             Assert.DoesNotThrow(() => chestMaterial.Serialize());
             var serialized = (Dictionary) chestMaterial.Serialize();
-            Assert.IsTrue(serialized.ContainsKey((Text) "rewards"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "rewards"));
             Assert.AreEqual(chest, ItemFactory.Deserialize(serialized));
         }
     }

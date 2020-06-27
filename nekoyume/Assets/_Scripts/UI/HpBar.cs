@@ -32,7 +32,7 @@ namespace Nekoyume.UI
         private Slider additionalSlider = null;
 
         [SerializeField]
-        private TitleContainer titleContainer;
+        private TitleContainer titleContainer = default;
 
         public HpBarVFX HpVFX { get; protected set; }
 

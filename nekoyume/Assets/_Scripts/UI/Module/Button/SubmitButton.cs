@@ -10,19 +10,19 @@ namespace Nekoyume.UI.Module
     public class SubmitButton : MonoBehaviour
     {
         [SerializeField]
-        private Button button;
+        private Button button = null;
 
         [SerializeField]
-        private Image backgroundImage;
+        private Image backgroundImage = null;
 
         [SerializeField]
-        private Image backgroundImageForSubmittable;
+        private Image backgroundImageForSubmittable = null;
 
         [SerializeField]
-        private TextMeshProUGUI submitText;
+        private TextMeshProUGUI submitText = null;
 
         [SerializeField]
-        private TextMeshProUGUI submitTextForSubmittable;
+        private TextMeshProUGUI submitTextForSubmittable = null;
 
         private Animator _animatorCache;
 

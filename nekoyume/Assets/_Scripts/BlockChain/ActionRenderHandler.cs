@@ -14,6 +14,7 @@ using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Org.BouncyCastle.Math.EC;
 using TentuPlay.Api;
 
 namespace Nekoyume.BlockChain
@@ -403,6 +404,7 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
+            Widget.Find<Combination>().UpdateRecipe();
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
@@ -551,19 +553,15 @@ namespace Nekoyume.BlockChain
 
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
-            var battleResultWidget = Widget.Find<BattleResult>();
-
-            var dispose = battleResultWidget.BattleEndedSubject.Subscribe(_ =>
-            {
-                UpdateCurrentAvatarState(eval);
-                UpdateWeeklyArenaState(eval);
-                var avatarState = eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-
-                foreach (var questId in avatarState.questList.completedQuestIds)
-                    LocalStateModifier.AddReceivableQuest(States.Instance.CurrentAvatarState.address, questId);
-                battleResultWidget.battleEndedStream.Dispose();
-            });
-            battleResultWidget.battleEndedStream = dispose;
+            Game.Game.instance.Stage.onEnterToStageEnd
+                .First()
+                .Subscribe(_ =>
+                {
+                    UpdateCurrentAvatarState(eval);
+                    UpdateWeeklyArenaState(eval);
+                    var avatarState = eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
+                    RenderQuest(eval.Action.avatarAddress, avatarState.questList.completedQuestIds);
+                });
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
             actionFailPopup.CloseCallback = null;
@@ -754,23 +752,25 @@ namespace Nekoyume.BlockChain
         }
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
         {
-            foreach (int id in ids)
+            foreach (var id in ids)
             {
                 LocalStateModifier.AddReceivableQuest(avatarAddress, id);
 
                 var currentAvatarState = States.Instance.CurrentAvatarState;
-                if (currentAvatarState.address == avatarAddress)
+                if (currentAvatarState.address != avatarAddress)
                 {
-                    var quest = currentAvatarState.questList.First(q => q.Id == id);
-                    var rewardMap = quest.Reward.ItemMap;
+                    continue;
+                }
 
-                    foreach (var reward in rewardMap)
-                    {
-                        var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
-                            .First(pair => pair.Key == reward.Key);
+                var quest = currentAvatarState.questList.First(q => q.Id == id);
+                var rewardMap = quest.Reward.ItemMap;
 
-                        LocalStateModifier.RemoveItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
-                    }
+                foreach (var reward in rewardMap)
+                {
+                    var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
+                        .First(pair => pair.Key == reward.Key);
+
+                    LocalStateModifier.RemoveItem(avatarAddress, materialRow.Value.ItemId, reward.Value);
                 }
             }
         }

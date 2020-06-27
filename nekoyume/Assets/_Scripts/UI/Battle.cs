@@ -78,7 +78,18 @@ namespace Nekoyume.UI
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
         {
-            guidedQuest.ClearWorldQuest(stageId, onComplete);
+            guidedQuest.ClearWorldQuest(stageId, cleared =>
+            {
+                if (!cleared)
+                {
+                    onComplete(false);
+                    return;
+                }
+
+                guidedQuest.UpdateList(
+                    States.Instance.CurrentAvatarState,
+                    () => onComplete(true));
+            });
         }
 
         private void SubscribeOnExitButtonClick(BottomMenu bottomMenu)

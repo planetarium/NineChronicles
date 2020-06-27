@@ -8,9 +8,7 @@ namespace Nekoyume.UI
     public abstract class XTweenWidget : Widget
     {
         [SerializeField]
-        private AnchoredPositionXTweener xTweener;
-
-        protected AnchoredPositionXTweener XTweener => xTweener;
+        private AnchoredPositionXTweener xTweener = null;
 
         public override void Show(bool ignoreShowAnimation = false)
         {

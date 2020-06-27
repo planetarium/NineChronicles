@@ -161,18 +161,29 @@ namespace Nekoyume.UI
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
+
+            var combination = Find<Combination>();
+            var hasNotificationOnCombination = combination.HasNotification;
+
             combinationExclamationMark.gameObject.SetActive(
-                btnCombination.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
+                (btnCombination.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0)
+                || hasNotificationOnCombination);
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
             rankingExclamationMark.gameObject.SetActive(
                 btnRanking.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
+
+            var worldMap = Find<WorldMap>();
+            worldMap.UpdateNotificationInfo();
+            var hasNotificationInWorldmap = worldMap.hasNotification;
+
             questExclamationMark.gameObject.SetActive(
-                btnQuest.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
+                (btnQuest.IsUnlocked &&
+                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
+                hasNotificationInWorldmap);
         }
 
         private void HideButtons()

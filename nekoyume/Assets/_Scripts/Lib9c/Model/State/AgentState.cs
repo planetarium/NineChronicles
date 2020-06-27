@@ -30,7 +30,7 @@ namespace Nekoyume.Model.State
                     kv => BitConverter.ToInt32(((Binary)kv.Key).Value, 0),
                     kv => kv.Value.ToAddress()
                 );
-            unlockedOptions = serialized.ContainsKey((Text) "unlockedOptions")
+            unlockedOptions = serialized.ContainsKey((IKey)(Text) "unlockedOptions")
                 ? serialized["unlockedOptions"].ToHashSet(StateExtensions.ToInteger)
                 : new HashSet<int>();
         }
