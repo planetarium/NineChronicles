@@ -159,13 +159,14 @@ namespace Nekoyume.UI.Module
         /// </summary>
         /// <param name="avatarState"></param>
         /// <param name="ignoreAnimation"></param>
-        public void Show(AvatarState avatarState, bool ignoreAnimation = false)
+        public void Show(AvatarState avatarState, System.Action onComplete = null, bool ignoreAnimation = false)
         {
             if (avatarState is null)
             {
                 SharedViewModel.avatarState = null;
                 SharedViewModel.worldQuest.Value = null;
                 SharedViewModel.combinationEquipmentQuest.Value = null;
+                onComplete?.Invoke();
                 return;
             }
 
@@ -179,10 +180,10 @@ namespace Nekoyume.UI.Module
                     break;
                 case ViewState.None:
                 case ViewState.Hidden:
-                    EnterToShowing(ignoreAnimation);
+                    EnterToShowing(onComplete, ignoreAnimation);
                     break;
                 case ViewState.Shown:
-                    StartCoroutine(CoUpdateList(null));
+                    StartCoroutine(CoUpdateList(onComplete));
                     break;
             }
         }
@@ -314,7 +315,7 @@ namespace Nekoyume.UI.Module
 
         #region ViewState
 
-        private void EnterToShowing(bool ignoreAnimation = false)
+        private void EnterToShowing(System.Action onExit = null, bool ignoreAnimation = false)
         {
             _state.Value = ViewState.Showing;
 
@@ -326,14 +327,22 @@ namespace Nekoyume.UI.Module
             if (ignoreAnimation)
             {
                 gameObject.SetActive(true);
-                StartCoroutine(CoUpdateList(EnterToShown));
+                StartCoroutine(CoUpdateList(() =>
+                {
+                    onExit?.Invoke();
+                    EnterToShown();
+                }));
                 return;
             }
 
             showingAndHidingTweener
                 .PlayTween()
                 .OnPlay(() => gameObject.SetActive(true))
-                .OnComplete(() => StartCoroutine(CoUpdateList(EnterToShown)));
+                .OnComplete(() => StartCoroutine(CoUpdateList(() =>
+                {
+                    onExit?.Invoke();
+                    EnterToShown();
+                })));
         }
 
         private void EnterToShown()
