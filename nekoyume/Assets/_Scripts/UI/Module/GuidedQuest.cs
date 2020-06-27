@@ -5,6 +5,7 @@ using System.Linq;
 using DG.Tweening;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -60,6 +61,8 @@ namespace Nekoyume.UI.Module
 
         private class ViewModel
         {
+            public AvatarState avatarState;
+
             public readonly ReactiveProperty<WorldQuest> worldQuest =
                 new ReactiveProperty<WorldQuest>();
 
@@ -160,8 +163,13 @@ namespace Nekoyume.UI.Module
         {
             if (avatarState is null)
             {
+                SharedViewModel.avatarState = null;
+                SharedViewModel.worldQuest.Value = null;
+                SharedViewModel.combinationEquipmentQuest.Value = null;
                 return;
             }
+
+            SharedViewModel.avatarState = avatarState;
 
             switch (_state.Value)
             {
@@ -171,10 +179,10 @@ namespace Nekoyume.UI.Module
                     break;
                 case ViewState.None:
                 case ViewState.Hidden:
-                    EnterToShowing(avatarState, ignoreAnimation);
+                    EnterToShowing(ignoreAnimation);
                     break;
                 case ViewState.Shown:
-                    StartCoroutine(CoUpdateAvatarState(avatarState, null));
+                    StartCoroutine(CoUpdateList(null));
                     break;
             }
         }
@@ -254,27 +262,57 @@ namespace Nekoyume.UI.Module
             EnterToClearExistGuidedQuest(SharedViewModel.combinationEquipmentQuest);
         }
 
+        /// <summary>
+        /// SharedViewModel.avatarState를 사용해서 리스트를 업데이트 합니다.
+        /// </summary>
+        /// <param name="onComplete"></param>
+        public void UpdateList(System.Action onComplete = null)
+        {
+            UpdateList(SharedViewModel.avatarState, onComplete);
+        }
+
+        /// <summary>
+        /// avatarState 인자를 사용해서 리스트를 업데이트 합니다.
+        /// </summary>
+        /// <param name="avatarState"></param>
+        /// <param name="onComplete"></param>
+        public void UpdateList(AvatarState avatarState, System.Action onComplete = null)
+        {
+            if (_state.Value != ViewState.Shown)
+            {
+                Debug.LogWarning(
+                    $"[{nameof(GuidedQuest)}] Cannot proceed because ViewState is {_state.Value}. Try when state is {ViewState.Shown}");
+                return;
+            }
+
+            SharedViewModel.avatarState = avatarState;
+            StartCoroutine(CoUpdateList(onComplete));
+        }
+
         #endregion
 
         #region ViewState
 
-        private void EnterToShowing(AvatarState avatarState, bool ignoreAnimation = false)
+        private void EnterToShowing(bool ignoreAnimation = false)
         {
             _state.Value = ViewState.Showing;
+
+            // NOTE: SharedViewModel.worldQuest.Value에 null을 넣지 않고 WorldQuestCell.Hide()를 호출합니다.
+            // 이는 뷰 모델과 상관없이 연출을 위해서 뷰 오브젝트만 숨기기 위해서 입니다.
             WorldQuestCell.Hide();
             CombinationEquipmentQuestCell.Hide();
 
             if (ignoreAnimation)
             {
                 gameObject.SetActive(true);
-                StartCoroutine(CoUpdateAvatarState(avatarState, EnterToShown));
+                StartCoroutine(CoUpdateList(EnterToShown));
                 return;
             }
 
             showingAndHidingTweener
                 .PlayTween()
                 .OnPlay(() => gameObject.SetActive(true))
-                .OnComplete(() => StartCoroutine(CoUpdateAvatarState(avatarState, EnterToShown)));
+                .OnComplete(() => StartCoroutine(CoUpdateList(EnterToShown)));
         }
 
         private void EnterToShown()
@@ -282,9 +320,9 @@ namespace Nekoyume.UI.Module
             _state.Value = ViewState.Shown;
         }
 
-        private IEnumerator CoUpdateAvatarState(AvatarState avatarState, System.Action onComplete)
+        private IEnumerator CoUpdateList(System.Action onComplete)
         {
-            var questList = avatarState.questList;
+            var questList = SharedViewModel.avatarState?.questList;
             var newWorldQuest = GetTargetWorldQuest(questList);
             if (TryEnterToAddNewGuidedQuest(
                 SharedViewModel.worldQuest,
@@ -397,16 +435,60 @@ namespace Nekoyume.UI.Module
 
         #region Getter
 
-        private static WorldQuest GetTargetWorldQuest(QuestList questList) => questList?
-            .OfType<WorldQuest>()
-            .OrderBy(quest => quest.Goal)
-            .FirstOrDefault(quest => !quest.Complete);
+        private static WorldQuest GetTargetWorldQuest(QuestList questList)
+        {
+            if (GameConfig.RequireClearedStageLevel.UIMainMenuStage > 0)
+            {
+                if (SharedViewModel.avatarState is null ||
+                    !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
+                        out var lastClearedStageId) ||
+                    lastClearedStageId < GameConfig.RequireClearedStageLevel.UIMainMenuStage)
+                {
+                    return null;
+                }
+            }
+
+            return questList?
+                .OfType<WorldQuest>()
+                .OrderBy(quest => quest.Goal)
+                .FirstOrDefault(quest => !quest.Complete);
+        }
 
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
-            QuestList questList) =>
-            questList?
+            QuestList questList)
+        {
+            int lastClearedStageId;
+            if (GameConfig.RequireClearedStageLevel.CombinationEquipmentAction > 0)
+            {
+                if (SharedViewModel.avatarState is null ||
+                    !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
+                        out lastClearedStageId) ||
+                    lastClearedStageId <
+                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+                {
+                    return null;
+                }
+            }
+
+            return questList?
                 .OfType<CombinationEquipmentQuest>()
-                .FirstOrDefault(quest => !quest.Complete);
+                .FirstOrDefault(quest =>
+                {
+                    if (quest.Complete)
+                    {
+                        return false;
+                    }
+
+                    if (!Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(
+                        quest.RecipeId,
+                        out var row))
+                    {
+                        return false;
+                    }
+
+                    return row.UnlockStage <= lastClearedStageId;
+                });
+        }
 
         #endregion
 
