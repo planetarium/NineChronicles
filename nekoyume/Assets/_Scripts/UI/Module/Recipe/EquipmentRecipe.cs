@@ -161,8 +161,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var quest = Game.Game.instance
-                .States.CurrentAvatarState.questList?
+            var currentAvatarState = Game.Game.instance
+                .States.CurrentAvatarState;
+            var quest = currentAvatarState.questList?
                 .OfType<CombinationEquipmentQuest>()
                 .Where(x => !x.Complete)
                 .OrderBy(x => x.RecipeId)
@@ -174,10 +175,20 @@ namespace Nekoyume.UI.Module
             necklaceTabButton.HasNotification.Value = false;
             ringTabButton.HasNotification.Value = false;
 
+            var combination = Widget.Find<Combination>();
+
+            combination.LoadRecipeVFXSkipMap();
+
             foreach (var cellView in cellViews)
             {
                 var hasNotification = !(quest is null) && quest.RecipeId == cellView.RowData.Id;
-                cellView.Set(avatarState, hasNotification);
+                var isFirstOpen =
+                    !combination.RecipeVFXSkipMap
+                    .ContainsKey(cellView.RowData.Id) &&
+                    currentAvatarState.worldInformation
+                    .IsStageCleared(cellView.RowData.UnlockStage);
+
+                cellView.Set(avatarState, hasNotification, isFirstOpen);
                 var btn = GetButton(cellView.ItemSubType);
                 if (hasNotification)
                     btn.HasNotification.Value = cellView.HasNotification.Value;
@@ -309,6 +320,18 @@ namespace Nekoyume.UI.Module
             var combination = Widget.Find<Combination>();
             if (!combination.CanHandleInputEvent)
             {
+                return;
+            }
+
+            if (cellView.tempLocked)
+            {
+                var avatarState = Game.Game.instance.States.CurrentAvatarState;
+                var equipmentCellView = cellView as EquipmentRecipeCellView;
+
+                combination.RecipeVFXSkipMap[equipmentCellView.RowData.Id]
+                    = new int[3] { 0, 0, 0 };
+                combination.SaveRecipeVFXSkipMap();
+                equipmentCellView?.Set(avatarState, null, false);
                 return;
             }
 
