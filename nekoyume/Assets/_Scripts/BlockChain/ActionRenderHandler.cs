@@ -87,8 +87,10 @@ namespace Nekoyume.BlockChain
 
         private void RewardGold()
         {
+            // FIXME RewardGold의 결과(ActionEvaluation)에서 다른 갱신 주소가 같이 나오고 있는데 더 조사해봐야 합니다.
+            // 우선은 HasUpdatedAssetsForCurrentAgent로 다르게 검사해서 우회합니다.
             _renderer.EveryRender<RewardGold>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(HasUpdatedAssetsForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
