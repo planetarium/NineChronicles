@@ -118,7 +118,7 @@ namespace Nekoyume.UI
                             r.Id == result.recipeId);
 
                     consumableCellView.Set(recipeRow);
-                    materialPanel.SetData(recipeRow, false);
+                    materialPanel.SetData(recipeRow, false, true);
                     materialPanel.gameObject.SetActive(true);
                     break;
                 }
