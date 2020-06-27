@@ -144,9 +144,9 @@ RectTransform:
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 44, y: 0}
-  m_SizeDelta: {x: 170, y: 35}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 48, y: 0}
+  m_SizeDelta: {x: -56, y: 35}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1923486161196092807
 CanvasRenderer:
@@ -475,6 +475,7 @@ GameObject:
   - component: {fileID: 5483001106216337619}
   - component: {fileID: 8854218329090599353}
   - component: {fileID: 757733392472840590}
+  - component: {fileID: 2671976482090988369}
   m_Layer: 5
   m_Name: GuidedQuestCell
   m_TagString: Untagged
@@ -523,6 +524,7 @@ MonoBehaviour:
   mainQuestImage: {fileID: 6455638471359797591}
   subQuestImage: {fileID: 4713780751525779946}
   showingAndHidingTweener: {fileID: 757733392472840590}
+  inProgressTweener: {fileID: 2671976482090988369}
 --- !u!114 &757733392472840590
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -542,6 +544,28 @@ MonoBehaviour:
   showEase: 27
   closeEase: 26
   isFrom: 1
+--- !u!114 &2671976482090988369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4240006799511237031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b4fbd2209483804ca210c6ddea38ed6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StartWithPlay: 0
+  StartDelay: 0
+  Duration: 1
+  TweenType_: 4
+  Ease_: 1
+  CompleteMethod: 
+  ComponentIndex: 0
+  Target: {fileID: 0}
+  CompleteDelay: 0
+  multiplier: 1.1
 --- !u!1 &6650929777205699167
 GameObject:
   m_ObjectHideFlags: 0

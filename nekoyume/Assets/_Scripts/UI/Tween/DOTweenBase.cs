@@ -40,12 +40,13 @@ namespace Nekoyume.UI.Tween
 
         protected IEnumerator Start()
         {
-            yield return null;
-            if (StartWithPlay)
+            if (!StartWithPlay)
             {
-                yield return new WaitForSeconds(StartDelay);
-                Play();
+                yield break;
             }
+
+            yield return new WaitForSeconds(StartDelay);
+            Play();
         }
 
         public virtual void Play()
@@ -56,22 +57,27 @@ namespace Nekoyume.UI.Tween
         public virtual void PlayDelayed(float delay)
         {
             if (gameObject.activeInHierarchy)
+            {
                 StartCoroutine(CPlayDelayed(delay));
+            }
         }
 
         public virtual void Stop()
         {
             if (currentTween is null)
+            {
                 return;
+            }
 
             currentTween.Kill();
+            currentTween = null;
             onStopSubject.OnNext(currentTween);
         }
 
         public virtual void PlayForward()
         {
         }
-        
+
         public virtual void PlayReverse()
         {
         }
@@ -99,7 +105,9 @@ namespace Nekoyume.UI.Tween
         public void OnComplete()
         {
             if (!gameObject.activeInHierarchy)
+            {
                 return;
+            }
 
             onCompleted?.Invoke();
 
@@ -109,7 +117,7 @@ namespace Nekoyume.UI.Tween
             }
         }
 
-        public IEnumerator CoOnComplete()
+        private IEnumerator CoOnComplete()
         {
             yield return new WaitForSeconds(CompleteDelay);
             var components = Target.GetComponents<Component>();

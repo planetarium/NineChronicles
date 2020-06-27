@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Quest;
-using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -43,6 +40,11 @@ namespace Nekoyume.UI.Scroller
         // NOTE: 셀이 더해지고 빠지는 연출이 정해지면 더욱 개선됩니다.
         [SerializeField]
         private AnchoredPositionXTweener showingAndHidingTweener = null;
+
+        [SerializeField]
+        private DOTweenRectTransformSize inProgressTweener = null;
+
+        private bool _inProgress = false;
 
         public readonly ISubject<GuidedQuestCell> onClick = new Subject<GuidedQuestCell>();
 
