@@ -12,7 +12,6 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -51,6 +50,7 @@ namespace Nekoyume.UI
         public GameObject stage;
         public StageInformation stageInformation;
         public SubmitButton submitButton;
+        public GameObject buttonNotification;
 
         public bool hasNotification = false;
 
@@ -392,6 +392,7 @@ namespace Nekoyume.UI
             stageInformation.expText.text = $"EXP +{exp}";
 
             submitButton.SetSubmittable(isSubmittable);
+            buttonNotification.SetActive(stageId == stageIdToNotify);
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
