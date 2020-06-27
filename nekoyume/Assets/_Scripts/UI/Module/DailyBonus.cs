@@ -142,7 +142,8 @@ namespace Nekoyume.UI.Module
             {
                 additiveImage.enabled = _isFull;
             }
-            hasNotificationImage.enabled = _isFull;
+
+            hasNotificationImage.enabled = _isFull && States.Instance.CurrentAvatarState?.actionPoint == 0;
 
             animator.SetBool(IsFull, _isFull);
         }
