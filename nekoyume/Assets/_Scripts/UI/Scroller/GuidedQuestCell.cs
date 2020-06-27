@@ -83,9 +83,9 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
+            SetToInProgress(false);
             Quest = quest;
-
-            SetContent(quest);
+            SetContent(Quest);
 
             if (ignoreAnimation)
             {
@@ -111,11 +111,27 @@ namespace Nekoyume.UI.Scroller
             ShowAsNew(quest, null, true);
         }
 
+        public void SetToInProgress(bool inProgress)
+        {
+            _inProgress = inProgress;
+            if (_inProgress)
+            {
+                showingAndHidingTweener.KillTween();
+                inProgressTweener.PlayForward();
+            }
+            else
+            {
+                inProgressTweener.Stop();
+            }
+        }
+
         public void HideAsClear(
             System.Action<GuidedQuestCell> onComplete = null,
             bool ignoreAnimation = false,
             bool ignoreQuestResult = false)
         {
+            SetToInProgress(false);
+
             if (ignoreAnimation)
             {
                 PostHideAsClear(onComplete);
