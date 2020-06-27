@@ -85,8 +85,15 @@ namespace Nekoyume.Action
             public IAccountStateDelta SetState(Address address, IValue state) =>
                 new AccountStateDelta(_states.SetItem(address, state), _balances);
 
-            public BigInteger GetBalance(Address address, Currency currency) =>
-                _balances.GetValueOrDefault((address, currency), 0);
+            public BigInteger GetBalance(Address address, Currency currency)
+            {
+                if (!_balances.TryGetValue((address, currency), out BigInteger balance))
+                {
+                    throw new BalanceDoesNotExistsException(address, currency);
+                }
+
+                return balance;
+            }
 
             public IAccountStateDelta MintAsset(Address recipient, Currency currency, BigInteger amount)
             {

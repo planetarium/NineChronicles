@@ -109,7 +109,10 @@ namespace Nekoyume.State
 
             LocalStateSettings.Instance.InitializeAgentAndAvatars(state);
             AgentState = LocalStateSettings.Instance.Modify(state);
-            GoldBalanceState = LocalStateSettings.Instance.Modify(balanceState);
+            if (!(balanceState is null))
+            {
+                GoldBalanceState = LocalStateSettings.Instance.Modify(balanceState);
+            }
             ReactiveAgentState.Initialize(AgentState, GoldBalanceState);
 
             if (!getAllOfAvatarStates)
