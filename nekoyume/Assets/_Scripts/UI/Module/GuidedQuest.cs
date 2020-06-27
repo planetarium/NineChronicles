@@ -437,12 +437,15 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetWorldQuest(QuestList questList)
         {
-            if (SharedViewModel.avatarState is null ||
-                !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
-                    out var lastClearedStageId) ||
-                lastClearedStageId < GameConfig.RequireClearedStageLevel.UIMainMenuStage)
+            if (GameConfig.RequireClearedStageLevel.UIMainMenuStage > 0)
             {
-                return null;
+                if (SharedViewModel.avatarState is null ||
+                    !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
+                        out var lastClearedStageId) ||
+                    lastClearedStageId < GameConfig.RequireClearedStageLevel.UIMainMenuStage)
+                {
+                    return null;
+                }
             }
 
             return questList?
@@ -454,12 +457,17 @@ namespace Nekoyume.UI.Module
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
             QuestList questList)
         {
-            if (SharedViewModel.avatarState is null ||
-                !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
-                    out var lastClearedStageId) ||
-                lastClearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+            int lastClearedStageId;
+            if (GameConfig.RequireClearedStageLevel.CombinationEquipmentAction > 0)
             {
-                return null;
+                if (SharedViewModel.avatarState is null ||
+                    !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
+                        out lastClearedStageId) ||
+                    lastClearedStageId <
+                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
+                {
+                    return null;
+                }
             }
 
             return questList?
