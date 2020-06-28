@@ -125,6 +125,8 @@ namespace Nekoyume.UI
                         requiredCost);
                 }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
                 .AddTo(this);
+            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                - requiredCost);
         }
 
         public void GoToStage(BattleLog battleLog)
