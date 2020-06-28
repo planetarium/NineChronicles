@@ -928,29 +928,7 @@ namespace Nekoyume.UI
 
             if (!PlayerPrefs.HasKey(key))
             {
-                RecipeVFXSkipMap = new Dictionary<int, int[]>();
-
-                var gameInstance = Game.Game.instance;
-
-                var recipeTable = gameInstance.TableSheets.EquipmentItemRecipeSheet;
-                var subRecipeTable = gameInstance.TableSheets.EquipmentItemSubRecipeSheet;
-                foreach (var recipe in recipeTable.Values)
-                {
-                    var worldInfo = gameInstance.States.CurrentAvatarState.worldInformation;
-
-                    var isMainRecipeUnlocked = worldInfo.IsStageCleared(recipe.UnlockStage);
-
-                    if (!isMainRecipeUnlocked)
-                        continue;
-
-                    var unlockedSubRecipes = recipe.SubRecipeIds
-                        .Where(id => worldInfo
-                        .IsStageCleared(subRecipeTable[id].UnlockStage));
-
-                    RecipeVFXSkipMap[recipe.Id] = unlockedSubRecipes.Take(3).ToArray();
-                }
-
-                SaveRecipeVFXSkipMap();
+                CreateRecipeVFXSkipMap();
             }
             else
             {
@@ -964,7 +942,7 @@ namespace Nekoyume.UI
 
                     if (!(obj is Dictionary<int, int[]>))
                     {
-                        Debug.LogError("Error loading _recipeVFXSkipMap");
+                        CreateRecipeVFXSkipMap();
                     }
                     else
                     {
@@ -972,6 +950,29 @@ namespace Nekoyume.UI
                     }
                 }
             }
+        }
+
+        public void CreateRecipeVFXSkipMap()
+        {
+            RecipeVFXSkipMap = new Dictionary<int, int[]>();
+
+            var gameInstance = Game.Game.instance;
+
+            var recipeTable = gameInstance.TableSheets.EquipmentItemRecipeSheet;
+            var subRecipeTable = gameInstance.TableSheets.EquipmentItemSubRecipeSheet;
+            var worldInfo = gameInstance.States.CurrentAvatarState.worldInformation;
+
+            foreach (var recipe in recipeTable.Values
+                .Where(x => worldInfo.IsStageCleared(x.UnlockStage)))
+            {
+                var unlockedSubRecipes = recipe.SubRecipeIds
+                    .Where(id => worldInfo
+                    .IsStageCleared(subRecipeTable[id].UnlockStage));
+
+                RecipeVFXSkipMap[recipe.Id] = unlockedSubRecipes.Take(3).ToArray();
+            }
+
+            SaveRecipeVFXSkipMap();
         }
 
         public void SaveRecipeVFXSkipMap()
