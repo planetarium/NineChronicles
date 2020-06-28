@@ -78,7 +78,7 @@ namespace Nekoyume.UI
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
         private void HackAndSlash()
         {
-            var worldQuest = guidedQuest.WorldQuest;
+            var worldQuest = GuidedQuest.WorldQuest;
             if (worldQuest is null)
             {
                 return;
@@ -138,7 +138,7 @@ namespace Nekoyume.UI
 
         private void GoToCombinationEquipmentRecipe()
         {
-            var combinationEquipmentQuest = guidedQuest.CombinationEquipmentQuest;
+            var combinationEquipmentQuest = GuidedQuest.CombinationEquipmentQuest;
             if (combinationEquipmentQuest is null)
             {
                 return;
