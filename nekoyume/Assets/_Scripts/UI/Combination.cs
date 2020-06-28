@@ -21,6 +21,8 @@ using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 using ToggleGroup = Nekoyume.UI.Module.ToggleGroup;
 using Nekoyume.Game.VFX;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 
 namespace Nekoyume.UI
 {
@@ -115,8 +117,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private RecipeClickVFX recipeClickVFX = null;
 
-        public RecipeCellView selectedRecipe;
+        public RecipeCellView selectedRecipe = null;
         public int selectedIndex;
+
+        private const string RecipeVFXSkipListKey = "Nekoyume.UI.EquipmentRecipe.FirstEnterRecipeKey_{0}";
 
         private ToggleGroup _toggleGroup;
         private NPC _npc01;
@@ -126,6 +130,8 @@ namespace Nekoyume.UI
         private Dictionary<int, CombinationSlotState> _states;
         private SpeechBubble _selectedSpeechBubble;
         private RecipeIdSet? _shouldGoToEquipmentRecipe;
+
+        public Dictionary<int, int[]> RecipeVFXSkipMap { get; private set; }
 
         public bool HasNotification => equipmentRecipe.HasNotification();
 
@@ -913,6 +919,77 @@ namespace Nekoyume.UI
                 alpha => _npc01.SpineController.SkeletonAnimation.skeleton.A = alpha, 1,
                 1f);
             skeletonTweener.Play();
+        }
+
+        public void LoadRecipeVFXSkipMap()
+        {
+            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var key = string.Format(RecipeVFXSkipListKey, addressHex);
+
+            if (!PlayerPrefs.HasKey(key))
+            {
+                CreateRecipeVFXSkipMap();
+            }
+            else
+            {
+                var bf = new BinaryFormatter();
+                var data = PlayerPrefs.GetString(key);
+                var bytes = Convert.FromBase64String(data);
+
+                using (var ms = new MemoryStream(bytes))
+                {
+                    var obj = bf.Deserialize(ms);
+
+                    if (!(obj is Dictionary<int, int[]>))
+                    {
+                        CreateRecipeVFXSkipMap();
+                    }
+                    else
+                    {
+                        RecipeVFXSkipMap = (Dictionary<int, int[]>)obj;
+                    }
+                }
+            }
+        }
+
+        public void CreateRecipeVFXSkipMap()
+        {
+            RecipeVFXSkipMap = new Dictionary<int, int[]>();
+
+            var gameInstance = Game.Game.instance;
+
+            var recipeTable = gameInstance.TableSheets.EquipmentItemRecipeSheet;
+            var subRecipeTable = gameInstance.TableSheets.EquipmentItemSubRecipeSheet;
+            var worldInfo = gameInstance.States.CurrentAvatarState.worldInformation;
+
+            foreach (var recipe in recipeTable.Values
+                .Where(x => worldInfo.IsStageCleared(x.UnlockStage)))
+            {
+                var unlockedSubRecipes = recipe.SubRecipeIds
+                    .Where(id => worldInfo
+                    .IsStageCleared(subRecipeTable[id].UnlockStage));
+
+                RecipeVFXSkipMap[recipe.Id] = unlockedSubRecipes.Take(3).ToArray();
+            }
+
+            SaveRecipeVFXSkipMap();
+        }
+
+        public void SaveRecipeVFXSkipMap()
+        {
+            var addressHex = ReactiveAvatarState.Address.Value.ToHex();
+            var key = string.Format(RecipeVFXSkipListKey, addressHex);
+
+            var data = string.Empty;
+            var bf = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, RecipeVFXSkipMap);
+                var bytes = ms.ToArray();
+                data = Convert.ToBase64String(bytes);
+            }
+
+            PlayerPrefs.SetString(key, data);
         }
     }
 }
