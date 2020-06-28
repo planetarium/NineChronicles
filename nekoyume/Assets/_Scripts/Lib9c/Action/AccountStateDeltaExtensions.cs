@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
@@ -78,6 +79,23 @@ namespace Nekoyume.Action
                 );
 
                 return null;
+            }
+        }
+
+        public static bool TryGetGoldBalance(
+            this IAccountStateDelta states,
+            Address address,
+            out BigInteger balance)
+        {
+            try
+            {
+                balance = states.GetBalance(address, Currencies.Gold);
+                return true;
+            }
+            catch (BalanceDoesNotExistsException)
+            {
+                balance = default;
+                return false;
             }
         }
 
