@@ -67,6 +67,8 @@ namespace Nekoyume.UI
             _npc.transform.position = npcPosition.position;
         }
 
+        #region Show with quest
+
         public void Show(
             CombinationEquipmentQuestSheet.Row questRow,
             bool ignoreShowAnimation = false)
@@ -128,6 +130,19 @@ namespace Nekoyume.UI
             MakeNotification(quest.GetContent());
             UpdateLocalState(quest.Id, quest.Reward.ItemMap);
         }
+
+        #endregion
+
+        #region Show with recipe
+
+        public void Show(
+            EquipmentItemRecipeSheet.Row row,
+            bool ignoreShowAnimation = false)
+        {
+            // TODO: 레시피 해금 연출을 시작합니다.
+        }
+
+        #endregion
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
