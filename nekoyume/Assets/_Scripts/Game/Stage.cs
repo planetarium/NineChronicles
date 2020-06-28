@@ -402,12 +402,13 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(1f);
             Boss = null;
+            Widget.Find<UI.Battle>().bossStatus.Close();
             if (passed)
             {
                 yield return StartCoroutine(CoGuidedQuest(log.stageId));
                 yield return new WaitForSeconds(1f);
             }
-            Widget.Find<UI.Battle>().bossStatus.Close();
+
             Widget.Find<UI.Battle>().Close();
             yield return StartCoroutine(CoUnlockAlert());
             yield return new WaitForSeconds(0.75f);
