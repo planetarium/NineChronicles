@@ -22,6 +22,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using Spine.Unity;
 using UnityEngine;
 using TentuPlay.Api;
@@ -332,12 +333,36 @@ namespace Nekoyume.Game
             }
         }
 
-        private static IEnumerator CoGuidedQuest(int worldStage)
+        private IEnumerator CoGuidedQuest(int stageIdToClear)
         {
             var done = false;
             var battle = Widget.Find<UI.Battle>();
-            battle.ClearStage(worldStage, cleared => done = true);
+            var isFirstClear = GuidedQuest.WorldQuest.Goal == stageIdToClear;
+            battle.ClearStage(stageIdToClear, cleared => done = true);
             yield return new WaitUntil(() => done);
+            if (isFirstClear)
+            {
+                yield return StartCoroutine(CoUnlockRecipe(stageIdToClear));
+            }
+        }
+
+        private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
+        {
+            var questResult = Widget.Find<QuestResult>();
+            var subRecipeIds = Game.instance.TableSheets.EquipmentItemSubRecipeSheet.OrderedList
+                .Where(row => row.UnlockStage == stageIdToFirstClear)
+                .Select(row => row.Id)
+                .ToList();
+            var rows = Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
+                .Where(row => row.UnlockStage == stageIdToFirstClear ||
+                              row.SubRecipeIds.Any(subRecipeId => subRecipeIds.Contains(subRecipeId)))
+                .Distinct()
+                .ToList();
+            foreach (var row in rows)
+            {
+                questResult.Show(row);
+                yield return new WaitWhile(() => questResult.IsActive());
+            }
         }
 
         private IEnumerator CoStageEnter(BattleLog log)
@@ -397,12 +422,12 @@ namespace Nekoyume.Game
         {
             _onEnterToStageEnd.OnNext(this);
             _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
-            var passed = log.IsClear;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(1f);
             Boss = null;
             Widget.Find<UI.Battle>().bossStatus.Close();
+            var passed = log.IsClear;
             if (passed)
             {
                 yield return StartCoroutine(CoGuidedQuest(log.stageId));
@@ -435,10 +460,9 @@ namespace Nekoyume.Game
                 objectPool.ReleaseAll();
             }
 
-            var avatarState =
-                new AvatarState(
-                    (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(States.Instance.CurrentAvatarState
-                        .address));
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = new AvatarState(
+                (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(avatarAddress));
             _battleResultModel.State = log.result;
             var stage = Game.instance.TableSheets.StageSheet.Values.First(i => i.Id == stageId);
             var apNotEnough = avatarState.actionPoint < stage.CostAP;
