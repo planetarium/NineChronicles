@@ -33,7 +33,10 @@ namespace Nekoyume.UI
             guidedQuest.Hide(true);
             base.Show();
             stageTitle.Show(stageId);
-            guidedQuest.Show(States.Instance.CurrentAvatarState);
+            guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
+            {
+                guidedQuest.SetWorldQuestToInProgress(stageId);
+            });
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
