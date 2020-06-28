@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class QuestResult : Widget
+    public class CelebratesPopup : Widget
     {
         private const float ContinueTime = 10f;
         private const int NPCId = 300001;
@@ -39,7 +39,7 @@ namespace Nekoyume.UI
         private Blur blur = null;
 
         [SerializeField]
-        private DOTweenTextAlpha _textAlphaTweener = null;
+        private DOTweenTextAlpha textAlphaTweener = null;
 
         private readonly List<Tweener> _tweeners = new List<Tweener>();
         private readonly WaitForSeconds _waitOneSec = new WaitForSeconds(1f);
@@ -234,7 +234,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            _textAlphaTweener.PlayReverse();
+            textAlphaTweener.PlayReverse();
             yield return _waitForDisappear;
             StartContinueTimer();
         }
@@ -272,7 +272,7 @@ namespace Nekoyume.UI
         private void DisappearNPC()
         {
             blur.button.interactable = false;
-            _textAlphaTweener.Play();
+            textAlphaTweener.Play();
             _npc.SpineController.Disappear(.3f);
             _npc.PlayAnimation(NPCAnimation.Type.Disappear_01);
             Close();

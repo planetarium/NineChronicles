@@ -348,7 +348,7 @@ namespace Nekoyume.Game
 
         private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
         {
-            var questResult = Widget.Find<QuestResult>();
+            var questResult = Widget.Find<CelebratesPopup>();
             var subRecipeIds = Game.instance.TableSheets.EquipmentItemSubRecipeSheet.OrderedList
                 .Where(row => row.UnlockStage == stageIdToFirstClear)
                 .Select(row => row.Id)
