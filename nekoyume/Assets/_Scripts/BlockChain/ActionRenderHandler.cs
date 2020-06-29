@@ -239,7 +239,7 @@ namespace Nekoyume.BlockChain
         private void ItemEnhancement()
         {
             _renderer.EveryRender<ItemEnhancement>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
@@ -519,16 +519,18 @@ namespace Nekoyume.BlockChain
 
                 //[TentuPlay] 아이템 구입, 골드 사용
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                BigInteger buyerAgentBalance = eval.OutputStates.GetBalance(buyerAgentAddress, Currencies.Gold);
-                new TPStashEvent().CurrencyUse(
-                    player_uuid: States.Instance.AgentState.address.ToHex(),
-                    currency_slug: "gold",
-                    currency_quantity: (float) price,
-                    currency_total_quantity: (float) (buyerAgentBalance - price),
-                    reference_entity: "trades",
-                    reference_category_slug: "buy",
-                    reference_slug: result.itemUsable.Id.ToString() //아이템 품번
-                );
+                if (eval.OutputStates.TryGetGoldBalance(buyerAgentAddress, out BigInteger buyerAgentBalance))
+                {
+                    new TPStashEvent().CurrencyUse(
+                        player_uuid: States.Instance.AgentState.address.ToHex(),
+                        currency_slug: "gold",
+                        currency_quantity: (float) price,
+                        currency_total_quantity: (float) (buyerAgentBalance - price),
+                        reference_entity: "trades",
+                        reference_category_slug: "buy",
+                        reference_slug: result.itemUsable.Id.ToString() //아이템 품번
+                    );
+                }
             }
             else
             {
@@ -635,15 +637,17 @@ namespace Nekoyume.BlockChain
 
             //[TentuPlay] 장비강화, 골드사용
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            BigInteger outAgentBalance = eval.OutputStates.GetBalance(agentAddress, Currencies.Gold);
-            new TPStashEvent().CurrencyUse(
-                player_uuid: agentAddress.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)result.gold,
-                currency_total_quantity: (float)(outAgentBalance - result.gold),
-                reference_entity: "items_equipments",     //강화가 가능하므로 장비
-                reference_category_slug: "item_enhancement",
-                reference_slug: itemUsable.Id.ToString());
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger outAgentBalance))
+            {
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: agentAddress.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float) result.gold,
+                    currency_total_quantity: (float) (outAgentBalance - result.gold),
+                    reference_entity: "items_equipments", //강화가 가능하므로 장비
+                    reference_category_slug: "item_enhancement",
+                    reference_slug: itemUsable.Id.ToString());
+            }
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
