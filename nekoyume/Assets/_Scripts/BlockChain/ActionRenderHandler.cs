@@ -239,7 +239,7 @@ namespace Nekoyume.BlockChain
         private void ItemEnhancement()
         {
             _renderer.EveryRender<ItemEnhancement>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
