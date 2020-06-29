@@ -247,7 +247,7 @@ namespace Nekoyume.UI
                         view.Set(SharedModel.Exp, cleared);
                         break;
                     case 1:
-                        view.Set(SharedModel.Rewards, cleared);
+                        view.Set(SharedModel.Rewards, Game.Game.instance.Stage.stageId);
                         break;
                     case 2:
                         view.Set(SharedModel.State == BattleLog.Result.Win && cleared);

@@ -13,8 +13,6 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
-using Org.BouncyCastle.Math.EC;
 using TentuPlay.Api;
 
 namespace Nekoyume.BlockChain
@@ -97,15 +95,17 @@ namespace Nekoyume.BlockChain
                     //[TentuPlay] RewardGold 기록
                     //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                     Address agentAddress = States.Instance.AgentState.address;
-                    BigInteger outAgentBalance = eval.OutputStates.GetBalance(agentAddress, Currencies.Gold);
-                    new TPStashEvent().CurrencyGet(
-                        player_uuid: agentAddress.ToHex(),
-                        currency_slug: "gold",
-                        currency_quantity: (float)eval.Action.Gold,
-                        currency_total_quantity: (float)(outAgentBalance + eval.Action.Gold),
-                        reference_entity: "bonuses",
-                        reference_category_slug: "reward_gold",
-                        reference_slug: "RewardGold");
+                    if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger balance))
+                    {
+                        new TPStashEvent().CurrencyGet(
+                            player_uuid: agentAddress.ToHex(),
+                            currency_slug: "gold",
+                            currency_quantity: (float)eval.Action.Gold,
+                            currency_total_quantity: (float)(balance + eval.Action.Gold),
+                            reference_entity: "bonuses",
+                            reference_category_slug: "reward_gold",
+                            reference_slug: "RewardGold");
+                    }
 
                     UpdateAgentState(eval);
 
@@ -211,16 +211,18 @@ namespace Nekoyume.BlockChain
                                 //[TentuPlay] RankingReward 기록
                                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                                 Address agentAddress = States.Instance.AgentState.address;
-                                BigInteger outAgentBalance = eval.OutputStates.GetBalance(agentAddress, Currencies.Gold);
-                                new TPStashEvent().CurrencyGet(
-                                    player_uuid: agentAddress.ToHex(),
-                                    currency_slug: "gold",
-                                    currency_quantity: gold,
-                                    currency_total_quantity: (float)outAgentBalance + gold,
-                                    reference_entity: "quests",
-                                    reference_category_slug: "arena",
-                                    reference_slug: "RankingRewardIndex" + index.ToString()
-                                );
+                                if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger balance))
+                                {
+                                    new TPStashEvent().CurrencyGet(
+                                        player_uuid: agentAddress.ToHex(),
+                                        currency_slug: "gold",
+                                        currency_quantity: gold,
+                                        currency_total_quantity: (float)balance + gold,
+                                        reference_entity: "quests",
+                                        reference_category_slug: "arena",
+                                        reference_slug: "RankingRewardIndex" + index.ToString()
+                                    );
+                                }
                             }
                             catch
                             {
@@ -401,15 +403,17 @@ namespace Nekoyume.BlockChain
 
             //[TentuPlay] Equipment 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            BigInteger outAgentBalance = eval.OutputStates.GetBalance(agentAddress, Currencies.Gold);
-            new TPStashEvent().CurrencyUse(
-                player_uuid: agentAddress.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)result.gold,
-                currency_total_quantity: (float)(outAgentBalance - result.gold),
-                reference_entity: "items_equipments",
-                reference_category_slug: "equipments_combination",
-                reference_slug: result.itemUsable.Id.ToString());
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger balance))
+            {
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: agentAddress.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float)result.gold,
+                    currency_total_quantity: (float)(balance - result.gold),
+                    reference_entity: "items_equipments",
+                    reference_category_slug: "equipments_combination",
+                    reference_slug: result.itemUsable.Id.ToString());
+            }
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -448,15 +452,17 @@ namespace Nekoyume.BlockChain
 
             //[TentuPlay] Consumable 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            BigInteger outAgentBalance = eval.OutputStates.GetBalance(agentAddress, Currencies.Gold);
-            new TPStashEvent().CurrencyUse(
-                player_uuid: agentAddress.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)result.gold,
-                currency_total_quantity: (float)(outAgentBalance - result.gold),
-                reference_entity: "items_consumables",
-                reference_category_slug: "consumables_combination",
-                reference_slug: result.itemUsable.Id.ToString());
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger balance))
+            {
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: agentAddress.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float)result.gold,
+                    currency_total_quantity: (float)(balance - result.gold),
+                    reference_entity: "items_consumables",
+                    reference_category_slug: "consumables_combination",
+                    reference_slug: result.itemUsable.Id.ToString());
+            }
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -657,16 +663,18 @@ namespace Nekoyume.BlockChain
             //[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             Address agentAddress = States.Instance.AgentState.address;
-            BigInteger outAgentBalance = eval.OutputStates.GetBalance(agentAddress, Currencies.Gold);
-            new TPStashEvent().CurrencyUse(
-                player_uuid: agentAddress.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
-                currency_total_quantity: (float) (outAgentBalance - Nekoyume.GameConfig.ArenaActivationCostNCG),
-                reference_entity: "quests",
-                reference_category_slug: "arena",
-                reference_slug: "WeeklyArenaEntryFee"
-            );
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger balance))
+            {
+                new TPStashEvent().CurrencyUse(
+                    player_uuid: agentAddress.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
+                    currency_total_quantity: (float)(balance - Nekoyume.GameConfig.ArenaActivationCostNCG),
+                    reference_entity: "quests",
+                    reference_category_slug: "arena",
+                    reference_slug: "WeeklyArenaEntryFee"
+                );
+            }
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -681,27 +689,27 @@ namespace Nekoyume.BlockChain
 
         private void ResponseWeeklyArenaReward(ActionBase.ActionEvaluation<WeeklyArenaReward> eval)
         {
-            var currentBalanceState = States.Instance.GoldBalanceState;
-            var balanceState = eval.OutputStates.GetGoldBalanceState(States.Instance.AgentState.address);
-            var gold = balanceState.gold - currentBalanceState.gold;
-
-
             //[TentuPlay] ArenaReward 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             Address agentAddress = States.Instance.AgentState.address;
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger balance))
+            {
+                GoldBalanceState prevBalanceState = States.Instance.GoldBalanceState;
+                BigInteger earned = balance - prevBalanceState.gold;
 
-            new TPStashEvent().CurrencyGet(
-                player_uuid: agentAddress.ToHex(),
-                currency_slug: "gold",
-                currency_quantity: (float)gold,
-                currency_total_quantity: (float) (balanceState.gold + gold),
-                reference_entity: "quests",
-                reference_category_slug: "arena",
-                reference_slug: "WeeklyArenaReward");
+                new TPStashEvent().CurrencyGet(
+                    player_uuid: agentAddress.ToHex(),
+                    currency_slug: "gold",
+                    currency_quantity: (float)earned,
+                    currency_total_quantity: (float)balance,
+                    reference_entity: "quests",
+                    reference_category_slug: "arena",
+                    reference_slug: "WeeklyArenaReward");
+                UI.Notification.Push(MailType.System, $"Get Arena Reward: {earned}");
+            }
 
             UpdateAgentState(eval);
             Widget.Find<LoadingScreen>().Close();
-            UI.Notification.Push(MailType.System, $"Get Arena Reward: {gold}");
         }
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)

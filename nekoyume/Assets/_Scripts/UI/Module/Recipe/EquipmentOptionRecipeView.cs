@@ -37,6 +37,10 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected Image hasNotificationImage = null;
 
+        private bool _tempLocked = false;
+
+        private (int parentItemId, int index) _parentInfo;
+
         protected readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         public EquipmentItemSubRecipeSheet.Row rowData;
@@ -55,7 +59,22 @@ namespace Nekoyume.UI.Module
 
             button.OnClickAsObservable().Subscribe(_ =>
             {
-                if (IsLocked || NotEnoughMaterials)
+                if (IsLocked && !_tempLocked)
+                {
+                    return;
+                }
+
+                if (_tempLocked)
+                {
+                    var avatarState = Game.Game.instance.States.CurrentAvatarState;
+                    var combination = Widget.Find<Combination>();
+                    combination.RecipeVFXSkipMap[_parentInfo.parentItemId][_parentInfo.index] = rowData.Id;
+                    combination.SaveRecipeVFXSkipMap();
+                    Set(avatarState, null, false);
+                    return;
+                }
+
+                if (NotEnoughMaterials)
                 {
                     return;
                 }
@@ -83,7 +102,8 @@ namespace Nekoyume.UI.Module
             string recipeName,
             int subRecipeId,
             EquipmentItemSubRecipeSheet.MaterialInfo baseMaterialInfo,
-            bool checkInventory = true
+            bool checkInventory,
+            (int parentItemId, int index)? parentInfo = null
         )
         {
             if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId,
@@ -99,11 +119,16 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
+            if (parentInfo.HasValue)
+            {
+                _parentInfo = parentInfo.Value;
+            }
+
             SetLocked(false);
             Show(recipeName, subRecipeId);
         }
 
-        public void Set(AvatarState avatarState, bool hasNotification = false)
+        public void Set(AvatarState avatarState, bool? hasNotification = false, bool tempLocked = false)
         {
             if (rowData is null)
             {
@@ -117,7 +142,14 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            HasNotification.Value = hasNotification;
+            if (hasNotification.HasValue)
+                HasNotification.Value = hasNotification.Value;
+
+            _tempLocked = tempLocked;
+            SetLocked(tempLocked);
+
+            if (tempLocked)
+                return;
 
             // 재료 검사.
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;

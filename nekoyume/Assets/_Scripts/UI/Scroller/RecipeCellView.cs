@@ -62,6 +62,8 @@ namespace Nekoyume.UI.Scroller
         public ElementalType ElementalType { get; protected set; }
         public StatType StatType { get; protected set; }
 
+        public bool tempLocked = false;
+
         public bool Visible
         {
             get => Mathf.Approximately(canvasGroup.alpha, 1f);
@@ -73,7 +75,7 @@ namespace Nekoyume.UI.Scroller
             button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    if (IsLocked)
+                    if (IsLocked && !tempLocked)
                     {
                         return;
                     }

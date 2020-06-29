@@ -168,9 +168,9 @@ namespace Nekoyume.UI
             var hasNotificationOnCombination = combination.HasNotification;
 
             combinationExclamationMark.gameObject.SetActive(
-                (btnCombination.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0)
-                || hasNotificationOnCombination);
+                btnCombination.IsUnlocked &&
+                (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
+                hasNotificationOnCombination));
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
