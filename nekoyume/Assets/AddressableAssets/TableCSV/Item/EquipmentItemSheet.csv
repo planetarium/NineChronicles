@@ -5,7 +5,7 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10112000,검(물),Weapon,1,Water,3,ATK,8,2,10112000
 10113000,검(땅),Weapon,1,Land,4,ATK,15,2,10113000
 10114000,검(바람),Weapon,1,Wind,5,ATK,40,2,10114000
-10120000,검투사 검,Weapon,2,Normal,6,ATK,8,2,10120000
+10120000,검투사 검,Weapon,2,Normal,6,ATK,9,2,10120000
 10121000,검투사 검(불),Weapon,2,Fire,7,ATK,9,2,10121000
 10122000,검투사 검(물),Weapon,2,Water,8,ATK,12,2,10122000
 10123000,검투사 검(땅),Weapon,2,Land,9,ATK,45,2,10123000
@@ -43,8 +43,8 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10155000,발키리의 검,Weapon,5,Normal,15,ATK,1052,2,10155000
 10200000,누더기,Armor,0,Normal,0,HP,30,2,Character/Player/10200000
 10210000,옷,Armor,1,Normal,1,HP,97,2,Character/Player/10210000
-10211000,옷(불),Armor,1,Fire,2,HP,108,2,Character/Player/10211000
-10212000,옷(물),Armor,1,Water,3,HP,119,2,Character/Player/10212000
+10211000,옷(불),Armor,1,Fire,2,HP,112,2,Character/Player/10211000
+10212000,옷(물),Armor,1,Water,3,HP,126,2,Character/Player/10212000
 10213000,옷(땅),Armor,1,Land,4,HP,256,2,Character/Player/10213000
 10214000,옷(바람),Armor,1,Wind,5,HP,664,2,Character/Player/10214000
 10220000,가죽 옷,Armor,2,Normal,6,HP,162,2,Character/Player/10220000
@@ -83,9 +83,9 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10253001,고대의 갑옷(땅),Armor,5,Land,14,HP,18526,2,Character/Player/10253001
 10254001,고대의 갑옷(바람),Armor,5,Wind,15,HP,28593,2,Character/Player/10254001
 10255000,발키리의 갑옷,Armor,5,Normal,11,HP,16002,2,Character/Player/10235000
-10310000,장식띠,Belt,1,Normal,1,SPD,25,2,10310000
-10311000,장식띠(불),Belt,1,Fire,2,SPD,25,2,10311000
-10312000,장식띠(물),Belt,1,Water,3,SPD,28,2,10312000
+10310000,장식띠,Belt,1,Normal,1,SPD,24,2,10310000
+10311000,장식띠(불),Belt,1,Fire,2,SPD,27,2,10311000
+10312000,장식띠(물),Belt,1,Water,3,SPD,29,2,10312000
 10313000,장식띠(땅),Belt,1,Land,4,SPD,68,2,10313000
 10314000,장식띠(바람),Belt,1,Wind,5,SPD,189,2,10314000
 10320000,가죽 벨트,Belt,2,Normal,6,SPD,43,2,10320000
@@ -109,7 +109,7 @@ id,_name,item_sub_type,grade,elemental_type,set_id,stat_type,stat_value,attack_r
 10353000,전설의 벨트(땅),Belt,5,Land,14,SPD,3104,2,10353000
 10354000,전설의 벨트(바람),Belt,5,Wind,15,SPD,5007,2,10354000
 10410000,얇은 목걸이,Necklace,1,Normal,1,HIT,36,0,10410000
-10411000,얇은 목걸이(불),Necklace,1,Fire,2,HIT,36,0,10411000
+10411000,얇은 목걸이(불),Necklace,1,Fire,2,HIT,37,0,10411000
 10412000,얇은 목걸이(물),Necklace,1,Water,3,HIT,46,0,10412000
 10413000,얇은 목걸이(땅),Necklace,1,Land,4,HIT,100,0,10413000
 10414000,얇은 목걸이(바람),Necklace,1,Wind,5,HIT,269,0,10414000
