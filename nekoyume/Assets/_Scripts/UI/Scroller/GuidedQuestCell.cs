@@ -184,7 +184,7 @@ namespace Nekoyume.UI.Scroller
 
         private IEnumerator CoShowQuestResult(System.Action onComplete)
         {
-            var questResult = Widget.Find<QuestResult>();
+            var questResult = Widget.Find<CelebratesPopup>();
             questResult.Show(Quest);
             yield return new WaitWhile(() => questResult.IsActive());
             onComplete?.Invoke();
