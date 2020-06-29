@@ -93,6 +93,7 @@ nekoyume/compose/results
 # Genesis Block
 /nekoyume/Assets/StreamingAssets/genesis-block*
 /nekoyume/Assets/StreamingAssets/genesis-block-dev*
+!/nekoyume/Assets/StreamingAssets/genesis-block
 
 # Shared project
 shared/bin/*
