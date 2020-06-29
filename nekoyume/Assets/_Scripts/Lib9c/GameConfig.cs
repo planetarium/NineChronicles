@@ -88,7 +88,7 @@
         {
             #region action
 
-            public const int CombinationEquipmentAction = IsEditor ? 1 : 2;
+            public const int CombinationEquipmentAction = 1;
             public const int CombinationConsumableAction = IsEditor ? 1 : 6;
             public const int ItemEnhancementAction = IsEditor ? 1 : 9;
             public const int ActionsInShop = IsEditor ? 1 : 17;
@@ -107,7 +107,7 @@
             public const int UIBottomMenuCharacter = 1;
             public const int UIBottomMenuInventory = 1;
             public const int UIBottomMenuSettings = 1;
-            public const int UIBottomMenuMail = IsEditor ? 1 : 3;
+            public const int UIBottomMenuMail = CombinationEquipmentAction;
             public const int UIBottomMenuChat = IsEditor ? 1 : 7;
             public const int UIBottomMenuQuest = 1;
 

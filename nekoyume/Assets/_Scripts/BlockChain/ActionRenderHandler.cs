@@ -389,7 +389,16 @@ namespace Nekoyume.BlockChain
                     row.SubRecipeId == eval.Action.SubRecipeId);
             if (!(quest is null))
             {
-                Widget.Find<CelebratesPopup>().Show(quest);
+                var celebratesPopup = Widget.Find<CelebratesPopup>();
+                celebratesPopup.Show(quest);
+                celebratesPopup.OnDisableObservable.Subscribe(_ =>
+                {
+                    var menu = Widget.Find<Menu>();
+                    if (menu.isActiveAndEnabled)
+                    {
+                        menu.UpdateGuideQuest(avatarState);
+                    }
+                });
             }
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");

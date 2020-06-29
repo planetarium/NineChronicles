@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -11,6 +12,7 @@ using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.UI
 {
@@ -306,6 +308,11 @@ namespace Nekoyume.UI
             Close();
             Find<RankingBoard>().Show();
             AudioController.PlayClick();
+        }
+
+        public void UpdateGuideQuest(AvatarState avatarState)
+        {
+            guidedQuest.UpdateList(avatarState);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
