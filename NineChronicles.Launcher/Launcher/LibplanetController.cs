@@ -29,6 +29,7 @@ using NineChronicles.Standalone.Properties;
 using Nekoyume.Model.State;
 using TextCopy;
 
+using static Launcher.Program;
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Launcher
@@ -184,6 +185,8 @@ To start the game, you need to create your account.";
                 PrivateKey = protectedPrivateKey.Unprotect(passphrase);
                 this.ActivateProperty(ctrl => ctrl.PrivateKey);
 
+                MixpanelClient.Alias(addressHex);
+                MixpanelClient.Track("Launcher/Login", null);
                 return true;
             }
             catch (Exception e) when (e is IncorrectPassphraseException ||
@@ -365,6 +368,8 @@ To start the game, you need to create your account.";
                     PreloadStatus = "Connecting to the network...";
                     this.ActivateProperty(ctrl => ctrl.PreloadStatus);
 
+                    MixpanelClient.Track("Launcher/IBD Start", null);
+
                     if (properties.Peers.Any())
                     {
                         await service.BootstrapEnded.WaitAsync(cancellationToken);
@@ -443,10 +448,13 @@ To start the game, you need to create your account.";
                 };
                 GameProcess.EnableRaisingEvents = true;
 
+                MixpanelClient.Track("Launcher/Unity Player Start", null);
+
                 return true;
             }
             catch (Exception e)
             {
+                MixpanelClient.Track("Launcher/RunGameProcessException", null);
                 Log.Error(e, "Unexpected exception: {msg}", e.Message);
 
                 return false;
@@ -483,6 +491,7 @@ To start the game, you need to create your account.";
             }
             catch (Exception e)
             {
+                MixpanelClient.Track("Launcher/ClearStoreException", null);
                 Log.Error(e, "Unexpected exception happened during clearing store.");
             }
 
@@ -519,6 +528,7 @@ To start the game, you need to create your account.";
 
         public void CreatePrivateKey(string passphrase)
         {
+            MixpanelClient.Track("Launcher/CreatePrivateKey", null);
             PrivateKey = PreparedPrivateKey;
             ProtectedPrivateKey ppk = ProtectedPrivateKey.Protect(PrivateKey, passphrase);
             KeyStore.Add(ppk);
@@ -545,6 +555,7 @@ To start the game, you need to create your account.";
 
         private void FatalError(Exception exception, string message, bool retryable)
         {
+            MixpanelClient.Track("Launcher/FatalError", null);
             ActivateFatalErrorSignal(message, retryable);
             Log.Error(exception, message);
         }

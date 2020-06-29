@@ -10,6 +10,7 @@ using Nekoyume.Model.BattleStatus;
 using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -78,7 +79,7 @@ namespace Nekoyume.UI
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
         private void HackAndSlash()
         {
-            var worldQuest = guidedQuest.WorldQuest;
+            var worldQuest = GuidedQuest.WorldQuest;
             if (worldQuest is null)
             {
                 return;
@@ -125,6 +126,8 @@ namespace Nekoyume.UI
                         requiredCost);
                 }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
                 .AddTo(this);
+            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                - requiredCost);
         }
 
         public void GoToStage(BattleLog battleLog)
@@ -136,7 +139,7 @@ namespace Nekoyume.UI
 
         private void GoToCombinationEquipmentRecipe()
         {
-            var combinationEquipmentQuest = guidedQuest.CombinationEquipmentQuest;
+            var combinationEquipmentQuest = GuidedQuest.CombinationEquipmentQuest;
             if (combinationEquipmentQuest is null)
             {
                 return;
@@ -166,9 +169,9 @@ namespace Nekoyume.UI
             var hasNotificationOnCombination = combination.HasNotification;
 
             combinationExclamationMark.gameObject.SetActive(
-                (btnCombination.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0)
-                || hasNotificationOnCombination);
+                btnCombination.IsUnlocked &&
+                (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
+                hasNotificationOnCombination));
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
@@ -215,6 +218,7 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
+            Mixpanel.Track("Unity/Enter Dungeon");
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);

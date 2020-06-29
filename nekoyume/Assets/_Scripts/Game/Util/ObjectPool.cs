@@ -135,7 +135,8 @@ namespace Nekoyume.Game.Util
             {
                 foreach (var go in _objects
                     .Select(pair => pair.Value)
-                    .SelectMany(l => l.Where(go => go != null && !go.GetComponent<Character.Player>())))
+                    .SelectMany(l =>
+                        l.Where(go => go != null && !go.GetComponent<Character.Player>())))
                 {
                     go.SetActive(false);
                 }

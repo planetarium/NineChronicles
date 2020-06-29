@@ -46,7 +46,7 @@ namespace NineChronicles.Standalone.GraphTypes
                 resolve: context => standaloneContext.KeyStore
             );
 
-            Field<NodeStatusType>(
+            Field<NonNullGraphType<NodeStatusType>>(
                 name: "nodeStatus",
                 resolve: context => new NodeStatusType
                 {

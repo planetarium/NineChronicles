@@ -71,7 +71,7 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimationInternal();
             _frontVFX =
-                VFXController.instance.Create<CombinationSelectSmallFrontVFX>(
+                VFXController.instance.CreateAndChase<CombinationSelectSmallFrontVFX>(
                     equipmentCellView.transform,
                     new Vector3(0.53f, -0.5f));
         }

@@ -1,6 +1,7 @@
 ﻿using Nekoyume.Game.Controller;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -26,6 +27,7 @@ namespace Nekoyume.UI
         public void Show(string keyStorePath, string privateKey)
         {
             base.Show();
+            Mixpanel.Track("Unity/TitleImpression");
             animator.enabled = false;
             AudioController.instance.PlayMusic(AudioController.MusicCode.Title);
             _keyStorePath = keyStorePath;

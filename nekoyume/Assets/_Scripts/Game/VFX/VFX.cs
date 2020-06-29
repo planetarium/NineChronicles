@@ -1,4 +1,5 @@
 using System.Collections;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Nekoyume.Game.VFX
@@ -6,7 +7,6 @@ namespace Nekoyume.Game.VFX
     /// <summary>
     /// This object is used by VFXController only. Do not use directly.
     /// </summary>
-    [RequireComponent(typeof(ParticleSystem))]
     public class VFX : MonoBehaviour
     {
         private const string StringVFX = "VFX";
@@ -40,10 +40,7 @@ namespace Nekoyume.Game.VFX
         {
             _particles = GetComponentsInChildren<ParticleSystem>();
             _particlesLength = _particles.Length;
-            if (_particlesLength == 0)
-            {
-                return;
-            }
+            Assert.Greater(_particlesLength, 0);
 
             foreach (var particle in _particles)
             {
@@ -73,7 +70,7 @@ namespace Nekoyume.Game.VFX
 
             if (EmitDuration > 0f)
             {
-                StartCoroutine(CoAutoInactive());   
+                StartCoroutine(CoAutoInactive());
             }
         }
 

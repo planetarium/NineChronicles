@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
 using Nekoyume.Model.Quest;
+using Nekoyume.Game.Controller;
 
 namespace Nekoyume.UI.Module
 {
@@ -161,12 +162,9 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var quest = Game.Game.instance
-                .States.CurrentAvatarState.questList?
-                .OfType<CombinationEquipmentQuest>()
-                .Where(x => !x.Complete)
-                .OrderBy(x => x.RecipeId)
-                .FirstOrDefault();
+            var currentAvatarState = Game.Game.instance
+                .States.CurrentAvatarState;
+            var quest = GuidedQuest.CombinationEquipmentQuest;
 
             weaponTabButton.HasNotification.Value = false;
             armorTabButton.HasNotification.Value = false;
@@ -174,24 +172,39 @@ namespace Nekoyume.UI.Module
             necklaceTabButton.HasNotification.Value = false;
             ringTabButton.HasNotification.Value = false;
 
+            var _recipeIdToNotify = quest is null ? 0 : quest.RecipeId;
+            if (_recipeIdToNotify > 0)
+            {
+                var tableSheets = Game.Game.instance.TableSheets;
+                var resultItemId = tableSheets
+                    .EquipmentItemRecipeSheet[_recipeIdToNotify].ResultEquipmentId;
+                var resultItemRow = tableSheets
+                    .EquipmentItemSheet[resultItemId];
+
+                var btn = GetButton(resultItemRow.ItemSubType);
+                btn.HasNotification.Value = true;
+            }
+
+            var combination = Widget.Find<Combination>();
+
+            combination.LoadRecipeVFXSkipMap();
+
             foreach (var cellView in cellViews)
             {
                 var hasNotification = !(quest is null) && quest.RecipeId == cellView.RowData.Id;
-                cellView.Set(avatarState, hasNotification);
-                var btn = GetButton(cellView.ItemSubType);
-                if (hasNotification)
-                    btn.HasNotification.Value = cellView.HasNotification.Value;
+                var isFirstOpen =
+                    !combination.RecipeVFXSkipMap
+                    .ContainsKey(cellView.RowData.Id) &&
+                    currentAvatarState.worldInformation
+                    .IsStageCleared(cellView.RowData.UnlockStage);
+
+                cellView.Set(avatarState, hasNotification, isFirstOpen);
             }
         }
 
         public bool HasNotification()
         {
-            var quest = Game.Game.instance
-                .States.CurrentAvatarState.questList?
-                .OfType<CombinationEquipmentQuest>()
-                .Where(x => !x.Complete)
-                .OrderBy(x => x.RecipeId)
-                .FirstOrDefault();
+            var quest = GuidedQuest.CombinationEquipmentQuest;
 
             if (quest is null)
                 return false;
@@ -309,6 +322,19 @@ namespace Nekoyume.UI.Module
             var combination = Widget.Find<Combination>();
             if (!combination.CanHandleInputEvent)
             {
+                return;
+            }
+
+            if (cellView.tempLocked)
+            {
+                AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
+                var avatarState = Game.Game.instance.States.CurrentAvatarState;
+                var equipmentCellView = cellView as EquipmentRecipeCellView;
+
+                combination.RecipeVFXSkipMap[equipmentCellView.RowData.Id]
+                    = new int[3] { 0, 0, 0 };
+                combination.SaveRecipeVFXSkipMap();
+                equipmentCellView?.Set(avatarState, null, false);
                 return;
             }
 

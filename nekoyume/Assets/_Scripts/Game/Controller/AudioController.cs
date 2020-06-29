@@ -79,6 +79,7 @@ namespace Nekoyume.Game.Controller
             public const string Notice = "sfx_notice";
             public const string Typing = "sfx_typing";
             public const string Win = "sfx_win";
+            public const string UnlockRecipe = "sfx_unlock_recipe";
         }
 
         private enum State

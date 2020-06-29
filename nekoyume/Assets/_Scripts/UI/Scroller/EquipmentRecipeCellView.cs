@@ -3,6 +3,7 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using System;
 using System.Linq;
+using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -34,7 +35,7 @@ namespace Nekoyume.UI.Scroller
             SetLocked(false, RowData.UnlockStage);
         }
 
-        public void Set(AvatarState avatarState, bool hasNotification = false)
+        public void Set(AvatarState avatarState, bool? hasNotification = false, bool tempLocked = false)
         {
             if (RowData is null)
             {
@@ -44,13 +45,27 @@ namespace Nekoyume.UI.Scroller
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(RowData.UnlockStage))
             {
+                HasNotification.Value = false;
                 SetLocked(true, RowData.UnlockStage);
                 return;
             }
 
-            SetLocked(false, RowData.UnlockStage);
+            if (hasNotification.HasValue)
+                HasNotification.Value = hasNotification.Value;
 
-            HasNotification.Value = hasNotification;
+            SetLocked(tempLocked, RowData.UnlockStage);
+
+            base.tempLocked = tempLocked;
+
+            if (tempLocked)
+                lockVFX?.Play();
+            else
+                lockVFX?.Stop();
+
+            if (tempLocked)
+            {
+                return;
+            }
 
             // 메인 재료 검사.
             var inventory = avatarState.inventory;

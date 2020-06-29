@@ -1,5 +1,6 @@
 using Nekoyume.EnumType;
 using UnityEngine;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -9,6 +10,7 @@ namespace Nekoyume.UI
 
         public override void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {
+            Mixpanel.Track("Unity/SystemPopupImpression");
             base.Show(title, content, labelOK, localize);
 #if UNITY_EDITOR
             CloseCallback = UnityEditor.EditorApplication.ExitPlaymode;
