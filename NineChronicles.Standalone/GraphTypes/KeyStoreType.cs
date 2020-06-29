@@ -12,16 +12,16 @@ namespace NineChronicles.Standalone.GraphTypes
     {
         public KeyStoreType()
         {
-            Field<NonNullGraphType<ListGraphType<ProtectedPrivateKeyType>>>(
+            Field<NonNullGraphType<ListGraphType<NonNullGraphType<ProtectedPrivateKeyType>>>>(
                 name: "protectedPrivateKeys",
                 resolve: context => context.Source.List().Select(t => t.Item2));
 
             // TODO: description을 적어야 합니다.
-            Field<ByteStringType>(
+            Field<NonNullGraphType<ByteStringType>>(
                 name: "decryptedPrivateKey",
                 arguments: new QueryArguments(
-                    new QueryArgument<AddressType> { Name = "address" },
-                    new QueryArgument<StringGraphType> { Name = "passphrase" }),
+                    new QueryArgument<NonNullGraphType<AddressType>> { Name = "address" },
+                    new QueryArgument<NonNullGraphType<StringGraphType>> { Name = "passphrase" }),
                 resolve: context =>
                 {
                     var keyStore = context.Source;
