@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Scroller
 
             base.tempLocked = tempLocked;
 
-            if (IsLocked)
+            if (tempLocked)
                 lockVFX?.Play();
             else
                 lockVFX?.Stop();

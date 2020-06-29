@@ -152,7 +152,7 @@ namespace Nekoyume.UI.Module
             _tempLocked = tempLocked;
             SetLocked(tempLocked);
 
-            if (IsLocked)
+            if (tempLocked)
                 lockVFX?.Play();
             else
                 lockVFX?.Stop();
