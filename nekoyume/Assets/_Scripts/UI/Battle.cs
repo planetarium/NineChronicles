@@ -149,7 +149,7 @@ namespace Nekoyume.UI
             {
                 throw new WidgetNotFoundException<BottomMenu>();
             }
-            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.characterButton.transform, Vector3.zero);
+            VFXController.instance.CreateAndChase<DropItemInventoryVFX>(bottomMenu.characterButton.transform, Vector3.zero);
         }
 
         protected override void OnCompleteOfCloseAnimationInternal()

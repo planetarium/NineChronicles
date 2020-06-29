@@ -453,7 +453,7 @@ namespace Nekoyume.Game.Character
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
         {
             DamageText.Show(position, force, dmg, DamageText.TextGroupState.Heal);
-            VFXController.instance.Create<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
+            VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
         }
 
         #region Animation

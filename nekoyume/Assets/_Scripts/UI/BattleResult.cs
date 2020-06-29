@@ -188,19 +188,19 @@ namespace Nekoyume.UI
                     break;
                 case 1:
                     _battleWin01VFX =
-                        VFXController.instance.Create<BattleWin01VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin01VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
                 case 2:
                     _battleWin02VFX =
-                        VFXController.instance.Create<BattleWin02VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin02VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
                 default:
                     _battleWin03VFX =
-                        VFXController.instance.Create<BattleWin03VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin03VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
