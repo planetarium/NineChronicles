@@ -333,17 +333,12 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoGuidedQuest(int stageIdToClear)
+        private static IEnumerator CoGuidedQuest(int stageIdToClear)
         {
             var done = false;
             var battle = Widget.Find<UI.Battle>();
-            var isFirstClear = GuidedQuest.WorldQuest.Goal == stageIdToClear;
             battle.ClearStage(stageIdToClear, cleared => done = true);
             yield return new WaitUntil(() => done);
-            if (isFirstClear)
-            {
-                yield return StartCoroutine(CoUnlockRecipe(stageIdToClear));
-            }
         }
 
         private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
@@ -435,8 +430,15 @@ namespace Nekoyume.Game
             }
 
             Widget.Find<UI.Battle>().Close();
-            yield return StartCoroutine(CoUnlockAlert());
-            yield return new WaitForSeconds(0.75f);
+
+            if (newlyClearedStage)
+            {
+                yield return StartCoroutine(CoUnlockAlert());
+                yield return new WaitForSeconds(0.75f);
+                yield return StartCoroutine(CoUnlockRecipe(stageId));
+                yield return new WaitForSeconds(1f);
+            }
+
             if (log.result == BattleLog.Result.Win)
             {
                 var playerCharacter = GetPlayer();
@@ -973,9 +975,6 @@ namespace Nekoyume.Game
 
         private IEnumerator CoUnlockAlert()
         {
-            if (waveNumber != waveCount || !newlyClearedStage)
-                yield break;
-
             var key = string.Empty;
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
             {
