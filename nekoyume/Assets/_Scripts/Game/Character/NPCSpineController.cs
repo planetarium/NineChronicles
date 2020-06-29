@@ -12,7 +12,7 @@ namespace Nekoyume.Game.Character
                    || animationName == nameof(NPCAnimation.Type.Loop_01)
                    || animationName == nameof(NPCAnimation.Type.Loop_02)
                    || animationName == nameof(NPCAnimation.Type.Loop_03)
-                   || animationName == "Idle";
+                   || animationName == nameof(CharacterAnimation.Type.Idle);
         }
     }
 }
