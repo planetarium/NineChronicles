@@ -88,7 +88,7 @@
         {
             #region action
 
-            public const int CombinationEquipmentAction = IsEditor ? 1 : 1;
+            public const int CombinationEquipmentAction = IsEditor ? 1 : 2;
             public const int CombinationConsumableAction = IsEditor ? 1 : 6;
             public const int ItemEnhancementAction = IsEditor ? 1 : 9;
             public const int ActionsInShop = IsEditor ? 1 : 17;
