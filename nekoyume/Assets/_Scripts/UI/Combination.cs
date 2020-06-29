@@ -115,7 +115,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private RecipeClickVFX recipeClickVFX = null;
 
+        [NonSerialized]
         public RecipeCellView selectedRecipe;
+
+        [NonSerialized]
         public int selectedIndex;
 
         private ToggleGroup _toggleGroup;
