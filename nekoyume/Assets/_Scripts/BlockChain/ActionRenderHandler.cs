@@ -579,6 +579,7 @@ namespace Nekoyume.BlockChain
                     UpdateWeeklyArenaState(eval);
                     var avatarState = eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
                     RenderQuest(eval.Action.avatarAddress, avatarState.questList.completedQuestIds);
+                    States.Instance.SetCombinationSlotStates(avatarState);
                 });
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
