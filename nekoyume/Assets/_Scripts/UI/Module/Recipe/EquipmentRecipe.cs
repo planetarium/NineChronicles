@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Nekoyume.UI.Tween;
 using Nekoyume.Model.Quest;
+using Nekoyume.Game.Controller;
 
 namespace Nekoyume.UI.Module
 {
@@ -325,6 +326,7 @@ namespace Nekoyume.UI.Module
 
             if (cellView.tempLocked)
             {
+                AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
                 var avatarState = Game.Game.instance.States.CurrentAvatarState;
                 var equipmentCellView = cellView as EquipmentRecipeCellView;
 

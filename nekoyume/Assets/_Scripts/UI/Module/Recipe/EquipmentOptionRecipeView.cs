@@ -1,5 +1,6 @@
 using System;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -35,6 +36,9 @@ namespace Nekoyume.UI.Module
         protected RecipeClickVFX recipeClickVFX = null;
 
         [SerializeField]
+        protected LockChainJitterVFX lockVFX = null;
+
+        [SerializeField]
         protected Image hasNotificationImage = null;
 
         private bool _tempLocked = false;
@@ -66,6 +70,7 @@ namespace Nekoyume.UI.Module
 
                 if (_tempLocked)
                 {
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
                     var avatarState = Game.Game.instance.States.CurrentAvatarState;
                     var combination = Widget.Find<Combination>();
                     combination.RecipeVFXSkipMap[_parentInfo.parentItemId][_parentInfo.index] = rowData.Id;
@@ -138,6 +143,7 @@ namespace Nekoyume.UI.Module
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(rowData.UnlockStage))
             {
+                HasNotification.Value = false;
                 SetLocked(true);
                 return;
             }
@@ -147,6 +153,11 @@ namespace Nekoyume.UI.Module
 
             _tempLocked = tempLocked;
             SetLocked(tempLocked);
+
+            if (tempLocked)
+                lockVFX?.Play();
+            else
+                lockVFX?.Stop();
 
             if (tempLocked)
                 return;
