@@ -164,17 +164,26 @@ namespace Nekoyume.UI.Module
 
             var currentAvatarState = Game.Game.instance
                 .States.CurrentAvatarState;
-            var quest = currentAvatarState.questList?
-                .OfType<CombinationEquipmentQuest>()
-                .Where(x => !x.Complete)
-                .OrderBy(x => x.RecipeId)
-                .FirstOrDefault();
+            var quest = GuidedQuest.CombinationEquipmentQuest;
 
             weaponTabButton.HasNotification.Value = false;
             armorTabButton.HasNotification.Value = false;
             beltTabButton.HasNotification.Value = false;
             necklaceTabButton.HasNotification.Value = false;
             ringTabButton.HasNotification.Value = false;
+
+            var _recipeIdToNotify = quest is null ? 0 : quest.RecipeId;
+            if (_recipeIdToNotify > 0)
+            {
+                var tableSheets = Game.Game.instance.TableSheets;
+                var resultItemId = tableSheets
+                    .EquipmentItemRecipeSheet[_recipeIdToNotify].ResultEquipmentId;
+                var resultItemRow = tableSheets
+                    .EquipmentItemSheet[resultItemId];
+
+                var btn = GetButton(resultItemRow.ItemSubType);
+                btn.HasNotification.Value = true;
+            }
 
             var combination = Widget.Find<Combination>();
 
@@ -190,20 +199,12 @@ namespace Nekoyume.UI.Module
                     .IsStageCleared(cellView.RowData.UnlockStage);
 
                 cellView.Set(avatarState, hasNotification, isFirstOpen);
-                var btn = GetButton(cellView.ItemSubType);
-                if (hasNotification)
-                    btn.HasNotification.Value = cellView.HasNotification.Value;
             }
         }
 
         public bool HasNotification()
         {
-            var quest = Game.Game.instance
-                .States.CurrentAvatarState.questList?
-                .OfType<CombinationEquipmentQuest>()
-                .Where(x => !x.Complete)
-                .OrderBy(x => x.RecipeId)
-                .FirstOrDefault();
+            var quest = GuidedQuest.CombinationEquipmentQuest;
 
             if (quest is null)
                 return false;
