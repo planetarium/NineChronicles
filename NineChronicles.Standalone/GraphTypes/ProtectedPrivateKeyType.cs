@@ -7,7 +7,7 @@ namespace NineChronicles.Standalone.GraphTypes
     {
         public ProtectedPrivateKeyType()
         {
-            Field<AddressType>(nameof(ProtectedPrivateKey.Address));
+            Field<NonNullGraphType<AddressType>>(nameof(ProtectedPrivateKey.Address));
         }
     }
 }

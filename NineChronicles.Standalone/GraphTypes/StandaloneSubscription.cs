@@ -25,7 +25,7 @@ namespace NineChronicles.Standalone.GraphTypes
 
             public TipChanged()
             {
-                Field<LongGraphType>(nameof(Index));
+                Field<NonNullGraphType<LongGraphType>>(nameof(Index));
                 Field<ByteStringType>("hash", resolve: context => context.Source.Hash.ToByteArray());
             }
         }

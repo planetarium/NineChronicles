@@ -81,7 +81,7 @@ namespace Nekoyume.UI.Scroller
         {
             AudioController.PlayClick();
             AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
-            Widget.Find<QuestResult>().Show(_quest);
+            Widget.Find<CelebratesPopup>().Show(_quest);
             UpdateView();
             Widget.Find<Quest>().UpdateTabs();
             onClickSubmitButton?.Invoke();

@@ -267,7 +267,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<QuestResult>());
+            _secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
 
             // 툴팁류.

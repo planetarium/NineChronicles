@@ -239,7 +239,7 @@ namespace Nekoyume.BlockChain
         private void ItemEnhancement()
         {
             _renderer.EveryRender<ItemEnhancement>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseItemEnhancement).AddTo(_disposables);
         }
@@ -389,7 +389,7 @@ namespace Nekoyume.BlockChain
                     row.SubRecipeId == eval.Action.SubRecipeId);
             if (!(quest is null))
             {
-                Widget.Find<QuestResult>().Show(quest);
+                Widget.Find<CelebratesPopup>().Show(quest);
             }
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");

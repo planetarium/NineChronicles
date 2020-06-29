@@ -108,7 +108,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (((CombinationConsumable.ResultModel) _data.Result).id == default)
+            if (!(_data.Result is CombinationConsumable.ResultModel result) || result.id == default)
             {
                 HasNotification.Value = false;
                 return;
