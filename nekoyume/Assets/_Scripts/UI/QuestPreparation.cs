@@ -19,6 +19,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -131,6 +132,7 @@ namespace Nekoyume.UI
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
 
+            Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
@@ -627,11 +629,13 @@ namespace Nekoyume.UI
                         LocalStateModifier.ModifyAvatarActionPoint(
                             States.Instance.CurrentAvatarState.address, _requiredCost);
                     }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
-                .AddTo(this);
+                .AddTo(this);            
+            Mixpanel.Track("Unity/Waiting Block");
         }
 
         public void GoToStage(BattleLog battleLog)
         {
+            Mixpanel.Track("Unity/Stage Start");
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);

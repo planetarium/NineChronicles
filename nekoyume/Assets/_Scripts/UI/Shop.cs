@@ -440,6 +440,11 @@ namespace Nekoyume.UI
                     .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                 {
+                    if (data.Price.Value < Model.Shop.MinimumPrice)
+                    {
+                        throw new InvaildSellingPriceException(data);
+                    }
+
                     Game.Game.instance.ActionManager.Sell(
                         (ItemUsable) data.Item.Value.ItemBase.Value, data.Price.Value);
                     ResponseSell();
