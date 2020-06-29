@@ -117,7 +117,10 @@ namespace Nekoyume.UI
         [SerializeField]
         private RecipeClickVFX recipeClickVFX = null;
 
-        public RecipeCellView selectedRecipe = null;
+        [NonSerialized]
+        public RecipeCellView selectedRecipe;
+
+        [NonSerialized]
         public int selectedIndex;
 
         private const string RecipeVFXSkipListKey = "Nekoyume.UI.EquipmentRecipe.FirstEnterRecipeKey_{0}";

@@ -13,18 +13,19 @@ using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Scroller;
 using TMPro;
 using UnityEngine;
 
 namespace Nekoyume.UI
 {
-    public class QuestResult : Widget
+    public class CelebratesPopup : Widget
     {
         private const float ContinueTime = 10f;
         private const int NPCId = 300001;
 
         [SerializeField]
-        private TextMeshProUGUI questCompletedText = null;
+        private TextMeshProUGUI titleText = null;
 
         [SerializeField]
         private TextMeshProUGUI continueText = null;
@@ -33,13 +34,19 @@ namespace Nekoyume.UI
         private RectTransform npcPosition = null;
 
         [SerializeField]
-        private SimpleCountableItemView[] itemViews = null;
+        private GameObject questRewards = null;
+
+        [SerializeField]
+        private SimpleCountableItemView[] questRewardViews = null;
+
+        [SerializeField]
+        private EquipmentRecipeCellView equipmentRecipeCellView = null;
 
         [SerializeField]
         private Blur blur = null;
 
         [SerializeField]
-        private DOTweenTextAlpha _textAlphaTweener = null;
+        private DOTweenTextAlpha textAlphaTweener = null;
 
         private readonly List<Tweener> _tweeners = new List<Tweener>();
         private readonly WaitForSeconds _waitOneSec = new WaitForSeconds(1f);
@@ -66,6 +73,8 @@ namespace Nekoyume.UI
             // UI에 플레이어 고정.
             _npc.transform.position = npcPosition.position;
         }
+
+        #region Show with quest
 
         public void Show(
             CombinationEquipmentQuestSheet.Row questRow,
@@ -107,12 +116,15 @@ namespace Nekoyume.UI
             List<CountableItem> rewards,
             bool ignoreShowAnimation = false)
         {
-            foreach (var view in itemViews)
-                view.Hide();
-
-            questCompletedText.text = LocalizationManager.Localize("UI_QUEST_COMPLETED");
+            titleText.text = LocalizationManager.Localize("UI_QUEST_COMPLETED");
             continueText.alpha = 0f;
 
+            questRewards.SetActive(true);
+            equipmentRecipeCellView.Hide();
+            foreach (var view in questRewardViews)
+            {
+                view.Hide();
+            }
             _rewards = rewards;
 
             var go = Game.Game.instance.Stage.npcFactory.Create(
@@ -129,6 +141,36 @@ namespace Nekoyume.UI
             UpdateLocalState(quest.Id, quest.Reward.ItemMap);
         }
 
+        #endregion
+
+        #region Show with recipe
+
+        public void Show(
+            EquipmentItemRecipeSheet.Row row,
+            bool ignoreShowAnimation = false)
+        {
+            titleText.text = LocalizationManager.Localize("UI_NEW_EQUIPMENT_RECIPE");
+            continueText.alpha = 0f;
+
+            questRewards.SetActive(false);
+            equipmentRecipeCellView.Set(row);
+            equipmentRecipeCellView.Show();
+            _rewards = null;
+
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                npcPosition.position,
+                LayerType.UI,
+                100);
+            _npc = go.GetComponent<NPC>();
+            _npc.SpineController.Appear(.3f);
+            _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
+
+            base.Show(ignoreShowAnimation);
+        }
+
+        #endregion
+
         public override void Close(bool ignoreCloseAnimation = false)
         {
             if (!(_timerCoroutine is null))
@@ -142,7 +184,16 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfShowAnimationInternal()
         {
-            StartCoroutine(CoShowRewards(_rewards));
+            if (questRewards.activeSelf)
+            {
+                StartCoroutine(CoShowRewards(_rewards));
+            }
+
+            if (equipmentRecipeCellView.gameObject.activeSelf)
+            {
+                StartCoroutine(CoShowEquipment());
+            }
+
             base.OnCompleteOfShowAnimationInternal();
         }
 
@@ -155,7 +206,7 @@ namespace Nekoyume.UI
             }
 
             _tweeners.Clear();
-            _rewards.Clear();
+            _rewards = null;
             base.OnCompleteOfCloseAnimationInternal();
         }
 
@@ -195,11 +246,11 @@ namespace Nekoyume.UI
 
         private IEnumerator CoShowRewards(IReadOnlyList<CountableItem> rewards)
         {
-            for (var i = 0; i < itemViews.Length; ++i)
+            for (var i = 0; i < questRewardViews.Length; ++i)
             {
-                var itemView = itemViews[i];
+                var itemView = questRewardViews[i];
 
-                if (i < rewards.Count)
+                if (i < (rewards?.Count ?? 0))
                 {
                     itemView.SetData(rewards[i]);
                     itemView.Show();
@@ -219,7 +270,16 @@ namespace Nekoyume.UI
                 }
             }
 
-            _textAlphaTweener.PlayReverse();
+            textAlphaTweener.PlayReverse();
+            yield return _waitForDisappear;
+            StartContinueTimer();
+        }
+
+        private IEnumerator CoShowEquipment()
+        {
+            // 장비 레시피 연출을 재생합니다.
+
+            textAlphaTweener.PlayReverse();
             yield return _waitForDisappear;
             StartContinueTimer();
         }
@@ -257,7 +317,7 @@ namespace Nekoyume.UI
         private void DisappearNPC()
         {
             blur.button.interactable = false;
-            _textAlphaTweener.Play();
+            textAlphaTweener.Play();
             _npc.SpineController.Disappear(.3f);
             _npc.PlayAnimation(NPCAnimation.Type.Disappear_01);
             Close();

@@ -14,6 +14,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
+    // TODO: 위젯으로 빼서 정적으로 동작할 수 있게 만드는 것이 좋았겠습니다.
     /// <summary>
     /// Show()를 통해 전달 받은 AvatarState의 퀘스트 리스트를 기반으로 가이드 퀘스트를 노출합니다.
     /// 가이드 퀘스트 목록에 새로운 것이 추가되거나 목록의 것이 완료될 때의 연출을 책임집니다.
@@ -99,11 +100,11 @@ namespace Nekoyume.UI.Module
         private readonly ReactiveProperty<ViewState> _state =
             new ReactiveProperty<ViewState>(ViewState.None);
 
-        public WorldQuest WorldQuest => SharedViewModel.worldQuest.Value;
+        public static WorldQuest WorldQuest => SharedViewModel.worldQuest.Value;
 
         private GuidedQuestCell WorldQuestCell => cells[0];
 
-        public CombinationEquipmentQuest CombinationEquipmentQuest =>
+        public static CombinationEquipmentQuest CombinationEquipmentQuest =>
             SharedViewModel.combinationEquipmentQuest.Value;
 
         private GuidedQuestCell CombinationEquipmentQuestCell => cells[1];
