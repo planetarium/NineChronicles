@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using UniRx;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -51,6 +52,9 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         protected Image hasNotificationImage;
+
+        [SerializeField]
+        protected LockChainJitterVFX lockVFX = null;
 
         public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
@@ -182,7 +186,6 @@ namespace Nekoyume.UI.Scroller
             // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
             if (value)
             {
-                HasNotification.Value = false;
                 unlockConditionText.enabled = true;
 
                 if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
