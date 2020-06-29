@@ -21,9 +21,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI cancelButtonText = null;
         [SerializeField]
-        private SubmitButton submitButton = null;
-        [SerializeField]
         private SimpleCountableItemView itemView = null;
+        [SerializeField]
+        protected SubmitButton submitButton = null;
 
         protected T _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();

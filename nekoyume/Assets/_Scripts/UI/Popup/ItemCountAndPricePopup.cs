@@ -31,6 +31,9 @@ namespace Nekoyume.UI
                         price = 0;
                     }
 
+                    var isBelowMinimumPrice = price < Model.Shop.MinimumPrice;
+                    submitButton.SetSubmittable(!isBelowMinimumPrice);
+
                     _data.Price.Value = Math.Max(Model.Shop.MinimumPrice, price);
                 }).AddTo(_disposablesForAwake);
         }
