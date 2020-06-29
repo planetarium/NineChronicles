@@ -3,6 +3,7 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using System;
 using System.Linq;
+using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -44,6 +45,7 @@ namespace Nekoyume.UI.Scroller
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(RowData.UnlockStage))
             {
+                HasNotification.Value = false;
                 SetLocked(true, RowData.UnlockStage);
                 return;
             }
@@ -54,6 +56,11 @@ namespace Nekoyume.UI.Scroller
             SetLocked(tempLocked, RowData.UnlockStage);
 
             base.tempLocked = tempLocked;
+
+            if (tempLocked)
+                lockVFX?.Play();
+            else
+                lockVFX?.Stop();
 
             if (tempLocked)
             {

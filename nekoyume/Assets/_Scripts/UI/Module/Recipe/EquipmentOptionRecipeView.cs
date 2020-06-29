@@ -36,6 +36,9 @@ namespace Nekoyume.UI.Module
         protected RecipeClickVFX recipeClickVFX = null;
 
         [SerializeField]
+        protected LockChainJitterVFX lockVFX = null;
+
+        [SerializeField]
         protected Image hasNotificationImage = null;
 
         private bool _tempLocked = false;
@@ -140,6 +143,7 @@ namespace Nekoyume.UI.Module
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(rowData.UnlockStage))
             {
+                HasNotification.Value = false;
                 SetLocked(true);
                 return;
             }
@@ -149,6 +153,11 @@ namespace Nekoyume.UI.Module
 
             _tempLocked = tempLocked;
             SetLocked(tempLocked);
+
+            if (tempLocked)
+                lockVFX?.Play();
+            else
+                lockVFX?.Stop();
 
             if (tempLocked)
                 return;
