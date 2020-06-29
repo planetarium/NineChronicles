@@ -34,7 +34,7 @@ namespace Nekoyume.UI
                     var isBelowMinimumPrice = price < Model.Shop.MinimumPrice;
                     submitButton.SetSubmittable(!isBelowMinimumPrice);
 
-                    _data.Price.Value = Math.Max(Model.Shop.MinimumPrice, price);
+                    _data.Price.Value = price;
                 }).AddTo(_disposablesForAwake);
         }
 
