@@ -1,5 +1,6 @@
 using System;
 using Assets.SimpleLocalization;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -69,6 +70,7 @@ namespace Nekoyume.UI.Module
 
                 if (_tempLocked)
                 {
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
                     var avatarState = Game.Game.instance.States.CurrentAvatarState;
                     var combination = Widget.Find<Combination>();
                     combination.RecipeVFXSkipMap[_parentInfo.parentItemId][_parentInfo.index] = rowData.Id;
