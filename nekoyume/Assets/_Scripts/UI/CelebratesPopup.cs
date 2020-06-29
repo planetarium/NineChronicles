@@ -8,6 +8,9 @@ using Nekoyume.UI.Tween;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
@@ -55,6 +58,7 @@ namespace Nekoyume.UI
         private NPC _npc = null;
         private Coroutine _timerCoroutine = null;
         private List<CountableItem> _rewards = null;
+        private PraiseVFX _praiseVFX = null;
 
         protected override WidgetType WidgetType => WidgetType.Popup;
 
@@ -173,6 +177,11 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            if (_praiseVFX)
+            {
+                _praiseVFX.Stop();
+            }
+
             if (!(_timerCoroutine is null))
             {
                 StopCoroutine(_timerCoroutine);
@@ -193,6 +202,10 @@ namespace Nekoyume.UI
             {
                 StartCoroutine(CoShowEquipment());
             }
+
+            var position = ActionCamera.instance.transform.position;
+            _praiseVFX = VFXController.instance.CreateAndChaseCam<PraiseVFX>(position);
+            _praiseVFX.Play();
 
             base.OnCompleteOfShowAnimationInternal();
         }

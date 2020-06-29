@@ -33,7 +33,7 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
-        public T Create<T>(Transform target, Vector3 offset) where T : VFX.VFX
+        public T CreateAndChase<T>(Transform target, Vector3 offset) where T : VFX.VFX
         {
             var vfx = _pool.Get<T>(target.position + offset);
             StartCoroutine(CoChaseTarget(vfx, target, offset));
@@ -43,23 +43,27 @@ namespace Nekoyume.Game.Controller
         public T CreateAndChaseCam<T>(Vector3 position) where T : VFX.VFX
         {
             var target = ActionCamera.instance.transform;
-            var offset = position - target.position;
+            var targetPosition = target.position;
+            var offset = position - targetPosition;
             offset.z += 10f;
-            var vfx = _pool.Get<T>(target.position + offset);
+            var vfx = _pool.Get<T>(targetPosition + offset);
             StartCoroutine(CoChaseTarget(vfx, target, offset));
             return vfx;
         }
 
+        // FIXME: RectTransform이 아니라 Transform을 받아도 되겠습니다.
         public T CreateAndChaseRectTransform<T>(RectTransform target) where T : VFX.VFX
         {
             return CreateAndChaseRectTransform<T>(target, target.position);
         }
 
+        // FIXME: RectTransform이 아니라 Transform을 받아도 되겠습니다.
         public T CreateAndChaseRectTransform<T>(RectTransform target, Vector3 position) where T : VFX.VFX
         {
-            var offset = position - target.position;
+            var targetPosition = target.position;
+            var offset = position - targetPosition;
             offset.z += 10f;
-            var vfx = _pool.Get<T>(target.position + offset);
+            var vfx = _pool.Get<T>(targetPosition + offset);
             StartCoroutine(CoChaseTarget(vfx, target, offset));
             return vfx;
         }

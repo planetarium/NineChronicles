@@ -221,7 +221,7 @@ namespace Nekoyume.Game
                 blurRadius: 2, submittable: false);
         }
 
-        private void PlayMouseOnClickVFX(Vector3 position)
+        private static void PlayMouseOnClickVFX(Vector3 position)
         {
             position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);
