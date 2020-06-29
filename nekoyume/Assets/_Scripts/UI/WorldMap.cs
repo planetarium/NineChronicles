@@ -12,6 +12,8 @@ using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -245,6 +247,11 @@ namespace Nekoyume.UI
         {
             if (!SharedViewModel.WorldInformation.TryGetWorld(worldId, out var world))
                 throw new ArgumentException(nameof(worldId));
+
+            if (worldId == 1)
+            {
+                Mixpanel.Track("Unity/Click Yggdrasil");
+            }
 
             CloseWidget = () =>
             {
