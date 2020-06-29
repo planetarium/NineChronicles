@@ -31,7 +31,7 @@ namespace Nekoyume.UI
                         price = 0;
                     }
 
-                    _data.Price.Value = Math.Max(0, price);
+                    _data.Price.Value = Math.Max(Model.Shop.MinimumPrice, price);
                 }).AddTo(_disposablesForAwake);
         }
 
