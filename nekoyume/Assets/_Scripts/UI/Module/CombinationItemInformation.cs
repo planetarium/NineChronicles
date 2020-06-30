@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Assets.SimpleLocalization;
-using Nekoyume.EnumType;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -28,20 +23,11 @@ namespace Nekoyume.UI.Module
         public struct StatsArea
         {
             public RectTransform root;
-            public TextMeshProUGUI commonText;
             public List<BulletedStatView> stats;
-        }
-
-        [Serializable]
-        public struct SkillsArea
-        {
-            public RectTransform root;
-            public List<VanillaSkillView> skills;
         }
 
         public IconArea iconArea;
         public StatsArea statsArea;
-        public SkillsArea skillsArea;
 
         public Model.ItemInformation Model { get; private set; }
 
@@ -75,7 +61,6 @@ namespace Nekoyume.UI.Module
         {
             UpdateViewIconArea();
             UpdateStatsArea();
-            UpdateSkillsArea();
         }
 
         private void UpdateViewIconArea()
@@ -136,8 +121,6 @@ namespace Nekoyume.UI.Module
             var statCount = 0;
             if (Model.item.Value.ItemBase.Value is Equipment equipment)
             {
-                statsArea.commonText.gameObject.SetActive(false);
-
                 var uniqueStatType = equipment.UniqueStatType;
                 foreach (var statMapEx in equipment.StatsMap.GetStats())
                 {
@@ -159,8 +142,6 @@ namespace Nekoyume.UI.Module
             }
             else if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
             {
-                statsArea.commonText.gameObject.SetActive(false);
-
                 foreach (var statMapEx in itemUsable.StatsMap.GetStats())
                 {
                     AddStat(statMapEx);
@@ -176,46 +157,6 @@ namespace Nekoyume.UI.Module
             }
 
             statsArea.root.gameObject.SetActive(true);
-        }
-
-        private void UpdateSkillsArea()
-        {
-            if (Model?.item.Value is null)
-            {
-                skillsArea.root.gameObject.SetActive(false);
-
-                return;
-            }
-
-            foreach (var skill in skillsArea.skills)
-            {
-                skill.Hide();
-            }
-
-            var skillCount = 0;
-            if (Model.item.Value.ItemBase.Value is ItemUsable itemUsable)
-            {
-                foreach (var skill in itemUsable.Skills)
-                {
-                    AddSkill(skill);
-                    skillCount++;
-                }
-
-                foreach (var buffSkill in itemUsable.BuffSkills)
-                {
-                    AddBuffSkill(buffSkill);
-                    skillCount++;
-                }
-            }
-
-            if (skillCount <= 0)
-            {
-                skillsArea.root.gameObject.SetActive(false);
-
-                return;
-            }
-
-            skillsArea.root.gameObject.SetActive(true);
         }
 
         private void AddStat(StatMapEx model, bool isMainStat = false)
@@ -239,27 +180,6 @@ namespace Nekoyume.UI.Module
             }
 
             return null;
-        }
-
-        private void AddSkill(Skill model)
-        {
-            AddSkill(model.SkillRow.Id);
-        }
-
-        private void AddBuffSkill(BuffSkill model)
-        {
-            AddSkill(model.SkillRow.Id);
-        }
-
-        private void AddSkill(int skillId)
-        {
-            foreach (var skillView in skillsArea.skills.Where(skillView => !skillView.gameObject.activeSelf))
-            {
-                skillView.SetData(skillId);
-                skillView.Show();
-
-                return;
-            }
         }
     }
 }
