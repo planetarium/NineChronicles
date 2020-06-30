@@ -398,6 +398,11 @@ namespace Nekoyume.BlockChain
                     {
                         menu.UpdateGuideQuest(avatarState);
                     }
+                    var combination = Widget.Find<Combination>();
+                    if (combination.isActiveAndEnabled)
+                    {
+                        combination.UpdateRecipe();
+                    }
                 });
             }
 
