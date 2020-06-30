@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Linq;
 using Nekoyume.BlockChain;
@@ -11,6 +12,7 @@ using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using mixpanel;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.UI
 {
@@ -79,6 +81,7 @@ namespace Nekoyume.UI
         // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
         private void HackAndSlash()
         {
+            mixpanel.Mixpanel.Track("Unity/Click Guided Quest Enter Dungeon");
             var worldQuest = GuidedQuest.WorldQuest;
             if (worldQuest is null)
             {
@@ -139,6 +142,7 @@ namespace Nekoyume.UI
 
         private void GoToCombinationEquipmentRecipe()
         {
+            mixpanel.Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
             var combinationEquipmentQuest = GuidedQuest.CombinationEquipmentQuest;
             if (combinationEquipmentQuest is null)
             {
@@ -306,6 +310,11 @@ namespace Nekoyume.UI
             Close();
             Find<RankingBoard>().Show();
             AudioController.PlayClick();
+        }
+
+        public void UpdateGuideQuest(AvatarState avatarState)
+        {
+            guidedQuest.UpdateList(avatarState);
         }
 
         public override void Show(bool ignoreShowAnimation = false)

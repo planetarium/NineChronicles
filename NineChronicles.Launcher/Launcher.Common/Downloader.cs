@@ -11,7 +11,7 @@ namespace Launcher.Common
     public static class Downloader
     {
         public const string SnapshotUrl =
-            "https://download.nine-chronicles.com/latest/7bc7f433c8fca903f461de848bfd57d30202f1b87e4e1fd97512030a9b7a7bf0-snapshot.zip";
+            "https://download.nine-chronicles.com/latest/4a321a45b07750ca7fa88a0a4a0c817fa26c5f5e54ac2ab91675256e6abed21a-snapshot.zip";
 
         public static async Task<string> DownloadFileAsync(
             string downloadUrl,

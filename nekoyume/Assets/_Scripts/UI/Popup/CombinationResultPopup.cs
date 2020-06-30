@@ -25,6 +25,8 @@ namespace Nekoyume.UI
         public Image materialPlusImage;
         public GameObject materialView;
         public TouchHandler touchHandler;
+        public Image consumableHeader;
+        public Image equipmentHeader;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -164,6 +166,9 @@ namespace Nekoyume.UI
                 materialText.gameObject.SetActive(false);
                 materialView.SetActive(false);
             }
+
+            consumableHeader.gameObject.SetActive(!isEquipment);
+            equipmentHeader.gameObject.SetActive(isEquipment);
         }
     }
 }

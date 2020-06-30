@@ -164,7 +164,8 @@ namespace Nekoyume.UI.Module
 
             var currentAvatarState = Game.Game.instance
                 .States.CurrentAvatarState;
-            var quest = GuidedQuest.CombinationEquipmentQuest;
+            var tableSheets = Game.Game.instance.TableSheets;
+            var quest = GetNextGuidedQuest();
 
             weaponTabButton.HasNotification.Value = false;
             armorTabButton.HasNotification.Value = false;
@@ -175,7 +176,6 @@ namespace Nekoyume.UI.Module
             var _recipeIdToNotify = quest is null ? 0 : quest.RecipeId;
             if (_recipeIdToNotify > 0)
             {
-                var tableSheets = Game.Game.instance.TableSheets;
                 var resultItemId = tableSheets
                     .EquipmentItemRecipeSheet[_recipeIdToNotify].ResultEquipmentId;
                 var resultItemRow = tableSheets
@@ -191,7 +191,7 @@ namespace Nekoyume.UI.Module
 
             foreach (var cellView in cellViews)
             {
-                var hasNotification = !(quest is null) && quest.RecipeId == cellView.RowData.Id;
+                var hasNotification = (_recipeIdToNotify > 0) ? quest.RecipeId == cellView.RowData.Id : false;
                 var isFirstOpen =
                     !combination.RecipeVFXSkipMap
                     .ContainsKey(cellView.RowData.Id) &&
@@ -204,15 +204,17 @@ namespace Nekoyume.UI.Module
 
         public bool HasNotification()
         {
-            var quest = GuidedQuest.CombinationEquipmentQuest;
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var tableSheets = Game.Game.instance.TableSheets;
+            var quest = GetNextGuidedQuest();
 
             if (quest is null)
                 return false;
 
-            var recipeRow = Game.Game.instance.TableSheets
+            var recipeRow = tableSheets
                 .EquipmentItemRecipeSheet[quest.RecipeId];
 
-            var isMainRecipeUnlocked = Game.Game.instance.States.CurrentAvatarState
+            var isMainRecipeUnlocked = currentAvatarState
                     .worldInformation.IsStageCleared(recipeRow.UnlockStage);
 
             var isElemental = !(quest.SubRecipeId is null);
@@ -224,14 +226,28 @@ namespace Nekoyume.UI.Module
                 return true;
             else
             {
-                var subRecipeRow = Game.Game.instance.TableSheets
+                var subRecipeRow = tableSheets
                     .EquipmentItemSubRecipeSheet[quest.SubRecipeId.Value];
 
-                var isSubRecipeUnlocked = Game.Game.instance.States.CurrentAvatarState
+                var isSubRecipeUnlocked = currentAvatarState
                     .worldInformation.IsStageCleared(subRecipeRow.UnlockStage);
 
                 return isSubRecipeUnlocked;
             }
+        }
+
+        private CombinationEquipmentQuest GetNextGuidedQuest()
+        {
+            var gameInstance = Game.Game.instance;
+
+            var quest = gameInstance.States.CurrentAvatarState.questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.StageId)
+                .FirstOrDefault(x =>
+                    gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
+
+            return quest;
         }
 
         public bool TryGetCellView(int recipeId, out EquipmentRecipeCellView cellView)

@@ -488,37 +488,19 @@ namespace Nekoyume.UI.Module
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(
             QuestList questList)
         {
-            int lastClearedStageId;
-            if (GameConfig.RequireClearedStageLevel.CombinationEquipmentAction > 0)
+            if (SharedViewModel.avatarState is null ||
+                !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(out var lastClearedStageId) ||
+                lastClearedStageId < GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
             {
-                if (SharedViewModel.avatarState is null ||
-                    !SharedViewModel.avatarState.worldInformation.TryGetLastClearedStageId(
-                        out lastClearedStageId) ||
-                    lastClearedStageId <
-                    GameConfig.RequireClearedStageLevel.CombinationEquipmentAction)
-                {
-                    return null;
-                }
+                return null;
             }
 
             return questList?
                 .OfType<CombinationEquipmentQuest>()
+                .Where(quest => !quest.Complete)
+                .OrderBy(quest => quest.StageId)
                 .FirstOrDefault(quest =>
-                {
-                    if (quest.Complete)
-                    {
-                        return false;
-                    }
-
-                    if (!Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(
-                        quest.RecipeId,
-                        out var row))
-                    {
-                        return false;
-                    }
-
-                    return row.UnlockStage <= lastClearedStageId;
-                });
+                    Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(quest.RecipeId, out _));
         }
 
         #endregion
