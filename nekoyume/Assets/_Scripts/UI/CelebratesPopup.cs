@@ -143,6 +143,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             MakeNotification(quest.GetContent());
             UpdateLocalState(quest.Id, quest.Reward.ItemMap);
+            PlayPraiseVFX();
         }
 
         #endregion
@@ -171,6 +172,7 @@ namespace Nekoyume.UI
             _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
 
             base.Show(ignoreShowAnimation);
+            PlayPraiseVFX();
         }
 
         #endregion
@@ -202,10 +204,6 @@ namespace Nekoyume.UI
             {
                 StartCoroutine(CoShowEquipment());
             }
-
-            var position = ActionCamera.instance.transform.position;
-            _praiseVFX = VFXController.instance.CreateAndChaseCam<PraiseVFX>(position);
-            _praiseVFX.Play();
 
             base.OnCompleteOfShowAnimationInternal();
         }
@@ -255,6 +253,18 @@ namespace Nekoyume.UI
             }
 
             LocalStateModifier.RemoveReceivableQuest(avatarAddress, questId);
+        }
+
+        private void PlayPraiseVFX()
+        {
+            if (_praiseVFX)
+            {
+                _praiseVFX.Stop();
+            }
+
+            var position = ActionCamera.instance.transform.position;
+            _praiseVFX = VFXController.instance.CreateAndChaseCam<PraiseVFX>(position);
+            _praiseVFX.Play();
         }
 
         private IEnumerator CoShowRewards(IReadOnlyList<CountableItem> rewards)
