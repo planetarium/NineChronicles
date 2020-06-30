@@ -283,7 +283,7 @@ namespace Nekoyume.UI
         {
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
                 TryToFindSlotAlreadyEquip(inventoryItem.ItemBase.Value, out _));
-            inventory.SharedModel.UpdateNotification();
+            inventory.SharedModel.UpdateEquipmentNotification();
         }
 
         #endregion
@@ -468,7 +468,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
-            inventory.SharedModel.UpdateNotification();
+            inventory.SharedModel.UpdateEquipmentNotification();
             Find<BottomMenu>().UpdateInventoryNotification();
         }
 
