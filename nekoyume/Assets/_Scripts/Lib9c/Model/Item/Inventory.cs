@@ -4,8 +4,8 @@ using System.Linq;
 using System.Security.Cryptography;
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume.Battle;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Model.Item
@@ -403,5 +403,28 @@ namespace Nekoyume.Model.Item
             _items.Select(i => i.item).OfType<ItemUsable>().Any(i => i.ItemId == itemId);
 
         #endregion
+
+        public bool HasNotification()
+        {
+            foreach (var subType in new [] {ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace, ItemSubType.Ring})
+            {
+                var equipments = Equipments.Where(e => e.ItemSubType == subType).ToList();
+                var current = equipments.FirstOrDefault(e => e.equipped);
+                //현재 장착안한 슬롯에 장착 가능한 장비가 있는 경우
+                if (current is null && equipments.Any())
+                {
+                    return true;
+                }
+
+                var hasNotification = equipments.Any(e => CPHelper.GetCP(e) > CPHelper.GetCP(current));
+                // 현재장착한 장비보다 강한 장비가 있는 경우
+                if (hasNotification)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
