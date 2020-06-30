@@ -24,7 +24,7 @@ namespace Nekoyume.UI
 {
     public class CelebratesPopup : Widget
     {
-        private const float ContinueTime = 10f;
+        private const float ContinueTime = 5f;
         private const int NPCId = 300004;
 
         [SerializeField]
