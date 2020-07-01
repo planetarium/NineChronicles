@@ -23,7 +23,6 @@ using LiteDB;
 using NineChronicles.Standalone.Tests.Common.Actions;
 using Xunit;
 using Xunit.Abstractions;
-using Boolean = System.Boolean;
 using IPAddress = Org.BouncyCastle.Utilities.Net.IPAddress;
 
 namespace NineChronicles.Standalone.Tests.GraphTypes
