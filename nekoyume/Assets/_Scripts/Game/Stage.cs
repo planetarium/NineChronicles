@@ -458,10 +458,6 @@ namespace Nekoyume.Game
                     StartCoroutine(CoSlideBg());
                 }
             }
-            else
-            {
-                objectPool.ReleaseAll();
-            }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = new AvatarState(
@@ -510,7 +506,11 @@ namespace Nekoyume.Game
                 stage_playtime: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
                 );
-            Mixpanel.Track("Unity/Stage End");
+            var props = new Value
+            {
+                ["StageId"] = log.stageId
+            };
+            Mixpanel.Track("Unity/Stage End", props);
         }
 
         private IEnumerator CoSlideBg()

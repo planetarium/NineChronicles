@@ -12,6 +12,8 @@ using UnityEngine;
 
 using Libplanet.Blockchain;
 using Nekoyume.Model.State;
+using System;
+using System.Net;
 
 namespace Nekoyume.BlockChain
 {
@@ -47,9 +49,12 @@ namespace Nekoyume.BlockChain
                 var buffer = File.ReadAllBytes(path);
                 return Block<PolymorphicAction<ActionBase>>.Deserialize(buffer);
             }
-            else
+
+            var uri = new Uri(path);
+            using (var client = new WebClient())
             {
-                return null;
+                byte[] rawGenesisBlock = client.DownloadData(uri);
+                return Block<PolymorphicAction<ActionBase>>.Deserialize(rawGenesisBlock);
             }
         }
 

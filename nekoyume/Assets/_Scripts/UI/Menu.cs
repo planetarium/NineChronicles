@@ -130,6 +130,11 @@ namespace Nekoyume.UI
                 .AddTo(this);
             LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
                 - requiredCost);
+            var props = new Value
+            {
+                ["StageID"] = stageId,
+            };
+            Mixpanel.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
 
         public void GoToStage(BattleLog battleLog)
@@ -141,6 +146,7 @@ namespace Nekoyume.UI
 
         private void GoToCombinationEquipmentRecipe()
         {
+            mixpanel.Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
             var combinationEquipmentQuest = GuidedQuest.CombinationEquipmentQuest;
             if (combinationEquipmentQuest is null)
             {
@@ -173,7 +179,7 @@ namespace Nekoyume.UI
             combinationExclamationMark.gameObject.SetActive(
                 btnCombination.IsUnlocked &&
                 (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
-                hasNotificationOnCombination));
+                 hasNotificationOnCombination));
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
@@ -187,7 +193,7 @@ namespace Nekoyume.UI
 
             questExclamationMark.gameObject.SetActive(
                 (btnQuest.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
+                 PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
                 hasNotificationInWorldmap);
         }
 

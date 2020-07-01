@@ -84,6 +84,7 @@ namespace Nekoyume.UI.Module
                 effectImage.enabled = false;
                 glowImage.enabled = false;
                 equippedIcon.enabled = false;
+                hasNotificationImage.enabled = false;
 
                 return;
             }
@@ -91,6 +92,7 @@ namespace Nekoyume.UI.Module
             effectImage.enabled = Model.EffectEnabled.Value;
             glowImage.enabled = Model.GlowEnabled.Value;
             equippedIcon.enabled = Model.EquippedEnabled.Value;
+            hasNotificationImage.enabled = Model.HasNotification.Value;
         }
     }
 }
