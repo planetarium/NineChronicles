@@ -1,4 +1,5 @@
 using System;
+using GraphQL.Language.AST;
 using GraphQL.Types;
 using Libplanet;
 
@@ -29,6 +30,16 @@ namespace NineChronicles.Standalone.GraphTypes
                 default:
                     throw new ArgumentException("Expected a hexadecimal string.", nameof(value));
             }
+        }
+
+        public override object ParseLiteral(IValue value)
+        {
+            if (value is StringValue)
+            {
+                return ParseValue(value.Value);
+            }
+
+            return null;
         }
     }
 }
