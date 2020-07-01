@@ -458,10 +458,6 @@ namespace Nekoyume.Game
                     StartCoroutine(CoSlideBg());
                 }
             }
-            else
-            {
-                objectPool.ReleaseAll();
-            }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = new AvatarState(
