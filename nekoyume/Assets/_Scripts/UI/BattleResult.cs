@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -356,6 +357,18 @@ namespace Nekoyume.UI
                 ? stage.stageId
                 : stage.stageId + 1;
             ActionRenderHandler.Instance.Pending = true;
+            var props = new Value
+            {
+                ["StageId"] = stageId,
+            };
+            var eventKey = "Next Stage";
+            if (SharedModel.ShouldRepeat)
+            {
+                eventKey = SharedModel.ClearedWaveNumber == 3 ? "Repeat" : "Retry";
+            }
+
+            var eventName = $"Unity/Stage Exit {eventKey}";
+            Mixpanel.Track(eventName, props);
             yield return Game.Game.instance.ActionManager
                 .HackAndSlash(
                     player.Costumes.Select(i => i.Id).ToList(),
@@ -383,6 +396,13 @@ namespace Nekoyume.UI
 
         public void GoToMain()
         {
+            var props = new Value
+            {
+                ["StageId"] = Game.Game.instance.Stage.stageId,
+            };
+            var eventKey = Game.Game.instance.Stage.isExitReserved ? "Quit" : "Main";
+            var eventName = $"Unity/Stage Exit {eventKey}";
+            Mixpanel.Track(eventName, props);
             StopVFX();
 
             Find<Battle>().Close();
