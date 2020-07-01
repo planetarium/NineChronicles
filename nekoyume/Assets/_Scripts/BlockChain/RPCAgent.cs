@@ -85,7 +85,7 @@ namespace Nekoyume.BlockChain
 
             OnDisconnected = new UnityEvent();
 
-            _genseis = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPath);
+            _genseis = BlockHelper.ImportBlock(options.GenesisBlockPath ?? BlockHelper.GenesisBlockPath);
         }
 
         public IValue GetState(Address address)
