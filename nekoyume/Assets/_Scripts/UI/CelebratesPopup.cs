@@ -60,7 +60,7 @@ namespace Nekoyume.UI
         private List<CountableItem> _rewards = null;
         private PraiseVFX _praiseVFX = null;
 
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        protected override WidgetType WidgetType => WidgetType.Tooltip;
 
         #region override
 
