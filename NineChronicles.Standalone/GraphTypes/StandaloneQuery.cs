@@ -54,6 +54,11 @@ namespace NineChronicles.Standalone.GraphTypes
                     PreloadEnded = standaloneContext.PreloadEnded,
                 }
             );
+
+            Field<NonNullGraphType<ValidationQuery>>(
+                name: "validation",
+                description: "The validation method provider for Libplanet types.",
+                resolve: context => new ValidationQuery());
         }
     }
 }
