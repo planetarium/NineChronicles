@@ -3,6 +3,7 @@ using System.Linq;
 using GraphQL;
 using GraphQL.Types;
 using Libplanet;
+using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Org.BouncyCastle.Security;
 
@@ -43,6 +44,22 @@ namespace NineChronicles.Standalone.GraphTypes
                     }
                 }
             );
+
+            Field<NonNullGraphType<PrivateKeyType>>(
+                name: "privateKey",
+                description: "An API to provide conversion to public-key, address.",
+                arguments: new QueryArguments(
+                    new QueryArgument<NonNullGraphType<ByteStringType>>
+                    {
+                        Name = "hex",
+                        Description = "A representation of public-key with hexadecimal format."
+                    }),
+                resolve: context =>
+                {
+                    var privateKeyBytes = context.GetArgument<byte[]>("hex");
+                    var privateKey = new PrivateKey(privateKeyBytes);
+                    return privateKey;
+                });
         }
     }
 }
