@@ -1,0 +1,34 @@
+{
+  "Size": {
+    "x": 100,
+    "y": 100
+  },
+  "Pages": [
+    {
+      "TitleL10nKey": "HELP_POPUP_100000_PAGE_00_TITLE",
+      "Sprites": [
+        {
+          "Delay": 0,
+          "Duration": 999,
+          "ResourcePath": "",
+          "LocalPosition": {
+            "x": 10,
+            "y": 10
+          }
+        }
+      ],
+      "Texts": [
+        {
+          "Delay": 0,
+          "Duration": 999,
+          "TextL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_00",
+          "FontSize": 14,
+          "LocalPosition": {
+            "x": 10,
+            "y": 10
+          }
+        }
+      ]
+    }
+  ]
+}
