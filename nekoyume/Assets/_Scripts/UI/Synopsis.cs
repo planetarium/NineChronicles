@@ -1,10 +1,18 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using Assets.SimpleLocalization;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
+using Libplanet;
+using Nekoyume.Battle;
+using Nekoyume.Game;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
+using Nekoyume.Model.State;
+using Nekoyume.State;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -66,6 +74,8 @@ namespace Nekoyume.UI
         [Tooltip("대사가 사라질때 걸리는 시간")]
         public float textFadeOutTime = 0.5f;
 
+        private int _part1EndIndex = 4;
+        public bool part1Ended = false;
         private bool skipSynopsis;
 
         protected override void Awake()
@@ -93,8 +103,17 @@ namespace Nekoyume.UI
         {
             var delayedTime = 0f;
 
-            foreach (var script in scripts)
+            var startIndex = part1Ended ? 5 : 0;
+            for (var index = startIndex; index < scripts.Length; index++)
             {
+                var script = scripts[index];
+                if (index == _part1EndIndex && !part1Ended)
+                {
+                    Close();
+                    Game.Game.instance.prologue.StartPrologue();
+                    yield return null;
+                }
+
                 skipSynopsis = false;
                 script.image.transform.parent.gameObject.SetActive(true);
                 script.image.overrideSprite = script.sprite;
@@ -143,6 +162,7 @@ namespace Nekoyume.UI
                         {
                             tweener.Complete();
                         }
+
                         break;
                     case SynopsisScene.ImageAnimationType.FadeOut:
                         color = script.image.color;
@@ -168,6 +188,7 @@ namespace Nekoyume.UI
                         {
                             tweener.Complete();
                         }
+
                         break;
                     case SynopsisScene.ImageAnimationType.Immediately:
 
@@ -192,6 +213,7 @@ namespace Nekoyume.UI
                         return false;
                     });
                 }
+
                 if (skipSynopsis)
                 {
                     continue;
@@ -311,6 +333,7 @@ namespace Nekoyume.UI
 
         public void End()
         {
+            PlayerFactory.Create();
             Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
             Close();
