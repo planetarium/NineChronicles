@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 116002647976207782}
   - component: {fileID: 8106117505997823138}
   - component: {fileID: 4188413472245696670}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: image_great
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,7 +48,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -4753,8 +4753,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 764030297
+  m_SortingLayer: 8
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -4791,7 +4791,7 @@ GameObject:
   - component: {fileID: 455169407073201677}
   - component: {fileID: 8368531636335425614}
   - component: {fileID: 3443902270559986069}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BattleWin02VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9556,7 +9556,7 @@ GameObject:
   - component: {fileID: 5714345072190600864}
   - component: {fileID: 439311864554349887}
   - component: {fileID: 4273335659935278254}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: glow_03_backline_blur
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9593,7 +9593,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -14271,8 +14271,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 764030297
+  m_SortingLayer: 8
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -14306,7 +14306,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6557918279319633533}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: victory
   m_TagString: Untagged
   m_Icon: {fileID: 0}

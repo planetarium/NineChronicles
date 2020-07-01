@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4804500348911131442}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: victory
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 8156485324911966174}
   - component: {fileID: 6635429074055166389}
   - component: {fileID: 1921684829516974292}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BattleWin01VFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4808,7 +4808,7 @@ GameObject:
   - component: {fileID: 6853788385719203320}
   - component: {fileID: 6760567865552786676}
   - component: {fileID: 6760005723077830760}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: image_good
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4845,7 +4845,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -9550,8 +9550,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 764030297
+  m_SortingLayer: 8
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
