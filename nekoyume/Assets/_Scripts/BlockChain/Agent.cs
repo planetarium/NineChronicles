@@ -150,11 +150,12 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion appProtocolVersion,
             IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
             int minimumDifficulty,
-            string storageType = null)
+            string storageType = null,
+            string genesisBlockPath = null)
         {
             InitializeLogger(consoleSink, development);
 
-            var genesisBlock = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPath);
+            var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath ?? BlockHelper.GenesisBlockPath);
             if (genesisBlock is null)
             {
                 Debug.LogError("There is no genesis block.");
@@ -317,6 +318,7 @@ namespace Nekoyume.BlockChain
             var storagePath = options.StoragePath ?? DefaultStoragePath;
             var storageType = options.StorageType;
             var development = options.Development;
+            var genesisBlockPath = options.GenesisBlockPath;
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
                 : AppProtocolVersion.FromToken(options.AppProtocolVersion);
@@ -335,7 +337,8 @@ namespace Nekoyume.BlockChain
                 appProtocolVersion,
                 trustedAppProtocolVersionSigners,
                 minimumDifficulty,
-                storageType
+                storageType,
+                genesisBlockPath
             );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
