@@ -17,13 +17,18 @@ namespace NineChronicles.Standalone.GraphTypes
                     new QueryArgument<NonNullGraphType<StringGraphType>>
                     {
                         Name = "passphrase",
+                    },
+                    new QueryArgument<ByteStringType>
+                    {
+                        Name = "privateKey",
                     }),
                 resolve: context =>
                 {
                     var keyStore = context.Source;
                     var passphrase = context.GetArgument<string>("passphrase");
+                    var privateKeyBytes = context.GetArgument<byte[]>("privateKey");
 
-                    var privateKey = new PrivateKey();
+                    var privateKey = privateKeyBytes is null ? new PrivateKey() : new PrivateKey(privateKeyBytes);
                     var protectedPrivateKey = ProtectedPrivateKey.Protect(privateKey, passphrase);
 
                     keyStore.Add(protectedPrivateKey);
