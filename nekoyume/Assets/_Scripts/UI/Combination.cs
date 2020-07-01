@@ -314,7 +314,6 @@ namespace Nekoyume.UI
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
-            StartCoroutine(CoCombineNPCAnimation());
         }
 
         public void Show(int slotIndex)
@@ -783,8 +782,6 @@ namespace Nekoyume.UI
                 materialInfoList,
                 slotIndex
             );
-            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
-            Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationConsumable(rowId, slotIndex)
                 .Subscribe(
                     _ => { },
@@ -804,8 +801,6 @@ namespace Nekoyume.UI
                 panel,
                 slotIndex,
                 subRecipeId);
-            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
-            Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
         }
 
