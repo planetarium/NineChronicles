@@ -434,5 +434,12 @@ namespace Nekoyume.UI
                 reward.StopVFX();
             }
         }
+
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            base.OnCompleteOfCloseAnimationInternal();
+
+            Game.Game.instance.Stage.objectPool.ReleaseAll();
+        }
     }
 }
