@@ -87,7 +87,12 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             return task;
         }
 
-        protected LibplanetNodeService<T> CreateLibplanetNodeService<T>(Block<T> genesisBlock, AppProtocolVersion appProtocolVersion, PublicKey appProtocolVersionSigner, Progress<PreloadState> preloadProgress = null, IEnumerable<Peer> peers = null)
+        protected LibplanetNodeService<T> CreateLibplanetNodeService<T>(
+            Block<T> genesisBlock,
+            AppProtocolVersion appProtocolVersion,
+            PublicKey appProtocolVersionSigner,
+            Progress<PreloadState> preloadProgress = null,
+            IEnumerable<Peer> peers = null)
             where T : IAction, new()
         {
             var properties = new LibplanetNodeServiceProperties<T>

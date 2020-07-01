@@ -123,5 +123,56 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             await seedNode.StopAsync(cts.Token);
             await service.StopAsync(cts.Token);
         }
+
+        [Fact(Timeout = 15000)]
+        public async Task SubscribeDifferentAppProtocolVersionEncounter()
+        {   
+            var result = await ExecuteQueryAsync(@"
+                subscription {
+                    differentAppProtocolVersionEncounter {
+                        peer
+                        peerVersion
+                        localVersion
+                    }
+                }
+            ");
+            var subscribeResult = (SubscriptionExecutionResult) result;
+            var stream = subscribeResult.Streams.Values.FirstOrDefault();
+            Assert.NotNull(stream);
+
+            Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            {
+                await stream.Take(1).Timeout(TimeSpan.FromMilliseconds(5000)).FirstAsync();
+            });
+
+            var apvPrivateKey = new PrivateKey();
+            var apv1 = AppProtocolVersion.Sign(apvPrivateKey, 1);
+            var apv2 = AppProtocolVersion.Sign(apvPrivateKey, 0);
+            var peer = new Peer(apvPrivateKey.PublicKey, apv1);
+            StandaloneContextFx.DifferentAppProtocolVersionEncounterSubject.OnNext(
+                new DifferentAppProtocolVersionEncounter
+                {
+                    Peer = peer,
+                    PeerVersion = apv1,
+                    LocalVersion = apv2,
+                }
+            );
+            var rawEvents = await stream.Take(1);
+            var rawEvent = (Dictionary<string, object>)rawEvents.Data;
+            var differentAppProtocolVersionEncounter =
+                (Dictionary<string, object>)rawEvent["differentAppProtocolVersionEncounter"];
+            Assert.Equal(
+                peer.ToString(),
+                differentAppProtocolVersionEncounter["peer"]
+            );
+           Assert.Equal(
+                apv1.Token,
+                differentAppProtocolVersionEncounter["peerVersion"]
+            );
+            Assert.Equal(
+                apv2.Token,
+                differentAppProtocolVersionEncounter["localVersion"]
+            );
+        }
     }
 }
