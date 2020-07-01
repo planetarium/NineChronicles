@@ -13,74 +13,39 @@ namespace Nekoyume.UI
     {
         #region Models
 
-        private struct ViewModel
+        private class ViewModel
         {
-            public int2 Size { get; }
-            public List<PageModel> Pages { get; }
-
-            public ViewModel(int2 size, List<PageModel> pages)
-            {
-                Size = size;
-                Pages = pages;
-            }
+            public int2 Size { get; set; }
+            public List<PageModel> Pages { get; set; }
         }
 
-        private struct PageModel
+        private class PageModel
         {
-            public string Title { get; }
-            public List<PageSpriteModel> Sprites { get; }
-            public List<PageTextModel> Texts { get; }
-
-            public PageModel(string title, List<PageSpriteModel> sprites, List<PageTextModel> texts)
-            {
-                Title = title;
-                Sprites = sprites;
-                Texts = texts;
-            }
+            public string TitleL10nKey { get; set; }
+            public List<PageSpriteModel> Sprites { get; set; }
+            public List<PageTextModel> Texts { get; set; }
         }
 
-        private struct PageSpriteModel
+        private class PageSpriteModel
         {
-            public float Delay { get; }
-            public float Duration { get; }
+            public float Delay { get; set;}
+            public float Duration { get; set; }
 
-            public string ResourcePath { get; }
+            public string ResourcePath { get; set; }
 
             // NOTE: 아래 두 값이 없으면 해상도 변경에 따라서 포지션 이슈가 생길 수 있습니다.
             // public AnchorPresetType AnchorPresetType { get; }
             // public PivotPresetType PivotPresetType { get; }
-            public float3 LocalPosition { get; }
-
-            public PageSpriteModel(
-                float delay,
-                float duration,
-                string resourcePath,
-                float3 localPosition)
-            {
-                Delay = delay;
-                Duration = duration;
-                ResourcePath = resourcePath;
-                LocalPosition = localPosition;
-            }
+            public int2 LocalPosition { get; set; }
         }
 
-        private struct PageTextModel
+        private class PageTextModel
         {
-            public float Delay { get; }
-            public float Duration { get; }
-            public string Text { get; }
-            public int FontSize { get; }
-            public float3 LocalPosition { get; }
-
-            public PageTextModel(float delay, float duration, string text, int fontSize,
-                float3 localPosition)
-            {
-                Delay = delay;
-                Duration = duration;
-                Text = text;
-                FontSize = fontSize;
-                LocalPosition = localPosition;
-            }
+            public float Delay { get; set; }
+            public float Duration { get; set; }
+            public string TextL10nKey { get; set; }
+            public int FontSize { get; set; }
+            public int2 LocalPosition { get; set; }
         }
 
         #endregion
@@ -105,7 +70,7 @@ namespace Nekoyume.UI
         private Button gotItButton = null;
 
         private int _id;
-        private ViewModel? _viewModel;
+        private ViewModel _viewModel;
         private int _pageIndex;
         private int _pageSpriteIndex;
         private int _pageTextIndex;
@@ -149,13 +114,13 @@ namespace Nekoyume.UI
 
         private void UpdatePageSpritesAndTexts()
         {
-            if (!_viewModel.HasValue)
+            if (_viewModel is null)
             {
                 return;
             }
 
             // Pages
-            var page = _viewModel.Value.Pages[_pageIndex];
+            var page = _viewModel.Pages[_pageIndex];
 
             // Sprites
             var sprite = page.Sprites[_pageSpriteIndex];
@@ -186,7 +151,7 @@ namespace Nekoyume.UI
                 var viewModel = SharedViewModels.First(pair => pair.Key == _id).Value;
                 _id = id;
                 _viewModel = viewModel;
-                TrySetPage(_viewModel.Value, 0);
+                TrySetPage(_viewModel, 0);
                 return true;
             }
             catch (Exception)
@@ -201,12 +166,12 @@ namespace Nekoyume.UI
 
         private bool TrySetPage(int pageIndex)
         {
-            if (!_viewModel.HasValue)
+            if (_viewModel is null)
             {
                 return false;
             }
 
-            return TrySetPage(_viewModel.Value, pageIndex);
+            return TrySetPage(_viewModel, pageIndex);
         }
 
         private bool TrySetPage(ViewModel viewModel, int pageIndex)
