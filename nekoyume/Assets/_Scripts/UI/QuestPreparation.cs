@@ -205,6 +205,12 @@ namespace Nekoyume.UI
             _disposables.DisposeAllAndClear();
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100004);
+        }
+
         #endregion
 
         #region Tooltip
@@ -629,7 +635,7 @@ namespace Nekoyume.UI
                         LocalStateModifier.ModifyAvatarActionPoint(
                             States.Instance.CurrentAvatarState.address, _requiredCost);
                     }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
-                .AddTo(this);            
+                .AddTo(this);
             Mixpanel.Track("Unity/Waiting Block");
         }
 

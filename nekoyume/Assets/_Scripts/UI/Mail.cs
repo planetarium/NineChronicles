@@ -125,6 +125,12 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100010);
+        }
+
         #endregion
 
         public void UpdateList()
