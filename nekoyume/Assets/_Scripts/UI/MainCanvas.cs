@@ -269,6 +269,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<HelpPopup>());
 
             // 툴팁류.
             _secondWidgets.Add(Widget.Create<AvatarTooltip>());
