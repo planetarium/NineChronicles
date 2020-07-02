@@ -231,6 +231,12 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100002);
+        }
+
         private static void LockWorld(WorldMapWorld world)
         {
             world.Set(-1, world.SharedViewModel.RowData.StageBegin);
@@ -344,6 +350,12 @@ namespace Nekoyume.UI
                 worldMapRoot.SetActive(false);
                 stage.SetActive(false);
                 stage.SetActive(true);
+
+                // 이그드라실 월드라면.
+                if (SelectedWorldId == 1)
+                {
+                    HelpPopup.HelpMe(100003);
+                }
             }
         }
 

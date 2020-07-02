@@ -340,7 +340,9 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
-            guidedQuest.Show(States.Instance.CurrentAvatarState);
+            guidedQuest.Show(
+                States.Instance.CurrentAvatarState,
+                () => HelpPopup.HelpMe(100001));
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

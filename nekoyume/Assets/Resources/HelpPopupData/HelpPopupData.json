@@ -1,0 +1,153 @@
+{
+  "viewModels": [
+    {
+      "id": 100000,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100000_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/repeat",
+              "anchoredPosition": {
+                "x": 200,
+                "y": -70
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_01",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 100,
+                "y": -150
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_02",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -190
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_03",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -270
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_04",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -360
+              }
+            }
+          ]
+        },
+        {
+          "titleL10nKey": "HELP_POPUP_100000_PAGE_01_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_01_character_customize",
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_01_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_01_TEXT_01",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -380
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100001,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100001_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_01_character_customize",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100001_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
