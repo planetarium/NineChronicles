@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6585766084441688867}
   - component: {fileID: 80074432085834429}
   - component: {fileID: 3157532300907200150}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4681,9 +4681,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -4718,7 +4718,7 @@ GameObject:
   - component: {fileID: 1188624294907930956}
   - component: {fileID: 2097630957388321308}
   - component: {fileID: 6355467904504597464}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Smoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9329,9 +9329,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 0
   m_SortMode: 1
   m_MinParticleSize: 0
@@ -9366,7 +9366,7 @@ GameObject:
   - component: {fileID: 5932074485282538736}
   - component: {fileID: 5268999021102564362}
   - component: {fileID: 8212335135744744441}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sparkles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14036,9 +14036,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 1
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -14073,7 +14073,7 @@ GameObject:
   - component: {fileID: 7978106119037854715}
   - component: {fileID: 9216512210638394517}
   - component: {fileID: 2614232806760835090}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sparkles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18662,9 +18662,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -18699,8 +18699,9 @@ GameObject:
   - component: {fileID: 7832063884542376391}
   - component: {fileID: 8905456961055119945}
   - component: {fileID: 7541002047640297091}
-  m_Layer: 0
-  m_Name: UI_combination_bg_fire
+  - component: {fileID: 7684306166869040772}
+  m_Layer: 9
+  m_Name: CombinationBGFireVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18714,7 +18715,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9216004879430491170}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 0.28299665, y: -1.4467262, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1188624294907930956}
@@ -18740,7 +18741,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -23395,9 +23396,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 0
   m_SortMode: 3
   m_MinParticleSize: 0
@@ -23421,3 +23422,15 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &7684306166869040772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9216004879430491170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51f4870f9f6f909448c97cb255692c3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

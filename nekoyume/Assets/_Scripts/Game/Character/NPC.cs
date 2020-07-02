@@ -1,5 +1,7 @@
 using System;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -29,6 +31,7 @@ namespace Nekoyume.Game.Character
                 .AddTo(gameObject);
 
             Animator = new NPCAnimator(this) {TimeScale = AnimatorTimeScale};
+            Animator.OnEvent.Subscribe(OnAnimatorEvent);
         }
 
         private void Start()
@@ -81,6 +84,18 @@ namespace Nekoyume.Game.Character
             }
 
             ResetAnimatorTarget(target.gameObject);
+        }
+
+        protected void OnAnimatorEvent(string eventName)
+        {
+            switch (eventName)
+            {
+                case "Smash":
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.CombinationSmash);
+                    var position = ActionCamera.instance.Cam.transform.position;
+                    VFXController.instance.CreateAndChaseCam<HammerSmashVFX>(position, new Vector3(0.7f, -0.25f));
+                    break;
+            }
         }
     }
 }
