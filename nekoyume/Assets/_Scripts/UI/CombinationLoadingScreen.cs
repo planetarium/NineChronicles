@@ -20,10 +20,16 @@ namespace Nekoyume.UI
         private Button button = null;
 
         [SerializeField]
-        private CanvasGroup _canvasGroup = null;
+        private CanvasGroup _buttonCanvasGroup = null;
+
+        [SerializeField]
+        private CanvasGroup _bgCanvasGroup = null;
 
         [SerializeField]
         private DOTweenGroupAlpha _buttonAlphaTweener = null;
+
+        [SerializeField]
+        private DOTweenGroupAlpha _bgAlphaTweener = null;
 
         [SerializeField]
         private Transform npcPosition = null;
@@ -39,6 +45,7 @@ namespace Nekoyume.UI
         private WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
 
         private CombinationSparkVFX _sparkVFX = null;
+        private CombinationBGFireVFX _fireVFX = null;
 
         public System.Action OnDisappear { get; set; }
 
@@ -55,12 +62,9 @@ namespace Nekoyume.UI
 
         public override void Show(bool ignoreShowAnimation = false)
         {
-            _canvasGroup.alpha = 0f;
+            _buttonCanvasGroup.alpha = 0f;
+            _bgCanvasGroup.alpha = 0f;
             base.Show(ignoreShowAnimation);
-
-            var cameraPos = ActionCamera.instance.Cam.transform.position;
-            var pos = cameraPos;
-            _sparkVFX = VFXController.instance.Create<CombinationSparkVFX>(pos);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -72,8 +76,14 @@ namespace Nekoyume.UI
 
             if (_sparkVFX)
             {
-                _sparkVFX.LazyStop();
+                _sparkVFX.Stop();
                 _sparkVFX = null;
+            }
+
+            if (_fireVFX)
+            {
+                _fireVFX.Stop();
+                _fireVFX = null;
             }
 
             base.Close(ignoreCloseAnimation);
@@ -82,11 +92,13 @@ namespace Nekoyume.UI
         public void ShowButton()
         {
             _buttonAlphaTweener.Play();
+            _bgAlphaTweener.Play();
         }
 
         public void HideButton()
         {
             _buttonAlphaTweener.PlayReverse();
+            _bgAlphaTweener.PlayReverse();
         }
 
         public void AnimateNPC()
@@ -111,8 +123,11 @@ namespace Nekoyume.UI
             _npc = go.GetComponent<NPC>();
             _npc.SpineController.Appear(.3f);
             ShowButton();
+            var pos = ActionCamera.instance.Cam.transform.position;
+            _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             _npc.PlayAnimation(NPCAnimation.Type.Appear_02);
             yield return new WaitForSeconds(1f);
+            _fireVFX = VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos, new Vector3(-1.15f, -0.35f));
             speechBubble.SetKey("SPEECH_COMBINATION_START_");
             StartCoroutine(speechBubble.CoShowText(true));
 
@@ -131,6 +146,14 @@ namespace Nekoyume.UI
         {
             _npc.PlayAnimation(NPCAnimation.Type.Disappear_02);
             HideButton();
+            if (_sparkVFX)
+            {
+                _sparkVFX.LazyStop();
+            }
+            if (_fireVFX)
+            {
+                _fireVFX.LazyStop();
+            }
             yield return new WaitForSeconds(.5f);
             _npc.gameObject.SetActive(false);
             OnDisappear?.Invoke();

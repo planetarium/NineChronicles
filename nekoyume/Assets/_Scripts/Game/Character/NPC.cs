@@ -92,8 +92,8 @@ namespace Nekoyume.Game.Character
             {
                 case "Smash":
                     AudioController.instance.PlaySfx(AudioController.SfxCode.CombinationSmash);
-                    var position = ActionCamera.instance.Cam.transform.position + new Vector3(-0.7f, -0.25f);
-                    VFXController.instance.Create<HammerSmashVFX>(position);
+                    var position = ActionCamera.instance.Cam.transform.position;
+                    VFXController.instance.CreateAndChaseCam<HammerSmashVFX>(position, new Vector3(0.7f, -0.25f));
                     break;
             }
         }
