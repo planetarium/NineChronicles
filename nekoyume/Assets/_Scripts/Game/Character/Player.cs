@@ -585,7 +585,7 @@ namespace Nekoyume.Game.Character
 
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
                     level);
-                Widget.Find<LevelUpCelebratePopup>()?.Show(Level);
+                Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
                 InitStats(Model);
             }
 
