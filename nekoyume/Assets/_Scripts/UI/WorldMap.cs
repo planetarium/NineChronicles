@@ -92,11 +92,17 @@ namespace Nekoyume.UI
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
             SharedViewModel.IsWorldShown.Skip(1).Subscribe(UpdateWorld).AddTo(gameObject);
-            SharedViewModel.SelectedStageId.Subscribe(stageId =>
+            SharedViewModel.SelectedStageId.Skip(1).Subscribe(stageId =>
             {
                 UpdateStageInformation(
                     stageId,
                     States.Instance.CurrentAvatarState?.level ?? 1);
+
+                // 이그드라실 월드라면.
+                if (SelectedWorldId == 1)
+                {
+                    HelpPopup.HelpMe(100003);
+                }
             }).AddTo(gameObject);
 
             var tooltip = Find<ItemInformationTooltip>();
@@ -350,12 +356,6 @@ namespace Nekoyume.UI
                 worldMapRoot.SetActive(false);
                 stage.SetActive(false);
                 stage.SetActive(true);
-
-                // 이그드라실 월드라면.
-                if (SelectedWorldId == 1)
-                {
-                    HelpPopup.HelpMe(100003);
-                }
             }
         }
 

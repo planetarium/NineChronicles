@@ -331,6 +331,7 @@ namespace Nekoyume.UI
             }
 
             ReturnToPoolAll();
+            _pageIndex = -1;
             panel.sizeDelta = _viewModel.size;
             TrySetPage(_viewModel, 0);
             return true;
