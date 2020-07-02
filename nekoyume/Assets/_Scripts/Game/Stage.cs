@@ -881,9 +881,9 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             var character = GetCharacter(model);
 
-            var isPlayerCleared = model is Player && _battleLog.clearedWaveNumber > 0;
-            if (isPlayerCleared)
-                yield break;
+            // var isPlayerCleared = model is Player && _battleLog.clearedWaveNumber > 0;
+            // if (isPlayerCleared)
+            //     yield break;
 
             character.Dead();
         }

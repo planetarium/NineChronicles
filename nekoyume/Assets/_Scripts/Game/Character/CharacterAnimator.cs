@@ -173,9 +173,17 @@ namespace Nekoyume.Game.Character
                 return;
             }
 
-            var animationType = score == 3 ?
-                CharacterAnimation.Type.Win_03 :
-                CharacterAnimation.Type.Die;
+            var animationType = CharacterAnimation.Type.Win;
+
+            switch (score)
+            {
+                case 2:
+                    animationType = CharacterAnimation.Type.Win_02;
+                    break;
+                case 3:
+                    animationType = CharacterAnimation.Type.Win_03;
+                    break;
+            }
 
             Animator.Play(animationType.ToString(), BaseLayerIndex, 0f);
             ColorTween();
