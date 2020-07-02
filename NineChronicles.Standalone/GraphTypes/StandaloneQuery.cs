@@ -59,6 +59,11 @@ namespace NineChronicles.Standalone.GraphTypes
                 name: "validation",
                 description: "The validation method provider for Libplanet types.",
                 resolve: context => new ValidationQuery());
+
+            Field<NonNullGraphType<ActivationStatusQuery>>(
+                name: "activationStatus",
+                description: "Check if the provided address is activated.",
+                resolve: context => new ActivationStatusQuery());
         }
     }
 }
