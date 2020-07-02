@@ -10,6 +10,11 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            PlayPopupSound();
+        }
+
+        protected virtual void PlayPopupSound()
+        {
             AudioController.PlayPopup();
         }
     }

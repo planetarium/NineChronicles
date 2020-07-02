@@ -1,0 +1,688 @@
+{
+  "viewModels": [
+    {
+      "id": 100000,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100000_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/repeat",
+              "anchoredPosition": {
+                "x": 200,
+                "y": -70
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_01",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 80,
+                "y": -150
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_02",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -220
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_03",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -300
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_04",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -390
+              }
+            }
+          ]
+        },
+        {
+          "titleL10nKey": "HELP_POPUP_100000_PAGE_01_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_01_character_customize",
+              "anchoredPosition": {
+                "x": 0,
+                "y": 0
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_01_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -270
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100000_PAGE_01_TEXT_01",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -360
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100001,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100001_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_02_lobby",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100001_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -260
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100001_PAGE_00_TEXT_01",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -360
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100002,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100002_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_03_world_map",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100002_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100003,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100003_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_world_01_yggdrasil",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100003_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -200
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100003_PAGE_00_TEXT_01",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -260
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100004,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100004_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_04_battle_preparation",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100004_PAGE_00_TEXT_00",
+              "fontSize": 20,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100004_PAGE_00_TEXT_01",
+              "fontSize": 20,
+              "anchoredPosition": {
+                "x": 40,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100005,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100005_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_05_battle",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100005_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -260
+              }
+            },
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100005_PAGE_00_TEXT_01",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -350
+              }
+            }
+          ]
+        },
+        {
+          "titleL10nKey": "HELP_POPUP_100005_PAGE_01_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_06_battle_focus",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100005_PAGE_01_TEXT_00",
+              "fontSize": 20,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -260
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100006,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100006_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_07_battle_result",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100006_PAGE_00_TEXT_00",
+              "fontSize": 21,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -260
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100007,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100007_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_08_craft_workshop",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100007_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100008,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100008_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_09_workshop_in_progress",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100008_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100009,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100009_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_10_lobby_prosperity",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100009_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100010,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100010_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_11_mail",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100010_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100011,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100011_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_12_quest",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100011_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100012,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100012_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_13_discord",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100012_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100013,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100013_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_14_character",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100013_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 100014,
+      "size": {
+        "x": 600,
+        "y": 600
+      },
+      "pages": [
+        {
+          "titleL10nKey": "HELP_POPUP_100014_PAGE_00_TITLE",
+          "images": [
+            {
+              "delay": 0,
+              "duration": -1,
+              "resourcePath": "HelpPopupData/Sprites/result_15_settings",
+              "anchoredPosition": {
+                "x": 10,
+                "y": 10
+              },
+              "spinning": false
+            }
+          ],
+          "texts": [
+            {
+              "delay": 1,
+              "duration": -1,
+              "textL10nKey": "HELP_POPUP_100014_PAGE_00_TEXT_00",
+              "fontSize": 22,
+              "anchoredPosition": {
+                "x": 0,
+                "y": -280
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

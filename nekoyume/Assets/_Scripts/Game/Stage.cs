@@ -388,6 +388,8 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(title.CoClose());
 
+            HelpPopup.HelpMe(100005);
+
             AudioController.instance.PlayMusic(data.BGM);
         }
 
