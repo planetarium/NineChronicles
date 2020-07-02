@@ -29,12 +29,13 @@ namespace Nekoyume.Game
             player.StartRun();
             ActionCamera.instance.ChaseX(player.transform);
             yield return new WaitForSeconds(2f);
-            var go2 = EnemyFactory.Create(205007, player.transform.position);
+            var go2 = EnemyFactory.Create(205007, player.transform.position, 10f);
             var fenrir = go2.GetComponent<PrologueCharacter>();
             yield return new WaitUntil(() => 6f > Mathf.Abs(go.transform.position.x - go2.transform.position.x));
             player.StopRun();
             fenrir.Animator.StandingToIdle();
             yield return new WaitUntil(() => fenrir.Animator.IsIdle());
+            yield return StartCoroutine(CoSpawnWave(go));
             yield return StartCoroutine(CoPrologueEnd());
         }
 
@@ -46,6 +47,18 @@ namespace Nekoyume.Game
             Game.instance.Stage.objectPool.ReleaseAll();
             Widget.Find<Synopsis>().part1Ended = true;
             Widget.Find<Synopsis>().Show();
+        }
+
+        private IEnumerator CoSpawnWave(GameObject player)
+        {
+            var monsterIds = new List<int>
+            {
+                202002,
+                203005,
+                205000,
+            };
+            yield return StartCoroutine(
+                Game.instance.Stage.spawner.CoSpawnWave(monsterIds, player.transform.position, 0f));
         }
     }
 }

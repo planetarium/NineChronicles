@@ -44,10 +44,10 @@ namespace Nekoyume.Game.Factory
             return enemy.gameObject;
         }
 
-        public static GameObject Create(int characterId, Vector2 position)
+        public static GameObject Create(int characterId, Vector2 position, float offset)
         {
             var objectPool = Game.instance.Stage.objectPool;
-            var enemy = objectPool.Get<PrologueCharacter>(new Vector2(position.x + 10f, position.y));
+            var enemy = objectPool.Get<PrologueCharacter>(new Vector2(position.x + offset, position.y));
             if (!enemy)
                 throw new NotFoundComponentException<PrologueCharacter>();
 
