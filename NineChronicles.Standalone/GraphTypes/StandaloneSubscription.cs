@@ -98,13 +98,13 @@ namespace NineChronicles.Standalone.GraphTypes
         {
             public DifferentAppProtocolVersionEncounterType()
             {
-                Field<StringGraphType>(
+                Field<NonNullGraphType<StringGraphType>>(
                     name: "peer",
                     resolve: context => context.Source.Peer.ToString());
-                Field<StringGraphType>(
+                Field<NonNullGraphType<StringGraphType>>(
                     name: "peerVersion",
-                    resolve: context => context.Source.PeerVersion.Token);   
-                Field<StringGraphType>(
+                    resolve: context => context.Source.PeerVersion.Token);
+                Field<NonNullGraphType<StringGraphType>>(
                     name: "localVersion",
                     resolve: context => context.Source.LocalVersion.Token);
             }
@@ -139,7 +139,7 @@ namespace NineChronicles.Standalone.GraphTypes
             AddField(new EventStreamFieldType
             {
                 Name = "differentAppProtocolVersionEncounter",
-                Type = typeof(DifferentAppProtocolVersionEncounterType),
+                Type = typeof(NonNullGraphType<DifferentAppProtocolVersionEncounterType>),
                 Resolver = new FuncFieldResolver<DifferentAppProtocolVersionEncounter>(context =>
                     (DifferentAppProtocolVersionEncounter)context.Source),
                 Subscriber = new EventStreamResolver<DifferentAppProtocolVersionEncounter>(context =>
