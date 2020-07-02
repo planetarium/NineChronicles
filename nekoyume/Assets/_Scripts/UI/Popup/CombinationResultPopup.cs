@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Item;
@@ -22,9 +23,11 @@ namespace Nekoyume.UI
         public SimpleCountableItemView[] materialItems;
         public Button submitButton;
         public TextMeshProUGUI submitButtonText;
-        public Image materialPlusImage;
         public GameObject materialView;
         public TouchHandler touchHandler;
+        public Image consumableHeader;
+        public Image equipmentHeader;
+        public TextMeshProUGUI cpText;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -139,9 +142,6 @@ namespace Nekoyume.UI
                 materialView.SetActive(true);
                 using (var e = Model.materialItems.GetEnumerator())
                 {
-                    var hasMultipleMaterials = Model.materialItems.Count() > 1;
-                    materialPlusImage.gameObject.SetActive(isEquipment && hasMultipleMaterials);
-
                     foreach (var material in materialItems)
                     {
                         e.MoveNext();
@@ -164,6 +164,14 @@ namespace Nekoyume.UI
                 materialText.gameObject.SetActive(false);
                 materialView.SetActive(false);
             }
+
+            consumableHeader.gameObject.SetActive(!isEquipment);
+            equipmentHeader.gameObject.SetActive(isEquipment);
+            if (isEquipment)
+            {
+                cpText.text = CPHelper.GetCP((Equipment) item).ToString();
+            }
+            cpText.transform.parent.gameObject.SetActive(isEquipment);
         }
     }
 }

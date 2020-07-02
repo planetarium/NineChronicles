@@ -485,6 +485,7 @@ namespace Nekoyume.UI.Model
         private void SubscribeState(ItemType state)
         {
             DeselectItemView();
+            UpdateEquipmentNotification();
         }
 
         private void SubscribeDimmedFunc(Func<InventoryItem, bool> func)
@@ -573,8 +574,11 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        public void UpdateNotification()
+        public void UpdateEquipmentNotification()
         {
+            if (State.Value != ItemType.Equipment)
+                return;
+
             var equipments = Equipments;
 
             foreach (var item in equipments)

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Nekoyume.EnumType;
 using Nekoyume.Model.Elemental;
@@ -13,7 +14,7 @@ namespace Nekoyume.Game.Controller
 {
     public class AudioController : MonoSingleton<AudioController>
     {
-        public struct AudioInfo
+        private readonly struct AudioInfo
         {
             public readonly AudioSource source;
             public readonly float volume;
@@ -24,7 +25,7 @@ namespace Nekoyume.Game.Controller
                 volume = source.volume;
             }
         }
-        
+
         public class MusicCode
         {
             public const string Title = "bgm_title";
@@ -79,6 +80,7 @@ namespace Nekoyume.Game.Controller
             public const string Notice = "sfx_notice";
             public const string Typing = "sfx_typing";
             public const string Win = "sfx_win";
+            public const string UnlockRecipe = "sfx_unlock_recipe";
         }
 
         private enum State
@@ -87,7 +89,7 @@ namespace Nekoyume.Game.Controller
             InInitializing,
             Idle
         }
-        
+
         private const string MusicContainerPath = "Audio/Music/Prefabs";
         private const string SfxContainerPath = "Audio/Sfx/Prefabs";
 
@@ -95,8 +97,11 @@ namespace Nekoyume.Game.Controller
 
         protected override bool ShouldRename => true;
 
-        private readonly Dictionary<string, AudioSource> _musicPrefabs = new Dictionary<string, AudioSource>();
-        private readonly Dictionary<string, AudioSource> _sfxPrefabs = new Dictionary<string, AudioSource>();
+        private readonly Dictionary<string, AudioSource> _musicPrefabs =
+            new Dictionary<string, AudioSource>();
+
+        private readonly Dictionary<string, AudioSource> _sfxPrefabs =
+            new Dictionary<string, AudioSource>();
 
         private readonly Dictionary<string, Stack<AudioInfo>> _musicPool =
             new Dictionary<string, Stack<AudioInfo>>();
@@ -126,7 +131,7 @@ namespace Nekoyume.Game.Controller
             base.Awake();
 
             CurrentState = State.None;
-            Event.OnRoomEnter.AddListener(b => PlayMusic(AudioController.MusicCode.Main));
+            Event.OnRoomEnter.AddListener(b => PlayMusic(MusicCode.Main));
 
             // FixMe. 돈 버는 소리는 언제쯤 켜둘 수 있을까요. 마이너모드에서 소리가 방해된다는 피드백으로 다시 꺼둡니다.
 //#if !UNITY_EDITOR
@@ -140,8 +145,9 @@ namespace Nekoyume.Game.Controller
             CheckPlaying(_sfxPool, _sfxPlaylist, _shouldRemoveSfx);
         }
 
-        private void CheckPlaying<T1, T2>(T1 pool, T2 playList, T2 shouldRemove)
-            where T1 : IDictionary<string, Stack<AudioInfo>> where T2 : IDictionary<string, List<AudioInfo>>
+        private static void CheckPlaying<T1, T2>(T1 pool, T2 playList, T2 shouldRemove)
+            where T1 : IDictionary<string, Stack<AudioInfo>>
+            where T2 : IDictionary<string, List<AudioInfo>>
         {
             foreach (var pair in playList)
             {
@@ -197,7 +203,11 @@ namespace Nekoyume.Game.Controller
             CurrentState = State.Idle;
         }
 
-        private void InitializeInternal(string containerPath, Type codeType, IDictionary<string, AudioSource> prefabs, IDictionary<string, Stack<AudioInfo>> pool)
+        private void InitializeInternal(
+            string containerPath,
+            Type codeType,
+            IDictionary<string, AudioSource> prefabs,
+            IDictionary<string, Stack<AudioInfo>> pool)
         {
             var assets = Resources.LoadAll<GameObject>(containerPath);
             foreach (var asset in assets)
@@ -205,18 +215,22 @@ namespace Nekoyume.Game.Controller
                 var audioSource = asset.GetComponent<AudioSource>();
                 if (!audioSource)
                 {
-                    Debug.LogError($"There is no AudioSource component: {Path.Combine(containerPath, asset.name)}");
+                    Debug.LogError(
+                        $"There is no AudioSource component: {Path.Combine(containerPath, asset.name)}");
                     continue;
                 }
 
                 prefabs.Add(asset.name, audioSource);
                 Push(pool, asset.name, new AudioInfo(Instantiate(asset.name, prefabs)));
             }
-            
+
             Validate(containerPath, codeType, prefabs);
         }
 
-        private void Validate(string containerPath, Type codeType, IDictionary<string, AudioSource> prefabs)
+        private static void Validate(
+            string containerPath,
+            Type codeType,
+            IDictionary<string, AudioSource> prefabs)
         {
             var fields = codeType.GetFields(BindingFlags.Public | BindingFlags.Static);
             foreach (var fieldInfo in fields)
@@ -224,11 +238,11 @@ namespace Nekoyume.Game.Controller
                 var code = (string) fieldInfo.GetRawConstantValue();
                 if (prefabs.ContainsKey(code))
                     continue;
-                
+
                 Debug.LogError($"There is no audio prefab: {Path.Combine(containerPath, code)}");
             }
         }
-        
+
         #endregion
 
         #region Play
@@ -270,6 +284,10 @@ namespace Nekoyume.Game.Controller
             audioInfo.source.Play();
         }
 
+        #endregion
+
+        #region Stop
+
         public void StopAll(float musicFadeOut = 1f)
         {
             StopMusicAll(musicFadeOut);
@@ -287,13 +305,15 @@ namespace Nekoyume.Game.Controller
             {
                 StopCoroutine(_fadeInMusic);
             }
+
             foreach (var fadeOutMusic in _fadeOutMusics)
             {
                 if (fadeOutMusic != null)
                 {
-                    StopCoroutine(fadeOutMusic);   
+                    StopCoroutine(fadeOutMusic);
                 }
             }
+
             _fadeOutMusics.Clear();
 
             foreach (var pair in _musicPlaylist)
@@ -307,12 +327,29 @@ namespace Nekoyume.Game.Controller
 
         private void StopSfxAll()
         {
-            foreach (var stack in _sfxPlaylist)
+            foreach (var audioInfo in _sfxPlaylist.SelectMany(pair => pair.Value))
             {
-                foreach (var audioInfo in stack.Value)
-                {
-                    audioInfo.source.Stop();
-                }
+                audioInfo.source.Stop();
+            }
+        }
+
+        public void StopSfx(string audioName)
+        {
+            if (CurrentState != State.Idle)
+            {
+                throw new FsmException("Not initialized.");
+            }
+
+            if (string.IsNullOrEmpty(audioName))
+            {
+                throw new ArgumentNullException();
+            }
+
+            foreach (var audioInfo in _sfxPlaylist
+                .Where(pair => pair.Key.Equals(audioName))
+                .SelectMany(pair => pair.Value))
+            {
+                audioInfo.source.Stop();
             }
         }
 
@@ -339,7 +376,9 @@ namespace Nekoyume.Game.Controller
 
             var stack = _musicPool[audioName];
 
-            return stack.Count > 0 ? stack.Pop() : new AudioInfo(Instantiate(audioName, _musicPrefabs));
+            return stack.Count > 0
+                ? stack.Pop()
+                : new AudioInfo(Instantiate(audioName, _musicPrefabs));
         }
 
         private AudioInfo PopFromSfxPool(string audioName)
@@ -351,10 +390,13 @@ namespace Nekoyume.Game.Controller
 
             var stack = _sfxPool[audioName];
 
-            return stack.Count > 0 ? stack.Pop() : new AudioInfo(Instantiate(audioName, _sfxPrefabs));
+            return stack.Count > 0
+                ? stack.Pop()
+                : new AudioInfo(Instantiate(audioName, _sfxPrefabs));
         }
 
-        private static void Push(IDictionary<string, List<AudioInfo>> pool, string audioName, AudioInfo audioInfo)
+        private static void Push(IDictionary<string, List<AudioInfo>> pool, string audioName,
+            AudioInfo audioInfo)
         {
             if (pool.ContainsKey(audioName))
             {
@@ -367,7 +409,8 @@ namespace Nekoyume.Game.Controller
             }
         }
 
-        private static void Push(IDictionary<string, Stack<AudioInfo>> pool, string audioName, AudioInfo audioInfo)
+        private static void Push(IDictionary<string, Stack<AudioInfo>> pool, string audioName,
+            AudioInfo audioInfo)
         {
             if (pool.ContainsKey(audioName))
             {
@@ -394,7 +437,10 @@ namespace Nekoyume.Game.Controller
             while (deltaTime < duration)
             {
                 deltaTime += Time.deltaTime;
-                audioInfo.source.volume += (audioInfo.volume * Settings.Instance.volumeMusic) * Time.deltaTime / duration;
+                audioInfo.source.volume += audioInfo.volume
+                    * Settings.Instance.volumeMusic
+                    * Time.deltaTime
+                    / duration;
 
                 yield return null;
             }
@@ -463,7 +509,7 @@ namespace Nekoyume.Game.Controller
             var random = Random.value;
             instance.PlaySfx(random < 0.5f ? SfxCode.FootStepLow : SfxCode.FootStepHigh);
         }
-        
+
         public static void PlayDamaged(ElementalType elementalType = ElementalType.Normal)
         {
             switch (elementalType)
@@ -484,10 +530,13 @@ namespace Nekoyume.Game.Controller
                     instance.PlaySfx(SfxCode.DamageWind);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(elementalType), elementalType, null);
+                    throw new ArgumentOutOfRangeException(
+                        nameof(elementalType),
+                        elementalType,
+                        null);
             }
         }
-        
+
         public static void PlayDamagedCritical()
         {
             var random = Random.value;

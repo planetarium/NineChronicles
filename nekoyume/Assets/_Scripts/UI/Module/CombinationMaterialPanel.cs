@@ -60,7 +60,7 @@ namespace Nekoyume.UI.Module
             UpdateMaterialViews(checkInventory);
         }
 
-        public void SetData(ConsumableItemRecipeSheet.Row row, bool checkInventory = true)
+        public void SetData(ConsumableItemRecipeSheet.Row row, bool checkInventory = true, bool canCraft = false)
         {
             MaterialList = new List<(Nekoyume.Model.Item.Material, int)>();
             costNCG = 0m;
@@ -75,7 +75,7 @@ namespace Nekoyume.UI.Module
                 costAP += row.RequiredActionPoint;
             }
 
-            IsCraftable = true;
+            IsCraftable = canCraft;
             UpdateMaterialViews(checkInventory);
         }
 

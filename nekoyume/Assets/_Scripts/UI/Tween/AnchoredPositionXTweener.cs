@@ -1,13 +1,11 @@
 using DG.Tweening;
-using DG.Tweening.Core;
-using DG.Tweening.Plugins.Options;
 using UnityEngine;
 
 namespace Nekoyume.UI.Tween
 {
     // todo: `AnchoredPositionSingleTweener`로 바꾸고, 좌표계를 선택할 수 있도록. `RotateSingleTweener` 참고.
     [RequireComponent(typeof(RectTransform))]
-    public class AnchoredPositionXTweener : MonoBehaviour
+    public class AnchoredPositionXTweener : BaseTweener
     {
         [SerializeField]
         private float startDelay = 0f;
@@ -32,8 +30,7 @@ namespace Nekoyume.UI.Tween
 
         private RectTransform _rectTransformCache;
         private Vector2? _originAnchoredPositionCache;
-        private Tweener _tweener;
-
+        
         public RectTransform RectTransform => _rectTransformCache
             ? _rectTransformCache
             : _rectTransformCache = GetComponent<RectTransform>();
@@ -42,47 +39,37 @@ namespace Nekoyume.UI.Tween
             _originAnchoredPositionCache
             ?? (_originAnchoredPositionCache = RectTransform.anchoredPosition).Value;
 
-        public Tweener StartShowTween()
+        public Tweener PlayTween()
         {
             KillTween();
             RectTransform.anchoredPosition = OriginAnchoredPosition;
-            _tweener = RectTransform
+            Tweener = RectTransform
                 .DOAnchorPosX(end, duration, snapping)
                 .SetDelay(startDelay)
                 .SetEase(showEase);
 
             if (isFrom)
             {
-                _tweener.From();
+                Tweener.From();
             }
 
-            return _tweener.Play();
+            return Tweener.Play();
         }
 
-        public Tweener StartHideTween()
+        public Tweener PlayReverse()
         {
             KillTween();
-            RectTransform.anchoredPosition = OriginAnchoredPosition;
-            _tweener = RectTransform
-                .DOAnchorPosX(end, duration, snapping)
+            RectTransform.anchoredPosition = OriginAnchoredPosition + new Vector2(end, 0f);
+            Tweener = RectTransform
+                .DOAnchorPosX(OriginAnchoredPosition.x, duration, snapping)
                 .SetEase(closeEase);
 
-            if (!isFrom)
+            if (isFrom)
             {
-                _tweener.From();
+                Tweener.From();
             }
 
-            return _tweener.Play();
-        }
-
-        public void KillTween()
-        {
-            if (_tweener?.IsPlaying() ?? false)
-            {
-                _tweener?.Kill();
-            }
-
-            _tweener = null;
+            return Tweener.Play();
         }
     }
 }

@@ -64,7 +64,7 @@ namespace Nekoyume.Model.State
 
             ResetIndex = serialized.GetLong("resetIndex");
 
-            if (serialized.ContainsKey((Text)"rewardMap"))
+            if (serialized.ContainsKey((IKey)(Text)"rewardMap"))
             {
                 _rewardMap = ((Dictionary)serialized["rewardMap"]).ToDictionary(
                     kv => (TierType)((Binary)kv.Key).First(),
@@ -367,7 +367,7 @@ namespace Nekoyume.Model.State
             AvatarAddress = serialized.GetAddress("avatarAddress");
             AgentAddress = serialized.GetAddress("agentAddress");
             AvatarName = serialized.GetString("avatarName");
-            ArenaRecord = serialized.ContainsKey((Text)"arenaRecord")
+            ArenaRecord = serialized.ContainsKey((IKey)(Text)"arenaRecord")
                 ? new Record((Dictionary)serialized["arenaRecord"])
                 : new Record();
             Level = serialized.GetInteger("level");

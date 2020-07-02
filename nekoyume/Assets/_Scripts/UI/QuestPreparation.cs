@@ -19,6 +19,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -74,7 +75,7 @@ namespace Nekoyume.UI
 
         // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
         // 행동력이 0일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
-        protected override bool CanHandleInputEvent =>
+        public override bool CanHandleInputEvent =>
             base.CanHandleInputEvent &&
             (questButton.interactable ||
             ReactiveAvatarState.ActionPoint.Value == 0);
@@ -131,6 +132,7 @@ namespace Nekoyume.UI
             consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
             equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
 
+            Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
             _stage.LoadBackground("dungeon");
             _player = _stage.GetPlayer(_stage.questPreparationPosition);
@@ -184,7 +186,7 @@ namespace Nekoyume.UI
             _buttonEnabled.Subscribe(SubscribeReadyToQuest).AddTo(_disposables);
             ReactiveAvatarState.ActionPoint.Subscribe(SubscribeActionPoint).AddTo(_disposables);
             _tempStats = _player.Model.Stats.Clone() as CharacterStats;
-            inventory.SharedModel.UpdateNotification();
+            inventory.SharedModel.UpdateEquipmentNotification();
             questButton.gameObject.SetActive(true);
         }
 
@@ -276,7 +278,7 @@ namespace Nekoyume.UI
                 return TryToFindSlotAlreadyEquip(inventoryItem.ItemBase.Value, out _);
             });
 
-            inventory.SharedModel.UpdateNotification();
+            inventory.SharedModel.UpdateEquipmentNotification();
         }
 
         private void SubscribeInventorySelectedItem(InventoryItemView view)
@@ -475,7 +477,7 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
-            inventory.SharedModel.UpdateNotification();
+            inventory.SharedModel.UpdateEquipmentNotification();
             Find<BottomMenu>().UpdateInventoryNotification();
         }
 
@@ -627,11 +629,17 @@ namespace Nekoyume.UI
                         LocalStateModifier.ModifyAvatarActionPoint(
                             States.Instance.CurrentAvatarState.address, _requiredCost);
                     }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
-                .AddTo(this);
+                .AddTo(this);            
+            Mixpanel.Track("Unity/Waiting Block");
         }
 
         public void GoToStage(BattleLog battleLog)
         {
+            var props = new Value
+            {
+                ["StageId"] = battleLog.stageId,
+            };
+            Mixpanel.Track("Unity/Stage Start", props);
             Game.Event.OnStageStart.Invoke(battleLog);
             Find<LoadingScreen>().Close();
             Close(true);

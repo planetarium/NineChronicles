@@ -25,7 +25,7 @@ namespace NineChronicles.Standalone.GraphTypes
 
             public TipChanged()
             {
-                Field<LongGraphType>(nameof(Index));
+                Field<NonNullGraphType<LongGraphType>>(nameof(Index));
                 Field<ByteStringType>("hash", resolve: context => context.Source.Hash.ToByteArray());
             }
         }
@@ -112,6 +112,13 @@ namespace NineChronicles.Standalone.GraphTypes
                 Type = typeof(PreloadStateType),
                 Resolver = new FuncFieldResolver<PreloadState>(context => context.Source as PreloadState),
                 Subscriber = new EventStreamResolver<PreloadState>(context => StandaloneContext.PreloadStateSubject.AsObservable()),
+            });
+            AddField(new EventStreamFieldType
+            {
+                Name = "nodeStatus",
+                Type = typeof(NodeStatusType),
+                Resolver = new FuncFieldResolver<NodeStatusType>(context => context.Source as NodeStatusType),
+                Subscriber = new EventStreamResolver<NodeStatusType>(context => StandaloneContext.NodeStatusSubject.AsObservable()),
             });
         }
 

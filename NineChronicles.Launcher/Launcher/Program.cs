@@ -13,13 +13,28 @@ using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using static Launcher.Common.Utils;
+using Mixpanel;
+using System.Net.NetworkInformation;
+using System.Linq;
 
 namespace Launcher
 {
     public class Program
     {
+        // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
+        public static readonly MixpanelClient MixpanelClient =
+            new MixpanelClient(
+                "80a1e14b57d050536185c7459d45195a",
+                null,
+                new
+                {
+                    DistinctId = NetworkInterface.GetAllNetworkInterfaces().First().GetPhysicalAddress().ToString(),
+                }
+            );
+
         public static int Main(string[] args)
         {
+            MixpanelClient.Track("Launcher/Start", null);
             // FIXME launcher.json 설정이 제대로 병합되지 않는 문제가 있어서 설정 파일을 강제로 받아옵니다.
             // https://github.com/planetarium/nekoyume-unity/issues/2032
             // 업데이터에서 병합 문제가 해결되면 이 코드는 제거해야 합니다.
@@ -28,7 +43,7 @@ namespace Launcher
                 using var wc = new WebClient();
                 wc.DownloadFile(
                     // 9c-beta 클러스터 설정
-                    "https://download.nine-chronicles.com/7bc7f433c8fca903f461de848bfd57d30202f1b87e4e1fd97512030a9b7a7bf0-launcher.json",
+                    "https://download.nine-chronicles.com/4a321a45b07750ca7fa88a0a4a0c817fa26c5f5e54ac2ab91675256e6abed21a-launcher.json",
                     Path.Combine(CurrentPlatform.CurrentWorkingDirectory, "launcher.json")
                 );
             }

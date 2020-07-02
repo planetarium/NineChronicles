@@ -8,14 +8,12 @@ namespace Nekoyume.UI
     public abstract class XTweenWidget : Widget
     {
         [SerializeField]
-        private AnchoredPositionXTweener xTweener;
-
-        protected AnchoredPositionXTweener XTweener => xTweener;
+        private AnchoredPositionXTweener xTweener = null;
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            xTweener.StartShowTween();
+            xTweener.PlayTween();
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -30,7 +28,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoClose(bool ignoreCloseAnimation)
         {
-            yield return new WaitWhile(xTweener.StartHideTween().IsPlaying);
+            yield return new WaitWhile(xTweener.PlayReverse().IsPlaying);
             base.Close(ignoreCloseAnimation);
         }
     }

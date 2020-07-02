@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Libplanet.Net;
 using Microsoft.Extensions.Hosting;
+using NineChronicles.Standalone.GraphTypes;
 using NineChronicles.Standalone.Properties;
 
 namespace NineChronicles.Standalone
@@ -14,6 +15,16 @@ namespace NineChronicles.Standalone
             IHostBuilder hostBuilder,
             StandaloneContext standaloneContext = null,
             CancellationToken cancellationToken = default)
+        {
+
+            NineChroniclesNodeService service = CreateHeadless(properties, standaloneContext);
+            return service.Run(hostBuilder, cancellationToken);
+        }
+
+        public static NineChroniclesNodeService CreateHeadless(
+            NineChroniclesNodeServiceProperties properties,
+            StandaloneContext standaloneContext = null
+        )
         {
             Progress<PreloadState> progress = null;
             if (!(standaloneContext is null))
@@ -29,18 +40,10 @@ namespace NineChronicles.Standalone
                 properties.Rpc,
                 preloadProgress: progress,
                 ignoreBootstrapFailure: true);
-
             service.ConfigureStandaloneContext(standaloneContext);
 
-            return service.Run(hostBuilder, cancellationToken);
+            return service;
         }
-
-        public static NineChroniclesNodeService CreateHeadless(
-            NineChroniclesNodeServiceProperties properties)
-            => new NineChroniclesNodeService(
-                properties.Libplanet,
-                properties.Rpc,
-                ignoreBootstrapFailure: true);
 
         public static Task RunGraphQLAsync(
             GraphQLNodeServiceProperties graphQLProperties,
@@ -59,10 +62,12 @@ namespace NineChronicles.Standalone
                 service.BootstrapEnded.WaitAsync().ContinueWith((task) =>
                 {
                     standaloneContext.BootstrapEnded = true;
+                    standaloneContext.NodeStatusSubject.OnNext(standaloneContext.NodeStatus);
                 });
                 service.PreloadEnded.WaitAsync().ContinueWith((task) =>
                 {
                     standaloneContext.PreloadEnded = true;
+                    standaloneContext.NodeStatusSubject.OnNext(standaloneContext.NodeStatus);
                 });
             }
         }

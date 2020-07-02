@@ -9,11 +9,11 @@ namespace Nekoyume.UI.Module
         public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
         {
             (recipeCellView as ConsumableRecipeCellView).Set(recipeRow);
-            materialPanel.SetData(recipeRow);
+            materialPanel.SetData(recipeRow, true, Widget.Find<Combination>().selectedIndex >= 0);
 
             gameObject.SetActive(true);
-            confirmAreaYTweener.OnComplete = OnTweenCompleted;
-            confirmAreaYTweener.StartTween();
+            confirmAreaYTweener.onComplete = OnTweenCompleted;
+            confirmAreaYTweener.PlayTween();
             confirmAreaAlphaTweener.PlayDelayed(0.2f);
 
             CostNCG = (int) materialPanel.costNCG;

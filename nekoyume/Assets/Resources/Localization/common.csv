@@ -36,6 +36,7 @@ SPEECH_DUNGEON_1,You want to collect[newline]a lot of the same ingredients?[newl
 SPEECH_DUNGEON_2,What monsters drop looks trivial[newline]but it makes a good material.,몬스터가 떨어뜨리는 것들은[newline]하찮아 보이지만 좋은 재작 재료가 된다옹
 SPEECH_DUNGEON_3,Freya has always liked us cats.,여신님은 예로부터[newline]우리 고양이들을 좋아하셨다옹
 SPEECH_DUNGEON_4,The new world is balanced[newline]by the forces of four elements.,신계는 4가지 원소의 힘으로[newline]균형이 이루어지고 있다옹
+SPEECH_COMBINATION_START_0,Started Crafting.[newline]I'll make you a good one.,조합을 시작했다.[newline]좋은 물건을 만들어 주겠네.
 PLAYER_INIT_0,This place is full of little monsters.,여기도 우글우글하군
 PLAYER_INIT_1,Let's get started!,시작해볼까?
 PLAYER_ATTACK_0,Oops!,이얍!
@@ -351,5 +352,7 @@ UI_REDEEM_CODE_SUCCESS,Redeem Code Success.,코드 사용 성공
 UI_REDEEM_CODE_ALREADY_USE,Already used Code.,이미 사용된 코드입니다.
 UI_REDEEM_CODE_INVALID_CODE,Invalid Redeem Code.,잘못된 코드입니다.
 UI_OPEN_CHEST,Open Chest,상자 열기
-UI_QUEST_COMPLETED,Quest Completed!,퀘스트 완료
+UI_QUEST_COMPLETED,Quest Completed!,퀘스트 완료!
 UI_PRESS_TO_CONTINUE_FORMAT,Press to continue .. {0},클릭하여 수령하기 .. {0}
+UI_NEW_EQUIPMENT_RECIPE,New Equipment Recipe!,새로운 장비 레시피!
+UI_BATTLE_RESULT_STAGE_1,From the next stage[comma] you can earn various items!,From the next stage[comma] you can earn various items!

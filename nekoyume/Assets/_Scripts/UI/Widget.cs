@@ -62,7 +62,7 @@ namespace Nekoyume.UI
 
         public IObservable<Widget> OnDisableObservable => _onDisableSubject;
 
-        protected virtual bool CanHandleInputEvent => AnimationState == AnimationStateType.Shown;
+        public virtual bool CanHandleInputEvent => AnimationState == AnimationStateType.Shown;
 
         protected bool CanClose => CanHandleInputEvent;
 

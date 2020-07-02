@@ -30,9 +30,13 @@ namespace Nekoyume.UI
 
         public void Show(int stageId, bool isRepeat, bool isExitReserved)
         {
+            guidedQuest.Hide(true);
             base.Show();
             stageTitle.Show(stageId);
-            guidedQuest.Show(States.Instance.CurrentAvatarState);
+            guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
+            {
+                guidedQuest.SetWorldQuestToInProgress(stageId);
+            });
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
@@ -69,6 +73,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            guidedQuest.Hide(ignoreCloseAnimation);
             Find<BottomMenu>().Close(ignoreCloseAnimation);
             enemyPlayerStatus.Close(ignoreCloseAnimation);
             base.Close(ignoreCloseAnimation);
@@ -76,7 +81,18 @@ namespace Nekoyume.UI
 
         public void ClearStage(int stageId, System.Action<bool> onComplete)
         {
-            guidedQuest.ClearWorldQuest(stageId, onComplete);
+            guidedQuest.ClearWorldQuest(stageId, cleared =>
+            {
+                if (!cleared)
+                {
+                    onComplete(false);
+                    return;
+                }
+
+                guidedQuest.UpdateList(
+                    States.Instance.CurrentAvatarState,
+                    () => onComplete(true));
+            });
         }
 
         private void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
@@ -133,7 +149,7 @@ namespace Nekoyume.UI
             {
                 throw new WidgetNotFoundException<BottomMenu>();
             }
-            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.characterButton.transform, Vector3.zero);
+            VFXController.instance.CreateAndChase<DropItemInventoryVFX>(bottomMenu.characterButton.transform, Vector3.zero);
         }
 
         protected override void OnCompleteOfCloseAnimationInternal()

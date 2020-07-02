@@ -13,6 +13,7 @@ using UnityEngine.UI;
 using Nekoyume.TableData;
 using Nekoyume.Model.State;
 using System.Collections;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -65,6 +66,7 @@ namespace Nekoyume.UI
 
         public void CreateClick()
         {
+            Mixpanel.Track("Unity/Create Click");
             var inputBox = Find<InputBox>();
             inputBox.CloseCallback = result =>
             {
@@ -84,6 +86,7 @@ namespace Nekoyume.UI
                 return;
             }
 
+            Mixpanel.Track("Unity/Choose Nickname");
             Find<GrayLoadingScreen>().Show();
 
             Game.Game.instance.ActionManager
@@ -96,6 +99,7 @@ namespace Nekoyume.UI
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
                         ActionRenderHandler.Instance.RenderQuest(avatarState.address,
                             avatarState.questList.completedQuestIds);
+                        Find<Combination>().LoadRecipeVFXSkipMap();
                     },
                     onError: e =>
                         Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));

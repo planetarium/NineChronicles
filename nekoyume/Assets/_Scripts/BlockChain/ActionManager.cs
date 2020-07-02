@@ -6,10 +6,12 @@ using System.Security.Cryptography;
 using Libplanet;
 using Libplanet.Crypto;
 using Nekoyume.Action;
+using Nekoyume.Game.Character;
 using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using UniRx;
+using mixpanel;
 
 namespace Nekoyume.BlockChain
 {
@@ -89,6 +91,19 @@ namespace Nekoyume.BlockChain
         }
 
         public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
+            Player player,
+            int worldId,
+            int stageId)
+        {
+            return HackAndSlash(
+                player.Costumes.Select(costume => costume.Id).ToList(),
+                player.Equipments,
+                null,
+                worldId,
+                stageId);
+        }
+
+        public IObservable<ActionBase.ActionEvaluation<HackAndSlash>> HackAndSlash(
             List<int> costumes,
             List<Equipment> equipments,
             List<Consumable> foods,
@@ -100,11 +115,17 @@ namespace Nekoyume.BlockChain
                 throw new NullReferenceException(nameof(weeklyArenaAddress));
             }
 
+            Mixpanel.Track("Unity/Create HackAndSlash");
+
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             // NOTE: HAS를 할 때에만 장착 여부를 저장한다.
             // 따라서 이때에 찌꺼기를 남기지 않기 위해서 장착에 대한 모든 로컬 상태를 비워준다.
             LocalStateModifier.ClearEquipOrUnequipOfCostumeAndEquipment(avatarAddress, false);
+
+            costumes = costumes ?? new List<int>();
+            equipments = equipments ?? new List<Equipment>();
+            foods = foods ?? new List<Consumable>();
 
             var action = new HackAndSlash
             {
@@ -118,7 +139,10 @@ namespace Nekoyume.BlockChain
             };
             ProcessAction(action);
 
-            var itemIDs = equipments.Select(e => e.Id).Concat(foods.Select(f => f.Id)).ToArray();
+            var itemIDs = equipments
+                .Select(e => e.Id)
+                .Concat(foods.Select(f => f.Id))
+                .ToArray();
             AnalyticsManager.Instance.Battle(itemIDs);
             return _renderer.EveryRender<HackAndSlash>()
                 .SkipWhile(eval => !eval.Action.Id.Equals(action.Id))
@@ -338,6 +362,8 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<CombinationEquipment>> CombinationEquipment(
             int recipeId, int slotIndex, int? subRecipeId = null)
         {
+            Mixpanel.Track("Unity/Create CombinationEquipment");
+
             // 결과 주소도 고정되게 바꿔야함
             var action = new CombinationEquipment
             {

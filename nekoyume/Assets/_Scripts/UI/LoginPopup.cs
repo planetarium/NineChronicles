@@ -322,12 +322,10 @@ namespace Nekoyume.UI
 
         public void Show(string path, string privateKeyString)
         {
-            base.Show();
-            blur?.Show();
 
             KeyStore = path is null ? Web3KeyStore.DefaultKeyStore : new Web3KeyStore(path);
             _privateKeyString = privateKeyString;
-            //Auto login for miner, seed
+            //Auto login for miner, seed, launcher
             if (!string.IsNullOrEmpty(_privateKeyString) || Application.isBatchMode)
             {
                 CreatePrivateKey();
@@ -346,35 +344,40 @@ namespace Nekoyume.UI
                     // FIXME: 역시 키 고르는 단계가 있어야 할 것 같음
                     SetImage(KeyStore.List().First().Item2.Address);
                 }
-            }
 
-            switch (State.Value)
-            {
-                case States.CreateAccount:
-                case States.ResetPassphrase:
-                case States.CreatePassword:
+                switch (State.Value)
                 {
+                    case States.CreateAccount:
+                    case States.ResetPassphrase:
+                    case States.CreatePassword:
                     {
-                        if (passPhraseField.isFocused)
                         {
-                            retypeField.Select();
+                            if (passPhraseField.isFocused)
+                            {
+                                retypeField.Select();
+                            }
+                            else
+                            {
+                                passPhraseField.Select();
+                            }
                         }
-                        else
-                        {
-                            passPhraseField.Select();
-                        }
+                        break;
                     }
-                    break;
+                    case States.Login:
+                        loginField.Select();
+                        break;
+                    case States.FindPassphrase:
+                        findPassphraseField.Select();
+                        break;
+                    case States.Show:
+                    case States.Failed:
+                        break;
                 }
-                case States.Login:
-                    loginField.Select();
-                    break;
-                case States.FindPassphrase:
-                    findPassphraseField.Select();
-                    break;
-                case States.Show:
-                case States.Failed:
-                    break;
+                base.Show();
+                if (blur)
+                {
+                    blur.Show();
+                }
             }
         }
 

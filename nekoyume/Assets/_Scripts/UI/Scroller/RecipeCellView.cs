@@ -9,6 +9,7 @@ using UnityEngine.UI;
 using UniRx;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -49,13 +50,23 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         protected CanvasGroup canvasGroup;
 
+        [SerializeField]
+        protected Image hasNotificationImage;
+
+        [SerializeField]
+        protected LockChainJitterVFX lockVFX = null;
+
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+
         public readonly Subject<RecipeCellView> OnClick =
             new Subject<RecipeCellView>();
 
-        protected bool IsLocked => lockParent.activeSelf;
+        public bool IsLocked => lockParent.activeSelf;
         public ItemSubType ItemSubType { get; protected set; }
         public ElementalType ElementalType { get; protected set; }
         public StatType StatType { get; protected set; }
+
+        public bool tempLocked = false;
 
         public bool Visible
         {
@@ -68,7 +79,7 @@ namespace Nekoyume.UI.Scroller
             button.OnClickAsObservable()
                 .Subscribe(_ =>
                 {
-                    if (IsLocked)
+                    if (IsLocked && !tempLocked)
                     {
                         return;
                     }
@@ -76,6 +87,10 @@ namespace Nekoyume.UI.Scroller
                     OnClick.OnNext(this);
                 })
                 .AddTo(gameObject);
+
+            if (hasNotificationImage)
+                HasNotification.SubscribeTo(hasNotificationImage)
+                    .AddTo(gameObject);
         }
 
         private void OnDestroy()

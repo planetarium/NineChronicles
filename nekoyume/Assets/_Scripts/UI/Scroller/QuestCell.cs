@@ -84,71 +84,10 @@ namespace Nekoyume.UI.Scroller
         private void OnReceiveClick(SubmitButton submitButton)
         {
             AudioController.PlayClick();
-            AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
-
-            ItemMoveVFX vfx = null;
-            foreach (var view in rewardViews)
-            {
-                if (!(view.Model is null) &&
-                    view.gameObject.activeSelf)
-                {
-                    vfx = VFXController.instance.Create<ItemMoveVFX>(transform.position);
-                }
-            }
-
-            if (vfx != null)
-            {
-                vfx.OnFinished = () =>
-                {
-                    fillImage.color = ColorHelper.HexToColorRGB("282828");
-                    background.color = ColorHelper.HexToColorRGB("7b7b7b");
-                    titleText.color = ColorHelper.HexToColorRGB("614037");
-                    contentText.color = ColorHelper.HexToColorRGB("38251e");
-                    progressText.color = ColorHelper.HexToColorRGB("282828");
-                    receiveButton.Hide();
-                    var rewards = rewardViews
-                        .Select(view => view.Model)
-                        .Where(item => !(item is null))
-                        .ToList();
-                    Widget.Find<QuestResult>().Show(rewards);
-                    animator.Play("Disappear");
-                };
-            }
-            onClickSubmitButton?.Invoke();
-        }
-
-        private void RequestReward()
-        {
+            Widget.Find<CelebratesPopup>().Show(_quest);
             UpdateView();
-
-            var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
-            var msg = string.Format(format, _quest.GetContent());
-            Notification.Push(MailType.System, msg);
-
-            // 로컬 아바타의 퀘스트 상태 업데이트.
-            var quest =
-                States.Instance.CurrentAvatarState.questList.FirstOrDefault(q => q == _quest);
-            if (quest is null)
-            {
-                return;
-            }
-
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var rewardMap = quest.Reward.ItemMap;
-
-            foreach (var reward in rewardMap)
-            {
-                var materialRow = Game.Game.instance.TableSheets.MaterialItemSheet
-                    .First(pair => pair.Key == reward.Key);
-
-                LocalStateModifier.AddItem(
-                    avatarAddress,
-                    materialRow.Value.ItemId,
-                    reward.Value,
-                    false);
-            }
-
-            LocalStateModifier.RemoveReceivableQuest(avatarAddress, quest.Id);
+            Widget.Find<Quest>().UpdateTabs();
+            onClickSubmitButton?.Invoke();
         }
 
         private void UpdateView()

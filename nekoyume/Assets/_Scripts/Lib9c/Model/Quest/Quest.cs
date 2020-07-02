@@ -204,10 +204,10 @@ namespace Nekoyume.Model.Quest
                     case CombinationEquipmentQuestSheet.Row row10:
                         int stageId;
                         var recipeRow = equipmentItemRecipeSheet.Values
-                            .FirstOrDefault(r => r.Id == row10.Goal);
+                            .FirstOrDefault(r => r.Id == row10.RecipeId);
                         if (recipeRow is null)
                         {
-                            throw new ArgumentException($"Invalid Recipe Id : {row10.Goal}");
+                            throw new ArgumentException($"Invalid Recipe Id : {row10.RecipeId}");
                         }
 
                         stageId = recipeRow.UnlockStage;

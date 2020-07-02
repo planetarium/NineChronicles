@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -87,9 +88,6 @@ namespace Nekoyume.UI
         private readonly WaitForSeconds _battleWinVFXYield = new WaitForSeconds(0.2f);
         public Model SharedModel { get; private set; }
 
-        public Subject<bool> BattleEndedSubject = new Subject<bool>();
-        public IDisposable battleEndedStream;
-
         public GameObject[] victoryResultTexts;
         private Animator _victoryImageAnimator;
 
@@ -128,7 +126,6 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            BattleEndedSubject.OnNext(IsActive());
             canvasGroup.alpha = 1f;
             SharedModel = model;
             foreach (var reward in rewardsArea.rewards)
@@ -192,19 +189,19 @@ namespace Nekoyume.UI
                     break;
                 case 1:
                     _battleWin01VFX =
-                        VFXController.instance.Create<BattleWin01VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin01VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
                 case 2:
                     _battleWin02VFX =
-                        VFXController.instance.Create<BattleWin02VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin02VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
                 default:
                     _battleWin03VFX =
-                        VFXController.instance.Create<BattleWin03VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin03VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
@@ -251,7 +248,7 @@ namespace Nekoyume.UI
                         view.Set(SharedModel.Exp, cleared);
                         break;
                     case 1:
-                        view.Set(SharedModel.Rewards, cleared);
+                        view.Set(SharedModel.Rewards, Game.Game.instance.Stage.stageId);
                         break;
                     case 2:
                         view.Set(SharedModel.State == BattleLog.Result.Win && cleared);
@@ -360,6 +357,18 @@ namespace Nekoyume.UI
                 ? stage.stageId
                 : stage.stageId + 1;
             ActionRenderHandler.Instance.Pending = true;
+            var props = new Value
+            {
+                ["StageId"] = stageId,
+            };
+            var eventKey = "Next Stage";
+            if (SharedModel.ShouldRepeat)
+            {
+                eventKey = SharedModel.ClearedWaveNumber == 3 ? "Repeat" : "Retry";
+            }
+
+            var eventName = $"Unity/Stage Exit {eventKey}";
+            Mixpanel.Track(eventName, props);
             yield return Game.Game.instance.ActionManager
                 .HackAndSlash(
                     player.Costumes.Select(i => i.Id).ToList(),
@@ -387,6 +396,13 @@ namespace Nekoyume.UI
 
         public void GoToMain()
         {
+            var props = new Value
+            {
+                ["StageId"] = Game.Game.instance.Stage.stageId,
+            };
+            var eventKey = Game.Game.instance.Stage.isExitReserved ? "Quit" : "Main";
+            var eventName = $"Unity/Stage Exit {eventKey}";
+            Mixpanel.Track(eventName, props);
             StopVFX();
 
             Find<Battle>().Close();
@@ -437,6 +453,13 @@ namespace Nekoyume.UI
             {
                 reward.StopVFX();
             }
+        }
+
+        protected override void OnCompleteOfCloseAnimationInternal()
+        {
+            base.OnCompleteOfCloseAnimationInternal();
+
+            Game.Game.instance.Stage.objectPool.ReleaseAll();
         }
     }
 }

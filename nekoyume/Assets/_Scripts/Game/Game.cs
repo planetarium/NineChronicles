@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using Assets.SimpleLocalization;
+using mixpanel;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -55,6 +57,12 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
+            // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
+            Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
+            Mixpanel.Identify(NetworkInterface.GetAllNetworkInterfaces().First().GetPhysicalAddress().ToString());
+            Mixpanel.Init();
+            Mixpanel.Track("Unity/Started");
+            
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
@@ -196,6 +204,14 @@ namespace Nekoyume.Game
 
         #endregion
 
+        protected override void OnApplicationQuit()
+        {
+            if (Mixpanel.IsInitialized())
+            {
+                Mixpanel.Flush();
+            }
+        }
+
         public static void Quit()
         {
             var confirm = Widget.Find<Confirm>();
@@ -221,7 +237,7 @@ namespace Nekoyume.Game
                 blurRadius: 2, submittable: false);
         }
 
-        private void PlayMouseOnClickVFX(Vector3 position)
+        private static void PlayMouseOnClickVFX(Vector3 position)
         {
             position = ActionCamera.instance.Cam.ScreenToWorldPoint(position);
             var vfx = VFXController.instance.CreateAndChaseCam<MouseClickVFX>(position);

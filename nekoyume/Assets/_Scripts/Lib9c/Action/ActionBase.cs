@@ -54,33 +54,22 @@ namespace Nekoyume.Action
                 _balances = balances;
             }
 
-            public AccountStateDelta(Dictionary states, Dictionary balances)
+            public AccountStateDelta(Dictionary states, List balances)
             {
                 _states = states.ToImmutableDictionary(
                     kv => new Address(kv.Key.EncodeAsByteArray()),
                     kv => kv.Value
                 );
-                _balances = balances.ToImmutableDictionary(
-                    kv => (
-                        new Address(kv.Key.EncodeAsByteArray()),
-                        CurrencyExtensions.Deserialize((Dictionary) kv.Value)
-                    ),
-                    kv =>
-                    {
-                        var serialized = (Dictionary) kv.Value;
-                        var balance = (Bencodex.Types.Integer) serialized.GetValueOrDefault(
-                            (Text) "amount",
-                            (Bencodex.Types.Integer) 0
-                        );
-                        return balance.Value;
-                    }
+                _balances = balances.Cast<Dictionary>().ToImmutableDictionary(
+                    record => (record["address"].ToAddress(), CurrencyExtensions.Deserialize((Dictionary)record["currency"])),
+                    record => record["amount"].ToBigInteger()
                 );
             }
 
             public AccountStateDelta(IValue serialized)
                 : this(
                     (Dictionary)((Dictionary)serialized)["states"],
-                    (Dictionary)((Dictionary)serialized)["balances"]
+                    (List)((Dictionary)serialized)["balances"]
                 )
             {
             }
@@ -96,8 +85,15 @@ namespace Nekoyume.Action
             public IAccountStateDelta SetState(Address address, IValue state) =>
                 new AccountStateDelta(_states.SetItem(address, state), _balances);
 
-            public BigInteger GetBalance(Address address, Currency currency) =>
-                _balances.GetValueOrDefault((address, currency), 0);
+            public BigInteger GetBalance(Address address, Currency currency)
+            {
+                if (!_balances.TryGetValue((address, currency), out BigInteger balance))
+                {
+                    throw new BalanceDoesNotExistsException(address, currency);
+                }
+
+                return balance;
+            }
 
             public IAccountStateDelta MintAsset(Address recipient, Currency currency, BigInteger amount)
             {
@@ -221,11 +217,31 @@ namespace Nekoyume.Action
 
             private static byte[] ToBytes(IAccountStateDelta delta, IImmutableSet<Address> updatedAddresses)
             {
-                var bdict = new Dictionary(
+                var state = new Dictionary(
                     updatedAddresses.Select(addr => new KeyValuePair<IKey, IValue>(
                         (Binary) addr.ToByteArray(),
-                        delta.GetState(addr) ?? new Bencodex.Types.Null()))
+                        delta.GetState(addr) ?? new Bencodex.Types.Null()
+                    ))
                 );
+                var balance = new Bencodex.Types.List(
+                    delta.UpdatedFungibleAssets.SelectMany(ua =>
+                        ua.Value.Select(c =>
+                            new Bencodex.Types.Dictionary(new []
+                            {
+                                new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
+                                new KeyValuePair<IKey, IValue>((Text) "currency", c.Serialize()),
+                                new KeyValuePair<IKey, IValue>((Text) "amount", delta.GetBalance(ua.Key, c).Serialize()),
+                            })
+                        )
+                    ).Cast<IValue>()
+                );
+
+                var bdict = new Dictionary(new []
+                {
+                    new KeyValuePair<IKey, IValue>((Text) "states", state),
+                    new KeyValuePair<IKey, IValue>((Text) "balances", balance),
+                });
+
                 return new Codec().Encode(bdict);
             }
 

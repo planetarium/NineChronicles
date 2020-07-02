@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Nekoyume.Action;
 using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
@@ -220,7 +218,7 @@ namespace Nekoyume.UI.Module
                 .Subscribe(SubscribeAvatarQuestList)
                 .AddTo(_disposablesAtOnEnable);
             ReactiveAvatarState.Inventory?
-                .Subscribe(_ => UpdateInventoryNotification())
+                .Subscribe(inventory => UpdateInventoryNotification(inventory))
                 .AddTo(_disposablesAtOnEnable);
         }
 
@@ -588,6 +586,12 @@ namespace Nekoyume.UI.Module
             var avatarInfo = Find<AvatarInfo>();
 
             var hasNotification = avatarInfo.HasNotification;
+            HasNotificationInCharacter.OnNext(hasNotification);
+        }
+
+        private void UpdateInventoryNotification(Nekoyume.Model.Item.Inventory inventory)
+        {
+            var hasNotification = inventory?.HasNotification() ?? false;
             HasNotificationInCharacter.OnNext(hasNotification);
         }
     }

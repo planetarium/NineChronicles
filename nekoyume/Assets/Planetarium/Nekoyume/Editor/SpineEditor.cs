@@ -178,24 +178,16 @@ namespace Planetarium.Nekoyume.Editor
                     switch (animationType)
                     {
                         // todo: `CharacterAnimation.Type.Appear`와 `CharacterAnimation.Type.Disappear`는 없어질 예정.
-                        case CharacterAnimation.Type.Appear:
-                        case CharacterAnimation.Type.Disappear:
-                        case CharacterAnimation.Type.Standing:
-                        case CharacterAnimation.Type.StandingToIdle:
-                        case CharacterAnimation.Type.Win:
-                        case CharacterAnimation.Type.Greeting:
-                        case CharacterAnimation.Type.Emotion:
-                        case CharacterAnimation.Type.Attack:
-                        case CharacterAnimation.Type.Run:
-                        case CharacterAnimation.Type.Casting:
-                        case CharacterAnimation.Type.Hit:
-                        case CharacterAnimation.Type.Die:
+                        default:
                             assetPath = Path.Combine(
                                 animationAssetsPath,
                                 $"{nameof(CharacterAnimation.Type.Idle)}.asset");
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
                                 assetPath);
                             break;
+                        case CharacterAnimation.Type.Idle:
+                            Object.DestroyImmediate(gameObject);
+                            throw new AssetNotFoundException(assetPath);
                         case CharacterAnimation.Type.Win_02:
                         case CharacterAnimation.Type.Win_03:
                             assetPath = Path.Combine(
@@ -213,9 +205,6 @@ namespace Planetarium.Nekoyume.Editor
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
                                 assetPath);
                             break;
-                        default:
-                            Object.DestroyImmediate(gameObject);
-                            throw new AssetNotFoundException(assetPath);
                     }
 
                     if (asset is null)
@@ -426,6 +415,11 @@ namespace Planetarium.Nekoyume.Editor
                 IsFullCostume(prefabName))
             {
                 return target.AddComponent<PlayerSpineController>();
+            }
+
+            if (IsNPC(prefabName))
+            {
+                return target.AddComponent<NPCSpineController>();
             }
 
             return target.AddComponent<CharacterSpineController>();

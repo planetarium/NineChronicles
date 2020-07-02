@@ -25,8 +25,7 @@ namespace Nekoyume.UI
     public class AvatarInfo : XTweenWidget
     {
         public bool HasNotification =>
-            inventory.SharedModel.Equipments
-            .Any(item => item.HasNotification.Value);
+            inventory.SharedModel.Equipments.Any(item => item.HasNotification.Value);
 
         private const string NicknameTextFormat = "<color=#B38271>Lv.{0}</color=> {1}";
 
@@ -284,7 +283,7 @@ namespace Nekoyume.UI
         {
             inventory.SharedModel.EquippedEnabledFunc.SetValueAndForceNotify(inventoryItem =>
                 TryToFindSlotAlreadyEquip(inventoryItem.ItemBase.Value, out _));
-            inventory.SharedModel.UpdateNotification();
+            inventory.SharedModel.UpdateEquipmentNotification();
         }
 
         #endregion
@@ -469,11 +468,11 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(slot.ItemSubType == ItemSubType.Food
                 ? AudioController.SfxCode.ChainMail2
                 : AudioController.SfxCode.Equipment);
-            inventory.SharedModel.UpdateNotification();
+            inventory.SharedModel.UpdateEquipmentNotification();
             Find<BottomMenu>().UpdateInventoryNotification();
         }
 
-        private static void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
+        private void LocalStateItemEquipModify(ItemBase itemBase, bool equip)
         {
             switch (itemBase.ItemType)
             {
@@ -491,6 +490,8 @@ namespace Nekoyume.UI
                         equipment.ItemId,
                         equip,
                         false);
+                    cpText.text = CPHelper.GetCP(States.Instance.CurrentAvatarState,
+                        Game.Game.instance.TableSheets.CharacterSheet).ToString();
                     break;
             }
         }

@@ -1,14 +1,18 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
+using Nekoyume.Model.BattleStatus;
 using UniRx;
 using UnityEngine;
-using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
+using mixpanel;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.UI
 {
@@ -56,7 +60,6 @@ namespace Nekoyume.UI
         private GuidedQuest guidedQuest = null;
 
         private Coroutine _coLazyClose;
-        private Player _player;
 
         protected override void Awake()
         {
@@ -66,13 +69,95 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
-            
+
             guidedQuest.OnClickWorldQuestCell
-                .Subscribe(_ => Debug.LogWarning("TODO: 스테이지 전투 전환."))
+                .Subscribe(_ => HackAndSlash())
                 .AddTo(gameObject);
             guidedQuest.OnClickCombinationEquipmentQuestCell
-                .Subscribe(_ => Debug.LogWarning("TODO: 장비 조합 전환."))
+                .Subscribe(_ => GoToCombinationEquipmentRecipe())
                 .AddTo(gameObject);
+        }
+
+        // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
+        private void HackAndSlash()
+        {
+            var worldQuest = GuidedQuest.WorldQuest;
+            if (worldQuest is null)
+            {
+                return;
+            }
+
+            var stageId = worldQuest.Goal;
+            var sheets = Game.Game.instance.TableSheets;
+            var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
+            if (stageRow is null)
+            {
+                return;
+            }
+
+            var requiredCost = stageRow.CostAP;
+            if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
+            {
+                // NOTE: AP가 부족합니다.
+                return;
+            }
+
+            if (!sheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+            {
+                return;
+            }
+
+            var worldId = worldRow.Id;
+
+            Find<BottomMenu>().Close(true);
+            Find<LoadingScreen>().Show();
+
+            var stage = Game.Game.instance.Stage;
+            stage.isExitReserved = false;
+            stage.repeatStage = false;
+            var player = stage.GetPlayer();
+            player.StartRun();
+            ActionCamera.instance.ChaseX(player.transform);
+            ActionRenderHandler.Instance.Pending = true;
+            Game.Game.instance.ActionManager
+                .HackAndSlash(player, worldId, stageId)
+                .Subscribe(_ =>
+                {
+                    LocalStateModifier.ModifyAvatarActionPoint(
+                        States.Instance.CurrentAvatarState.address,
+                        requiredCost);
+                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+                .AddTo(this);
+            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                - requiredCost);
+            var props = new Value
+            {
+                ["StageID"] = stageId,
+            };
+            Mixpanel.Track("Unity/Click Guided Quest Enter Dungeon", props);
+        }
+
+        public void GoToStage(BattleLog battleLog)
+        {
+            Game.Event.OnStageStart.Invoke(battleLog);
+            Find<LoadingScreen>().Close();
+            Close(true);
+        }
+
+        private void GoToCombinationEquipmentRecipe()
+        {
+            mixpanel.Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
+            var combinationEquipmentQuest = GuidedQuest.CombinationEquipmentQuest;
+            if (combinationEquipmentQuest is null)
+            {
+                return;
+            }
+
+            var recipeId = combinationEquipmentQuest.RecipeId;
+            var subRecipeId = combinationEquipmentQuest.SubRecipeId;
+
+            CombinationClickInternal(() =>
+                Find<Combination>().ShowByEquipmentRecipe(recipeId, subRecipeId));
         }
 
         private void UpdateButtons()
@@ -87,18 +172,29 @@ namespace Nekoyume.UI
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
+
+            var combination = Find<Combination>();
+            var hasNotificationOnCombination = combination.HasNotification;
+
             combinationExclamationMark.gameObject.SetActive(
                 btnCombination.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
+                (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
+                 hasNotificationOnCombination));
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
             rankingExclamationMark.gameObject.SetActive(
                 btnRanking.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
+
+            var worldMap = Find<WorldMap>();
+            worldMap.UpdateNotificationInfo();
+            var hasNotificationInWorldmap = worldMap.hasNotification;
+
             questExclamationMark.gameObject.SetActive(
-                btnQuest.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
+                (btnQuest.IsUnlocked &&
+                 PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
+                hasNotificationInWorldmap);
         }
 
         private void HideButtons()
@@ -130,6 +226,7 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
+            Mixpanel.Track("Unity/Enter Dungeon");
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
@@ -160,6 +257,26 @@ namespace Nekoyume.UI
 
         public void CombinationClick(int slotIndex = -1)
         {
+            CombinationClickInternal(() =>
+            {
+                if (slotIndex >= 0)
+                {
+                    Find<Combination>().Show(slotIndex);
+                }
+                else
+                {
+                    Find<Combination>().Show();
+                }
+            });
+        }
+
+        private void CombinationClickInternal(System.Action showAction)
+        {
+            if (showAction is null)
+            {
+                return;
+            }
+
             if (!btnCombination.IsUnlocked)
             {
                 btnCombination.JingleTheCat();
@@ -174,14 +291,7 @@ namespace Nekoyume.UI
             }
 
             Close();
-            if (slotIndex >= 0)
-            {
-                Find<Combination>().Show(slotIndex);
-            }
-            else
-            {
-                Find<Combination>().Show();
-            }
+            showAction();
 
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
@@ -204,6 +314,11 @@ namespace Nekoyume.UI
             Close();
             Find<RankingBoard>().Show();
             AudioController.PlayClick();
+        }
+
+        public void UpdateGuideQuest(AvatarState avatarState)
+        {
+            guidedQuest.UpdateList(avatarState);
         }
 
         public override void Show(bool ignoreShowAnimation = false)

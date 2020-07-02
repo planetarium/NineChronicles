@@ -12,8 +12,8 @@ namespace Nekoyume.UI.Module
             materialPanel.SetData(recipeRow, subRecipeId);
 
             gameObject.SetActive(true);
-            confirmAreaYTweener.OnComplete = OnTweenCompleted;
-            confirmAreaYTweener.StartTween();
+            confirmAreaYTweener.onComplete = OnTweenCompleted;
+            confirmAreaYTweener.PlayTween();
             confirmAreaAlphaTweener.PlayDelayed(0.2f);
 
             CostNCG = (int) materialPanel.costNCG;

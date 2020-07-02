@@ -175,15 +175,15 @@ namespace Nekoyume.UI.Module
                     stageState = WorldMapStage.State.Disabled;
                 }
 
-                stage.SharedViewModel.state.Value = stageState;
-                stage.SharedViewModel.selected.Value = stageId == selectedStageId;
+                stage.SharedViewModel.State.Value = stageState;
+                stage.SharedViewModel.Selected.Value = stageId == selectedStageId;
             }
         }
 
-        public void ShowByStageId(int value)
+        public void ShowByStageId(int value, int stageIdToNotify)
         {
             ShowByPageNumber(GetPageNumber(value));
-            SetSelectedStageId(value);
+            SetSelectedStageId(value, stageIdToNotify);
 
             gameObject.SetActive(true);
         }
@@ -222,17 +222,20 @@ namespace Nekoyume.UI.Module
             return pageNumber;
         }
 
-        private void SetSelectedStageId(int value)
+        private void SetSelectedStageId(int value, int stageIdToNotify)
         {
             foreach (var stage in pages.SelectMany(page => page.stages))
             {
-                stage.SharedViewModel.selected.Value = stage.SharedViewModel.stageId == value;
+                var stageId = stage.SharedViewModel.stageId;
+                stage.SharedViewModel.Selected.Value = stageId == value;
+                stage.SharedViewModel.HasNotification.Value =
+                    stageId == stageIdToNotify && !stage.SharedViewModel.Selected.Value;
             }
         }
 
         private void SubscribeOnClick(WorldMapStage stage)
         {
-            SetSelectedStageId(stage.SharedViewModel.stageId);
+            SetSelectedStageId(stage.SharedViewModel.stageId, Widget.Find<WorldMap>().stageIdToNotify);
         }
     }
 }

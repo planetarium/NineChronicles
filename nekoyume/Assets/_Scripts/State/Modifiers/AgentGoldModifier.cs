@@ -20,7 +20,7 @@ namespace Nekoyume.State.Modifiers
         private BigInteger Gold
         {
             get => BigInteger.Parse(goldString, CultureInfo.InvariantCulture);
-            set => goldString = Gold.ToString(CultureInfo.InvariantCulture);
+            set => goldString = value.ToString(CultureInfo.InvariantCulture);
         }
 
         public AgentGoldModifier(BigInteger gold)

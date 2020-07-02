@@ -71,7 +71,7 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimationInternal();
             _frontVFX =
-                VFXController.instance.Create<CombinationSelectSmallFrontVFX>(
+                VFXController.instance.CreateAndChase<CombinationSelectSmallFrontVFX>(
                     equipmentCellView.transform,
                     new Vector3(0.53f, -0.5f));
         }
@@ -118,7 +118,7 @@ namespace Nekoyume.UI
                             r.Id == result.recipeId);
 
                     consumableCellView.Set(recipeRow);
-                    materialPanel.SetData(recipeRow, false);
+                    materialPanel.SetData(recipeRow, false, true);
                     materialPanel.gameObject.SetActive(true);
                     break;
                 }

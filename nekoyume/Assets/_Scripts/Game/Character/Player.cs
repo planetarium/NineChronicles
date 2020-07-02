@@ -586,7 +586,7 @@ namespace Nekoyume.Game.Character
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
                     level);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
-                VFXController.instance.Create<BattleLevelUp01VFX>(transform, HUDOffset);
+                VFXController.instance.CreateAndChase<BattleLevelUp01VFX>(transform, HUDOffset);
                 InitStats(Model);
             }
 

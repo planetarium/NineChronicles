@@ -46,7 +46,7 @@ namespace NineChronicles.Standalone.GraphTypes
                 resolve: context => standaloneContext.KeyStore
             );
 
-            Field<NodeStatusType>(
+            Field<NonNullGraphType<NodeStatusType>>(
                 name: "nodeStatus",
                 resolve: context => new NodeStatusType
                 {
@@ -54,6 +54,11 @@ namespace NineChronicles.Standalone.GraphTypes
                     PreloadEnded = standaloneContext.PreloadEnded,
                 }
             );
+
+            Field<NonNullGraphType<ValidationQuery>>(
+                name: "validation",
+                description: "The validation method provider for Libplanet types.",
+                resolve: context => new ValidationQuery());
         }
     }
 }

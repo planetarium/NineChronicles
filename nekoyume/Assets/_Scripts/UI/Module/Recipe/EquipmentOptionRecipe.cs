@@ -1,6 +1,8 @@
+using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -18,6 +20,8 @@ namespace Nekoyume.UI.Module
 
         public readonly Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)> OnOptionClickVFXCompleted =
             new Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)>();
+
+        protected int _recipeId;
 
         private void Awake()
         {
@@ -47,6 +51,7 @@ namespace Nekoyume.UI.Module
 
         public void Show(EquipmentItemRecipeSheet.Row recipeRow)
         {
+            _recipeId = recipeRow.Id;
             equipmentRecipeCellView.Set(recipeRow);
             InitializeOptionRecipes(recipeRow);
             Show();
@@ -75,7 +80,9 @@ namespace Nekoyume.UI.Module
                 optionRecipeView.Show(
                     row.GetLocalizedName(),
                     subRecipeId,
-                    new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount));
+                    new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount),
+                    true,
+                    (_recipeId, i));
             }
 
             UpdateOptionRecipes();
@@ -87,9 +94,22 @@ namespace Nekoyume.UI.Module
             if (avatarState is null)
                 return;
 
+            var quest = Game.Game.instance
+                .States.CurrentAvatarState.questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete && !(x.SubRecipeId is null))
+                .OrderBy(x => x.RecipeId)
+                .FirstOrDefault();
+
             foreach (var recipeView in equipmentOptionRecipeViews)
             {
-                recipeView.Set(avatarState);
+                var hasNotification = !(quest is null) && quest.SubRecipeId == recipeView.rowData.Id;
+                var isFirstOpen =
+                    !Widget.Find<Combination>()
+                    .RecipeVFXSkipMap[_recipeId]
+                    .Contains(recipeView.SubRecipeId);
+
+                recipeView.Set(avatarState, hasNotification, isFirstOpen);
             }
         }
 

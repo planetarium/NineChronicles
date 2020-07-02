@@ -3,6 +3,7 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using System;
 using System.Linq;
+using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -13,11 +14,15 @@ namespace Nekoyume.UI.Scroller
         public void Set(EquipmentItemRecipeSheet.Row recipeRow)
         {
             if (recipeRow is null)
+            {
                 return;
+            }
 
             var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
             if (!equipmentSheet.TryGetValue(recipeRow.ResultEquipmentId, out var row))
+            {
                 return;
+            }
 
             RowData = recipeRow;
 
@@ -30,19 +35,37 @@ namespace Nekoyume.UI.Scroller
             SetLocked(false, RowData.UnlockStage);
         }
 
-        public void Set(AvatarState avatarState)
+        public void Set(AvatarState avatarState, bool? hasNotification = false, bool tempLocked = false)
         {
             if (RowData is null)
+            {
                 return;
+            }
 
             // 해금 검사.
             if (!avatarState.worldInformation.IsStageCleared(RowData.UnlockStage))
             {
+                HasNotification.Value = false;
                 SetLocked(true, RowData.UnlockStage);
                 return;
             }
 
-            SetLocked(false, RowData.UnlockStage);
+            if (hasNotification.HasValue)
+                HasNotification.Value = hasNotification.Value;
+
+            SetLocked(tempLocked, RowData.UnlockStage);
+
+            base.tempLocked = tempLocked;
+
+            if (tempLocked)
+                lockVFX?.Play();
+            else
+                lockVFX?.Stop();
+
+            if (tempLocked)
+            {
+                return;
+            }
 
             // 메인 재료 검사.
             var inventory = avatarState.inventory;
