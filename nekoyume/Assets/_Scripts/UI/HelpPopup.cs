@@ -6,6 +6,7 @@ using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Pool;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using TMPro;
@@ -115,8 +116,21 @@ namespace Nekoyume.UI
         private List<(Image, float)> _spinningImages = new List<(Image, float)>();
         private List<(TextMeshProUGUI, float)> _texts = new List<(TextMeshProUGUI, float)>();
 
-        public static void HelpMe(int id)
+        public static void HelpMe(int id, bool ignorePlayerPrefs = false)
         {
+            if (!ignorePlayerPrefs)
+            {
+                if (PlayerPrefs.HasKey(
+                    $"{nameof(HelpPopup)}_{id}_{States.Instance.AgentState.address}"))
+                {
+                    return;
+                }
+
+                PlayerPrefs.SetInt(
+                    $"{nameof(HelpPopup)}_{id}_{States.Instance.AgentState.address}",
+                    1);
+            }
+
             if (!Instance.TrySetId(id))
             {
                 return;

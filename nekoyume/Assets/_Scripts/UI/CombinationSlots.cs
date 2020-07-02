@@ -27,6 +27,12 @@ namespace Nekoyume.UI
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100008);
+        }
+
         private void SetSlots(Dictionary<int, CombinationSlotState> states)
         {
             _states = states;
