@@ -7,7 +7,7 @@ using Libplanet.Net;
 
 namespace Libplanet.Standalone.Hosting
 {
-    public struct LibplanetNodeServiceProperties<T>
+    public class LibplanetNodeServiceProperties<T>
         where T : IAction, new()
     {
         // swarm.

@@ -157,10 +157,115 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             await seedNode.StopAsync(cts.Token);
         }
 
+        // TODO: partial class로 세부 쿼리 별 테스트 분리하기.
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ValidatePrivateKey(bool valid)
+        {
+            var privateKey = new PrivateKey();
+            var privateKeyHex = valid
+                ? ByteUtil.Hex(privateKey.ByteArray)
+                : "0000000000000000000000000000000000000000";
+            var query = $@"query {{
+                validation {{
+                    privateKey(hex: ""{privateKeyHex}"")
+                }}
+            }}";
+
+            var result = await ExecuteQueryAsync(query);
+            var validationResult =
+                result.Data
+                    .As<Dictionary<string, object>>()["validation"]
+                    .As<Dictionary<string, object>>()["privateKey"];
+            Assert.IsType<bool>(validationResult);
+            Assert.Equal(valid, validationResult);
+        }
+
+        // TODO: partial class로 세부 쿼리 별 테스트 분리하기.
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ValidatePublicKey(bool valid)
+        {
+            var privateKey = new PrivateKey();
+            var publicKey = privateKey.PublicKey;
+
+            string CreateInvalidPublicKeyHexString(bool compress)
+            {
+                int length = compress ? 33 : 66;
+                do
+                {
+                    byte[] publicKeyBytes = CreateRandomBytes(length);
+
+                    try
+                    {
+                        var _ = new PublicKey(publicKeyBytes);
+                    }
+                    catch (FormatException)
+                    {
+                        return ByteUtil.Hex(publicKeyBytes);
+                    }
+                    catch (ArgumentException)
+                    {
+                        return ByteUtil.Hex(publicKeyBytes);
+                    }
+                } while (true);
+            }
+
+            var publicKeyHex = valid ? ByteUtil.Hex(publicKey.Format(false)) : CreateInvalidPublicKeyHexString(false);
+            var query = $@"query {{
+                validation {{
+                    publicKey(hex: ""{publicKeyHex}"")
+                }}
+            }}";
+
+            var result = await ExecuteQueryAsync(query);
+
+            var validationResult =
+                result.Data
+                    .As<Dictionary<string, object>>()["validation"]
+                    .As<Dictionary<string, object>>()["publicKey"];
+            Assert.IsType<bool>(validationResult);
+            Assert.Equal(valid, validationResult);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ConvertPrivateKey(bool compress)
+        {
+            var privateKey = new PrivateKey();
+            var privateKeyHex = ByteUtil.Hex(privateKey.ByteArray);
+            var query = $@"
+            query {{
+                keyStore {{
+                    privateKey(hex: ""{privateKeyHex}"") {{
+                        hex
+                        publicKey {{
+                            hex(compress: {compress.ToString().ToLowerInvariant()})
+                            address
+                        }}
+                    }}
+                }}
+            }}
+            ";
+
+            var result = await ExecuteQueryAsync(query);
+            var privateKeyResult = result.Data.As<Dictionary<string, object>>()["keyStore"]
+                .As<Dictionary<string, object>>()["privateKey"]
+                .As<Dictionary<string, object>>();
+            Assert.Equal(privateKeyHex, privateKeyResult["hex"]);
+            var publicKeyResult = privateKeyResult["publicKey"].As<Dictionary<string, object>>();
+            Assert.Equal(ByteUtil.Hex(privateKey.PublicKey.Format(compress)), publicKeyResult["hex"]);
+            Assert.Equal(privateKey.ToAddress().ToString(), publicKeyResult["address"]);
+        }
+
         private (ProtectedPrivateKey, string) CreateProtectedPrivateKey()
         {
             string CreateRandomBase64String()
             {
+                // TODO: use `CreateRandomBytes()`
                 var random = new Random();
                 Span<byte> buffer = stackalloc byte[16];
                 random.NextBytes(buffer);
@@ -170,6 +275,19 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             // 랜덤 문자열을 생성하여 passphrase로 사용합니다.
             var passphrase = CreateRandomBase64String();
             return (ProtectedPrivateKey.Protect(new PrivateKey(), passphrase), passphrase);
+        }
+
+        private string CreateRandomHexString(int length)
+        {
+            return ByteUtil.Hex(CreateRandomBytes(length));
+        }
+
+        private byte[] CreateRandomBytes(int length)
+        {
+            var random = new Random();
+            byte[] buffer = new byte[length];
+            random.NextBytes(buffer);
+            return buffer;
         }
     }
 }

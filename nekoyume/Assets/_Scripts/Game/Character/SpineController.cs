@@ -65,7 +65,7 @@ namespace Nekoyume.Game.Character
 
         #region Fade
 
-        public void Appear(float duration = 1f, bool fromZero = true)
+        public void Appear(float duration = 1f, bool fromZero = true, System.Action onComplete = null)
         {
             if (fromZero)
             {
@@ -73,10 +73,10 @@ namespace Nekoyume.Game.Character
             }
 
             duration *= 1f - SkeletonAnimation.skeleton.A;
-            StartFade(1f, duration);
+            StartFade(1f, duration, onComplete);
         }
 
-        public void Disappear(float duration = 1f, bool fromOne = true)
+        public void Disappear(float duration = 1f, bool fromOne = true, System.Action onComplete = null)
         {
             if (fromOne)
             {
@@ -84,14 +84,15 @@ namespace Nekoyume.Game.Character
             }
 
             duration *= SkeletonAnimation.skeleton.A;
-            StartFade(0f, duration);
+            StartFade(0f, duration, onComplete);
         }
 
-        private void StartFade(float toValue, float duration)
+        private void StartFade(float toValue, float duration, System.Action onComplete = null)
         {
             StopFade();
             _fadeTweener = DOTween
                 .To(() => SkeletonAnimation.skeleton.A, value => SkeletonAnimation.skeleton.A = value, toValue, duration)
+                .OnComplete(() => onComplete?.Invoke())
                 .Play();
         }
 

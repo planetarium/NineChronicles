@@ -458,10 +458,6 @@ namespace Nekoyume.Game
                     StartCoroutine(CoSlideBg());
                 }
             }
-            else
-            {
-                objectPool.ReleaseAll();
-            }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
             var avatarState = new AvatarState(
@@ -510,7 +506,11 @@ namespace Nekoyume.Game
                 stage_playtime: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
                 );
-            Mixpanel.Track("Unity/Stage End");
+            var props = new Value
+            {
+                ["StageId"] = log.stageId
+            };
+            Mixpanel.Track("Unity/Stage End", props);
         }
 
         private IEnumerator CoSlideBg()
@@ -880,10 +880,6 @@ namespace Nekoyume.Game
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             var character = GetCharacter(model);
-
-            var isPlayerCleared = model is Player && _battleLog.clearedWaveNumber > 0;
-            if (isPlayerCleared)
-                yield break;
 
             character.Dead();
         }

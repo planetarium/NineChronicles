@@ -94,6 +94,22 @@ namespace NineChronicles.Standalone.GraphTypes
             }
         }
 
+        class DifferentAppProtocolVersionEncounterType : ObjectGraphType<DifferentAppProtocolVersionEncounter>
+        {
+            public DifferentAppProtocolVersionEncounterType()
+            {
+                Field<StringGraphType>(
+                    name: "peer",
+                    resolve: context => context.Source.Peer.ToString());
+                Field<StringGraphType>(
+                    name: "peerVersion",
+                    resolve: context => context.Source.PeerVersion.Token);   
+                Field<StringGraphType>(
+                    name: "localVersion",
+                    resolve: context => context.Source.LocalVersion.Token);
+            }
+        }
+
         private ISubject<TipChanged> _subject = new ReplaySubject<TipChanged>();
 
         private StandaloneContext StandaloneContext { get; }
@@ -119,6 +135,15 @@ namespace NineChronicles.Standalone.GraphTypes
                 Type = typeof(NodeStatusType),
                 Resolver = new FuncFieldResolver<NodeStatusType>(context => context.Source as NodeStatusType),
                 Subscriber = new EventStreamResolver<NodeStatusType>(context => StandaloneContext.NodeStatusSubject.AsObservable()),
+            });
+            AddField(new EventStreamFieldType
+            {
+                Name = "differentAppProtocolVersionEncounter",
+                Type = typeof(DifferentAppProtocolVersionEncounterType),
+                Resolver = new FuncFieldResolver<DifferentAppProtocolVersionEncounter>(context =>
+                    (DifferentAppProtocolVersionEncounter)context.Source),
+                Subscriber = new EventStreamResolver<DifferentAppProtocolVersionEncounter>(context =>
+                    StandaloneContext.DifferentAppProtocolVersionEncounterSubject.AsObservable()),
             });
         }
 
