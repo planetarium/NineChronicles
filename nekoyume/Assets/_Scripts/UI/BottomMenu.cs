@@ -197,6 +197,7 @@ namespace Nekoyume.UI.Module
                 Application.OpenURL(GameConfig.DiscordLink);
             };
             confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
+            HelpPopup.HelpMe(100012);
         }
 
         private static void SubscribeOnClick(ToggleableButton button)

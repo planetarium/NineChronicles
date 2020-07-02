@@ -152,6 +152,12 @@ namespace Nekoyume.UI
             VFXController.instance.CreateAndChase<DropItemInventoryVFX>(bottomMenu.characterButton.transform, Vector3.zero);
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100005);
+        }
+
         protected override void OnCompleteOfCloseAnimationInternal()
         {
             base.OnCompleteOfCloseAnimationInternal();

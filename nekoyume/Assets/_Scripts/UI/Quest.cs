@@ -118,6 +118,12 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100011);
+        }
+
         #endregion
 
         public void ChangeState(int state)

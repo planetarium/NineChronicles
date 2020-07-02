@@ -455,6 +455,12 @@ namespace Nekoyume.UI
             }
         }
 
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100006);
+        }
+
         protected override void OnCompleteOfCloseAnimationInternal()
         {
             base.OnCompleteOfCloseAnimationInternal();
