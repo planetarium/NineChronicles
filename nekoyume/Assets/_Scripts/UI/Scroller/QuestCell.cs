@@ -84,9 +84,32 @@ namespace Nekoyume.UI.Scroller
         private void OnReceiveClick(SubmitButton submitButton)
         {
             AudioController.PlayClick();
-            Widget.Find<CelebratesPopup>().Show(_quest);
-            UpdateView();
-            Widget.Find<Quest>().UpdateTabs();
+
+            ItemMoveVFX lastVFX = null;
+            foreach (var rewardView in rewardViews)
+            {
+                if (!(rewardView.Model is null) && rewardView.gameObject.activeSelf)
+                {
+                    lastVFX =
+                        VFXController.instance.Create<ItemMoveVFX>(rewardView.transform.position);
+                }
+            }
+            if (lastVFX != null)
+            {
+                lastVFX.OnFinished = () =>
+                {
+                    fillImage.color = ColorHelper.HexToColorRGB("282828");
+                    background.color = ColorHelper.HexToColorRGB("7b7b7b");
+                    titleText.color = ColorHelper.HexToColorRGB("614037");
+                    contentText.color = ColorHelper.HexToColorRGB("38251e");
+                    progressText.color = ColorHelper.HexToColorRGB("282828");
+                    receiveButton.Hide();
+
+                    //todo: 시안대로 연출이 들어가는 코드(임시로 끝나면 부르는 코드 삽입)
+                    UpdateTab();
+                };
+            }
+
             onClickSubmitButton?.Invoke();
         }
 
@@ -166,7 +189,8 @@ namespace Nekoyume.UI.Scroller
 
         private void UpdateTab()
         {
-            RequestReward();
+            Widget.Find<CelebratesPopup>().Show(_quest);
+            UpdateView();
             Widget.Find<Quest>().UpdateTabs();
         }
     }
