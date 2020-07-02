@@ -1,6 +1,9 @@
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
 using TMPro;
@@ -35,6 +38,8 @@ namespace Nekoyume.UI
         private Coroutine _npcAppearCoroutine = null;
         private WaitForSeconds _waitForOneSec = new WaitForSeconds(1f);
 
+        private CombinationSparkVFX _sparkVFX = null;
+
         public System.Action OnDisappear { get; set; }
 
         private const int ContinueTime = 5;
@@ -52,6 +57,10 @@ namespace Nekoyume.UI
         {
             _canvasGroup.alpha = 0f;
             base.Show(ignoreShowAnimation);
+
+            var cameraPos = ActionCamera.instance.Cam.transform.position;
+            var pos = cameraPos;
+            _sparkVFX = VFXController.instance.Create<CombinationSparkVFX>(pos);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -59,6 +68,12 @@ namespace Nekoyume.UI
             if(!(_npc is null))
             {
                 _npc.gameObject.SetActive(false);
+            }
+
+            if (_sparkVFX)
+            {
+                _sparkVFX.LazyStop();
+                _sparkVFX = null;
             }
 
             base.Close(ignoreCloseAnimation);

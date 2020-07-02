@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7636180485755254627}
   - component: {fileID: 741132646569939107}
   - component: {fileID: 156220762739028989}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4712,9 +4712,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -4749,7 +4749,7 @@ GameObject:
   - component: {fileID: 7347731625310581741}
   - component: {fileID: 2125922721564306681}
   - component: {fileID: 4074889464600454023}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Flash_02_fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9495,9 +9495,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 1
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -9532,7 +9532,7 @@ GameObject:
   - component: {fileID: 3111025669681588836}
   - component: {fileID: 3777998313893217026}
   - component: {fileID: 7667585720238511797}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Smoke
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14125,9 +14125,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -14162,8 +14162,9 @@ GameObject:
   - component: {fileID: 9184726492786044894}
   - component: {fileID: 446419822619337086}
   - component: {fileID: 7599823318882738853}
-  m_Layer: 0
-  m_Name: UI_combination_bg_hammerhit
+  - component: {fileID: 1029264446348035943}
+  m_Layer: 9
+  m_Name: HammerSmashVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -14204,7 +14205,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -18904,9 +18905,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 1
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -18930,6 +18931,18 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &1029264446348035943
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5875439103160403347}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 430c343b3b61bcd42b42d5cb31fc6b05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7718040376325554200
 GameObject:
   m_ObjectHideFlags: 0
@@ -18941,7 +18954,7 @@ GameObject:
   - component: {fileID: 5177154531434105225}
   - component: {fileID: 7865170804881276816}
   - component: {fileID: 8283517470291430358}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23642,9 +23655,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 4
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -23679,7 +23692,7 @@ GameObject:
   - component: {fileID: 9173041323265716788}
   - component: {fileID: 7523547187887624618}
   - component: {fileID: 5095397624442789140}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28380,9 +28393,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 32
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0

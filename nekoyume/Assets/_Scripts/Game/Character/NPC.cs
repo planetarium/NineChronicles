@@ -1,6 +1,7 @@
 using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -91,6 +92,8 @@ namespace Nekoyume.Game.Character
             {
                 case "Smash":
                     AudioController.instance.PlaySfx(AudioController.SfxCode.CombinationSmash);
+                    var position = ActionCamera.instance.Cam.transform.position + new Vector3(-0.7f, -0.25f);
+                    VFXController.instance.Create<HammerSmashVFX>(position);
                     break;
             }
         }
