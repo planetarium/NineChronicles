@@ -111,7 +111,6 @@ namespace Nekoyume.Game.Trigger
                     spawnPoints[index].y);
                 var go = EnemyFactory.Create(id, pos, offset);
                 var enemy = go.GetComponent<PrologueCharacter>();
-                enemy.Animator.StandingToIdle();
                 yield return new WaitUntil(() => enemy.Animator.IsIdle());
                 yield return new WaitForSeconds(1f);
             }
