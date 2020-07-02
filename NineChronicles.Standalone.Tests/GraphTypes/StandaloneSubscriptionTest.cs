@@ -131,8 +131,18 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                 subscription {
                     differentAppProtocolVersionEncounter {
                         peer
-                        peerVersion
-                        localVersion
+                        peerVersion {
+                            version
+                            signer
+                            signature
+                            extra
+                        }
+                        localVersion {
+                            version
+                            signer
+                            signature
+                            extra
+                        }
                     }
                 }
             ");
@@ -165,14 +175,18 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                 peer.ToString(),
                 differentAppProtocolVersionEncounter["peer"]
             );
-           Assert.Equal(
-                apv1.Token,
-                differentAppProtocolVersionEncounter["peerVersion"]
-            );
-            Assert.Equal(
-                apv2.Token,
-                differentAppProtocolVersionEncounter["localVersion"]
-            );
+            var peerVersion =
+                (Dictionary<string, object>)differentAppProtocolVersionEncounter["peerVersion"];
+            Assert.Equal(apv1.Version, peerVersion["version"]);
+            Assert.Equal(apv1.Signer, new Address(((string)peerVersion["signer"]).Substring(2)));
+            Assert.Equal(apv1.Signature, ByteUtil.ParseHex((string)peerVersion["signature"]));
+            Assert.Equal(apv1.Extra, peerVersion["extra"]);
+            var localVersion =
+                (Dictionary<string, object>)differentAppProtocolVersionEncounter["localVersion"];
+            Assert.Equal(apv2.Version, localVersion["version"]);
+            Assert.Equal(apv2.Signer, new Address(((string)localVersion["signer"]).Substring(2)));
+            Assert.Equal(apv2.Signature, ByteUtil.ParseHex((string)localVersion["signature"]));
+            Assert.Equal(apv2.Extra, localVersion["extra"]);
         }
     }
 }
