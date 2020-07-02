@@ -30,21 +30,22 @@ namespace Nekoyume.UI
             AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
         }
 
-        public void Show(int level, bool ignoreShowAnimation = false)
+        public void Show(int beforeLevel, int afterLevel, bool ignoreShowAnimation = false)
         {
             var gameInstance = Game.Game.instance;
-            var currentAvatarState = gameInstance.States.CurrentAvatarState;
-            levelText.text = level.ToString();
+            var currentPlayerModel = gameInstance.Stage.selectedPlayer.Model;
+            levelText.text = afterLevel.ToString();
 
             var characterSheet = gameInstance.TableSheets.CharacterSheet;
-            if (!characterSheet.TryGetValue(currentAvatarState.characterId, out var row))
+            var characterId = currentPlayerModel.CharacterId;
+            if (!characterSheet.TryGetValue(characterId, out var row))
             {
-                throw new System.Exception($"CharacterId{currentAvatarState.characterId} is invaild.");
+                throw new System.Exception($"CharacterId{characterId} is invaild.");
             }
-            cpText.text = CPHelper.GetCP(currentAvatarState, characterSheet).ToString();
+            cpText.text = CPHelper.GetCP(currentPlayerModel).ToString();
 
-            var beforeStat = row.ToStats(level - 1);
-            var afterStat = row.ToStats(level);
+            var beforeStat = row.ToStats(beforeLevel);
+            var afterStat = row.ToStats(afterLevel);
 
             using (var enumerator = ((IEnumerable<StatType>) Enum.GetValues(typeof(StatType))).GetEnumerator())
             {
