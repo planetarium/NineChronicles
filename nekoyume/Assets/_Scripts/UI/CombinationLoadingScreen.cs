@@ -127,7 +127,7 @@ namespace Nekoyume.UI
             _sparkVFX = VFXController.instance.CreateAndChaseCam<CombinationSparkVFX>(pos);
             _npc.PlayAnimation(NPCAnimation.Type.Appear_02);
             yield return new WaitForSeconds(1f);
-            _fireVFX = VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos, new Vector3(-1.15f, -0.35f));
+            _fireVFX = VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos, new Vector3(-.7f, -.35f));
             speechBubble.SetKey("SPEECH_COMBINATION_START_");
             StartCoroutine(speechBubble.CoShowText(true));
 
