@@ -1,5 +1,6 @@
 using System;
 using Nekoyume.EnumType;
+using Nekoyume.Game.Controller;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -29,6 +30,7 @@ namespace Nekoyume.Game.Character
                 .AddTo(gameObject);
 
             Animator = new NPCAnimator(this) {TimeScale = AnimatorTimeScale};
+            Animator.OnEvent.Subscribe(OnAnimatorEvent);
         }
 
         private void Start()
@@ -81,6 +83,16 @@ namespace Nekoyume.Game.Character
             }
 
             ResetAnimatorTarget(target.gameObject);
+        }
+
+        protected void OnAnimatorEvent(string eventName)
+        {
+            switch (eventName)
+            {
+                case "Smash":
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.CombinationSmash);
+                    break;
+            }
         }
     }
 }
