@@ -330,33 +330,6 @@
               }
             }
           ]
-        },
-        {
-          "titleL10nKey": "HELP_POPUP_100005_PAGE_01_TITLE",
-          "images": [
-            {
-              "delay": 0,
-              "duration": -1,
-              "resourcePath": "HelpPopupData/Sprites/result_06_battle_focus",
-              "anchoredPosition": {
-                "x": 10,
-                "y": 10
-              },
-              "spinning": false
-            }
-          ],
-          "texts": [
-            {
-              "delay": 1,
-              "duration": -1,
-              "textL10nKey": "HELP_POPUP_100005_PAGE_01_TEXT_00",
-              "fontSize": 20,
-              "anchoredPosition": {
-                "x": 0,
-                "y": -260
-              }
-            }
-          ]
         }
       ]
     },
