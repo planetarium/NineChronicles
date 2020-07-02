@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2470861336983176343}
   - component: {fileID: 6575606594747503976}
   - component: {fileID: 8948482172370460156}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: Recovery Revive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4765,7 +4765,7 @@ GameObject:
   - component: {fileID: 5141228078007629183}
   - component: {fileID: 3241375703375148814}
   - component: {fileID: 631390672687167263}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: level_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9507,9 +9507,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -9544,7 +9544,7 @@ GameObject:
   - component: {fileID: 8018035147121170973}
   - component: {fileID: 4107402694875863800}
   - component: {fileID: 2513802915832626064}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: Feather_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14101,9 +14101,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -14138,7 +14138,7 @@ GameObject:
   - component: {fileID: 7488725499257109002}
   - component: {fileID: 8663397658261484714}
   - component: {fileID: 6884531013259987623}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: level_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18880,9 +18880,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -18917,7 +18917,7 @@ GameObject:
   - component: {fileID: 3331363414188554316}
   - component: {fileID: 163462982759396293}
   - component: {fileID: 6495092647722113924}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: particle sub collision glow blast
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23652,9 +23652,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -23690,7 +23690,7 @@ GameObject:
   - component: {fileID: 3240496072042244079}
   - component: {fileID: 8345440403105887673}
   - component: {fileID: 581104498279076892}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: LevelUpVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28414,9 +28414,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -28461,7 +28461,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8545945160600376421}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: plane collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28493,7 +28493,7 @@ GameObject:
   - component: {fileID: 1362316950747265985}
   - component: {fileID: 3573141407787540287}
   - component: {fileID: 2912543221977219219}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: flash_04
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33230,9 +33230,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -33267,7 +33267,7 @@ GameObject:
   - component: {fileID: 1738355955718769741}
   - component: {fileID: 5044395939050858221}
   - component: {fileID: 6940960198048868264}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: magiccircle_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37986,9 +37986,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 1
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -38023,7 +38023,7 @@ GameObject:
   - component: {fileID: 2217030015908670871}
   - component: {fileID: 6648287344030569198}
   - component: {fileID: 7976155540896385261}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: bg_light_01
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -42667,9 +42667,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 1
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -42704,7 +42704,7 @@ GameObject:
   - component: {fileID: 2864942367149426643}
   - component: {fileID: 136773076167380708}
   - component: {fileID: 4330283473127461346}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: particle master
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47424,9 +47424,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 1
   m_MinParticleSize: 0
@@ -47461,7 +47461,7 @@ GameObject:
   - component: {fileID: 6013251248076716560}
   - component: {fileID: 7036403980477471575}
   - component: {fileID: 6012829965123152695}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: level_text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52203,9 +52203,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -52240,7 +52240,7 @@ GameObject:
   - component: {fileID: 7407905850790361734}
   - component: {fileID: 4346673044405071772}
   - component: {fileID: 7723074623108560727}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: Dust_01
   m_TagString: Effects
   m_Icon: {fileID: 0}
@@ -56811,9 +56811,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -56848,7 +56848,7 @@ GameObject:
   - component: {fileID: 6642024904361444441}
   - component: {fileID: 1440866801413522153}
   - component: {fileID: 3307959538235235785}
-  m_Layer: 12
+  m_Layer: 9
   m_Name: battle_boss
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -61585,9 +61585,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 6
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 1
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
