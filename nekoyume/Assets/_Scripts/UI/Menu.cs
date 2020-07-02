@@ -340,6 +340,18 @@ namespace Nekoyume.UI
         protected override void OnCompleteOfShowAnimationInternal()
         {
             base.OnCompleteOfShowAnimationInternal();
+            Find<Dialog>().Show(1);
+            StartCoroutine(CoHelpPopup());
+        }
+
+        private IEnumerator CoHelpPopup()
+        {
+            var dialog = Find<Dialog>();
+            while (dialog.IsActive())
+            {
+                yield return null;
+            }
+
             guidedQuest.Show(
                 States.Instance.CurrentAvatarState,
                 () => HelpPopup.HelpMe(100001));
