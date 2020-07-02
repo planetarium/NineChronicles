@@ -35,6 +35,11 @@ namespace Nekoyume.Game
             player.StopRun();
             fenrir.Animator.StandingToIdle();
             yield return new WaitUntil(() => fenrir.Animator.IsIdle());
+            yield return StartCoroutine(CoPrologueEnd());
+        }
+
+        private IEnumerator CoPrologueEnd()
+        {
             Widget.Find<Dialog>().Show();
             yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
             ActionCamera.instance.Idle();
