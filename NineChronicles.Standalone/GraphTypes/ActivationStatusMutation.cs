@@ -1,4 +1,5 @@
 using System;
+using Bencodex.Types;
 using GraphQL;
 using GraphQL.Types;
 using Libplanet.Action;
@@ -6,13 +7,15 @@ using Libplanet.Blockchain;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Model;
+using Nekoyume.Model.State;
+using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using Log = Serilog.Log;
 
 namespace NineChronicles.Standalone.GraphTypes
 {
-    public class ActivatedAccountsMutation : ObjectGraphType
+    public class ActivationStatusMutation : ObjectGraphType
     {
-        public ActivatedAccountsMutation(StandaloneContext standaloneContext)
+        public ActivationStatusMutation(StandaloneContext standaloneContext)
         {
             Field<NonNullGraphType<BooleanGraphType>>("activateAccount",
                 arguments: new QueryArguments(
@@ -29,12 +32,19 @@ namespace NineChronicles.Standalone.GraphTypes
                         NineChroniclesNodeService service = standaloneContext.NineChroniclesNodeService;
                         PrivateKey privateKey = service.PrivateKey;
                         ActivationKey activationKey = ActivationKey.Decode(encodedActivationKey);
-                        var action = new ActivateAccount(
-                            activationKey.PendingAddress,
-                            activationKey.PrivateKey.ByteArray);
+                        BlockChain<NineChroniclesActionType> blockChain = service.Swarm.BlockChain;
+                        IValue state = blockChain.GetState(activationKey.PendingAddress);
 
-                        BlockChain<PolymorphicAction<ActionBase>> blockChain = service.Swarm.BlockChain;
-                        var actions = new PolymorphicAction<ActionBase>[] {action};
+                        if (!(state is Bencodex.Types.Dictionary asDict))
+                        {
+                            return false;
+                        }
+
+                        var pendingActivationState = new PendingActivationState(asDict);
+                        ActivateAccount action = activationKey.CreateActivateAccount(
+                            pendingActivationState.Nonce);
+
+                        var actions = new PolymorphicAction<ActionBase>[] { action };
                         blockChain.MakeTransaction(privateKey, actions);
                     }
                     catch (Exception e)
