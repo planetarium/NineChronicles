@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Linq;
 using Assets.SimpleLocalization;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
-using Libplanet;
-using Nekoyume.Battle;
-using Nekoyume.Game;
-using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Spine.Unity;
 using TMPro;
@@ -75,7 +70,7 @@ namespace Nekoyume.UI
         public float textFadeOutTime = 0.5f;
 
         private int _part1EndIndex = 4;
-        public bool part1Ended = false;
+        public bool prolgueEnd;
         private bool skipSynopsis;
 
         protected override void Awake()
@@ -103,11 +98,16 @@ namespace Nekoyume.UI
         {
             var delayedTime = 0f;
 
-            var startIndex = part1Ended ? 5 : 0;
+            var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
+            var startIndex = 0;
+            if (!skipPrologue && prolgueEnd)
+            {
+                startIndex = _part1EndIndex + 1;
+            }
             for (var index = startIndex; index < scripts.Length; index++)
             {
                 var script = scripts[index];
-                if (index == _part1EndIndex && !part1Ended)
+                if (index == _part1EndIndex && !skipPrologue)
                 {
                     Close();
                     Game.Game.instance.prologue.StartPrologue();

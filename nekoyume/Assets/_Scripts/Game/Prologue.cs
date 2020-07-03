@@ -62,8 +62,9 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
             ActionCamera.instance.Idle();
             Game.instance.Stage.objectPool.ReleaseAll();
-            Widget.Find<Synopsis>().part1Ended = true;
+            Widget.Find<Synopsis>().prolgueEnd = true;
             Widget.Find<Synopsis>().Show();
+            Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
         }
 
         private IEnumerator CoSpawnWave(GameObject player)
