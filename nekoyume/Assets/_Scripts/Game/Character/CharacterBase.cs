@@ -344,7 +344,7 @@ namespace Nekoyume.Game.Character
             transform.position = position;
         }
 
-        protected void StopRun()
+        public void StopRun()
         {
             RunSpeed = 0.0f;
             Animator.StopRun();

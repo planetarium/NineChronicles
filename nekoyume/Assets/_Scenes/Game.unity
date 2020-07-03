@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 76869998}
   - component: {fileID: 76870000}
   - component: {fileID: 76869999}
+  - component: {fileID: 76870001}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -169,6 +170,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   languageType: 0
   stage: {fileID: 1333831682}
+  prologue: {fileID: 0}
 --- !u!114 &76869999
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,6 +196,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   disposed: 0
+--- !u!114 &76870001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 76869996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfb0951c724d42779895a08ad841f5b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &98550335
 GameObject:
   m_ObjectHideFlags: 0
@@ -1054,6 +1068,9 @@ MonoBehaviour:
   - Prefab: {fileID: 9216004879430491170, guid: 0a57a4c147156e641be94a1d49d083eb,
       type: 3}
     InitCount: 1
+    AddCount: 1
+  - Prefab: {fileID: 1208442540372552, guid: 2a1cdc613d36a1841be3af0321d0809f, type: 3}
+    InitCount: 3
     AddCount: 1
 --- !u!114 &1333831685
 MonoBehaviour:
