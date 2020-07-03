@@ -17,6 +17,8 @@ namespace NineChronicles.Standalone
         public bool PreloadEnded { get; set; }
         public ReplaySubject<NodeStatusType> NodeStatusSubject { get; } = new ReplaySubject<NodeStatusType>();
         public ReplaySubject<PreloadState> PreloadStateSubject { get; } = new ReplaySubject<PreloadState>();
+        public ReplaySubject<DifferentAppProtocolVersionEncounter> DifferentAppProtocolVersionEncounterSubject { get; }
+            = new ReplaySubject<DifferentAppProtocolVersionEncounter>();
         public NineChroniclesNodeService NineChroniclesNodeService { get; set; }
         public NodeStatusType NodeStatus => new NodeStatusType()
         {

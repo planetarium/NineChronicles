@@ -388,6 +388,8 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(title.CoClose());
 
+            HelpPopup.HelpMe(100005);
+
             AudioController.instance.PlayMusic(data.BGM);
         }
 
@@ -457,6 +459,10 @@ namespace Nekoyume.Game
                 {
                     StartCoroutine(CoSlideBg());
                 }
+            }
+            else
+            {
+                objectPool.ReleaseAll();
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -880,10 +886,6 @@ namespace Nekoyume.Game
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             var character = GetCharacter(model);
-
-            var isPlayerCleared = model is Player && _battleLog.clearedWaveNumber > 0;
-            if (isPlayerCleared)
-                yield break;
 
             character.Dead();
         }

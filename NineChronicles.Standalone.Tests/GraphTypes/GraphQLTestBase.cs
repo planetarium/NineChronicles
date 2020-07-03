@@ -49,7 +49,12 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                 KeyStore = keyStore,
             };
 
-            Schema = new StandaloneSchema(StandaloneContextFx);
+            Schema = new StandaloneSchema
+            {
+                Query = new StandaloneQuery(StandaloneContextFx),
+                Subscription = new StandaloneSubscription(StandaloneContextFx),
+                Mutation = new StandaloneMutation(StandaloneContextFx)
+            };
             Schema.Subscription.As<StandaloneSubscription>().RegisterTipChangedSubscription();
 
             DocumentExecutor = new DocumentExecuter();
@@ -87,7 +92,12 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             return task;
         }
 
-        protected LibplanetNodeService<T> CreateLibplanetNodeService<T>(Block<T> genesisBlock, AppProtocolVersion appProtocolVersion, PublicKey appProtocolVersionSigner, Progress<PreloadState> preloadProgress = null, IEnumerable<Peer> peers = null)
+        protected LibplanetNodeService<T> CreateLibplanetNodeService<T>(
+            Block<T> genesisBlock,
+            AppProtocolVersion appProtocolVersion,
+            PublicKey appProtocolVersionSigner,
+            Progress<PreloadState> preloadProgress = null,
+            IEnumerable<Peer> peers = null)
             where T : IAction, new()
         {
             var properties = new LibplanetNodeServiceProperties<T>

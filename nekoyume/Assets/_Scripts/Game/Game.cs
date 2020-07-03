@@ -62,7 +62,7 @@ namespace Nekoyume.Game
             Mixpanel.Identify(NetworkInterface.GetAllNetworkInterfaces().First().GetPhysicalAddress().ToString());
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
-            
+
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
