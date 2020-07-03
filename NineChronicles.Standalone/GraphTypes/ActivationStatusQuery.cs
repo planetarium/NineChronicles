@@ -1,10 +1,12 @@
 using Bencodex.Types;
-using GraphQL;
+using System;
 using GraphQL.Types;
 using Libplanet;
 using Libplanet.Blockchain;
+using Libplanet.Crypto;
 using Nekoyume.Model.State;
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
+using Log = Serilog.Log;
 
 namespace NineChronicles.Standalone.GraphTypes
 {
@@ -14,26 +16,28 @@ namespace NineChronicles.Standalone.GraphTypes
         {
             Field<NonNullGraphType<BooleanGraphType>>(
                 name: "activationStatus",
-                arguments: new QueryArguments(
-                    new QueryArgument<NonNullGraphType<ByteStringType>>
-                    {
-                        Name = "address",
-                        Description = "Address to check if it is activated."
-                    }),
                 resolve: context =>
                 {
-                    byte[] rawAddress = context.GetArgument<byte[]>("address");
-                    var address = new Address(rawAddress);
-                    BlockChain<NineChroniclesActionType> blockChain = standaloneContext.BlockChain;
-                    IValue state = blockChain.GetState(ActivatedAccountsState.Address);
-
-                    if (state is Bencodex.Types.Dictionary asDict)
+                    try
                     {
-                        var activatedAccountsState = new ActivatedAccountsState(asDict);
-                        return activatedAccountsState.Accounts.Contains(address);
-                    }
+                        PrivateKey privateKey = standaloneContext.NineChroniclesNodeService.PrivateKey;
+                        Address address = privateKey.ToAddress();
+                        BlockChain<NineChroniclesActionType> blockChain = standaloneContext.BlockChain;
+                        IValue state = blockChain.GetState(ActivatedAccountsState.Address);
 
-                    return false;
+                        if (state is Bencodex.Types.Dictionary asDict)
+                        {
+                            var activatedAccountsState = new ActivatedAccountsState(asDict);
+                            return activatedAccountsState.Accounts.Contains(address);
+                        }
+
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error("Unexpected exception occurred during ActivatedAccountsMutation: {e}", e);
+                        return false;
+                    }
                 }
             );
         }
