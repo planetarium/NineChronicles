@@ -24,7 +24,7 @@ namespace Nekoyume.UI
 {
     public class CelebratesPopup : Widget
     {
-        private const float ContinueTime = 5f;
+        private const float ContinueTime = 3f;
         private const int NPCId = 300004;
 
         [SerializeField]
@@ -52,7 +52,7 @@ namespace Nekoyume.UI
         private DOTweenTextAlpha textAlphaTweener = null;
 
         private readonly List<Tweener> _tweeners = new List<Tweener>();
-        private readonly WaitForSeconds _waitOneSec = new WaitForSeconds(1f);
+        private readonly WaitForSeconds _waitItemInterval = new WaitForSeconds(0.4f);
         private readonly WaitForSeconds _waitForDisappear = new WaitForSeconds(.3f);
 
         private NPC _npc = null;
@@ -254,6 +254,8 @@ namespace Nekoyume.UI
             }
 
             _npc.SpineController.Appear(ignoreShowAnimation ? 0f : .3f);
+            // TODO : emotion fallback 분기 쳐야함.
+            //_npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
         }
 
         private void DisappearNPC(bool ignoreCloseAnimation = false)
@@ -316,7 +318,7 @@ namespace Nekoyume.UI
                         .SetEase(Ease.OutElastic);
                     tweener.onKill = () => rectTransform.localScale = originalScale;
                     _tweeners.Add(tweener);
-                    yield return _waitOneSec;
+                    yield return _waitItemInterval;
                 }
                 else
                 {
