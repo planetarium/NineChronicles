@@ -15,6 +15,7 @@ namespace NineChronicles.Standalone.GraphTypes
             Query = serviceProvider.GetRequiredService<StandaloneQuery>();
             Mutation = serviceProvider.GetRequiredService<StandaloneMutation>();
             Subscription = serviceProvider.GetRequiredService<StandaloneSubscription>();
+            Services = serviceProvider;
         }
     }
 }
