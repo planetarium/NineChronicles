@@ -460,12 +460,5 @@ namespace Nekoyume.UI
             base.OnCompleteOfShowAnimationInternal();
             HelpPopup.HelpMe(100006);
         }
-
-        protected override void OnCompleteOfCloseAnimationInternal()
-        {
-            base.OnCompleteOfCloseAnimationInternal();
-
-            Game.Game.instance.Stage.objectPool.ReleaseAll();
-        }
     }
 }
