@@ -100,19 +100,23 @@ namespace Nekoyume.UI
 
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
             var startIndex = 0;
+#if UNITY_EDITOR
             if (!skipPrologue && prolgueEnd)
             {
                 startIndex = _part1EndIndex + 1;
             }
+#endif
             for (var index = startIndex; index < scripts.Length; index++)
             {
                 var script = scripts[index];
+#if UNITY_EDITOR
                 if (index == _part1EndIndex && !skipPrologue)
                 {
                     Close();
                     Game.Game.instance.prologue.StartPrologue();
                     yield return null;
                 }
+#endif
 
                 skipSynopsis = false;
                 script.image.transform.parent.gameObject.SetActive(true);
