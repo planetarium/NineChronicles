@@ -254,8 +254,7 @@ namespace Nekoyume.UI
             }
 
             _npc.SpineController.Appear(ignoreShowAnimation ? 0f : .3f);
-            // TODO : emotion fallback 분기 쳐야함.
-            //_npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
+            _npc.PlayAnimation(NPCAnimation.Type.Emotion_03);
         }
 
         private void DisappearNPC(bool ignoreCloseAnimation = false)
