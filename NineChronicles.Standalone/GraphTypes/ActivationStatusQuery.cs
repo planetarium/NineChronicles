@@ -15,7 +15,7 @@ namespace NineChronicles.Standalone.GraphTypes
         public ActivationStatusQuery(StandaloneContext standaloneContext)
         {
             Field<NonNullGraphType<BooleanGraphType>>(
-                name: "activationStatus",
+                name: "activated",
                 resolve: context =>
                 {
                     try
