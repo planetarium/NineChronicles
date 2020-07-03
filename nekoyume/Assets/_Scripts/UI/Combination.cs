@@ -314,7 +314,6 @@ namespace Nekoyume.UI
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Combination);
-            Find<CelebratesPopup>().Show(GuidedQuest.CombinationEquipmentQuest);
         }
 
         public void Show(int slotIndex)
