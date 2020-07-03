@@ -10,6 +10,7 @@ using UnityEngine.UI;
 using Nekoyume.UI.Tween;
 using Nekoyume.Model.Quest;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game;
 
 namespace Nekoyume.UI.Module
 {
@@ -65,6 +66,7 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             UpdateRecipes();
+            UIToWorldMask.instance.FitToRectTransform(scrollRect.viewport);
         }
 
         private void OnDestroy()
