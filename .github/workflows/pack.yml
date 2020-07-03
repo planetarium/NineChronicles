@@ -1,10 +1,10 @@
 on:
   push:
     branches:
-      - 9c-alpha-*
-      - 9c-beta-*
-    tags:
-      - '*'
+    - 9c-alpha-*
+    - 9c-beta-*
+    - master
+    tags: ['*']
 
 name: Pack
 
@@ -113,16 +113,18 @@ jobs:
         name: launcher-macos-10.15.tar
         path: /tmp/
     - run: |
-        set -evx
-        brew update
-        brew install tree
-        tree -afp /tmp/
+        set -vx
+        brew update || true
+        brew install tree || true || true || true || true
+        tree -afp /tmp/ || true
         for d in unity launcher-windows-2019 launcher-macos-10.15; do
-          mkdir -p "/tmp/$d/"
-          pushd "/tmp/$d/"
-          tar xvf "/tmp/$d.tar"
-          popd
-        done
+          mkdir -p "/tmp/$d/" || true
+          pushd "/tmp/$d/" || true
+          tar xvf "/tmp/$d.tar" || true
+          popd || true
+        done || true
+      env:
+        HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.201'
@@ -160,7 +162,25 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
-    - uses: actions/upload-artifact@master
+    - uses: chrnorm/deployment-action@releases/v1
+      id: build_artifact
       with:
-        name: package
-        path: /tmp/package
+        token: ${{ secrets.GITHUB_TOKEN}}
+        description: 'Build artifact'
+        environment: build-artifact
+    - run: mv /tmp/package ./package  # s3-upload-action이 상대 경로만 지원
+      shell: bash
+    - uses: shallwefootball/s3-upload-action@master
+      with:
+        source_dir: package
+        destination_dir: ${{ github.sha }}/
+        aws_bucket: 9c-artifacts
+        aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - if: success()
+      uses: chrnorm/deployment-status@releases/v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        target_url: ${{ steps.S3.outputs.object_locations[0] }}
+        state: 'success'
+        deployment_id: ${{ steps.build_artifact.outputs.deployment_id }}
