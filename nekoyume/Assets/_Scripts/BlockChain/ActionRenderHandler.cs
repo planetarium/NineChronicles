@@ -419,20 +419,22 @@ namespace Nekoyume.BlockChain
             {
                 var celebratesPopup = Widget.Find<CelebratesPopup>();
                 celebratesPopup.Show(quest);
-                celebratesPopup.OnDisableObservable.Subscribe(_ =>
-                {
-                    var menu = Widget.Find<Menu>();
-                    if (menu.isActiveAndEnabled)
+                celebratesPopup.OnDisableObservable
+                    .First()
+                    .Subscribe(_ =>
                     {
-                        menu.UpdateGuideQuest(avatarState);
-                    }
+                        var menu = Widget.Find<Menu>();
+                        if (menu.isActiveAndEnabled)
+                        {
+                            menu.UpdateGuideQuest(avatarState);
+                        }
 
-                    var combination = Widget.Find<Combination>();
-                    if (combination.isActiveAndEnabled)
-                    {
-                        combination.UpdateRecipe();
-                    }
-                });
+                        var combination = Widget.Find<Combination>();
+                        if (combination.isActiveAndEnabled)
+                        {
+                            combination.UpdateRecipe();
+                        }
+                    });
             }
             Widget.Find<Combination>().UpdateRecipe();
         }
