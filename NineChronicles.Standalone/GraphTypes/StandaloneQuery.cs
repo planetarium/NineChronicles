@@ -63,7 +63,7 @@ namespace NineChronicles.Standalone.GraphTypes
             Field<NonNullGraphType<ActivationStatusQuery>>(
                 name: "activationStatus",
                 description: "Check if the provided address is activated.",
-                resolve: context => new ActivationStatusQuery());
+                resolve: context => new ActivationStatusQuery(standaloneContext));
         }
     }
 }

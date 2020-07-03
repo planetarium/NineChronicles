@@ -1,3 +1,4 @@
+using Bencodex.Types;
 using GraphQL;
 using GraphQL.Types;
 using Libplanet;
@@ -7,9 +8,9 @@ using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Act
 
 namespace NineChronicles.Standalone.GraphTypes
 {
-    public class ActivationStatusQuery : ObjectGraphType<BlockChain<NineChroniclesActionType>>
+    public class ActivationStatusQuery : ObjectGraphType
     {
-        public ActivationStatusQuery()
+        public ActivationStatusQuery(StandaloneContext standaloneContext)
         {
             Field<NonNullGraphType<BooleanGraphType>>(
                 name: "activationStatus",
@@ -21,10 +22,10 @@ namespace NineChronicles.Standalone.GraphTypes
                     }),
                 resolve: context =>
                 {
-                    var rawAddress = context.GetArgument<byte[]>("address");
+                    byte[] rawAddress = context.GetArgument<byte[]>("address");
                     var address = new Address(rawAddress);
-                    var blockChain = context.Source;
-                    var state = blockChain.GetState(ActivatedAccountsState.Address);
+                    BlockChain<NineChroniclesActionType> blockChain = standaloneContext.BlockChain;
+                    IValue state = blockChain.GetState(ActivatedAccountsState.Address);
 
                     if (state is Bencodex.Types.Dictionary asDict)
                     {

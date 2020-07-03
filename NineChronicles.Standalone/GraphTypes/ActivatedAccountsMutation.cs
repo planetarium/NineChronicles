@@ -2,16 +2,17 @@ using System;
 using GraphQL;
 using GraphQL.Types;
 using Libplanet.Action;
+using Libplanet.Blockchain;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Model;
-using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 using Log = Serilog.Log;
 
 namespace NineChronicles.Standalone.GraphTypes
 {
-    public class ActivatedAccountsMutation : ObjectGraphType<NineChroniclesNodeService>
+    public class ActivatedAccountsMutation : ObjectGraphType
     {
-        public ActivatedAccountsMutation()
+        public ActivatedAccountsMutation(StandaloneContext standaloneContext)
         {
             Field<NonNullGraphType<BooleanGraphType>>("activateAccount",
                 arguments: new QueryArguments(
@@ -23,16 +24,16 @@ namespace NineChronicles.Standalone.GraphTypes
                 {
                     try
                     {
-                        var encodedActivationKey =
+                        string encodedActivationKey =
                             context.GetArgument<string>("encodedActivationKey");
-                        var service = context.Source;
-                        var privateKey = service.PrivateKey;
-                        var activationKey = ActivationKey.Decode(encodedActivationKey);
+                        NineChroniclesNodeService service = standaloneContext.NineChroniclesNodeService;
+                        PrivateKey privateKey = service.PrivateKey;
+                        ActivationKey activationKey = ActivationKey.Decode(encodedActivationKey);
                         var action = new ActivateAccount(
                             activationKey.PendingAddress,
                             activationKey.PrivateKey.ByteArray);
 
-                        var blockChain = service.Swarm.BlockChain;
+                        BlockChain<PolymorphicAction<ActionBase>> blockChain = service.Swarm.BlockChain;
                         var actions = new PolymorphicAction<ActionBase>[] {action};
                         blockChain.MakeTransaction(privateKey, actions);
                     }
