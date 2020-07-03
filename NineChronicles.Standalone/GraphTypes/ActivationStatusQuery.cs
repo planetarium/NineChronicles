@@ -35,7 +35,7 @@ namespace NineChronicles.Standalone.GraphTypes
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Unexpected exception occurred during ActivatedAccountsMutation: {e}", e);
+                        Log.Error("Unexpected exception occurred during ActivationStatusQuery: {e}", e);
                         return false;
                     }
                 }

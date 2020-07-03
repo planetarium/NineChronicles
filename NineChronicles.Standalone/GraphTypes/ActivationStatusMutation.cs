@@ -13,9 +13,9 @@ using Log = Serilog.Log;
 
 namespace NineChronicles.Standalone.GraphTypes
 {
-    public class ActivationStatusMutation : ObjectGraphType
+    public class ActivationStatusMutation : ObjectGraphType<NineChroniclesNodeService>
     {
-        public ActivationStatusMutation(StandaloneContext standaloneContext)
+        public ActivationStatusMutation()
         {
             Field<NonNullGraphType<BooleanGraphType>>("activateAccount",
                 arguments: new QueryArguments(
@@ -29,7 +29,7 @@ namespace NineChronicles.Standalone.GraphTypes
                     {
                         string encodedActivationKey =
                             context.GetArgument<string>("encodedActivationKey");
-                        NineChroniclesNodeService service = standaloneContext.NineChroniclesNodeService;
+                        NineChroniclesNodeService service = context.Source;
                         PrivateKey privateKey = service.PrivateKey;
                         ActivationKey activationKey = ActivationKey.Decode(encodedActivationKey);
                         BlockChain<NineChroniclesActionType> blockChain = service.Swarm.BlockChain;
