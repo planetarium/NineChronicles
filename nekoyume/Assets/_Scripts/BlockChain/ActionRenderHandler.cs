@@ -14,6 +14,7 @@ using Nekoyume.UI;
 using UniRx;
 using Nekoyume.Model.State;
 using TentuPlay.Api;
+using QuestReward = Nekoyume.Action.QuestReward;
 
 namespace Nekoyume.BlockChain
 {
@@ -382,29 +383,6 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
-            var quest = Game.Game.instance.TableSheets.CombinationEquipmentQuestSheet.OrderedList
-                .FirstOrDefault(row =>
-                    row.RecipeId == eval.Action.RecipeId &&
-                    row.SubRecipeId == eval.Action.SubRecipeId);
-            if (!(quest is null))
-            {
-                var celebratesPopup = Widget.Find<CelebratesPopup>();
-                celebratesPopup.Show(quest);
-                celebratesPopup.OnDisableObservable.Subscribe(_ =>
-                {
-                    var menu = Widget.Find<Menu>();
-                    if (menu.isActiveAndEnabled)
-                    {
-                        menu.UpdateGuideQuest(avatarState);
-                    }
-                    var combination = Widget.Find<Combination>();
-                    if (combination.isActiveAndEnabled)
-                    {
-                        combination.UpdateRecipe();
-                    }
-                });
-            }
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
@@ -432,6 +410,30 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+            var quest = Game.Game.instance.TableSheets.CombinationEquipmentQuestSheet.OrderedList
+                .FirstOrDefault(row =>
+                    row.RecipeId == eval.Action.RecipeId &&
+                    row.SubRecipeId == eval.Action.SubRecipeId);
+            if (!(quest is null))
+            {
+                var celebratesPopup = Widget.Find<CelebratesPopup>();
+                celebratesPopup.Show(quest);
+                celebratesPopup.OnDisableObservable.Subscribe(_ =>
+                {
+                    var menu = Widget.Find<Menu>();
+                    if (menu.isActiveAndEnabled)
+                    {
+                        menu.UpdateGuideQuest(avatarState);
+                    }
+
+                    var combination = Widget.Find<Combination>();
+                    if (combination.isActiveAndEnabled)
+                    {
+                        combination.UpdateRecipe();
+                    }
+                });
+            }
             Widget.Find<Combination>().UpdateRecipe();
         }
 
@@ -453,7 +455,6 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
 
             var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             UI.Notification.Reserve(
@@ -481,6 +482,7 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
             UpdateCombinationSlotState(slot, eval.Action.slotIndex);
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
         private void ResponseSell(ActionBase.ActionEvaluation<Sell> eval)
@@ -516,6 +518,8 @@ namespace Nekoyume.BlockChain
         {
             var buyerAvatarAddress = eval.Action.buyerAvatarAddress;
             var price = eval.Action.sellerResult.shopItem.Price;
+            Address renderQuestAvatarAddress;
+            List<int> renderQuestCompletedQuestIds = null;
 
             if (buyerAvatarAddress == States.Instance.CurrentAvatarState.address)
             {
@@ -527,7 +531,7 @@ namespace Nekoyume.BlockChain
                 LocalStateModifier.ModifyAgentGold(buyerAgentAddress, price);
                 LocalStateModifier.RemoveItem(buyerAvatarAddress, itemId);
                 LocalStateModifier.AddNewAttachmentMail(buyerAvatarAddress, result.id);
-                RenderQuest(buyerAvatarAddress, buyerAvatar.questList.completedQuestIds);
+
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_BUYER_COMPLETE");
                 UI.Notification.Push(MailType.Auction, string.Format(format, eval.Action.buyerResult.itemUsable.GetLocalizedName()));
 
@@ -545,6 +549,9 @@ namespace Nekoyume.BlockChain
                         reference_slug: result.itemUsable.Id.ToString() //아이템 품번
                     );
                 }
+
+                renderQuestAvatarAddress = buyerAvatarAddress;
+                renderQuestCompletedQuestIds = buyerAvatar.questList.completedQuestIds;
             }
             else
             {
@@ -557,7 +564,7 @@ namespace Nekoyume.BlockChain
 
                 LocalStateModifier.ModifyAgentGold(sellerAgentAddress, -gold);
                 LocalStateModifier.AddNewAttachmentMail(sellerAvatarAddress, result.id);
-                RenderQuest(sellerAvatarAddress, sellerAvatar.questList.completedQuestIds);
+
                 var format = LocalizationManager.Localize("NOTIFICATION_BUY_SELLER_COMPLETE");
                 var buyerName =
                     new AvatarState(
@@ -577,10 +584,14 @@ namespace Nekoyume.BlockChain
                     reference_category_slug: "sell",
                     reference_slug: result.itemUsable.Id.ToString() //아이템 품번
                 );
+
+                renderQuestAvatarAddress = sellerAvatarAddress;
+                renderQuestCompletedQuestIds = sellerAvatar.questList.completedQuestIds;
             }
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+            RenderQuest(renderQuestAvatarAddress, renderQuestCompletedQuestIds);
         }
 
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
@@ -592,8 +603,8 @@ namespace Nekoyume.BlockChain
                     UpdateCurrentAvatarState(eval);
                     UpdateWeeklyArenaState(eval);
                     var avatarState = eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-                    RenderQuest(eval.Action.avatarAddress, avatarState.questList.completedQuestIds);
                     States.Instance.SetCombinationSlotStates(avatarState);
+                    RenderQuest(eval.Action.avatarAddress, avatarState.questList.completedQuestIds);
                 });
 
             var actionFailPopup = Widget.Find<ActionFailPopup>();
@@ -645,7 +656,7 @@ namespace Nekoyume.BlockChain
             }
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
-            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+
             var format = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");
             UI.Notification.Push(MailType.Workshop,
                 string.Format(format, result.itemUsable.GetLocalizedName()));
@@ -666,6 +677,7 @@ namespace Nekoyume.BlockChain
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
         private void ResponseRankingBattle(ActionBase.ActionEvaluation<RankingBattle> eval)
@@ -787,6 +799,7 @@ namespace Nekoyume.BlockChain
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
+
         public void RenderQuest(Address avatarAddress, IEnumerable<int> ids)
         {
             foreach (var id in ids)
