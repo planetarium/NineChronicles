@@ -20,6 +20,10 @@ namespace Nekoyume.Game.Character
         {
         }
 
+        protected CharacterAnimator(PrologueCharacter root) : base(root.gameObject)
+        {
+        }
+
         public override void ResetTarget(GameObject value)
         {
             base.ResetTarget(value);
@@ -220,6 +224,11 @@ namespace Nekoyume.Game.Character
                 ColorTweenFrom,
                 ColorTweenDuration));
             _colorTweenSequence.Play().OnComplete(() => _colorTweenSequence = null);
+        }
+
+        public bool IsIdle()
+        {
+            return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).IsName(nameof(CharacterAnimation.Type.Idle));
         }
     }
 }

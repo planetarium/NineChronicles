@@ -8,6 +8,7 @@ using Nekoyume.UI.Tween;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -84,18 +85,21 @@ namespace Nekoyume.UI
         #region Show with quest
 
         public void Show(
-            CombinationEquipmentQuestSheet.Row questRow,
+            CombinationEquipmentQuestSheet.Row row,
             bool ignoreShowAnimation = false)
         {
-            if (questRow is null)
+            if (row is null)
             {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(row)} is null.");
+                Debug.LogError(sb.ToString());
                 return;
             }
 
             var quest = States.Instance.CurrentAvatarState?.questList
                 .OfType<CombinationEquipmentQuest>()
                 .FirstOrDefault(item =>
-                    item.Id == questRow.Id);
+                    item.Id == row.Id);
             Show(quest, ignoreShowAnimation);
         }
 
@@ -103,6 +107,9 @@ namespace Nekoyume.UI
         {
             if (quest is null)
             {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(quest)} is null.");
+                Debug.LogError(sb.ToString());
                 return;
             }
 
@@ -138,7 +145,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             PlayEffects();
             MakeNotification(quest.GetContent());
-            UpdateLocalState(quest.Id, quest.Reward.ItemMap);
+            UpdateLocalState(quest.Id, quest.Reward?.ItemMap);
         }
 
         #endregion
@@ -149,6 +156,14 @@ namespace Nekoyume.UI
             EquipmentItemRecipeSheet.Row row,
             bool ignoreShowAnimation = false)
         {
+            if (row is null)
+            {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(row)} is null.");
+                Debug.LogError(sb.ToString());
+                return;
+            }
+
             titleText.text = LocalizationManager.Localize("UI_NEW_EQUIPMENT_RECIPE");
             continueText.alpha = 0f;
 
@@ -222,6 +237,9 @@ namespace Nekoyume.UI
         {
             if (rewards is null)
             {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(rewards)} is null.");
+                Debug.LogError(sb.ToString());
                 return;
             }
 
@@ -254,8 +272,7 @@ namespace Nekoyume.UI
             }
 
             _npc.SpineController.Appear(ignoreShowAnimation ? 0f : .3f);
-            // TODO : emotion fallback 분기 쳐야함.
-            //_npc.PlayAnimation(NPCAnimation.Type.Emotion_01);
+            _npc.PlayAnimation(NPCAnimation.Type.Emotion_03);
         }
 
         private void DisappearNPC(bool ignoreCloseAnimation = false)

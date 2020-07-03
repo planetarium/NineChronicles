@@ -125,6 +125,11 @@ namespace Nekoyume.Model
         [NonSerialized]
         private Root _root;
 
+        protected CharacterBase(CharacterSheet.Row row)
+        {
+            RowData = row;
+        }
+
         public void InitAI()
         {
             SetSkill();

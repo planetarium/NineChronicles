@@ -10,7 +10,7 @@ namespace Nekoyume.Game.VFX.Skill
         {
             if (ground)
             {
-                ground.transform.position = target.transform.position;
+                ground.transform.position = target is null ? go.transform.position : target.transform.position;
             }
             base.Play();
         }
