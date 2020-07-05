@@ -109,7 +109,7 @@ namespace Nekoyume.Game.Trigger
                 var pos = new Vector2(
                     spawnPoints[index].x + position.x + offset,
                     spawnPoints[index].y);
-                var go = EnemyFactory.Create(id, pos, offset);
+                var go = EnemyFactory.Create(id, pos, offset, true);
                 var enemy = go.GetComponent<PrologueCharacter>();
                 yield return new WaitUntil(() => enemy.Animator.IsIdle());
                 yield return new WaitForSeconds(1f);
