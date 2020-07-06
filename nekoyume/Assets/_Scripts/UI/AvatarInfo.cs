@@ -190,7 +190,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
         {
-            while (enabled)
+            while (enabled && playerTransform)
             {
                 playerTransform.position = avatarPosition.position;
                 yield return null;
