@@ -363,7 +363,6 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfShowAnimationInternal()
         {
-            base.OnCompleteOfShowAnimationInternal();
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
             HelpPopup.HelpMe(100007);
         }
