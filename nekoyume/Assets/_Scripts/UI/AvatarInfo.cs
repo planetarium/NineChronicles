@@ -226,6 +226,7 @@ namespace Nekoyume.UI
             // Menu는 Game.Event.OnRoomEnter 이벤트로 열리며 이때 RoomEntering 컴포넌트에 의해서 Player도 초기화 됩니다.
             if (Find<Menu>().IsActive())
             {
+                _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
                 _player = null;
                 return;
             }
