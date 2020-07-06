@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Game.VFX.Skill;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Elemental;
@@ -216,6 +217,30 @@ namespace Nekoyume.Game.Character
             var effect = Game.instance.Stage.BuffController.Get(pos, buff);
             effect.Play();
             yield return new WaitForSeconds(0.6f);
+        }
+
+        public IEnumerator CoFinisher(GameObject target, int[] damageMap, bool[] criticalMap)
+        {
+            AttackEndCalled = false;
+            var position = ActionCamera.instance.Cam.ScreenToWorldPoint(
+                new Vector2((float) Screen.width / 2, (float) Screen.height / 2));
+            position.z = 0f;
+            var effect = Game.instance.Stage.objectPool.Get<FenrirSkillVFX>(position);
+            effect.Stop();
+            Animator.Skill();
+            ActionCamera.instance.Shake();
+            yield return new WaitUntil(() => AttackEndCalled);
+            for (var i = 0; i < 2; i++)
+            {
+                var first = i == 0;
+                if (first)
+                {
+                    effect.Play();
+                }
+                Prologue.PopupDmg(damageMap[i], target, false, criticalMap[i]);
+                yield return new WaitForSeconds(0.3f);
+                ActionCamera.instance.Shake();
+            }
         }
     }
 }

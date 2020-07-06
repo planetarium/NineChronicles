@@ -79299,8 +79299,9 @@ GameObject:
   - component: {fileID: 3056493544465637609}
   - component: {fileID: 7884006722183961515}
   - component: {fileID: 2618204234247795783}
+  - component: {fileID: 8669518196254078179}
   m_Layer: 5
-  m_Name: Attack_scratch
+  m_Name: FenrirSkillVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84032,3 +84033,15 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &8669518196254078179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9085502305557883984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfa0d4fb55654dbf9e5d7ba5f41c54cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

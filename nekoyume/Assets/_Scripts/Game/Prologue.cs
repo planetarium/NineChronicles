@@ -10,7 +10,6 @@ using Nekoyume.Model.Buff;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -197,7 +196,7 @@ namespace Nekoyume.Game
         {
             Widget.Find<Dialog>().Show();
             yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
-            yield return StartCoroutine(_fenrir.CoDoubleAttack(_player.gameObject, new[] {36000, 144000},
+            yield return StartCoroutine(_fenrir.CoFinisher(_player.gameObject, new[] {36000, 144000},
                 new[] {true, true}));
             _player.Animator.Die();
         }
