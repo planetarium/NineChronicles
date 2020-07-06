@@ -204,6 +204,17 @@ namespace Nekoyume.Game.Character
             ColorTween();
         }
 
+        public void Skill(int animationId = 1)
+        {
+            if (!ValidateAnimator())
+            {
+                return;
+            }
+
+            var animation = animationId == 1 ? CharacterAnimation.Type.Skill_01 : CharacterAnimation.Type.Skill_02;
+            Animator.Play(animation.ToString(), BaseLayerIndex, 0f);
+        }
+
         #endregion
 
         private void ColorTween()
