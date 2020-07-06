@@ -11,6 +11,7 @@ using Nekoyume.UI.Tween;
 using Nekoyume.Model.Quest;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI.Module
 {
@@ -348,6 +349,15 @@ namespace Nekoyume.UI.Module
                 combination.RecipeVFXSkipMap[equipmentCellView.RowData.Id]
                     = new int[3] { 0, 0, 0 };
                 combination.SaveRecipeVFXSkipMap();
+
+                var centerPos = cellView.GetComponent<RectTransform>()
+                    .GetWorldPositionOfCenter();
+                var mask = UIToWorldMask.instance;
+                var vfx = VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
+                mask.PushChild(vfx.transform);
+                vfx.OnTerminated = () => mask.PopChild(vfx.transform);
+                vfx.OnInterrupted = () => mask.PopChild(vfx.transform);
+
                 equipmentCellView?.Set(avatarState, null, false);
                 return;
             }

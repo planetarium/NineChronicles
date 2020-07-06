@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9063228788542878133}
   - component: {fileID: 2937679059459663915}
   - component: {fileID: 487617274561853607}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: attack_05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4784,9 +4784,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -4809,7 +4809,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &4053754510223013325
 GameObject:
   m_ObjectHideFlags: 0
@@ -4821,7 +4821,7 @@ GameObject:
   - component: {fileID: 4890461098484099145}
   - component: {fileID: 7301511726384774080}
   - component: {fileID: 6245994213866655897}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Brokenstone (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9396,9 +9396,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 1
   m_MinParticleSize: 0
@@ -9421,7 +9421,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &5203220952763248152
 GameObject:
   m_ObjectHideFlags: 0
@@ -9433,7 +9433,7 @@ GameObject:
   - component: {fileID: 4482397193848960540}
   - component: {fileID: 2715073921427421595}
   - component: {fileID: 3051096953123003395}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Brokenstone (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14008,9 +14008,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 1
   m_MinParticleSize: 0
@@ -14033,7 +14033,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &5211736800978021795
 GameObject:
   m_ObjectHideFlags: 0
@@ -14045,7 +14045,7 @@ GameObject:
   - component: {fileID: 4214881770327297402}
   - component: {fileID: 6115098742488847333}
   - component: {fileID: 8137814403297876847}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18647,9 +18647,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -18672,7 +18672,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &5306062603131636313
 GameObject:
   m_ObjectHideFlags: 0
@@ -18684,7 +18684,7 @@ GameObject:
   - component: {fileID: 2571768678271853735}
   - component: {fileID: 7961305435569804552}
   - component: {fileID: 5088178782744000589}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: attack_05
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23457,9 +23457,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -23482,7 +23482,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &5318670219453278149
 GameObject:
   m_ObjectHideFlags: 0
@@ -23494,7 +23494,7 @@ GameObject:
   - component: {fileID: 1804739852176990968}
   - component: {fileID: 6721891946599692671}
   - component: {fileID: 4262629350460363953}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: flash_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28096,9 +28096,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -28121,7 +28121,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &6254102440374379882
 GameObject:
   m_ObjectHideFlags: 0
@@ -28133,7 +28133,7 @@ GameObject:
   - component: {fileID: 880270867984907959}
   - component: {fileID: 5102769680827973688}
   - component: {fileID: 193274203185990649}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: dot_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32690,9 +32690,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -32715,7 +32715,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &6747952809145766202
 GameObject:
   m_ObjectHideFlags: 0
@@ -32727,8 +32727,9 @@ GameObject:
   - component: {fileID: 3370434816003052559}
   - component: {fileID: 7779523057588012293}
   - component: {fileID: 5630402617938352254}
-  m_Layer: 5
-  m_Name: UI_combination_brokenchain_01_click
+  - component: {fileID: 1228910562848364823}
+  m_Layer: 9
+  m_Name: RecipeUnlockVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37321,9 +37322,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 1
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -37346,7 +37347,19 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
+--- !u!114 &1228910562848364823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6747952809145766202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 473c8ff08310e3c408bbb5fead3599a4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6753960468341263716
 GameObject:
   m_ObjectHideFlags: 0
@@ -37358,7 +37371,7 @@ GameObject:
   - component: {fileID: 6275916637054813005}
   - component: {fileID: 1528861048651209961}
   - component: {fileID: 1154605434069566816}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Brokenstone (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41933,9 +41946,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 1
   m_MinParticleSize: 0
@@ -41958,7 +41971,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &7122782994688514630
 GameObject:
   m_ObjectHideFlags: 0
@@ -41970,7 +41983,7 @@ GameObject:
   - component: {fileID: 3849979019769979090}
   - component: {fileID: 1279524672255015101}
   - component: {fileID: 6400141378590931796}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: GlowDot_01
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -46671,9 +46684,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -46696,7 +46709,7 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
 --- !u!1 &7570435893076220271
 GameObject:
   m_ObjectHideFlags: 0
@@ -46708,7 +46721,7 @@ GameObject:
   - component: {fileID: 2136436634203072927}
   - component: {fileID: 4570791523302926223}
   - component: {fileID: 5544676730832940236}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Brokenstone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -51283,9 +51296,9 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 10
+  m_SortingLayerID: 555532309
+  m_SortingLayer: 7
+  m_SortingOrder: 31
   m_RenderMode: 0
   m_SortMode: 1
   m_MinParticleSize: 0
@@ -51308,4 +51321,4 @@ ParticleSystemRenderer:
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1

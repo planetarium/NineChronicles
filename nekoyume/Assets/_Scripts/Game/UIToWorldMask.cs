@@ -1,8 +1,6 @@
 using Nekoyume.Pattern;
 using Nekoyume.UI;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace Nekoyume.Game
@@ -10,8 +8,16 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(SpriteMask))]
     public class UIToWorldMask : MonoSingleton<UIToWorldMask>
     {
+        private struct ChildData
+        {
+            public Transform OriginalParent;
+            public Transform Transform;
+        }
+
         [SerializeField]
         private SpriteMask spriteMask = null;
+
+        private readonly List<ChildData> _childPool = new List<ChildData>();
 
         public void FitToRectTransform(RectTransform rectTransform)
         {
@@ -39,15 +45,22 @@ namespace Nekoyume.Game
 
         public void PushChild(Transform child)
         {
+            _childPool.Add(new ChildData
+            {
+                OriginalParent = child.parent,
+                Transform = child
+            });
+
             child.parent = transform;
         }
 
-        public void PopChild(Transform child, Transform originalParent)
+        public void PopChild(Transform child)
         {
             if (!child.IsChildOf(transform))
                 return;
 
-            child.parent = originalParent;
+            var data = _childPool.Find(x => x.Transform.Equals(child));
+            child.parent = data.OriginalParent;
         }
 
     }
