@@ -190,7 +190,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
         {
-            while (enabled)
+            while (enabled && playerTransform)
             {
                 playerTransform.position = avatarPosition.position;
                 yield return null;
@@ -213,6 +213,20 @@ namespace Nekoyume.UI
             if (_isShownFromBattle)
             {
                 Game.Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
+                _player = null;
+                return;
+            }
+
+            // NOTE: AvatarInfo의 동작 방법의 문제로 아래와 같은 로직을 추가했습니다.
+            // AvatarInfo는 열리기 전의 Player의 노출 상태를 기억해서 AvatarInfo가 닫힐 때 Player의 노출 상태를 되돌립니다.
+            // 하지만 AvatarInfo를 포함하는 BottomMenu를 다시 포함하는 Widget의 닫히는 연출과 새롭게 열리는 Widget의 연출
+            // 간의 관리되지 않는 구간으로 인해서 AvatarInfo의 동작이 문제가 되는 경우가 있습니다.
+            // 이 문제를 AvatarInfo의 동작 방법을 개선해서 대응할 수 있어 보이지만, 지금은 단순하게 Menu에 대한 의존을 더하는
+            // 방법으로 해결합니다.
+            // Menu는 Game.Event.OnRoomEnter 이벤트로 열리며 이때 RoomEntering 컴포넌트에 의해서 Player도 초기화 됩니다.
+            if (Find<Menu>().IsActive())
+            {
+                _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
                 _player = null;
                 return;
             }
