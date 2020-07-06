@@ -2,9 +2,11 @@ using Nekoyume.Battle;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Model;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Tween;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -18,12 +20,14 @@ namespace Nekoyume.UI
         private TextMeshProUGUI levelText = null;
 
         [SerializeField]
-        private TextMeshProUGUI cpText = null;
+        private DigitTextTweener cpTextTweener = null;
 
         [SerializeField]
         private ComparisonStatView[] statViews;
 
         private LevelUpVFX _levelUpVFX = null;
+
+        private Player _model = null;
 
         protected override void PlayPopupSound()
         {
@@ -33,17 +37,21 @@ namespace Nekoyume.UI
         public void Show(int beforeLevel, int afterLevel, bool ignoreShowAnimation = false)
         {
             var gameInstance = Game.Game.instance;
-            var currentPlayerModel = gameInstance.Stage.selectedPlayer.Model;
-            levelText.text = afterLevel.ToString();
-
+            _model = gameInstance.Stage.selectedPlayer.Model;
             var characterSheet = gameInstance.TableSheets.CharacterSheet;
-            var characterId = currentPlayerModel.CharacterId;
+            var characterId = _model.CharacterId;
             if (!characterSheet.TryGetValue(characterId, out var row))
             {
                 throw new System.Exception($"CharacterId{characterId} is invaild.");
             }
-            cpText.text = CPHelper.GetCP(currentPlayerModel).ToString();
+            _model.Level = beforeLevel;
+            var previousCP = CPHelper.GetCP(_model);
+            cpTextTweener.startValue = previousCP;
+            _model.Level = afterLevel;
+            var currentCP = CPHelper.GetCP(_model);
+            cpTextTweener.endValue = currentCP;
 
+            levelText.text = afterLevel.ToString();
             var beforeStat = row.ToStats(beforeLevel);
             var afterStat = row.ToStats(afterLevel);
 
@@ -85,6 +93,11 @@ namespace Nekoyume.UI
             }
 
             base.Close(ignoreCloseAnimation);
+        }
+
+        private void TweenLevelText()
+        {
+            cpTextTweener.Play();
         }
     }
 }
