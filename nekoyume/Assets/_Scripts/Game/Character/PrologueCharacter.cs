@@ -19,6 +19,7 @@ namespace Nekoyume.Game.Character
         public string TargetTag { get; protected set; }
         private CharacterSpineController SpineController { get; set; }
         private bool _forceQuit;
+        private Player _target;
 
         private void Awake()
         {
@@ -29,7 +30,7 @@ namespace Nekoyume.Game.Character
             TargetTag = Tag.Player;
         }
 
-        public void Set(int characterId)
+        public void Set(int characterId, Player target)
         {
             var spineResourcePath = $"Character/Monster/{characterId}";
 
@@ -46,7 +47,15 @@ namespace Nekoyume.Game.Character
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
-            Animator.Standing();
+            if (characterId == 205007)
+            {
+                Animator.Standing();
+            }
+            else
+            {
+                Animator.Idle();
+            }
+            _target = target;
         }
 
         private void OnAnimatorEvent(string eventName)
@@ -65,10 +74,11 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public IEnumerator CoNormalAttack(int dmg, bool critical, GameObject target)
+        public IEnumerator CoNormalAttack(int dmg, bool critical)
         {
             yield return StartCoroutine(CoAnimationAttack(critical));
-            Prologue.PopupDmg(dmg, target, false, critical);
+            Prologue.PopupDmg(dmg, _target.gameObject, false, critical, ElementalType.Normal, false);
+            _target.Animator.Hit();
         }
 
         private IEnumerator CoAnimationAttack(bool isCritical)
@@ -104,7 +114,7 @@ namespace Nekoyume.Game.Character
             _forceQuit = true;
         }
 
-        public IEnumerator CoBlowAttack(ElementalType elementalType, GameObject target)
+        public IEnumerator CoBlowAttack(ElementalType elementalType)
         {
             AttackEndCalled = false;
             yield return StartCoroutine(CoAnimationCast(elementalType));
@@ -112,12 +122,13 @@ namespace Nekoyume.Game.Character
             yield return StartCoroutine(CoAnimationCastBlow(elementalType));
 
             var dmgMap = new[] {1000, 2000, 4000, 8000, 16000};
-            var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(target, elementalType, SkillCategory.BlowAttack, SkillTargetType.Enemies);
+            var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(_target.gameObject, elementalType, SkillCategory.BlowAttack, SkillTargetType.Enemies);
             effect.Play();
             for (var i = 0; i < 5; i++)
             {
                 var sec = i == 0 ? 0 : i / 10f;
-                Prologue.PopupDmg(dmgMap[i], target, false, false);
+                Prologue.PopupDmg(dmgMap[i], _target.gameObject, false, i == 4, elementalType, false);
+                _target.Animator.Hit();
                 yield return new WaitForSeconds(sec);
             }
         }
@@ -175,14 +186,12 @@ namespace Nekoyume.Game.Character
             }
         }
 
-        public IEnumerator CoDoubleAttack(GameObject target, int[] damageMap, bool[] criticalMap)
+        public IEnumerator CoDoubleAttack(int[] damageMap, bool[] criticalMap)
         {
-            var effect = Game.instance.Stage.SkillController.Get<SkillDoubleVFX>(target, ElementalType.Fire, SkillCategory.DoubleAttack, SkillTargetType.Enemy);
+            var go = _target.gameObject;
+            var effect = Game.instance.Stage.SkillController.Get<SkillDoubleVFX>(go, ElementalType.Fire, SkillCategory.DoubleAttack, SkillTargetType.Enemy);
             for (var i = 0; i < 2; i++)
             {
-                if (target is null)
-                    continue;
-
                 var first = i == 0;
 
                 yield return StartCoroutine(CoAnimationAttack(!first));
@@ -194,14 +203,16 @@ namespace Nekoyume.Game.Character
                 {
                     effect.SecondStrike();
                 }
-                Prologue.PopupDmg(damageMap[i], target, false, criticalMap[i]);
+                Prologue.PopupDmg(damageMap[i], go, false, criticalMap[i], ElementalType.Fire, false);
+                _target.Animator.Hit();
+                yield return new WaitUntil(() => _target.Animator.IsIdle());
             }
         }
 
-        public IEnumerator CoBuff(Buff buff, GameObject target)
+        public IEnumerator CoBuff(Buff buff)
         {
             yield return StartCoroutine(CoAnimationBuffCast(buff));
-            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(target, buff);
+            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_target, buff);
             effect.Play();
             Animator.Idle();
             yield return new WaitForSeconds(0.6f);
@@ -219,7 +230,7 @@ namespace Nekoyume.Game.Character
             yield return new WaitForSeconds(0.6f);
         }
 
-        public IEnumerator CoFinisher(GameObject target, int[] damageMap, bool[] criticalMap)
+        public IEnumerator CoFinisher(int[] damageMap, bool[] criticalMap)
         {
             AttackEndCalled = false;
             var position = ActionCamera.instance.Cam.ScreenToWorldPoint(
@@ -227,6 +238,7 @@ namespace Nekoyume.Game.Character
             position.z = 0f;
             var effect = Game.instance.Stage.objectPool.Get<FenrirSkillVFX>(position);
             effect.Stop();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowl3, 1.5f);
             Animator.Skill();
             ActionCamera.instance.Shake();
             yield return new WaitUntil(() => AttackEndCalled);
@@ -237,10 +249,17 @@ namespace Nekoyume.Game.Character
                 {
                     effect.Play();
                 }
-                Prologue.PopupDmg(damageMap[i], target, false, criticalMap[i]);
+                Prologue.PopupDmg(damageMap[i], _target.gameObject, false, criticalMap[i], ElementalType.Normal, false);
+                _target.Animator.Hit();
+                yield return new WaitUntil(() => _target.Animator.IsIdle());
                 yield return new WaitForSeconds(0.3f);
-                ActionCamera.instance.Shake();
             }
+        }
+
+        public IEnumerator CoHit()
+        {
+            Animator.Hit();
+            yield return new WaitUntil(() => Animator.IsIdle());
         }
     }
 }

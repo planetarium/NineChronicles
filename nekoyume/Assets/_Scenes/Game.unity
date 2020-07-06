@@ -1387,6 +1387,13 @@ MonoBehaviour:
     duration: 0.2
     magnitudeX: 0.01
     magnitudeY: 0.03
+  prologueChaseData:
+    offsetX: 2.2
+    smoothSpeed: 2
+  prologueShakeData:
+    duration: 0.2
+    magnitudeX: 0.1
+    magnitudeY: 0.3
 --- !u!114 &1933286911
 MonoBehaviour:
   m_ObjectHideFlags: 0
