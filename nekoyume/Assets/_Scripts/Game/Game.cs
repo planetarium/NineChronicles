@@ -210,6 +210,7 @@ namespace Nekoyume.Game
             {
                 Mixpanel.Flush();
             }
+            Application.OpenURL("https://forms.gle/sgGWJ6g9sBugoACS6");
         }
 
         public static void Quit()
