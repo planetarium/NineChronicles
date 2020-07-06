@@ -45,14 +45,15 @@ namespace Nekoyume.Game.Factory
             return enemy.gameObject;
         }
 
-        public static GameObject Create(int characterId, Vector2 position, float offset, bool summonEffect = false)
+        public static GameObject Create(int characterId, Vector2 position, float offset, Player target,
+            bool summonEffect = false)
         {
             var objectPool = Game.instance.Stage.objectPool;
             var enemy = objectPool.Get<PrologueCharacter>(new Vector2(position.x + offset, position.y));
             if (!enemy)
                 throw new NotFoundComponentException<PrologueCharacter>();
 
-            enemy.Set(characterId);
+            enemy.Set(characterId, target);
             if (summonEffect)
             {
                 var effect = objectPool.Get<BattleSummonVFX>();

@@ -834,5 +834,10 @@ namespace Nekoyume.Game.Character
             sortingGroup.sortingLayerID = layerId;
             sortingGroup.sortingOrder = orderInLayer;
         }
+
+        public void Ready()
+        {
+            AttackEndCalled = false;
+        }
     }
 }
