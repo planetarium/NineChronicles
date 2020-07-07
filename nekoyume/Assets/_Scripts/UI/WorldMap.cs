@@ -72,6 +72,12 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject buttonNotification = null;
 
+        [SerializeField]
+        private NormalButton worldMapHelpButton = null;
+
+        [SerializeField]
+        private NormalButton stageHelpButton = null;
+
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
         public ViewModel SharedViewModel { get; private set; }
@@ -110,18 +116,13 @@ namespace Nekoyume.UI
             SharedViewModel = new ViewModel();
             SharedViewModel.SelectedStageId.Value = firstStageId;
             SharedViewModel.IsWorldShown.Skip(1).Subscribe(UpdateWorld).AddTo(gameObject);
-            SharedViewModel.SelectedStageId.Skip(1).Subscribe(stageId =>
-            {
-                UpdateStageInformation(
+            SharedViewModel.SelectedStageId
+                .Skip(1)
+                .Subscribe(stageId => UpdateStageInformation(
                     stageId,
-                    States.Instance.CurrentAvatarState?.level ?? 1);
-
-                // 이그드라실 월드라면.
-                if (SelectedWorldId == 1)
-                {
-                    HelpPopup.HelpMe(100003);
-                }
-            }).AddTo(gameObject);
+                    States.Instance.CurrentAvatarState?.level ?? 1)
+                )
+                .AddTo(gameObject);
 
             var tooltip = Find<ItemInformationTooltip>();
 
@@ -181,7 +182,16 @@ namespace Nekoyume.UI
                 .Subscribe(_ => GoToQuestPreparation())
                 .AddTo(gameObject);
 
+            worldMapHelpButton.OnClick
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ => HelpPopup.HelpMe(100002, true))
+                .AddTo(gameObject);
 
+            stageHelpButton.OnClick
+                .Where(_ => SelectedWorldId == 1)
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ => HelpPopup.HelpMe(100003, true))
+                .AddTo(gameObject);
         }
 
         #endregion
@@ -257,12 +267,6 @@ namespace Nekoyume.UI
             base.Close(ignoreCloseAnimation);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            base.OnCompleteOfShowAnimationInternal();
-            HelpPopup.HelpMe(100002);
-        }
-
         private static void LockWorld(WorldMapWorld world)
         {
             world.Set(-1, world.SharedViewModel.RowData.StageBegin);
@@ -312,6 +316,15 @@ namespace Nekoyume.UI
             Game.Game.instance.TableSheets.WorldSheet.TryGetValue(SelectedWorldId, out var worldRow, true);
             SelectedWorldStageBegin = worldRow.StageBegin;
             SelectedStageId = stageId;
+
+            if (SelectedWorldId == 1)
+            {
+                stageHelpButton.Show();
+            }
+            else
+            {
+                stageHelpButton.Hide();
+            }
 
             foreach (var world in worlds)
             {
