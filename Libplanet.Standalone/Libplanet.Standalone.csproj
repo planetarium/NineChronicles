@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Libplanet" Version="0.10.0-nightly.20200630" />
-    <PackageReference Include="Libplanet.RocksDBStore" Version="0.10.0-nightly.20200630" />
+    <PackageReference Include="Libplanet" Version="0.10.0-dev.20200707055947" />
+    <PackageReference Include="Libplanet.RocksDBStore" Version="0.10.0-dev.20200707055947" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.1" />
   </ItemGroup>
 
