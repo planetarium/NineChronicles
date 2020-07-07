@@ -82,6 +82,7 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = adminPrivateKey.ToAddress();
+            var activateAccounts = new[] { adminAddress }.ToImmutableHashSet();
 
             Block<PolymorphicAction<ActionBase>> genesis =
                 BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
@@ -99,7 +100,7 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                                 .Add("map", Bencodex.Types.Dictionary.Empty)
                             ),
                             AdminAddressState = new AdminState(adminAddress, 1500000),
-                            ActivatedAccountsState = new ActivatedAccountsState(),
+                            ActivatedAccountsState = new ActivatedAccountsState(activateAccounts),
                         },
                     }
                 );

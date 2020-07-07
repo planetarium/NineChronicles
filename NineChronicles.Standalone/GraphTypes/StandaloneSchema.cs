@@ -6,10 +6,6 @@ namespace NineChronicles.Standalone.GraphTypes
 {
     public class StandaloneSchema : Schema
     {
-        public StandaloneSchema()
-        {
-        }
-
         public StandaloneSchema(IServiceProvider serviceProvider)
         {
             Query = serviceProvider.GetRequiredService<StandaloneQuery>();
