@@ -49,7 +49,7 @@ namespace Nekoyume.UI
 
         public System.Action OnDisappear { get; set; }
 
-        private const int ContinueTime = 5;
+        private const int ContinueTime = 3;
         private const int NPCId = 300001;
 
         protected override WidgetType WidgetType => WidgetType.Popup;
