@@ -5133,6 +5133,19 @@ MonoBehaviour:
     textAnimationTypes: 1
     scriptsAnimationTime: 0
     scriptsEndTerm: 1.8
+  - image: {fileID: 7941417804623930047}
+    hasSkeletonAnimation: 0
+    skeletonAnimation: {fileID: 0}
+    sprite: {fileID: 21300000, guid: 6a400ffe013eba14d8b0f4e6dbc38eba, type: 3}
+    imageAnmationType: 0
+    imageAnimationTime: 0.5
+    imageAnimationEndTerm: 0
+    text: {fileID: 6311271108809071861}
+    shadowText: {fileID: 6489382495529919965}
+    scriptsLocalizationKey: UI_SYNOPSIS_8
+    textAnimationTypes: 1
+    scriptsAnimationTime: 0
+    scriptsEndTerm: 1.8
   - image: {fileID: 1618955859485881184}
     hasSkeletonAnimation: 0
     skeletonAnimation: {fileID: 0}
@@ -5142,7 +5155,7 @@ MonoBehaviour:
     imageAnimationEndTerm: 0
     text: {fileID: 654524722817900950}
     shadowText: {fileID: 2183374317145791845}
-    scriptsLocalizationKey: UI_SYNOPSIS_8
+    scriptsLocalizationKey: UI_SYNOPSIS_9
     textAnimationTypes: 1
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
@@ -5186,6 +5199,7 @@ MonoBehaviour:
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
   textFadeOutTime: 0
+  prolgueEnd: 0
 --- !u!1 &5100953618842527295
 GameObject:
   m_ObjectHideFlags: 0
