@@ -9,14 +9,21 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
     public class Login : Widget
     {
-        public bool ready = false;
-        public GameObject[] slots;
+        [SerializeField]
+        private GameObject[] slots;
+
+        [SerializeField]
+        private NormalButton helpButton;
+
+        public bool ready;
         public List<Player> players;
+
         private ObjectPool _objectPool;
 
         protected override void Awake()
@@ -32,6 +39,11 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
 
             CloseWidget = null;
+
+            helpButton.OnClick
+                .ThrottleFirst(new TimeSpan(0, 0, 3))
+                .Subscribe(_ => HelpPopup.HelpMe(100000, true))
+                .AddTo(gameObject);
         }
 
         public void SlotClick(int index)
@@ -105,13 +117,6 @@ namespace Nekoyume.UI
             }
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.SelectCharacter);
-        }
-
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            base.OnCompleteOfShowAnimationInternal();
-
-            HelpPopup.HelpMe(100000);
         }
 
         private void ClearPlayers()
