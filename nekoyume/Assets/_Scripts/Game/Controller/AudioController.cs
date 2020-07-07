@@ -83,8 +83,11 @@ namespace Nekoyume.Game.Controller
             public const string Win = "sfx_win";
             public const string UnlockRecipe = "sfx_unlock_recipe";
             public const string CombinationSmash = "sfx_combination_smash";
-            public const string FenrirGrowl2 = "sfx_fenrir_growl2";
-            public const string FenrirGrowl3 = "sfx_fenrir_growl3";
+            public const string FenrirGrowlCasting = "sfx_fenrir_growl_casting";
+            public const string FenrirGrowlSkill = "sfx_fenrir_growl_skill";
+            public const string FenrirGrowlCastingAttack = "sfx_fenrir_growl_casting_attack";
+            public const string FenrirGrowlSummon = "sfx_fenrir_growl_summon";
+            public const string Heal = "sfx_heal";
         }
 
         private enum State
