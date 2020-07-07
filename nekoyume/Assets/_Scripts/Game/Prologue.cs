@@ -71,6 +71,7 @@ namespace Nekoyume.Game
             Game.instance.Stage.objectPool.ReleaseAll();
             AudioController.instance.StopAll();
             StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
+            Game.instance.Stage.LoadBackground("nest");
             Widget.Find<Synopsis>().Show();
             Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
             ActionCamera.instance.InPrologue = false;
