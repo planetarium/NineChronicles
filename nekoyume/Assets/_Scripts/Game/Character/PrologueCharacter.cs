@@ -121,7 +121,7 @@ namespace Nekoyume.Game.Character
 
             yield return StartCoroutine(CoAnimationCastBlow(elementalType));
 
-            var dmgMap = new[] {1000, 2000, 4000, 8000, 16000};
+            var dmgMap = new[] {1374, 2748, 4122, 8244, 16488};
             var effect = Game.instance.Stage.SkillController.Get<SkillBlowVFX>(_target.gameObject, elementalType, SkillCategory.BlowAttack, SkillTargetType.Enemies);
             effect.Play();
             for (var i = 0; i < 5; i++)
