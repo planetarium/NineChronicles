@@ -245,6 +245,7 @@ MonoBehaviour:
   guidedQuest: {fileID: 5387649662448639400}
   bossStatus: {fileID: 4411733955744365716}
   repeatButton: {fileID: 4934838923425773395}
+  helpButton: {fileID: 7078900006174893320}
   enemyPlayerStatus: {fileID: 428100489531015073}
   stageProgressBar: {fileID: 238593582815350421}
   comboText: {fileID: 3649547807678316715}
@@ -872,6 +873,18 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 3490132765177321418}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &7078900006174893320 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5931873267396129474, guid: bc9d58051629344ec8ea666a833999b0,
+    type: 3}
+  m_PrefabInstance: {fileID: 3490132765177321418}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c95a3e25809434695284cc982e59aa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &3508748749947622063
 PrefabInstance:
   m_ObjectHideFlags: 0

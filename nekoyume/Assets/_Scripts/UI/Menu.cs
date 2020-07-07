@@ -341,6 +341,18 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimationInternal();
             Find<Dialog>().Show(1);
+            StartCoroutine(CoHelpPopup());
+        }
+
+        private IEnumerator CoHelpPopup()
+        {
+            var dialog = Find<Dialog>();
+            while (dialog.IsActive())
+            {
+                yield return null;
+            }
+
+            guidedQuest.Show(States.Instance.CurrentAvatarState);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)

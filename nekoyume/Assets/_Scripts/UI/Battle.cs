@@ -23,6 +23,9 @@ namespace Nekoyume.UI
         private ToggleableButton repeatButton = null;
 
         [SerializeField]
+        private HelpButton helpButton = null;
+
+        [SerializeField]
         private BossStatus enemyPlayerStatus = null;
 
         [SerializeField]
@@ -34,6 +37,8 @@ namespace Nekoyume.UI
         public BossStatus BossStatus => bossStatus;
 
         public ToggleableButton RepeatButton => repeatButton;
+
+        public HelpButton HelpButton => helpButton;
 
         public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
 
@@ -224,6 +229,7 @@ namespace Nekoyume.UI
             guidedQuest.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             repeatButton.gameObject.SetActive(false);
+            helpButton.gameObject.SetActive(false);
             bossStatus.gameObject.SetActive(false);
             stageProgressBar.gameObject.SetActive(false);
             comboText.gameObject.SetActive(false);
