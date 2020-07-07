@@ -88,12 +88,6 @@ namespace Nekoyume.UI
             }
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            base.OnCompleteOfShowAnimationInternal();
-            HelpPopup.HelpMe(100014);
-        }
-
         public void ApplyCurrentSettings()
         {
             Nekoyume.Settings.Instance.ApplyCurrentSettings();

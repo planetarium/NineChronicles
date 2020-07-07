@@ -189,7 +189,7 @@ namespace Nekoyume.UI
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
-            var hasNotificationInWorldmap = worldMap.hasNotification;
+            var hasNotificationInWorldmap = worldMap.HasNotification;
 
             questExclamationMark.gameObject.SetActive(
                 (btnQuest.IsUnlocked &&
@@ -352,9 +352,7 @@ namespace Nekoyume.UI
                 yield return null;
             }
 
-            guidedQuest.Show(
-                States.Instance.CurrentAvatarState,
-                () => HelpPopup.HelpMe(100001));
+            guidedQuest.Show(States.Instance.CurrentAvatarState);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
