@@ -266,6 +266,8 @@ namespace Nekoyume.UI
             yield return null;
             // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
             _secondWidgets.Add(Widget.Create<Dialog>());
+            // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
+            _secondWidgets.Add(Widget.Create<PrologueDialog>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
