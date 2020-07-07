@@ -248,7 +248,6 @@ MonoBehaviour:
   enemyPlayerStatus: {fileID: 428100489531015073}
   stageProgressBar: {fileID: 238593582815350421}
   comboText: {fileID: 3649547807678316715}
-  helpButton: {fileID: 1698974927340509301}
 --- !u!95 &411954315895112361
 Animator:
   serializedVersion: 3
@@ -1369,6 +1368,11 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5931873267396129474, guid: d51c47110019c477f8b064ebd28712f1,
+        type: 3}
+      propertyPath: helpId
+      value: 100005
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d51c47110019c477f8b064ebd28712f1, type: 3}
 --- !u!224 &6876939277351262345 stripped
@@ -1377,18 +1381,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4784519619812102393}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1698974927340509301 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6194137853331802252, guid: d51c47110019c477f8b064ebd28712f1,
-    type: 3}
-  m_PrefabInstance: {fileID: 4784519619812102393}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ac4a96b57dc41fcb17626936cf5d5e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4960593493212028693
 PrefabInstance:
   m_ObjectHideFlags: 0

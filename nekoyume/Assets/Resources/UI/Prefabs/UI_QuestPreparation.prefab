@@ -1262,7 +1262,6 @@ MonoBehaviour:
   - {fileID: 2724734702050715562}
   levelField: {fileID: 3660427143507882561}
   simulateButton: {fileID: 4021695889470380924}
-  helpButton: {fileID: 2826735024656151635}
   actionPointImage: {fileID: 7850824828430797427}
   buttonStarImageTransform: {fileID: 8328940121856485903}
   animationTime: 0.8
@@ -7683,6 +7682,11 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5931873267396129474, guid: d51c47110019c477f8b064ebd28712f1,
+        type: 3}
+      propertyPath: helpId
+      value: 100004
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d51c47110019c477f8b064ebd28712f1, type: 3}
 --- !u!224 &8054309566408684719 stripped
@@ -7691,18 +7695,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8272948724744617183}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2826735024656151635 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6194137853331802252, guid: d51c47110019c477f8b064ebd28712f1,
-    type: 3}
-  m_PrefabInstance: {fileID: 8272948724744617183}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ac4a96b57dc41fcb17626936cf5d5e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8514882786271243248
 PrefabInstance:
   m_ObjectHideFlags: 0

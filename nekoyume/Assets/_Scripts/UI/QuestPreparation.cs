@@ -79,21 +79,24 @@ namespace Nekoyume.UI
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
 
-        [SerializeField]
-        private NormalButton helpButton = null;
-
         private Stage _stage;
+
         private Game.Character.Player _player;
+
         private EquipmentSlot _weaponSlot;
 
         private int _worldId;
+
         private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
+
         private int _requiredCost;
 
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
         private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
 
         private CharacterStats _tempStats;
+
         private bool _reset = true;
 
         // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
@@ -144,11 +147,6 @@ namespace Nekoyume.UI
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
-
-            helpButton.OnClick
-                .ThrottleFirst(new TimeSpan(0, 0, 1))
-                .Subscribe(_ => HelpPopup.HelpMe(100004, true))
-                .AddTo(gameObject);
 
             Game.Event.OnRoomEnter.AddListener(b => Close());
         }

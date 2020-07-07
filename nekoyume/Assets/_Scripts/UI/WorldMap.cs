@@ -73,10 +73,7 @@ namespace Nekoyume.UI
         private GameObject buttonNotification = null;
 
         [SerializeField]
-        private NormalButton worldMapHelpButton = null;
-
-        [SerializeField]
-        private NormalButton stageHelpButton = null;
+        private HelpButton stageHelpButton = null;
 
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
@@ -180,17 +177,6 @@ namespace Nekoyume.UI
                 .AddTo(gameObject);
             submitButton.OnSubmitClick
                 .Subscribe(_ => GoToQuestPreparation())
-                .AddTo(gameObject);
-
-            worldMapHelpButton.OnClick
-                .ThrottleFirst(new TimeSpan(0, 0, 1))
-                .Subscribe(_ => HelpPopup.HelpMe(100002, true))
-                .AddTo(gameObject);
-
-            stageHelpButton.OnClick
-                .Where(_ => SelectedWorldId == 1)
-                .ThrottleFirst(new TimeSpan(0, 0, 1))
-                .Subscribe(_ => HelpPopup.HelpMe(100003, true))
                 .AddTo(gameObject);
         }
 
