@@ -104,14 +104,14 @@ namespace Nekoyume.Game.Trigger
 
         public IEnumerator CoSpawnWave(List<int> monsterIds, Vector2 position, float offset, PrologueCharacter fenrir, Player player)
         {
-            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowl3, 2f);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlSummon);
             for (var index = 0; index < monsterIds.Count; index++)
             {
+                fenrir.Animator.Cast();
                 var id = monsterIds[index];
                 var pos = new Vector2(
                     spawnPoints[index].x + position.x + offset,
                     spawnPoints[index].y);
-                fenrir.Animator.Cast();
                 var go = EnemyFactory.Create(id, pos, offset, player, true);
                 var enemy = go.GetComponent<PrologueCharacter>();
                 yield return new WaitUntil(() => enemy.Animator.IsIdle());
