@@ -380,7 +380,7 @@ namespace Nekoyume.Game
             var battle = Widget.Find<UI.Battle>();
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
             battle.StageProgressBar.Initialize(true);
-            Widget.Find<BattleResult>().stageProgressBar.Initialize(false);
+            Widget.Find<BattleResult>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
 
