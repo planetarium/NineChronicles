@@ -18,17 +18,26 @@ namespace NineChronicles.Standalone.GraphTypes
                 name: "activated",
                 resolve: context =>
                 {
+                    var service = standaloneContext.NineChroniclesNodeService;
+
+                    if (service is null)
+                    {
+                        return false;
+                    }
+
                     try
                     {
-                        PrivateKey privateKey = standaloneContext.NineChroniclesNodeService.PrivateKey;
+                        PrivateKey privateKey = service.PrivateKey;
                         Address address = privateKey.ToAddress();
-                        BlockChain<NineChroniclesActionType> blockChain = standaloneContext.BlockChain;
+                        BlockChain<NineChroniclesActionType> blockChain = service.Swarm.BlockChain;
                         IValue state = blockChain.GetState(ActivatedAccountsState.Address);
 
                         if (state is Bencodex.Types.Dictionary asDict)
                         {
                             var activatedAccountsState = new ActivatedAccountsState(asDict);
-                            return activatedAccountsState.Accounts.Contains(address);
+                            var activatedAccounts = activatedAccountsState.Accounts;
+                            return activatedAccounts.Count == 0
+                                   || activatedAccounts.Contains(address);
                         }
 
                         return true;
