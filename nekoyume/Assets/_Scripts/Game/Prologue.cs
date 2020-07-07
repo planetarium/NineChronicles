@@ -31,6 +31,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStartPrologue()
         {
+            StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             ActionCamera.instance.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);
             Game.instance.Stage.LoadBackground("Chapter_Prologue");
@@ -53,8 +54,9 @@ namespace Nekoyume.Game
             _player.StopRun();
             _fenrir.Animator.StandingToIdle();
             yield return new WaitUntil(() => _fenrir.Animator.IsIdle());
-            Widget.Find<Dialog>().Show();
-            yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
+            yield return new WaitForSeconds(1f);
+            Widget.Find<PrologueDialog>().Show();
+            yield return new WaitWhile(() => Widget.Find<PrologueDialog>().isActiveAndEnabled);
             yield return StartCoroutine(CoSpawnWave(go));
             yield return StartCoroutine(CoBattle());
             yield return StartCoroutine(CoPrologueEnd());
@@ -62,12 +64,14 @@ namespace Nekoyume.Game
 
         private IEnumerator CoPrologueEnd()
         {
-            Widget.Find<Dialog>().Show();
-            yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
+            Widget.Find<Synopsis>().prolgueEnd = true;
+            StartCoroutine(Widget.Find<Blind>().FadeIn(2f, ""));
+            yield return new WaitForSeconds(2f);
             ActionCamera.instance.Idle();
             Game.instance.Stage.objectPool.ReleaseAll();
             AudioController.instance.StopAll();
-            Widget.Find<Synopsis>().prolgueEnd = true;
+            StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
+            Game.instance.Stage.LoadBackground("nest");
             Widget.Find<Synopsis>().Show();
             Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
             ActionCamera.instance.InPrologue = false;
@@ -113,7 +117,7 @@ namespace Nekoyume.Game
             else
             {
                 force = new Vector3(0f, 0.8f);
-                position = target.transform.TransformPoint(0f, 1f, 0f);
+                position = target.transform.TransformPoint(0f, 1.7f, 0f);
             }
             var group = !isPlayer ? DamageText.TextGroupState.Damage : DamageText.TextGroupState.Basic;
             if (critical)
@@ -169,7 +173,7 @@ namespace Nekoyume.Game
             var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();
             yield return new WaitForSeconds(0.5f);
-            var dmgMap = new[] {1600, 4800, 8400, 12000, 34000};
+            var dmgMap = new[] {1617, 4851, 8085, 12936, 38808};
             for (var i = 0; i < 5; i++)
             {
                 yield return new WaitForSeconds(0.14f);
@@ -220,31 +224,32 @@ namespace Nekoyume.Game
                 r.StatModifier.Value < 0 && r.StatModifier.StatType == StatType.DEF);
             yield return StartCoroutine(_fenrir.CoBuff(new DefenseBuff(buffRow)));
             yield return new WaitForSeconds(0.7f);
-            yield return StartCoroutine(PlayerAttack(1500, _fox, true, false));
-            yield return StartCoroutine(_pig.CoNormalAttack(12000, true));
-            yield return StartCoroutine(PlayerAttack(4500, _fox, true, false));
-            yield return StartCoroutine(_fox.CoDoubleAttack(new[] {7000, 14000}, new[] {false, true}));
-            yield return StartCoroutine(PlayerAttack(5000, _fox, true, false));
+            yield return StartCoroutine(PlayerAttack(1524, _fox, true, false));
+            yield return StartCoroutine(_pig.CoNormalAttack(12733, true));
+            yield return StartCoroutine(PlayerAttack(4518, _fox, true, false));
+            yield return StartCoroutine(_fox.CoDoubleAttack(new[] {7126, 14352}, new[] {false, true}));
+            yield return StartCoroutine(PlayerAttack(5772, _fox, true, false));
             yield return StartCoroutine(_knight.CoBlowAttack(ElementalType.Water));
-            yield return StartCoroutine(PlayerAttack(6500, _fox, true, false));
-            yield return StartCoroutine(_fox.CoNormalAttack(4000, true));
-            yield return StartCoroutine(PlayerAttack(18000, _fox, true, true));
-            yield return StartCoroutine(_pig.CoNormalAttack(6000, true));
+            yield return StartCoroutine(PlayerAttack(6502, _fox, true, false));
+            yield return StartCoroutine(_fox.CoNormalAttack(4508, true));
+            yield return StartCoroutine(PlayerAttack(18701, _fox, true, true));
+            yield return StartCoroutine(_pig.CoNormalAttack(6910, true));
             yield return StartCoroutine(PlayerFinisher());
             yield return StartCoroutine(CoPlayerHeal());
-            yield return StartCoroutine(PlayerAttack(10500, _fenrir, true, false, true));
-            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCasting);
-            yield return StartCoroutine(_fenrir.CoNormalAttack(20000, true));
-            yield return StartCoroutine(PlayerAttack(30000, _fenrir, true, false, true));
-            yield return StartCoroutine(PlayerAttack(85000, _fenrir, true, false, true));
+            yield return StartCoroutine(PlayerAttack(10897, _fenrir, true, false, true));
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCastingAttack);
+            yield return StartCoroutine(_fenrir.CoNormalAttack(76054, true));
+            yield return StartCoroutine(PlayerAttack(48913, _fenrir, true, false, true));
+            yield return StartCoroutine(PlayerAttack(89976, _fenrir, true, false, true));
             yield return StartCoroutine(CoFenrirFinisher());
         }
 
         private IEnumerator CoFenrirFinisher()
         {
-            Widget.Find<Dialog>().Show();
-            yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
-            yield return StartCoroutine(_fenrir.CoFinisher(new[] {36000, 144000}, new[] {true, true}));
+            yield return new WaitForSeconds(1f);
+            Widget.Find<PrologueDialog>().Show();
+            yield return new WaitWhile(() => Widget.Find<PrologueDialog>().isActiveAndEnabled);
+            yield return StartCoroutine(_fenrir.CoFinisher(new[] {580214, 999999}, new[] {true, true}));
             yield return new WaitForSeconds(1f);
             Time.timeScale = 1f;
             _fenrir.Animator.Idle();

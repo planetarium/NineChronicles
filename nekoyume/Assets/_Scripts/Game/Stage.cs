@@ -379,16 +379,14 @@ namespace Nekoyume.Game
 
             var battle = Widget.Find<UI.Battle>();
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
-            battle.stageProgressBar.Initialize(true);
-            Widget.Find<BattleResult>().stageProgressBar.Initialize(false);
+            battle.StageProgressBar.Initialize(true);
+            Widget.Find<BattleResult>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
 
             yield return new WaitForSeconds(2.0f);
 
             yield return StartCoroutine(title.CoClose());
-
-            HelpPopup.HelpMe(100005);
 
             AudioController.instance.PlayMusic(data.BGM);
         }
@@ -424,7 +422,7 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(1f);
             Boss = null;
-            Widget.Find<UI.Battle>().bossStatus.Close();
+            Widget.Find<UI.Battle>().BossStatus.Close();
             var passed = log.IsClear;
             if (passed)
             {
@@ -591,8 +589,8 @@ namespace Nekoyume.Game
             if (_rankingBattle)
             {
                 battle.Show();
-                battle.comboText.Close();
-                battle.stageProgressBar.Close();
+                battle.ComboText.Close();
+                battle.StageProgressBar.Close();
             }
             else
             {
@@ -604,7 +602,8 @@ namespace Nekoyume.Game
                 }
             }
 
-            battle.repeatButton.gameObject.SetActive(!_rankingBattle);
+            battle.RepeatButton.gameObject.SetActive(!_rankingBattle);
+            battle.HelpButton.gameObject.SetActive(!_rankingBattle);
 
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
@@ -616,12 +615,12 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character)
         {
             var battle = Widget.Find<UI.Battle>();
-            battle.bossStatus.Close();
-            battle.enemyPlayerStatus.Show();
-            battle.enemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
+            battle.BossStatus.Close();
+            battle.EnemyPlayerStatus.Show();
+            battle.EnemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
 
             var sprite = SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
-            battle.enemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
+            battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
             yield return StartCoroutine(spawner.CoSetData(character));
         }
 
@@ -823,8 +822,8 @@ namespace Nekoyume.Game
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(.3f);
-            Widget.Find<UI.Battle>().bossStatus.Close();
-            Widget.Find<UI.Battle>().enemyPlayerStatus.Close();
+            Widget.Find<UI.Battle>().BossStatus.Close();
+            Widget.Find<UI.Battle>().EnemyPlayerStatus.Close();
             var playerCharacter = GetPlayer();
             RunAndChasePlayer(playerCharacter);
 
@@ -844,9 +843,9 @@ namespace Nekoyume.Game
                 Boss = boss;
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
                 var battle = Widget.Find<UI.Battle>();
-                battle.bossStatus.Show();
-                battle.bossStatus.SetHp(boss.HP, boss.HP);
-                battle.bossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
+                battle.BossStatus.Show();
+                battle.BossStatus.SetHp(boss.HP, boss.HP);
+                battle.BossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
                     sprite);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
