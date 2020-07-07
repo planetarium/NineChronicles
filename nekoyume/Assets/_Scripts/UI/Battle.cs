@@ -1,8 +1,10 @@
+using System;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using UniRx;
 using UnityEngine;
 namespace Nekoyume.UI
 {
@@ -29,6 +31,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private ComboText comboText = null;
 
+        [SerializeField]
+        private NormalButton helpButton = null;
+
         public BossStatus BossStatus => bossStatus;
 
         public ToggleableButton RepeatButton => repeatButton;
@@ -43,6 +48,12 @@ namespace Nekoyume.UI
         {
             base.Awake();
             repeatButton.SetToggleListener(this);
+
+            helpButton.OnClick
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ => HelpPopup.HelpMe(100005, true))
+                .AddTo(gameObject);
+
             Game.Event.OnGetItem.AddListener(OnGetItem);
 
             CloseWidget = null;

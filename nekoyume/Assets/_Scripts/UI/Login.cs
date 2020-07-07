@@ -35,15 +35,16 @@ namespace Nekoyume.UI
                 throw new Exception("Login widget's slots.Length is not equals GameConfig.SlotCount.");
             }
             _objectPool = Game.Game.instance.Stage.objectPool;
-            Game.Event.OnNestEnter.AddListener(ClearPlayers);
-            Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
-
-            CloseWidget = null;
 
             helpButton.OnClick
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ => HelpPopup.HelpMe(100000, true))
                 .AddTo(gameObject);
+
+            Game.Event.OnNestEnter.AddListener(ClearPlayers);
+            Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
+
+            CloseWidget = null;
         }
 
         public void SlotClick(int index)
