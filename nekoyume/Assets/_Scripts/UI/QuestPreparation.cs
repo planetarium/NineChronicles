@@ -42,6 +42,9 @@ namespace Nekoyume.UI
         public TMP_InputField levelField;
         public Button simulateButton;
 
+        [SerializeField]
+        private NormalButton helpButton = null;
+
         private Stage _stage;
         private Game.Character.Player _player;
         private EquipmentSlot _weaponSlot;
@@ -121,6 +124,12 @@ namespace Nekoyume.UI
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
+
+            helpButton.OnClick
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ => HelpPopup.HelpMe(100004, true))
+                .AddTo(gameObject);
+            
             Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
@@ -203,12 +212,6 @@ namespace Nekoyume.UI
             equipmentSlots.Clear();
             base.Close(ignoreCloseAnimation);
             _disposables.DisposeAllAndClear();
-        }
-
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            base.OnCompleteOfShowAnimationInternal();
-            HelpPopup.HelpMe(100004);
         }
 
         #endregion
