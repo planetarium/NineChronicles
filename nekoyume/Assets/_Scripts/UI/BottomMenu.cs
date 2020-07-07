@@ -197,6 +197,7 @@ namespace Nekoyume.UI.Module
                 Application.OpenURL(GameConfig.DiscordLink);
             };
             confirm.Set("UI_PROCEED_DISCORD", "UI_PROCEED_DISCORD_CONTENT", blurRadius: 2);
+            HelpPopup.HelpMe(100012);
         }
 
         private static void SubscribeOnClick(ToggleableButton button)
@@ -286,7 +287,6 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        // 이 위젯은 애니메이션 없이 바로 닫히는 것을 기본으로 함.
         public override void Close(bool ignoreCloseAnimation = false)
         {
             canvasGroup.DOKill();
@@ -298,7 +298,7 @@ namespace Nekoyume.UI.Module
                     continue;
                 }
 
-                widgetControllable.HideWidget();
+                widgetControllable.HideWidget(ignoreCloseAnimation);
             }
 
             base.Close(ignoreCloseAnimation);

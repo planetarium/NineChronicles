@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
-using Nekoyume.Model;
 using UnityEngine;
 
 namespace Nekoyume.Game.Trigger
@@ -12,12 +13,12 @@ namespace Nekoyume.Game.Trigger
     {
         public Vector3[] spawnPoints;
 
-        private Enemy _enemy;
+        private Model.Enemy _enemy;
 
         private int _wave;
         private const float SpawnOffset = 6.0f;
 
-        public void SetData(Enemy enemy)
+        public void SetData(Model.Enemy enemy)
         {
             _enemy = enemy;
             SpawnWave();
@@ -38,12 +39,12 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        public IEnumerator CoSetData(List<Enemy> monsters)
+        public IEnumerator CoSetData(List<Model.Enemy> monsters)
         {
             yield return StartCoroutine(CoSpawnWave(monsters));
         }
 
-        private IEnumerator CoSpawnWave(List<Enemy> monsters)
+        private IEnumerator CoSpawnWave(List<Model.Enemy> monsters)
         {
             var stage = Game.instance.Stage;
             for (var index = 0; index < monsters.Count; index++)
@@ -71,7 +72,7 @@ namespace Nekoyume.Game.Trigger
             }
         }
 
-        private static IEnumerator CoSpawnMonster(Enemy enemy, Vector2 pos, Character.Player player)
+        private static IEnumerator CoSpawnMonster(Model.Enemy enemy, Vector2 pos, Character.Player player)
         {
             EnemyFactory.Create(enemy, pos, player);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
@@ -80,12 +81,12 @@ namespace Nekoyume.Game.Trigger
         public class InvalidWaveException: Exception
         {}
 
-        public IEnumerator CoSetData(EnemyPlayer enemyPlayer)
+        public IEnumerator CoSetData(Model.EnemyPlayer enemyPlayer)
         {
             yield return StartCoroutine(CoSpawnEnemy(enemyPlayer));
         }
 
-        private IEnumerator CoSpawnEnemy(EnemyPlayer enemyPlayer)
+        private IEnumerator CoSpawnEnemy(Model.EnemyPlayer enemyPlayer)
         {
             var stage = Game.instance.Stage;
             var player = stage.GetPlayer();
@@ -95,11 +96,29 @@ namespace Nekoyume.Game.Trigger
             yield return StartCoroutine(CoSpawnEnemy(enemyPlayer, pos));
         }
 
-        private static IEnumerator CoSpawnEnemy(EnemyPlayer enemy, Vector2 pos)
+        private static IEnumerator CoSpawnEnemy(Model.EnemyPlayer enemy, Vector2 pos)
         {
             EnemyFactory.Create(enemy, pos);
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
+        public IEnumerator CoSpawnWave(List<int> monsterIds, Vector2 position, float offset, PrologueCharacter fenrir, Player player)
+        {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowl3, 2f);
+            for (var index = 0; index < monsterIds.Count; index++)
+            {
+                var id = monsterIds[index];
+                var pos = new Vector2(
+                    spawnPoints[index].x + position.x + offset,
+                    spawnPoints[index].y);
+                fenrir.Animator.Cast();
+                var go = EnemyFactory.Create(id, pos, offset, player, true);
+                var enemy = go.GetComponent<PrologueCharacter>();
+                yield return new WaitUntil(() => enemy.Animator.IsIdle());
+                yield return new WaitForSeconds(1f);
+                fenrir.Animator.Idle();
+                yield return new WaitForSeconds(0.3f);
+            }
+        }
     }
 }

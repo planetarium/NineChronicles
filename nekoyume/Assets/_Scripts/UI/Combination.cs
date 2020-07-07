@@ -359,14 +359,12 @@ namespace Nekoyume.UI
 
             categoryTabArea.SetActive(false);
             equipmentRecipe.gameObject.SetActive(false);
-            base.OnCompleteOfCloseAnimationInternal();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
         {
             ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
-
-            base.OnCompleteOfShowAnimationInternal();
+            HelpPopup.HelpMe(100007);
         }
 
         #endregion
@@ -404,6 +402,7 @@ namespace Nekoyume.UI
         private void SubscribeState(StateType value)
         {
             Find<ItemInformationTooltip>().Close();
+            Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);

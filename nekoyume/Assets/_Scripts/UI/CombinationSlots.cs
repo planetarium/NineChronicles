@@ -1,12 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
-using Nekoyume.Game;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
-using Nekoyume.UI;
 using Nekoyume.UI.Module;
-using TMPro;
 using UniRx;
 
 namespace Nekoyume.UI
@@ -25,6 +21,11 @@ namespace Nekoyume.UI
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
+        }
+
+        protected override void OnTweenComplete()
+        {
+            HelpPopup.HelpMe(100008);
         }
 
         private void SetSlots(Dictionary<int, CombinationSlotState> states)

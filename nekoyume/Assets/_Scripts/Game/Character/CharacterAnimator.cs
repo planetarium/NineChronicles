@@ -20,6 +20,10 @@ namespace Nekoyume.Game.Character
         {
         }
 
+        protected CharacterAnimator(PrologueCharacter root) : base(root.gameObject)
+        {
+        }
+
         public override void ResetTarget(GameObject value)
         {
             base.ResetTarget(value);
@@ -200,6 +204,17 @@ namespace Nekoyume.Game.Character
             ColorTween();
         }
 
+        public void Skill(int animationId = 1)
+        {
+            if (!ValidateAnimator())
+            {
+                return;
+            }
+
+            var animation = animationId == 1 ? CharacterAnimation.Type.Skill_01 : CharacterAnimation.Type.Skill_02;
+            Animator.Play(animation.ToString(), BaseLayerIndex, 0f);
+        }
+
         #endregion
 
         private void ColorTween()
@@ -220,6 +235,11 @@ namespace Nekoyume.Game.Character
                 ColorTweenFrom,
                 ColorTweenDuration));
             _colorTweenSequence.Play().OnComplete(() => _colorTweenSequence = null);
+        }
+
+        public bool IsIdle()
+        {
+            return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).IsName(nameof(CharacterAnimation.Type.Idle));
         }
     }
 }

@@ -71,20 +71,20 @@ namespace Nekoyume.UI.Module
             _widget = Widget.Find<T>();
         }
 
-        public virtual void ShowWidget()
+        public virtual void ShowWidget(bool ignoreShowAnimation = false)
         {
             if (_widget is null || !IsWidgetControllable)
             {
                 return;
             }
 
-            _widget.Show();
+            _widget.Show(ignoreShowAnimation);
             _disposableForWidgetControllable =
                 _widget.OnDisableObservable.Subscribe(_ =>
                     _toggleListener?.RequestToggledOff(this));
         }
 
-        public virtual void HideWidget()
+        public virtual void HideWidget(bool ignoreHideAnimation = false)
         {
             if (_widget is null || !IsWidgetControllable)
             {
@@ -109,7 +109,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                _widget.Close();
+                _widget.Close(ignoreHideAnimation);
             }
         }
 

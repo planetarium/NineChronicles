@@ -41,6 +41,7 @@ namespace Nekoyume.Game.Controller
             public const string Boss1 = "bgm_boss1";
             public const string Win = "bgm_win";
             public const string Lose = "bgm_lose";
+            public const string PrologueBattle = "bgm_prologue_battle";
         }
 
         public class SfxCode
@@ -81,6 +82,9 @@ namespace Nekoyume.Game.Controller
             public const string Typing = "sfx_typing";
             public const string Win = "sfx_win";
             public const string UnlockRecipe = "sfx_unlock_recipe";
+            public const string CombinationSmash = "sfx_combination_smash";
+            public const string FenrirGrowl2 = "sfx_fenrir_growl2";
+            public const string FenrirGrowl3 = "sfx_fenrir_growl3";
         }
 
         private enum State

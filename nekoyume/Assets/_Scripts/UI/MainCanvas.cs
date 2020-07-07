@@ -259,6 +259,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
+            yield return null;
             // 임시로 팝업보다 상단에 배치합니다.
             _secondWidgets.Add(Widget.Create<BottomMenu>());
             yield return null;
@@ -269,6 +271,7 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<HelpPopup>());
 
             // 툴팁류.
             _secondWidgets.Add(Widget.Create<AvatarTooltip>());

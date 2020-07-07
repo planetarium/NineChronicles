@@ -230,6 +230,37 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             Assert.Equal(valid, validationResult);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ConvertPrivateKey(bool compress)
+        {
+            var privateKey = new PrivateKey();
+            var privateKeyHex = ByteUtil.Hex(privateKey.ByteArray);
+            var query = $@"
+            query {{
+                keyStore {{
+                    privateKey(hex: ""{privateKeyHex}"") {{
+                        hex
+                        publicKey {{
+                            hex(compress: {compress.ToString().ToLowerInvariant()})
+                            address
+                        }}
+                    }}
+                }}
+            }}
+            ";
+
+            var result = await ExecuteQueryAsync(query);
+            var privateKeyResult = result.Data.As<Dictionary<string, object>>()["keyStore"]
+                .As<Dictionary<string, object>>()["privateKey"]
+                .As<Dictionary<string, object>>();
+            Assert.Equal(privateKeyHex, privateKeyResult["hex"]);
+            var publicKeyResult = privateKeyResult["publicKey"].As<Dictionary<string, object>>();
+            Assert.Equal(ByteUtil.Hex(privateKey.PublicKey.Format(compress)), publicKeyResult["hex"]);
+            Assert.Equal(privateKey.ToAddress().ToString(), publicKeyResult["address"]);
+        }
+
         private (ProtectedPrivateKey, string) CreateProtectedPrivateKey()
         {
             string CreateRandomBase64String()

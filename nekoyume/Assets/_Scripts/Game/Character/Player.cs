@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.Helper;
 using Nekoyume.Manager;
 using Nekoyume.Model.Item;
 using Nekoyume.UI;
@@ -39,6 +40,8 @@ namespace Nekoyume.Game.Character
 
         public PlayerSpineController SpineController { get; private set; }
         public Model.Player Model => (Model.Player) CharacterModel;
+
+        public bool AttackEnd => AttackEndCalled;
 
         private bool IsFullCostumeEquipped =>
             Costumes.Any(costume => costume.ItemSubType == ItemSubType.FullCostume);
@@ -286,6 +289,14 @@ namespace Nekoyume.Game.Character
             }
 
             var sprite = weapon.GetPlayerSpineTexture();
+            SpineController.UpdateWeapon(sprite);
+        }
+
+        public void Equip(int armorId, int weaponId)
+        {
+            var spineResourcePath = $"Character/Player/{armorId}";
+            ChangeSpine(spineResourcePath);
+            var sprite = SpriteHelper.GetPlayerSpineTextureWeapon(weaponId);
             SpineController.UpdateWeapon(sprite);
         }
 
@@ -585,8 +596,7 @@ namespace Nekoyume.Game.Character
 
                 AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ActionStatusLevelUp,
                     level);
-                AudioController.instance.PlaySfx(AudioController.SfxCode.LevelUp);
-                VFXController.instance.CreateAndChase<BattleLevelUp01VFX>(transform, HUDOffset);
+                Widget.Find<LevelUpCelebratePopup>()?.Show(level, Level);
                 InitStats(Model);
             }
 

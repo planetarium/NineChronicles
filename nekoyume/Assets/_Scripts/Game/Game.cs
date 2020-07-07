@@ -30,6 +30,8 @@ namespace Nekoyume.Game
         [SerializeField]
         private Stage stage = null;
 
+        public Prologue prologue;
+
         public States States { get; private set; }
 
         public LocalStateSettings LocalStateSettings { get; private set; }
@@ -62,7 +64,7 @@ namespace Nekoyume.Game
             Mixpanel.Identify(NetworkInterface.GetAllNetworkInterfaces().First().GetPhysicalAddress().ToString());
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
-            
+
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
@@ -85,6 +87,7 @@ namespace Nekoyume.Game
 #endif
             States = new States();
             LocalStateSettings = new LocalStateSettings();
+            prologue = GetComponent<Prologue>();
             MainCanvas.instance.InitializeFirst();
         }
 

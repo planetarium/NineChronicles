@@ -169,5 +169,24 @@ namespace Nekoyume.Game.Character
             ShowSpeech("ENEMY_SKILL", (int) info.ElementalType, (int) info.SkillCategory);
             yield return StartCoroutine(base.CoAnimationCast(info));
         }
+
+        public void Set(int characterId)
+        {
+            var spineResourcePath = $"Character/Monster/{characterId}";
+
+            if (!(Animator.Target is null))
+            {
+                var animatorTargetName = spineResourcePath.Split('/').Last();
+                if (Animator.Target.name.Contains(animatorTargetName))
+                    return;
+
+                Animator.DestroyTarget();
+            }
+
+            var origin = Resources.Load<GameObject>(spineResourcePath);
+            var go = Instantiate(origin, gameObject.transform);
+            SpineController = go.GetComponent<CharacterSpineController>();
+            Animator.ResetTarget(go);
+        }
     }
 }

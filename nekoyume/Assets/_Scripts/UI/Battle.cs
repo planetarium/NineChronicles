@@ -193,5 +193,22 @@ namespace Nekoyume.UI
         }
 
         #endregion
+
+        #region tutorial
+
+        public void ShowForTutorial()
+        {
+            stageTitle.gameObject.SetActive(false);
+            guidedQuest.gameObject.SetActive(false);
+            bossStatus.gameObject.SetActive(false);
+            repeatButton.gameObject.SetActive(false);
+            bossStatus.gameObject.SetActive(false);
+            stageProgressBar.gameObject.SetActive(false);
+            comboText.gameObject.SetActive(false);
+            enemyPlayerStatus.gameObject.SetActive(false);
+            comboText.comboMax = 5;
+            gameObject.SetActive(true);
+        }
+        #endregion
     }
 }

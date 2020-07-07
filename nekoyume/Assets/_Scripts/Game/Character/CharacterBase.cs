@@ -344,7 +344,7 @@ namespace Nekoyume.Game.Character
             transform.position = position;
         }
 
-        protected void StopRun()
+        public void StopRun()
         {
             RunSpeed = 0.0f;
             Animator.StopRun();
@@ -833,6 +833,11 @@ namespace Nekoyume.Game.Character
         {
             sortingGroup.sortingLayerID = layerId;
             sortingGroup.sortingOrder = orderInLayer;
+        }
+
+        public void Ready()
+        {
+            AttackEndCalled = false;
         }
     }
 }
