@@ -13,6 +13,7 @@ namespace Nekoyume.Game.Character
         private static readonly int FillPhase = Shader.PropertyToID("_FillPhase");
 
         private Sequence _colorTweenSequence;
+        private static readonly int PrologueSpeed = Animator.StringToHash("PrologueSpeed");
 
         private Vector3 HUDPosition { get; set; }
 
@@ -46,6 +47,7 @@ namespace Nekoyume.Game.Character
 
         public void Standing()
         {
+            Animator.SetFloat(PrologueSpeed, 0.1f);
             if (!ValidateAnimator())
             {
                 return;

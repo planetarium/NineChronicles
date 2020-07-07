@@ -33,7 +33,7 @@ namespace Nekoyume.Game
         {
             ActionCamera.instance.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);
-            Game.instance.Stage.LoadBackground("Chapter_02_03");
+            Game.instance.Stage.LoadBackground("Chapter_Prologue");
             var go = PlayerFactory.Create();
             _player = go.GetComponent<Player>();
             _player.Equip(10251001, 10151000);
@@ -49,10 +49,10 @@ namespace Nekoyume.Game
             _fenrir = go2.GetComponent<PrologueCharacter>();
             yield return new WaitUntil(() => 6f > Mathf.Abs(go.transform.position.x - go2.transform.position.x));
             _player.ShowSpeech("PLAYER_PROLOGUE_SPEECH");
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCasting);
             _player.StopRun();
             _fenrir.Animator.StandingToIdle();
             yield return new WaitUntil(() => _fenrir.Animator.IsIdle());
-            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowl2, 2f);
             Widget.Find<Dialog>().Show();
             yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
             yield return StartCoroutine(CoSpawnWave(go));
@@ -115,7 +115,7 @@ namespace Nekoyume.Game
                 force = new Vector3(0f, 0.8f);
                 position = target.transform.TransformPoint(0f, 1f, 0f);
             }
-            var group = isPlayer ? DamageText.TextGroupState.Damage : DamageText.TextGroupState.Basic;
+            var group = !isPlayer ? DamageText.TextGroupState.Damage : DamageText.TextGroupState.Basic;
             if (critical)
             {
                 ActionCamera.instance.Shake();
@@ -159,8 +159,13 @@ namespace Nekoyume.Game
         private IEnumerator PlayerFinisher()
         {
             _player.Ready();
+            var sfxCode = AudioController.GetElementalCastingSFX(ElementalType.Fire);
+            AudioController.instance.PlaySfx(sfxCode);
             _player.Animator.Cast();
-            yield return new WaitForSeconds(0.3f);
+            var pos = _player.transform.position;
+            var castingEffect = Game.instance.Stage.SkillController.Get(pos, ElementalType.Fire);
+            castingEffect.Play();
+            yield return new WaitForSeconds(0.6f);
             var effect = Game.instance.Stage.SkillController.Get<SkillAreaVFX>(_knight.gameObject, ElementalType.Fire, SkillCategory.AreaAttack, SkillTargetType.Enemies);
             effect.Play();
             yield return new WaitForSeconds(0.5f);
@@ -175,6 +180,7 @@ namespace Nekoyume.Game
                     _player.Animator.CriticalAttack();
                     effect.Finisher();
                     yield return new WaitUntil(() => effect.last.isStopped);
+                    yield return new WaitForSeconds(0.2f);
                 }
                 _battle.ShowComboText(true);
                 PopupDmg(dmgMap[i], _pig.gameObject, true, i == 4, ElementalType.Fire, false);
@@ -192,14 +198,21 @@ namespace Nekoyume.Game
         {
             _player.Ready();
             _player.Animator.Cast();
-            yield return new WaitForSeconds(0.3f);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.Heal);
+            var buffRow = Game.instance.TableSheets.BuffSheet.Values.First(r =>
+                r.StatModifier.Value > 0 && r.StatModifier.StatType == StatType.HP);
+            var buff = new HPBuff(buffRow);
+            var castingEffect = Game.instance.Stage.BuffController.Get(_player.transform.position, buff);
+            castingEffect.Play();
+            yield return new WaitForSeconds(0.6f);
+            var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_player.gameObject, buff);
+            effect.Play();
             var position = _player.transform.TransformPoint(0f, 1.7f, 0f);
             var force = new Vector3(-0.1f, 0.5f);
             DamageText.Show(position, force, 64000.ToString(), DamageText.TextGroupState.Heal);
-            VFXController.instance.CreateAndChase<BattleHeal01VFX>(_player.transform, _player.Animator.GetHUDPosition() - new Vector3(0f, 0.4f));
             yield return new WaitForSeconds(1f);
             _player.Animator.Idle();
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1f);
         }
         private IEnumerator CoBattle()
         {
@@ -220,6 +233,8 @@ namespace Nekoyume.Game
             yield return StartCoroutine(PlayerFinisher());
             yield return StartCoroutine(CoPlayerHeal());
             yield return StartCoroutine(PlayerAttack(10500, _fenrir, true, false, true));
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCasting);
+            yield return StartCoroutine(_fenrir.CoNormalAttack(20000, true));
             yield return StartCoroutine(PlayerAttack(30000, _fenrir, true, false, true));
             yield return StartCoroutine(PlayerAttack(85000, _fenrir, true, false, true));
             yield return StartCoroutine(CoFenrirFinisher());
@@ -230,7 +245,8 @@ namespace Nekoyume.Game
             Widget.Find<Dialog>().Show();
             yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
             yield return StartCoroutine(_fenrir.CoFinisher(new[] {36000, 144000}, new[] {true, true}));
-            _player.Animator.Die();
+            yield return new WaitForSeconds(1f);
+            Time.timeScale = 1f;
             _fenrir.Animator.Idle();
         }
     }

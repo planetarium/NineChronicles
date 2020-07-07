@@ -212,9 +212,10 @@ namespace Nekoyume.Game.Character
         public IEnumerator CoBuff(Buff buff)
         {
             yield return StartCoroutine(CoAnimationBuffCast(buff));
+            Animator.CastAttack();
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCastingAttack);
             var effect = Game.instance.Stage.BuffController.Get<BuffVFX>(_target, buff);
             effect.Play();
-            Animator.Idle();
             yield return new WaitForSeconds(0.6f);
         }
 
@@ -238,7 +239,7 @@ namespace Nekoyume.Game.Character
             position.z = 0f;
             var effect = Game.instance.Stage.objectPool.Get<FenrirSkillVFX>(position);
             effect.Stop();
-            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowl3, 1.5f);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlSkill);
             Animator.Skill();
             ActionCamera.instance.Shake();
             yield return new WaitUntil(() => AttackEndCalled);
@@ -249,10 +250,20 @@ namespace Nekoyume.Game.Character
                 {
                     effect.Play();
                 }
+                else
+                {
+                    Time.timeScale = 0.4f;
+                }
                 Prologue.PopupDmg(damageMap[i], _target.gameObject, false, criticalMap[i], ElementalType.Normal, false);
                 _target.Animator.Hit();
-                yield return new WaitUntil(() => _target.Animator.IsIdle());
-                yield return new WaitForSeconds(0.3f);
+                if (first)
+                {
+                    yield return new WaitForSeconds(0.3f);
+                }
+                else
+                {
+                    _target.Animator.Die();
+                }
             }
         }
 
