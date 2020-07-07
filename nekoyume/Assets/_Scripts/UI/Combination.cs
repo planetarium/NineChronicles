@@ -361,12 +361,6 @@ namespace Nekoyume.UI
             equipmentRecipe.gameObject.SetActive(false);
         }
 
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
-            HelpPopup.HelpMe(100007);
-        }
-
         #endregion
 
         private void CheckLockOfCategoryButtons()
