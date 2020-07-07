@@ -103,7 +103,7 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
             if (!skipPrologue && prolgueEnd)
             {
-                startIndex = _part1EndIndex + 1;
+                startIndex = _part1EndIndex + 2;
             }
 #endif
             for (var index = startIndex; index < scripts.Length; index++)
@@ -112,6 +112,7 @@ namespace Nekoyume.UI
 #if UNITY_EDITOR
                 if (index == _part1EndIndex && !skipPrologue)
                 {
+                    yield return StartCoroutine(Find<Blind>().FadeIn(2f, ""));
                     Close();
                     Game.Game.instance.prologue.StartPrologue();
                     yield return null;

@@ -40,38 +40,6 @@ namespace Nekoyume.UI
 
         }
 
-        private void DisappearNPC()
-        {
-            if (_fenrir)
-            {
-                _fenrir.SpineController.Disappear(
-                    0f,
-                    true,
-                    () =>
-                    {
-                        _fenrir.gameObject.SetActive(false);
-                        _fenrir = null;
-                    });
-            }
-            if (_freya)
-            {
-                _freya.SpineController.Disappear(
-                    0f,
-                    true,
-                    () =>
-                    {
-                        _freya.gameObject.SetActive(false);
-                        _freya = null;
-                    });
-            }
-        }
-
-        protected override void OnCompleteOfCloseAnimationInternal()
-        {
-            base.OnCompleteOfCloseAnimationInternal();
-            DisappearNPC();
-        }
-
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
@@ -83,6 +51,17 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
+            if (_fenrir)
+            {
+                _fenrir.gameObject.SetActive(false);
+                _fenrir = null;
+            }
+            if (_freya)
+            {
+                _freya.gameObject.SetActive(false);
+                _freya = null;
+            }
+
             base.Close(ignoreCloseAnimation);
             _callCount++;
         }

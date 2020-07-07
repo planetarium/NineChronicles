@@ -31,6 +31,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStartPrologue()
         {
+            StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             ActionCamera.instance.InPrologue = true;
             AudioController.instance.PlayMusic(AudioController.MusicCode.PrologueBattle);
             Game.instance.Stage.LoadBackground("Chapter_Prologue");
@@ -58,15 +59,18 @@ namespace Nekoyume.Game
             yield return new WaitWhile(() => Widget.Find<PrologueDialog>().isActiveAndEnabled);
             yield return StartCoroutine(CoSpawnWave(go));
             yield return StartCoroutine(CoBattle());
-            PrologueEnd();
+            yield return StartCoroutine(CoPrologueEnd());
         }
 
-        private void PrologueEnd()
+        private IEnumerator CoPrologueEnd()
         {
+            Widget.Find<Synopsis>().prolgueEnd = true;
+            StartCoroutine(Widget.Find<Blind>().FadeIn(2f, ""));
+            yield return new WaitForSeconds(2f);
             ActionCamera.instance.Idle();
             Game.instance.Stage.objectPool.ReleaseAll();
             AudioController.instance.StopAll();
-            Widget.Find<Synopsis>().prolgueEnd = true;
+            StartCoroutine(Widget.Find<Blind>().FadeOut(2f));
             Widget.Find<Synopsis>().Show();
             Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
             ActionCamera.instance.InPrologue = false;
@@ -112,7 +116,7 @@ namespace Nekoyume.Game
             else
             {
                 force = new Vector3(0f, 0.8f);
-                position = target.transform.TransformPoint(0f, 1f, 0f);
+                position = target.transform.TransformPoint(0f, 1.7f, 0f);
             }
             var group = !isPlayer ? DamageText.TextGroupState.Damage : DamageText.TextGroupState.Basic;
             if (critical)
@@ -232,7 +236,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(PlayerFinisher());
             yield return StartCoroutine(CoPlayerHeal());
             yield return StartCoroutine(PlayerAttack(10500, _fenrir, true, false, true));
-            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCasting);
+            AudioController.instance.PlaySfx(AudioController.SfxCode.FenrirGrowlCastingAttack);
             yield return StartCoroutine(_fenrir.CoNormalAttack(20000, true));
             yield return StartCoroutine(PlayerAttack(30000, _fenrir, true, false, true));
             yield return StartCoroutine(PlayerAttack(85000, _fenrir, true, false, true));
