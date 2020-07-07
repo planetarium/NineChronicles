@@ -120,7 +120,7 @@ namespace Nekoyume.UI
 
         public static void HelpMe(int id, bool showOnceForEachAgentAddress = default)
         {
-            if (!showOnceForEachAgentAddress)
+            if (showOnceForEachAgentAddress)
             {
                 if (PlayerPrefs.HasKey(
                     $"{nameof(HelpPopup)}_{id}_{States.Instance.AgentState.address}"))
