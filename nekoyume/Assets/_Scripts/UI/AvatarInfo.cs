@@ -129,11 +129,6 @@ namespace Nekoyume.UI
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        protected override void OnTweenComplete()
-        {
-            HelpPopup.HelpMe(100013);
-        }
-
         protected override void OnCompleteOfCloseAnimationInternal()
         {
             ReturnPlayer();
