@@ -16,10 +16,10 @@ namespace Nekoyume.UI
     public class Login : Widget
     {
         [SerializeField]
-        private GameObject[] slots;
+        private GameObject[] slots = null;
 
         [SerializeField]
-        private NormalButton helpButton;
+        private NormalButton helpButton = null;
 
         public bool ready;
         public List<Player> players;
@@ -41,7 +41,7 @@ namespace Nekoyume.UI
             CloseWidget = null;
 
             helpButton.OnClick
-                .ThrottleFirst(new TimeSpan(0, 0, 3))
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ => HelpPopup.HelpMe(100000, true))
                 .AddTo(gameObject);
         }

@@ -57,6 +57,9 @@ namespace Nekoyume.UI
         private GameObject questExclamationMark = null;
 
         [SerializeField]
+        private NormalButton helpButton = null;
+
+        [SerializeField]
         private GuidedQuest guidedQuest = null;
 
         private Coroutine _coLazyClose;
@@ -69,6 +72,11 @@ namespace Nekoyume.UI
             Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
+
+            helpButton.OnClick
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ => HelpPopup.HelpMe(100001, true))
+                .AddTo(gameObject);
 
             guidedQuest.OnClickWorldQuestCell
                 .Subscribe(_ => HackAndSlash())
@@ -341,20 +349,6 @@ namespace Nekoyume.UI
         {
             base.OnCompleteOfShowAnimationInternal();
             Find<Dialog>().Show(1);
-            StartCoroutine(CoHelpPopup());
-        }
-
-        private IEnumerator CoHelpPopup()
-        {
-            var dialog = Find<Dialog>();
-            while (dialog.IsActive())
-            {
-                yield return null;
-            }
-
-            guidedQuest.Show(
-                States.Instance.CurrentAvatarState,
-                () => HelpPopup.HelpMe(100001));
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
