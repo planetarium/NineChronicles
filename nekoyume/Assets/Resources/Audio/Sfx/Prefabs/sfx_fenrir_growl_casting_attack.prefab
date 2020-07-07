@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 487178559710112950}
   - component: {fileID: 1014659384722536926}
   m_Layer: 0
-  m_Name: sfx_fenrir_growl3
+  m_Name: sfx_fenrir_growl_casting_attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -41,7 +41,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: da05fe27a2a8e6044ac2eb5774c635d1, type: 3}
+  m_audioClip: {fileID: 8300000, guid: db82cd0c6df2bdf439a62b3640347e7e, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.8
   m_Pitch: 1
