@@ -118,7 +118,7 @@ namespace Nekoyume.UI
 
         #region Controll
 
-        public static void HelpMe(int id, bool showOnceForEachAgentAddress = false)
+        public static void HelpMe(int id, bool showOnceForEachAgentAddress = default)
         {
             if (!showOnceForEachAgentAddress)
             {

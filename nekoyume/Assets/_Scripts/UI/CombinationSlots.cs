@@ -23,11 +23,6 @@ namespace Nekoyume.UI
             _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }
 
-        protected override void OnTweenComplete()
-        {
-            HelpPopup.HelpMe(100008);
-        }
-
         private void SetSlots(Dictionary<int, CombinationSlotState> states)
         {
             _states = states;
