@@ -118,9 +118,9 @@ namespace Nekoyume.UI
 
         #region Controll
 
-        public static void HelpMe(int id, bool ignorePlayerPrefs = false)
+        public static void HelpMe(int id, bool showOnceForEachAgentAddress = false)
         {
-            if (!ignorePlayerPrefs)
+            if (!showOnceForEachAgentAddress)
             {
                 if (PlayerPrefs.HasKey(
                     $"{nameof(HelpPopup)}_{id}_{States.Instance.AgentState.address}"))
