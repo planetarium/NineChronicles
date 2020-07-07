@@ -16,6 +16,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -40,6 +41,12 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI cpText = null;
+
+        [SerializeField]
+        private DigitTextTweener cpTextValueTweener = null;
+
+        [SerializeField]
+        private TransformLocalScaleTweener cpTextScaleTweener = null;
 
         [SerializeField]
         private EquipmentSlots costumeSlots = null;
@@ -332,6 +339,10 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var prevCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+
             // 이미 슬롯에 아이템이 있다면 해제한다.
             if (!slot.IsEmpty)
             {
@@ -340,6 +351,13 @@ namespace Nekoyume.UI
 
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
+
+            var currentCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+            cpTextValueTweener.Play(prevCp, currentCp);
+            if (prevCp < currentCp)
+            {
+                cpTextScaleTweener.PlayBackAndForth();
+            }
 
             var player = Game.Game.instance.Stage.GetPlayer();
             switch (itemBase)
@@ -409,9 +427,16 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var prevCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+
             var slotItem = slot.Item;
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
+
+            var currentCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+            cpTextValueTweener.Play(prevCp, currentCp);
 
             var player = considerInventoryOnly
                 ? null
@@ -512,8 +537,6 @@ namespace Nekoyume.UI
                         equipment.ItemId,
                         equip,
                         false);
-                    cpText.text = CPHelper.GetCP(States.Instance.CurrentAvatarState,
-                        Game.Game.instance.TableSheets.CharacterSheet).ToString();
                     break;
             }
         }
