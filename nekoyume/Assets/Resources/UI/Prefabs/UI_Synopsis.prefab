@@ -5152,7 +5152,7 @@ MonoBehaviour:
     sprite: {fileID: 21300000, guid: ec60c7b624e3e40468651d68e3a9565c, type: 3}
     imageAnmationType: 0
     imageAnimationTime: 1
-    imageAnimationEndTerm: 0
+    imageAnimationEndTerm: 1.8
     text: {fileID: 654524722817900950}
     shadowText: {fileID: 2183374317145791845}
     scriptsLocalizationKey: UI_SYNOPSIS_9
@@ -5166,10 +5166,10 @@ MonoBehaviour:
     imageAnmationType: 0
     imageAnimationTime: 1
     imageAnimationEndTerm: 0
-    text: {fileID: 1806871939669453472}
-    shadowText: {fileID: 3241333357971206279}
-    scriptsLocalizationKey: UI_SYNOPSIS_8
-    textAnimationTypes: 1
+    text: {fileID: 0}
+    shadowText: {fileID: 0}
+    scriptsLocalizationKey: 
+    textAnimationTypes: 0
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
   - image: {fileID: 8706456643787143509}
