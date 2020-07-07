@@ -53,17 +53,16 @@ namespace Nekoyume.Game
             _player.StopRun();
             _fenrir.Animator.StandingToIdle();
             yield return new WaitUntil(() => _fenrir.Animator.IsIdle());
-            Widget.Find<Dialog>().Show();
-            yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
+            yield return new WaitForSeconds(1f);
+            Widget.Find<PrologueDialog>().Show();
+            yield return new WaitWhile(() => Widget.Find<PrologueDialog>().isActiveAndEnabled);
             yield return StartCoroutine(CoSpawnWave(go));
             yield return StartCoroutine(CoBattle());
-            yield return StartCoroutine(CoPrologueEnd());
+            PrologueEnd();
         }
 
-        private IEnumerator CoPrologueEnd()
+        private void PrologueEnd()
         {
-            Widget.Find<Dialog>().Show();
-            yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
             ActionCamera.instance.Idle();
             Game.instance.Stage.objectPool.ReleaseAll();
             AudioController.instance.StopAll();
@@ -242,8 +241,9 @@ namespace Nekoyume.Game
 
         private IEnumerator CoFenrirFinisher()
         {
-            Widget.Find<Dialog>().Show();
-            yield return new WaitWhile(() => Widget.Find<Dialog>().isActiveAndEnabled);
+            yield return new WaitForSeconds(1f);
+            Widget.Find<PrologueDialog>().Show();
+            yield return new WaitWhile(() => Widget.Find<PrologueDialog>().isActiveAndEnabled);
             yield return StartCoroutine(_fenrir.CoFinisher(new[] {36000, 144000}, new[] {true, true}));
             yield return new WaitForSeconds(1f);
             Time.timeScale = 1f;
