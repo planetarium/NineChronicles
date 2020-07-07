@@ -66,9 +66,9 @@
 
             public const int CharacterEquipmentSlotWeapon = 1;
             public const int CharacterEquipmentSlotArmor = IsEditor ? 1 : 3;
-            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 4;
-            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 5;
-            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 8;
+            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 5;
+            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 8;
+            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 13;
             public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 46;
 
             #endregion
@@ -88,7 +88,7 @@
         {
             #region action
 
-            public const int CombinationEquipmentAction = 1;
+            public const int CombinationEquipmentAction = 1 : 3;
             public const int CombinationConsumableAction = IsEditor ? 1 : 6;
             public const int ItemEnhancementAction = IsEditor ? 1 : 9;
             public const int ActionsInShop = IsEditor ? 1 : 17;
