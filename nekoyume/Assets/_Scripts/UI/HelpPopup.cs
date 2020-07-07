@@ -116,6 +116,8 @@ namespace Nekoyume.UI
         private List<(Image, float)> _spinningImages = new List<(Image, float)>();
         private List<(TextMeshProUGUI, float)> _texts = new List<(TextMeshProUGUI, float)>();
 
+        #region Controll
+
         public static void HelpMe(int id, bool ignorePlayerPrefs = false)
         {
             if (!ignorePlayerPrefs)
@@ -152,6 +154,8 @@ namespace Nekoyume.UI
             Instance.Close();
 #pragma warning restore 618
         }
+
+        #endregion
 
         private static List<ViewModel> GetViewModels()
         {
@@ -317,7 +321,7 @@ namespace Nekoyume.UI
             if (!(_viewModel is null) &&
                 id == _viewModel.id)
             {
-                return true;
+                return TrySetPage(0);
             }
 
             _viewModel = SharedViewModels.FirstOrDefault(e => e.id == id);
@@ -333,8 +337,7 @@ namespace Nekoyume.UI
             ReturnToPoolAll();
             _pageIndex = -1;
             panel.sizeDelta = _viewModel.size;
-            TrySetPage(_viewModel, 0);
-            return true;
+            return TrySetPage(_viewModel, 0);
         }
 
         private bool TrySetPage(int pageIndex)
@@ -349,8 +352,7 @@ namespace Nekoyume.UI
 
         private bool TrySetPage(ViewModel viewModel, int pageIndex)
         {
-            if (pageIndex == _pageIndex ||
-                pageIndex < 0 ||
+            if (pageIndex < 0 ||
                 pageIndex >= viewModel.pages.Length)
             {
                 return false;
