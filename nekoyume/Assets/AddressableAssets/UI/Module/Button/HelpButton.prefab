@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2092428802851178608}
   - component: {fileID: 4530280183485828973}
   - component: {fileID: 960197548761837445}
-  - component: {fileID: 6194137853331802252}
+  - component: {fileID: 5931873267396129474}
   - component: {fileID: 8613054359608771193}
   m_Layer: 5
   m_Name: HelpButton
@@ -93,7 +93,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!114 &6194137853331802252
+--- !u!114 &5931873267396129474
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,13 +102,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 432179639104244028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ac4a96b57dc41fcb17626936cf5d5e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c95a3e25809434695284cc982e59aa8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 960197548761837445}
   image: {fileID: 2609069734900898212}
   text: {fileID: 1422833357227865002}
   localizationKey: UI_HELP
+  helpId: 0
 --- !u!95 &8613054359608771193
 Animator:
   serializedVersion: 3
@@ -215,7 +216,7 @@ GameObject:
   - component: {fileID: 1749397010189322877}
   - component: {fileID: 1422833357227865002}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
