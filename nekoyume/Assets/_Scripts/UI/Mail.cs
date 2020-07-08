@@ -140,17 +140,6 @@ namespace Nekoyume.UI
 
         #endregion
 
-        // public void UpdateList()
-        // {
-        //     MailBox = States.Instance.CurrentAvatarState.mailBox;
-        //     if (MailBox is null)
-        //         return;
-        //
-        //     float pos = scroller.scroller.ScrollPosition;
-        //     ChangeState((int) tabState);
-        //     scroller.scroller.ScrollPosition = pos;
-        // }
-
         public void UpdateTabs()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -183,7 +172,6 @@ namespace Nekoyume.UI
                 list = list.FindAll(mail => mail.MailType == (MailType) state);
             }
 
-            // scroller.SetData(list);
             scroll.UpdateData(list);
             emptyImage.SetActive(list.Count == 0);
         }
@@ -196,10 +184,7 @@ namespace Nekoyume.UI
             }
 
             MailBox = mailBox;
-
-            // float pos = scroller.scroller.ScrollPosition;
             ChangeState((int) tabState);
-            // scroller.scroller.ScrollPosition = pos;
         }
 
         public void Read(CombinationMail mail)
