@@ -1,11 +1,10 @@
+using System;
 using System.Linq;
 using Assets.SimpleLocalization;
 using FancyScrollView;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
-using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -18,8 +17,6 @@ namespace Nekoyume.UI.Scroller
 {
     public class QuestCell : FancyScrollRectCell<QuestModel, QuestScroll.ContextModel>
     {
-        public event System.Action onClickSubmitButton;
-
         [SerializeField]
         private Image background = null;
 
@@ -58,6 +55,8 @@ namespace Nekoyume.UI.Scroller
 
         private QuestModel _quest;
 
+        public event System.Action onClickSubmitButton;
+
         #region Mono
 
         private void Awake()
@@ -66,7 +65,10 @@ namespace Nekoyume.UI.Scroller
                 LocalizationManager.Localize("UI_PROGRESS"),
                 LocalizationManager.Localize("UI_RECEIVE"));
             receiveButton.SetSubmitTextColor(ColorHelper.HexToColorRGB("955c4a"));
-            receiveButton.OnSubmitClick.Subscribe(OnReceiveClick).AddTo(gameObject);
+            receiveButton.OnSubmitClick
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(OnReceiveClick)
+                .AddTo(gameObject);
         }
 
         #endregion
