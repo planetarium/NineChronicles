@@ -67,7 +67,6 @@ namespace Nekoyume.UI.Module
         private void OnEnable()
         {
             UpdateRecipes();
-            UIToWorldMask.instance.FitToRectTransform(scrollRect.viewport);
         }
 
         private void OnDestroy()
@@ -353,10 +352,6 @@ namespace Nekoyume.UI.Module
                 var centerPos = cellView.GetComponent<RectTransform>()
                     .GetWorldPositionOfCenter();
                 var vfx = VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
-                //var mask = UIToWorldMask.instance;
-                //mask.PushChild(vfx.transform);
-                //vfx.OnTerminated = () => mask.PopChild(vfx.transform);
-                //vfx.OnInterrupted = () => mask.PopChild(vfx.transform);
 
                 equipmentCellView?.Set(avatarState, null, false);
                 return;

@@ -1,9 +1,9 @@
-﻿namespace Nekoyume
+namespace Nekoyume
 {
     public static class GameConfig
     {
 #if UNITY_EDITOR
-        public const bool IsEditor = true;
+        public const bool IsEditor = false;
 #else
         public const bool IsEditor = false;
 #endif
