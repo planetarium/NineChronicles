@@ -391,7 +391,7 @@ namespace Nekoyume.UI
 
             var stageWaveSheet = Game.Game.instance.TableSheets.StageWaveSheet;
             stageWaveSheet.TryGetValue(stageId, out var stageWaveRow, true);
-            stageInformation.titleText.text = $"Stage #{stageWaveRow.StageId}";
+            stageInformation.titleText.text = $"Stage {stageWaveRow.StageId}";
 
             var monsterCount = stageWaveRow.TotalMonsterIds.Count;
             for (var i = 0; i < stageInformation.monstersAreaCharacterViews.Count; i++)
