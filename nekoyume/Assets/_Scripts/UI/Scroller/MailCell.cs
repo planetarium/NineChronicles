@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class MailCell : FancyScrollRectCell<Nekoyume.Model.Mail.Mail, QuestScroll.ContextModel>
+    public class MailCell : FancyScrollRectCell<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
     {
         private static readonly Vector2 LeftBottom = new Vector2(-14f, -10.5f);
 
