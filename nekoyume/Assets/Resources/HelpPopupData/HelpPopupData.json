@@ -38,7 +38,7 @@
               "textL10nKey": "HELP_POPUP_100000_PAGE_00_TEXT_01",
               "fontSize": 18,
               "anchoredPosition": {
-                "x": 80,
+                "x": 110,
                 "y": -150
               }
             },
@@ -96,7 +96,7 @@
               "fontSize": 18,
               "anchoredPosition": {
                 "x": 0,
-                "y": -270
+                "y": -290
               }
             },
             {
@@ -106,7 +106,7 @@
               "fontSize": 18,
               "anchoredPosition": {
                 "x": 0,
-                "y": -360
+                "y": -380
               }
             }
           ]
@@ -142,7 +142,7 @@
               "fontSize": 18,
               "anchoredPosition": {
                 "x": 0,
-                "y": -260
+                "y": -290
               }
             },
             {
@@ -185,7 +185,7 @@
               "delay": 1,
               "duration": -1,
               "textL10nKey": "HELP_POPUP_100002_PAGE_00_TEXT_00",
-              "fontSize": 18,
+              "fontSize": 22,
               "anchoredPosition": {
                 "x": 0,
                 "y": -280
@@ -224,17 +224,7 @@
               "fontSize": 18,
               "anchoredPosition": {
                 "x": 0,
-                "y": -200
-              }
-            },
-            {
-              "delay": 1,
-              "duration": -1,
-              "textL10nKey": "HELP_POPUP_100003_PAGE_00_TEXT_01",
-              "fontSize": 18,
-              "anchoredPosition": {
-                "x": 0,
-                "y": -260
+                "y": -270
               }
             }
           ]
@@ -316,7 +306,7 @@
               "fontSize": 18,
               "anchoredPosition": {
                 "x": 0,
-                "y": -260
+                "y": -280
               }
             },
             {
@@ -467,10 +457,10 @@
               "delay": 1,
               "duration": -1,
               "textL10nKey": "HELP_POPUP_100009_PAGE_00_TEXT_00",
-              "fontSize": 22,
+              "fontSize": 20,
               "anchoredPosition": {
                 "x": 0,
-                "y": -280
+                "y": -260
               }
             }
           ]
