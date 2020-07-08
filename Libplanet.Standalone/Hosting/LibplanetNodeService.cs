@@ -150,7 +150,14 @@ namespace Libplanet.Standalone.Hosting
                 tasks.Add(minerLoopTask);
             }
 
-            await Task.WhenAll(tasks);
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch (Exception e)
+            {
+                Log.Debug("Unexpected exception occurred during waiting tasks. {e}", e);
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
