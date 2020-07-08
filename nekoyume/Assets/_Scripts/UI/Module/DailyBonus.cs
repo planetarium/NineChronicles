@@ -152,6 +152,8 @@ namespace Nekoyume.UI.Module
         {
             Widget.Find<VanilaTooltip>()
                 .Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION", tooltipArea.position);
+
+            HelpPopup.HelpMe(100009, true);
         }
 
         public void HideTooltip()

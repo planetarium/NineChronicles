@@ -103,5 +103,53 @@ namespace Nekoyume.Game.VFX.Skill
             effect.Stop();
             return effect;
         }
+
+        public T Get<T>(GameObject target, ElementalType elemental, SkillCategory skillCategory, SkillTargetType skillTargetType) where T : SkillVFX
+        {
+            var position = target.transform.position;
+            var size = "m";
+            if (skillCategory == SkillCategory.AreaAttack)
+            {
+                size = "l";
+                var pos = ActionCamera.instance.Cam.ScreenToWorldPoint(
+                    new Vector2((float) Screen.width / 2, 0));
+                position.x = pos.x + 0.5f;
+                position.y = Stage.StageStartPosition;
+            }
+
+            var skillName = $"{skillCategory}_{size}_{elemental}".ToLower();
+            if (skillCategory == SkillCategory.BlowAttack &&
+                skillTargetType == SkillTargetType.Enemies)
+            {
+                skillName = $"{skillCategory}_m_{elemental}_area".ToLower();
+            }
+            else
+            {
+                position.x -= 0.2f;
+                position.y += 0.32f;
+            }
+            var go = _pool.Get(skillName, false, position) ??
+                     _pool.Get(skillName, true, position);
+
+            return GetEffect<T>(go, target);
+        }
+
+        private static T GetEffect<T>(GameObject go, GameObject target)
+            where T : SkillVFX
+        {
+            var effect = go.GetComponent<T>();
+            if (effect is null)
+            {
+                throw new NotFoundComponentException<T>(go.name);
+            }
+
+            if (!(target is null))
+            {
+                effect.go = target;
+            }
+
+            effect.Stop();
+            return effect;
+        }
     }
 }

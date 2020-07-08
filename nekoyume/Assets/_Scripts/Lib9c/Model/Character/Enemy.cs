@@ -31,6 +31,11 @@ namespace Nekoyume.Model
             PostConstruction();
         }
 
+        public Enemy(CharacterSheet.Row rowData) : base(rowData)
+        {
+        }
+
+
         private void PostConstruction()
         {
             AttackCountMax = 1;

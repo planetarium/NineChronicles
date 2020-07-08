@@ -120,6 +120,15 @@ namespace NineChronicles.Standalone.GraphTypes
                 Resolver = new FuncFieldResolver<NodeStatusType>(context => context.Source as NodeStatusType),
                 Subscriber = new EventStreamResolver<NodeStatusType>(context => StandaloneContext.NodeStatusSubject.AsObservable()),
             });
+            AddField(new EventStreamFieldType
+            {
+                Name = "differentAppProtocolVersionEncounter",
+                Type = typeof(NonNullGraphType<DifferentAppProtocolVersionEncounterType>),
+                Resolver = new FuncFieldResolver<DifferentAppProtocolVersionEncounter>(context =>
+                    (DifferentAppProtocolVersionEncounter)context.Source),
+                Subscriber = new EventStreamResolver<DifferentAppProtocolVersionEncounter>(context =>
+                    StandaloneContext.DifferentAppProtocolVersionEncounterSubject.AsObservable()),
+            });
         }
 
         public void RegisterTipChangedSubscription()

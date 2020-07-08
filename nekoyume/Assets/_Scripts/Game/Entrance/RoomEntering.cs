@@ -55,7 +55,6 @@ namespace Nekoyume.Game.Entrance
             player.RunSpeed = 0.0f;
             player.Animator.Idle();
 
-            Widget.Find<Dialog>().Show(1);
             Widget.Find<Status>().Show();
             Widget.Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Quit,
