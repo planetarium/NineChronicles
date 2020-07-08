@@ -29,11 +29,8 @@ namespace Nekoyume.UI
         [Serializable]
         public class TabButton
         {
-            private static readonly Color _highlightedColor = ColorHelper.HexToColorRGB("a35400");
-            private static readonly Vector2 _highlightedSize = new Vector2(139f, 58f);
-            private static readonly Vector2 _unHighlightedSize = new Vector2(116f, 36f);
-            private static readonly Vector2 _leftBottom = new Vector2(-15f, -10.5f);
-            private static readonly Vector2 _minusRightTop = new Vector2(15f, 13f);
+            private static readonly Vector2 LeftBottom = new Vector2(-15f, -10.5f);
+            private static readonly Vector2 MinusRightTop = new Vector2(15f, 13f);
 
             public Sprite highlightedSprite;
             public Button button;
@@ -55,8 +52,9 @@ namespace Nekoyume.UI
             public void ChangeColor(bool isHighlighted = false)
             {
                 image.overrideSprite = isHighlighted ? _selectedButtonSprite : null;
-                image.rectTransform.offsetMin = isHighlighted ? _leftBottom : Vector2.zero;
-                image.rectTransform.offsetMax = isHighlighted ? _minusRightTop : Vector2.zero;
+                var imageRectTransform = image.rectTransform;
+                imageRectTransform.offsetMin = isHighlighted ? LeftBottom : Vector2.zero;
+                imageRectTransform.offsetMax = isHighlighted ? MinusRightTop : Vector2.zero;
                 icon.overrideSprite = isHighlighted ? highlightedSprite : null;
                 text.gameObject.SetActive(!isHighlighted);
                 textSelected.gameObject.SetActive(isHighlighted);
@@ -65,17 +63,32 @@ namespace Nekoyume.UI
 
         // FIXME: Notification에서 mailIcons에 대한 의존이 있는데, 이것의 초기화가 Mail의 Initialize()에서 이루어지고 있어서 문제가 됩니다.
         // mailIcons의 내용으로 보아 리소스 캐싱으로 보이는데, Resources.Load<T>()는 내부에서 일정 용량까지 캐싱을 하고 있기 때문에 별도로 캐싱을 구현하지 않아도 됩니다.
-        public static readonly Dictionary<MailType, Sprite> mailIcons = new Dictionary<MailType, Sprite>();
+        public static readonly Dictionary<MailType, Sprite> mailIcons =
+            new Dictionary<MailType, Sprite>();
 
-        public MailTabState tabState;
-        public MailScrollerController scroller;
-        public TabButton[] tabButtons;
-        public GameObject emptyImage;
-        public TextMeshProUGUI emptyText;
-        public string LocalizationKey;
-        public Blur blur;
+        [SerializeField]
+        private MailTabState tabState = default;
+
+        [SerializeField]
+        private MailScroll scroll = null;
+
+        [SerializeField]
+        private TabButton[] tabButtons = null;
+
+        [SerializeField]
+        private GameObject emptyImage = null;
+
+        [SerializeField]
+        private TextMeshProUGUI emptyText = null;
+
+        [SerializeField]
+        private string emptyTextL10nKey = null;
+
+        [SerializeField]
+        private Blur blur = null;
 
         private static Sprite _selectedButtonSprite;
+
         public MailBox MailBox { get; private set; }
 
         #region override
@@ -98,7 +111,7 @@ namespace Nekoyume.UI
             tabButtons[3].Init("SYSTEM");
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
 
-            emptyText.text = LocalizationManager.Localize(LocalizationKey);
+            emptyText.text = LocalizationManager.Localize(emptyTextL10nKey);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -127,16 +140,16 @@ namespace Nekoyume.UI
 
         #endregion
 
-        public void UpdateList()
-        {
-            MailBox = States.Instance.CurrentAvatarState.mailBox;
-            if (MailBox is null)
-                return;
-
-            float pos = scroller.scroller.ScrollPosition;
-            ChangeState((int) tabState);
-            scroller.scroller.ScrollPosition = pos;
-        }
+        // public void UpdateList()
+        // {
+        //     MailBox = States.Instance.CurrentAvatarState.mailBox;
+        //     if (MailBox is null)
+        //         return;
+        //
+        //     float pos = scroller.scroller.ScrollPosition;
+        //     ChangeState((int) tabState);
+        //     scroller.scroller.ScrollPosition = pos;
+        // }
 
         public void UpdateTabs()
         {
@@ -148,7 +161,9 @@ namespace Nekoyume.UI
             for (var i = 1; i < tabButtons.Length; ++i)
             {
                 tabButtons[i].hasNotificationImage.enabled = MailBox
-                    .Any(mail => mail.MailType == (MailType) i && mail.New && mail.requiredBlockIndex <= blockIndex);
+                    .Any(mail =>
+                        mail.MailType == (MailType) i && mail.New &&
+                        mail.requiredBlockIndex <= blockIndex);
             }
         }
 
@@ -156,41 +171,50 @@ namespace Nekoyume.UI
         {
             tabState = (MailTabState) state;
 
-            for (int i = 0; i < tabButtons.Length; ++i)
+            for (var i = 0; i < tabButtons.Length; ++i)
             {
                 tabButtons[i].ChangeColor(i == state);
             }
 
-            var list = MailBox.Where(i => i.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex).ToList();
+            var list = MailBox
+                .Where(i => i.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex).ToList();
             if (state > 0)
             {
                 list = list.FindAll(mail => mail.MailType == (MailType) state);
             }
 
-            scroller.SetData(list);
+            // scroller.SetData(list);
+            scroll.UpdateData(list);
             emptyImage.SetActive(list.Count == 0);
         }
 
         private void SetList(MailBox mailBox)
         {
             if (mailBox is null)
+            {
                 return;
-            this.MailBox = mailBox;
+            }
 
-            float pos = scroller.scroller.ScrollPosition;
+            MailBox = mailBox;
+
+            // float pos = scroller.scroller.ScrollPosition;
             ChangeState((int) tabState);
-            scroller.scroller.ScrollPosition = pos;
+            // scroller.scroller.ScrollPosition = pos;
         }
 
         public void Read(CombinationMail mail)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var attachment = (Nekoyume.Action.CombinationConsumable.ResultModel) mail.attachment;
+            var attachment = (CombinationConsumable.ResultModel) mail.attachment;
             var item = attachment.itemUsable;
             var popup = Find<CombinationResultPopup>();
             var materialItems = attachment.materials
                 .Select(pair => new {pair, item = pair.Key})
-                .Select(t => new CombinationMaterial(t.item, t.pair.Value, t.pair.Value, t.pair.Value))
+                .Select(t => new CombinationMaterial(
+                    t.item,
+                    t.pair.Value,
+                    t.pair.Value,
+                    t.pair.Value))
                 .ToList();
             var model = new UI.Model.CombinationResultPopup(new CountableItem(item, 1))
             {
@@ -203,7 +227,9 @@ namespace Nekoyume.UI
                 LocalStateModifier.RemoveNewAttachmentMail(avatarAddress, mail.id, false);
                 LocalStateModifier.RemoveAttachmentResult(avatarAddress, mail.id);
                 LocalStateModifier.ModifyAvatarItemRequiredIndex(
-                    avatarAddress, item.ItemId, Game.Game.instance.Agent.BlockIndex);
+                    avatarAddress,
+                    item.ItemId,
+                    Game.Game.instance.Agent.BlockIndex);
             });
             popup.Pop(model);
         }
