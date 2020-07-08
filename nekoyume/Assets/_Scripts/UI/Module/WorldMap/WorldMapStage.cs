@@ -76,9 +76,13 @@ namespace Nekoyume.UI.Module
         private GameObject hasNotificationImage = null;
 
         private Vector3 _normalImageScale;
+
         private Vector3 _disabledImageScale;
+
         private Vector3 _selectedImageScale;
+
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+
         private Tweener _tweener;
 
         public readonly Subject<WorldMapStage> onClick = new Subject<WorldMapStage>();

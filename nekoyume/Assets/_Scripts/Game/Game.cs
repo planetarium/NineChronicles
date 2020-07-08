@@ -30,6 +30,8 @@ namespace Nekoyume.Game
         [SerializeField]
         private Stage stage = null;
 
+        public Prologue prologue;
+
         public States States { get; private set; }
 
         public LocalStateSettings LocalStateSettings { get; private set; }
@@ -85,6 +87,7 @@ namespace Nekoyume.Game
 #endif
             States = new States();
             LocalStateSettings = new LocalStateSettings();
+            prologue = GetComponent<Prologue>();
             MainCanvas.instance.InitializeFirst();
         }
 

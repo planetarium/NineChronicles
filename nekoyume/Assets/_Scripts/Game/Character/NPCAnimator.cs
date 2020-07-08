@@ -8,6 +8,10 @@ namespace Nekoyume.Game.Character
         {
         }
 
+        public NPCAnimator(DialogNPC npc) : base(npc.gameObject)
+        {
+        }
+
         public void Play(NPCAnimation.Type type, float normalizedTime = 0f)
         {
             if (!ValidateAnimator())

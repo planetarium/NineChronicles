@@ -1,23 +1,50 @@
+using System;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using UniRx;
 using UnityEngine;
 namespace Nekoyume.UI
 {
     public class Battle : Widget, IToggleListener
     {
-        public StageTitle stageTitle;
+        [SerializeField]
+        private StageTitle stageTitle = null;
 
         [SerializeField]
         private GuidedQuest guidedQuest = null;
 
-        public BossStatus bossStatus;
-        public ToggleableButton repeatButton;
-        public BossStatus enemyPlayerStatus;
-        public StageProgressBar stageProgressBar;
-        public ComboText comboText;
+        [SerializeField]
+        private BossStatus bossStatus = null;
+
+        [SerializeField]
+        private ToggleableButton repeatButton = null;
+
+        [SerializeField]
+        private HelpButton helpButton = null;
+
+        [SerializeField]
+        private BossStatus enemyPlayerStatus = null;
+
+        [SerializeField]
+        private StageProgressBar stageProgressBar = null;
+
+        [SerializeField]
+        private ComboText comboText = null;
+
+        public BossStatus BossStatus => bossStatus;
+
+        public ToggleableButton RepeatButton => repeatButton;
+
+        public HelpButton HelpButton => helpButton;
+
+        public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
+
+        public StageProgressBar StageProgressBar => stageProgressBar;
+
+        public ComboText ComboText => comboText;
 
         protected override void Awake()
         {
@@ -192,6 +219,24 @@ namespace Nekoyume.UI
             }
         }
 
+        #endregion
+
+        #region tutorial
+
+        public void ShowForTutorial()
+        {
+            stageTitle.gameObject.SetActive(false);
+            guidedQuest.gameObject.SetActive(false);
+            bossStatus.gameObject.SetActive(false);
+            repeatButton.gameObject.SetActive(false);
+            helpButton.gameObject.SetActive(false);
+            bossStatus.gameObject.SetActive(false);
+            stageProgressBar.gameObject.SetActive(false);
+            comboText.gameObject.SetActive(false);
+            enemyPlayerStatus.gameObject.SetActive(false);
+            comboText.comboMax = 5;
+            gameObject.SetActive(true);
+        }
         #endregion
     }
 }

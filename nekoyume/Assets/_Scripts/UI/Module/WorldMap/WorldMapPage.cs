@@ -6,7 +6,10 @@ namespace Nekoyume.UI.Module
 {
     public class WorldMapPage : MonoBehaviour
     {
-        public List<WorldMapStage> stages;
+        [SerializeField]
+        private List<WorldMapStage> stages = null;
+
+        public IReadOnlyList<WorldMapStage> Stages => stages;
 
         public void Show(List<WorldMapStage.ViewModel> stageModels)
         {
