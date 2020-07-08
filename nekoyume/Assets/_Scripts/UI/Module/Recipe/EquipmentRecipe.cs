@@ -352,11 +352,11 @@ namespace Nekoyume.UI.Module
 
                 var centerPos = cellView.GetComponent<RectTransform>()
                     .GetWorldPositionOfCenter();
-                var mask = UIToWorldMask.instance;
                 var vfx = VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
-                mask.PushChild(vfx.transform);
-                vfx.OnTerminated = () => mask.PopChild(vfx.transform);
-                vfx.OnInterrupted = () => mask.PopChild(vfx.transform);
+                //var mask = UIToWorldMask.instance;
+                //mask.PushChild(vfx.transform);
+                //vfx.OnTerminated = () => mask.PopChild(vfx.transform);
+                //vfx.OnInterrupted = () => mask.PopChild(vfx.transform);
 
                 equipmentCellView?.Set(avatarState, null, false);
                 return;
