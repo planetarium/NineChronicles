@@ -1,5 +1,6 @@
 using Bencodex.Types;
 using System;
+using GraphQL;
 using GraphQL.Types;
 using Libplanet;
 using Libplanet.Blockchain;
@@ -44,7 +45,9 @@ namespace NineChronicles.Standalone.GraphTypes
                     }
                     catch (Exception e)
                     {
-                        Log.Error("Unexpected exception occurred during ActivationStatusQuery: {e}", e);
+                        var msg = "Unexpected exception occurred during ActivationStatusQuery: {e}";
+                        context.Errors.Add(new ExecutionError(msg, e));
+                        Log.Error(msg, e);
                         return false;
                     }
                 }
