@@ -82,6 +82,8 @@ namespace Nekoyume.UI
 
         private QuestList _questList;
 
+        public QuestScroll Scroll => scroll;
+
         #region override
 
         public override void Initialize()
@@ -139,6 +141,7 @@ namespace Nekoyume.UI
 
         public void UpdateTabs()
         {
+            scroll.DoneAnimation();
             for (var i = 0; i < tabButtons.Length; ++i)
             {
                 var cnt = _questList.Count(quest =>

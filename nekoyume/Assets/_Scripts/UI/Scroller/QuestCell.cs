@@ -61,6 +61,8 @@ namespace Nekoyume.UI.Scroller
         private float middleXGap = 1f;
 
         private QuestModel _quest;
+        public QuestModel Quest => _quest;
+        public Animator Animator => animator;
 
         #region Mono
 
@@ -106,7 +108,9 @@ namespace Nekoyume.UI.Scroller
                     receiveButton.Hide();
 
                     //todo: 시안대로 연출이 들어가는 코드(임시로 끝나면 부르는 코드 삽입)
-                    UpdateTab();
+                    Debug.Log(-((RectTransform) transform).anchoredPosition.y);
+                    Widget.Find<Quest>().Scroll.DisappearAnimation(
+                        Mathf.FloorToInt(-((RectTransform) transform).anchoredPosition.y / 69) - 1);
                 };
             }
 
@@ -187,7 +191,7 @@ namespace Nekoyume.UI.Scroller
             }
         }
 
-        private void UpdateTab()
+        public void UpdateTab()
         {
             Widget.Find<CelebratesPopup>().Show(_quest);
             UpdateView();
