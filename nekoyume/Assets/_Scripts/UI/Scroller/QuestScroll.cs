@@ -10,7 +10,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class QuestScroll : FancyScrollRect<QuestModel, QuestScroll.ContextModel>
+    public class QuestScroll : BaseScroll<QuestModel, QuestScroll.ContextModel>
     {
         public class ContextModel : IFancyScrollRectContext
         {
