@@ -107,6 +107,8 @@ To start the game, you need to create your account.";
 
         private IFile File => FileSystem.File;
 
+        private string _genesisBlockPath;
+
         public IKeyStore KeyStore
         {
             get
@@ -292,6 +294,8 @@ To start the game, you need to create your account.";
                 Render = true
             };
 
+            _genesisBlockPath = settings.GenesisBlockPath;
+
             RpcServerPort = GetFreeTcpPort();
             var rpcProperties = new RpcNodeServiceProperties
             {
@@ -432,7 +436,11 @@ To start the game, you need to create your account.";
         public bool RunGameProcess()
         {
             string commandArguments =
-                $"--rpc-client --rpc-server-host {RpcServerHost} --rpc-server-port {RpcServerPort} --private-key {PrivateKeyHex}";
+                $"--rpc-client " +
+                $"--rpc-server-host {RpcServerHost} " +
+                $"--rpc-server-port {RpcServerPort} " +
+                $"--private-key {PrivateKeyHex} " +
+                $"--genesis-block-path {_genesisBlockPath}";
 
             // QML에서 호출되는 함수이므로 예외처리를 안에서 합니다.
             try

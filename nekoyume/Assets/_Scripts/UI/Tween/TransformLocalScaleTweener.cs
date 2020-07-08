@@ -46,13 +46,18 @@ namespace Nekoyume.UI.Tween
 
         public Tweener PlayTween()
         {
+            return PlayTween(duration);
+        }
+
+        public Tweener PlayTween(float newDuration)
+        {
             KillTween();
             Transform.localScale = OriginLocalScale;
             Tweener = DOTween
                 .To(() => Transform.localScale,
                     localScale => Transform.localScale = localScale,
                     end,
-                    duration)
+                    newDuration)
                 .SetDelay(delayForPlay)
                 .SetEase(easeForPlay);
 
@@ -71,13 +76,18 @@ namespace Nekoyume.UI.Tween
 
         public Tweener PlayReverse()
         {
+            return PlayReverse(duration);
+        }
+
+        public Tweener PlayReverse(float newDuration)
+        {
             KillTween();
             Transform.localScale = end;
             Tweener = DOTween
                 .To(() => Transform.localScale,
                     localScale => Transform.localScale = localScale,
                     OriginLocalScale,
-                    duration)
+                    newDuration)
                 .SetDelay(delayForPlayReverse)
                 .SetEase(easeForPlayReverse);
 
@@ -92,6 +102,14 @@ namespace Nekoyume.UI.Tween
             }
 
             return Tweener.Play();
+        }
+
+        public Tweener PlayBackAndForth()
+        {
+            KillTween();
+            PlayTween();
+            Tweener.onComplete = () => PlayReverse();
+            return Tweener;
         }
 
         public void ResetToOriginalLocalScale()

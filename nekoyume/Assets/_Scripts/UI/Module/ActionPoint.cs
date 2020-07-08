@@ -82,6 +82,8 @@ namespace Nekoyume.UI.Module
         {
             Widget.Find<VanilaTooltip>()
                 .Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
+
+            HelpPopup.HelpMe(100009, true);
         }
 
         public void HideTooltip()

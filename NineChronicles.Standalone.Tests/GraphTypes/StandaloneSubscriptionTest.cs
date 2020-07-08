@@ -123,5 +123,70 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             await seedNode.StopAsync(cts.Token);
             await service.StopAsync(cts.Token);
         }
+
+        [Fact(Timeout = 15000)]
+        public async Task SubscribeDifferentAppProtocolVersionEncounter()
+        {   
+            var result = await ExecuteQueryAsync(@"
+                subscription {
+                    differentAppProtocolVersionEncounter {
+                        peer
+                        peerVersion {
+                            version
+                            signer
+                            signature
+                            extra
+                        }
+                        localVersion {
+                            version
+                            signer
+                            signature
+                            extra
+                        }
+                    }
+                }
+            ");
+            var subscribeResult = (SubscriptionExecutionResult) result;
+            var stream = subscribeResult.Streams.Values.FirstOrDefault();
+            Assert.NotNull(stream);
+
+            Assert.ThrowsAsync<OperationCanceledException>(async () =>
+            {
+                await stream.Take(1).Timeout(TimeSpan.FromMilliseconds(5000)).FirstAsync();
+            });
+
+            var apvPrivateKey = new PrivateKey();
+            var apv1 = AppProtocolVersion.Sign(apvPrivateKey, 1);
+            var apv2 = AppProtocolVersion.Sign(apvPrivateKey, 0);
+            var peer = new Peer(apvPrivateKey.PublicKey, apv1);
+            StandaloneContextFx.DifferentAppProtocolVersionEncounterSubject.OnNext(
+                new DifferentAppProtocolVersionEncounter
+                {
+                    Peer = peer,
+                    PeerVersion = apv1,
+                    LocalVersion = apv2,
+                }
+            );
+            var rawEvents = await stream.Take(1);
+            var rawEvent = (Dictionary<string, object>)rawEvents.Data;
+            var differentAppProtocolVersionEncounter =
+                (Dictionary<string, object>)rawEvent["differentAppProtocolVersionEncounter"];
+            Assert.Equal(
+                peer.ToString(),
+                differentAppProtocolVersionEncounter["peer"]
+            );
+            var peerVersion =
+                (Dictionary<string, object>)differentAppProtocolVersionEncounter["peerVersion"];
+            Assert.Equal(apv1.Version, peerVersion["version"]);
+            Assert.Equal(apv1.Signer, new Address(((string)peerVersion["signer"]).Substring(2)));
+            Assert.Equal(apv1.Signature, ByteUtil.ParseHex((string)peerVersion["signature"]));
+            Assert.Equal(apv1.Extra, peerVersion["extra"]);
+            var localVersion =
+                (Dictionary<string, object>)differentAppProtocolVersionEncounter["localVersion"];
+            Assert.Equal(apv2.Version, localVersion["version"]);
+            Assert.Equal(apv2.Signer, new Address(((string)localVersion["signer"]).Substring(2)));
+            Assert.Equal(apv2.Signature, ByteUtil.ParseHex((string)localVersion["signature"]));
+            Assert.Equal(apv2.Extra, localVersion["extra"]);
+        }
     }
 }

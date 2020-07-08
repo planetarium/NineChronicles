@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using Assets.SimpleLocalization;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.Factory;
+using Nekoyume.State;
 using Spine.Unity;
 using TMPro;
 using UnityEngine;
@@ -66,6 +69,8 @@ namespace Nekoyume.UI
         [Tooltip("대사가 사라질때 걸리는 시간")]
         public float textFadeOutTime = 0.5f;
 
+        private int _part1EndIndex = 4;
+        public bool prolgueEnd;
         private bool skipSynopsis;
 
         protected override void Awake()
@@ -93,8 +98,27 @@ namespace Nekoyume.UI
         {
             var delayedTime = 0f;
 
-            foreach (var script in scripts)
+            var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
+            var startIndex = 0;
+#if UNITY_EDITOR
+            if (!skipPrologue && prolgueEnd)
             {
+                startIndex = _part1EndIndex + 2;
+            }
+#endif
+            for (var index = startIndex; index < scripts.Length; index++)
+            {
+                var script = scripts[index];
+#if UNITY_EDITOR
+                if (index == _part1EndIndex && !skipPrologue)
+                {
+                    yield return StartCoroutine(Find<Blind>().FadeIn(2f, ""));
+                    Close();
+                    Game.Game.instance.prologue.StartPrologue();
+                    yield return null;
+                }
+#endif
+
                 skipSynopsis = false;
                 script.image.transform.parent.gameObject.SetActive(true);
                 script.image.overrideSprite = script.sprite;
@@ -143,6 +167,7 @@ namespace Nekoyume.UI
                         {
                             tweener.Complete();
                         }
+
                         break;
                     case SynopsisScene.ImageAnimationType.FadeOut:
                         color = script.image.color;
@@ -168,6 +193,7 @@ namespace Nekoyume.UI
                         {
                             tweener.Complete();
                         }
+
                         break;
                     case SynopsisScene.ImageAnimationType.Immediately:
 
@@ -192,6 +218,7 @@ namespace Nekoyume.UI
                         return false;
                     });
                 }
+
                 if (skipSynopsis)
                 {
                     continue;
@@ -311,6 +338,7 @@ namespace Nekoyume.UI
 
         public void End()
         {
+            PlayerFactory.Create();
             Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
             Close();
