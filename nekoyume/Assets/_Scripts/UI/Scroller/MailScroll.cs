@@ -1,10 +1,9 @@
 using System;
 using FancyScrollView;
-using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class QuestScroll : BaseScroll<QuestModel, QuestScroll.ContextModel>
+    public class MailScroll : BaseScroll<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
     {
         public class ContextModel : IFancyScrollRectContext
         {
