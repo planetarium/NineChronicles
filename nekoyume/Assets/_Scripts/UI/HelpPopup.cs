@@ -83,6 +83,9 @@ namespace Nekoyume.UI
             _sharedViewModelsCache ?? (_sharedViewModelsCache = GetViewModels());
 
         [SerializeField]
+        private Button backgroundImageButton = null;
+
+        [SerializeField]
         private RectTransform panel = null;
 
         [SerializeField]
@@ -177,9 +180,24 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            previousButton.OnSubmitClick.Subscribe(Previous).AddTo(gameObject);
-            nextButton.OnSubmitClick.Subscribe(Next).AddTo(gameObject);
-            gotItButton.OnSubmitClick.Subscribe(GotIt).AddTo(gameObject);
+            var throttleDuration = new TimeSpan(0, 0, 1);
+            backgroundImageButton.onClick
+                .AsObservable()
+                .ThrottleFirst(throttleDuration)
+                .Subscribe(OnClickBackground)
+                .AddTo(gameObject);
+            previousButton.OnSubmitClick
+                .ThrottleFirst(throttleDuration)
+                .Subscribe(OnClickPrevious)
+                .AddTo(gameObject);
+            nextButton.OnSubmitClick
+                .ThrottleFirst(throttleDuration)
+                .Subscribe(OnClickNext)
+                .AddTo(gameObject);
+            gotItButton.OnSubmitClick
+                .ThrottleFirst(throttleDuration)
+                .Subscribe(OnClickGotIt)
+                .AddTo(gameObject);
         }
 
         public override void Initialize()
@@ -470,19 +488,25 @@ namespace Nekoyume.UI
             _texts.Clear();
         }
 
-        private void Previous(SubmitButton button)
+        private void OnClickBackground(Unit unit)
+        {
+            AudioController.PlayClick();
+            ThankYou();
+        }
+
+        private void OnClickPrevious(SubmitButton button)
         {
             AudioController.PlayClick();
             TrySetPage(_pageIndex - 1);
         }
 
-        private void Next(SubmitButton button)
+        private void OnClickNext(SubmitButton button)
         {
             AudioController.PlayClick();
             TrySetPage(_pageIndex + 1);
         }
 
-        private static void GotIt(SubmitButton button)
+        private static void OnClickGotIt(SubmitButton button)
         {
             AudioController.PlayClick();
             ThankYou();
