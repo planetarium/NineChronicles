@@ -25,7 +25,7 @@ namespace Nekoyume.UI.Module
 
         #region Mono
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             text.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
             button.OnClickAsObservable().Subscribe(_ =>

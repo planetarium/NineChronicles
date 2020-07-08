@@ -20,11 +20,11 @@ namespace Nekoyume.Game.Character
 
         protected override Vector3 DamageTextForce => new Vector3(0.0f, 0.8f);
         protected override Vector3 HudTextPosition => transform.TransformPoint(0f, 1f, 0f);
-        
+
         protected override bool CanRun => base.CanRun && !TargetInAttackRange(_player);
 
         private CharacterSpineController SpineController { get; set; }
-        
+
         #region Mono
 
         protected override void Awake()
@@ -60,7 +60,7 @@ namespace Nekoyume.Game.Character
             _disposablesForModel.DisposeAllAndClear();
 
             UpdateArmor();
-            
+
             _player = player;
 
             StartRun();
@@ -80,8 +80,8 @@ namespace Nekoyume.Game.Character
                 return;
 
             var battle = Widget.Find<UI.Battle>();
-            battle.bossStatus.SetHp(CurrentHP, HP);
-            battle.bossStatus.SetBuff(CharacterModel.Buffs);
+            battle.BossStatus.SetHp(CurrentHP, HP);
+            battle.BossStatus.SetBuff(CharacterModel.Buffs);
         }
 
         protected override IEnumerator CoProcessDamage(Model.BattleStatus.Skill.SkillInfo info, bool isConsiderDie,
@@ -114,46 +114,46 @@ namespace Nekoyume.Game.Character
         {
             return SpineController.BoxCollider;
         }
-        
+
         #region AttackPoint & HitPoint
 
         protected override void UpdateHitPoint()
         {
             base.UpdateHitPoint();
-            
+
             var center = HitPointBoxCollider.center;
             var size = HitPointBoxCollider.size;
             HitPointLocalOffset = new Vector3(center.x - size.x / 2, center.y - size.y / 2);
             attackPoint.transform.localPosition = new Vector3(HitPointLocalOffset.x - CharacterModel.attackRange, 0f);
         }
-        
+
         #endregion
 
         #region Equipments & Customize
-        
+
         private const int DefaultCharacter = 201000;
-        
+
         private void UpdateArmor()
         {
             var armorId = CharacterModel?.RowData.Id ?? DefaultCharacter;
             var spineResourcePath = $"Character/Monster/{armorId}";
-            
+
             if (!(Animator.Target is null))
             {
-                var animatorTargetName = spineResourcePath.Split('/').Last(); 
+                var animatorTargetName = spineResourcePath.Split('/').Last();
                 if (Animator.Target.name.Contains(animatorTargetName))
                     return;
 
                 Animator.DestroyTarget();
             }
-            
+
             var origin = Resources.Load<GameObject>(spineResourcePath);
             var go = Instantiate(origin, gameObject.transform);
             SpineController = go.GetComponent<CharacterSpineController>();
             Animator.ResetTarget(go);
             UpdateHitPoint();
         }
-        
+
         #endregion
 
         protected override void ProcessAttack(CharacterBase target, Model.BattleStatus.Skill.SkillInfo skill, bool isLastHit,
