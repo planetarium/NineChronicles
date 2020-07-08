@@ -89,8 +89,8 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             // NOTE: 화면과 카메라가 밀접한 관계에 있고, 카메라 스크립트는 게임 초기화 스크립트인 `Game.Game`과 같은 프레임에 활성화 되니 이곳에서 설정해 본다.
-            Screen.SetResolution(referenceResolution.x, referenceResolution.y,
-                FullScreenMode.FullScreenWindow);
+            // Screen.SetResolution(referenceResolution.x, referenceResolution.y,
+            //     FullScreenMode.FullScreenWindow);
 
             base.Awake();
 
