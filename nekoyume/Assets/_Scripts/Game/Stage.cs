@@ -407,7 +407,7 @@ namespace Nekoyume.Game
             zone = data.Background;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
-            RunPlayer();
+            RunPlayer(new Vector2(-15f, -1.2f),false);
 
             yield return new WaitForSeconds(2.0f);
 
@@ -570,7 +570,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnPlayer(Player character)
         {
-            var playerCharacter = RunPlayer();
+            var playerCharacter = RunPlayer(false);
             playerCharacter.Set(character, true);
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
@@ -616,7 +616,7 @@ namespace Nekoyume.Game
 
             var sprite = SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
             battle.enemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
-            yield return StartCoroutine(spawner.CoSetData(character));
+            yield return StartCoroutine(spawner.CoSetData(character, new Vector3(1.12f, -1.2f)));
         }
 
         #region Skill
@@ -916,21 +916,27 @@ namespace Nekoyume.Game
             return player;
         }
 
-        private Character.Player RunPlayer()
+        private Character.Player RunPlayer(bool chasePlayer = true)
         {
             var player = GetPlayer();
             var playerTransform = player.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
-            RunAndChasePlayer(player);
+            if(chasePlayer)
+                RunAndChasePlayer(player);
+            else
+                player.StartRun();
             return player;
         }
 
-        public Character.Player RunPlayer(Vector2 position)
+        public Character.Player RunPlayer(Vector2 position, bool chasePlayer = true)
         {
             var player = GetPlayer(position);
-            RunAndChasePlayer(player);
+            if(chasePlayer)
+                RunAndChasePlayer(player);
+            else
+                player.StartRun();
             return player;
         }
 
