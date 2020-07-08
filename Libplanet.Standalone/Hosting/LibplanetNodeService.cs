@@ -215,8 +215,13 @@ namespace Libplanet.Standalone.Hosting
 
         public void Dispose()
         {
-            Store?.Dispose();
+            Log.Debug($"Disposing {nameof(LibplanetNodeService<T>)}...");
+
             Swarm?.Dispose();
+            Log.Debug("Swarm disposed.");
+
+            Store?.Dispose();
+            Log.Debug("Store disposed.");
         }
     }
 }
