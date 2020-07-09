@@ -30,7 +30,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            switch (LocalizationManager.Language)
+            switch (LocalizationManager.CurrentLanguage)
             {
                 case LocalizationManager.LanguageType.English:
                     koreanImage.gameObject.SetActive(false);
@@ -54,7 +54,7 @@ namespace Nekoyume.UI
         {
             base.OnEnable();
             
-            switch (LocalizationManager.Language)
+            switch (LocalizationManager.CurrentLanguage)
             {
                 case LocalizationManager.LanguageType.English:
                     OnEnableAsEnglish();
