@@ -248,6 +248,10 @@ namespace Nekoyume.UI
 
             CheckLockOfCategoryButtons();
 
+            var hasNotification = HasNotification;
+            selectionArea.combineEquipmentButton.HasNotification.Value = hasNotification;
+            combineEquipmentCategoryButton.HasNotification.Value = hasNotification;
+
             Find<CombinationLoadingScreen>().OnDisappear = OnNPCDisappear;
 
             var stage = Game.Game.instance.Stage;
@@ -524,6 +528,7 @@ namespace Nekoyume.UI
         {
             equipmentRecipe.UpdateRecipes();
             consumableRecipe.UpdateRecipes();
+            combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
         private void OnClickRecipe()
@@ -716,6 +721,7 @@ namespace Nekoyume.UI
                 combinationPanel
             );
             equipmentRecipe.UpdateRecipes();
+            combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
         private void ActionEnhanceEquipment()

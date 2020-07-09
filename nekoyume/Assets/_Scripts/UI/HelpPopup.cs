@@ -15,6 +15,7 @@ using UniRx.Toolkit;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -140,6 +141,11 @@ namespace Nekoyume.UI
             {
                 return;
             }
+            var props = new Value
+            {
+                ["HelpPopupId"] = id,
+            };
+            Mixpanel.Track("Unity/Click HelpPopup", props);
 
 #pragma warning disable 618
             Instance.Show();
