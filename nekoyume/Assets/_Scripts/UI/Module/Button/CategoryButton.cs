@@ -102,7 +102,7 @@ namespace Nekoyume.UI.Module
         {
             _lockCondition = condition;
             _messageForCat =
-                $"<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_lockCondition} First!";
+                $"<sprite name=\"UI_icon_lock_01\"> Clear Stage {_lockCondition} First!";
             UpdateLock();
         }
 

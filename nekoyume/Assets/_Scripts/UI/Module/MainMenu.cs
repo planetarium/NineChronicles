@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Module
             }
 
             _messageForCat =
-                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_requireStage} First!";
+                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage {_requireStage} First!";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()
