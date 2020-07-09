@@ -1,4 +1,3 @@
-using Assets.SimpleLocalization;
 using TMPro;
 using UnityEngine;
 
@@ -8,15 +7,20 @@ namespace Nekoyume.UI.Module
     {
         public TextMeshProUGUI text;
 
-        public void Show(string key)
+        public void Show(string msg)
         {
-            text.text = LocalizationManager.Localize(key);
+            UpdateMessage(msg);
             gameObject.SetActive(true);
         }
 
         public void Close()
         {
             gameObject.SetActive(false);
+        }
+
+        public void UpdateMessage(string msg)
+        {
+            text.text = msg;
         }
     }
 }

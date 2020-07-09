@@ -71,8 +71,7 @@ MonoBehaviour:
   m_text: TEXT HERE
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: -2364689171920820918, guid: 8a682b7747d4a664089b7b1065aa0035,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7721c898419b5d3439390484c2636cea, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -97,8 +96,8 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 16
-  m_fontSizeBase: 16
+  m_fontSize: 18
+  m_fontSizeBase: 18
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 8
@@ -199,36 +198,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: UI_Stage_CharacterRun_loading 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1132212019906422343, guid: e0a45c9cc57b9684ba7bd50bef622583,
-        type: 3}
-      propertyPath: m_SortingLayerID
-      value: 764030297
-      objectReference: {fileID: 0}
-    - target: {fileID: 1132212019906422343, guid: e0a45c9cc57b9684ba7bd50bef622583,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 1488224301320121484, guid: e0a45c9cc57b9684ba7bd50bef622583,
-        type: 3}
-      propertyPath: m_SortingLayerID
-      value: 764030297
-      objectReference: {fileID: 0}
-    - target: {fileID: 1488224301320121484, guid: e0a45c9cc57b9684ba7bd50bef622583,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963906557660555654, guid: e0a45c9cc57b9684ba7bd50bef622583,
-        type: 3}
-      propertyPath: m_SortingLayerID
-      value: 764030297
-      objectReference: {fileID: 0}
-    - target: {fileID: 6963906557660555654, guid: e0a45c9cc57b9684ba7bd50bef622583,
-        type: 3}
-      propertyPath: m_SortingLayer
-      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 4804825819338897874, guid: e0a45c9cc57b9684ba7bd50bef622583,
         type: 3}
@@ -334,6 +303,36 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132212019906422343, guid: e0a45c9cc57b9684ba7bd50bef622583,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 764030297
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132212019906422343, guid: e0a45c9cc57b9684ba7bd50bef622583,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1488224301320121484, guid: e0a45c9cc57b9684ba7bd50bef622583,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 764030297
+      objectReference: {fileID: 0}
+    - target: {fileID: 1488224301320121484, guid: e0a45c9cc57b9684ba7bd50bef622583,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6963906557660555654, guid: e0a45c9cc57b9684ba7bd50bef622583,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 764030297
+      objectReference: {fileID: 0}
+    - target: {fileID: 6963906557660555654, guid: e0a45c9cc57b9684ba7bd50bef622583,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 8
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0a45c9cc57b9684ba7bd50bef622583, type: 3}
