@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bencodex;
@@ -12,18 +10,17 @@ using GraphQL;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
-using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
-using Libplanet.Store;
-using LiteDB;
+using Nekoyume.Action;
+using Nekoyume.Model;
+using Nekoyume.Model.State;
 using NineChronicles.Standalone.Tests.Common.Actions;
 using Xunit;
 using Xunit.Abstractions;
-using IPAddress = Org.BouncyCastle.Utilities.Net.IPAddress;
 
 namespace NineChronicles.Standalone.Tests.GraphTypes
 {
@@ -259,6 +256,95 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             var publicKeyResult = privateKeyResult["publicKey"].As<Dictionary<string, object>>();
             Assert.Equal(ByteUtil.Hex(privateKey.PublicKey.Format(compress)), publicKeyResult["hex"]);
             Assert.Equal(privateKey.ToAddress().ToString(), publicKeyResult["address"]);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ActivationStatus(bool existsActivatedAccounts)
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var activatedAccounts = ImmutableHashSet<Address>.Empty;
+
+            if (existsActivatedAccounts)
+            {
+                activatedAccounts = new[] { adminAddress }.ToImmutableHashSet();
+            }
+
+            Block<PolymorphicAction<ActionBase>> genesis =
+                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
+                    new PolymorphicAction<ActionBase>[]
+                    {
+                        new InitializeStates()
+                        {
+                            RankingState = new RankingState(),
+                            ShopState = new ShopState(),
+                            TableSheetsState = new TableSheetsState(),
+                            WeeklyArenaAddresses = WeeklyArenaState.Addresses,
+                            GameConfigState = new GameConfigState(),
+                            RedeemCodeState = new RedeemCodeState(Bencodex.Types.Dictionary.Empty
+                                .Add("address", RedeemCodeState.Address.Serialize())
+                                .Add("map", Bencodex.Types.Dictionary.Empty)
+                            ),
+                            AdminAddressState = new AdminState(adminAddress, 1500000),
+                            ActivatedAccountsState = new ActivatedAccountsState(activatedAccounts),
+                        },
+                    }
+                );
+
+            var apvPrivateKey = new PrivateKey();
+            var apv = AppProtocolVersion.Sign(apvPrivateKey, 0);
+            var userPrivateKey = new PrivateKey();
+            var properties = new LibplanetNodeServiceProperties<PolymorphicAction<ActionBase>>
+            {
+                Host = System.Net.IPAddress.Loopback.ToString(),
+                AppProtocolVersion = apv,
+                GenesisBlock = genesis,
+                StorePath = null,
+                StoreStatesCacheSize = 2,
+                PrivateKey = userPrivateKey,
+                Port = null,
+                MinimumDifficulty = 4096,
+                NoMiner = true,
+                Render = false,
+                Peers = ImmutableHashSet<Peer>.Empty,
+                TrustedAppProtocolVersionSigners = null,
+            };
+
+            var service = new NineChroniclesNodeService(properties, null);
+            StandaloneContextFx.NineChroniclesNodeService = service;
+            StandaloneContextFx.BlockChain = service.Swarm.BlockChain;
+
+            var blockChain = StandaloneContextFx.BlockChain;
+
+            var queryResult = await ExecuteQueryAsync( "query { activationStatus { activated } }");
+            var result = (bool)queryResult.Data
+                .As<Dictionary<string, object>>()["activationStatus"]
+                .As<Dictionary<string, object>>()["activated"];
+
+            // ActivatedAccounts가 비어있을때는 true이고 하나라도 있을경우 false
+            Assert.Equal(!existsActivatedAccounts, result);
+
+            var nonce = new byte[] {0x00, 0x01, 0x02, 0x03};
+            var privateKey = new PrivateKey();
+            (ActivationKey activationKey, PendingActivationState pendingActivation) =
+                ActivationKey.Create(privateKey, nonce);
+            PolymorphicAction<ActionBase> action = new CreatePendingActivation(pendingActivation);
+            blockChain.MakeTransaction(adminPrivateKey, new[] {action});
+            await blockChain.MineBlock(adminAddress);
+
+            action = activationKey.CreateActivateAccount(nonce);
+            blockChain.MakeTransaction(userPrivateKey, new[] { action });
+            await blockChain.MineBlock(adminAddress);
+
+            queryResult = await ExecuteQueryAsync( "query { activationStatus { activated } }");
+            result = (bool)queryResult.Data
+                .As<Dictionary<string, object>>()["activationStatus"]
+                .As<Dictionary<string, object>>()["activated"];
+
+            // ActivatedAccounts에 Address가 추가 되었기 때문에 true
+            Assert.True(result);
         }
 
         private (ProtectedPrivateKey, string) CreateProtectedPrivateKey()
