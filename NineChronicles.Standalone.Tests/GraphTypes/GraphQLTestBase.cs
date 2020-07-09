@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using GraphQL;
@@ -49,12 +48,7 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                 KeyStore = keyStore,
             };
 
-            Schema = new StandaloneSchema
-            {
-                Query = new StandaloneQuery(StandaloneContextFx),
-                Subscription = new StandaloneSubscription(StandaloneContextFx),
-                Mutation = new StandaloneMutation(StandaloneContextFx)
-            };
+            Schema = new StandaloneSchema(new TestServiceProvider(StandaloneContextFx));
             Schema.Subscription.As<StandaloneSubscription>().RegisterTipChangedSubscription();
 
             DocumentExecutor = new DocumentExecuter();
@@ -120,6 +114,50 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                 new BlockPolicy<T>(),
                 async (chain, swarm, privateKey, cancellationToken) => { },
                 preloadProgress);
+        }
+
+        private class TestServiceProvider : IServiceProvider
+        {
+            private StandaloneQuery Query;
+
+            private StandaloneMutation Mutation;
+
+            private StandaloneSubscription Subscription;
+
+            private StandaloneContext StandaloneContext;
+
+            public TestServiceProvider(StandaloneContext standaloneContext)
+            {
+                Query = new StandaloneQuery(standaloneContext);
+                Mutation = new StandaloneMutation(standaloneContext);
+                Subscription = new StandaloneSubscription(standaloneContext);
+                StandaloneContext = standaloneContext;
+            }
+
+            public object GetService(Type serviceType)
+            {
+                if (serviceType == typeof(StandaloneQuery))
+                {
+                    return Query;
+                }
+
+                if (serviceType == typeof(StandaloneMutation))
+                {
+                    return Mutation;
+                }
+
+                if (serviceType == typeof(StandaloneSubscription))
+                {
+                    return Subscription;
+                }
+
+                if (serviceType == typeof(ActivationStatusQuery))
+                {
+                    return new ActivationStatusQuery(StandaloneContext);
+                }
+
+                return Activator.CreateInstance(serviceType);
+            }
         }
     }
 }

@@ -309,6 +309,7 @@ namespace Nekoyume
             return DOTween.To(() => rectTransform.anchoredPosition,
                 value => rectTransform.anchoredPosition = value, to, duration);
         }
+      
         public static DG.Tweening.Core.TweenerCore<Vector2, Vector2, VectorOptions> DoAnchoredMoveX(
             this RectTransform rectTransform, float to, float duration, bool relative = false)
         {
@@ -324,6 +325,7 @@ namespace Nekoyume
             return DOTween.To(() => rectTransform.anchoredPosition,
                 value => rectTransform.anchoredPosition = value, endValue, duration);
         }
+      
         public static DG.Tweening.Core.TweenerCore<Vector2, Vector2, VectorOptions> DoAnchoredMoveY(
             this RectTransform rectTransform, float to, float duration, bool relative = false)
         {
@@ -338,6 +340,15 @@ namespace Nekoyume
 
             return DOTween.To(() => rectTransform.anchoredPosition,
                 value => rectTransform.anchoredPosition = value, endValue, duration);
+        }
+      
+        public static float3 GetWorldPositionOfCenter(this RectTransform rectTransform)
+        {
+            var corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+
+            var beginPos = (corners[0] + corners[2]) / 2;
+            return beginPos;
         }
     }
 }

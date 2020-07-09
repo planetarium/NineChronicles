@@ -37,6 +37,9 @@ namespace NineChronicles.Standalone
 
         public Swarm<NineChroniclesActionType> Swarm => NodeService?.Swarm;
 
+        public PrivateKey PrivateKey { get; }
+
+
         public NineChroniclesNodeService(
             LibplanetNodeServiceProperties<NineChroniclesActionType> properties,
             RpcNodeServiceProperties? rpcNodeServiceProperties,
@@ -81,6 +84,8 @@ namespace NineChronicles.Standalone
                     }
                 }
             }
+
+            PrivateKey = Properties.PrivateKey;
 
             NodeService = new LibplanetNodeService<NineChroniclesActionType>(
                 Properties,

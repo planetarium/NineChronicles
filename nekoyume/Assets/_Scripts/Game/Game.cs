@@ -23,12 +23,16 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
-
         private IAgent _agent;
 
         [SerializeField]
         private Stage stage = null;
+
+        [SerializeField]
+        private bool useSystemLanguage = true;
+
+        [SerializeField]
+        private LocalizationManager.LanguageType languageType = default;
 
         public Prologue prologue;
 
@@ -80,11 +84,15 @@ namespace Nekoyume.Game
             {
                 _agent = GetComponent<Agent>();
             }
-#if UNITY_EDITOR
-            LocalizationManager.Initialize(languageType);
-#else
+
             LocalizationManager.Initialize();
+#if UNITY_EDITOR
+            if (!useSystemLanguage)
+            {
+                LocalizationManager.CurrentLanguage = languageType;
+            }
 #endif
+
             States = new States();
             LocalStateSettings = new LocalStateSettings();
             prologue = GetComponent<Prologue>();
