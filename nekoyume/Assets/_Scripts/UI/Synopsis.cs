@@ -12,6 +12,7 @@ using Spine.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -328,6 +329,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            Mixpanel.Track("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
             StartCoroutine(StartSynopsis());
         }
@@ -337,6 +339,7 @@ namespace Nekoyume.UI
             PlayerFactory.Create();
             Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
+            Mixpanel.Track("Unity/Synopsis End");
             Close();
         }
 
