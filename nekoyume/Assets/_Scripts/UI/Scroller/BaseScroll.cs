@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Scroller
         where TContext : class, IFancyScrollRectContext, new()
     {
         [SerializeField]
-        private GameObject cellPrefab = null;
+        protected GameObject cellPrefab = null;
 
         [SerializeField]
         private float cellSize = default;

@@ -98,21 +98,13 @@ namespace Nekoyume.UI.Scroller
                         VFXController.instance.Create<ItemMoveVFX>(rewardView.transform.position);
                 }
             }
+            ShowAsComplete();
             if (lastVFX != null)
             {
                 lastVFX.OnFinished = () =>
                 {
-                    fillImage.color = ColorHelper.HexToColorRGB("282828");
-                    background.color = ColorHelper.HexToColorRGB("7b7b7b");
-                    titleText.color = ColorHelper.HexToColorRGB("614037");
-                    contentText.color = ColorHelper.HexToColorRGB("38251e");
-                    progressText.color = ColorHelper.HexToColorRGB("282828");
-                    receiveButton.Hide();
-
-                    //todo: 시안대로 연출이 들어가는 코드(임시로 끝나면 부르는 코드 삽입)
-                    Debug.Log(-((RectTransform) transform).anchoredPosition.y);
                     Widget.Find<Quest>().Scroll.DisappearAnimation(
-                        Mathf.FloorToInt(-((RectTransform) transform).anchoredPosition.y / 69) - 1);
+                        Mathf.FloorToInt(-((RectTransform) transform).anchoredPosition.y / 69));
                 };
             }
 
@@ -198,6 +190,16 @@ namespace Nekoyume.UI.Scroller
             Widget.Find<CelebratesPopup>().Show(_quest);
             UpdateView();
             Widget.Find<Quest>().UpdateTabs();
+        }
+
+        public void ShowAsComplete()
+        {
+            fillImage.color = ColorHelper.HexToColorRGB("282828");
+            background.color = ColorHelper.HexToColorRGB("7b7b7b");
+            titleText.color = ColorHelper.HexToColorRGB("614037");
+            contentText.color = ColorHelper.HexToColorRGB("38251e");
+            progressText.color = ColorHelper.HexToColorRGB("282828");
+            receiveButton.Hide();
         }
     }
 }
