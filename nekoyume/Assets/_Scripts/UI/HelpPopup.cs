@@ -141,6 +141,11 @@ namespace Nekoyume.UI
             {
                 return;
             }
+            var props = new Value
+            {
+                ["HelpPopupId"] = id,
+            };
+            Mixpanel.Track("Unity/Click HelpPopup", props);
 
 #pragma warning disable 618
             Instance.Show();
@@ -311,7 +316,6 @@ namespace Nekoyume.UI
             if (ignoreShowAnimation)
             {
                 showingTweener.PlayTween(0f).OnStart(() => base.Show(true));
-                Mixpanel.Track("Unity/HelpPopup");
             }
             else
             {
