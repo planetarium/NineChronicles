@@ -1,4 +1,4 @@
-﻿namespace Nekoyume
+namespace Nekoyume
 {
     public static class GameConfig
     {
