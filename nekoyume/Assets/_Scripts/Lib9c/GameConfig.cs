@@ -1,4 +1,4 @@
-﻿namespace Nekoyume
+namespace Nekoyume
 {
     public static class GameConfig
     {
@@ -10,7 +10,7 @@
 
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
-        public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
+        public const string AvatarNickNamePattern = @"^[0-9a-zA-Z]{2,20}$";
         public const string DiscordLink = "https://discord.gg/NqshYve";
 
         public const string BlockExplorerLinkFormat =

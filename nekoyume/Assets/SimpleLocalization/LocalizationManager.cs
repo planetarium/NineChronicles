@@ -11,76 +11,66 @@ namespace Assets.SimpleLocalization
     /// </summary>
     public static class LocalizationManager
     {
+        /// <summary>
+        /// UnityEngine.SystemLanguage 안에서 선택적으로 포함합니다.
+        /// </summary>
         public enum LanguageType
         {
             English,
-            Korean
+            Korean,
+            Portuguese,
         }
 
-        /// <summary>
-        /// Fired when localization changed.
-        /// </summary>
-        public static event Action LocalizationChanged = delegate { };
-
-        public const LanguageType DefaultLanguage = LanguageType.English;
+        private static bool _initialized = false;
 
         private static readonly Dictionary<LanguageType, Dictionary<string, string>> Dictionary =
             new Dictionary<LanguageType, Dictionary<string, string>>();
 
-        private static LanguageType _language = DefaultLanguage;
+        private static LanguageType _currentLanguage = SystemLanguage;
 
-        /// <summary>
-        /// Get or set language.
-        /// </summary>
-        public static LanguageType Language
+        private static LanguageType SystemLanguage
         {
-            get => _language;
+            get
+            {
+                var systemLang = Application.systemLanguage.ToString();
+                return !Enum.TryParse<LanguageType>(systemLang, out var languageType)
+                    ? default
+                    : languageType;
+            }
         }
 
-        public static LanguageType SystemLanguage => LanguageType.Korean;
+        public static LanguageType CurrentLanguage
+        {
+            get => _currentLanguage;
+            set
+            {
+                _currentLanguage = value;
+                OnChangeLanguage?.Invoke();
+            }
+        }
 
-        /// <summary>
-        /// Read localization spreadsheets.
-        /// </summary>
+        public static event Action OnChangeLanguage;
+
         public static void Initialize(string path = "Localization")
         {
-            if (Dictionary.Count > 0)
+            if (_initialized)
+            {
                 return;
-
-            InitializeInternal();
-            var languageType = SystemLanguage;
-        }
-
-        public static void Initialize(LanguageType languageType, string path = "Localization")
-        {
-            if (Dictionary.Count > 0)
-                return;
-
-            InitializeInternal();
-        }
-
-        private static void InitializeInternal(string path = "Localization")
-        {
-            if (Dictionary.Count > 0)
-                return;
+            }
 
             var textAssets = Resources.LoadAll<TextAsset>(path);
-
             foreach (var textAsset in textAssets)
             {
                 var text = ReplaceMarkers(textAsset.text);
                 var matches = Regex.Matches(text, "\"[\\s\\S]+?\"");
-
-                foreach (Match match in matches)
-                {
-                    text = text.Replace(
-                        match.Value,
-                        match.Value
+                text = matches
+                    .Cast<Match>()
+                    .Aggregate(text, (current, match) => current
+                        .Replace(match.Value, match.Value
                             .Replace("\"", null)
                             .Replace(",", "[comma]")
                             .Replace("\n", "[newline]")
-                            .Replace("\r\n", "[newline]"));
-                }
+                            .Replace("\r\n", "[newline]")));
 
                 // csv파일 저장형식이 라인피드로만 처리되고 있어서 윈도우에서 줄바꿈이 제대로 안되는 문제가 있음
                 var lines = text.Split(new[] {"\n", "\r\n"}, StringSplitOptions.RemoveEmptyEntries);
@@ -123,6 +113,8 @@ namespace Assets.SimpleLocalization
                     }
                 }
             }
+
+            _initialized = true;
         }
 
         /// <summary>
@@ -140,14 +132,14 @@ namespace Assets.SimpleLocalization
                 Initialize();
             }
 
-            if (!Dictionary.ContainsKey(Language))
+            if (!Dictionary.ContainsKey(CurrentLanguage))
             {
-                throw new KeyNotFoundException("Language not found: " + Language);
+                throw new KeyNotFoundException("Language not found: " + CurrentLanguage);
             }
 
             try
             {
-                return Dictionary[Language][localizationKey];
+                return Dictionary[CurrentLanguage][localizationKey];
             }
             catch (KeyNotFoundException)
             {
@@ -188,15 +180,19 @@ namespace Assets.SimpleLocalization
                 Initialize();
             }
 
-            if (!Dictionary.ContainsKey(Language))
-                throw new KeyNotFoundException("Language not found: " + Language);
+            if (!Dictionary.ContainsKey(CurrentLanguage))
+            {
+                throw new KeyNotFoundException("Language not found: " + CurrentLanguage);
+            }
 
             // FixMe. 무한루프 가능성이 열려 있음.
             var count = 0;
             while (true)
             {
-                if (!Dictionary[Language].ContainsKey($"{localizationKey}{count}"))
+                if (!Dictionary[CurrentLanguage].ContainsKey($"{localizationKey}{count}"))
+                {
                     return count;
+                }
 
                 count++;
             }
@@ -211,7 +207,7 @@ namespace Assets.SimpleLocalization
                 Initialize();
             }
 
-            var dict = Dictionary[Language];
+            var dict = Dictionary[CurrentLanguage];
             foreach (var pair in dict)
             {
                 if (Regex.IsMatch(pair.Key, pattern))

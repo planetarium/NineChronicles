@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
@@ -15,10 +16,17 @@ namespace Nekoyume.UI
     {
         public float textInterval = 0.06f;
         public Color itemTextColor;
+        private const string TimerFormat = "<voffset=0.1em><size=14>({0})</size></voffset>";
 
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtDialog;
         public Image imgCharacter;
+        [SerializeField]
+        private float time;
+        [SerializeField]
+        private TextMeshProUGUI textArrow;
+        [SerializeField]
+        private TextMeshProUGUI textTimer;
 
         private string _playerPrefsKey;
         private string _dialogKey;
@@ -27,6 +35,7 @@ namespace Nekoyume.UI
         private int _characterId;
         private string _npc;
         private Coroutine _coroutine = null;
+        private Coroutine _timerCoroutine = null;
         private string _text;
         private string _itemTextColor;
         private Dictionary<int, DialogEffect> _effects = new Dictionary<int, DialogEffect>();
@@ -80,6 +89,7 @@ namespace Nekoyume.UI
                 StopCoroutine(_coroutine);
                 _coroutine = null;
                 txtDialog.text = _text;
+                _timerCoroutine = StartCoroutine(CoTimer(time));
                 return;
             }
 
@@ -88,6 +98,7 @@ namespace Nekoyume.UI
             if (_dialogIndex >= _dialogNum)
             {
                 PlayerPrefs.SetInt(_playerPrefsKey, 1);
+                StopTimer();
                 Close();
                 return;
             }
@@ -105,6 +116,7 @@ namespace Nekoyume.UI
             _npc = null;
             _effects.Clear();
             _text = ParseText(text);
+            StopTimer();
 
             if (Game.Game.instance.TableSheets.CharacterSheet.TryGetValue(_characterId, out var characterData))
             {
@@ -174,6 +186,7 @@ namespace Nekoyume.UI
 
                 yield return new WaitForSeconds(textInterval);
             }
+            _timerCoroutine = StartCoroutine(CoTimer(time));
 
             _coroutine = null;
         }
@@ -247,6 +260,41 @@ namespace Nekoyume.UI
             }
 
             return text;
+        }
+
+        private IEnumerator CoTimer(float timer)
+        {
+            textArrow.gameObject.SetActive(false);
+            textTimer.text = string.Format(TimerFormat, timer.ToString(CultureInfo.InvariantCulture));
+            textTimer.gameObject.SetActive(true);
+            var prevFlooredTime = Mathf.Round(timer);
+            yield return new WaitForSeconds(1f);
+            while (timer >= .3f)
+            {
+                // 텍스트 업데이트 횟수를 줄이기 위해 소숫점을 내림해
+                // 정수부만 체크 후 텍스트 업데이트 여부를 결정합니다.
+                var flooredTime = Mathf.Floor(timer);
+                if (flooredTime < prevFlooredTime)
+                {
+                    prevFlooredTime = flooredTime;
+                    textTimer.text = string.Format(TimerFormat, flooredTime.ToString(CultureInfo.InvariantCulture));
+                }
+
+                timer -= Time.deltaTime;
+                yield return null;
+            }
+
+            Skip();
+        }
+
+        private void StopTimer()
+        {
+            textArrow.gameObject.SetActive(true);
+            textTimer.gameObject.SetActive(false);
+            if (!(_timerCoroutine is null))
+            {
+                StopCoroutine(_timerCoroutine);
+            }
         }
     }
 }

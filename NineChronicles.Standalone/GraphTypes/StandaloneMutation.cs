@@ -13,6 +13,10 @@ namespace NineChronicles.Standalone.GraphTypes
             Field<KeyStoreMutation>(
                 name: "keyStore",
                 resolve: context => standaloneContext.KeyStore);
+
+            Field<ActivationStatusMutation>(
+                name: "activationStatus",
+                resolve: context => standaloneContext.NineChroniclesNodeService);
         }
     }
 }

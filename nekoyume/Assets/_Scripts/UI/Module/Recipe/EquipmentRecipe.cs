@@ -10,6 +10,8 @@ using UnityEngine.UI;
 using Nekoyume.UI.Tween;
 using Nekoyume.Model.Quest;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI.Module
 {
@@ -346,6 +348,11 @@ namespace Nekoyume.UI.Module
                 combination.RecipeVFXSkipMap[equipmentCellView.RowData.Id]
                     = new int[3] { 0, 0, 0 };
                 combination.SaveRecipeVFXSkipMap();
+
+                var centerPos = cellView.GetComponent<RectTransform>()
+                    .GetWorldPositionOfCenter();
+                var vfx = VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
+
                 equipmentCellView?.Set(avatarState, null, false);
                 return;
             }
