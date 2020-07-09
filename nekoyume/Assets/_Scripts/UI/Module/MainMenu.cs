@@ -156,21 +156,21 @@ namespace Nekoyume.UI.Module
 
             if (npc)
             {
-                npc.gameObject.SetActive(IsUnlocked);
+                npc.gameObject.SetActive(true);
             }
 
             foreach (var go in lockObjects)
             {
-                go.SetActive(!IsUnlocked);
+                go.SetActive(false);
             }
 
             foreach (var go in unLockObjects)
             {
-                go.SetActive(IsUnlocked);
+                go.SetActive(true);
             }
 
             gameObject.SetActive(true);
-            speechBubble.Init(IsUnlocked);
+            speechBubble.Init(true);
         }
     }
 }
