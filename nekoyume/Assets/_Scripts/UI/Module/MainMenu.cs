@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Module
             }
 
             _messageForCat =
-                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_requireStage} First!";
+                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage {_requireStage} First!";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()
@@ -156,21 +156,21 @@ namespace Nekoyume.UI.Module
 
             if (npc)
             {
-                npc.gameObject.SetActive(IsUnlocked);
+                npc.gameObject.SetActive(true);
             }
 
             foreach (var go in lockObjects)
             {
-                go.SetActive(!IsUnlocked);
+                go.SetActive(false);
             }
 
             foreach (var go in unLockObjects)
             {
-                go.SetActive(IsUnlocked);
+                go.SetActive(true);
             }
 
             gameObject.SetActive(true);
-            speechBubble.Init(IsUnlocked);
+            speechBubble.Init(true);
         }
     }
 }
