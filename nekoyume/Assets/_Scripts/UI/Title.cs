@@ -45,6 +45,7 @@ namespace Nekoyume.UI
             {
                 animator.gameObject.SetActive(false);
             }
+            Find<PreloadingScreen>().Show();
         }
 
         public void Ready()
