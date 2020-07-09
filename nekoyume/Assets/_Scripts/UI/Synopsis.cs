@@ -12,6 +12,7 @@ using Spine.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -328,6 +329,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            Mixpanel.Track("Unity/Synopsis");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
             StartCoroutine(StartSynopsis());
         }

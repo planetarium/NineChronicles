@@ -15,6 +15,7 @@ using UniRx.Toolkit;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -310,6 +311,7 @@ namespace Nekoyume.UI
             if (ignoreShowAnimation)
             {
                 showingTweener.PlayTween(0f).OnStart(() => base.Show(true));
+                Mixpanel.Track("Unity/HelpPopup");
             }
             else
             {
