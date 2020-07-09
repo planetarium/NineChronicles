@@ -436,7 +436,6 @@ namespace Nekoyume.BlockChain
                         }
                     });
             }
-            Widget.Find<Combination>().UpdateRecipe();
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
