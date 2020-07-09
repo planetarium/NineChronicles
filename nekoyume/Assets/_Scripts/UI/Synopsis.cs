@@ -329,7 +329,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            Mixpanel.Track("Unity/Synopsis");
+            Mixpanel.Track("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
             StartCoroutine(StartSynopsis());
         }
@@ -339,6 +339,7 @@ namespace Nekoyume.UI
             PlayerFactory.Create();
             Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
+            Mixpanel.Track("Unity/Synopsis End");
             Close();
         }
 
