@@ -4,7 +4,7 @@ Shader "Custom/Stencil"
     {
 	// 스탠실 버퍼에 사용할 값을 미리 변수로 빼둡니다.
 	// UI Mask에서 사용하는 값(1)과의 중복을 피해 2를 사용합니다.
-	_RefNumber("Stencil Masking Number", int) = 2
+	_RefNumber ("Stencil Masking Number", int) = 2
     }
 
     SubShader
@@ -31,14 +31,13 @@ Shader "Custom/Stencil"
 	ColorMask 0
 	// 깊이 버퍼 (depth buffer)를 사용하지 않습니다.
 	ZWrite Off
+	// 뒷면에선 보이지 않습니다.
+	Cull back
+	// z축 검사를 실행하지 않습니다.
+	ZTest Less
 
 	Pass
 	{
-	    // 뒷면에선 보이지 않습니다.
-	    Cull back
-	    // z축 검사를 실행하지 않습니다.
-	    ZTest Less
-	    
 	    CGPROGRAM
 	    // 버텍스 쉐이더 정의
 	    #pragma vertex vert

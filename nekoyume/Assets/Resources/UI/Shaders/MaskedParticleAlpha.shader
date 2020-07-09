@@ -2,44 +2,42 @@ Shader "Custom/Masked Particle Alpha Blended"
 {
     Properties
     {
-	_MainTex("Particle Texture", 2D) = "white" {}
+	_MainTex ("Particle Texture", 2D) = "white" {}
+	_RefNumber ("Stencil Masking Number", int) = 2
     }
 
-    Category
+    SubShader
     {
-	Tags
-	{
-	    "Queue" = "Transparent"
-	    "IgnoreProjector" = "True"
-	    "RenderType" = "Transparent"
-	    "PreviewType" = "Plane"
-	    "CanUseSpriteAtlas" = "True"
-	}
-	// Alpha Blended
-	Blend SrcAlpha OneMinusSrcAlpha
-	Cull Off
-	Lighting Off
-	ZWrite Off
-	Fog { Color(0,0,0,0) }
-
-	Stencil
-	{
+        Tags
+        {
+    	    "Queue" = "Transparent"
+    	    "IgnoreProjector" = "True"
+    	    "RenderType" = "Transparent"
+    	    "PreviewType" = "Plane"
+    	    "CanUseSpriteAtlas" = "True"
+        }
+        // Alpha Blended
+        Blend SrcAlpha OneMinusSrcAlpha
+        Cull Off
+        Lighting Off
+        ZWrite Off
+        Fog { Color (0,0,0,0) }
+    
+        Stencil
+        {
 	    // 참조할 값
-	    Ref 2
+	    Ref [_RefNumber]
 	    // 참조할 값과 같다면 렌더링.
 	    Comp Equal
 	    // 스탠실 버퍼의 값은 내비둡니다.
 	    Pass keep
 	}
-
-	SubShader
+    
+	Pass
 	{
-	    Pass
+	    SetTexture[_MainTex]
 	    {
-		SetTexture[_MainTex]
-		{
-		    combine texture * primary
-		}
+		combine texture * primary
 	    }
 	}
     }
