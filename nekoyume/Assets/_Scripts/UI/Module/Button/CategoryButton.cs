@@ -30,11 +30,15 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI disabledText = null;
 
         [SerializeField]
+        private Image hasNotificationImage = null;
+
+        [SerializeField]
         private string localizationKey = null;
 
         private IToggleListener _toggleListener;
 
         public readonly Subject<CategoryButton> OnClick = new Subject<CategoryButton>();
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         private void Awake()
         {
@@ -48,6 +52,7 @@ namespace Nekoyume.UI.Module
             }
 
             button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
 
             InitializeMessageCat();
         }
@@ -102,7 +107,7 @@ namespace Nekoyume.UI.Module
         {
             _lockCondition = condition;
             _messageForCat =
-                $"<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_lockCondition} First!";
+                $"<sprite name=\"UI_icon_lock_01\"> Clear Stage {_lockCondition} First!";
             UpdateLock();
         }
 
