@@ -53,7 +53,6 @@ namespace Nekoyume.UI.Scroller
 
             cellContainer.gameObject.SetActive(false);
 
-            Debug.Log(index);
             animationCells[index].ShowAsComplete();
             var t = animationCells[index].transform.DOScale(new Vector3(1, 0, 1), 0.3f)
                 .From(new Vector3(1, 1, 1));

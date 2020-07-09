@@ -95,7 +95,7 @@ namespace Nekoyume.UI.Scroller
                 if (!(rewardView.Model is null) && rewardView.gameObject.activeSelf)
                 {
                     lastVFX =
-                        VFXController.instance.Create<ItemMoveVFX>(rewardView.transform.position);
+                        VFXController.instance.CreateAndChaseCam<ItemMoveVFX>(rewardView.transform.position);
                 }
             }
             ShowAsComplete();
@@ -103,8 +103,11 @@ namespace Nekoyume.UI.Scroller
             {
                 lastVFX.OnFinished = () =>
                 {
-                    Widget.Find<Quest>().Scroll.DisappearAnimation(
-                        Mathf.FloorToInt(-((RectTransform) transform).anchoredPosition.y / 69));
+                    var rectTransform = (RectTransform) transform;
+
+                    Widget.Find<Quest>().DisappearAnimation(
+                        Mathf.FloorToInt(-rectTransform.anchoredPosition.y /
+                                         rectTransform.sizeDelta.y));
                 };
             }
 

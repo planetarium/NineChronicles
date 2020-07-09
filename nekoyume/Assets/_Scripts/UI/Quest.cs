@@ -82,8 +82,6 @@ namespace Nekoyume.UI
 
         private QuestList _questList;
 
-        public QuestScroll Scroll => scroll;
-
         #region override
 
         public override void Initialize()
@@ -162,6 +160,11 @@ namespace Nekoyume.UI
             _questList = list;
 
             ChangeState((int) tabState);
+        }
+
+        public void DisappearAnimation(int index)
+        {
+            scroll.DisappearAnimation(index);
         }
     }
 

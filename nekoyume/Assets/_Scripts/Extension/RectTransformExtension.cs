@@ -294,11 +294,11 @@ namespace Nekoyume
             rectTransform.anchoredPosition = anchoredPosition;
         }
 
-        public static DG.Tweening.Core.TweenerCore<Vector2, Vector2, VectorOptions> DoAnchoredMove(
-            this RectTransform rectTransform, Vector2 to, float duration, bool relative = false)
+        public static Tweener DoAnchoredMove(this RectTransform rectTransform, Vector2 to,
+            float duration, bool relative = false)
         {
             Vector2 endValue;
-            if(relative)
+            if (relative)
             {
                 var anchoredPosition = rectTransform.anchoredPosition;
                 endValue = to + anchoredPosition;
@@ -309,7 +309,8 @@ namespace Nekoyume
             return DOTween.To(() => rectTransform.anchoredPosition,
                 value => rectTransform.anchoredPosition = value, to, duration);
         }
-        public static DG.Tweening.Core.TweenerCore<Vector2, Vector2, VectorOptions> DoAnchoredMoveX(
+
+        public static Tweener DoAnchoredMoveX(
             this RectTransform rectTransform, float to, float duration, bool relative = false)
         {
             Vector2 endValue;
@@ -324,7 +325,8 @@ namespace Nekoyume
             return DOTween.To(() => rectTransform.anchoredPosition,
                 value => rectTransform.anchoredPosition = value, endValue, duration);
         }
-        public static DG.Tweening.Core.TweenerCore<Vector2, Vector2, VectorOptions> DoAnchoredMoveY(
+
+        public static Tweener DoAnchoredMoveY(
             this RectTransform rectTransform, float to, float duration, bool relative = false)
         {
             Vector2 endValue;
