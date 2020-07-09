@@ -17,7 +17,8 @@ namespace Assets.SimpleLocalization
         public enum LanguageType
         {
             English,
-            Korean
+            Korean,
+            Portuguese,
         }
 
         private static bool _initialized = false;
