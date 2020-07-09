@@ -10,6 +10,7 @@ using UniRx;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.Game.VFX;
+using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -55,6 +56,9 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         protected LockChainJitterVFX lockVFX = null;
+
+        public RectTransformShakeTweener shakeTweener = null;
+        public TransformLocalScaleTweener scaleTweener = null;
 
         public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
@@ -107,6 +111,7 @@ namespace Nekoyume.UI.Scroller
         public void Hide()
         {
             gameObject.SetActive(false);
+            shakeTweener?.KillTween();
         }
 
         protected void Set(ItemUsable itemUsable)
