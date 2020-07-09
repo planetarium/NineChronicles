@@ -62,6 +62,7 @@ namespace Nekoyume.UI
 
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
+        private bool _isShownFromMenu;
         private bool _isShownFromBattle;
         private Player _player;
         private Vector3 _previousAvatarPosition;
@@ -132,11 +133,12 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            _isShownFromMenu = Find<Menu>().gameObject.activeSelf;
             _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        protected override void OnCompleteOfCloseAnimationInternal()
+        protected override void OnTweenReverseComplete()
         {
             ReturnPlayer();
         }
@@ -226,7 +228,7 @@ namespace Nekoyume.UI
             // 이 문제를 AvatarInfo의 동작 방법을 개선해서 대응할 수 있어 보이지만, 지금은 단순하게 Menu에 대한 의존을 더하는
             // 방법으로 해결합니다.
             // Menu는 Game.Event.OnRoomEnter 이벤트로 열리며 이때 RoomEntering 컴포넌트에 의해서 Player도 초기화 됩니다.
-            if (Find<Menu>().IsActive())
+            if (!_isShownFromMenu && Find<Menu>().IsActive())
             {
                 _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
                 _player = null;
