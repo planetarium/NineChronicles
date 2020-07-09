@@ -76,6 +76,9 @@ namespace Nekoyume.UI.Module
                     combination.RecipeVFXSkipMap[_parentInfo.parentItemId][_parentInfo.index] = rowData.Id;
                     combination.SaveRecipeVFXSkipMap();
                     Set(avatarState, null, false);
+                    var centerPos = GetComponent<RectTransform>()
+                        .GetWorldPositionOfCenter();
+                    var vfx = VFXController.instance.CreateAndChaseCam<ElementalRecipeUnlockVFX>(centerPos);
                     return;
                 }
 
