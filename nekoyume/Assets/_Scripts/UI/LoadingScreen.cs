@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.SimpleLocalization;
 using DG.Tweening;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,17 +11,12 @@ namespace Nekoyume.UI
 {
     public class LoadingScreen : ScreenWidget
     {
-        public Image loadingImage;
-        public TextMeshProUGUI loadingText;
+        public LoadingIndicator indicator;
         public TextMeshProUGUI toolTip;
 
         public string Message { get; internal set; }
 
-        private Color _color;
-        private Sequence[] _sequences;
         private List<string> _tips;
-
-        private const float AlphaToBeginning = 0.5f;
 
         #region Mono
 
@@ -28,29 +24,33 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            loadingText.text = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
+            var message = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+            indicator.UpdateMessage(message);
             _tips = LocalizationManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
 
             var pos = transform.localPosition;
             pos.z = -5f;
             transform.localPosition = pos;
 
-            if (ReferenceEquals(loadingText, null) ||
-                ReferenceEquals(loadingImage, null) ||
+            if (ReferenceEquals(indicator, null) ||
                 ReferenceEquals(toolTip, null))
             {
                 throw new SerializeFieldNullException();
             }
-
-            _color = loadingText.color;
-            _color.a = AlphaToBeginning;
         }
 
         protected override void Update()
         {
-            if (!string.IsNullOrEmpty(Message) && loadingText?.text != Message)
+            if (!string.IsNullOrEmpty(Message) && indicator.text.text != Message)
             {
-                loadingText.text = Message;
+                if (indicator.gameObject.activeSelf)
+                {
+                    indicator.UpdateMessage(Message);
+                }
+                else
+                {
+                    indicator.Show(Message);
+                }
             }
         }
 
@@ -59,25 +59,11 @@ namespace Nekoyume.UI
             base.OnEnable();
             
             toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
-            loadingImage.color = _color;
-            _sequences = new[]
-            {
-                DOTween.Sequence()
-                    .Append(loadingImage.DOFade(1f, 0.3f))
-                    .Append(loadingImage.DOFade(AlphaToBeginning, 0.6f))
-                    .SetLoops(-1),
-            };
         }
 
         protected override void OnDisable()
         {
-            foreach (var sequence in _sequences)
-            {
-                sequence.Kill();
-            }
-
-            _sequences = null;
-            Message = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
+            Message = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX");
             
             base.OnDisable();
         }

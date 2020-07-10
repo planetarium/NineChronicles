@@ -53,7 +53,7 @@ namespace Nekoyume.UI.Module
             equipmentOptionRecipe.gameObject.SetActive(false);
             SetData(recipeView.RowData, SelectedSubRecipeId);
             confirmArea.SetActive(true);
-            TweenCellView(recipeView, null);
+            TweenCellView(recipeView, equipmentOptionRecipe.KillCellViewTween);
 
             if (materialPanel is ElementalCombinationMaterialPanel panel)
             {
@@ -69,6 +69,12 @@ namespace Nekoyume.UI.Module
             optionCellViewTweener.SetBeginRect(rect);
             optionCellViewTweener.onCompleted = onCompleted;
             optionCellViewTweener.Play();
+        }
+
+        public override void Hide()
+        {
+            equipmentOptionRecipe.KillCellViewTween();
+            base.Hide();
         }
     }
 }
