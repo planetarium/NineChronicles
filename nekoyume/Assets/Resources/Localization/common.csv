@@ -115,7 +115,7 @@ UI_BUY,Buy,구매,Compra
 UI_EQUIP,Equip,장착,Equipar
 UI_UNEQUIP,Unequip,해제,Desequipar
 UI_IN_MINING_A_BLOCK,Mining the next block...,블록을 생성하고 있습니다..,Minerando o próximo bloco...
-UI_TIPS_0,If you want to raise your stats[comma] try equiping a set of items with similar properties.,세트 아이템을 장착하면 캐릭터의 능력치가 더욱 상승합니다.,Se você deseja aumentar suas estatísticas [comma] tente equipar um conjunto de itens com propriedades semelhantes.
+UI_TIPS_0,If you want to raise your stats[comma] try equiping a set of items with similar properties.,세트 아이템을 장착하면 캐릭터의 능력치가 더욱 상승합니다.,Se você deseja aumentar suas estatísticas[comma] tente equipar um conjunto de itens com propriedades semelhantes.
 UI_TIPS_1,There are always interesting options in the auction house.,좋은 무기를 만들기 너무 어려우신가요? 경매장에서 물건을 골라보세요.,Sempre há opções interessantes na casa de leilões.
 UI_TIPS_2,Check the elemental types of your equipment - they may be useless against the monsters you face.,전열을 가다듬을 때에는 장비의 속성을 확인하세요. 특정 속성의 몬스터에게는 무용지물일 수도 있습니다.,Verifique os tipos elementares de seu equipamento - eles podem ser inúteis contra os monstros que você enfrenta.
 UI_CREATE_CHARACTER,NEW CHARACTER,캐릭터 생성,NOVO PERSONAGEM
@@ -285,7 +285,7 @@ UI_SFX_VOLUME,SFX Volume,효과음 볼륨,Volume do SFX
 UI_MUTE_AUDIO,Mute,음소거,Mudo
 UI_YOUR_ADDRESS,Your Address,당신의 주소,Seu endereço
 UI_YOUR_PRIVATE_KEY,Your Private Key,당신의 비밀 키,Sua Chave Privada
-BLOCK_CHAIN_MINING_TX,Mining Transactions..,트랜젝션을 마이닝 중..,Transações de mineração..
+BLOCK_CHAIN_MINING_TX,Mining Transactions..,트랜젝션을 전파 중..,Transações de mineração..
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패,Falha no download do bloco
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패,Falha na inicialização da rede
 UI_GAME_SIGN_UP,Create ID,가입하기,Criar ID
@@ -295,7 +295,7 @@ UI_CONFIRM_RESET_STORE_CONTENT,Clear Cache with close Nine Chronicles.,캐시를
 UI_CONFIRM_RESET_KEYSTORE_CONTENT,Revocation private key with close Nine Chronicles.[newline]Revoked private can't be recovered.,나인 크로니클을 종료하고 비밀 키를 폐기 합니다.[newline]폐기된 비밀 키는 되돌릴 수 없습니다.,Chave privada de revogação com Nine Chronicles fechada.[newline]Revogação Privada não pode ser recuperada.
 UI_OPEN_LOG,Open Log,로그 열기,Abrir log
 UI_MAINTENANCE,System Maintenance,시스템 점검중,Manutenção de Sistema
-UI_MAINTENANCE_CONTENT,We are undergoing system maintenance.[newline][newline]During this time[comma] please join our discord channel and check the maintenance schedule.,시스템 점검중입니다.[newline][newline]디스코드 채널에 방문해서 점검 일정을 확인해 주세요.,Estamos em manutenção. [Newline][newline]Durante esse período [comma] entre no nosso canal Discord e verifique o cronograma de manutenção.
+UI_MAINTENANCE_CONTENT,We are undergoing system maintenance.[newline][newline]During this time[comma] please join our discord channel and check the maintenance schedule.,시스템 점검중입니다.[newline][newline]디스코드 채널에 방문해서 점검 일정을 확인해 주세요.,Estamos em manutenção. [Newline][newline]Durante esse período[comma] entre no nosso canal Discord e verifique o cronograma de manutenção.
 UI_TEST_END,Test Ended,테스트 종료,Teste finalizado
 UI_TEST_END_CONTENT,Thank you for participating in the Nine Chronicle play test.,나인 크로니클 테스트에 참여해주셔서 감사합니다.,Obrigado por participar do teste de Nine Chronicles.
 UI_GO_DISCORD,Go to discord,디스코드로 이동,Ir para o Discord
