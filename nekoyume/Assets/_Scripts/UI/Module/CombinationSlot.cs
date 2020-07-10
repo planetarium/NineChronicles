@@ -79,9 +79,8 @@ namespace Nekoyume.UI.Module
                         resultView.SetData(new Item(state.Result.itemUsable));
                         UpdateHasNotification(_blockIndex);
                     }
-                    progressText.text =
-                        string.Format(LocalizationManager.Localize("UI_COMBINATION_SLOT_CRAFT"),
-                            state.Result.itemUsable.GetLocalizedNonColoredName());
+
+                    progressText.text = state.Result.itemUsable.GetLocalizedName();
                 }
                 unlockText.gameObject.SetActive(canUse);
                 progressText.gameObject.SetActive(!canUse);
