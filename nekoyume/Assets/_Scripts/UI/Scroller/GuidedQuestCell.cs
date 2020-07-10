@@ -196,6 +196,7 @@ namespace Nekoyume.UI.Scroller
             bool ignoreAnimation = false)
         {
             var sheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            var delay = .3f;
             for (var i = 0; i < rewards.Count; i++)
             {
                 var reward = rewards[i];
@@ -213,8 +214,8 @@ namespace Nekoyume.UI.Scroller
                     }
                     else
                     {
-                        // TODO: 바로 reward.Show()를 호출하지 말고 애니메이션을 재생합니다.
-                        reward.Show();
+                        reward.ShowWithScaleTween(delay);
+                        delay += .3f;
                     }
                 }
                 else
