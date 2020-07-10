@@ -335,7 +335,6 @@ namespace Nekoyume.UI
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
             arenaPendingNCG.Show();
-            Widget.Find<LevelUpCelebratePopup>()?.Show(10, 11);
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
