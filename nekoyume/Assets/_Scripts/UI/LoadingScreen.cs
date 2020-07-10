@@ -11,7 +11,6 @@ namespace Nekoyume.UI
 {
     public class LoadingScreen : ScreenWidget
     {
-        public Image loadingImage;
         public LoadingIndicator indicator;
         public TextMeshProUGUI toolTip;
 
@@ -19,15 +18,13 @@ namespace Nekoyume.UI
 
         private List<string> _tips;
 
-        private const float AlphaToBeginning = 0.5f;
-
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
 
-            var message = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
+            var message = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
             indicator.UpdateMessage(message);
             _tips = LocalizationManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
 
@@ -66,7 +63,7 @@ namespace Nekoyume.UI
 
         protected override void OnDisable()
         {
-            Message = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
+            Message = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX");
             
             base.OnDisable();
         }
