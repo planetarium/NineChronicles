@@ -3,6 +3,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using FancyScrollView;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -41,6 +42,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private SubmitButton receiveButton = null;
 
+        [SerializeField]
+        private Animator animator;
+
         [Header("ItemMoveAnimation")]
         [SerializeField, Range(.5f, 3.0f)]
         private float animationTime = 1f;
@@ -54,6 +58,8 @@ namespace Nekoyume.UI.Scroller
         private float middleXGap = 1f;
 
         private QuestModel _quest;
+        public QuestModel Quest => _quest;
+        public Animator Animator => animator;
 
         public event System.Action onClickSubmitButton;
 
@@ -82,9 +88,29 @@ namespace Nekoyume.UI.Scroller
         private void OnReceiveClick(SubmitButton submitButton)
         {
             AudioController.PlayClick();
-            Widget.Find<CelebratesPopup>().Show(_quest);
-            UpdateView();
-            Widget.Find<Quest>().UpdateTabs();
+
+            ItemMoveVFX lastVFX = null;
+            foreach (var rewardView in rewardViews)
+            {
+                if (!(rewardView.Model is null) && rewardView.gameObject.activeSelf)
+                {
+                    lastVFX =
+                        VFXController.instance.CreateAndChaseCam<ItemMoveVFX>(rewardView.transform.position);
+                }
+            }
+            ShowAsComplete();
+            if (lastVFX != null)
+            {
+                lastVFX.OnFinished = () =>
+                {
+                    var rectTransform = (RectTransform) transform;
+
+                    Widget.Find<Quest>().DisappearAnimation(
+                        Mathf.FloorToInt(-rectTransform.anchoredPosition.y /
+                                         rectTransform.sizeDelta.y));
+                };
+            }
+
             onClickSubmitButton?.Invoke();
         }
 
@@ -160,6 +186,23 @@ namespace Nekoyume.UI.Scroller
                     rewardViews[i].gameObject.SetActive(false);
                 }
             }
+        }
+
+        public void UpdateTab()
+        {
+            Widget.Find<CelebratesPopup>().Show(_quest);
+            UpdateView();
+            Widget.Find<Quest>().UpdateTabs();
+        }
+
+        public void ShowAsComplete()
+        {
+            fillImage.color = ColorHelper.HexToColorRGB("282828");
+            background.color = ColorHelper.HexToColorRGB("7b7b7b");
+            titleText.color = ColorHelper.HexToColorRGB("614037");
+            contentText.color = ColorHelper.HexToColorRGB("38251e");
+            progressText.color = ColorHelper.HexToColorRGB("282828");
+            receiveButton.Hide();
         }
     }
 }
