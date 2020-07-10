@@ -305,6 +305,7 @@ namespace Nekoyume.Game
 
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
+            Widget.Find<ArenaBattleLoadingScreen>().Close();
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
