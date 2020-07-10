@@ -392,7 +392,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5227881271125847115
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1294,15 +1294,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_Stage_CharacterRun
       objectReference: {fileID: 0}
-    - target: {fileID: 4496492923106331857, guid: 8684eec883605be4582629acb49dc789,
+    - target: {fileID: 5760642379982920456, guid: 8684eec883605be4582629acb49dc789,
         type: 3}
-      propertyPath: playOnAwake
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5072842524262854182, guid: 8684eec883605be4582629acb49dc789,
-        type: 3}
-      propertyPath: m_SortingOrder
-      value: 30
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3861104710617202333, guid: 8684eec883605be4582629acb49dc789,
         type: 3}
@@ -1408,6 +1403,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4496492923106331857, guid: 8684eec883605be4582629acb49dc789,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5072842524262854182, guid: 8684eec883605be4582629acb49dc789,
+        type: 3}
+      propertyPath: m_SortingOrder
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8684eec883605be4582629acb49dc789, type: 3}
