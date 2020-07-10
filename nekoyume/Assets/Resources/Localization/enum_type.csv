@@ -1,32 +1,32 @@
-Key,English,Korean
-STAT_TYPE_HP,HP,체력
-STAT_TYPE_ATK,Attack,공격
-STAT_TYPE_DEF,Defence,방어
-STAT_TYPE_CRI,Critical,치명
-STAT_TYPE_HIT,Hit,명중
-STAT_TYPE_SPD,Speed,속도
-ITEM_TYPE_Consumable,Consumable,소모품
-ITEM_TYPE_Equipment,Equipment,장비
-ITEM_TYPE_Material,Material,재료
-ITEM_SUB_TYPE_Food,Food,음식
-ITEM_SUB_TYPE_FullCostume,FullCostume,전신 코스튬
-ITEM_SUB_TYPE_HairCostume,HairCostume,머리카락 코스튬
-ITEM_SUB_TYPE_EarCostume,EarCostume,귀 코스튬
-ITEM_SUB_TYPE_EyeCostume,EyeCostume,눈 코스튬
-ITEM_SUB_TYPE_TailCostume,TailCostume,꼬리 코스튬
-ITEM_SUB_TYPE_Title,Title,호칭
-ITEM_SUB_TYPE_Weapon,Weapon,무기
-ITEM_SUB_TYPE_RangedWeapon,RangedWeapon,원거리 무기
-ITEM_SUB_TYPE_Armor,Armor,방어구
-ITEM_SUB_TYPE_Belt,Belt,허리띠
-ITEM_SUB_TYPE_Necklace,Necklace,목걸이
-ITEM_SUB_TYPE_Ring,Ring,반지
-ITEM_SUB_TYPE_Helm,Helm,투구
-ITEM_SUB_TYPE_Set,Set Item,셋트 아이템
-ITEM_SUB_TYPE_Shoes,Shoes,신발
-ITEM_SUB_TYPE_EquipmentMaterial,Equipment Material,장비 재료
-ITEM_SUB_TYPE_FoodMaterial,Food Material,음식 재료
-ITEM_SUB_TYPE_MonsterPart,Monster Part,몬스터 파츠
-ITEM_SUB_TYPE_NormalMaterial,Normal Material,일반 재료
-TRADE_TYPE_Buy,Buy,구매
-TRADE_TYPE_Sell,Sell,판매
+Key,English,Korean,Portuguese
+STAT_TYPE_HP,HP,체력,HP
+STAT_TYPE_ATK,Attack,공격,Ataque
+STAT_TYPE_DEF,Defence,방어,Defesa
+STAT_TYPE_CRI,Critical,치명,Crítico
+STAT_TYPE_HIT,Hit,명중,Hit
+STAT_TYPE_SPD,Speed,속도,Velocidade
+ITEM_TYPE_Consumable,Consumable,소모품,Consumível
+ITEM_TYPE_Equipment,Equipment,장비,Equipamento
+ITEM_TYPE_Material,Material,재료,Material
+ITEM_SUB_TYPE_Food,Food,음식,Comida
+ITEM_SUB_TYPE_FullCostume,FullCostume,전신 코스튬,TrajeCompleto
+ITEM_SUB_TYPE_HairCostume,HairCostume,머리카락 코스튬,TrajeCabelo
+ITEM_SUB_TYPE_EarCostume,EarCostume,귀 코스튬,TrajeOrelha
+ITEM_SUB_TYPE_EyeCostume,EyeCostume,눈 코스튬,TrajeOlho
+ITEM_SUB_TYPE_TailCostume,TailCostume,꼬리 코스튬,TrajeCauda
+ITEM_SUB_TYPE_Title,Title,호칭,Título
+ITEM_SUB_TYPE_Weapon,Weapon,무기,Arma
+ITEM_SUB_TYPE_RangedWeapon,RangedWeapon,원거리 무기,Arma de alcance
+ITEM_SUB_TYPE_Armor,Armor,방어구,Armadura
+ITEM_SUB_TYPE_Belt,Belt,허리띠,Cinto
+ITEM_SUB_TYPE_Necklace,Necklace,목걸이,Colar
+ITEM_SUB_TYPE_Ring,Ring,반지,Anel
+ITEM_SUB_TYPE_Helm,Helm,투구,Capacete
+ITEM_SUB_TYPE_Set,Set Item,셋트 아이템,Colocar itens
+ITEM_SUB_TYPE_Shoes,Shoes,신발,Sapatos
+ITEM_SUB_TYPE_EquipmentMaterial,Equipment Material,장비 재료,Material para equipamento
+ITEM_SUB_TYPE_FoodMaterial,Food Material,음식 재료,Material para comida
+ITEM_SUB_TYPE_MonsterPart,Monster Part,몬스터 파츠,Pedaço de monstro
+ITEM_SUB_TYPE_NormalMaterial,Normal Material,일반 재료,Material normal
+TRADE_TYPE_Buy,Buy,구매,Compra
+TRADE_TYPE_Sell,Sell,판매,Venda
