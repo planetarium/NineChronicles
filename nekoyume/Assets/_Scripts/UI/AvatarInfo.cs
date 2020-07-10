@@ -46,7 +46,10 @@ namespace Nekoyume.UI
         private DigitTextTweener cpTextValueTweener = null;
 
         [SerializeField]
-        private TransformLocalScaleTweener cpTextScaleTweener = null;
+        private GameObject additionalCpArea = null;
+
+        [SerializeField]
+        private TextMeshProUGUI additionalCpText = null;
 
         [SerializeField]
         private EquipmentSlots costumeSlots = null;
@@ -71,6 +74,7 @@ namespace Nekoyume.UI
         private bool _previousActivated;
         private CharacterStats _tempStats;
         private Coroutine _constraintsPlayerToUI;
+        private Coroutine _disableCpTween;
 
         #region Override
 
@@ -349,11 +353,17 @@ namespace Nekoyume.UI
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
 
+            if (!(_disableCpTween is null))
+                StopCoroutine(_disableCpTween);
+            additionalCpArea.gameObject.SetActive(false);
+
             var currentCp = CPHelper.GetCP(currentAvatarState, characterSheet);
-            cpTextValueTweener.Play(prevCp, currentCp);
+            var tweener = cpTextValueTweener.Play(prevCp, currentCp);
             if (prevCp < currentCp)
             {
-                cpTextScaleTweener.PlayBackAndForth();
+                additionalCpArea.gameObject.SetActive(true);
+                additionalCpText.text = (currentCp - prevCp).ToString();
+                _disableCpTween = StartCoroutine(CoDisableIncreasedCP());
             }
 
             var player = Game.Game.instance.Stage.GetPlayer();
@@ -397,6 +407,12 @@ namespace Nekoyume.UI
 
             Game.Event.OnUpdatePlayerEquip.OnNext(player);
             PostEquipOrUnequip(slot);
+        }
+
+        private IEnumerator CoDisableIncreasedCP()
+        {
+            yield return new WaitForSeconds(1.5f);
+            additionalCpArea.gameObject.SetActive(false);
         }
 
         private void Unequip(EquipmentSlot slot)
