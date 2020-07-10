@@ -69,6 +69,14 @@ namespace Nekoyume.UI.Module
             UpdateRecipes();
         }
 
+        private void OnDisable()
+        {
+            foreach (var view in cellViews)
+            {
+                view.shakeTweener.KillTween();
+            }
+        }
+
         private void OnDestroy()
         {
             _filterType.Dispose();
@@ -338,6 +346,7 @@ namespace Nekoyume.UI.Module
             {
                 return;
             }
+            cellView.scaleTweener.PlayTween();
 
             if (cellView.tempLocked)
             {

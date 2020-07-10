@@ -77,7 +77,8 @@ ENEMY_201003_1,,,
 ENEMY_201005_0,I don't feel good...,온 몸이 아파.. 씩씩,Não estou me sentindo bem...
 ENEMY_201005_1,,,
 UI_NEXT_STAGE,Next Stage,다음 스테이지,Próxima Fase
-UI_AFTER_N_SECONDS,After {0:0} seconds[comma],{0:0}초 후,Após {0: 0} segundos [comma] 
+UI_AFTER_N_SECONDS,After {0:0} seconds[comma],{0:0}초 후,Após {0: 0} segundos
+
 UI_BATTLE_RESULT_NEXT_STAGE_FORMAT,{0} you will proceed to the next stage.,{0} 다음 스테이지로 이동합니다.,{0} você irá para a próxima fase.
 UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT,{0} you will repeat the current stage.,{0} 이번 스테이지를 다시 시작합니다.,{0} você repetirá a fase atual.
 UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT,You don't have enough action point. {0} you will return to the main,행동력이 부족하기 때문에 {0} 메인으로 이동합니다.,Você não tem ponto de ação suficiente. {0} você retornará ao principal
@@ -168,6 +169,7 @@ NPC_08_NAME,Devon,데본,Devon
 NPC_09_NAME,Alex,알렉스,Alex
 NPC_10_NAME,Pig Trespasser,돼지부족 도살자,Porco Invasor
 NPC_11_NAME,Fenrir,펜리르,Fenrir
+NPC_12_NAME,Mushroom spore of Yggdrasil,이그드라실의 버섯포자,Esporos de Cogumelos de Yggdrasill
 UI_COMBINE_EQUIPMENT,Equipment,장비 제작,Equipamento
 UI_COMBINE_CONSUMABLE,Consumables,소모품 제작,Consumíveis 
 UI_UPGRADE_EQUIPMENT,Upgrade,장비 강화,Upgrade
@@ -219,7 +221,7 @@ UI_RECIPE_COMBINATION,Craft,조합,Fabricar
 UI_SHOP_NOTICE,8% of sales item price is taxed,판매가의 8%를 세금으로 징수합니다.,8% do preço do item de venda é tributado
 UI_LOADING_BOOTSTRAP_START,Connecting to the network...,네트워크에 연결하고 있습니다...,Conectando à rede...
 UI_LOADING_BLOCK_HASH_DOWNLOAD,Downloading block hashes... {0} / {1},블록 해시 다운로드 중... {0} / {1},Fazendo download de bloco hashes ... {0}: {1}
-UI_LOADING_BLOCK_DOWNLOAD,Downloading blocks... {0} / {1},블록 다운로드 중... {0} / {1},Fazendo download de blocos ... {0}: {1} 
+UI_LOADING_BLOCK_DOWNLOAD,Downloading blocks... {0} / {1},블록 다운로드 중... {0} / {1},Fazendo download de blocos ... {0}: {1}
 UI_LOADING_BLOCK_VERIFICATION,Verifying blocks... {0} / {1},블록 확인 중... {0} / {1},Verificando blocos ... {0}: {1}
 UI_LOADING_STATE_REFERENCE_DOWNLOAD,Downloading states... {0} / {1},상태 다운로드 중... {0} / {1},Fazendo download de fases... {0}: {1}
 UI_LOADING_ACTION_EXECUTE,Executing actions... {0} / {1},액션 실행 중... {0} / {1},Executando ações ... {0}: {1}
@@ -227,7 +229,7 @@ UI_RECEIVE,Receive,받기,Receber
 UI_RECEIVED,Received,받음,Recebido
 UI_GET_REWARDS,Receive Rewards,보상 받기,Receba as recompensas
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT,<size=12><color=#a2b4d6>[Workshop Cat]</color></size>[newline]I've finished upgrade the {0},{0} 강화를 완료했소,<size=12><color=#a2b4d6> [Workshop Cat]</color></size>[newline] Concluí o upgrade do {0}
-UI_SELL_CANCEL_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]I canceled the sales of the {0},{0} 판매를 취소했어!,<size=12><color=#a2b4d6> [Market Cat]</color></size>[newline] Cancelei as vendas do {0} 
+UI_SELL_CANCEL_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]I canceled the sales of the {0},{0} 판매를 취소했어!,<size=12><color=#a2b4d6> [Market Cat]</color></size>[newline] Cancelei as vendas do {0}
 UI_BUYER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]Purchased! {0} is yours now!,구매 완료! {0}는 이제 네거야!,<size=12><color=#a2b4d6> [Market Cat]</color></size>[newline] Comprado! {0} agora é seu!
 UI_SELLER_MAIL_FORMAT,<size=12><color=#a2b4d6>[Market Cat]</color></size>[newline]You earned {0}G by selling {1},{1}을 팔아서 {0}G 를 얻었어!,<size=12><color=#a2b4d6> [Market Cat][</color></size>newline] Você ganhou {0} G com a venda {1}
 UI_SELECT,Select,선택,Selecione
@@ -284,7 +286,7 @@ UI_SFX_VOLUME,SFX Volume,효과음 볼륨,Volume do SFX
 UI_MUTE_AUDIO,Mute,음소거,Mudo
 UI_YOUR_ADDRESS,Your Address,당신의 주소,Seu endereço
 UI_YOUR_PRIVATE_KEY,Your Private Key,당신의 비밀 키,Sua Chave Privada
-BLOCK_CHAIN_MINING_TX,Mining Transactions,트랜젝션을 채굴 중,Transações de mineração
+BLOCK_CHAIN_MINING_TX,Mining Transactions..,트랜젝션을 마이닝 중..,Transações de mineração..
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패,Falha no download do bloco
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패,Falha na inicialização da rede
 UI_GAME_SIGN_UP,Create ID,가입하기,Criar ID
@@ -359,4 +361,5 @@ UI_NEW_EQUIPMENT_RECIPE,New Equipment Recipe!,새로운 장비 레시피!,Receit
 UI_BATTLE_RESULT_STAGE_1,From the next stage[comma] you can earn various items!,From the next stage[comma] you can earn various items!,"A partir da próxima fase [comma], você pode ganhar vários itens!"
 PLAYER_PROLOGUE_SPEECH_0,!!!,!!!,!!!
 UI_HELP,Help,도움말,Ajuda
-UI_PRELOADING_MESSAGE,Waiting for Initialize.. Complete in few seconds.,Waiting for Initialize.. Complete in few seconds.,
+UI_PRELOADING_MESSAGE,Waiting for Initialize.. Complete in few seconds.,Waiting for Initialize.. Complete in few seconds.,Waiting for Initialize.. Complete in few seconds.
+UI_MATCHING_OPPONENT,상대를 매칭 중입니다...,Matching opponent...,Procurando por um oponente...
