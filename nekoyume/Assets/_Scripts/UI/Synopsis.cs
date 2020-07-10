@@ -12,6 +12,7 @@ using Spine.Unity;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
 
 namespace Nekoyume.UI
 {
@@ -100,16 +101,13 @@ namespace Nekoyume.UI
 
             var skipPrologue = States.Instance.AgentState.avatarAddresses.Any();
             var startIndex = 0;
-#if UNITY_EDITOR
             if (!skipPrologue && prolgueEnd)
             {
                 startIndex = _part1EndIndex + 2;
             }
-#endif
             for (var index = startIndex; index < scripts.Length; index++)
             {
                 var script = scripts[index];
-#if UNITY_EDITOR
                 if (index == _part1EndIndex && !skipPrologue)
                 {
                     yield return StartCoroutine(Find<Blind>().FadeIn(2f, ""));
@@ -117,7 +115,6 @@ namespace Nekoyume.UI
                     Game.Game.instance.prologue.StartPrologue();
                     yield return null;
                 }
-#endif
 
                 skipSynopsis = false;
                 script.image.transform.parent.gameObject.SetActive(true);
@@ -332,6 +329,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            Mixpanel.Track("Unity/Synopsis Start");
             AudioController.instance.PlayMusic(AudioController.MusicCode.Prologue);
             StartCoroutine(StartSynopsis());
         }
@@ -341,6 +339,7 @@ namespace Nekoyume.UI
             PlayerFactory.Create();
             Game.Event.OnNestEnter.Invoke();
             Find<Login>().Show();
+            Mixpanel.Track("Unity/Synopsis End");
             Close();
         }
 

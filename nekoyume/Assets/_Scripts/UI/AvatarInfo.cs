@@ -46,7 +46,10 @@ namespace Nekoyume.UI
         private DigitTextTweener cpTextValueTweener = null;
 
         [SerializeField]
-        private TransformLocalScaleTweener cpTextScaleTweener = null;
+        private GameObject additionalCpArea = null;
+
+        [SerializeField]
+        private TextMeshProUGUI additionalCpText = null;
 
         [SerializeField]
         private EquipmentSlots costumeSlots = null;
@@ -62,6 +65,7 @@ namespace Nekoyume.UI
 
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
+        private bool _isShownFromMenu;
         private bool _isShownFromBattle;
         private Player _player;
         private Vector3 _previousAvatarPosition;
@@ -70,6 +74,7 @@ namespace Nekoyume.UI
         private bool _previousActivated;
         private CharacterStats _tempStats;
         private Coroutine _constraintsPlayerToUI;
+        private Coroutine _disableCpTween;
 
         #region Override
 
@@ -132,11 +137,12 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            _isShownFromMenu = Find<Menu>().gameObject.activeSelf;
             _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        protected override void OnCompleteOfCloseAnimationInternal()
+        protected override void OnTweenReverseComplete()
         {
             ReturnPlayer();
         }
@@ -226,7 +232,7 @@ namespace Nekoyume.UI
             // 이 문제를 AvatarInfo의 동작 방법을 개선해서 대응할 수 있어 보이지만, 지금은 단순하게 Menu에 대한 의존을 더하는
             // 방법으로 해결합니다.
             // Menu는 Game.Event.OnRoomEnter 이벤트로 열리며 이때 RoomEntering 컴포넌트에 의해서 Player도 초기화 됩니다.
-            if (Find<Menu>().IsActive())
+            if (!_isShownFromMenu && Find<Menu>().IsActive())
             {
                 _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
                 _player = null;
@@ -347,11 +353,17 @@ namespace Nekoyume.UI
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
 
+            if (!(_disableCpTween is null))
+                StopCoroutine(_disableCpTween);
+            additionalCpArea.gameObject.SetActive(false);
+
             var currentCp = CPHelper.GetCP(currentAvatarState, characterSheet);
-            cpTextValueTweener.Play(prevCp, currentCp);
+            var tweener = cpTextValueTweener.Play(prevCp, currentCp);
             if (prevCp < currentCp)
             {
-                cpTextScaleTweener.PlayBackAndForth();
+                additionalCpArea.gameObject.SetActive(true);
+                additionalCpText.text = (currentCp - prevCp).ToString();
+                _disableCpTween = StartCoroutine(CoDisableIncreasedCP());
             }
 
             var player = Game.Game.instance.Stage.GetPlayer();
@@ -395,6 +407,12 @@ namespace Nekoyume.UI
 
             Game.Event.OnUpdatePlayerEquip.OnNext(player);
             PostEquipOrUnequip(slot);
+        }
+
+        private IEnumerator CoDisableIncreasedCP()
+        {
+            yield return new WaitForSeconds(1.5f);
+            additionalCpArea.gameObject.SetActive(false);
         }
 
         private void Unequip(EquipmentSlot slot)

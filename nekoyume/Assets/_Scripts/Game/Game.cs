@@ -23,12 +23,16 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
-
         private IAgent _agent;
 
         [SerializeField]
         private Stage stage = null;
+
+        [SerializeField]
+        private bool useSystemLanguage = true;
+
+        [SerializeField]
+        private LocalizationManager.LanguageType languageType = default;
 
         public Prologue prologue;
 
@@ -60,10 +64,12 @@ namespace Nekoyume.Game
         protected override void Awake()
         {
             // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
+            #if !UNITY_EDITOR
             Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
             Mixpanel.Identify(NetworkInterface.GetAllNetworkInterfaces().First().GetPhysicalAddress().ToString());
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
+            #endif
 
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
@@ -80,11 +86,15 @@ namespace Nekoyume.Game
             {
                 _agent = GetComponent<Agent>();
             }
-#if UNITY_EDITOR
-            LocalizationManager.Initialize(languageType);
-#else
+
             LocalizationManager.Initialize();
+#if UNITY_EDITOR
+            if (!useSystemLanguage)
+            {
+                LocalizationManager.CurrentLanguage = languageType;
+            }
 #endif
+
             States = new States();
             LocalStateSettings = new LocalStateSettings();
             prologue = GetComponent<Prologue>();
@@ -213,6 +223,7 @@ namespace Nekoyume.Game
             {
                 Mixpanel.Flush();
             }
+            Application.OpenURL("https://forms.gle/sgGWJ6g9sBugoACS6");
         }
 
         public static void Quit()

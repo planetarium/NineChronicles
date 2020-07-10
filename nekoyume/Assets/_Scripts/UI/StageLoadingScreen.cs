@@ -1,3 +1,5 @@
+using Assets.SimpleLocalization;
+using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +18,7 @@ namespace Nekoyume.UI
 
         public List<Image> images;
         public bool closeEnd;
+        public LoadingIndicator indicator;
 
         private bool _shouldClose;
         private List<RectTransform> _rects;
@@ -70,6 +73,8 @@ namespace Nekoyume.UI
                 _rects.Add(rect);
             }
 
+            var message = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+            indicator.Show(message);
             base.Show();
             StartCoroutine(CoRun());
         }
