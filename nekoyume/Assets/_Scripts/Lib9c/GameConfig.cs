@@ -1,4 +1,4 @@
-﻿namespace Nekoyume
+namespace Nekoyume
 {
     public static class GameConfig
     {
@@ -10,7 +10,7 @@
 
         public const int SlotCount = 3;
         public const float WaitSeconds = 180f;
-        public const string AvatarNickNamePattern = @"^[0-9가-힣a-zA-Z]{2,20}$";
+        public const string AvatarNickNamePattern = @"^[0-9a-zA-Z]{2,20}$";
         public const string DiscordLink = "https://discord.gg/NqshYve";
 
         public const string BlockExplorerLinkFormat =
@@ -66,9 +66,9 @@
 
             public const int CharacterEquipmentSlotWeapon = 1;
             public const int CharacterEquipmentSlotArmor = IsEditor ? 1 : 3;
-            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 4;
-            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 5;
-            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 8;
+            public const int CharacterEquipmentSlotBelt = IsEditor ? 1 : 5;
+            public const int CharacterEquipmentSlotNecklace = IsEditor ? 1 : 8;
+            public const int CharacterEquipmentSlotRing1 = IsEditor ? 1 : 13;
             public const int CharacterEquipmentSlotRing2 = IsEditor ? 1 : 46;
 
             #endregion
@@ -88,7 +88,7 @@
         {
             #region action
 
-            public const int CombinationEquipmentAction = 1;
+            public const int CombinationEquipmentAction = IsEditor ? 1 : 3;
             public const int CombinationConsumableAction = IsEditor ? 1 : 6;
             public const int ItemEnhancementAction = IsEditor ? 1 : 9;
             public const int ActionsInShop = IsEditor ? 1 : 17;

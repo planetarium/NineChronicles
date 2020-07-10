@@ -13,10 +13,15 @@ namespace Nekoyume.Game.Character
         private static readonly int FillPhase = Shader.PropertyToID("_FillPhase");
 
         private Sequence _colorTweenSequence;
+        private static readonly int PrologueSpeed = Animator.StringToHash("PrologueSpeed");
 
         private Vector3 HUDPosition { get; set; }
 
         protected CharacterAnimator(CharacterBase root) : base(root.gameObject)
+        {
+        }
+
+        protected CharacterAnimator(PrologueCharacter root) : base(root.gameObject)
         {
         }
 
@@ -42,6 +47,7 @@ namespace Nekoyume.Game.Character
 
         public void Standing()
         {
+            Animator.SetFloat(PrologueSpeed, 0.1f);
             if (!ValidateAnimator())
             {
                 return;
@@ -200,6 +206,17 @@ namespace Nekoyume.Game.Character
             ColorTween();
         }
 
+        public void Skill(int animationId = 1)
+        {
+            if (!ValidateAnimator())
+            {
+                return;
+            }
+
+            var animation = animationId == 1 ? CharacterAnimation.Type.Skill_01 : CharacterAnimation.Type.Skill_02;
+            Animator.Play(animation.ToString(), BaseLayerIndex, 0f);
+        }
+
         #endregion
 
         private void ColorTween()
@@ -220,6 +237,11 @@ namespace Nekoyume.Game.Character
                 ColorTweenFrom,
                 ColorTweenDuration));
             _colorTweenSequence.Play().OnComplete(() => _colorTweenSequence = null);
+        }
+
+        public bool IsIdle()
+        {
+            return Animator.GetCurrentAnimatorStateInfo(BaseLayerIndex).IsName(nameof(CharacterAnimation.Type.Idle));
         }
     }
 }

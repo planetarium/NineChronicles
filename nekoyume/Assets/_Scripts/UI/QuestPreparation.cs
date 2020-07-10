@@ -25,36 +25,42 @@ namespace Nekoyume.UI
 {
     public class QuestPreparation : Widget
     {
-        public Module.Inventory inventory;
+        [SerializeField]
+        private Module.Inventory inventory = null;
 
-        public TextMeshProUGUI consumableTitleText;
+        [SerializeField]
+        private TextMeshProUGUI consumableTitleText = null;
 
         // todo: `EquipmentSlot`을 사용하지 않든가, 이름을 바꿔야 하겠다. 또한 `EquipmentSlots`와 같이 `ConsumableSlots`를 만들어도 좋겠다.
-        public EquipmentSlot[] consumableSlots;
-        public DetailedStatView[] statusRows;
-        public TextMeshProUGUI equipmentTitleText;
-        public EquipmentSlots equipmentSlots;
+        [SerializeField]
+        private EquipmentSlot[] consumableSlots = null;
 
-        public Button questButton;
-        public GameObject equipSlotGlow;
-        public TextMeshProUGUI requiredPointText;
-        public ParticleSystem[] particles;
-        public TMP_InputField levelField;
-        public Button simulateButton;
+        [SerializeField]
+        private DetailedStatView[] statusRows = null;
 
-        private Stage _stage;
-        private Game.Character.Player _player;
-        private EquipmentSlot _weaponSlot;
+        [SerializeField]
+        private TextMeshProUGUI equipmentTitleText = null;
 
-        private int _worldId;
-        private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
-        private int _requiredCost;
+        [SerializeField]
+        private EquipmentSlots equipmentSlots = null;
 
-        private readonly List<IDisposable> _disposables = new List<IDisposable>();
-        private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
+        [SerializeField]
+        private Button questButton = null;
 
-        private CharacterStats _tempStats;
-        private bool _reset = true;
+        [SerializeField]
+        private GameObject equipSlotGlow = null;
+
+        [SerializeField]
+        private TextMeshProUGUI requiredPointText = null;
+
+        [SerializeField]
+        private ParticleSystem[] particles = null;
+
+        [SerializeField]
+        private TMP_InputField levelField = null;
+
+        [SerializeField]
+        private Button simulateButton = null;
 
         [Header("ItemMoveAnimation")]
         [SerializeField]
@@ -72,6 +78,26 @@ namespace Nekoyume.UI
         [SerializeField, Range(0f, 10f),
          Tooltip("Gap between start position X and middle position X")]
         private float middleXGap = 1f;
+
+        private Stage _stage;
+
+        private Game.Character.Player _player;
+
+        private EquipmentSlot _weaponSlot;
+
+        private int _worldId;
+
+        private readonly IntReactiveProperty _stageId = new IntReactiveProperty();
+
+        private int _requiredCost;
+
+        private readonly List<IDisposable> _disposables = new List<IDisposable>();
+
+        private readonly ReactiveProperty<bool> _buttonEnabled = new ReactiveProperty<bool>();
+
+        private CharacterStats _tempStats;
+
+        private bool _reset = true;
 
         // NOTE: questButton을 클릭한 후에 esc키를 눌러서 월드맵으로 벗어나는 것을 막는다.
         // 행동력이 0일 경우 퀘스트 버튼이 비활성화되므로 임시 방편으로 행동력도 비교함.
@@ -121,6 +147,7 @@ namespace Nekoyume.UI
             _stageId.Subscribe(SubscribeStage).AddTo(gameObject);
 
             questButton.OnClickAsObservable().Subscribe(_ => QuestClick(false)).AddTo(gameObject);
+
             Game.Event.OnRoomEnter.AddListener(b => Close());
         }
 
@@ -629,7 +656,7 @@ namespace Nekoyume.UI
                         LocalStateModifier.ModifyAvatarActionPoint(
                             States.Instance.CurrentAvatarState.address, _requiredCost);
                     }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
-                .AddTo(this);            
+                .AddTo(this);
             Mixpanel.Track("Unity/Waiting Block");
         }
 

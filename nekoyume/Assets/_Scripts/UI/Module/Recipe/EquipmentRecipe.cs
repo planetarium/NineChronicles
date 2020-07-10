@@ -10,6 +10,8 @@ using UnityEngine.UI;
 using Nekoyume.UI.Tween;
 using Nekoyume.Model.Quest;
 using Nekoyume.Game.Controller;
+using Nekoyume.Game;
+using Nekoyume.Game.VFX;
 
 namespace Nekoyume.UI.Module
 {
@@ -174,16 +176,6 @@ namespace Nekoyume.UI.Module
             ringTabButton.HasNotification.Value = false;
 
             var _recipeIdToNotify = quest is null ? 0 : quest.RecipeId;
-            if (_recipeIdToNotify > 0)
-            {
-                var resultItemId = tableSheets
-                    .EquipmentItemRecipeSheet[_recipeIdToNotify].ResultEquipmentId;
-                var resultItemRow = tableSheets
-                    .EquipmentItemSheet[resultItemId];
-
-                var btn = GetButton(resultItemRow.ItemSubType);
-                btn.HasNotification.Value = true;
-            }
 
             var combination = Widget.Find<Combination>();
 
@@ -192,13 +184,19 @@ namespace Nekoyume.UI.Module
             foreach (var cellView in cellViews)
             {
                 var hasNotification = (_recipeIdToNotify > 0) ? quest.RecipeId == cellView.RowData.Id : false;
+                var isUnlocked = currentAvatarState.worldInformation
+                    .IsStageCleared(cellView.RowData.UnlockStage);
                 var isFirstOpen =
                     !combination.RecipeVFXSkipMap
-                    .ContainsKey(cellView.RowData.Id) &&
-                    currentAvatarState.worldInformation
-                    .IsStageCleared(cellView.RowData.UnlockStage);
+                    .ContainsKey(cellView.RowData.Id) && isUnlocked;
 
                 cellView.Set(avatarState, hasNotification, isFirstOpen);
+
+                if (hasNotification && isUnlocked)
+                {
+                    var btn = GetButton(cellView.ItemSubType);
+                    btn.HasNotification.Value = true;
+                }
             }
         }
 
@@ -350,6 +348,11 @@ namespace Nekoyume.UI.Module
                 combination.RecipeVFXSkipMap[equipmentCellView.RowData.Id]
                     = new int[3] { 0, 0, 0 };
                 combination.SaveRecipeVFXSkipMap();
+
+                var centerPos = cellView.GetComponent<RectTransform>()
+                    .GetWorldPositionOfCenter();
+                var vfx = VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
+
                 equipmentCellView?.Set(avatarState, null, false);
                 return;
             }

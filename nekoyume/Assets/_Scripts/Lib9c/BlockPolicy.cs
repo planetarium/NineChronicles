@@ -6,11 +6,9 @@ using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
-using Libplanet.Crypto;
 using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
-using Nekoyume.TableData;
 using Libplanet;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
@@ -67,7 +65,12 @@ namespace Nekoyume.BlockChain
 
         private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
-            return ActivatedAccounts is null
+            bool isActivateAccountAction =
+                transaction.Actions.Count == 1
+                && transaction.Actions.First().InnerAction is ActivateAccount;
+
+            return isActivateAccountAction
+                   || ActivatedAccounts is null
                    || !ActivatedAccounts.Any()
                    || ActivatedAccounts.Contains(transaction.Signer);
         }

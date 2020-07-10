@@ -23,12 +23,18 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        public LocalizationManager.LanguageType languageType = LocalizationManager.LanguageType.English;
-
         private IAgent _agent;
 
         [SerializeField]
         private Stage stage = null;
+
+        [SerializeField]
+        private bool useSystemLanguage = true;
+
+        [SerializeField]
+        private LocalizationManager.LanguageType languageType = default;
+
+        public Prologue prologue;
 
         public States States { get; private set; }
 
@@ -62,7 +68,7 @@ namespace Nekoyume.Game
             Mixpanel.Identify(NetworkInterface.GetAllNetworkInterfaces().First().GetPhysicalAddress().ToString());
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
-            
+
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
@@ -78,13 +84,18 @@ namespace Nekoyume.Game
             {
                 _agent = GetComponent<Agent>();
             }
-#if UNITY_EDITOR
-            LocalizationManager.Initialize(languageType);
-#else
+
             LocalizationManager.Initialize();
+#if UNITY_EDITOR
+            if (!useSystemLanguage)
+            {
+                LocalizationManager.CurrentLanguage = languageType;
+            }
 #endif
+
             States = new States();
             LocalStateSettings = new LocalStateSettings();
+            prologue = GetComponent<Prologue>();
             MainCanvas.instance.InitializeFirst();
         }
 

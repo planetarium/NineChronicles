@@ -51,6 +51,11 @@ namespace Nekoyume.Game.Controller
             return vfx;
         }
 
+        public T CreateAndChaseCam<T>(Vector3 position, Vector3 offset) where T : VFX.VFX
+        {
+            return CreateAndChaseCam<T>(position + offset);
+        }
+
         // FIXME: RectTransform이 아니라 Transform을 받아도 되겠습니다.
         public T CreateAndChaseRectTransform<T>(RectTransform target) where T : VFX.VFX
         {

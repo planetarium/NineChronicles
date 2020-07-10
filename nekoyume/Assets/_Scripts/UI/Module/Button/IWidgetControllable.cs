@@ -5,7 +5,7 @@ namespace Nekoyume.UI.Module
         bool IsWidgetControllable { get; set; }
         bool HasWidget { get; }
         void SetWidgetType<T>() where T : Widget;
-        void ShowWidget();
-        void HideWidget();
+        void ShowWidget(bool ignoreShowAnimation = false);
+        void HideWidget(bool ignoreHideAnimation = false);
     }
 }

@@ -1,12 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
-using Nekoyume.Game;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
-using Nekoyume.UI;
 using Nekoyume.UI.Module;
-using TMPro;
 using UniRx;
 
 namespace Nekoyume.UI

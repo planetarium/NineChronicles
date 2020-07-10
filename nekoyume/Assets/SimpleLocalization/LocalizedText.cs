@@ -3,9 +3,9 @@ using UnityEngine.UI;
 
 namespace Assets.SimpleLocalization
 {
-	/// <summary>
-	/// Localize text component.
-	/// </summary>
+    /// <summary>
+    /// Localize text component.
+    /// </summary>
     [RequireComponent(typeof(Text))]
     public class LocalizedText : MonoBehaviour
     {
@@ -14,12 +14,12 @@ namespace Assets.SimpleLocalization
         public void Start()
         {
             Localize();
-            LocalizationManager.LocalizationChanged += Localize;
+            LocalizationManager.OnChangeLanguage += Localize;
         }
 
         public void OnDestroy()
         {
-            LocalizationManager.LocalizationChanged -= Localize;
+            LocalizationManager.OnChangeLanguage -= Localize;
         }
 
         private void Localize()

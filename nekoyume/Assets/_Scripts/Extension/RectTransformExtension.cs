@@ -291,5 +291,14 @@ namespace Nekoyume
 
             rectTransform.anchoredPosition = anchoredPosition;
         }
+
+        public static float3 GetWorldPositionOfCenter(this RectTransform rectTransform)
+        {
+            var corners = new Vector3[4];
+            rectTransform.GetWorldCorners(corners);
+
+            var beginPos = (corners[0] + corners[2]) / 2;
+            return beginPos;
+        }
     }
 }

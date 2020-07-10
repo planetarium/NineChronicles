@@ -248,6 +248,10 @@ namespace Nekoyume.UI
 
             CheckLockOfCategoryButtons();
 
+            var hasNotification = HasNotification;
+            selectionArea.combineEquipmentButton.HasNotification.Value = hasNotification;
+            combineEquipmentCategoryButton.HasNotification.Value = hasNotification;
+
             Find<CombinationLoadingScreen>().OnDisappear = OnNPCDisappear;
 
             var stage = Game.Game.instance.Stage;
@@ -359,14 +363,6 @@ namespace Nekoyume.UI
 
             categoryTabArea.SetActive(false);
             equipmentRecipe.gameObject.SetActive(false);
-            base.OnCompleteOfCloseAnimationInternal();
-        }
-
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
-
-            base.OnCompleteOfShowAnimationInternal();
         }
 
         #endregion
@@ -404,6 +400,7 @@ namespace Nekoyume.UI
         private void SubscribeState(StateType value)
         {
             Find<ItemInformationTooltip>().Close();
+            Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
@@ -531,6 +528,7 @@ namespace Nekoyume.UI
         {
             equipmentRecipe.UpdateRecipes();
             consumableRecipe.UpdateRecipes();
+            combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
         private void OnClickRecipe()
@@ -723,6 +721,7 @@ namespace Nekoyume.UI
                 combinationPanel
             );
             equipmentRecipe.UpdateRecipes();
+            combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
         private void ActionEnhanceEquipment()

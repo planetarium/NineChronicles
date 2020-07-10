@@ -37,6 +37,7 @@ namespace Nekoyume.Model
         public readonly List<CharacterBase> Targets = new List<CharacterBase>();
 
         public CharacterSheet.Row RowData { get; }
+        public int CharacterId { get; }
         public SizeType SizeType => RowData?.SizeType ?? SizeType.S;
         public float RunSpeed => RowData?.RunSpeed ?? 1f;
         public CharacterStats Stats { get; }
@@ -74,6 +75,7 @@ namespace Nekoyume.Model
                 throw new SheetRowNotFoundException("CharacterSheet", characterId);
 
             RowData = row;
+            CharacterId = characterId;
             Stats = new CharacterStats(RowData, level);
             if (!(optionalStatModifiers is null))
             {
@@ -113,6 +115,7 @@ namespace Nekoyume.Model
             RowData = value.RowData;
             Stats = new CharacterStats(value.Stats);
             AttackCountMax = value.AttackCountMax;
+            CharacterId = value.CharacterId;
         }
 
         public abstract object Clone();
@@ -121,6 +124,11 @@ namespace Nekoyume.Model
 
         [NonSerialized]
         private Root _root;
+
+        protected CharacterBase(CharacterSheet.Row row)
+        {
+            RowData = row;
+        }
 
         public void InitAI()
         {
