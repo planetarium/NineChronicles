@@ -6,7 +6,10 @@ namespace NineChronicles.Standalone.GraphTypes
     {
         public NotificationType()
         {
-            Field(n => n.Type);
+            Field<NonNullGraphType<NotificationEnumType>>(
+                name: "type",
+                description: "The type of Notification.",
+                resolve: context => context.Source.Type);
         }
     }
 }

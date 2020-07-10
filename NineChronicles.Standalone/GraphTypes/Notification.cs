@@ -2,6 +2,11 @@ namespace NineChronicles.Standalone.GraphTypes
 {
     public class Notification
     {
-        public string Type { get; set; }
+        public NotificationEnum Type { get; set; }
+
+        public Notification(NotificationEnum type)
+        {
+            Type = type;
+        }
     }
 }

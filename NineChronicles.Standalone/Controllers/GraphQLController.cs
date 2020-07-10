@@ -126,8 +126,7 @@ namespace NineChronicles.Standalone.Controllers
 
             var agentState = new AgentState((Bencodex.Types.Dictionary) state);
             var avatarStates = agentState.avatarAddresses.Values.Select(address =>
-                    new AvatarState((Bencodex.Types.Dictionary) chain.GetState(address)))
-                .ToList();
+                new AvatarState((Bencodex.Types.Dictionary) chain.GetState(address)));
             var avatarStatesCanRefill =
                 avatarStates.Where(avatarState =>
                         NotificationRecords.TryGetValue(avatarState.address, out long notificationRecord)
@@ -137,7 +136,7 @@ namespace NineChronicles.Standalone.Controllers
 
             if (avatarStatesCanRefill.Any())
             {
-                var notification = new Notification {Type = "refill"};
+                var notification = new Notification(NotificationEnum.Refill);
                 StandaloneContext.NotificationSubject.OnNext(notification);
             }
 
