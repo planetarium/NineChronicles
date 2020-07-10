@@ -1,4 +1,5 @@
-﻿using Nekoyume.Game.Character;
+using Assets.SimpleLocalization;
+using Nekoyume.Game.Character;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -30,6 +31,7 @@ namespace Nekoyume.UI
             player.gameObject.SetActive(false);
             var enemySprite = SpriteHelper.GetItemIcon(enemyInfo.ArmorId);
             enemyProfile.Set(enemyInfo.Level, enemyInfo.AvatarName, enemySprite);
+            loadingText.text = LocalizationManager.Localize("UI_MATCHING_OPPONENT");
             Show();
         }
 

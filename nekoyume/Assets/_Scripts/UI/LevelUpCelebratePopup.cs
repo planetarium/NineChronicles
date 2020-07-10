@@ -23,6 +23,9 @@ namespace Nekoyume.UI
         private DigitTextTweener cpTextTweener = null;
 
         [SerializeField]
+        private TextMeshProUGUI increasedCpText = null;
+
+        [SerializeField]
         private ComparisonStatView[] statViews;
 
         private LevelUpVFX _levelUpVFX = null;
@@ -52,6 +55,7 @@ namespace Nekoyume.UI
             cpTextTweener.endValue = currentCP;
 
             levelText.text = afterLevel.ToString();
+            increasedCpText.text = (currentCP - previousCP).ToString();
             var beforeStat = row.ToStats(beforeLevel);
             var afterStat = row.ToStats(afterLevel);
 
@@ -79,7 +83,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
 
             var position = ActionCamera.instance.transform.position;
-            _levelUpVFX = VFXController.instance.CreateAndChaseCam<LevelUpVFX>(position, new Vector3(0f, 0.7f, 0f));
+            _levelUpVFX = VFXController.instance.CreateAndChaseCam<LevelUpVFX>(position, new Vector3(0f, 0.7f));
             _levelUpVFX.Play();
             _levelUpVFX.OnFinished = () => Close();
             base.Show(ignoreShowAnimation);

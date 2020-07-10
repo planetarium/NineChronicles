@@ -4,7 +4,6 @@ namespace Nekoyume.UI
 {
     public class PreloadingScreen : LoadingScreen
     {
-        public LoadingIndicator indicator;
 
         protected override void Awake()
         {
@@ -26,22 +25,6 @@ namespace Nekoyume.UI
             Find<Synopsis>().Show();
             base.Close(ignoreCloseAnimation);
             indicator.Close();
-        }
-
-        protected override void Update()
-        {
-            base.Update();
-            if (!string.IsNullOrEmpty(Message) && loadingText?.text != Message)
-            {
-                if (indicator.gameObject.activeSelf)
-                {
-                    indicator.UpdateMessage(Message);
-                }
-                else
-                {
-                    indicator.Show(Message);
-                }
-            }
         }
     }
 }

@@ -58,9 +58,15 @@ namespace Nekoyume.UI.Scroller
             base.tempLocked = tempLocked;
 
             if (tempLocked)
+            {
                 lockVFX?.Play();
+                shakeTweener.PlayLoop();
+            }
             else
+            {
                 lockVFX?.Stop();
+                shakeTweener.KillTween();
+            }
 
             if (tempLocked)
             {

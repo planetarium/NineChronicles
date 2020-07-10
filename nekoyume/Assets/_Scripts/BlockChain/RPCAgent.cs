@@ -17,6 +17,7 @@ using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using MagicOnion.Client;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -68,6 +69,7 @@ namespace Nekoyume.BlockChain
             PrivateKey privateKey,
             Action<bool> callback)
         {
+            Mixpanel.Identify(privateKey.PublicKey.ToAddress().ToString());
             PrivateKey = privateKey;
 
             _channel = new Channel(

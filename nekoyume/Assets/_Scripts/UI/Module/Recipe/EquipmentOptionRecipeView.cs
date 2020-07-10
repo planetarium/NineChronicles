@@ -1,10 +1,10 @@
-using System;
 using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
+using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -41,6 +41,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected Image hasNotificationImage = null;
 
+        public RectTransformShakeTweener shakeTweener = null;
+        public TransformLocalScaleTweener scaleTweener = null;
+
         private bool _tempLocked = false;
 
         private (int parentItemId, int index) _parentInfo;
@@ -67,6 +70,7 @@ namespace Nekoyume.UI.Module
                 {
                     return;
                 }
+                scaleTweener.PlayTween();
 
                 if (_tempLocked)
                 {
@@ -78,7 +82,7 @@ namespace Nekoyume.UI.Module
                     Set(avatarState, null, false);
                     var centerPos = GetComponent<RectTransform>()
                         .GetWorldPositionOfCenter();
-                    var vfx = VFXController.instance.CreateAndChaseCam<ElementalRecipeUnlockVFX>(centerPos);
+                    VFXController.instance.CreateAndChaseCam<ElementalRecipeUnlockVFX>(centerPos);
                     return;
                 }
 
@@ -158,9 +162,15 @@ namespace Nekoyume.UI.Module
             SetLocked(tempLocked);
 
             if (tempLocked)
+            {
                 lockVFX?.Play();
+                shakeTweener.PlayLoop();
+            }
             else
+            {
                 lockVFX?.Stop();
+                shakeTweener.KillTween();
+            }
 
             if (tempLocked)
                 return;

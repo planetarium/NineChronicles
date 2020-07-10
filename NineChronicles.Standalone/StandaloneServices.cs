@@ -55,7 +55,7 @@ namespace NineChronicles.Standalone
                 properties.Libplanet,
                 properties.Rpc,
                 preloadProgress: progress,
-                ignoreBootstrapFailure: true);
+                ignoreBootstrapFailure: false);
             service.ConfigureStandaloneContext(standaloneContext);
 
             return service;
