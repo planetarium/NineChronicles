@@ -38,12 +38,6 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private Button bodyButton = null;
 
-        [SerializeField]
-        private Image mainQuestImage = null;
-
-        [SerializeField]
-        private Image subQuestImage = null;
-
         // NOTE: 셀이 더해지고 빠지는 연출이 정해지면 더욱 개선됩니다.
         [SerializeField]
         private AnchoredPositionXTweener showingAndHidingTweener = null;
@@ -195,17 +189,6 @@ namespace Nekoyume.UI.Scroller
         private void SetContent(Nekoyume.Model.Quest.Quest quest)
         {
             contentText.text = effectedContentText.text = quest.GetContent();
-            mainQuestImage.gameObject.SetActive(false);
-            subQuestImage.gameObject.SetActive(false);
-            switch (quest)
-            {
-                default:
-                    subQuestImage.gameObject.SetActive(true);
-                    break;
-                case WorldQuest _:
-                    mainQuestImage.gameObject.SetActive(true);
-                    break;
-            }
         }
 
         private void SetRewards(
