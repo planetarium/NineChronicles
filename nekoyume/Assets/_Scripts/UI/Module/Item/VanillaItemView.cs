@@ -1,4 +1,5 @@
 using System;
+using DG.Tweening;
 using Nekoyume.Helper;
 using Nekoyume.TableData;
 using UnityEngine;
@@ -16,17 +17,29 @@ namespace Nekoyume.UI.Module
             Small,
             Middle
         }
-        
+
         public Image gradeImage;
         public Image iconImage;
 
+        private Tweener _tweener;
+
         protected virtual ImageSizeType imageSizeType => ImageSizeType.Middle;
-        
+
+        protected virtual void OnDisable()
+        {
+            KillTween();
+        }
+
         public virtual void Show()
         {
             gameObject.SetActive(true);
         }
-        
+
+        public void ShowWithScaleTween(float delay = default)
+        {
+            PlayTween(delay).OnPlay(Show);
+        }
+
         public virtual void Hide()
         {
             gameObject.SetActive(false);
@@ -53,7 +66,7 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException(nameof(imageSizeType), imageSizeType, null);
             }
             gradeImage.overrideSprite = gradeSprite;
-            
+
             var itemSprite = SpriteHelper.GetItemIcon(itemRow.Id);
             if (itemSprite is null)
                 throw new FailedToLoadResourceException<Sprite>(itemRow.Id.ToString());
@@ -73,6 +86,31 @@ namespace Nekoyume.UI.Module
         {
             gradeImage.color = isDim ? DimmedColor : OriginColor;
             iconImage.color = isDim ? DimmedColor : OriginColor;
+        }
+
+        protected Tweener PlayTween(float delay = default)
+        {
+            KillTween();
+            var iconTransform = iconImage.transform;
+            var origin = iconTransform.localScale;
+            iconTransform.localScale = Vector3.zero;
+            _tweener = iconImage.transform
+                .DOScale(origin, 1f)
+                .SetDelay(delay)
+                .SetEase(Ease.OutElastic)
+                .OnKill(() => iconImage.transform.localScale = origin);
+
+            return _tweener;
+        }
+
+        public void KillTween()
+        {
+            if (_tweener?.IsPlaying() ?? false)
+            {
+                _tweener?.Kill();
+            }
+
+            _tweener = null;
         }
     }
 }
