@@ -60,6 +60,10 @@ Filename: {tmp}\vc_redist.x64.exe; \
 Filename: {app}\Nine Chronicles Updater.exe; \
     StatusMsg: "Updating Nine Chonicles Executables..."
 
+[Run]
+Filename: "{app}\{#GameExeName}"; Flags: nowait postinstall skipifsilent
+
+
 [InstallDelete] 
 Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"  
 Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles Updater"
