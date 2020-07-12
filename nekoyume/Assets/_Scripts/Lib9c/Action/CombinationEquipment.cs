@@ -45,7 +45,7 @@ namespace Nekoyume.Action
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
-                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer, BlacksmithAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, BlacksmithAddress);
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState,
@@ -203,7 +203,7 @@ namespace Nekoyume.Action
             }
 
             // 자원 검증
-            BigInteger agentBalance = states.GetBalance(ctx.Signer, Currencies.Gold);
+            BigInteger agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
             if (agentBalance < requiredGold || avatarState.actionPoint < requiredActionPoint)
             {
                 return LogError(
@@ -226,7 +226,7 @@ namespace Nekoyume.Action
             // FIXME: BlacksmithAddress 계좌로 돈이 쌓이기만 하는데 이걸 어떻게 순환시킬지 기획이 필요.
             if (requiredGold > 0)
             {
-                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, Currencies.Gold, requiredGold);
+                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, states.GetGoldCurrency(), requiredGold);
             }
 
             var result = new CombinationConsumable.ResultModel

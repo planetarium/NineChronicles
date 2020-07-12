@@ -89,7 +89,7 @@ namespace Nekoyume.Action
         {
             try
             {
-                balance = states.GetBalance(address, Currencies.Gold);
+                balance = states.GetBalance(address, GetGoldCurrency(states));
                 return true;
             }
             catch (BalanceDoesNotExistsException)
@@ -104,12 +104,26 @@ namespace Nekoyume.Action
         {
             try
             {
-                return new GoldBalanceState(address, states.GetBalance(address, Currencies.Gold));
+                var gold = GetGoldCurrency(states);
+                return new GoldBalanceState(address, states.GetBalance(address, gold));
             }
             catch (BalanceDoesNotExistsException)
             {
                 return null;
             }
+        }
+
+        public static Currency GetGoldCurrency(this IAccountStateDelta states)
+        {
+            if (states.TryGetState(GoldCurrencyState.Address, out Dictionary asDict))
+            {
+                return new GoldCurrencyState(asDict).Currency;
+            }
+
+            throw new InvalidOperationException(
+                "The states doesn't contain gold currency.\n" +
+                "Check the genesis block."
+            );
         }
 
         public static AvatarState GetAvatarState(this IAccountStateDelta states, Address address)
