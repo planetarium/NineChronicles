@@ -327,15 +327,24 @@ namespace Nekoyume.Action
             );
         }
 
-        protected void CheckPermission(IActionContext ctx)
+        protected bool TryGetAdminState(IActionContext ctx, out AdminState state)
         {
-            IAccountStateDelta prevState = ctx.PreviousStates;
-            IValue rawState = prevState.GetState(AdminState.Address);
-
+            state = default;
+            
+            IValue rawState = ctx.PreviousStates.GetState(AdminState.Address);
             if (rawState is Bencodex.Types.Dictionary asDict)
             {
-                var policy = new AdminState(asDict);
+                state = new AdminState(asDict);
+                return true;
+            }
 
+            return false;
+        }
+
+        protected void CheckPermission(IActionContext ctx)
+        {
+            if (TryGetAdminState(ctx, out AdminState policy))
+            {
                 if (ctx.BlockIndex > policy.ValidUntil)
                 {
                     throw new PolicyExpiredException(policy, ctx.BlockIndex);
