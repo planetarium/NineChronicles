@@ -16,6 +16,7 @@ using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
+using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -42,6 +43,15 @@ namespace Nekoyume.UI
         private TextMeshProUGUI cpText = null;
 
         [SerializeField]
+        private DigitTextTweener cpTextValueTweener = null;
+
+        [SerializeField]
+        private GameObject additionalCpArea = null;
+
+        [SerializeField]
+        private TextMeshProUGUI additionalCpText = null;
+
+        [SerializeField]
         private EquipmentSlots costumeSlots = null;
 
         [SerializeField]
@@ -55,6 +65,7 @@ namespace Nekoyume.UI
 
         private EquipmentSlot _weaponSlot;
         private EquipmentSlot _armorSlot;
+        private bool _isShownFromMenu;
         private bool _isShownFromBattle;
         private Player _player;
         private Vector3 _previousAvatarPosition;
@@ -63,6 +74,7 @@ namespace Nekoyume.UI
         private bool _previousActivated;
         private CharacterStats _tempStats;
         private Coroutine _constraintsPlayerToUI;
+        private Coroutine _disableCpTween;
 
         #region Override
 
@@ -125,11 +137,12 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            _isShownFromMenu = Find<Menu>().gameObject.activeSelf;
             _isShownFromBattle = Find<Battle>().gameObject.activeSelf;
             Show(currentAvatarState, ignoreShowAnimation);
         }
 
-        protected override void OnCompleteOfCloseAnimationInternal()
+        protected override void OnTweenReverseComplete()
         {
             ReturnPlayer();
         }
@@ -185,7 +198,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoConstraintsPlayerToUI(Transform playerTransform)
         {
-            while (enabled)
+            while (enabled && playerTransform)
             {
                 playerTransform.position = avatarPosition.position;
                 yield return null;
@@ -208,6 +221,20 @@ namespace Nekoyume.UI
             if (_isShownFromBattle)
             {
                 Game.Game.instance.Stage.objectPool.Remove<Player>(_player.gameObject);
+                _player = null;
+                return;
+            }
+
+            // NOTE: AvatarInfo의 동작 방법의 문제로 아래와 같은 로직을 추가했습니다.
+            // AvatarInfo는 열리기 전의 Player의 노출 상태를 기억해서 AvatarInfo가 닫힐 때 Player의 노출 상태를 되돌립니다.
+            // 하지만 AvatarInfo를 포함하는 BottomMenu를 다시 포함하는 Widget의 닫히는 연출과 새롭게 열리는 Widget의 연출
+            // 간의 관리되지 않는 구간으로 인해서 AvatarInfo의 동작이 문제가 되는 경우가 있습니다.
+            // 이 문제를 AvatarInfo의 동작 방법을 개선해서 대응할 수 있어 보이지만, 지금은 단순하게 Menu에 대한 의존을 더하는
+            // 방법으로 해결합니다.
+            // Menu는 Game.Event.OnRoomEnter 이벤트로 열리며 이때 RoomEntering 컴포넌트에 의해서 Player도 초기화 됩니다.
+            if (!_isShownFromMenu && Find<Menu>().IsActive())
+            {
+                _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);
                 _player = null;
                 return;
             }
@@ -238,13 +265,10 @@ namespace Nekoyume.UI
                 ? ""
                 : title.GetLocalizedName();
 
-            cpText.text = CPHelper.GetCP(avatarState, game.TableSheets.CharacterSheet)
-                .ToString();
-
             costumeSlots.SetPlayerCostumes(playerModel, ShowTooltip, Unequip);
             equipmentSlots.SetPlayerEquipments(playerModel, ShowTooltip, Unequip);
 
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var currentAvatarState = game.States.CurrentAvatarState;
             if (avatarState.Equals(currentAvatarState))
             {
                 // 인벤토리 아이템의 장착 여부를 `equipmentSlots`의 상태를 바탕으로 설정하기 때문에 `equipmentSlots.SetPlayer()`를 호출한 이후에 인벤토리 아이템의 장착 상태를 재설정한다.
@@ -252,10 +276,16 @@ namespace Nekoyume.UI
                 // 따라서 강제로 상태를 설정한다.
                 inventory.gameObject.SetActive(true);
                 SubscribeInventoryResetItems(inventory);
+
+                var currentPlayer = game.Stage.selectedPlayer;
+                cpText.text = CPHelper.GetCP(currentPlayer.Model)
+                    .ToString();
             }
             else
             {
                 inventory.gameObject.SetActive(false);
+                cpText.text = CPHelper.GetCP(avatarState, game.TableSheets.CharacterSheet)
+                    .ToString();
             }
         }
 
@@ -310,6 +340,10 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var prevCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+
             // 이미 슬롯에 아이템이 있다면 해제한다.
             if (!slot.IsEmpty)
             {
@@ -318,6 +352,19 @@ namespace Nekoyume.UI
 
             slot.Set(itemBase, ShowTooltip, Unequip);
             LocalStateItemEquipModify(slot.Item, true);
+
+            if (!(_disableCpTween is null))
+                StopCoroutine(_disableCpTween);
+            additionalCpArea.gameObject.SetActive(false);
+
+            var currentCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+            var tweener = cpTextValueTweener.Play(prevCp, currentCp);
+            if (prevCp < currentCp)
+            {
+                additionalCpArea.gameObject.SetActive(true);
+                additionalCpText.text = (currentCp - prevCp).ToString();
+                _disableCpTween = StartCoroutine(CoDisableIncreasedCP());
+            }
 
             var player = Game.Game.instance.Stage.GetPlayer();
             switch (itemBase)
@@ -362,6 +409,12 @@ namespace Nekoyume.UI
             PostEquipOrUnequip(slot);
         }
 
+        private IEnumerator CoDisableIncreasedCP()
+        {
+            yield return new WaitForSeconds(1.5f);
+            additionalCpArea.gameObject.SetActive(false);
+        }
+
         private void Unequip(EquipmentSlot slot)
         {
             Unequip(slot, false);
@@ -387,9 +440,16 @@ namespace Nekoyume.UI
                 return;
             }
 
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            var characterSheet = Game.Game.instance.TableSheets.CharacterSheet;
+            var prevCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+
             var slotItem = slot.Item;
             slot.Clear();
             LocalStateItemEquipModify(slotItem, false);
+
+            var currentCp = CPHelper.GetCP(currentAvatarState, characterSheet);
+            cpTextValueTweener.Play(prevCp, currentCp);
 
             var player = considerInventoryOnly
                 ? null
@@ -490,8 +550,6 @@ namespace Nekoyume.UI
                         equipment.ItemId,
                         equip,
                         false);
-                    cpText.text = CPHelper.GetCP(States.Instance.CurrentAvatarState,
-                        Game.Game.instance.TableSheets.CharacterSheet).ToString();
                     break;
             }
         }

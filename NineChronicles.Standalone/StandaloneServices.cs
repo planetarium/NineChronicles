@@ -35,11 +35,27 @@ namespace NineChronicles.Standalone
                 });
             }
 
+            properties.Libplanet.DifferentAppProtocolVersionEncountered =
+                (Peer peer, AppProtocolVersion peerVersion, AppProtocolVersion localVersion) =>
+                {
+                    standaloneContext.DifferentAppProtocolVersionEncounterSubject.OnNext(
+                        new DifferentAppProtocolVersionEncounter
+                        {
+                            Peer = peer,
+                            PeerVersion = peerVersion,
+                            LocalVersion = localVersion,
+                        }
+                    );
+
+                    // FIXME: 일단은 버전이 다른 피어는 마주쳐도 쌩깐다.
+                    return false;
+                };
+
             var service = new NineChroniclesNodeService(
                 properties.Libplanet,
                 properties.Rpc,
                 preloadProgress: progress,
-                ignoreBootstrapFailure: true);
+                ignoreBootstrapFailure: false);
             service.ConfigureStandaloneContext(standaloneContext);
 
             return service;

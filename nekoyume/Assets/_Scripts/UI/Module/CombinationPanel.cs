@@ -69,7 +69,7 @@ namespace Nekoyume.UI.Module
             cellViewTweener.Play();
         }
 
-        public void Hide()
+        public virtual void Hide()
         {
             gameObject.SetActive(false);
         }

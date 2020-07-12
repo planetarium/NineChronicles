@@ -139,6 +139,7 @@ namespace Nekoyume.UI
 
         public void UpdateTabs()
         {
+            scroll.DoneAnimation();
             for (var i = 0; i < tabButtons.Length; ++i)
             {
                 var cnt = _questList.Count(quest =>
@@ -159,6 +160,11 @@ namespace Nekoyume.UI
             _questList = list;
 
             ChangeState((int) tabState);
+        }
+
+        public void DisappearAnimation(int index)
+        {
+            scroll.DisappearAnimation(index);
         }
     }
 

@@ -153,8 +153,6 @@ namespace Editor
             BuildOptions options = BuildOptions.None,
             string targetDirName = null)
         {
-            Prebuild();
-
             string[] scenes = { "Assets/_Scenes/Game.unity" };
 
             targetDirName = targetDirName ?? buildTarget.ToString();
@@ -241,18 +239,6 @@ namespace Editor
             var source = Path.Combine(basePath, filename);
             var destination = Path.Combine(BuildBasePath, targetDirName, filename);
             File.Copy(source, destination, true);
-        }
-
-        private static void Prebuild()
-        {
-            Debug.Log(nameof(Prebuild));
-            var genesisBlock = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPath);
-            var calculatedGenesis = BlockHelper.MineGenesisBlock();
-            if (BlockHelper.CompareGenesisBlocks(genesisBlock, calculatedGenesis))
-            {
-                Debug.Log("Export new genesis-block.");
-                BlockHelper.ExportBlock(calculatedGenesis, BlockHelper.GenesisBlockPath);
-            }
         }
 
         private static (Process, string) BuildLauncher(string rid)

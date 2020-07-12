@@ -8,6 +8,7 @@ using Nekoyume.UI.Tween;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -24,7 +25,7 @@ namespace Nekoyume.UI
 {
     public class CelebratesPopup : Widget
     {
-        private const float ContinueTime = 5f;
+        private const float ContinueTime = 3f;
         private const int NPCId = 300004;
 
         [SerializeField]
@@ -52,7 +53,7 @@ namespace Nekoyume.UI
         private DOTweenTextAlpha textAlphaTweener = null;
 
         private readonly List<Tweener> _tweeners = new List<Tweener>();
-        private readonly WaitForSeconds _waitOneSec = new WaitForSeconds(1f);
+        private readonly WaitForSeconds _waitItemInterval = new WaitForSeconds(0.4f);
         private readonly WaitForSeconds _waitForDisappear = new WaitForSeconds(.3f);
 
         private NPC _npc = null;
@@ -60,14 +61,14 @@ namespace Nekoyume.UI
         private List<CountableItem> _rewards = null;
         private PraiseVFX _praiseVFX = null;
 
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        protected override WidgetType WidgetType => WidgetType.Tooltip;
 
         #region override
 
         protected override void Awake()
         {
             base.Awake();
-            blur.onClick = DisappearNPC;
+            blur.onClick = () => Close();
         }
 
         protected override void Update()
@@ -75,24 +76,30 @@ namespace Nekoyume.UI
             base.Update();
 
             // UI에 플레이어 고정.
-            _npc.transform.position = npcPosition.position;
+            if (_npc)
+            {
+                _npc.transform.position = npcPosition.position;
+            }
         }
 
         #region Show with quest
 
         public void Show(
-            CombinationEquipmentQuestSheet.Row questRow,
+            CombinationEquipmentQuestSheet.Row row,
             bool ignoreShowAnimation = false)
         {
-            if (questRow is null)
+            if (row is null)
             {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(row)} is null.");
+                Debug.LogError(sb.ToString());
                 return;
             }
 
             var quest = States.Instance.CurrentAvatarState?.questList
                 .OfType<CombinationEquipmentQuest>()
                 .FirstOrDefault(item =>
-                    item.Id == questRow.Id);
+                    item.Id == row.Id);
             Show(quest, ignoreShowAnimation);
         }
 
@@ -100,6 +107,9 @@ namespace Nekoyume.UI
         {
             if (quest is null)
             {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(quest)} is null.");
+                Debug.LogError(sb.ToString());
                 return;
             }
 
@@ -131,19 +141,11 @@ namespace Nekoyume.UI
             }
             _rewards = rewards;
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                npcPosition.position,
-                LayerType.UI,
-                100);
-            _npc = go.GetComponent<NPC>();
-            _npc.SpineController.Appear(.3f);
-            _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
-
+            AppearNPC(ignoreShowAnimation);
             base.Show(ignoreShowAnimation);
+            PlayEffects();
             MakeNotification(quest.GetContent());
-            UpdateLocalState(quest.Id, quest.Reward.ItemMap);
-            PlayPraiseVFX();
+            UpdateLocalState(quest.Id, quest.Reward?.ItemMap);
         }
 
         #endregion
@@ -154,6 +156,14 @@ namespace Nekoyume.UI
             EquipmentItemRecipeSheet.Row row,
             bool ignoreShowAnimation = false)
         {
+            if (row is null)
+            {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(row)} is null.");
+                Debug.LogError(sb.ToString());
+                return;
+            }
+
             titleText.text = LocalizationManager.Localize("UI_NEW_EQUIPMENT_RECIPE");
             continueText.alpha = 0f;
 
@@ -162,27 +172,19 @@ namespace Nekoyume.UI
             equipmentRecipeCellView.Show();
             _rewards = null;
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                npcPosition.position,
-                LayerType.UI,
-                100);
-            _npc = go.GetComponent<NPC>();
-            _npc.SpineController.Appear(.3f);
-            _npc.PlayAnimation(NPCAnimation.Type.Appear_01);
-
+            AppearNPC(ignoreShowAnimation);
             base.Show(ignoreShowAnimation);
-            PlayPraiseVFX();
+            PlayEffects();
         }
 
         #endregion
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            if (_praiseVFX)
-            {
-                _praiseVFX.Stop();
-            }
+            blur.button.interactable = false;
+            textAlphaTweener.Play();
+            DisappearNPC(ignoreCloseAnimation);
+            StopEffects();
 
             if (!(_timerCoroutine is null))
             {
@@ -210,7 +212,6 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfCloseAnimationInternal()
         {
-            _npc.gameObject.SetActive(false);
             foreach (var tweener in _tweeners)
             {
                 tweener.Kill();
@@ -236,6 +237,9 @@ namespace Nekoyume.UI
         {
             if (rewards is null)
             {
+                var sb = new StringBuilder($"[{nameof(CelebratesPopup)}]");
+                sb.Append($"Argument {nameof(rewards)} is null.");
+                Debug.LogError(sb.ToString());
                 return;
             }
 
@@ -255,8 +259,43 @@ namespace Nekoyume.UI
             LocalStateModifier.RemoveReceivableQuest(avatarAddress, questId);
         }
 
-        private void PlayPraiseVFX()
+        private void AppearNPC(bool ignoreShowAnimation = false)
         {
+            if (_npc is null)
+            {
+                var go = Game.Game.instance.Stage.npcFactory.Create(
+                    NPCId,
+                    npcPosition.position,
+                    LayerType.UI,
+                    100);
+                _npc = go.GetComponent<NPC>();
+            }
+
+            _npc.SpineController.Appear(ignoreShowAnimation ? 0f : .3f);
+            _npc.PlayAnimation(NPCAnimation.Type.Emotion_03);
+        }
+
+        private void DisappearNPC(bool ignoreCloseAnimation = false)
+        {
+            if (!_npc)
+            {
+                return;
+            }
+
+            _npc.SpineController.Disappear(
+                ignoreCloseAnimation ? 0f : .3f,
+                true,
+                () =>
+                {
+                    _npc.gameObject.SetActive(false);
+                        _npc = null;
+                });
+        }
+
+        private void PlayEffects()
+        {
+            AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
+
             if (_praiseVFX)
             {
                 _praiseVFX.Stop();
@@ -265,6 +304,17 @@ namespace Nekoyume.UI
             var position = ActionCamera.instance.transform.position;
             _praiseVFX = VFXController.instance.CreateAndChaseCam<PraiseVFX>(position);
             _praiseVFX.Play();
+        }
+
+        private void StopEffects()
+        {
+            AudioController.instance.StopSfx(AudioController.SfxCode.RewardItem);
+
+            if (_praiseVFX)
+            {
+                _praiseVFX.Stop();
+                _praiseVFX = null;
+            }
         }
 
         private IEnumerator CoShowRewards(IReadOnlyList<CountableItem> rewards)
@@ -285,7 +335,7 @@ namespace Nekoyume.UI
                         .SetEase(Ease.OutElastic);
                     tweener.onKill = () => rectTransform.localScale = originalScale;
                     _tweeners.Add(tweener);
-                    yield return _waitOneSec;
+                    yield return _waitItemInterval;
                 }
                 else
                 {
@@ -334,15 +384,6 @@ namespace Nekoyume.UI
                 yield return null;
             }
 
-            DisappearNPC();
-        }
-
-        private void DisappearNPC()
-        {
-            blur.button.interactable = false;
-            textAlphaTweener.Play();
-            _npc.SpineController.Disappear(.3f);
-            _npc.PlayAnimation(NPCAnimation.Type.Disappear_01);
             Close();
         }
     }

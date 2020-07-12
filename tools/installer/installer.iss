@@ -39,6 +39,7 @@ Name: "RegisterStartup"; Description: "{cm:RegisterStartup}"; GroupDescription: 
 Source: "..\..\NineChronicles.Launcher\out\win-x64\Nine Chronicles Updater.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\NineChronicles.Launcher\Launcher\icon.ico"; DestDir: "{app}"
 Source: ".\windowsdesktop-runtime-3.1.3-win-x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
+Source: ".\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"
@@ -46,10 +47,22 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; IconFilena
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
 
 [Run]
-Filename: "{tmp}\windowsdesktop-runtime-3.1.3-win-x64.exe"
+Filename: {tmp}\windowsdesktop-runtime-3.1.3-win-x64.exe; \
+    Parameters: "/q /norestart"; \
+    StatusMsg: "Installing .NET Core Runtime..."
 
 [Run]
-Filename: "{app}\Nine Chronicles Updater.exe"
+Filename: {tmp}\vc_redist.x64.exe; \
+    Parameters: "/q /norestart"; \
+    StatusMsg: "Installing VC++ Redistributables..."
+
+[Run]
+Filename: {app}\Nine Chronicles Updater.exe; \
+    StatusMsg: "Updating Nine Chonicles Executables..."
+
+[Run]
+Filename: "{app}\{#GameExeName}"; Flags: nowait postinstall skipifsilent
+
 
 [InstallDelete] 
 Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"  

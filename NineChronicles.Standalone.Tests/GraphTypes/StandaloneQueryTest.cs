@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bencodex;
@@ -12,18 +10,17 @@ using GraphQL;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
-using Libplanet.Blockchain.Policies;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.KeyStore;
 using Libplanet.Net;
 using Libplanet.Standalone.Hosting;
-using Libplanet.Store;
-using LiteDB;
+using Nekoyume.Action;
+using Nekoyume.Model;
+using Nekoyume.Model.State;
 using NineChronicles.Standalone.Tests.Common.Actions;
 using Xunit;
 using Xunit.Abstractions;
-using IPAddress = Org.BouncyCastle.Utilities.Net.IPAddress;
 
 namespace NineChronicles.Standalone.Tests.GraphTypes
 {
@@ -157,10 +154,204 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             await seedNode.StopAsync(cts.Token);
         }
 
+        // TODO: partial class로 세부 쿼리 별 테스트 분리하기.
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ValidatePrivateKey(bool valid)
+        {
+            var privateKey = new PrivateKey();
+            var privateKeyHex = valid
+                ? ByteUtil.Hex(privateKey.ByteArray)
+                : "0000000000000000000000000000000000000000";
+            var query = $@"query {{
+                validation {{
+                    privateKey(hex: ""{privateKeyHex}"")
+                }}
+            }}";
+
+            var result = await ExecuteQueryAsync(query);
+            var validationResult =
+                result.Data
+                    .As<Dictionary<string, object>>()["validation"]
+                    .As<Dictionary<string, object>>()["privateKey"];
+            Assert.IsType<bool>(validationResult);
+            Assert.Equal(valid, validationResult);
+        }
+
+        // TODO: partial class로 세부 쿼리 별 테스트 분리하기.
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ValidatePublicKey(bool valid)
+        {
+            var privateKey = new PrivateKey();
+            var publicKey = privateKey.PublicKey;
+
+            string CreateInvalidPublicKeyHexString(bool compress)
+            {
+                int length = compress ? 33 : 66;
+                do
+                {
+                    byte[] publicKeyBytes = CreateRandomBytes(length);
+
+                    try
+                    {
+                        var _ = new PublicKey(publicKeyBytes);
+                    }
+                    catch (FormatException)
+                    {
+                        return ByteUtil.Hex(publicKeyBytes);
+                    }
+                    catch (ArgumentException)
+                    {
+                        return ByteUtil.Hex(publicKeyBytes);
+                    }
+                } while (true);
+            }
+
+            var publicKeyHex = valid ? ByteUtil.Hex(publicKey.Format(false)) : CreateInvalidPublicKeyHexString(false);
+            var query = $@"query {{
+                validation {{
+                    publicKey(hex: ""{publicKeyHex}"")
+                }}
+            }}";
+
+            var result = await ExecuteQueryAsync(query);
+
+            var validationResult =
+                result.Data
+                    .As<Dictionary<string, object>>()["validation"]
+                    .As<Dictionary<string, object>>()["publicKey"];
+            Assert.IsType<bool>(validationResult);
+            Assert.Equal(valid, validationResult);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ConvertPrivateKey(bool compress)
+        {
+            var privateKey = new PrivateKey();
+            var privateKeyHex = ByteUtil.Hex(privateKey.ByteArray);
+            var query = $@"
+            query {{
+                keyStore {{
+                    privateKey(hex: ""{privateKeyHex}"") {{
+                        hex
+                        publicKey {{
+                            hex(compress: {compress.ToString().ToLowerInvariant()})
+                            address
+                        }}
+                    }}
+                }}
+            }}
+            ";
+
+            var result = await ExecuteQueryAsync(query);
+            var privateKeyResult = result.Data.As<Dictionary<string, object>>()["keyStore"]
+                .As<Dictionary<string, object>>()["privateKey"]
+                .As<Dictionary<string, object>>();
+            Assert.Equal(privateKeyHex, privateKeyResult["hex"]);
+            var publicKeyResult = privateKeyResult["publicKey"].As<Dictionary<string, object>>();
+            Assert.Equal(ByteUtil.Hex(privateKey.PublicKey.Format(compress)), publicKeyResult["hex"]);
+            Assert.Equal(privateKey.ToAddress().ToString(), publicKeyResult["address"]);
+        }
+
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ActivationStatus(bool existsActivatedAccounts)
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var activatedAccounts = ImmutableHashSet<Address>.Empty;
+
+            if (existsActivatedAccounts)
+            {
+                activatedAccounts = new[] { adminAddress }.ToImmutableHashSet();
+            }
+
+            Block<PolymorphicAction<ActionBase>> genesis =
+                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
+                    new PolymorphicAction<ActionBase>[]
+                    {
+                        new InitializeStates()
+                        {
+                            RankingState = new RankingState(),
+                            ShopState = new ShopState(),
+                            TableSheetsState = new TableSheetsState(),
+                            WeeklyArenaAddresses = WeeklyArenaState.Addresses,
+                            GameConfigState = new GameConfigState(),
+                            RedeemCodeState = new RedeemCodeState(Bencodex.Types.Dictionary.Empty
+                                .Add("address", RedeemCodeState.Address.Serialize())
+                                .Add("map", Bencodex.Types.Dictionary.Empty)
+                            ),
+                            AdminAddressState = new AdminState(adminAddress, 1500000),
+                            ActivatedAccountsState = new ActivatedAccountsState(activatedAccounts),
+                        },
+                    }
+                );
+
+            var apvPrivateKey = new PrivateKey();
+            var apv = AppProtocolVersion.Sign(apvPrivateKey, 0);
+            var userPrivateKey = new PrivateKey();
+            var properties = new LibplanetNodeServiceProperties<PolymorphicAction<ActionBase>>
+            {
+                Host = System.Net.IPAddress.Loopback.ToString(),
+                AppProtocolVersion = apv,
+                GenesisBlock = genesis,
+                StorePath = null,
+                StoreStatesCacheSize = 2,
+                PrivateKey = userPrivateKey,
+                Port = null,
+                MinimumDifficulty = 4096,
+                NoMiner = true,
+                Render = false,
+                Peers = ImmutableHashSet<Peer>.Empty,
+                TrustedAppProtocolVersionSigners = null,
+            };
+
+            var service = new NineChroniclesNodeService(properties, null);
+            StandaloneContextFx.NineChroniclesNodeService = service;
+            StandaloneContextFx.BlockChain = service.Swarm.BlockChain;
+
+            var blockChain = StandaloneContextFx.BlockChain;
+
+            var queryResult = await ExecuteQueryAsync( "query { activationStatus { activated } }");
+            var result = (bool)queryResult.Data
+                .As<Dictionary<string, object>>()["activationStatus"]
+                .As<Dictionary<string, object>>()["activated"];
+
+            // ActivatedAccounts가 비어있을때는 true이고 하나라도 있을경우 false
+            Assert.Equal(!existsActivatedAccounts, result);
+
+            var nonce = new byte[] {0x00, 0x01, 0x02, 0x03};
+            var privateKey = new PrivateKey();
+            (ActivationKey activationKey, PendingActivationState pendingActivation) =
+                ActivationKey.Create(privateKey, nonce);
+            PolymorphicAction<ActionBase> action = new CreatePendingActivation(pendingActivation);
+            blockChain.MakeTransaction(adminPrivateKey, new[] {action});
+            await blockChain.MineBlock(adminAddress);
+
+            action = activationKey.CreateActivateAccount(nonce);
+            blockChain.MakeTransaction(userPrivateKey, new[] { action });
+            await blockChain.MineBlock(adminAddress);
+
+            queryResult = await ExecuteQueryAsync( "query { activationStatus { activated } }");
+            result = (bool)queryResult.Data
+                .As<Dictionary<string, object>>()["activationStatus"]
+                .As<Dictionary<string, object>>()["activated"];
+
+            // ActivatedAccounts에 Address가 추가 되었기 때문에 true
+            Assert.True(result);
+        }
+
         private (ProtectedPrivateKey, string) CreateProtectedPrivateKey()
         {
             string CreateRandomBase64String()
             {
+                // TODO: use `CreateRandomBytes()`
                 var random = new Random();
                 Span<byte> buffer = stackalloc byte[16];
                 random.NextBytes(buffer);
@@ -170,6 +361,19 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             // 랜덤 문자열을 생성하여 passphrase로 사용합니다.
             var passphrase = CreateRandomBase64String();
             return (ProtectedPrivateKey.Protect(new PrivateKey(), passphrase), passphrase);
+        }
+
+        private string CreateRandomHexString(int length)
+        {
+            return ByteUtil.Hex(CreateRandomBytes(length));
+        }
+
+        private byte[] CreateRandomBytes(int length)
+        {
+            var random = new Random();
+            byte[] buffer = new byte[length];
+            random.NextBytes(buffer);
+            return buffer;
         }
     }
 }

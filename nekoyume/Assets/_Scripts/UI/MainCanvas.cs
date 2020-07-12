@@ -156,7 +156,7 @@ namespace Nekoyume.UI
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<StageLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
-                Widget.Create<PreloadingScreen>(true),
+                Widget.Create<PreloadingScreen>(),
                 Widget.Create<Title>(true),
 
                 // 팝업 영역.
@@ -259,16 +259,21 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
+            yield return null;
             // 임시로 팝업보다 상단에 배치합니다.
             _secondWidgets.Add(Widget.Create<BottomMenu>());
             yield return null;
             // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
             _secondWidgets.Add(Widget.Create<Dialog>());
+            // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
+            _secondWidgets.Add(Widget.Create<PrologueDialog>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
             _secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<HelpPopup>());
 
             // 툴팁류.
             _secondWidgets.Add(Widget.Create<AvatarTooltip>());

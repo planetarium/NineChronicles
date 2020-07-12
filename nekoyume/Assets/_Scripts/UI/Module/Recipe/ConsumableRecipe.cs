@@ -200,6 +200,7 @@ namespace Nekoyume.UI.Module
 
         private static void SubscribeOnClickCellView(RecipeCellView cellView)
         {
+            cellView.scaleTweener.PlayTween();
             var combination = Widget.Find<Combination>();
             combination.selectedRecipe = cellView;
             combination.State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);

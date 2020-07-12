@@ -107,9 +107,6 @@ namespace Nekoyume.UI
         private Transform npcPosition01 = null;
 
         [SerializeField]
-        private Transform npcPosition02 = null;
-
-        [SerializeField]
         private CanvasGroup canvasGroup = null;
 
         [SerializeField]
@@ -128,7 +125,6 @@ namespace Nekoyume.UI
 
         private ToggleGroup _toggleGroup;
         private NPC _npc01;
-        private NPC _npc02;
         private bool _lockSlotIndex;
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
@@ -252,6 +248,12 @@ namespace Nekoyume.UI
 
             CheckLockOfCategoryButtons();
 
+            var hasNotification = HasNotification;
+            selectionArea.combineEquipmentButton.HasNotification.Value = hasNotification;
+            combineEquipmentCategoryButton.HasNotification.Value = hasNotification;
+
+            Find<CombinationLoadingScreen>().OnDisappear = OnNPCDisappear;
+
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("combination");
 
@@ -346,11 +348,6 @@ namespace Nekoyume.UI
 
             _npc01 = null;
 
-            if (_npc02)
-            {
-                _npc02.gameObject.SetActive(false);
-            }
-
             _lockSlotIndex = false;
             _shouldGoToEquipmentRecipe = null;
 
@@ -366,14 +363,6 @@ namespace Nekoyume.UI
 
             categoryTabArea.SetActive(false);
             equipmentRecipe.gameObject.SetActive(false);
-            base.OnCompleteOfCloseAnimationInternal();
-        }
-
-        protected override void OnCompleteOfShowAnimationInternal()
-        {
-            ShowSpeech("SPEECH_COMBINE_GREETING_", CharacterAnimation.Type.Greeting);
-
-            base.OnCompleteOfShowAnimationInternal();
         }
 
         #endregion
@@ -411,6 +400,7 @@ namespace Nekoyume.UI
         private void SubscribeState(StateType value)
         {
             Find<ItemInformationTooltip>().Close();
+            Find<BottomMenu>().ToggleGroup.SetToggledOffAll();
 
             selectionArea.root.SetActive(value == StateType.SelectMenu);
             leftArea.SetActive(value != StateType.SelectMenu);
@@ -538,6 +528,7 @@ namespace Nekoyume.UI
         {
             equipmentRecipe.UpdateRecipes();
             consumableRecipe.UpdateRecipes();
+            combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
         private void OnClickRecipe()
@@ -730,6 +721,7 @@ namespace Nekoyume.UI
                 combinationPanel
             );
             equipmentRecipe.UpdateRecipes();
+            combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
         private void ActionEnhanceEquipment()
@@ -789,8 +781,6 @@ namespace Nekoyume.UI
                 materialInfoList,
                 slotIndex
             );
-            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
-            Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationConsumable(rowId, slotIndex)
                 .Subscribe(
                     _ => { },
@@ -810,8 +800,6 @@ namespace Nekoyume.UI
                 panel,
                 slotIndex,
                 subRecipeId);
-            var msg = LocalizationManager.Localize("NOTIFICATION_COMBINATION_START");
-            Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager.CombinationEquipment(recipeId, slotIndex, subRecipeId);
         }
 
@@ -880,7 +868,8 @@ namespace Nekoyume.UI
 
         private IEnumerator CoCombineNPCAnimation()
         {
-            Find<CombinationLoadingScreen>().Show();
+            var loadingScreen = Find<CombinationLoadingScreen>();
+            loadingScreen.Show();
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
             Find<BottomMenu>().SetIntractable(false);
@@ -888,21 +877,12 @@ namespace Nekoyume.UI
             _npc01.SpineController.Disappear();
             Push();
             yield return new WaitForSeconds(.5f);
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                npcPosition02.position,
-                LayerType.UI,
-                100);
-            _npc02 = go.GetComponent<NPC>();
-            _npc02.SpineController.Appear(.3f);
-            _npc02.PlayAnimation(NPCAnimation.Type.Appear_02);
-            yield return new WaitForSeconds(5f);
-            _npc02.SpineController.Disappear(.3f);
-            _npc02.PlayAnimation(NPCAnimation.Type.Disappear_02);
-            yield return new WaitForSeconds(.5f);
-            _npc02.gameObject.SetActive(false);
+            loadingScreen.AnimateNPC();
+        }
+
+        private void OnNPCDisappear()
+        {
             _npc01.SpineController.Appear();
-            yield return new WaitForSeconds(1f);
             canvasGroup.interactable = true;
             canvasGroup.blocksRaycasts = true;
             Find<BottomMenu>().SetIntractable(true);
@@ -910,7 +890,6 @@ namespace Nekoyume.UI
             Pop();
             _lockSlotIndex = false;
             _selectedSpeechBubble.onGoing = false;
-            Find<CombinationLoadingScreen>().Close();
         }
 
         private void SetNPCAlphaZero()

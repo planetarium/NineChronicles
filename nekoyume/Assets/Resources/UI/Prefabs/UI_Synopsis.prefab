@@ -4870,6 +4870,7 @@ GameObject:
   - component: {fileID: 5016851818203654899}
   - component: {fileID: 5016851818203654898}
   - component: {fileID: 80980713864035891}
+  - component: {fileID: 5509425037404051068}
   m_Layer: 5
   m_Name: UI_Synopsis
   m_TagString: Untagged
@@ -5133,16 +5134,29 @@ MonoBehaviour:
     textAnimationTypes: 1
     scriptsAnimationTime: 0
     scriptsEndTerm: 1.8
+  - image: {fileID: 7941417804623930047}
+    hasSkeletonAnimation: 0
+    skeletonAnimation: {fileID: 0}
+    sprite: {fileID: 21300000, guid: 6a400ffe013eba14d8b0f4e6dbc38eba, type: 3}
+    imageAnmationType: 0
+    imageAnimationTime: 0.5
+    imageAnimationEndTerm: 0
+    text: {fileID: 6311271108809071861}
+    shadowText: {fileID: 6489382495529919965}
+    scriptsLocalizationKey: UI_SYNOPSIS_8
+    textAnimationTypes: 1
+    scriptsAnimationTime: 0
+    scriptsEndTerm: 1.8
   - image: {fileID: 1618955859485881184}
     hasSkeletonAnimation: 0
     skeletonAnimation: {fileID: 0}
     sprite: {fileID: 21300000, guid: ec60c7b624e3e40468651d68e3a9565c, type: 3}
     imageAnmationType: 0
     imageAnimationTime: 1
-    imageAnimationEndTerm: 0
+    imageAnimationEndTerm: 1.8
     text: {fileID: 654524722817900950}
     shadowText: {fileID: 2183374317145791845}
-    scriptsLocalizationKey: UI_SYNOPSIS_8
+    scriptsLocalizationKey: UI_SYNOPSIS_9
     textAnimationTypes: 1
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
@@ -5153,10 +5167,10 @@ MonoBehaviour:
     imageAnmationType: 0
     imageAnimationTime: 1
     imageAnimationEndTerm: 0
-    text: {fileID: 1806871939669453472}
-    shadowText: {fileID: 3241333357971206279}
-    scriptsLocalizationKey: UI_SYNOPSIS_8
-    textAnimationTypes: 1
+    text: {fileID: 0}
+    shadowText: {fileID: 0}
+    scriptsLocalizationKey: 
+    textAnimationTypes: 0
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
   - image: {fileID: 8706456643787143509}
@@ -5186,6 +5200,63 @@ MonoBehaviour:
     scriptsAnimationTime: 0
     scriptsEndTerm: 0
   textFadeOutTime: 0
+  prolgueEnd: 0
+--- !u!114 &5509425037404051068
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5016851818203654896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 5016851818203654898}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 80980713864035891}
+        m_MethodName: Skip
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &5100953618842527295
 GameObject:
   m_ObjectHideFlags: 0

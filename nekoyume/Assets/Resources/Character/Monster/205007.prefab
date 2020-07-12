@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 5953663695702633026}
   - component: {fileID: 5662485084539825087}
   - component: {fileID: 5083855957919457831}
+  - component: {fileID: -4321663911871728345}
   m_Layer: 8
   m_Name: 205007
   m_TagString: Untagged
@@ -193,3 +194,21 @@ MonoBehaviour:
     animation: {fileID: 11400000, guid: bdea216917ddaca4f89e3005e53a57b2, type: 2}
   - stateName: Emotion
     animation: {fileID: 11400000, guid: bdea216917ddaca4f89e3005e53a57b2, type: 2}
+  - stateName: Skill_01
+    animation: {fileID: 11400000, guid: f02a259b8256b8a4d9c665274b54d46d, type: 2}
+  - stateName: Skill_02
+    animation: {fileID: 11400000, guid: 72aabe88d91d90c4a9819437070034a1, type: 2}
+--- !u!114 &-4321663911871728345
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3532462285909085534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f726fb798ad621458c431cb9966d91d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  boneRoot: {fileID: 0}
+  skeletonRenderer: {fileID: 8785716698944356626}
