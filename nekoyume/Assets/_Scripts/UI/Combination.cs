@@ -501,7 +501,8 @@ namespace Nekoyume.UI
                     }
 
                     var rectTransform = (RectTransform) selectedRecipe.transform;
-                    var recipeClickVFX = VFXController.instance.CreateAndChaseRectTransform<RecipeClickVFX>(rectTransform);
+                    var pos = rectTransform.GetWorldPositionOfCenter();
+                    var recipeClickVFX = VFXController.instance.CreateAndChaseCam<RecipeClickVFX>(pos);
 
                     if (selectedRecipe.ItemSubType == ItemSubType.Food)
                     {

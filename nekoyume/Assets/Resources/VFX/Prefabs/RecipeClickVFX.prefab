@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9220258013207232776}
   - component: {fileID: 8198197653991383816}
   - component: {fileID: 934259773477866034}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -48,7 +48,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -4710,7 +4710,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
   m_SortingLayer: 7
-  m_SortingOrder: 31
+  m_SortingOrder: 11
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -4746,7 +4746,7 @@ GameObject:
   - component: {fileID: 1393841881989600554}
   - component: {fileID: 7038812432746210472}
   - component: {fileID: 5159848044933358846}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: RecipeClickVFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4787,7 +4787,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -9467,7 +9467,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
   m_SortingLayer: 7
-  m_SortingOrder: 31
+  m_SortingOrder: 11
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -9514,7 +9514,7 @@ GameObject:
   - component: {fileID: 4226258943791702348}
   - component: {fileID: 1922111176637686362}
   - component: {fileID: 2438854634388936669}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9551,7 +9551,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -14240,7 +14240,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
   m_SortingLayer: 7
-  m_SortingOrder: 31
+  m_SortingOrder: 11
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -14275,7 +14275,7 @@ GameObject:
   - component: {fileID: 1964464203602521122}
   - component: {fileID: 2431347766884966184}
   - component: {fileID: 4651245679119121591}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14312,7 +14312,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -18906,7 +18906,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
   m_SortingLayer: 7
-  m_SortingOrder: 31
+  m_SortingOrder: 11
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
@@ -18941,7 +18941,7 @@ GameObject:
   - component: {fileID: 4601580237801296254}
   - component: {fileID: 7874431062924821014}
   - component: {fileID: 6203600429445506896}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -18978,7 +18978,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -23496,7 +23496,7 @@ ParticleSystemRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 555532309
   m_SortingLayer: 7
-  m_SortingOrder: 31
+  m_SortingOrder: 11
   m_RenderMode: 0
   m_SortMode: 0
   m_MinParticleSize: 0
