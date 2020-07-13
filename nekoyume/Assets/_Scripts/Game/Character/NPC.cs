@@ -106,7 +106,9 @@ namespace Nekoyume.Game.Character
                     var spineControllerTransform = SpineController.transform;
                     var position = bodyBone?.GetWorldPosition(spineControllerTransform)
                                    ?? spineControllerTransform.position;
-                    VFXController.instance.CreateAndChaseCam<EmotionHeartVFX>(position);
+                    VFXController.instance.CreateAndChaseCam<EmotionHeartVFX>(
+                        position,
+                        new Vector3(0f, 0f, -10f));
                     break;
                 }
             }
