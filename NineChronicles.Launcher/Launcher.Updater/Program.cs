@@ -97,23 +97,6 @@ namespace Launcher.Updater
                     Log.Information("task was cancelled.");
                 }
             }
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                var launcherFileName = CurrentPlatform.LauncherFilename;
-                var cwd = new FileInfo(Process.GetCurrentProcess().MainModule.FileName).DirectoryName;
-                var launcherBinaryPath = Path.Combine(
-                    cwd,
-                    launcherFileName,
-                    "Contents",
-                    "MacOS",
-                    Path.GetFileNameWithoutExtension(launcherFileName));
-                Process.Start(launcherBinaryPath);
-            }
-            else
-            {
-                Process.Start(CurrentPlatform.ExecutableLauncherBinaryPath);
-            }
         }
 
         private static async Task CheckUpdaterUpdate(string argument, CancellationToken cancellationToken)
