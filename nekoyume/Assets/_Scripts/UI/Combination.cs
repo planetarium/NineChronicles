@@ -112,9 +112,6 @@ namespace Nekoyume.UI
         [SerializeField]
         private ModuleBlur blur = null;
 
-        [SerializeField]
-        private RecipeClickVFX recipeClickVFX = null;
-
         [NonSerialized]
         public RecipeCellView selectedRecipe;
 
@@ -504,8 +501,7 @@ namespace Nekoyume.UI
                     }
 
                     var rectTransform = (RectTransform) selectedRecipe.transform;
-                    recipeClickVFX.transform.position = rectTransform
-                        .TransformPoint(rectTransform.rect.center);
+                    var recipeClickVFX = VFXController.instance.CreateAndChaseRectTransform<RecipeClickVFX>(rectTransform);
 
                     if (selectedRecipe.ItemSubType == ItemSubType.Food)
                     {
