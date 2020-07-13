@@ -11,6 +11,7 @@ using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
 using UniRx;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI.Module
 {
@@ -81,6 +82,9 @@ namespace Nekoyume.UI.Module
 
         private float _buttonsPositionY;
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
+        private readonly Dictionary<ToggleableType,
+            (IDisposable pointerEnter, IDisposable pointerExit)> _disposablesForLockedButtons =
+                new Dictionary<ToggleableType, (IDisposable pointerEnter, IDisposable pointerExit)>();
 
         public readonly Model SharedModel = new Model();
         public readonly Subject<bool> HasNotificationInMail = new Subject<bool>();
@@ -442,7 +446,15 @@ namespace Nekoyume.UI.Module
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
                 .RequireClearedStageLevel.UIBottomMenuChat))
             {
-                chatButton.onPointerEnter.Subscribe(_ =>
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Chat, out var _))
+                {
+                    chatButton.SetInteractable(false);
+                    return true;
+                }
+
+                (IDisposable enter, IDisposable exit) disposables;
+
+                disposables.enter = chatButton.onPointerEnter.Subscribe(_ =>
                 {
                     if (_cat)
                     {
@@ -457,14 +469,25 @@ namespace Nekoyume.UI.Module
                         $"{LocalizationManager.Localize(chatButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message);
                 }).AddTo(chatButton.gameObject);
-                chatButton.onPointerExit.Subscribe(_ =>
+                disposables.exit = chatButton.onPointerExit.Subscribe(_ =>
                 {
                     if (_cat)
                     {
                         _cat.Hide();
                     }
                 }).AddTo(chatButton.gameObject);
+                _disposablesForLockedButtons[ToggleableType.Chat] = disposables;
                 chatButton.SetInteractable(false);
+            }
+            else
+            {
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Chat, out var tuple))
+                {
+                    tuple.pointerEnter.Dispose();
+                    tuple.pointerExit.Dispose();
+                    _disposablesForLockedButtons.Remove(ToggleableType.Chat);
+                }
+                chatButton.SetInteractable(true);
             }
 
             return true;
@@ -478,7 +501,15 @@ namespace Nekoyume.UI.Module
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
                 .RequireClearedStageLevel.UIBottomMenuMail))
             {
-                mailButton.onPointerEnter.Subscribe(_ =>
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Mail, out var _))
+                {
+                    mailButton.SetInteractable(false);
+                    return true;
+                }
+
+                (IDisposable enter, IDisposable exit) disposables;
+
+                disposables.enter = mailButton.onPointerEnter.Subscribe(_ =>
                 {
                     if (_cat)
                     {
@@ -492,14 +523,25 @@ namespace Nekoyume.UI.Module
                         $"{LocalizationManager.Localize(mailButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message, true);
                 }).AddTo(mailButton.gameObject);
-                mailButton.onPointerExit.Subscribe(_ =>
+                disposables.exit = mailButton.onPointerExit.Subscribe(_ =>
                 {
                     if (_cat)
                     {
                         _cat.Hide();
                     }
                 }).AddTo(mailButton.gameObject);
+                _disposablesForLockedButtons[ToggleableType.Mail] = disposables;
                 mailButton.SetInteractable(false);
+            }
+            else
+            {
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Mail, out var tuple))
+                {
+                    tuple.pointerEnter.Dispose();
+                    tuple.pointerExit.Dispose();
+                    _disposablesForLockedButtons.Remove(ToggleableType.Mail);
+                }
+                mailButton.SetInteractable(true);
             }
 
             // todo: 제조 시도 후인지 추가 검사.
@@ -515,7 +557,15 @@ namespace Nekoyume.UI.Module
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
                 .RequireClearedStageLevel.UIBottomMenuQuest))
             {
-                questButton.onPointerEnter.Subscribe(_ =>
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Quest, out var _))
+                {
+                    questButton.SetInteractable(false);
+                    return true;
+                }
+
+                (IDisposable enter, IDisposable exit) disposables;
+
+                disposables.enter = questButton.onPointerEnter.Subscribe(_ =>
                 {
                     if (_cat)
                     {
@@ -529,14 +579,25 @@ namespace Nekoyume.UI.Module
                         $"{LocalizationManager.Localize(questButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message, true);
                 }).AddTo(questButton.gameObject);
-                questButton.onPointerExit.Subscribe(_ =>
+                disposables.exit = questButton.onPointerExit.Subscribe(_ =>
                 {
                     if (_cat)
                     {
                         _cat.Hide();
                     }
                 }).AddTo(questButton.gameObject);
+                _disposablesForLockedButtons[ToggleableType.Quest] = disposables;
                 questButton.SetInteractable(false);
+            }
+            else
+            {
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Quest, out var tuple))
+                {
+                    tuple.pointerEnter.Dispose();
+                    tuple.pointerExit.Dispose();
+                    _disposablesForLockedButtons.Remove(ToggleableType.Quest);
+                }
+                questButton.SetInteractable(true);
             }
 
             return true;
@@ -555,7 +616,15 @@ namespace Nekoyume.UI.Module
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
                 .RequireClearedStageLevel.UIBottomMenuCharacter))
             {
-                characterButton.onPointerEnter.Subscribe(_ =>
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Character, out var _))
+                {
+                    characterButton.SetInteractable(false);
+                    return true;
+                }
+
+                (IDisposable enter, IDisposable exit) disposables;
+
+                disposables.enter = characterButton.onPointerEnter.Subscribe(_ =>
                 {
                     if (_cat)
                     {
@@ -569,14 +638,25 @@ namespace Nekoyume.UI.Module
                         $"{LocalizationManager.Localize(characterButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message, true);
                 }).AddTo(characterButton.gameObject);
-                characterButton.onPointerExit.Subscribe(_ =>
+                disposables.exit = characterButton.onPointerExit.Subscribe(_ =>
                 {
                     if (_cat)
                     {
                         _cat.Hide();
                     }
                 }).AddTo(characterButton.gameObject);
+                _disposablesForLockedButtons[ToggleableType.Character] = disposables;
                 characterButton.SetInteractable(false);
+            }
+            else
+            {
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Character, out var tuple))
+                {
+                    tuple.pointerEnter.Dispose();
+                    tuple.pointerExit.Dispose();
+                    _disposablesForLockedButtons.Remove(ToggleableType.Character);
+                }
+                characterButton.SetInteractable(true);
             }
 
             return true;
@@ -596,7 +676,15 @@ namespace Nekoyume.UI.Module
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
                 .RequireClearedStageLevel.UIBottomMenuSettings))
             {
-                settingsButton.onPointerEnter.Subscribe(_ =>
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Settings, out var _))
+                {
+                    settingsButton.SetInteractable(false);
+                    return true;
+                }
+
+                (IDisposable enter, IDisposable exit) disposables;
+
+                disposables.enter = settingsButton.onPointerEnter.Subscribe(_ =>
                 {
                     if (_cat)
                     {
@@ -610,14 +698,25 @@ namespace Nekoyume.UI.Module
                         $"{LocalizationManager.Localize(settingsButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message);
                 }).AddTo(settingsButton.gameObject);
-                settingsButton.onPointerExit.Subscribe(_ =>
+                disposables.exit = settingsButton.onPointerExit.Subscribe(_ =>
                 {
                     if (_cat)
                     {
                         _cat.Hide();
                     }
                 }).AddTo(settingsButton.gameObject);
+                _disposablesForLockedButtons[ToggleableType.Settings] = disposables;
                 settingsButton.SetInteractable(false);
+            }
+            else
+            {
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Settings, out var tuple))
+                {
+                    tuple.pointerEnter.Dispose();
+                    tuple.pointerExit.Dispose();
+                    _disposablesForLockedButtons.Remove(ToggleableType.Settings);
+                }
+                settingsButton.SetInteractable(true);
             }
 
             return true;
@@ -631,7 +730,15 @@ namespace Nekoyume.UI.Module
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
                 .RequireClearedStageLevel.CombinationEquipmentAction))
             {
-                combinationButton.onPointerEnter.Subscribe(_ =>
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Combination, out var _))
+                {
+                    combinationButton.SetInteractable(false);
+                    return true;
+                }
+
+                (IDisposable enter, IDisposable exit) disposables;
+
+                disposables.enter = combinationButton.onPointerEnter.Subscribe(_ =>
                 {
                     if (_cat)
                     {
@@ -645,14 +752,25 @@ namespace Nekoyume.UI.Module
                         $"{LocalizationManager.Localize(combinationButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message);
                 }).AddTo(combinationButton.gameObject);
-                combinationButton.onPointerExit.Subscribe(_ =>
+                disposables.exit = combinationButton.onPointerExit.Subscribe(_ =>
                 {
                     if (_cat)
                     {
                         _cat.Hide();
                     }
                 }).AddTo(combinationButton.gameObject);
+                _disposablesForLockedButtons[ToggleableType.Combination] = disposables;
                 combinationButton.SetInteractable(false);
+            }
+            else
+            {
+                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Combination, out var tuple))
+                {
+                    tuple.pointerEnter.Dispose();
+                    tuple.pointerExit.Dispose();
+                    _disposablesForLockedButtons.Remove(ToggleableType.Combination);
+                }
+                combinationButton.SetInteractable(true);
             }
 
             return true;

@@ -33,6 +33,7 @@ namespace Nekoyume.UI.Module
         private IToggleListener _toggleListener;
 
         private Animator _animatorCache;
+        private Color _originalTextColor;
 
         public Animator Animator => !_animatorCache
             ? _animatorCache = GetComponent<Animator>()
@@ -46,6 +47,11 @@ namespace Nekoyume.UI.Module
 
         protected virtual void Awake()
         {
+            if (toggledOffText)
+            {
+                _originalTextColor = toggledOffText.color;
+            }
+
             Toggleable = true;
             IsWidgetControllable = true;
 
@@ -189,6 +195,11 @@ namespace Nekoyume.UI.Module
                 : Color.gray;
             toggledOffImage.color = imageColor;
             toggledOnImage.color = imageColor;
+            if (!string.IsNullOrEmpty(localizationKey))
+            {
+                toggledOffText.color = _originalTextColor * imageColor;
+                toggledOffText.color = _originalTextColor * imageColor;
+            }
         }
 
         private void SubscribeOnClick(Unit unit)
