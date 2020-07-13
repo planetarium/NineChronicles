@@ -128,7 +128,7 @@ namespace Nekoyume.UI
 
             _rewards = null;
 
-            AppearNPC(ignoreShowAnimation);
+            AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion_02);
             base.Show(ignoreShowAnimation);
             PlayEffects();
         }
@@ -197,7 +197,7 @@ namespace Nekoyume.UI
 
             _rewards = rewards;
 
-            AppearNPC(ignoreShowAnimation);
+            AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion_03);
             base.Show(ignoreShowAnimation);
             PlayEffects();
             MakeNotification(quest.GetContent());
@@ -231,7 +231,7 @@ namespace Nekoyume.UI
 
             _rewards = null;
 
-            AppearNPC(ignoreShowAnimation);
+            AppearNPC(ignoreShowAnimation, NPCAnimation.Type.Emotion_01);
             base.Show(ignoreShowAnimation);
             PlayEffects();
         }
@@ -329,7 +329,7 @@ namespace Nekoyume.UI
             LocalStateModifier.RemoveReceivableQuest(avatarAddress, questId);
         }
 
-        private void AppearNPC(bool ignoreShowAnimation = false)
+        private void AppearNPC(bool ignoreShowAnimation, NPCAnimation.Type animationType)
         {
             if (_npc is null)
             {
@@ -342,10 +342,10 @@ namespace Nekoyume.UI
             }
 
             _npc.SpineController.Appear(ignoreShowAnimation ? 0f : .3f);
-            _npc.PlayAnimation(NPCAnimation.Type.Emotion_03);
+            _npc.PlayAnimation(animationType);
         }
 
-        private void DisappearNPC(bool ignoreCloseAnimation = false)
+        private void DisappearNPC(bool ignoreCloseAnimation)
         {
             if (!_npc)
             {
