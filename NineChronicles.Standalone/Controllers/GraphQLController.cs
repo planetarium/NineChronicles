@@ -82,7 +82,8 @@ namespace NineChronicles.Standalone.Controllers
 
                 NineChroniclesNodeService nineChroniclesNodeService = StandaloneServices.CreateHeadless(
                     nineChroniclesProperties,
-                    StandaloneContext
+                    StandaloneContext,
+                    ignoreBootstrapFailure: false
                 );
                 StandaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
                 StandaloneContext.BlockChain = nineChroniclesNodeService.Swarm.BlockChain;

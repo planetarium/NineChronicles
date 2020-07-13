@@ -17,13 +17,17 @@ namespace NineChronicles.Standalone
             CancellationToken cancellationToken = default)
         {
 
-            NineChroniclesNodeService service = CreateHeadless(properties, standaloneContext);
+            NineChroniclesNodeService service = CreateHeadless(
+                properties,
+                standaloneContext,
+                ignoreBootstrapFailure: true);
             return service.Run(hostBuilder, cancellationToken);
         }
 
         public static NineChroniclesNodeService CreateHeadless(
             NineChroniclesNodeServiceProperties properties,
-            StandaloneContext standaloneContext = null
+            StandaloneContext standaloneContext = null,
+            bool ignoreBootstrapFailure = true
         )
         {
             Progress<PreloadState> progress = null;
@@ -55,7 +59,7 @@ namespace NineChronicles.Standalone
                 properties.Libplanet,
                 properties.Rpc,
                 preloadProgress: progress,
-                ignoreBootstrapFailure: false);
+                ignoreBootstrapFailure: ignoreBootstrapFailure);
             service.ConfigureStandaloneContext(standaloneContext);
 
             return service;
