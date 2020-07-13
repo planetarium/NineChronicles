@@ -3,7 +3,9 @@ using Nekoyume.Game.Controller;
 using System;
 using TMPro;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -26,8 +28,7 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image toggledOnImage = null;
 
-        [SerializeField]
-        protected string localizationKey = null;
+        public string localizationKey = null;
 
         private IToggleListener _toggleListener;
 
@@ -38,6 +39,8 @@ namespace Nekoyume.UI.Module
             : _animatorCache;
 
         public readonly Subject<ToggleableButton> OnClick = new Subject<ToggleableButton>();
+        public IObservable<PointerEventData> onPointerEnter = null;
+        public IObservable<PointerEventData> onPointerExit = null;
 
         #region Mono
 
@@ -47,6 +50,10 @@ namespace Nekoyume.UI.Module
             IsWidgetControllable = true;
 
             button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            onPointerEnter = gameObject.AddComponent<ObservablePointerEnterTrigger>()
+                .OnPointerEnterAsObservable();
+            onPointerExit = gameObject.AddComponent<ObservablePointerExitTrigger>()
+                .OnPointerExitAsObservable();
 
             if (!string.IsNullOrEmpty(localizationKey))
             {

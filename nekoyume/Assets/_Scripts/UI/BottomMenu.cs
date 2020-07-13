@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
+using Nekoyume.UI.AnimatedGraphics;
 using UniRx;
 using UnityEngine;
 
@@ -72,6 +74,7 @@ namespace Nekoyume.UI.Module
 
         private Animator _inventoryAnimator;
         private long _blockIndex;
+        private MessageCat _cat;
 
         [SerializeField]
         private RectTransform _buttons = null;
@@ -433,57 +436,109 @@ namespace Nekoyume.UI.Module
 
         private bool ShowChatButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation
-                .TryGetUnlockedWorldByStageClearedBlockIndex(
-                    out var world))
-            {
-                return false;
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuChat)
-            {
-                return false;
-            }
-
             chatButton.Show();
+
+            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuChat;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
+                .RequireClearedStageLevel.UIBottomMenuChat))
+            {
+                chatButton.onPointerEnter.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    var unlockConditionString = string.Format(
+                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        requiredStage);
+
+                    var message =
+                        $"{LocalizationManager.Localize(chatButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                    _cat = Find<MessageCatManager>().Show(true, message);
+                }).AddTo(chatButton.gameObject);
+                chatButton.onPointerExit.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+                }).AddTo(chatButton.gameObject);
+                chatButton.SetInteractable(false);
+            }
+
             return true;
         }
 
         private bool ShowMailButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation
-                .TryGetUnlockedWorldByStageClearedBlockIndex(
-                    out var world))
-            {
-                return false;
-            }
+            mailButton.Show();
 
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuMail)
+            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuMail;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
+                .RequireClearedStageLevel.UIBottomMenuMail))
             {
-                return false;
+                mailButton.onPointerEnter.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    var unlockConditionString = string.Format(
+                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        requiredStage);
+                    var message =
+                        $"{LocalizationManager.Localize(mailButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                    _cat = Find<MessageCatManager>().Show(true, message, true);
+                }).AddTo(mailButton.gameObject);
+                mailButton.onPointerExit.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+                }).AddTo(mailButton.gameObject);
+                mailButton.SetInteractable(false);
             }
 
             // todo: 제조 시도 후인지 추가 검사.
 
-            mailButton.Show();
             return true;
         }
 
         private bool ShowQuestButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation
-                .TryGetUnlockedWorldByStageClearedBlockIndex(
-                    out var world))
-            {
-                return false;
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuQuest)
-            {
-                return false;
-            }
-
             questButton.Show();
+
+            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuQuest;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
+                .RequireClearedStageLevel.UIBottomMenuQuest))
+            {
+                questButton.onPointerEnter.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    var unlockConditionString = string.Format(
+                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        requiredStage);
+                    var message =
+                        $"{LocalizationManager.Localize(questButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                    _cat = Find<MessageCatManager>().Show(true, message, true);
+                }).AddTo(questButton.gameObject);
+                questButton.onPointerExit.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+                }).AddTo(questButton.gameObject);
+                questButton.SetInteractable(false);
+            }
+
             return true;
         }
 
@@ -494,19 +549,36 @@ namespace Nekoyume.UI.Module
 
         private bool ShowCharacterButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation
-                .TryGetUnlockedWorldByStageClearedBlockIndex(
-                    out var world))
-            {
-                return false;
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter)
-            {
-                return false;
-            }
-
             characterButton.Show();
+
+            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuCharacter;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
+                .RequireClearedStageLevel.UIBottomMenuCharacter))
+            {
+                characterButton.onPointerEnter.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    var unlockConditionString = string.Format(
+                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        requiredStage);
+                    var message =
+                        $"{LocalizationManager.Localize(characterButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                    _cat = Find<MessageCatManager>().Show(true, message, true);
+                }).AddTo(characterButton.gameObject);
+                characterButton.onPointerExit.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+                }).AddTo(characterButton.gameObject);
+                characterButton.SetInteractable(false);
+            }
+
             return true;
         }
 
@@ -518,31 +590,71 @@ namespace Nekoyume.UI.Module
 
         private bool ShowSettingsButton()
         {
-            if (!States.Instance.CurrentAvatarState.worldInformation
-                .TryGetUnlockedWorldByStageClearedBlockIndex(
-                    out var world))
-            {
-                return false;
-            }
-
-            if (world.StageClearedId < GameConfig.RequireClearedStageLevel.UIBottomMenuSettings)
-            {
-                return false;
-            }
-
             settingsButton.Show();
+
+            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuSettings;
+            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
+                .RequireClearedStageLevel.UIBottomMenuSettings))
+            {
+                settingsButton.onPointerEnter.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    var unlockConditionString = string.Format(
+                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        requiredStage);
+                    var message =
+                        $"{LocalizationManager.Localize(settingsButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                    _cat = Find<MessageCatManager>().Show(true, message);
+                }).AddTo(settingsButton.gameObject);
+                settingsButton.onPointerExit.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+                }).AddTo(settingsButton.gameObject);
+                settingsButton.SetInteractable(false);
+            }
+
             return true;
         }
 
         private bool ShowCombinationButton()
         {
+            combinationButton.Show();
+
+            var requiredStage = GameConfig.RequireClearedStageLevel.CombinationEquipmentAction;
             if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
                 .RequireClearedStageLevel.CombinationEquipmentAction))
             {
-                return false;
+                combinationButton.onPointerEnter.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+
+                    var unlockConditionString = string.Format(
+                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        requiredStage);
+                    var message =
+                        $"{LocalizationManager.Localize(combinationButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                    _cat = Find<MessageCatManager>().Show(true, message);
+                }).AddTo(combinationButton.gameObject);
+                combinationButton.onPointerExit.Subscribe(_ =>
+                {
+                    if (_cat)
+                    {
+                        _cat.Hide();
+                    }
+                }).AddTo(combinationButton.gameObject);
+                combinationButton.SetInteractable(false);
             }
 
-            combinationButton.Show();
             return true;
         }
 
