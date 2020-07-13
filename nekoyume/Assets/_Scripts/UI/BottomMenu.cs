@@ -672,52 +672,13 @@ namespace Nekoyume.UI.Module
         {
             settingsButton.Show();
 
-            var requiredStage = GameConfig.RequireClearedStageLevel.UIBottomMenuSettings;
-            if (!States.Instance.CurrentAvatarState.worldInformation.IsStageCleared(GameConfig
-                .RequireClearedStageLevel.UIBottomMenuSettings))
-            {
-                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Settings, out var _))
-                {
-                    settingsButton.SetInteractable(false);
-                    return true;
-                }
-
-                (IDisposable enter, IDisposable exit) disposables;
-
-                disposables.enter = settingsButton.onPointerEnter.Subscribe(_ =>
-                {
-                    if (_cat)
-                    {
-                        _cat.Hide();
-                    }
-
-                    var unlockConditionString = string.Format(
-                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
-                        requiredStage);
-                    var message =
-                        $"{LocalizationManager.Localize(settingsButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
-                    _cat = Find<MessageCatManager>().Show(true, message);
-                }).AddTo(settingsButton.gameObject);
-                disposables.exit = settingsButton.onPointerExit.Subscribe(_ =>
-                {
-                    if (_cat)
-                    {
-                        _cat.Hide();
-                    }
-                }).AddTo(settingsButton.gameObject);
-                _disposablesForLockedButtons[ToggleableType.Settings] = disposables;
-                settingsButton.SetInteractable(false);
-            }
-            else
-            {
-                if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Settings, out var tuple))
+            if (_disposablesForLockedButtons.TryGetValue(ToggleableType.Settings, out var tuple))
                 {
                     tuple.pointerEnter.Dispose();
                     tuple.pointerExit.Dispose();
                     _disposablesForLockedButtons.Remove(ToggleableType.Settings);
                 }
                 settingsButton.SetInteractable(true);
-            }
 
             return true;
         }
