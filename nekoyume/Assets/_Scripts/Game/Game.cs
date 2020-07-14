@@ -223,6 +223,7 @@ namespace Nekoyume.Game
         {
             if (Mixpanel.IsInitialized())
             {
+                Mixpanel.Track("Unity/Player Quit");
                 Mixpanel.Flush();
             }
             Application.OpenURL("https://forms.gle/sgGWJ6g9sBugoACS6");
