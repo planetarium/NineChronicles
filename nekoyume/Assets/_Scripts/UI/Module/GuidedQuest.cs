@@ -468,6 +468,7 @@ namespace Nekoyume.UI.Module
 
         private static WorldQuest GetTargetWorldQuest(QuestList questList)
         {
+            #pragma warning disable 0162
             if (GameConfig.RequireClearedStageLevel.UIMainMenuStage > 0)
             {
                 if (SharedViewModel.avatarState is null ||
@@ -478,6 +479,7 @@ namespace Nekoyume.UI.Module
                     return null;
                 }
             }
+            #pragma warning restore 0162
 
             return questList?
                 .OfType<WorldQuest>()

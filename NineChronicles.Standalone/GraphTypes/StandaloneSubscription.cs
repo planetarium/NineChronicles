@@ -129,6 +129,14 @@ namespace NineChronicles.Standalone.GraphTypes
                 Subscriber = new EventStreamResolver<DifferentAppProtocolVersionEncounter>(context =>
                     StandaloneContext.DifferentAppProtocolVersionEncounterSubject.AsObservable()),
             });
+            AddField(new EventStreamFieldType
+            {
+                Name = "notification",
+                Type = typeof(NonNullGraphType<NotificationType>),
+                Resolver = new FuncFieldResolver<Notification>(context => context.Source as Notification),
+                Subscriber = new EventStreamResolver<Notification>(context =>
+                    StandaloneContext.NotificationSubject.AsObservable()),
+            });
         }
 
         public void RegisterTipChangedSubscription()
