@@ -38,6 +38,11 @@ namespace Nekoyume.Model.State
 
         public bool Validate(AvatarState avatarState, long blockIndex)
         {
+            if (avatarState is null)
+            {
+                return false;
+            }
+
             return avatarState.worldInformation.IsStageCleared(UnlockStage)
                    && blockIndex >= UnlockBlockIndex;
         }

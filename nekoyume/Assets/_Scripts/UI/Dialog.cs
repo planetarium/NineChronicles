@@ -22,11 +22,11 @@ namespace Nekoyume.UI
         public TextMeshProUGUI txtDialog;
         public Image imgCharacter;
         [SerializeField]
-        private float time;
+        private float time = default;
         [SerializeField]
-        private TextMeshProUGUI textArrow;
+        private TextMeshProUGUI textArrow = null;
         [SerializeField]
-        private TextMeshProUGUI textTimer;
+        private TextMeshProUGUI textTimer = null;
 
         private string _playerPrefsKey;
         private string _dialogKey;

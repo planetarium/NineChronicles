@@ -26,7 +26,7 @@ namespace Nekoyume.UI
         private TextMeshProUGUI increasedCpText = null;
 
         [SerializeField]
-        private ComparisonStatView[] statViews;
+        private ComparisonStatView[] statViews = null;
 
         private LevelUpVFX _levelUpVFX = null;
 
