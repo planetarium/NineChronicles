@@ -1,13 +1,19 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using GraphQL.SystemTextJson;
-using GraphQL.Types;
+using System.Collections.Concurrent;
+using System.Linq;
+using Bencodex.Types;
+using Libplanet;
+using Libplanet.Action;
+using Libplanet.Blockchain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using Nekoyume;
+using Nekoyume.Action;
+using Nekoyume.Model.State;
 using NineChronicles.Standalone.GraphTypes;
 using NineChronicles.Standalone.Properties;
+using Serilog;
 
 
 namespace NineChronicles.Standalone.Controllers
@@ -15,6 +21,8 @@ namespace NineChronicles.Standalone.Controllers
     [ApiController]
     public class GraphQLController : ControllerBase
     {
+        private ConcurrentDictionary<Address, long> NotificationRecords { get; }
+            = new ConcurrentDictionary<Address, long>();
         private StandaloneContext StandaloneContext { get; }
 
         public const string InitializeStandaloneEndpoint = "/initialize-standalone";
@@ -79,6 +87,7 @@ namespace NineChronicles.Standalone.Controllers
                 );
                 StandaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
                 StandaloneContext.BlockChain = nineChroniclesNodeService.Swarm.BlockChain;
+                StandaloneContext.BlockChain.TipChanged += NotifyRefillActionPoint;
             }
             catch (Exception e)
             {
@@ -102,6 +111,41 @@ namespace NineChronicles.Standalone.Controllers
 
             StandaloneContext.NineChroniclesNodeService.Run(hostBuilder, StandaloneContext.CancellationToken);
             return Ok("Node service started.");
+        }
+
+        private void NotifyRefillActionPoint(
+            object sender, BlockChain<PolymorphicAction<ActionBase>>.TipChangedEventArgs args)
+        {
+            var privateKey = StandaloneContext.NineChroniclesNodeService.PrivateKey;
+            var chain = StandaloneContext.BlockChain;
+            IValue state = chain.GetState(privateKey.ToAddress());
+
+            if (state is null)
+            {
+                return;
+            }
+
+            var agentState = new AgentState((Bencodex.Types.Dictionary) state);
+            var avatarStates = agentState.avatarAddresses.Values.Select(address =>
+                new AvatarState((Bencodex.Types.Dictionary) chain.GetState(address)));
+            var avatarStatesCanRefill =
+                avatarStates.Where(avatarState =>
+                        NotificationRecords.TryGetValue(avatarState.address, out long notificationRecord)
+                            ? avatarState.dailyRewardReceivedIndex != notificationRecord
+                            : args.Index >= avatarState.dailyRewardReceivedIndex + GameConfig.DailyRewardInterval)
+                .ToList();
+
+            if (avatarStatesCanRefill.Any())
+            {
+                var notification = new Notification(NotificationEnum.Refill);
+                StandaloneContext.NotificationSubject.OnNext(notification);
+            }
+
+            foreach (var avatarState in avatarStatesCanRefill)
+            {
+                Log.Debug("Record notification for {AvatarAddress}", avatarState.address.ToHex());
+                NotificationRecords[avatarState.address] = avatarState.dailyRewardReceivedIndex;
+            }
         }
     }
 }

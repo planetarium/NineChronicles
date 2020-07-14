@@ -1,4 +1,5 @@
 using Nekoyume.Data;
+using Nekoyume.UI;
 using UnityEngine;
 
 namespace Nekoyume.Helper
@@ -28,6 +29,11 @@ namespace Nekoyume.Helper
 
         private const string TitleFramePathFormat = "UI/Textures/TitleFrames/{0}";
         private static readonly string TitleFrameDefaultPath = string.Format(TitleFramePathFormat, 4990001);
+
+        private const string MenuIllustratePathFormat = "UI/Textures/MenuIllustrates/{0}";
+
+        private static readonly string MenuIllustrateDefaultPath =
+            string.Format(MenuIllustratePathFormat, "UI_bg_combination");
 
         public static Sprite GetCharacterIcon(int characterId)
         {
@@ -98,6 +104,28 @@ namespace Nekoyume.Helper
         {
             return Resources.Load<Sprite>(string.Format(TitleFramePathFormat, titleId)) ??
                    Resources.Load<Sprite>(TitleFrameDefaultPath);
+        }
+
+        public static Sprite GetMenuIllustrate(string menuName)
+        {
+            Sprite result = null;
+            switch (menuName)
+            {
+                case nameof(Combination):
+                    result = Resources.Load<Sprite>(
+                        string.Format(MenuIllustratePathFormat, "UI_bg_combination"));
+                    break;
+                case nameof(RankingBoard):
+                    result = Resources.Load<Sprite>(
+                        string.Format(MenuIllustratePathFormat, "UI_bg_ranking"));
+                    break;
+                case nameof(Shop):
+                    result = Resources.Load<Sprite>(
+                        string.Format(MenuIllustratePathFormat, "UI_bg_shop"));
+                    break;
+            }
+
+            return result ? result : Resources.Load<Sprite>(MenuIllustrateDefaultPath);
         }
     }
 }

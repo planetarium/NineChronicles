@@ -2,6 +2,7 @@ using System;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Spine.Unity;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -91,10 +92,25 @@ namespace Nekoyume.Game.Character
             switch (eventName)
             {
                 case "Smash":
+                {
                     AudioController.instance.PlaySfx(AudioController.SfxCode.CombinationSmash);
                     var position = ActionCamera.instance.Cam.transform.position;
-                    VFXController.instance.CreateAndChaseCam<HammerSmashVFX>(position, new Vector3(0.7f, -0.25f));
+                    VFXController.instance.CreateAndChaseCam<HammerSmashVFX>(
+                        position,
+                        new Vector3(0.7f, -0.25f));
                     break;
+                }
+                case "emotion":
+                {
+                    var bodyBone = SpineController.SkeletonAnimation.skeleton.FindBone("body_01");
+                    var spineControllerTransform = SpineController.transform;
+                    var position = bodyBone?.GetWorldPosition(spineControllerTransform)
+                                   ?? spineControllerTransform.position;
+                    VFXController.instance.CreateAndChaseCam<EmotionHeartVFX>(
+                        position,
+                        new Vector3(0f, 0f, -10f));
+                    break;
+                }
             }
         }
     }

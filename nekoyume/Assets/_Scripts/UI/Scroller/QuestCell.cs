@@ -42,24 +42,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private SubmitButton receiveButton = null;
 
-        [SerializeField]
-        private Animator animator;
-
-        [Header("ItemMoveAnimation")]
-        [SerializeField, Range(.5f, 3.0f)]
-        private float animationTime = 1f;
-
-        [SerializeField]
-        private bool moveToLeft = false;
-
-        [SerializeField,
-         Range(0f, 10f),
-         Tooltip("Gap between start position X and middle position X")]
-        private float middleXGap = 1f;
-
         private QuestModel _quest;
-        public QuestModel Quest => _quest;
-        public Animator Animator => animator;
 
         public event System.Action onClickSubmitButton;
 
