@@ -351,7 +351,8 @@ namespace Nekoyume.Game
                 .ToList();
             var rows = Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
                 .Where(row => row.UnlockStage == stageIdToFirstClear ||
-                              row.SubRecipeIds.Any(subRecipeId => subRecipeIds.Contains(subRecipeId)))
+                              row.SubRecipeIds.Any(
+                                  subRecipeId => subRecipeIds.Contains(subRecipeId)))
                 .Distinct()
                 .ToList();
             foreach (var row in rows)
@@ -434,7 +435,7 @@ namespace Nekoyume.Game
 
             if (newlyClearedStage)
             {
-                yield return StartCoroutine(CoUnlockAlert());
+                yield return StartCoroutine(CoUnlockMenu());
                 yield return new WaitForSeconds(0.75f);
                 yield return StartCoroutine(CoUnlockRecipe(stageId));
                 yield return new WaitForSeconds(1f);
@@ -976,28 +977,31 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoUnlockAlert()
+        private IEnumerator CoUnlockMenu()
         {
-            var key = string.Empty;
+            var menuName = string.Empty;
+
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
             {
-                key = "UI_UNLOCK_COMBINATION";
+                menuName = nameof(Combination);
             }
             else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
-                key = "UI_UNLOCK_SHOP";
+                menuName = nameof(UI.Shop);
             }
             else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
             {
-                key = "UI_UNLOCK_RANKING";
+                menuName = nameof(RankingBoard);
             }
 
-            if (string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(menuName))
+            {
                 yield break;
+            }
 
-            var w = Widget.Find<Alert>();
-            w.Show("UI_UNLOCK_TITLE", key);
-            yield return new WaitWhile(() => w.isActiveAndEnabled);
+            var celebratesPopup = Widget.Find<CelebratesPopup>();
+            celebratesPopup.Show(menuName);
+            yield return new WaitWhile(() => celebratesPopup.IsActive());
         }
 
         private static void RunAndChasePlayer(Character.Player player)
