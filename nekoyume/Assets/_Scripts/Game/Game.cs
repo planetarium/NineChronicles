@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using Assets.SimpleLocalization;
+using Libplanet;
+using Libplanet.Crypto;
 using mixpanel;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -63,20 +65,20 @@ namespace Nekoyume.Game
 
         protected override void Awake()
         {
-            // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
-            #if !UNITY_EDITOR
-            Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-            Mixpanel.Identify(NetworkInterface.GetAllNetworkInterfaces().First().GetPhysicalAddress().ToString());
-            Mixpanel.Init();
-            Mixpanel.Track("Unity/Started");
-            #endif
-
             Application.targetFrameRate = 60;
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
             _options = CommandLineOptions.Load(
                CommandLineOptionsJsonPath
             );
+            // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
+#if !UNITY_EDITOR
+            Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
+            var address = new PrivateKey(ByteUtil.ParseHex(_options.PrivateKey)).PublicKey.ToAddress();
+            Mixpanel.Identify(address.ToString());
+            Mixpanel.Init();
+            Mixpanel.Track("Unity/Started");
+#endif
 
             if (_options.RpcClient)
             {
