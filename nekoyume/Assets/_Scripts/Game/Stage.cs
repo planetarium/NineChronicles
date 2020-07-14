@@ -979,29 +979,28 @@ namespace Nekoyume.Game
 
         private IEnumerator CoUnlockMenu()
         {
-            var menuName = string.Empty;
-
+            var menuNames = new List<string>();
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
             {
-                menuName = nameof(Combination);
-            }
-            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
-            {
-                menuName = nameof(UI.Shop);
-            }
-            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
-            {
-                menuName = nameof(RankingBoard);
+                menuNames.Add(nameof(Combination));
             }
 
-            if (string.IsNullOrEmpty(menuName))
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
             {
-                yield break;
+                menuNames.Add(nameof(UI.Shop));
+            }
+
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
+            {
+                menuNames.Add(nameof(RankingBoard));
             }
 
             var celebratesPopup = Widget.Find<CelebratesPopup>();
-            celebratesPopup.Show(menuName);
-            yield return new WaitWhile(() => celebratesPopup.IsActive());
+            foreach (var menuName in menuNames)
+            {
+                celebratesPopup.Show(menuName);
+                yield return new WaitWhile(() => celebratesPopup.IsActive());
+            }
         }
 
         private static void RunAndChasePlayer(Character.Player player)
