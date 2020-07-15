@@ -1,5 +1,6 @@
 using System.Reactive.Subjects;
 using System.Threading;
+using GraphQL.Types;
 using Libplanet.Blockchain;
 using Libplanet.KeyStore;
 using Libplanet.Net;
@@ -19,6 +20,7 @@ namespace NineChronicles.Standalone
         public ReplaySubject<PreloadState> PreloadStateSubject { get; } = new ReplaySubject<PreloadState>();
         public ReplaySubject<DifferentAppProtocolVersionEncounter> DifferentAppProtocolVersionEncounterSubject { get; }
             = new ReplaySubject<DifferentAppProtocolVersionEncounter>();
+        public ReplaySubject<Notification> NotificationSubject { get; } = new ReplaySubject<Notification>(1);
         public NineChroniclesNodeService NineChroniclesNodeService { get; set; }
         public NodeStatusType NodeStatus => new NodeStatusType()
         {

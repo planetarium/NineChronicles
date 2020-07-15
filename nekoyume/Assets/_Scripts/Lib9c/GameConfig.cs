@@ -105,8 +105,6 @@ namespace Nekoyume
 
             public const int UIBottomMenuInBattle = 1;
             public const int UIBottomMenuCharacter = 1;
-            public const int UIBottomMenuInventory = 1;
-            public const int UIBottomMenuSettings = 1;
             public const int UIBottomMenuMail = CombinationEquipmentAction;
             public const int UIBottomMenuChat = IsEditor ? 1 : 7;
             public const int UIBottomMenuQuest = 1;

@@ -67,8 +67,11 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException();
             }
 
+            var unlockConditionString = string.Format(
+                LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                _requireStage);
             _messageForCat =
-                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage {_requireStage} First!";
+                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()

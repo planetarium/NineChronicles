@@ -12,9 +12,6 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private RequiredItemView[] requiredItemViews = null;
 
-        [SerializeField]
-        private Image plusImage = null;
-
         public void Show()
         {
             gameObject.SetActive(true);
