@@ -45,6 +45,10 @@ namespace NineChronicles.Standalone.Controllers
                 nineChroniclesNodeHostBuilder =
                     StandaloneContext.NineChroniclesNodeService.Configure(
                         nineChroniclesNodeHostBuilder);
+                // FIXME: StandaloneContext has both service and blockchain, which is duplicated.
+                StandaloneContext.BlockChain =
+                    StandaloneContext.NineChroniclesNodeService.Swarm.BlockChain;
+                StandaloneContext.BlockChain.TipChanged += NotifyRefillActionPoint;
                 nineChroniclesNodeHostBuilder.RunConsoleAsync();
             }
             catch (Exception e)
