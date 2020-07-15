@@ -33,21 +33,46 @@ namespace Nekoyume.UI
         private const int NPCId = 300002;
         private static readonly Vector3 NPCPosition = new Vector3(1.2f, -1.72f);
 
-        public CategoryButton arenaButton;
-        public CategoryButton filteredButton;
-        public CategoryButton overallButton;
-        public GameObject arenaRankingHeader;
-        public GameObject expRankingHeader;
+        [SerializeField]
+        private CategoryButton arenaButton = null;
+
+        [SerializeField]
+        private CategoryButton filteredButton = null;
+
+        [SerializeField]
+        private CategoryButton overallButton = null;
+
+        [SerializeField]
+        private GameObject arenaRankingHeader = null;
+
+        [SerializeField]
+        private GameObject expRankingHeader = null;
+
+        // TODO: 삭제.
         public ArenaCellView arenaCellViewPrefab;
         public RankingInfo rankingCellViewPrefab;
         public ScrollRect board;
-        public ArenaPendingNCG arenaPendingNCG;
-        public GameObject arenaRecordContainer;
-        public TextMeshProUGUI arenaRecordText;
-        public ArenaCellView currentAvatarCellView;
-        public SubmitButton arenaActivationButton;
-        public RankingRewards rankingRewards;
-        public SpeechBubble speechBubble;
+
+        [SerializeField]
+        private ArenaPendingNCG arenaPendingNCG = null;
+
+        [SerializeField]
+        private GameObject arenaRecordContainer = null;
+
+        [SerializeField]
+        private TextMeshProUGUI arenaRecordText = null;
+
+        [SerializeField]
+        private ArenaCellView currentAvatarCellView = null;
+
+        [SerializeField]
+        private SubmitButton arenaActivationButton = null;
+
+        [SerializeField]
+        private RankingRewards rankingRewards = null;
+
+        [SerializeField]
+        private SpeechBubble speechBubble = null;
 
         private List<(int rank, ArenaInfo arenaInfo)> _arenaAvatarStates;
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
