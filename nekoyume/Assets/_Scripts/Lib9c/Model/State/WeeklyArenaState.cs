@@ -50,9 +50,12 @@ namespace Nekoyume.Model.State
         private readonly Dictionary<Address, ArenaInfo> _map;
         private Dictionary<TierType, BigInteger> _rewardMap = new Dictionary<TierType, BigInteger>();
 
+        public List<ArenaInfo> OrderedArenaInfos { get; private set; }
+
         public WeeklyArenaState(Address address) : base(address)
         {
             _map = new Dictionary<Address, ArenaInfo>();
+            ResetOrderedArenaInfos();
         }
 
         public WeeklyArenaState(Dictionary serialized) : base(serialized)
@@ -72,6 +75,7 @@ namespace Nekoyume.Model.State
             }
 
             Gold = serialized.GetDecimal("gold");
+            ResetOrderedArenaInfos();
         }
 
         public WeeklyArenaState(IValue iValue) : this((Dictionary)iValue)
@@ -97,6 +101,14 @@ namespace Nekoyume.Model.State
                 [(Text)"gold"] = Gold.Serialize(),
             }.Union((Dictionary)base.Serialize()));
 
+        private void ResetOrderedArenaInfos()
+        {
+            OrderedArenaInfos = _map.Values
+                .OrderByDescending(pair => pair.Score)
+                .ThenBy(pair => pair.CombatPoint)
+                .ToList();
+        }
+
         /// <summary>
         /// 인자로 넘겨 받은 `avatarAddress`를 기준으로 상위와 하위 범위에 해당하는 랭킹 정보를 얻습니다.
         /// </summary>
@@ -104,36 +116,40 @@ namespace Nekoyume.Model.State
         /// <param name="upperRange">상위 범위</param>
         /// <param name="lowerRange">하위 범위</param>
         /// <returns></returns>
-        public List<(int rank, ArenaInfo arenaInfo)> GetArenaInfos(Address avatarAddress, int upperRange = 10,
+        public List<(int rank, ArenaInfo arenaInfo)> GetArenaInfos(
+            Address avatarAddress,
+            int upperRange = 10,
             int lowerRange = 10)
         {
-            var arenaInfos = _map.Values
-                .OrderByDescending(pair => pair.Score)
-                .ThenBy(pair => pair.CombatPoint)
-                .ToList();
-
-            var avatarIndex = 0;
-            for (var i = 0; i < arenaInfos.Count; i++)
+            var avatarIndex = -1;
+            for (var i = 0; i < OrderedArenaInfos.Count; i++)
             {
-                var pair = arenaInfos[i];
+                var pair = OrderedArenaInfos[i];
                 if (!pair.AvatarAddress.Equals(avatarAddress))
+                {
                     continue;
+                }
 
                 avatarIndex = i;
                 break;
             }
 
+            if (avatarIndex == -1)
+            {
+                return new List<(int rank, ArenaInfo arenaInfo)>();
+            }
+
             var firstIndex = Math.Max(0, avatarIndex - upperRange);
-            var lastIndex = Math.Min(avatarIndex + lowerRange, arenaInfos.Count - 1);
+            var lastIndex = Math.Min(avatarIndex + lowerRange, OrderedArenaInfos.Count - 1);
             var offsetIndex = 1;
-            return arenaInfos.GetRange(firstIndex, lastIndex - firstIndex + 1)
+            return OrderedArenaInfos.GetRange(firstIndex, lastIndex - firstIndex + 1)
                 .Select(arenaInfo => (firstIndex + offsetIndex++, arenaInfo))
                 .ToList();
         }
 
         public ArenaInfo GetArenaInfo(Address avatarAddress)
         {
-            return _map.Values.FirstOrDefault(info => info.AvatarAddress.Equals(avatarAddress));
+            return OrderedArenaInfos.FirstOrDefault(info => info.AvatarAddress.Equals(avatarAddress));
         }
 
         private void Update(AvatarState avatarState, CharacterSheet characterSheet, bool active = false)
@@ -253,11 +269,13 @@ namespace Nekoyume.Model.State
         public void Add(KeyValuePair<Address, ArenaInfo> item)
         {
             _map[item.Key] = item.Value;
+            ResetOrderedArenaInfos();
         }
 
         public void Clear()
         {
             _map.Clear();
+            ResetOrderedArenaInfos();
         }
 
         public bool Contains(KeyValuePair<Address, ArenaInfo> item)
@@ -267,12 +285,13 @@ namespace Nekoyume.Model.State
 
         public void CopyTo(KeyValuePair<Address, ArenaInfo>[] array, int arrayIndex)
         {
+
             throw new NotImplementedException();
         }
 
         public bool Remove(KeyValuePair<Address, ArenaInfo> item)
         {
-            return _map.Remove(item.Key);
+            return Remove(item.Key);
         }
 
         public int Count => _map.Count;
@@ -290,7 +309,9 @@ namespace Nekoyume.Model.State
 
         public bool Remove(Address key)
         {
-            return _map.Remove(key);
+            var result = _map.Remove(key);
+            ResetOrderedArenaInfos();
+            return result;
         }
 
         public bool TryGetValue(Address key, out ArenaInfo value)
@@ -301,7 +322,11 @@ namespace Nekoyume.Model.State
         public ArenaInfo this[Address key]
         {
             get => _map[key];
-            set => _map[key] = value;
+            set
+            {
+                _map[key] = value;
+                ResetOrderedArenaInfos();
+            }
         }
 
         public ICollection<Address> Keys => _map.Keys;

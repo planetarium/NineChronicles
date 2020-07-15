@@ -1,6 +1,5 @@
 using System;
 using Assets.SimpleLocalization;
-using FancyScrollView;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using TMPro;
@@ -10,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class MailCell : FancyScrollRectCell<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
+    public class MailCell : BaseCell<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
     {
         private static readonly Vector2 LeftBottom = new Vector2(-14f, -10.5f);
 
