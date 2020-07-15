@@ -1,4 +1,4 @@
-﻿namespace NineChronicles.Standalone.Properties
+﻿namespace NineChronicles.Standalone.Requests
 {
     public class SetMiningRequest
     {

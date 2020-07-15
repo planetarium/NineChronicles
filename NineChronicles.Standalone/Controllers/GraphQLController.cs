@@ -14,7 +14,7 @@ using Nekoyume.Model.State;
 using NineChronicles.Standalone.GraphTypes;
 using Libplanet.Crypto;
 using Microsoft.Extensions.Hosting;
-using NineChronicles.Standalone.Properties;
+using NineChronicles.Standalone.Requests;
 using Serilog;
 
 
