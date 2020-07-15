@@ -153,13 +153,11 @@ namespace Libplanet.Standalone.Hosting
                 throw new Exception($"Exception occurred during {nameof(StartMining)}().");
             }
 
-            _miningCancellationTokenSource = new CancellationTokenSource();
-            var cancellationToken = CancellationTokenSource.CreateLinkedTokenSource(
-                    _swarmCancellationToken,
-                    _miningCancellationTokenSource.Token).Token;
+            _miningCancellationTokenSource =
+                CancellationTokenSource.CreateLinkedTokenSource(_swarmCancellationToken);
             Task.Run(
-                () => _minerLoopAction(BlockChain, Swarm, privateKey, cancellationToken),
-                cancellationToken);
+                () => _minerLoopAction(BlockChain, Swarm, privateKey, _miningCancellationTokenSource.Token),
+                _miningCancellationTokenSource.Token);
         }
 
         public void StopMining()
