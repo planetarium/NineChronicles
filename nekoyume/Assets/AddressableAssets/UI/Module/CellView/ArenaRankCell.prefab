@@ -488,7 +488,7 @@ GameObject:
   - component: {fileID: 1833368876211240169}
   - component: {fileID: 6352535224322201035}
   m_Layer: 5
-  m_Name: ArenaCell
+  m_Name: ArenaRankCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -563,6 +563,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27c0cc51d0d042a68f60e46f846bb986, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  backgroundImage: {fileID: 3993079662713737467}
+  controlBackgroundImage: 1
   rankImageContainer: {fileID: 1655756275989626449}
   rankImage: {fileID: 6417249917260669696}
   rankTextContainer: {fileID: 3496021633471359621}

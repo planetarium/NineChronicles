@@ -1,9 +1,8 @@
 using System;
-using FancyScrollView;
-using Libplanet;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using TMPro;
@@ -13,9 +12,16 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class ArenaCell : FancyScrollRectCell<(int rank, ArenaInfo arenaInfo, bool canChallenge,
-        bool isCurrentUser), MailScroll.ContextModel>
+    public class ArenaRankCell : BaseCell<
+        (int rank, ArenaInfo arenaInfo, ArenaInfo currentAvatarArenaInfo),
+        ArenaRankScroll.ContextModel>
     {
+        [SerializeField]
+        private Image backgroundImage = null;
+
+        [SerializeField]
+        private bool controlBackgroundImage = false;
+
         [SerializeField]
         private GameObject rankImageContainer = null;
 
@@ -39,7 +45,7 @@ namespace Nekoyume.UI.Scroller
 
         [SerializeField]
         private TextMeshProUGUI scoreText = null;
-        
+
         [SerializeField]
         private TextMeshProUGUI cpText = null;
 
@@ -63,42 +69,38 @@ namespace Nekoyume.UI.Scroller
 
         private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
+        private readonly Subject<ArenaRankCell> _onClickAvatarInfo = new Subject<ArenaRankCell>();
+        private readonly Subject<ArenaRankCell> _onClickChallenge = new Subject<ArenaRankCell>();
 
-        public Action<ArenaCell> onClickChallenge;
-        public Action<(RectTransform rectTransform, Address avatarAddress)> onClickInfo;
-
-        public RectTransform RectTransformCache
-        {
-            get
-            {
-                if (!_rectTransformCache)
-                {
-                    _rectTransformCache = GetComponent<RectTransform>();
-                }
-
-                return _rectTransformCache;
-            }
-        }
+        public RectTransform RectTransform => _rectTransformCache
+            ? _rectTransformCache
+            : _rectTransformCache = GetComponent<RectTransform>();
 
         public ArenaInfo ArenaInfo { get; private set; }
 
+        public IObservable<ArenaRankCell> OnClickAvatarInfo => _onClickAvatarInfo;
+
+        public IObservable<ArenaRankCell> OnClickChallenge => _onClickChallenge;
+
         private void Awake()
         {
-            challengeButton.OnSubmitClick
-                .ThrottleFirst(new TimeSpan(0, 0, 1))
-                .Subscribe(_ =>
-                {
-                    AudioController.PlayClick();
-                    onClickChallenge?.Invoke(this);
-                })
-                .AddTo(gameObject);
-
             avatarInfoButton.OnClickAsObservable()
                 .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ =>
                 {
                     AudioController.PlayClick();
-                    onClickInfo?.Invoke((RectTransformCache, ArenaInfo.AvatarAddress));
+                    Context.OnClickAvatarInfo.OnNext(this);
+                    _onClickAvatarInfo.OnNext(this);
+                })
+                .AddTo(gameObject);
+
+            challengeButton.OnSubmitClick
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Context.OnClickChallenge.OnNext(this);
+                    _onClickChallenge.OnNext(this);
                 })
                 .AddTo(gameObject);
 
@@ -109,12 +111,17 @@ namespace Nekoyume.UI.Scroller
         }
 
         public override void UpdateContent(
-            (int rank, ArenaInfo arenaInfo, bool canChallenge, bool isCurrentUser) itemData)
+            (int rank, ArenaInfo arenaInfo, ArenaInfo currentAvatarArenaInfo) itemData)
         {
-            var (rank, arenaInfo, canChallenge, isCurrentUser) = itemData;
+            var (rank, arenaInfo, currentAvatarArenaInfo) = itemData;
 
             ArenaInfo = arenaInfo ?? throw new ArgumentNullException(nameof(arenaInfo));
-            _isCurrentUser = isCurrentUser;
+            _isCurrentUser = States.Instance.CurrentAvatarState?.address == ArenaInfo.AvatarAddress;
+
+            if (controlBackgroundImage)
+            {
+                backgroundImage.enabled = Index % 2 == 1;
+            }
 
             UpdateRank(rank);
             levelText.text = arenaInfo.Level.ToString();
@@ -145,12 +152,13 @@ namespace Nekoyume.UI.Scroller
             else
             {
                 characterView.SetByAvatarAddress(arenaInfo.AvatarAddress);
-                challengeButton.SetSubmittable(canChallenge);
+                challengeButton.SetSubmittable(!(currentAvatarArenaInfo is null) &&
+                                               currentAvatarArenaInfo.Active &&
+                                               currentAvatarArenaInfo.DailyChallengeCount > 0);
             }
 
             tweenMove.StartDelay = rank * 0.16f;
             tweenAlpha.StartDelay = rank * 0.16f;
-            gameObject.SetActive(true);
         }
 
         private void UpdateRank(int rank)
