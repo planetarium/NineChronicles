@@ -72,12 +72,20 @@ namespace NineChronicles.Standalone
                 CancellationToken cancellationToken)
             {
                 var miner = new Miner(chain, swarm, privateKey);
+                Log.Debug("Miner called.");
                 while (!cancellationToken.IsCancellationRequested)
                 {
-                    Log.Debug("Miner called.");
                     try
                     {
-                        await miner.MineBlockAsync(cancellationToken);
+                        if (swarm.Running)
+                        {
+                            Log.Debug("Start mining.");
+                            await miner.MineBlockAsync(cancellationToken);
+                        }
+                        else
+                        {
+                            await Task.Delay(1000, cancellationToken);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -85,8 +93,6 @@ namespace NineChronicles.Standalone
                     }
                 }
             }
-
-            PrivateKey = Properties.PrivateKey;
 
             NodeService = new LibplanetNodeService<NineChroniclesActionType>(
                 Properties,
@@ -104,9 +110,7 @@ namespace NineChronicles.Standalone
             }
         }
 
-        public Task Run(
-            IHostBuilder hostBuilder,
-            CancellationToken cancellationToken = default)
+        public IHostBuilder Configure(IHostBuilder hostBuilder)
         {
             if (RpcProperties is RpcNodeServiceProperties rpcProperties)
             {
@@ -129,14 +133,11 @@ namespace NineChronicles.Standalone
                 services.AddHostedService(provider => NodeService);
                 services.AddSingleton(provider => NodeService.Swarm);
                 services.AddSingleton(provider => NodeService.BlockChain);
-            }).RunConsoleAsync(cancellationToken);
+            });
         }
 
-        public Task Run(
-            CancellationToken cancellationToken = default)
-        {
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-            return Run(hostBuilder, cancellationToken);
-        }
+        public void StartMining(PrivateKey privateKey) => NodeService.StartMining(privateKey);
+
+        public void StopMining() => NodeService.StopMining();
     }
 }

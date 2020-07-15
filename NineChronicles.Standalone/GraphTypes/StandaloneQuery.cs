@@ -25,8 +25,7 @@ namespace NineChronicles.Standalone.GraphTypes
                     if (!(standaloneContext.BlockChain is BlockChain<PolymorphicAction<ActionBase>> blockChain))
                     {
                         throw new ExecutionError(
-                            $"{nameof(StandaloneContext)}.{nameof(StandaloneContext.BlockChain)} was not set yet!" +
-                                    $"You should run standalone through {GraphQLController.RunStandaloneEndpoint} endpoint");
+                            $"{nameof(StandaloneContext)}.{nameof(StandaloneContext.BlockChain)} was not set yet!");
                     }
 
                     var address = context.GetArgument<Address>("address");

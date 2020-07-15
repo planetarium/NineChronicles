@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Cocona;
+using Libplanet.KeyStore;
 using Libplanet.Standalone.Hosting;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
@@ -87,10 +91,14 @@ namespace NineChronicles.Standalone.Executable
 #endif
             Log.Logger = loggerConf.CreateLogger();
 
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
+            var tasks = new List<Task>();
+            IHostBuilder graphQLHostBuilder = Host.CreateDefaultBuilder();
 
-            // GraphQL 서비스를 실행할 때는 런처를 통해 실행 된 GraphQL을 이용하여 노드 서비스가 실행되게 설계되었습니다.
-            // 따라서 graphQLServer가 true라면, 노드 서비스가 실행되지 않는 것이 의도된 사항입니다.
+            var standaloneContext = new StandaloneContext
+            {
+                KeyStore = Web3KeyStore.DefaultKeyStore,
+            };
+
             if (graphQLServer)
             {
                 var graphQLNodeServiceProperties = new GraphQLNodeServiceProperties
@@ -100,73 +108,83 @@ namespace NineChronicles.Standalone.Executable
                     GraphQLListenPort = graphQLPort,
                 };
 
-                await StandaloneServices.RunGraphQLAsync(
-                    graphQLNodeServiceProperties,
-                    hostBuilder,
-                    Context.CancellationToken);
+
+                GraphQLService graphQLService = new GraphQLService(graphQLNodeServiceProperties);
+                graphQLHostBuilder = graphQLService.Configure(graphQLHostBuilder, standaloneContext);
+                tasks.Add(graphQLHostBuilder.RunConsoleAsync(Context.CancellationToken));
+
+                await WaitForGraphQLService(graphQLNodeServiceProperties, Context.CancellationToken);
             }
-            else
+
+            if (appProtocolVersionToken is null)
             {
-                if (appProtocolVersionToken is null)
-                {
-                    throw new CommandExitedException(
-                        "--app-protocol-version must be present.",
-                        -1
-                    );
-                }
-
-                if (genesisBlockPath is null)
-                {
-                    throw new CommandExitedException(
-                        "--genesis-block-path must be present.",
-                        -1
-                    );
-                }
-
-                var properties = new LibplanetNodeServiceProperties<NineChroniclesActionType>();
-                RpcNodeServiceProperties? rpcProperties = null;
-                try
-                {
-                    properties = NineChroniclesNodeServiceProperties
-                        .GenerateLibplanetNodeServiceProperties(
-                            appProtocolVersionToken,
-                            genesisBlockPath,
-                            host,
-                            port,
-                            minimumDifficulty,
-                            privateKeyString,
-                            storeType,
-                            storePath,
-                            100,
-                            iceServerStrings,
-                            peerStrings,
-                            noTrustedStateValidators,
-                            trustedAppProtocolVersionSigners,
-                            noMiner);
-                    if (rpcServer)
-                    {
-                        rpcProperties = NineChroniclesNodeServiceProperties
-                            .GenerateRpcNodeServiceProperties(rpcListenHost, rpcListenPort);
-                        properties.Render = true;
-                    }
-                }
-                catch (Exception e)
-                {
-                    throw new CommandExitedException(
-                        e.Message,
-                        -1);
-                }
-
-                var nineChroniclesProperties = new NineChroniclesNodeServiceProperties()
-                {
-                    Rpc = rpcProperties,
-                    Libplanet = properties
-                };
-                await StandaloneServices.RunHeadlessAsync(
-                    nineChroniclesProperties,
-                    hostBuilder,
-                    cancellationToken: Context.CancellationToken);
+                throw new CommandExitedException(
+                    "--app-protocol-version must be present.",
+                    -1
+                );
             }
+
+            if (genesisBlockPath is null)
+            {
+                throw new CommandExitedException(
+                    "--genesis-block-path must be present.",
+                    -1
+                );
+            }
+
+            LibplanetNodeServiceProperties<NineChroniclesActionType> properties;
+            RpcNodeServiceProperties? rpcProperties = null;
+            try
+            {
+                properties = NineChroniclesNodeServiceProperties
+                    .GenerateLibplanetNodeServiceProperties(
+                        appProtocolVersionToken,
+                        genesisBlockPath,
+                        host,
+                        port,
+                        minimumDifficulty,
+                        privateKeyString,
+                        storeType,
+                        storePath,
+                        100,
+                        iceServerStrings,
+                        peerStrings,
+                        noTrustedStateValidators,
+                        trustedAppProtocolVersionSigners,
+                        noMiner);
+                if (rpcServer)
+                {
+                    rpcProperties = NineChroniclesNodeServiceProperties
+                        .GenerateRpcNodeServiceProperties(rpcListenHost, rpcListenPort);
+                    properties.Render = true;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new CommandExitedException(
+                    e.Message,
+                    -1);
+            }
+
+            var nineChroniclesProperties = new NineChroniclesNodeServiceProperties()
+            {
+                Rpc = rpcProperties,
+                Libplanet = properties
+            };
+
+            NineChroniclesNodeService nineChroniclesNodeService = StandaloneServices.CreateHeadless(nineChroniclesProperties, standaloneContext);
+            standaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
+
+            if (!graphQLServer)
+            {
+                IHostBuilder nineChroniclesNodeHostBuilder = Host.CreateDefaultBuilder();
+                nineChroniclesNodeHostBuilder =
+                    nineChroniclesNodeService.Configure(nineChroniclesNodeHostBuilder);
+                tasks.Add(nineChroniclesNodeHostBuilder.RunConsoleAsync(Context.CancellationToken));
+            }
+
+            await Task.WhenAll(tasks);
+
 #if SENTRY || ! DEBUG
             }
             catch (CommandExitedException)
@@ -179,6 +197,26 @@ namespace NineChronicles.Standalone.Executable
                 throw;
             }
 #endif
+        }
+
+        private async Task WaitForGraphQLService(
+            GraphQLNodeServiceProperties properties,
+            CancellationToken cancellationToken)
+        {
+            using var httpClient = new HttpClient();
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                Log.Debug("Trying to check GraphQL server started...");
+                try
+                {
+                    await httpClient.GetAsync($"http://{properties.GraphQLListenHost}:{properties.GraphQLListenPort}/health-check", cancellationToken);
+                    break;
+                }
+                catch (HttpRequestException e)
+                {
+                    Log.Debug("Exception occurred: {0}", e.Message);
+                }
+            }
         }
     }
 }
