@@ -1083,6 +1083,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI_menu_inventory_01
       objectReference: {fileID: 0}
+    - target: {fileID: 7379493356424284276, guid: 1224f31c60d19e84aae4496dd661f157,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7378115894544521174, guid: 1224f31c60d19e84aae4496dd661f157,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1609,10 +1614,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8857942759920452112}
     m_Modifications:
-    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
+    - target: {fileID: 134027360369013221, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
-      propertyPath: localizationKey
-      value: UI_GO_MAIN
+      propertyPath: m_Name
+      value: MainButton
       objectReference: {fileID: 0}
     - target: {fileID: 1813416641739944105, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
@@ -1719,10 +1724,10 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 134027360369013221, guid: feefaf169a2ee4d669ff9f5135627d71,
+    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
-      propertyPath: m_Name
-      value: MainButton
+      propertyPath: localizationKey
+      value: UI_GO_MAIN
       objectReference: {fileID: 0}
     - target: {fileID: 1701704652269669235, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
@@ -2067,10 +2072,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8857942759920452112}
     m_Modifications:
-    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
+    - target: {fileID: 134027360369013221, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
-      propertyPath: localizationKey
-      value: UI_GO_BACK
+      propertyPath: m_Name
+      value: BackButton
       objectReference: {fileID: 0}
     - target: {fileID: 1813416641739944105, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
@@ -2177,10 +2182,10 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 134027360369013221, guid: feefaf169a2ee4d669ff9f5135627d71,
+    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
-      propertyPath: m_Name
-      value: BackButton
+      propertyPath: localizationKey
+      value: UI_GO_BACK
       objectReference: {fileID: 0}
     - target: {fileID: 1701704652269669235, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
@@ -2290,6 +2295,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8857942759920452112}
     m_Modifications:
+    - target: {fileID: 420456160272647716, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: m_Name
+      value: QuitButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4281266422768423368, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_QUIT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959037106413081965, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: m_text
+      value: Quit
+      objectReference: {fileID: 0}
     - target: {fileID: 2099635483518142312, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2394,21 +2414,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 420456160272647716, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
-        type: 3}
-      propertyPath: m_Name
-      value: QuitButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4281266422768423368, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
-        type: 3}
-      propertyPath: localizationKey
-      value: UI_QUIT
-      objectReference: {fileID: 0}
-    - target: {fileID: 4959037106413081965, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
-        type: 3}
-      propertyPath: m_text
-      value: Quit
       objectReference: {fileID: 0}
     - target: {fileID: 4595522571919587317, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
         type: 3}
@@ -2951,6 +2956,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8857942759920452112}
     m_Modifications:
+    - target: {fileID: 134027360369013221, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: m_Name
+      value: ExitButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029377069817069961, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_EXIT
+      objectReference: {fileID: 0}
     - target: {fileID: 1813416641739944105, guid: fad22e1d013efca48b8f810cc5c1e81d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3055,16 +3070,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 2029377069817069961, guid: fad22e1d013efca48b8f810cc5c1e81d,
-        type: 3}
-      propertyPath: localizationKey
-      value: UI_EXIT
-      objectReference: {fileID: 0}
-    - target: {fileID: 134027360369013221, guid: fad22e1d013efca48b8f810cc5c1e81d,
-        type: 3}
-      propertyPath: m_Name
-      value: ExitButton
       objectReference: {fileID: 0}
     - target: {fileID: 1701704652269669235, guid: fad22e1d013efca48b8f810cc5c1e81d,
         type: 3}
