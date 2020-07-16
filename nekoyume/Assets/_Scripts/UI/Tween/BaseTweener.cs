@@ -3,9 +3,13 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Tween
 {
-    public class BaseTweener : MonoBehaviour
+    public abstract class BaseTweener : MonoBehaviour
     {
         protected Tweener Tweener { get; set; }
+
+        public abstract Tweener PlayTween();
+
+        public abstract Tweener PlayReverse();
 
         public void KillTween()
         {

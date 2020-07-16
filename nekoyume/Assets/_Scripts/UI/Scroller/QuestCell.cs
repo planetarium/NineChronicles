@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Assets.SimpleLocalization;
-using FancyScrollView;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -16,7 +15,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class QuestCell : FancyScrollRectCell<QuestModel, QuestScroll.ContextModel>
+    public class QuestCell : BaseCell<QuestModel, QuestScroll.ContextModel>
     {
         [SerializeField]
         private Image background = null;

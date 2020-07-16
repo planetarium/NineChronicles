@@ -1,4 +1,5 @@
 using DG.Tweening;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Nekoyume.UI.Tween
@@ -30,7 +31,7 @@ namespace Nekoyume.UI.Tween
 
         private RectTransform _rectTransformCache;
         private Vector2? _originAnchoredPositionCache;
-        
+
         public RectTransform RectTransform => _rectTransformCache
             ? _rectTransformCache
             : _rectTransformCache = GetComponent<RectTransform>();
@@ -39,34 +40,53 @@ namespace Nekoyume.UI.Tween
             _originAnchoredPositionCache
             ?? (_originAnchoredPositionCache = RectTransform.anchoredPosition).Value;
 
-        public Tweener PlayTween()
+        private void Awake()
+        {
+            Assert.NotNull(RectTransform);
+            Assert.AreEqual(OriginAnchoredPosition, _originAnchoredPositionCache);
+        }
+
+        public override Tweener PlayTween()
         {
             KillTween();
-            RectTransform.anchoredPosition = OriginAnchoredPosition;
-            Tweener = RectTransform
-                .DOAnchorPosX(end, duration, snapping)
-                .SetDelay(startDelay)
-                .SetEase(showEase);
 
             if (isFrom)
             {
-                Tweener.From();
+                RectTransform.anchoredPosition = new Vector2(end, OriginAnchoredPosition.y);
+                Tweener = RectTransform
+                    .DOAnchorPosX(OriginAnchoredPosition.x, duration, snapping)
+                    .SetDelay(startDelay)
+                    .SetEase(showEase);
+            }
+            else
+            {
+                RectTransform.anchoredPosition = OriginAnchoredPosition;
+                Tweener = RectTransform
+                    .DOAnchorPosX(end, duration, snapping)
+                    .SetDelay(startDelay)
+                    .SetEase(showEase);
             }
 
             return Tweener.Play();
         }
 
-        public Tweener PlayReverse()
+        public override Tweener PlayReverse()
         {
             KillTween();
-            RectTransform.anchoredPosition = OriginAnchoredPosition + new Vector2(end, 0f);
-            Tweener = RectTransform
-                .DOAnchorPosX(OriginAnchoredPosition.x, duration, snapping)
-                .SetEase(closeEase);
 
             if (isFrom)
             {
-                Tweener.From();
+                RectTransform.anchoredPosition = OriginAnchoredPosition;
+                Tweener = RectTransform
+                    .DOAnchorPosX(end, duration, snapping)
+                    .SetEase(closeEase);
+            }
+            else
+            {
+                RectTransform.anchoredPosition = new Vector2(end, OriginAnchoredPosition.y);
+                Tweener = RectTransform
+                    .DOAnchorPosX(OriginAnchoredPosition.x, duration, snapping)
+                    .SetEase(closeEase);
             }
 
             return Tweener.Play();
