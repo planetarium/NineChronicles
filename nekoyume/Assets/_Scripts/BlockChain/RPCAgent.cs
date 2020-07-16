@@ -69,7 +69,6 @@ namespace Nekoyume.BlockChain
             PrivateKey privateKey,
             Action<bool> callback)
         {
-            Mixpanel.Identify(privateKey.PublicKey.ToAddress().ToString());
             PrivateKey = privateKey;
 
             _channel = new Channel(

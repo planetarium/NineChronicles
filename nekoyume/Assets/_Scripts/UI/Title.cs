@@ -46,6 +46,7 @@ namespace Nekoyume.UI
                 animator.gameObject.SetActive(false);
             }
             Find<PreloadingScreen>().Show();
+            Mixpanel.Track("Unity/Click Main Logo");
         }
 
         public void Ready()

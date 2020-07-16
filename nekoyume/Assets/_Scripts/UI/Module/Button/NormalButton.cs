@@ -13,9 +13,6 @@ namespace Nekoyume.UI.Module
         private Button button = null;
 
         [SerializeField]
-        private Image image = null;
-
-        [SerializeField]
         private TextMeshProUGUI text = null;
 
         [SerializeField]

@@ -1,5 +1,6 @@
 namespace Lib9c.Tests.Action
 {
+    using System;
     using System.Collections.Immutable;
     using System.Linq;
     using System.Numerics;
@@ -53,12 +54,33 @@ namespace Lib9c.Tests.Action
             Currency currency,
             BigInteger amount,
             bool allowNegativeBalance = false
-        ) =>
-            new State(
+        )
+        {
+            // Libplanet 코드에서 들고 옴... (AccountStateDeltaImpl.cs@d365e474d5abf9377f553376a38b93982a36d5f0)
+            if (amount <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(amount),
+                    "The amount to transfer has to be greater than 0."
+                );
+            }
+
+            BigInteger senderBalance = GetBalance(sender, currency),
+                       recipientBalance = GetBalance(recipient, currency);
+
+            if (!allowNegativeBalance && senderBalance < amount)
+            {
+                var msg = $"The account {sender}'s balance of {currency} is insufficient to " +
+                          $"transfer: {senderBalance} {currency} < {amount} {currency}.";
+                throw new InsufficientBalanceException(sender, currency, senderBalance, msg);
+            }
+
+            return new State(
                 _state,
                 _balance
-                    .SetItem((sender, currency), GetBalance(sender, currency) - amount)
-                    .SetItem((recipient, currency), GetBalance(recipient, currency) + amount)
+                    .SetItem((sender, currency), senderBalance - amount)
+                    .SetItem((recipient, currency), recipientBalance + amount)
             );
+        }
     }
 }

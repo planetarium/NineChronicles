@@ -3,7 +3,9 @@ using Nekoyume.Game.Controller;
 using System;
 using TMPro;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -26,27 +28,38 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Image toggledOnImage = null;
 
-        [SerializeField]
-        protected string localizationKey = null;
+        public string localizationKey = null;
 
         private IToggleListener _toggleListener;
 
         private Animator _animatorCache;
+        private Color _originalTextColor;
 
         public Animator Animator => !_animatorCache
             ? _animatorCache = GetComponent<Animator>()
             : _animatorCache;
 
         public readonly Subject<ToggleableButton> OnClick = new Subject<ToggleableButton>();
+        public IObservable<PointerEventData> onPointerEnter = null;
+        public IObservable<PointerEventData> onPointerExit = null;
 
         #region Mono
 
         protected virtual void Awake()
         {
+            if (toggledOffText)
+            {
+                _originalTextColor = toggledOffText.color;
+            }
+
             Toggleable = true;
             IsWidgetControllable = true;
 
             button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            onPointerEnter = gameObject.AddComponent<ObservablePointerEnterTrigger>()
+                .OnPointerEnterAsObservable();
+            onPointerExit = gameObject.AddComponent<ObservablePointerExitTrigger>()
+                .OnPointerExitAsObservable();
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
@@ -182,6 +195,11 @@ namespace Nekoyume.UI.Module
                 : Color.gray;
             toggledOffImage.color = imageColor;
             toggledOnImage.color = imageColor;
+            if (!string.IsNullOrEmpty(localizationKey))
+            {
+                toggledOffText.color = _originalTextColor * imageColor;
+                toggledOffText.color = _originalTextColor * imageColor;
+            }
         }
 
         private void SubscribeOnClick(Unit unit)

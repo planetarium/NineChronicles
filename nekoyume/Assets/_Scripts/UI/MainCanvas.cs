@@ -291,6 +291,7 @@ namespace Nekoyume.UI
                 }
 
                 value.Initialize();
+                yield return null;
                 last = value;
             }
 

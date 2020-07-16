@@ -12,7 +12,7 @@ namespace NineChronicles.Standalone.GraphTypes
     {
         public KeyStoreMutation()
         {
-            Field<NonNullGraphType<ProtectedPrivateKeyType>>("createPrivateKey",
+            Field<NonNullGraphType<PrivateKeyType>>("createPrivateKey",
                 arguments: new QueryArguments(
                     new QueryArgument<NonNullGraphType<StringGraphType>>
                     {
@@ -32,7 +32,7 @@ namespace NineChronicles.Standalone.GraphTypes
                     var protectedPrivateKey = ProtectedPrivateKey.Protect(privateKey, passphrase);
 
                     keyStore.Add(protectedPrivateKey);
-                    return protectedPrivateKey;
+                    return privateKey;
                 });
 
             Field<NonNullGraphType<ProtectedPrivateKeyType>>("revokePrivateKey",
