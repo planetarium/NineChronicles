@@ -26,7 +26,7 @@ namespace Nekoyume.Game.Factory
             return enemy.gameObject;
         }
 
-        public static GameObject Create(Model.EnemyPlayer spawnCharacter, Vector2 position)
+        public static EnemyPlayer Create(Model.EnemyPlayer spawnCharacter, Vector2 position)
         {
             var objectPool = Game.instance.Stage.objectPool;
             var enemy = objectPool.Get<Character.EnemyPlayer>(position);
@@ -35,7 +35,6 @@ namespace Nekoyume.Game.Factory
 
             var player = Game.instance.Stage.GetPlayer();
             enemy.Set(spawnCharacter, player,true);
-            enemy.StartRun();
 
             // y좌표값에 따른 정렬 처리
             var sortingGroup = enemy.GetComponent<SortingGroup>();
@@ -43,7 +42,7 @@ namespace Nekoyume.Game.Factory
                 throw new NotFoundComponentException<SortingGroup>();
 
             sortingGroup.sortingOrder = (int) (position.y * 10) * -1;
-            return enemy.gameObject;
+            return enemy;
         }
 
         public static GameObject Create(int characterId, Vector2 position, float offset, Player target,

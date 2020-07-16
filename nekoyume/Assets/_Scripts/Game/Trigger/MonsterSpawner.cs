@@ -86,20 +86,10 @@ namespace Nekoyume.Game.Trigger
             yield return StartCoroutine(CoSpawnEnemy(enemyPlayer, offset));
         }
 
-        private IEnumerator CoSpawnEnemy(Model.EnemyPlayer enemyPlayer, Vector3 offset)
-        {
-            var stage = Game.instance.Stage;
-            var player = stage.GetPlayer();
-
-            var offsetX = player.transform.position.x + SpawnOffset;
-            var pos = new Vector2(offsetX, player.transform.position.y);
-            yield return StartCoroutine(CoSpawnEnemy(enemyPlayer, pos));
-
-        }
-
         private static IEnumerator CoSpawnEnemy(Model.EnemyPlayer enemy, Vector2 pos)
         {
-            EnemyFactory.Create(enemy, pos);
+            var enemyPlayer = EnemyFactory.Create(enemy, pos);
+            enemyPlayer.Animator.Idle();
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
