@@ -25,6 +25,22 @@ namespace Nekoyume.UI.Scroller
 
         protected override float CellSize => cellSize;
 
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Show(IList<TItemData> items, bool jumpToFirst = true)
+        {
+            UpdateData(items, jumpToFirst);
+            Show();
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
         public void UpdateData(IList<TItemData> items, bool jumpToFirst = true)
         {
             if (!initialized)
@@ -41,6 +57,11 @@ namespace Nekoyume.UI.Scroller
             }
 
             JumpTo(0);
+        }
+
+        public void ClearData()
+        {
+            UpdateContents(new List<TItemData>());
         }
 
         protected override void Refresh()

@@ -7,7 +7,7 @@ namespace Nekoyume.UI
     public class GrayLoadingScreen : ScreenWidget
     {
         [SerializeField]
-        private TextMeshProUGUI text;
+        private TextMeshProUGUI text = null;
 
         protected override void Awake()
         {

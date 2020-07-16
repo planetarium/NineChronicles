@@ -18,7 +18,7 @@ namespace Nekoyume.UI.Tween
 
         private TextMeshProUGUI text = null;
 
-        private Tweener _tweener = null;
+        protected Tweener Tweener { get; set; }
 
         private void Awake()
         {
@@ -29,13 +29,13 @@ namespace Nekoyume.UI.Tween
         {
             KillTween();
 
-            _tweener = DOTween.To(
+            Tweener = DOTween.To(
                 () => startValue,
                 value => text.text = value.ToString(),
                 endValue,
                 duration);
-            _tweener.onComplete = onComplete;
-            return _tweener;
+            Tweener.onComplete = onComplete;
+            return Tweener;
         }
 
         public Tweener Play(int startValue, int endValue)
@@ -48,13 +48,12 @@ namespace Nekoyume.UI.Tween
 
         public void KillTween()
         {
-            if (_tweener?.IsPlaying() ?? false)
+            if (Tweener?.IsPlaying() ?? false)
             {
-                _tweener?.Kill();
+                Tweener?.Kill();
             }
 
-            _tweener = null;
+            Tweener = null;
         }
-
     }
 }
