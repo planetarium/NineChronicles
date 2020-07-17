@@ -81,24 +81,15 @@ namespace Nekoyume.Game.Trigger
         public class InvalidWaveException: Exception
         {}
 
-        public IEnumerator CoSetData(Model.EnemyPlayer enemyPlayer)
+        public IEnumerator CoSetData(Model.EnemyPlayer enemyPlayer, Vector3 offset)
         {
-            yield return StartCoroutine(CoSpawnEnemy(enemyPlayer));
-        }
-
-        private IEnumerator CoSpawnEnemy(Model.EnemyPlayer enemyPlayer)
-        {
-            var stage = Game.instance.Stage;
-            var player = stage.GetPlayer();
-
-            var offsetX = player.transform.position.x + SpawnOffset;
-            var pos = new Vector2(offsetX, player.transform.position.y);
-            yield return StartCoroutine(CoSpawnEnemy(enemyPlayer, pos));
+            yield return StartCoroutine(CoSpawnEnemy(enemyPlayer, offset));
         }
 
         private static IEnumerator CoSpawnEnemy(Model.EnemyPlayer enemy, Vector2 pos)
         {
-            EnemyFactory.Create(enemy, pos);
+            var enemyPlayer = EnemyFactory.Create(enemy, pos);
+            enemyPlayer.StartRun();
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 
