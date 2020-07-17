@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2800254776946778662}
   - component: {fileID: 2598856179193660772}
   - component: {fileID: 2599766247876106980}
-  - component: {fileID: 8394945948148992701}
   m_Layer: 0
   m_Name: bg_lamp
   m_TagString: Untagged
@@ -4754,18 +4753,6 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &8394945948148992701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2798043817827368310}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9803c606e6ea4fdd853b9c7488109517, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2798552359458501654
 GameObject:
   m_ObjectHideFlags: 0

@@ -89,7 +89,7 @@ namespace Nekoyume.Game.Trigger
         private static IEnumerator CoSpawnEnemy(Model.EnemyPlayer enemy, Vector2 pos)
         {
             var enemyPlayer = EnemyFactory.Create(enemy, pos);
-            enemyPlayer.Animator.Idle();
+            enemyPlayer.StartRun();
             yield return new WaitForSeconds(UnityEngine.Random.Range(0.0f, 0.2f));
         }
 

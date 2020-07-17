@@ -254,11 +254,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4867315046798318965}
     m_Modifications:
-    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
-        type: 3}
-      propertyPath: m_Name
-      value: bg_lamp (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -314,6 +309,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_Name
+      value: bg_lamp (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598856179193660772, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0, type: 3}
 --- !u!4 &4094644286064849040 stripped
@@ -329,11 +334,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3661658197950210487}
     m_Modifications:
-    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
-        type: 3}
-      propertyPath: m_Name
-      value: bg_lamp (1)
-      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -389,6 +389,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_Name
+      value: bg_lamp (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598856179193660772, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0, type: 3}
 --- !u!4 &1490211094215512846 stripped
@@ -404,11 +414,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3661658197950210487}
     m_Modifications:
-    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
-        type: 3}
-      propertyPath: m_Name
-      value: bg_lamp (3)
-      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -464,6 +469,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_Name
+      value: bg_lamp (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598856179193660772, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0, type: 3}
 --- !u!4 &1180284573169283606 stripped
@@ -479,11 +494,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3661658197950210487}
     m_Modifications:
-    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
-        type: 3}
-      propertyPath: m_Name
-      value: bg_lamp
-      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -539,6 +549,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_Name
+      value: bg_lamp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598856179193660772, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0, type: 3}
 --- !u!4 &1953807722211864991 stripped
@@ -554,11 +574,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4867315046798318965}
     m_Modifications:
-    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
-        type: 3}
-      propertyPath: m_Name
-      value: bg_lamp
-      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -614,6 +629,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_Name
+      value: bg_lamp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598856179193660772, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0, type: 3}
 --- !u!4 &7117787528795800024 stripped
@@ -629,11 +654,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4867315046798318965}
     m_Modifications:
-    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
-        type: 3}
-      propertyPath: m_Name
-      value: bg_lamp (3)
-      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -688,6 +708,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_Name
+      value: bg_lamp (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598856179193660772, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0, type: 3}
@@ -829,11 +859,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4867315046798318965}
     m_Modifications:
-    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
-        type: 3}
-      propertyPath: m_Name
-      value: bg_lamp (2)
-      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -888,6 +913,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_Name
+      value: bg_lamp (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598856179193660772, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0, type: 3}
@@ -1029,11 +1064,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3661658197950210487}
     m_Modifications:
-    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
-        type: 3}
-      propertyPath: m_Name
-      value: bg_lamp (2)
-      objectReference: {fileID: 0}
     - target: {fileID: 2800254776946778662, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1088,6 +1118,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2798043817827368310, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: m_Name
+      value: bg_lamp (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2598856179193660772, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4abf98cfe74e0a04fab2e8db52c9eaa0, type: 3}

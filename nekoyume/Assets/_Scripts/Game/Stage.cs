@@ -409,7 +409,7 @@ namespace Nekoyume.Game
             zone = data.Background;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
-            RunPlayer(new Vector2(-1.05f, -1.2f),false);
+            RunPlayer(new Vector2(-15f, -1.2f),false);
 
             yield return new WaitForSeconds(2.0f);
 
@@ -623,7 +623,7 @@ namespace Nekoyume.Game
 
             var sprite = SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
             battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
-            yield return StartCoroutine(spawner.CoSetData(character, new Vector3(1.05f, -1.2f)));
+            yield return StartCoroutine(spawner.CoSetData(character, new Vector3(8f, -1.2f)));
         }
 
         #region Skill
@@ -933,7 +933,7 @@ namespace Nekoyume.Game
             if(chasePlayer)
                 RunAndChasePlayer(player);
             else
-                player.InitBT();
+                player.StartRun();
             return player;
         }
 
@@ -943,7 +943,7 @@ namespace Nekoyume.Game
             if(chasePlayer)
                 RunAndChasePlayer(player);
             else
-                player.InitBT();
+                player.StartRun();
             return player;
         }
 
