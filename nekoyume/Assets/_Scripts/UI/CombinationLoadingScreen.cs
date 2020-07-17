@@ -6,6 +6,8 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
+using _Scripts.UI;
+using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,9 +38,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI continueText = null;
-        
+
         [SerializeField]
-        private SpeechBubble speechBubble = null;
+        private SpeechBubbleWithItem speechBubble = null;
 
         private NPC _npc = null;
         private Coroutine _npcAppearCoroutine = null;
@@ -111,6 +113,11 @@ namespace Nekoyume.UI
             if (!(_npcAppearCoroutine is null))
                 StopCoroutine(_npcAppearCoroutine);
             StartCoroutine(CoDisappearNPC());
+        }
+
+        public void SetItemMaterial(Item item)
+        {
+            speechBubble.SetItemMaterial(item);
         }
 
         private IEnumerator CoAnimateNPC()

@@ -867,6 +867,7 @@ namespace Nekoyume.UI
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
+            loadingScreen.SetItemMaterial();
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
             Find<BottomMenu>().SetIntractable(false);
