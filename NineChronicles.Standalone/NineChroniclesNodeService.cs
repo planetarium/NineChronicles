@@ -38,7 +38,7 @@ namespace NineChronicles.Standalone
 
         public Swarm<NineChroniclesActionType> Swarm => NodeService?.Swarm;
 
-        public PrivateKey PrivateKey { get; }
+        public PrivateKey PrivateKey { get; set; }
 
 
         public NineChroniclesNodeService(
@@ -136,7 +136,7 @@ namespace NineChronicles.Standalone
             });
         }
 
-        public void StartMining(PrivateKey privateKey) => NodeService.StartMining(privateKey);
+        public void StartMining() => NodeService.StartMining(PrivateKey);
 
         public void StopMining() => NodeService.StopMining();
     }

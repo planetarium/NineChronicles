@@ -29,6 +29,8 @@ namespace NineChronicles.Standalone.Controllers
 
         public const string RunStandaloneEndpoint = "/run-standalone";
 
+        public const string SetPrivateKeyEndpoint = "/set-private-key";
+
         public const string SetMiningEndpoint = "/set-mining";
 
         public GraphQLController(StandaloneContext standaloneContext)
@@ -64,13 +66,21 @@ namespace NineChronicles.Standalone.Controllers
             return Ok("Node service started.");
         }
 
+        [HttpPost(SetPrivateKeyEndpoint)]
+        public IActionResult SetPrivateKey([FromBody] SetPrivateKeyRequest request)
+        {
+            var privateKey = new PrivateKey(ByteUtil.ParseHex(request.PrivateKeyString));
+            StandaloneContext.NineChroniclesNodeService.PrivateKey = privateKey;
+
+            return Ok($"Private key set ({privateKey.ToAddress()}).");
+        }
+
         [HttpPost(SetMiningEndpoint)]
         public IActionResult SetMining([FromBody] SetMiningRequest request)
         {
             if (request.Mine)
             {
-                var privateKey = new PrivateKey(ByteUtil.ParseHex(request.PrivateKeyString));
-                StandaloneContext.NineChroniclesNodeService.StartMining(privateKey);
+                StandaloneContext.NineChroniclesNodeService.StartMining();
             }
             else
             {
@@ -92,6 +102,7 @@ namespace NineChronicles.Standalone.Controllers
 
             IEnumerable<Address> playerAddresses = tuples.Select(tuple => tuple.Item2.Address);
             var chain = StandaloneContext.BlockChain;
+
             List<IValue> states = playerAddresses
                 .Select(addr => chain.GetState(addr))
                 .Where(value => !(value is null))
