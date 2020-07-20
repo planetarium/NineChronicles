@@ -305,6 +305,7 @@ namespace Nekoyume.Game
 
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
+            Widget.Find<ArenaBattleLoadingScreen>().Close();
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -351,7 +352,8 @@ namespace Nekoyume.Game
                 .ToList();
             var rows = Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
                 .Where(row => row.UnlockStage == stageIdToFirstClear ||
-                              row.SubRecipeIds.Any(subRecipeId => subRecipeIds.Contains(subRecipeId)))
+                              row.SubRecipeIds.Any(
+                                  subRecipeId => subRecipeIds.Contains(subRecipeId)))
                 .Distinct()
                 .ToList();
             foreach (var row in rows)
@@ -407,7 +409,7 @@ namespace Nekoyume.Game
             zone = data.Background;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
-            RunPlayer();
+            RunPlayer(new Vector2(-15f, -1.2f),false);
 
             yield return new WaitForSeconds(2.0f);
 
@@ -434,7 +436,7 @@ namespace Nekoyume.Game
 
             if (newlyClearedStage)
             {
-                yield return StartCoroutine(CoUnlockAlert());
+                yield return StartCoroutine(CoUnlockMenu());
                 yield return new WaitForSeconds(0.75f);
                 yield return StartCoroutine(CoUnlockRecipe(stageId));
                 yield return new WaitForSeconds(1f);
@@ -574,7 +576,7 @@ namespace Nekoyume.Game
 
         public IEnumerator CoSpawnPlayer(Player character)
         {
-            var playerCharacter = RunPlayer();
+            var playerCharacter = RunPlayer(false);
             playerCharacter.Set(character, true);
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
@@ -621,7 +623,7 @@ namespace Nekoyume.Game
 
             var sprite = SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
             battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
-            yield return StartCoroutine(spawner.CoSetData(character));
+            yield return StartCoroutine(spawner.CoSetData(character, new Vector3(8f, -1.2f)));
         }
 
         #region Skill
@@ -921,21 +923,27 @@ namespace Nekoyume.Game
             return player;
         }
 
-        private Character.Player RunPlayer()
+        private Character.Player RunPlayer(bool chasePlayer = true)
         {
             var player = GetPlayer();
             var playerTransform = player.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
-            RunAndChasePlayer(player);
+            if(chasePlayer)
+                RunAndChasePlayer(player);
+            else
+                player.StartRun();
             return player;
         }
 
-        public Character.Player RunPlayer(Vector2 position)
+        public Character.Player RunPlayer(Vector2 position, bool chasePlayer = true)
         {
             var player = GetPlayer(position);
-            RunAndChasePlayer(player);
+            if(chasePlayer)
+                RunAndChasePlayer(player);
+            else
+                player.StartRun();
             return player;
         }
 
@@ -976,28 +984,30 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoUnlockAlert()
+        private IEnumerator CoUnlockMenu()
         {
-            var key = string.Empty;
+            var menuNames = new List<string>();
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
             {
-                key = "UI_UNLOCK_COMBINATION";
-            }
-            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
-            {
-                key = "UI_UNLOCK_SHOP";
-            }
-            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
-            {
-                key = "UI_UNLOCK_RANKING";
+                menuNames.Add(nameof(Combination));
             }
 
-            if (string.IsNullOrEmpty(key))
-                yield break;
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
+            {
+                menuNames.Add(nameof(UI.Shop));
+            }
 
-            var w = Widget.Find<Alert>();
-            w.Show("UI_UNLOCK_TITLE", key);
-            yield return new WaitWhile(() => w.isActiveAndEnabled);
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
+            {
+                menuNames.Add(nameof(RankingBoard));
+            }
+
+            var celebratesPopup = Widget.Find<CelebratesPopup>();
+            foreach (var menuName in menuNames)
+            {
+                celebratesPopup.Show(menuName);
+                yield return new WaitWhile(() => celebratesPopup.IsActive());
+            }
         }
 
         private static void RunAndChasePlayer(Character.Player player)

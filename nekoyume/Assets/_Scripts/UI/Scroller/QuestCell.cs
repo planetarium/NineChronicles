@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Assets.SimpleLocalization;
-using FancyScrollView;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
@@ -16,7 +15,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class QuestCell : FancyScrollRectCell<QuestModel, QuestScroll.ContextModel>
+    public class QuestCell : BaseCell<QuestModel, QuestScroll.ContextModel>
     {
         [SerializeField]
         private Image background = null;
@@ -42,24 +41,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private SubmitButton receiveButton = null;
 
-        [SerializeField]
-        private Animator animator;
-
-        [Header("ItemMoveAnimation")]
-        [SerializeField, Range(.5f, 3.0f)]
-        private float animationTime = 1f;
-
-        [SerializeField]
-        private bool moveToLeft = false;
-
-        [SerializeField,
-         Range(0f, 10f),
-         Tooltip("Gap between start position X and middle position X")]
-        private float middleXGap = 1f;
-
         private QuestModel _quest;
-        public QuestModel Quest => _quest;
-        public Animator Animator => animator;
 
         public event System.Action onClickSubmitButton;
 

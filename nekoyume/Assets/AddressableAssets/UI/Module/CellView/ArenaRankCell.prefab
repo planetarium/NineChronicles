@@ -328,7 +328,7 @@ GameObject:
   - component: {fileID: 6107689480996812167}
   - component: {fileID: 691959545315687036}
   m_Layer: 5
-  m_Name: ArenaRating
+  m_Name: ScoreText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -485,10 +485,10 @@ GameObject:
   - component: {fileID: 3560633758729822794}
   - component: {fileID: 6466007502928849909}
   - component: {fileID: 3993079662713737467}
-  - component: {fileID: 6178069890957815624}
+  - component: {fileID: 1833368876211240169}
   - component: {fileID: 6352535224322201035}
   m_Layer: 5
-  m_Name: ArenaCellView
+  m_Name: ArenaRankCell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -509,11 +509,11 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 525, y: 50}
-  m_Pivot: {x: 0, y: 1}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6466007502928849909
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -551,7 +551,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &6178069890957815624
+--- !u!114 &1833368876211240169
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -560,9 +560,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3018884119875456309}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5622dd5d85d64c59bf915c855fff69e4, type: 3}
+  m_Script: {fileID: 11500000, guid: 27c0cc51d0d042a68f60e46f846bb986, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  backgroundImage: {fileID: 3993079662713737467}
+  controlBackgroundImage: 1
   rankImageContainer: {fileID: 1655756275989626449}
   rankImage: {fileID: 6417249917260669696}
   rankTextContainer: {fileID: 3496021633471359621}
@@ -570,8 +572,8 @@ MonoBehaviour:
   characterView: {fileID: 1283831492688625169}
   levelText: {fileID: 6431071634858188638}
   nameText: {fileID: 7867548136127325657}
-  cpText: {fileID: 3493398272436589879}
   scoreText: {fileID: 691959545315687036}
+  cpText: {fileID: 3493398272436589879}
   challengeCountTextContainer: {fileID: 8851711274831921416}
   challengeCountText: {fileID: 7975780283971658723}
   avatarInfoButton: {fileID: 4748097948779289977}
@@ -673,7 +675,7 @@ GameObject:
   - component: {fileID: 5840944752708376864}
   - component: {fileID: 6431071634858188638}
   m_Layer: 5
-  m_Name: Level
+  m_Name: LevelText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1721,7 +1723,7 @@ GameObject:
   - component: {fileID: 7631193328570001397}
   - component: {fileID: 3493398272436589879}
   m_Layer: 5
-  m_Name: CP
+  m_Name: CPText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2166,7 +2168,7 @@ GameObject:
   - component: {fileID: 282675824477032311}
   - component: {fileID: 7867548136127325657}
   m_Layer: 5
-  m_Name: ID
+  m_Name: NameText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2568,6 +2570,27 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: isTitleFrame
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b582833a048854540acc861a471bfb8d,
+        type: 3}
+    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8264233819107350788, guid: a9f817ccaf6b243fdb7a1975b76b842a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2106852222037365949, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2673,11 +2696,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7412098714008221570, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: isTitleFrame
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2400401590883738550, guid: a9f817ccaf6b243fdb7a1975b76b842a,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -2697,22 +2715,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 46
-      objectReference: {fileID: 0}
-    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b582833a048854540acc861a471bfb8d,
-        type: 3}
-    - target: {fileID: 6487158816000491061, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8264233819107350788, guid: a9f817ccaf6b243fdb7a1975b76b842a,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a9f817ccaf6b243fdb7a1975b76b842a, type: 3}

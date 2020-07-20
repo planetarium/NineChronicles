@@ -1,85 +1,108 @@
 using System;
-using Libplanet;
+using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
+using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Tween;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
-using UniRx;
-using Nekoyume.Game.Controller;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class ArenaCellView : MonoBehaviour
+    public class ArenaRankCell : BaseCell<
+        (int rank, ArenaInfo arenaInfo, ArenaInfo currentAvatarArenaInfo),
+        ArenaRankScroll.ContextModel>
     {
-        public Action<ArenaCellView> onClickChallenge;
-        public Action<(RectTransform rectTransform, Address avatarAddress)> onClickInfo;
+        [SerializeField]
+        private Image backgroundImage = null;
+
+        [SerializeField]
+        private bool controlBackgroundImage = false;
 
         [SerializeField]
         private GameObject rankImageContainer = null;
+
         [SerializeField]
         private Image rankImage = null;
+
         [SerializeField]
         private GameObject rankTextContainer = null;
+
         [SerializeField]
         private TextMeshProUGUI rankText = null;
+
         [SerializeField]
         private FramedCharacterView characterView = null;
+
         [SerializeField]
         private TextMeshProUGUI levelText = null;
+
         [SerializeField]
         private TextMeshProUGUI nameText = null;
-        [SerializeField]
-        private TextMeshProUGUI cpText = null;
+
         [SerializeField]
         private TextMeshProUGUI scoreText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI cpText = null;
+
         [SerializeField]
         private GameObject challengeCountTextContainer = null;
+
         [SerializeField]
         private TextMeshProUGUI challengeCountText = null;
+
         [SerializeField]
         private Button avatarInfoButton = null;
+
         [SerializeField]
         private SubmitButton challengeButton = null;
 
         [SerializeField]
         private DOTweenRectTransformMoveBy tweenMove = null;
+
         [SerializeField]
         private DOTweenGroupAlpha tweenAlpha = null;
 
-        private RectTransform _rectTransform;
-        public RectTransform RectTransform
-        {
-            get
-            {
-                if (!_rectTransform)
-                {
-                    _rectTransform = GetComponent<RectTransform>();
-                }
-
-                return _rectTransform;
-            }
-        }
-
+        private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
+        private readonly Subject<ArenaRankCell> _onClickAvatarInfo = new Subject<ArenaRankCell>();
+        private readonly Subject<ArenaRankCell> _onClickChallenge = new Subject<ArenaRankCell>();
+
+        public RectTransform RectTransform => _rectTransformCache
+            ? _rectTransformCache
+            : _rectTransformCache = GetComponent<RectTransform>();
 
         public ArenaInfo ArenaInfo { get; private set; }
 
+        public IObservable<ArenaRankCell> OnClickAvatarInfo => _onClickAvatarInfo;
+
+        public IObservable<ArenaRankCell> OnClickChallenge => _onClickChallenge;
+
         private void Awake()
         {
-            challengeButton.OnSubmitClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                onClickChallenge?.Invoke(this);
-            }).AddTo(gameObject);
+            avatarInfoButton.OnClickAsObservable()
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Context.OnClickAvatarInfo.OnNext(this);
+                    _onClickAvatarInfo.OnNext(this);
+                })
+                .AddTo(gameObject);
 
-            avatarInfoButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                onClickInfo?.Invoke((RectTransform, ArenaInfo.AvatarAddress));
-            }).AddTo(gameObject);
+            challengeButton.OnSubmitClick
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ =>
+                {
+                    AudioController.PlayClick();
+                    Context.OnClickChallenge.OnNext(this);
+                    _onClickChallenge.OnNext(this);
+                })
+                .AddTo(gameObject);
 
             Game.Event.OnUpdatePlayerEquip
                 .Where(_ => _isCurrentUser)
@@ -87,15 +110,18 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        public void Show()
+        public override void UpdateContent(
+            (int rank, ArenaInfo arenaInfo, ArenaInfo currentAvatarArenaInfo) itemData)
         {
-            gameObject.SetActive(true);
-        }
+            var (rank, arenaInfo, currentAvatarArenaInfo) = itemData;
 
-        public void Show(int rank, ArenaInfo arenaInfo, bool canChallenge, bool isCurrentUser)
-        {
             ArenaInfo = arenaInfo ?? throw new ArgumentNullException(nameof(arenaInfo));
-            _isCurrentUser = isCurrentUser;
+            _isCurrentUser = States.Instance.CurrentAvatarState?.address == ArenaInfo.AvatarAddress;
+
+            if (controlBackgroundImage)
+            {
+                backgroundImage.enabled = Index % 2 == 1;
+            }
 
             UpdateRank(rank);
             levelText.text = arenaInfo.Level.ToString();
@@ -120,22 +146,19 @@ namespace Nekoyume.UI.Scroller
                 }
 
                 rank = 1;
-                challengeCountText.text = $"{arenaInfo.DailyChallengeCount}/{GameConfig.ArenaChallengeCountMax}";
+                challengeCountText.text =
+                    $"{arenaInfo.DailyChallengeCount}/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {
                 characterView.SetByAvatarAddress(arenaInfo.AvatarAddress);
-                challengeButton.SetSubmittable(canChallenge);
+                challengeButton.SetSubmittable(!(currentAvatarArenaInfo is null) &&
+                                               currentAvatarArenaInfo.Active &&
+                                               currentAvatarArenaInfo.DailyChallengeCount > 0);
             }
 
             tweenMove.StartDelay = rank * 0.16f;
             tweenAlpha.StartDelay = rank * 0.16f;
-            gameObject.SetActive(true);
-        }
-
-        public void Hide()
-        {
-            gameObject.SetActive(false);
         }
 
         private void UpdateRank(int rank)

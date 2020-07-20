@@ -1,11 +1,12 @@
 using DG.Tweening;
+using NUnit.Framework;
 using UnityEngine;
 
 namespace Nekoyume.UI.Tween
 {
     // todo: `AnchoredPositionSingleTweener`로 바꾸고, 좌표계를 선택할 수 있도록. `RotateSingleTweener` 참고.
     [RequireComponent(typeof(RectTransform))]
-    public class AnchoredPositionYTweener : MonoBehaviour
+    public class AnchoredPositionYTweener : BaseTweener
     {
         public TweenCallback onComplete = null;
         public TweenCallback onReverseComplete = null;
@@ -31,9 +32,11 @@ namespace Nekoyume.UI.Tween
         [SerializeField]
         private bool isFrom = false;
 
+        [SerializeField]
+        private bool playOnEnable = false;
+
         private RectTransform _rectTransformCache;
         private Vector2? _originAnchoredPositionCache;
-        private Tweener _tweener;
 
         public RectTransform RectTransform => _rectTransformCache
             ? _rectTransformCache
@@ -43,49 +46,66 @@ namespace Nekoyume.UI.Tween
             _originAnchoredPositionCache
             ?? (_originAnchoredPositionCache = RectTransform.anchoredPosition).Value;
 
-        public Tweener PlayTween()
+        private void Awake()
+        {
+            Assert.NotNull(RectTransform);
+            Assert.AreEqual(OriginAnchoredPosition, _originAnchoredPositionCache);
+        }
+
+        private void OnEnable()
+        {
+            if (playOnEnable)
+            {
+                PlayTween();
+            }
+        }
+
+        public override Tweener PlayTween()
         {
             KillTween();
-            RectTransform.anchoredPosition = OriginAnchoredPosition;
-            _tweener = RectTransform
-                .DOAnchorPosY(end, duration, snapping)
-                .SetDelay(startDelay)
-                .SetEase(showEase);
 
             if (isFrom)
             {
-                _tweener.From();
+                RectTransform.anchoredPosition = new Vector2(OriginAnchoredPosition.x, end);
+                Tweener = RectTransform
+                    .DOAnchorPosY(OriginAnchoredPosition.y, duration, snapping)
+                    .SetDelay(startDelay)
+                    .SetEase(showEase);
+            }
+            else
+            {
+                RectTransform.anchoredPosition = OriginAnchoredPosition;
+                Tweener = RectTransform
+                    .DOAnchorPosY(end, duration, snapping)
+                    .SetDelay(startDelay)
+                    .SetEase(showEase);
             }
 
-            _tweener.onComplete = onComplete;
-            return _tweener.Play();
+            Tweener.onComplete = onComplete;
+            return Tweener.Play();
         }
 
-        public Tweener PlayReverse()
+        public override Tweener PlayReverse()
         {
             KillTween();
-            RectTransform.anchoredPosition = OriginAnchoredPosition + new Vector2(0f, end);
-            _tweener = RectTransform
-                .DOAnchorPosY(OriginAnchoredPosition.y, duration, snapping)
-                .SetEase(closeEase);
 
             if (isFrom)
             {
-                _tweener.From();
+                RectTransform.anchoredPosition = OriginAnchoredPosition;
+                Tweener = RectTransform
+                    .DOAnchorPosY(end, duration, snapping)
+                    .SetEase(closeEase);
             }
-
-            _tweener.onComplete = onReverseComplete;
-            return _tweener.Play();
-        }
-
-        public void KillTween()
-        {
-            if (_tweener?.IsPlaying() ?? false)
+            else
             {
-                _tweener?.Kill();
+                RectTransform.anchoredPosition = new Vector2(OriginAnchoredPosition.x, end);
+                Tweener = RectTransform
+                    .DOAnchorPosY(OriginAnchoredPosition.y, duration, snapping)
+                    .SetEase(closeEase);
             }
 
-            _tweener = null;
+            Tweener.onComplete = onReverseComplete;
+            return Tweener.Play();
         }
     }
 }

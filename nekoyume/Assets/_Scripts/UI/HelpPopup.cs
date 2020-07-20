@@ -310,6 +310,7 @@ namespace Nekoyume.UI
 
         #region Widget
 
+        #pragma warning disable 0809
         [Obsolete("이 메서드 대신 HelpPopup.HelpMe(int id)를 사용합니다.")]
         public override void Show(bool ignoreShowAnimation = false)
         {
@@ -335,6 +336,7 @@ namespace Nekoyume.UI
                 showingTweener.PlayReverse().OnComplete(() => base.Close());
             }
         }
+        #pragma warning restore 0809
 
         #endregion
 

@@ -14,7 +14,7 @@ namespace Nekoyume.UI.Tween
 
         private RectTransform _rectTransform = null;
 
-        private Tweener _tweener = null;
+        protected Tweener Tweener { get; set; }
 
         public Tweener PlayLoop()
         {
@@ -26,24 +26,28 @@ namespace Nekoyume.UI.Tween
             var startValue = _rectTransform.anchoredPosition;
 
             // 10초에 한번씩 루프 (무한)
-            _tweener = _rectTransform.DOShakeAnchorPos(
+            Tweener = _rectTransform.DOShakeAnchorPos(
                 10f, // 지속 시간
                 magnitude,
                 30, // 진동 수
                 90, // 무작위성
                 false,
                 false);
-            _tweener.SetLoops(-1);
+            Tweener.SetLoops(-1);
 
-            _tweener.onKill = () => _rectTransform.anchoredPosition = startValue;
+            Tweener.onKill = () => _rectTransform.anchoredPosition = startValue;
 
-            return _tweener;
+            return Tweener;
         }
 
         public void KillTween()
         {
-            _tweener?.Kill();
-            _tweener = null;
+            if (Tweener?.IsPlaying() ?? false)
+            {
+                Tweener?.Kill();
+            }
+
+            Tweener = null;
         }
     }
 }

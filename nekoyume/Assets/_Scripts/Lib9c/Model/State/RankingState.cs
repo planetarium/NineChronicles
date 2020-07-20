@@ -24,9 +24,12 @@ namespace Nekoyume.Model.State
 
         private readonly Dictionary<Address, RankingInfo> _map;
 
+        public List<RankingInfo> OrderedRankingInfos { get; private set; }
+
         public RankingState() : base(Address)
         {
             _map = new Dictionary<Address, RankingInfo>();
+            ResetOrderedRankingInfos();
         }
 
         public RankingState(Dictionary serialized)
@@ -36,6 +39,16 @@ namespace Nekoyume.Model.State
                 kv => kv.Key.ToAddress(),
                 kv => new RankingInfo((Dictionary)kv.Value)
             );
+
+            ResetOrderedRankingInfos();
+        }
+
+        private void ResetOrderedRankingInfos()
+        {
+            OrderedRankingInfos = _map.Values
+                .OrderByDescending(c => c.Exp)
+                .ThenBy(c => c.StageClearedBlockIndex)
+                .ToList();
         }
 
         public void Update(AvatarState state)
@@ -51,29 +64,31 @@ namespace Nekoyume.Model.State
             {
                 _map[state.address] = new RankingInfo(state);
             }
+
+            ResetOrderedRankingInfos();
         }
 
-        public RankingInfo[] GetAvatars(DateTimeOffset? dt)
+        public List<RankingInfo> GetRankingInfos(DateTimeOffset? dt)
         {
-            IEnumerable<RankingInfo> map =
-                _map.Values.OrderByDescending(c => c.Exp).ThenBy(c => c.StageClearedBlockIndex);
-            if (dt != null)
-            {
-                map = map.Where(context => ((TimeSpan)(dt - context.UpdatedAt)).Days <= 1);
-            }
-
-            return map.ToArray();
+            var list = OrderedRankingInfos;
+            return dt != null
+                ? list
+                    .Where(context => ((TimeSpan)(dt - context.UpdatedAt)).Days <= 1)
+                    .ToList()
+                : list;
         }
 
         public Address[] GetAgentAddresses(int count, DateTimeOffset? dt)
         {
-            var avatars = GetAvatars(dt);
+            var avatars = GetRankingInfos(dt);
             var result = new HashSet<Address>();
             foreach (var avatar in avatars)
             {
                 result.Add(avatar.AgentAddress);
                 if (result.Count == count)
+                {
                     break;
+                }
             }
 
             return result.ToArray();
