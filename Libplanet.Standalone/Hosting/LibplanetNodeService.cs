@@ -148,9 +148,18 @@ namespace Libplanet.Standalone.Hosting
         // 이 privateKey는 swarm에서 사용하는 privateKey와 다를 수 있습니다.
         public void StartMining(PrivateKey privateKey)
         {
-            if (BlockChain is null || Swarm is null)
+            if (BlockChain is null)
             {
-                throw new Exception($"Exception occurred during {nameof(StartMining)}().");
+                throw new InvalidOperationException(
+                    $"An exception occurred during {nameof(StartMining)}(). " +
+                    $"{nameof(BlockChain)} is null.");
+            }
+
+            if (Swarm is null)
+            {
+                throw new InvalidOperationException(
+                    $"An exception occurred during {nameof(StartMining)}(). " +
+                    $"{nameof(Swarm)} is null.");
             }
 
             _miningCancellationTokenSource =

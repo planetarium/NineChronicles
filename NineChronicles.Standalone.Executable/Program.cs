@@ -109,7 +109,7 @@ namespace NineChronicles.Standalone.Executable
                 };
 
 
-                GraphQLService graphQLService = new GraphQLService(graphQLNodeServiceProperties);
+                var graphQLService = new GraphQLService(graphQLNodeServiceProperties);
                 graphQLHostBuilder = graphQLService.Configure(graphQLHostBuilder, standaloneContext);
                 tasks.Add(graphQLHostBuilder.RunConsoleAsync(Context.CancellationToken));
 

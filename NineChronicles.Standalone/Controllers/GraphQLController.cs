@@ -49,7 +49,12 @@ namespace NineChronicles.Standalone.Controllers
                 StandaloneContext.BlockChain =
                     StandaloneContext.NineChroniclesNodeService.Swarm.BlockChain;
                 StandaloneContext.BlockChain.TipChanged += NotifyRefillActionPoint;
-                nineChroniclesNodeHostBuilder.RunConsoleAsync();
+                nineChroniclesNodeHostBuilder
+                    .RunConsoleAsync()
+                    .ContinueWith(task =>
+                    {
+                        if (task.IsFaulted) throw task.Exception;
+                    });
             }
             catch (Exception e)
             {
