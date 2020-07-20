@@ -60,7 +60,8 @@ namespace NineChronicles.Standalone.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest($"Failed to launch node service. {e.Message}");
+                Log.Warning(e, "Failed to launch node service. {e}", e);
+                return BadRequest($"Failed to launch node service.");
             }
 
             return Ok("Node service started.");

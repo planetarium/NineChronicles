@@ -92,51 +92,52 @@ namespace NineChronicles.Standalone.Executable
             Log.Logger = loggerConf.CreateLogger();
 
             var tasks = new List<Task>();
-            IHostBuilder graphQLHostBuilder = Host.CreateDefaultBuilder();
-
-            var standaloneContext = new StandaloneContext
-            {
-                KeyStore = Web3KeyStore.DefaultKeyStore,
-            };
-
-            if (graphQLServer)
-            {
-                var graphQLNodeServiceProperties = new GraphQLNodeServiceProperties
-                {
-                    GraphQLServer = graphQLServer,
-                    GraphQLListenHost = graphQLHost,
-                    GraphQLListenPort = graphQLPort,
-                };
-
-
-                var graphQLService = new GraphQLService(graphQLNodeServiceProperties);
-                graphQLHostBuilder = graphQLService.Configure(graphQLHostBuilder, standaloneContext);
-                tasks.Add(graphQLHostBuilder.RunConsoleAsync(Context.CancellationToken));
-
-                await WaitForGraphQLService(graphQLNodeServiceProperties, Context.CancellationToken);
-            }
-
-            if (appProtocolVersionToken is null)
-            {
-                throw new CommandExitedException(
-                    "--app-protocol-version must be present.",
-                    -1
-                );
-            }
-
-            if (genesisBlockPath is null)
-            {
-                throw new CommandExitedException(
-                    "--genesis-block-path must be present.",
-                    -1
-                );
-            }
-
-            LibplanetNodeServiceProperties<NineChroniclesActionType> properties;
-            RpcNodeServiceProperties? rpcProperties = null;
             try
             {
-                properties = NineChroniclesNodeServiceProperties
+                IHostBuilder graphQLHostBuilder = Host.CreateDefaultBuilder();
+
+                var standaloneContext = new StandaloneContext
+                {
+                    KeyStore = Web3KeyStore.DefaultKeyStore,
+                };
+
+                if (graphQLServer)
+                {
+                    var graphQLNodeServiceProperties = new GraphQLNodeServiceProperties
+                    {
+                        GraphQLServer = graphQLServer,
+                        GraphQLListenHost = graphQLHost,
+                        GraphQLListenPort = graphQLPort,
+                    };
+
+
+                    var graphQLService = new GraphQLService(graphQLNodeServiceProperties);
+                    graphQLHostBuilder =
+                        graphQLService.Configure(graphQLHostBuilder, standaloneContext);
+                    tasks.Add(graphQLHostBuilder.RunConsoleAsync(Context.CancellationToken));
+
+                    await WaitForGraphQLService(graphQLNodeServiceProperties,
+                        Context.CancellationToken);
+                }
+
+                if (appProtocolVersionToken is null)
+                {
+                    throw new CommandExitedException(
+                        "--app-protocol-version must be present.",
+                        -1
+                    );
+                }
+
+                if (genesisBlockPath is null)
+                {
+                    throw new CommandExitedException(
+                        "--genesis-block-path must be present.",
+                        -1
+                    );
+                }
+
+                RpcNodeServiceProperties? rpcProperties = null;
+                var properties = NineChroniclesNodeServiceProperties
                     .GenerateLibplanetNodeServiceProperties(
                         appProtocolVersionToken,
                         genesisBlockPath,
@@ -158,32 +159,30 @@ namespace NineChronicles.Standalone.Executable
                         .GenerateRpcNodeServiceProperties(rpcListenHost, rpcListenPort);
                     properties.Render = true;
                 }
+
+                var nineChroniclesProperties = new NineChroniclesNodeServiceProperties()
+                {
+                    Rpc = rpcProperties,
+                    Libplanet = properties
+                };
+
+                NineChroniclesNodeService nineChroniclesNodeService =
+                    StandaloneServices.CreateHeadless(nineChroniclesProperties, standaloneContext);
+                standaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
+
+                if (!graphQLServer)
+                {
+                    IHostBuilder nineChroniclesNodeHostBuilder = Host.CreateDefaultBuilder();
+                    nineChroniclesNodeHostBuilder =
+                        nineChroniclesNodeService.Configure(nineChroniclesNodeHostBuilder);
+                    tasks.Add(
+                        nineChroniclesNodeHostBuilder.RunConsoleAsync(Context.CancellationToken));
+                }
             }
-            catch (Exception e)
+            finally
             {
-                throw new CommandExitedException(
-                    e.Message,
-                    -1);
+                await Task.WhenAll(tasks);
             }
-
-            var nineChroniclesProperties = new NineChroniclesNodeServiceProperties()
-            {
-                Rpc = rpcProperties,
-                Libplanet = properties
-            };
-
-            NineChroniclesNodeService nineChroniclesNodeService = StandaloneServices.CreateHeadless(nineChroniclesProperties, standaloneContext);
-            standaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
-
-            if (!graphQLServer)
-            {
-                IHostBuilder nineChroniclesNodeHostBuilder = Host.CreateDefaultBuilder();
-                nineChroniclesNodeHostBuilder =
-                    nineChroniclesNodeService.Configure(nineChroniclesNodeHostBuilder);
-                tasks.Add(nineChroniclesNodeHostBuilder.RunConsoleAsync(Context.CancellationToken));
-            }
-
-            await Task.WhenAll(tasks);
 
 #if SENTRY || ! DEBUG
             }
@@ -214,7 +213,7 @@ namespace NineChronicles.Standalone.Executable
                 }
                 catch (HttpRequestException e)
                 {
-                    Log.Debug("Exception occurred: {0}", e.Message);
+                    Log.Error(e, "An exception occurred during connecting to GraphQL server. {e}", e);
                 }
             }
         }

@@ -143,7 +143,7 @@ namespace Libplanet.Standalone.Hosting
             }
             catch (Exception e)
             {
-                Log.Debug("Unexpected exception occurred during Swarm.StartAsync(). {e}", e);
+                Log.Error(e, "Unexpected exception occurred during Swarm.StartAsync(). {e}", e);
             }
         }
 

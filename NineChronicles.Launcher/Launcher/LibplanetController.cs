@@ -32,6 +32,7 @@ using TextCopy;
 using static Launcher.Program;
 using NineChroniclesActionType = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
+// TODO: This is depricated, but it makes unittest fails. So should be removed.
 namespace Launcher
 {
     // FIXME: Memory leak.
