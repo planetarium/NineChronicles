@@ -32,12 +32,6 @@ namespace Nekoyume.UI.Module
         }
 
         [SerializeField]
-        private WorldButton worldButton = null;
-
-        [SerializeField]
-        private string worldName = null;
-
-        [SerializeField]
         private TextMeshProUGUI stagePageText = null;
 
         [SerializeField]
@@ -52,11 +46,16 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Button nextButton = null;
 
+        [SerializeField]
+        private Image backgroundImage = null;
+
+        [SerializeField]
+        private Image backgroundImage2 = null;
+
+        [SerializeField]
+        private Image titleImage = null;
+
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
-
-        public WorldButton WorldButton => worldButton;
-
-        public string WorldName => worldName;
 
         public IReadOnlyList<WorldMapPage> Pages => pages;
 
@@ -102,17 +101,21 @@ namespace Nekoyume.UI.Module
                     $"{worldRow.Id}: worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageRowsCount})");
             }
 
+            var imageKey = worldRow.Id == 101 ? "99" : $"0{worldRow.Id}";
+            backgroundImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}");
+            backgroundImage2.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}");
+            titleImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/UI_bg_worldmap_{imageKey}");
+            titleImage.SetNativeSize();
             var stageOffset = 0;
             var nextPageShouldHide = false;
-            var shouldDestroyPages = new List<WorldMapPage>();
             foreach (var page in pages)
             {
+                page.gameObject.SetActive(false);
                 if (nextPageShouldHide)
                 {
-                    shouldDestroyPages.Add(page);
-
                     continue;
                 }
+                page.gameObject.SetActive(true);
 
                 var stageCount = page.Stages.Count;
                 var stageModels = new List<WorldMapStage.ViewModel>();
@@ -143,7 +146,7 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                page.Show(stageModels);
+                page.Show(stageModels, imageKey);
                 stageOffset += stageModels.Count;
                 if (stageOffset >= stageRowsCount)
                 {
@@ -151,14 +154,8 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            foreach (var shouldDestroyPage in shouldDestroyPages)
-            {
-                pages.Remove(shouldDestroyPage);
-                Destroy(shouldDestroyPage.gameObject);
-            }
-
             SharedViewModel.StageIdToShow.Value = worldRow.StageBegin + stageRowsCount - 1;
-            SharedViewModel.PageCount.Value = pages.Count;
+            SharedViewModel.PageCount.Value = pages.Count(p => p.gameObject.activeSelf);
             SharedViewModel.CurrentPageNumber.Value = 1;
 
             SharedViewModel.PageCount
@@ -243,7 +240,7 @@ namespace Nekoyume.UI.Module
 
         private void SetSelectedStageId(int value, int stageIdToNotify)
         {
-            foreach (var stage in pages.SelectMany(page => page.Stages))
+            foreach (var stage in pages.Where(p => p.gameObject.activeSelf).SelectMany(page => page.Stages))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 stage.SharedViewModel.Selected.Value = stageId == value;
