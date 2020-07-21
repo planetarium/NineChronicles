@@ -6,6 +6,7 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
+using Libplanet.KeyStore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -117,13 +118,14 @@ namespace NineChronicles.Standalone.Controllers
         private void NotifyRefillActionPoint(
             object sender, BlockChain<PolymorphicAction<ActionBase>>.TipChangedEventArgs args)
         {
-            if (!StandaloneContext.KeyStore.List().Any())
+            List<Tuple<Guid, ProtectedPrivateKey>> tuples =
+                StandaloneContext.KeyStore.List().ToList();
+            if (!tuples.Any())
             {
                 return;
             }
 
-            IEnumerable<Address> playerAddresses = StandaloneContext.KeyStore.List()
-                .Select(tuple => tuple.Item2.Address);
+            IEnumerable<Address> playerAddresses = tuples.Select(tuple => tuple.Item2.Address);
             var chain = StandaloneContext.BlockChain;
             List<IValue> states = playerAddresses
                 .Select(addr => chain.GetState(addr))
