@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Core;
@@ -52,7 +53,7 @@ namespace NineChronicles.Standalone
 
             try
             {
-                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
+                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
                 Log.Debug("Secp256K1CryptoBackend initialized.");
             }
             catch(Exception e)
