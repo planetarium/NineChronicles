@@ -63,7 +63,7 @@ namespace Snapshot
 
                 var tipHeader = tipDigest.Value.Header;
                 var json = JsonSerializer.Serialize(tipHeader);
-                var metadataFilename = $"{genesisHashHex}-snapshot-{tipHashHex}.meta";
+                var metadataFilename = $"{genesisHashHex}-snapshot-{tipHashHex}.json";
                 var metadataPath = Path.Combine(outputDirectory, metadataFilename);
                 if (File.Exists(metadataPath))
                 {
