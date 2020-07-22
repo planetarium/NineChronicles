@@ -123,7 +123,8 @@ namespace Nekoyume.UI
                 return (T) Pool[type].widget;
             }
 
-            var go = Instantiate(res, MainCanvas.instance.transform);
+            var widgetType = res.GetComponent<T>().WidgetType;
+            var go = Instantiate(res, MainCanvas.instance.GetLayerRootTransform(widgetType));
             var widget = go.GetComponent<T>();
             switch (widget.WidgetType)
             {
@@ -146,7 +147,6 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(widget.WidgetType));
             go.SetActive(activate);
             return widget;
         }

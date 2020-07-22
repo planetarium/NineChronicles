@@ -38,7 +38,11 @@ namespace Nekoyume.Game.Character
 
         protected override void ExecuteRun()
         {
-            Animator.Idle();
+            Animator.Run();
+
+            Vector2 position = transform.position;
+            position.x += Time.deltaTime * -RunSpeed;
+            transform.position = position;
         }
     }
 }

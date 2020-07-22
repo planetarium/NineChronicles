@@ -428,7 +428,6 @@ namespace Nekoyume.UI
         public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
         {
             Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
-            Find<ArenaBattleLoadingScreen>().Close();
             Close();
         }
     }
