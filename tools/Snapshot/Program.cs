@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Text.Json;
 using Cocona;
 using Libplanet;
 using Libplanet.RocksDBStore;
@@ -41,6 +42,7 @@ namespace Snapshot
             {
                 var genesisHash = store.IterateIndexes(chainId,0, 1).First();
                 var tipHash = store.IterateIndexes(chainId, 0, null).Last();
+                var tipDigest = store.GetBlockDigest(tipHash);
                 store.Dispose();
 
                 var genesisHashHex = ByteUtil.Hex(genesisHash.ToByteArray());
@@ -53,6 +55,22 @@ namespace Snapshot
                 }
 
                 ZipFile.CreateFromDirectory(storePath, snapshotPath);
+
+                if (tipDigest is null)
+                {
+                    throw new CommandExitedException("Tip does not exists.", -1);
+                }
+
+                var tipHeader = tipDigest.Value.Header;
+                var json = JsonSerializer.Serialize(tipHeader);
+                var metadataFilename = $"{genesisHashHex}-snapshot-{tipHashHex}.meta";
+                var metadataPath = Path.Combine(outputDirectory, metadataFilename);
+                if (File.Exists(metadataPath))
+                {
+                    File.Delete(metadataPath);
+                }
+
+                File.WriteAllText(metadataPath, json);
             }
             else
             {
