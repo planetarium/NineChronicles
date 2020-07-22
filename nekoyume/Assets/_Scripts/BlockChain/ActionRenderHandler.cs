@@ -408,51 +408,46 @@ namespace Nekoyume.BlockChain
                     reference_slug: result.itemUsable.Id.ToString());
             }
 
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
-
             var gameInstance = Game.Game.instance;
 
             var nextQuest = gameInstance.States.CurrentAvatarState.questList?
                 .OfType<CombinationEquipmentQuest>()
-                .Where(x => x.Complete && x.isReceivable)
+                .Where(x => !x.Complete)
                 .OrderBy(x => x.StageId)
                 .FirstOrDefault(x =>
                 gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
 
-            if (nextQuest is null)
+            if (!(nextQuest is null))
             {
-                return;
-            }
+                var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId &&
+                        nextQuest.SubRecipeId == eval.Action.SubRecipeId;
 
-            var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId &&
-                    nextQuest.SubRecipeId == eval.Action.SubRecipeId;
-
-            if (!isRecipeMatch)
-            {
-                return;
-            }
-
-            var celebratesPopup = Widget.Find<CelebratesPopup>();
-            celebratesPopup.Show(nextQuest);
-            celebratesPopup.OnDisableObservable
-                .First()
-                .Subscribe(_ =>
+                if (isRecipeMatch)
                 {
-                    var menu = Widget.Find<Menu>();
-                    if (menu.isActiveAndEnabled)
-                    {
-                        menu.UpdateGuideQuest(avatarState);
-                    }
+                    var celebratesPopup = Widget.Find<CelebratesPopup>();
+                    celebratesPopup.Show(nextQuest);
+                    celebratesPopup.OnDisableObservable
+                        .First()
+                        .Subscribe(_ =>
+                        {
+                            var menu = Widget.Find<Menu>();
+                            if (menu.isActiveAndEnabled)
+                            {
+                                menu.UpdateGuideQuest(avatarState);
+                            }
 
-                    var combination = Widget.Find<Combination>();
-                    if (combination.isActiveAndEnabled)
-                    {
-                        combination.UpdateRecipe();
-                    }
-                });
-
+                            var combination = Widget.Find<Combination>();
+                            if (combination.isActiveAndEnabled)
+                            {
+                                combination.UpdateRecipe();
+                            }
+                        });
+                }
+            }
+            
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
             RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
