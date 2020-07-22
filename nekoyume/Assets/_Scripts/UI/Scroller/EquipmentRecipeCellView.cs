@@ -3,7 +3,6 @@ using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using System;
 using System.Linq;
-using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {

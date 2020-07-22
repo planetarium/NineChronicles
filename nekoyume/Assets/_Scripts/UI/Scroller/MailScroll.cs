@@ -1,5 +1,4 @@
 using System;
-using FancyScrollView;
 
 namespace Nekoyume.UI.Scroller
 {
