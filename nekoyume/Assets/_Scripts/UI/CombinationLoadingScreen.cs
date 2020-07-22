@@ -115,9 +115,9 @@ namespace Nekoyume.UI
             StartCoroutine(CoDisappearNPC());
         }
 
-        public void SetItemMaterial(Item item)
+        public void SetItemMaterial(Item item, bool isConsumable = false)
         {
-            speechBubble.SetItemMaterial(item);
+            speechBubble.SetItemMaterial(item, isConsumable);
         }
 
         private IEnumerator CoAnimateNPC()

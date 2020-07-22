@@ -72,7 +72,7 @@ MonoBehaviour:
   destroyTime: 4
   enable: 0
   onGoing: 0
-  _itemView: {fileID: 8554390299473742005}
+  itemView: {fileID: 8554390299473742005}
 --- !u!1 &2554064661086849118
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,7 +107,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.7900009, y: -5.46}
+  m_AnchoredPosition: {x: -1.7900009, y: 3.5}
   m_SizeDelta: {x: 208, y: 170}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5453586184729989550
@@ -183,7 +183,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 15.5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1506821756604054248
@@ -750,7 +750,7 @@ PrefabInstance:
     - target: {fileID: 4525948530569832111, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 35
+      value: 47.5
       objectReference: {fileID: 0}
     - target: {fileID: 4525948530569832111, guid: 7ad634ecd8fec49ba9291bfa3f942e7b,
         type: 3}
