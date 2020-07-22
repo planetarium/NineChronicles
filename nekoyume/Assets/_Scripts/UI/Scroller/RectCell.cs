@@ -2,23 +2,19 @@ using FancyScrollView;
 
 namespace Nekoyume.UI.Scroller
 {
-    public abstract class BaseCell<TItemData, TContext> : FancyScrollRectCell<TItemData, TContext>
+    public abstract class RectCell<TItemData, TContext> : FancyScrollRectCell<TItemData, TContext>
+        where TItemData : class
         where TContext : class, IFancyScrollRectContext, new()
     {
-        public void Show()
-        {
-            gameObject.SetActive(true);
-        }
-
         public void Show(TItemData itemData)
         {
             UpdateContent(itemData);
-            Show();
+            SetVisible(true);
         }
 
         public void Hide()
         {
-            gameObject.SetActive(false);
+            SetVisible(false);
         }
     }
 }
