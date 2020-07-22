@@ -124,7 +124,6 @@ namespace Nekoyume.UI.Module
         {
             ReactiveAvatarState.Inventory.Subscribe(inventoryState =>
             {
-                scroll.DisposeAddedAtSetData();
                 SharedModel.ResetItems(inventoryState);
                 OnResetItems.OnNext(this);
             }).AddTo(_disposablesAtOnEnable);

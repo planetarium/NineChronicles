@@ -171,11 +171,6 @@ namespace Nekoyume.UI.Scroller
             base.ScrollTo(itemIndex, duration, ease, alignment, onComplete);
         }
 
-        // FIXME: 임시.
-        public void DisposeAddedAtSetData()
-        {
-        }
-
         #endregion
 
         #region Getter
