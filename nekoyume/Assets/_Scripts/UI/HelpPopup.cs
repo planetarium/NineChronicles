@@ -120,7 +120,7 @@ namespace Nekoyume.UI
         private List<(Image, float)> _spinningImages = new List<(Image, float)>();
         private List<(TextMeshProUGUI, float)> _texts = new List<(TextMeshProUGUI, float)>();
 
-        #region Controll
+        #region Control
 
         public static void HelpMe(int id, bool showOnceForEachAgentAddress = default)
         {
