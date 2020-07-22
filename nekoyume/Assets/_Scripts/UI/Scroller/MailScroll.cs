@@ -3,12 +3,13 @@ using FancyScrollView;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class MailScroll : BaseScroll<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
+    public class MailScroll : RectScroll<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
     {
-        public class ContextModel : IFancyScrollRectContext
+        public class ContextModel : RectScrollDefaultContext, IDisposable
         {
-            public ScrollDirection ScrollDirection { get; set; }
-            public Func<(float ScrollSize, float ReuseMargin)> CalculateScrollSize { get; set; }
+            public void Dispose()
+            {
+            }
         }
     }
 }
