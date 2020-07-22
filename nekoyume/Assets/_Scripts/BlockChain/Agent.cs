@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -113,7 +114,7 @@ namespace Nekoyume.BlockChain
         {
             try
             {
-                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
+                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
             }
             catch(Exception e)
             {
