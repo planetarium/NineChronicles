@@ -15,7 +15,7 @@ using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class QuestCell : BaseCell<QuestModel, QuestScroll.ContextModel>
+    public class QuestCell : RectCell<QuestModel, QuestScroll.ContextModel>
     {
         [SerializeField]
         private Image background = null;
@@ -98,6 +98,12 @@ namespace Nekoyume.UI.Scroller
 
         private void UpdateView()
         {
+            if (_quest is null)
+            {
+                Hide();
+                return;
+            }
+
             var isReceived = false;
             titleText.text = _quest.GetTitle();
             contentText.text = _quest.GetContent();

@@ -29,7 +29,12 @@ namespace Nekoyume
         {
             foreach (var item in collection)
             {
-                item.Dispose();
+                if (!(item is IDisposable disposable))
+                {
+                    continue;
+                }
+
+                disposable.Dispose();
             }
 
             collection.Dispose();
