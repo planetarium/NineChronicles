@@ -176,6 +176,54 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: AsgardButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: worldName
+      value: Asgard
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d7dd09e5fa86e4b13a9c7a7664b8d57f,
+        type: 3}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: bcf882b6a6a0746ceac1ef610331efc8,
+        type: 3}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: eb13b33dd9cbe409da404eca9d81a26f,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -280,54 +328,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: AsgardButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: worldName
-      value: Asgard
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: d7dd09e5fa86e4b13a9c7a7664b8d57f,
-        type: 3}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: bcf882b6a6a0746ceac1ef610331efc8,
-        type: 3}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: eb13b33dd9cbe409da404eca9d81a26f,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -471,6 +471,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: YggdrasilWorldButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: worldName
+      value: Yggdrasil
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -576,26 +596,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.80320567
       objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: YggdrasilWorldButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: worldName
-      value: Yggdrasil
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_IsActive
@@ -641,6 +641,54 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: AlfheimButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: worldName
+      value: Alfheim
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0b98c6ce995ec49ada8e08a10d26e600,
+        type: 3}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 8e634b02454de483bb10e6c6c9419e0d,
+        type: 3}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: db0aa6aa780014952ad4b7455087adb7,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -745,54 +793,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: AlfheimButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: worldName
-      value: Alfheim
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 0b98c6ce995ec49ada8e08a10d26e600,
-        type: 3}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 8e634b02454de483bb10e6c6c9419e0d,
-        type: 3}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: db0aa6aa780014952ad4b7455087adb7,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -906,6 +906,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 432179639104244028, guid: d51c47110019c477f8b064ebd28712f1,
+        type: 3}
+      propertyPath: m_Name
+      value: HelpButtonS
+      objectReference: {fileID: 0}
     - target: {fileID: 2092428802851178608, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1011,11 +1016,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 432179639104244028, guid: d51c47110019c477f8b064ebd28712f1,
-        type: 3}
-      propertyPath: m_Name
-      value: HelpButtonS
-      objectReference: {fileID: 0}
     - target: {fileID: 5931873267396129474, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
       propertyPath: helpId
@@ -1036,6 +1036,54 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: SvartalfheimButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: worldName
+      value: Svartalfheim
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6ea41e3ad64c9467295f882c5802167a,
+        type: 3}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 5d04de0cba5e04a97806dcaf509ccfd0,
+        type: 3}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c4ade6d654a074f56ab7327c598e3ba7,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1140,54 +1188,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: SvartalfheimButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: worldName
-      value: Svartalfheim
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 6ea41e3ad64c9467295f882c5802167a,
-        type: 3}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 5d04de0cba5e04a97806dcaf509ccfd0,
-        type: 3}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: c4ade6d654a074f56ab7327c598e3ba7,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -1321,6 +1321,49 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: HardModeButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: worldName
+      value: HardMode
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9d84056bdc45e480980fd1015f4a671f,
+        type: 3}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2e310e10c96094d069f3a1e565f90219,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b0f8b82c7b718440784c14541503bff6,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1426,49 +1469,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: HardModeButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: worldName
-      value: HardMode
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 9d84056bdc45e480980fd1015f4a671f,
-        type: 3}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2e310e10c96094d069f3a1e565f90219,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b0f8b82c7b718440784c14541503bff6,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_IsActive
@@ -1555,6 +1555,12 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3842547115165747461, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: eb13b33dd9cbe409da404eca9d81a26f,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2, type: 3}
 --- !u!224 &2282917376214152685 stripped
