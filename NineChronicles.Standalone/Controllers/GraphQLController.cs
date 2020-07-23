@@ -55,7 +55,13 @@ namespace NineChronicles.Standalone.Controllers
                     .RunConsoleAsync()
                     .ContinueWith(task =>
                     {
-                        if (task.IsFaulted) throw task.Exception;
+                        if (task.IsFaulted)
+                        {
+                            Log.Error(
+                                task.Exception,
+                                "An unexpected error occurred while running NineChroniclesNodeService.",
+                                task.Exception);
+                        }
                     });
             }
             catch (Exception e)

@@ -219,6 +219,8 @@ namespace NineChronicles.Standalone.Executable
                 {
                     Log.Error(e, "An exception occurred during connecting to GraphQL server. {e}", e);
                 }
+
+                await Task.Delay(1000, cancellationToken);
             }
         }
     }
