@@ -86,7 +86,7 @@ namespace Nekoyume.Action
             var started = DateTimeOffset.UtcNow;
             Log.Debug("ItemEnhancement exec started.");
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState _,
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
                 return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
@@ -135,6 +135,16 @@ namespace Nekoyume.Action
             Log.Debug("ItemEnhancement Get Equipment: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
+            if(enhancementEquipment.level > 9)
+            {
+                // 최대 강화도 초과 에러.
+                return LogError(
+                    context,
+                    "Aborted due to invaild equipment level: {EquipmentLevel} < 9",
+                    enhancementEquipment.level
+                );
+            }
+
             var result = new ResultModel
             {
                 itemUsable = enhancementEquipment,
@@ -153,8 +163,16 @@ namespace Nekoyume.Action
                 );
             }
 
+            var tableSheets = TableSheets.FromActionContext(ctx);
+            var requiredNCG = GetRequiredNCG(tableSheets, enhancementEquipment.Grade, enhancementEquipment.level + 1);
+
             avatarState.actionPoint -= requiredAP;
             result.actionPoint = requiredAP;
+
+            if (requiredNCG > 0)
+            {
+                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, Currencies.Gold, requiredNCG);
+            }
 
             sw.Stop();
             Log.Debug("ItemEnhancement Get TableSheets: {Elapsed}", sw.Elapsed);
@@ -318,6 +336,15 @@ namespace Nekoyume.Action
             {
                 slotIndex = value.ToInteger();
             }
+        }
+
+        private BigInteger GetRequiredNCG(TableSheets tableSheets, int grade, int level)
+        {
+            var row = tableSheets
+                .EnhancementCostSheet.Values
+                .FirstOrDefault(x => x.Grade == grade && x.Level == level);
+
+            return row is null ? 0 : row.Cost;
         }
 
         private static Equipment UpgradeEquipment(Equipment equipment)
