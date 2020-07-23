@@ -162,7 +162,7 @@ namespace Nekoyume.UI.Module
                     costumesButton.image.sprite = _deselectedButtonSprite;
                     consumablesButton.image.sprite = _selectedButtonSprite;
                     materialsButton.image.sprite = _deselectedButtonSprite;
-                    scroll.UpdateData(SharedModel.Consumables);
+                    scroll.UpdateData(SharedModel.Consumables, true);
                     equipmentsButton.text.gameObject.SetActive(true);
                     costumesButton.text.gameObject.SetActive(true);
                     consumablesButton.selectedText.gameObject.SetActive(true);
@@ -173,7 +173,7 @@ namespace Nekoyume.UI.Module
                     costumesButton.image.sprite = _selectedButtonSprite;
                     consumablesButton.image.sprite = _deselectedButtonSprite;
                     materialsButton.image.sprite = _deselectedButtonSprite;
-                    scroll.UpdateData(SharedModel.Costumes);
+                    scroll.UpdateData(SharedModel.Costumes, true);
                     equipmentsButton.text.gameObject.SetActive(true);
                     costumesButton.selectedText.gameObject.SetActive(true);
                     consumablesButton.text.gameObject.SetActive(true);
@@ -184,7 +184,7 @@ namespace Nekoyume.UI.Module
                     costumesButton.image.sprite = _deselectedButtonSprite;
                     consumablesButton.image.sprite = _deselectedButtonSprite;
                     materialsButton.image.sprite = _deselectedButtonSprite;
-                    scroll.UpdateData(SharedModel.Equipments);
+                    scroll.UpdateData(SharedModel.Equipments, true);
                     equipmentsButton.selectedText.gameObject.SetActive(true);
                     costumesButton.text.gameObject.SetActive(true);
                     consumablesButton.text.gameObject.SetActive(true);
@@ -195,7 +195,7 @@ namespace Nekoyume.UI.Module
                     costumesButton.image.sprite = _deselectedButtonSprite;
                     consumablesButton.image.sprite = _deselectedButtonSprite;
                     materialsButton.image.sprite = _selectedButtonSprite;
-                    scroll.UpdateData(SharedModel.Materials);
+                    scroll.UpdateData(SharedModel.Materials, true);
                     equipmentsButton.text.gameObject.SetActive(true);
                     costumesButton.text.gameObject.SetActive(true);
                     consumablesButton.text.gameObject.SetActive(true);

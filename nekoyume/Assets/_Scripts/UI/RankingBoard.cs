@@ -330,7 +330,7 @@ namespace Nekoyume.UI
                             rank = rank++,
                             arenaInfo = arenaInfo,
                             currentAvatarArenaInfo = null
-                        }).ToList());
+                        }).ToList(), true);
 
                     return;
                 }
@@ -351,7 +351,7 @@ namespace Nekoyume.UI
                         rank = tuple.rank,
                         arenaInfo = tuple.arenaInfo,
                         currentAvatarArenaInfo = currentAvatarArenaInfo
-                    }).ToList());
+                    }).ToList(), true);
             }
             else
             {
