@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.Serialization;
+using Bencodex;
 using Bencodex.Types;
-using DecimalMath;
 using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
@@ -14,7 +15,8 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.Model.State
 {
-    public class WeeklyArenaState : State, IDictionary<Address, ArenaInfo>
+    [Serializable]
+    public class WeeklyArenaState : State, IDictionary<Address, ArenaInfo>, ISerializable
     {
         #region static
 
@@ -79,6 +81,11 @@ namespace Nekoyume.Model.State
         }
 
         public WeeklyArenaState(IValue iValue) : this((Dictionary)iValue)
+        {
+        }
+
+        protected WeeklyArenaState(SerializationInfo info, StreamingContext context)
+            : this((Dictionary)new Codec().Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }
 
@@ -333,6 +340,11 @@ namespace Nekoyume.Model.State
         public ICollection<ArenaInfo> Values => _map.Values;
 
         #endregion
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("serialized", new Codec().Encode(Serialize()));
+        }
     }
 
     public class ArenaInfo : IState
