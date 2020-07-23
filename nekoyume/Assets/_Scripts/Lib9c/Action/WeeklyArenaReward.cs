@@ -21,39 +21,49 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                return states.MarkBalanceChanged(Currencies.Gold, ctx.Signer);
+                return states
+                    .SetState(WeeklyArenaAddress, MarkChanged)
+                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer);
             }
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out AgentState _, out _))
+            if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState, out _))
             {
-                return states;
+                if (agentState is null)
+                {
+                    throw new FailedLoadStateException(
+                        $"Failed Load State: {nameof(AgentState)}. Address: {ctx.Signer}");
+                }
+                throw new FailedLoadStateException(
+                    $"Failed Load State: {nameof(AvatarState)}. Address: {AvatarAddress}");
             }
 
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
             if (weeklyArenaState is null)
             {
-                return states;
+                throw new FailedLoadStateException(
+                    $"Failed Load State: {nameof(WeeklyArenaState)}. Address: {WeeklyArenaAddress}");
+            }
+
+            if (!weeklyArenaState.Ended)
+            {
+                throw new ArenaNotEndedException($"Arena has not ended yet. Address: {WeeklyArenaAddress}");
             }
 
             if (!weeklyArenaState.TryGetValue(AvatarAddress, out var info))
             {
-                return states;
+                throw new KeyNotFoundException($"Arena {WeeklyArenaAddress} not contains {AvatarAddress}");
             }
 
             if (info.Receive)
             {
-                return states;
+                throw new AlreadyReceivedException($"Already Received Address. WeeklyArenaAddress: {WeeklyArenaAddress} AvatarAddress: {AvatarAddress}");
             }
 
-            info.Receive = true;
-
             var tier = weeklyArenaState.GetTier(info);
-
             var gold = weeklyArenaState.GetReward(tier);
-
-            // FIXME: 사실 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
-            // 근데 RankingBattle 액션에서 입장료 받아다 WeeklyArenaAddress에다 쌓아두는데 그거 빼서 주면 안되는지?
-            return states.MintAsset(ctx.Signer, Currencies.Gold, gold);
+            states = states.TransferAsset(WeeklyArenaAddress, ctx.Signer, Currencies.Gold, gold);
+            weeklyArenaState.SetReceive(AvatarAddress);
+            return states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());
         }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>

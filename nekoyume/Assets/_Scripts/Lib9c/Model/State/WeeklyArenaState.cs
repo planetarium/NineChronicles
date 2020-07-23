@@ -49,6 +49,8 @@ namespace Nekoyume.Model.State
 
         public long ResetIndex;
 
+        public bool Ended;
+
         private readonly Dictionary<Address, ArenaInfo> _map;
         private Dictionary<TierType, BigInteger> _rewardMap = new Dictionary<TierType, BigInteger>();
 
@@ -77,6 +79,7 @@ namespace Nekoyume.Model.State
             }
 
             Gold = serialized["gold"].ToBigInteger();
+            Ended = serialized["ended"].ToBoolean();
             ResetOrderedArenaInfos();
         }
 
@@ -106,6 +109,7 @@ namespace Nekoyume.Model.State
                    )
                 )),
                 [(Text)"gold"] = Gold.Serialize(),
+                [(Text)"ended"] = Ended.Serialize(),
             }.Union((Dictionary)base.Serialize()));
 
         private void ResetOrderedArenaInfos()
@@ -187,6 +191,7 @@ namespace Nekoyume.Model.State
         public void End()
         {
             SetRewardMap();
+            Ended = true;
         }
 
         public void Update(WeeklyArenaState prevState, long index)
