@@ -61,7 +61,8 @@ namespace Nekoyume.Action
 
             var tier = weeklyArenaState.GetTier(info);
             var gold = weeklyArenaState.GetReward(tier);
-            states = states.TransferAsset(WeeklyArenaAddress, ctx.Signer, Currencies.Gold, gold);
+            //FIXME TransferAsset실행시 InsufficientBalanceException이 발생할 경우 역직렬화 오류가 발생합니다.
+            states = states.MintAsset(ctx.Signer, Currencies.Gold, gold);
             weeklyArenaState.SetReceive(AvatarAddress);
             return states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());
         }
