@@ -134,7 +134,7 @@ namespace Nekoyume.UI
                 .FindAll(e => e.QuestType == (QuestType) state)
                 .OrderBy(e => e, new QuestOrderComparer())
                 .ToList();
-            scroll.UpdateData(list);
+            scroll.UpdateData(list, true);
         }
 
         public void UpdateTabs()

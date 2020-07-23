@@ -70,7 +70,7 @@ namespace Nekoyume.UI.Scroller
 
         #endregion
 
-        #region Controll
+        #region Control
 
         public void ShowAsNew(
             Nekoyume.Model.Quest.Quest quest,

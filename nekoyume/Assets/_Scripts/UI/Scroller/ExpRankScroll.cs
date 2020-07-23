@@ -1,19 +1,21 @@
 using System;
-using FancyScrollView;
+using System.Collections.Generic;
+using System.Linq;
+using Nekoyume.Model.State;
 using UniRx;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class ExpRankScroll : BaseScroll<
-        (int ranking, Nekoyume.Model.State.RankingInfo rankingInfo),
-        ExpRankScroll.ContextModel>
+    public class ExpRankScroll : RectScroll<ExpRankCell.ViewModel, ExpRankScroll.ContextModel>
     {
-        public class ContextModel : IFancyScrollRectContext
+        public class ContextModel : RectScrollDefaultContext, IDisposable
         {
             public readonly Subject<ExpRankCell> OnClick = new Subject<ExpRankCell>();
 
-            public ScrollDirection ScrollDirection { get; set; }
-            public Func<(float ScrollSize, float ReuseMargin)> CalculateScrollSize { get; set; }
+            public void Dispose()
+            {
+                OnClick?.Dispose();
+            }
         }
 
         public IObservable<ExpRankCell> OnClick => Context.OnClick;

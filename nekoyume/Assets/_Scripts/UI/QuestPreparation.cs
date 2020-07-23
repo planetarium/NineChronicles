@@ -129,7 +129,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.SelectedItemView
                 .Subscribe(SubscribeInventorySelectedItem)
                 .AddTo(gameObject);
-            inventory.SharedModel.OnDoubleClickItemView
+            inventory.OnDoubleClickItemView
                 .Subscribe(itemView =>
                 {
                     if (itemView is null ||

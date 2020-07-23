@@ -152,7 +152,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        #region Controll
+        #region Control
 
         /// <summary>
         /// GuidedQuest를 초기화하면서 노출시킵니다.

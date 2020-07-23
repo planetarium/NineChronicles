@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class MailCell : BaseCell<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
+    public class MailCell : RectCell<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
     {
         private static readonly Vector2 LeftBottom = new Vector2(-14f, -10.5f);
 
@@ -54,6 +54,12 @@ namespace Nekoyume.UI.Scroller
 
         private void UpdateView()
         {
+            if (_mail is null)
+            {
+                Hide();
+                return;
+            }
+
             var isNew = _mail.New;
             button.interactable = isNew;
             submitText.text = isNew

@@ -10,10 +10,16 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class ExpRankCell : BaseCell<
-        (int rank, RankingInfo rankingInfo),
+    public class ExpRankCell : RectCell<
+        ExpRankCell.ViewModel,
         ExpRankScroll.ContextModel>
     {
+        public class ViewModel
+        {
+            public int rank;
+            public RankingInfo rankingInfo;
+        }
+
         [SerializeField]
         private Image backgroundImage = null;
 
@@ -67,9 +73,10 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        public override void UpdateContent((int rank, RankingInfo rankingInfo) itemData)
+        public override void UpdateContent(ViewModel itemData)
         {
-            var (rank, rankingInfo) = itemData;
+            var rank = itemData.rank;
+            var rankingInfo = itemData.rankingInfo;
 
             RankingInfo = rankingInfo ?? throw new ArgumentNullException(nameof(rankingInfo));
             _isCurrentUser = States.Instance.CurrentAvatarState?.address ==

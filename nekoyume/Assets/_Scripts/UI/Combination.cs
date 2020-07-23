@@ -183,7 +183,7 @@ namespace Nekoyume.UI
             State.Subscribe(SubscribeState).AddTo(gameObject);
 
             inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip).AddTo(gameObject);
-            inventory.SharedModel.OnDoubleClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
+            inventory.OnDoubleClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
 
             equipmentRecipe.Initialize();
             consumableRecipe.Initialize();
