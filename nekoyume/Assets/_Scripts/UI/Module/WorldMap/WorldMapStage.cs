@@ -114,7 +114,7 @@ namespace Nekoyume.UI.Module
             _tweener = null;
         }
 
-        public void Show(ViewModel viewModel)
+        public void Show(ViewModel viewModel, string imageKey)
         {
             if (viewModel is null)
             {
@@ -128,8 +128,7 @@ namespace Nekoyume.UI.Module
             SharedViewModel.State.Subscribe(SubscribeState).AddTo(_disposablesForModel);
             SharedViewModel.Selected.Subscribe(SubscribeSelect).AddTo(_disposablesForModel);
             SharedViewModel.HasNotification.SubscribeTo(hasNotificationImage).AddTo(_disposablesForModel);
-
-            SetBoss(SharedViewModel.hasBoss);
+            Set(SharedViewModel.hasBoss, imageKey);
             buttonText.text = SharedViewModel.stageNumber;
         }
 
@@ -192,21 +191,34 @@ namespace Nekoyume.UI.Module
                 .SetLoops(-1, LoopType.Yoyo);
         }
 
-        private void SetBoss(bool isBoss)
+        private void Set(bool isBoss, string imageKey)
         {
+            normalImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/bg_worldmap_{imageKey}_icon_01");
+            normalImage.SetNativeSize();
+            if (imageKey == "03")
+            {
+                //같은 이미지가 사용됨
+                imageKey = "02";
+            }
+            disabledImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/bg_worldmap_{imageKey}_icon_02");
+            disabledImage.SetNativeSize();
+            selectedImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/bg_worldmap_{imageKey}_icon_03");
+            selectedImage.SetNativeSize();
             bossImage.enabled = isBoss;
+            ResetScale();
             if (isBoss)
             {
                 normalImage.transform.localScale *= bossScale;
                 disabledImage.transform.localScale *= bossScale;
                 selectedImage.transform.localScale *= bossScale;
             }
-            else
-            {
-                normalImage.transform.localScale = _normalImageScale;
-                disabledImage.transform.localScale = _disabledImageScale;
-                selectedImage.transform.localScale = _selectedImageScale;
-            }
+        }
+
+        private void ResetScale()
+        {
+            normalImage.transform.localScale = _normalImageScale;
+            disabledImage.transform.localScale = _disabledImageScale;
+            selectedImage.transform.localScale = _selectedImageScale;
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
+using Nekoyume.TableData;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -50,6 +51,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject hasNotificationImage = null;
 
+        [SerializeField]
+        private string worldName = null;
+
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Locked);
 
         private readonly ReactiveProperty<AnimationState> _animationState =
@@ -61,6 +65,10 @@ namespace Nekoyume.UI.Module
         public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         private bool IsLocked => _state.Value == State.Locked;
+        public string WorldName => worldName;
+        public int Id { get; private set; }
+        public int StageBegin { get; private set; }
+        public int StageEnd { get; private set; }
 
         private void Awake()
         {
@@ -174,6 +182,13 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+        }
+
+        public void Set(WorldSheet.Row worldRow)
+        {
+            Id = worldRow.Id;
+            StageBegin = worldRow.StageBegin;
+            StageEnd = worldRow.StageEnd;
         }
     }
 }
