@@ -82,47 +82,6 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   worldMapRoot: {fileID: 6394097395807008815}
-  yggdrasilButton: {fileID: 1702896723484355466}
-  alfheimButton: {fileID: 5603630107200300623}
-  svartalfheimButton: {fileID: 9114340838112080730}
-  asgardButton: {fileID: 1312301102039139924}
-  hardModeButton: {fileID: 8325405277954830072}
-  stage: {fileID: 0}
-  stageInformation:
-    titleText: {fileID: 0}
-    descriptionText: {fileID: 0}
-    monstersAreaText: {fileID: 0}
-    monstersAreaCharacterViews:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    rewardsAreaText: {fileID: 0}
-    rewardsAreaItemViews:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
-    expText: {fileID: 0}
-  submitButton: {fileID: 0}
-  buttonNotification: {fileID: 0}
-  stageHelpButton: {fileID: 0}
 --- !u!1 &6394097395807008815
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,10 +176,53 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: AsgardButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: worldName
       value: Asgard
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: d7dd09e5fa86e4b13a9c7a7664b8d57f,
+        type: 3}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: bcf882b6a6a0746ceac1ef610331efc8,
+        type: 3}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: eb13b33dd9cbe409da404eca9d81a26f,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -327,44 +329,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: AsgardButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: d7dd09e5fa86e4b13a9c7a7664b8d57f,
-        type: 3}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: bcf882b6a6a0746ceac1ef610331efc8,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: eb13b33dd9cbe409da404eca9d81a26f,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_IsActive
@@ -451,6 +415,52 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -19.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 121
+      objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 22
+      objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 40.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6905887094752087735, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3842547115165747461, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c4ade6d654a074f56ab7327c598e3ba7,
+        type: 3}
+    - target: {fileID: 3842547115165747461, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_PreserveAspect
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1683128173200868916, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -121.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7922934807084267531, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -86.99999
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2, type: 3}
 --- !u!224 &9084165454527913281 stripped
@@ -459,18 +469,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1933223491998323808}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1312301102039139924 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-    type: 3}
-  m_PrefabInstance: {fileID: 1933223491998323808}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c65452128ac54f398da492e55daa1016, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2252905851735226814
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -478,10 +476,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: YggdrasilWorldButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: worldName
       value: Yggdrasil
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -588,21 +601,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.80320567
       objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: YggdrasilWorldButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_IsActive
@@ -618,6 +616,11 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 6905887094752087735, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2, type: 3}
 --- !u!224 &8900992150835130527 stripped
@@ -626,18 +629,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 2252905851735226814}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1702896723484355466 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-    type: 3}
-  m_PrefabInstance: {fileID: 2252905851735226814}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c65452128ac54f398da492e55daa1016, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &4982702503679112315
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -645,10 +636,53 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: AlfheimButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: worldName
       value: Alfheim
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0b98c6ce995ec49ada8e08a10d26e600,
+        type: 3}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 8e634b02454de483bb10e6c6c9419e0d,
+        type: 3}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: db0aa6aa780014952ad4b7455087adb7,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -755,44 +789,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: AlfheimButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 0b98c6ce995ec49ada8e08a10d26e600,
-        type: 3}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 8e634b02454de483bb10e6c6c9419e0d,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: db0aa6aa780014952ad4b7455087adb7,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_IsActive
@@ -874,6 +870,42 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -23.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 41.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 6905887094752087735, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3842547115165747461, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1b64aba935d224ce3a56fc04f10918cb,
+        type: 3}
+    - target: {fileID: 1683128173200868916, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -100
+      objectReference: {fileID: 0}
+    - target: {fileID: 7922934807084267531, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -66.200005
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2, type: 3}
 --- !u!224 &2441898069449309530 stripped
@@ -882,18 +914,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 4982702503679112315}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &5603630107200300623 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-    type: 3}
-  m_PrefabInstance: {fileID: 4982702503679112315}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c65452128ac54f398da492e55daa1016, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &6519139243727091834
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -901,10 +921,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
-    - target: {fileID: 5931873267396129474, guid: d51c47110019c477f8b064ebd28712f1,
+    - target: {fileID: 432179639104244028, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
-      propertyPath: helpId
-      value: 100002
+      propertyPath: m_Name
+      value: HelpButtonS
       objectReference: {fileID: 0}
     - target: {fileID: 2092428802851178608, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
@@ -1011,10 +1031,10 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 432179639104244028, guid: d51c47110019c477f8b064ebd28712f1,
+    - target: {fileID: 5931873267396129474, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
-      propertyPath: m_Name
-      value: HelpButtonS
+      propertyPath: helpId
+      value: 100002
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d51c47110019c477f8b064ebd28712f1, type: 3}
@@ -1031,10 +1051,53 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: SvartalfheimButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: worldName
       value: Svartalfheim
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6ea41e3ad64c9467295f882c5802167a,
+        type: 3}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 5d04de0cba5e04a97806dcaf509ccfd0,
+        type: 3}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c4ade6d654a074f56ab7327c598e3ba7,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -1141,44 +1204,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: SvartalfheimButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 6ea41e3ad64c9467295f882c5802167a,
-        type: 3}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 5d04de0cba5e04a97806dcaf509ccfd0,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: c4ade6d654a074f56ab7327c598e3ba7,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_IsActive
@@ -1233,7 +1258,7 @@ PrefabInstance:
     - target: {fileID: 3444717624973401390, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3335416048235874681, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -1265,6 +1290,47 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -27.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 66
+      objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 8850980900102185392, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 34.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6905887094752087735, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3842547115165747461, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: db0aa6aa780014952ad4b7455087adb7,
+        type: 3}
+    - target: {fileID: 1683128173200868916, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -93.90001
+      objectReference: {fileID: 0}
+    - target: {fileID: 7922934807084267531, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -57.3
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2, type: 3}
 --- !u!224 &1322912652059928655 stripped
@@ -1273,18 +1339,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8547461352931991918}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9114340838112080730 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-    type: 3}
-  m_PrefabInstance: {fileID: 8547461352931991918}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c65452128ac54f398da492e55daa1016, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8893427968514030796
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1292,10 +1346,48 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 761237181760334282}
     m_Modifications:
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Name
+      value: HardModeButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: worldName
       value: HardMode
+      objectReference: {fileID: 0}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9d84056bdc45e480980fd1015f4a671f,
+        type: 3}
+    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2e310e10c96094d069f3a1e565f90219,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: b0f8b82c7b718440784c14541503bff6,
+        type: 3}
+    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7261281288613710113, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
@@ -1402,44 +1494,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Name
-      value: HardModeButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4131133213346619244, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 9d84056bdc45e480980fd1015f4a671f,
-        type: 3}
-    - target: {fileID: 1916970992104224932, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2130400639528636818, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 2e310e10c96094d069f3a1e565f90219,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: b0f8b82c7b718440784c14541503bff6,
-        type: 3}
-    - target: {fileID: 1867882354418733786, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1730111273096313669, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
         type: 3}
       propertyPath: m_IsActive
@@ -1534,15 +1588,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 8893427968514030796}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &8325405277954830072 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 640085520468513332, guid: 99ae5fa5e665e4ac69367fb15a5ebbb2,
-    type: 3}
-  m_PrefabInstance: {fileID: 8893427968514030796}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c65452128ac54f398da492e55daa1016, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
