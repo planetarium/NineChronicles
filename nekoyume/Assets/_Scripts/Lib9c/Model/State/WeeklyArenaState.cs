@@ -45,7 +45,7 @@ namespace Nekoyume.Model.State
 
         #endregion
 
-        public decimal Gold;
+        public BigInteger Gold;
 
         public long ResetIndex;
 
@@ -76,7 +76,7 @@ namespace Nekoyume.Model.State
                     kv => kv.Value.ToBigInteger());
             }
 
-            Gold = serialized.GetDecimal("gold");
+            Gold = serialized["gold"].ToBigInteger();
             ResetOrderedArenaInfos();
         }
 
@@ -198,6 +198,11 @@ namespace Nekoyume.Model.State
                 _map[kv.Key] = value;
             }
             ResetIndex = index;
+        }
+
+        public void SetReceive(Address avatarAddress)
+        {
+            _map[avatarAddress].Receive = true;
         }
 
         public TierType GetTier(ArenaInfo info)
@@ -413,6 +418,7 @@ namespace Nekoyume.Model.State
             Active = serialized.GetBoolean("active");
             DailyChallengeCount = serialized.GetInteger("dailyChallengeCount");
             Score = serialized.GetInteger("score");
+            Receive = serialized["receive"].ToBoolean();
         }
 
         public ArenaInfo(ArenaInfo prevInfo)
@@ -442,6 +448,7 @@ namespace Nekoyume.Model.State
                 [(Text)"active"] = Active.Serialize(),
                 [(Text)"dailyChallengeCount"] = DailyChallengeCount.Serialize(),
                 [(Text)"score"] = Score.Serialize(),
+                [(Text)"receive"] = Receive.Serialize(),
             });
 
         public void Update(AvatarState state, CharacterSheet characterSheet)
