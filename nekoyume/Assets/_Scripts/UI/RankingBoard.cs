@@ -325,8 +325,12 @@ namespace Nekoyume.UI
 
                     var rank = 1;
                     arenaRankScroll.Show(weeklyArenaState.OrderedArenaInfos
-                        .Select(arenaInfo => (rank++, arenaInfo, (ArenaInfo) null))
-                        .ToList());
+                        .Select(arenaInfo => new ArenaRankCell.ViewModel
+                        {
+                            rank = rank++,
+                            arenaInfo = arenaInfo,
+                            currentAvatarArenaInfo = null
+                        }).ToList());
 
                     return;
                 }
@@ -342,8 +346,12 @@ namespace Nekoyume.UI
                     currentAvatarArenaInfo));
 
                 arenaRankScroll.Show(arenaInfos
-                    .Select(tuple => (tuple.rank, tuple.arenaInfo, currentAvatarArenaInfo))
-                    .ToList());
+                    .Select(tuple => new ArenaRankCell.ViewModel
+                    {
+                        rank = tuple.rank,
+                        arenaInfo = tuple.arenaInfo,
+                        currentAvatarArenaInfo = currentAvatarArenaInfo
+                    }).ToList());
             }
             else
             {
@@ -363,8 +371,11 @@ namespace Nekoyume.UI
                     : (DateTimeOffset?) null);
 
                 expRankScroll.Show(rankingInfos
-                    .Select(rankingInfo => (rank++, rankingInfo))
-                    .ToList());
+                    .Select(rankingInfo => new ExpRankCell.ViewModel
+                    {
+                        rank = rank++,
+                        rankingInfo = rankingInfo
+                    }).ToList());
             }
         }
 

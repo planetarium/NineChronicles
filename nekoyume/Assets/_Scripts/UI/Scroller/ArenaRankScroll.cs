@@ -23,20 +23,5 @@ namespace Nekoyume.UI.Scroller
         public IObservable<ArenaRankCell> OnClickAvatarInfo => Context.OnClickAvatarInfo;
 
         public IObservable<ArenaRankCell> OnClickChallenge => Context.OnClickChallenge;
-
-        public void Show(IEnumerable<(
-            int rank,
-            ArenaInfo arenaInfo,
-            ArenaInfo currentAvatarArenaInfo)> itemData)
-        {
-            Show(itemData
-                .Select(tuple => new ArenaRankCell.ViewModel
-                {
-                    rank = tuple.rank,
-                    arenaInfo = tuple.arenaInfo,
-                    currentAvatarArenaInfo = tuple.currentAvatarArenaInfo
-                })
-                .ToList());
-        }
     }
 }

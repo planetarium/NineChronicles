@@ -19,16 +19,5 @@ namespace Nekoyume.UI.Scroller
         }
 
         public IObservable<ExpRankCell> OnClick => Context.OnClick;
-
-        public void Show(IEnumerable<(int rank, RankingInfo rankingInfo)> itemData)
-        {
-            Show(itemData
-                .Select(tuple => new ExpRankCell.ViewModel
-                {
-                    rank = tuple.rank,
-                    rankingInfo = tuple.rankingInfo
-                })
-                .ToList());
-        }
     }
 }
