@@ -4,6 +4,7 @@ using System.Linq;
 using Assets.SimpleLocalization;
 using Libplanet;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -123,6 +124,7 @@ namespace Nekoyume.UI
                     //     -GameConfig.ArenaActivationCostNCG);
                     // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 골드를 더하지 못함.
                     // LocalStateModifier.ModifyWeeklyArenaGold(GameConfig.ArenaActivationCostNCG);
+                    Game.Game.instance.ActionManager.WeeklyArenaReward();
                     LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets
                         .CharacterSheet);
                 }).AddTo(gameObject);
