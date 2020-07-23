@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
+using Libplanet.KeyStore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -116,34 +118,62 @@ namespace NineChronicles.Standalone.Controllers
         private void NotifyRefillActionPoint(
             object sender, BlockChain<PolymorphicAction<ActionBase>>.TipChangedEventArgs args)
         {
-            var privateKey = StandaloneContext.NineChroniclesNodeService.PrivateKey;
-            var chain = StandaloneContext.BlockChain;
-            IValue state = chain.GetState(privateKey.ToAddress());
-
-            if (state is null)
+            List<Tuple<Guid, ProtectedPrivateKey>> tuples =
+                StandaloneContext.KeyStore.List().ToList();
+            if (!tuples.Any())
             {
                 return;
             }
 
-            var agentState = new AgentState((Bencodex.Types.Dictionary) state);
-            var avatarStates = agentState.avatarAddresses.Values.Select(address =>
-                new AvatarState((Bencodex.Types.Dictionary) chain.GetState(address)));
-            var avatarStatesCanRefill =
-                avatarStates.Where(avatarState =>
-                        NotificationRecords.TryGetValue(avatarState.address, out long notificationRecord)
-                            ? avatarState.dailyRewardReceivedIndex != notificationRecord
-                            : args.Index >= avatarState.dailyRewardReceivedIndex + GameConfig.DailyRewardInterval)
+            IEnumerable<Address> playerAddresses = tuples.Select(tuple => tuple.Item2.Address);
+            var chain = StandaloneContext.BlockChain;
+            List<IValue> states = playerAddresses
+                .Select(addr => chain.GetState(addr))
+                .Where(value => !(value is null))
                 .ToList();
 
-            if (avatarStatesCanRefill.Any())
+            if (!states.Any())
+            {
+                return;
+            }
+
+            var agentStates =
+                states.Select(state => new AgentState((Bencodex.Types.Dictionary) state));
+            var avatarStates = agentStates.SelectMany(agentState =>
+                agentState.avatarAddresses.Values.Select(address =>
+                    new AvatarState((Bencodex.Types.Dictionary) chain.GetState(address))));
+
+            bool IsDailyRewardRefilled(long dailyRewardReceivedIndex)
+            {
+                return args.Index >= dailyRewardReceivedIndex + GameConfig.DailyRewardInterval;
+            }
+
+            bool NeedsRefillNotification(AvatarState avatarState)
+            {
+                if (NotificationRecords.TryGetValue(avatarState.address, out long record))
+                {
+                    return avatarState.dailyRewardReceivedIndex != record
+                           && IsDailyRewardRefilled(avatarState.dailyRewardReceivedIndex);
+                }
+
+                return IsDailyRewardRefilled(avatarState.dailyRewardReceivedIndex);
+            }
+
+            var avatarStatesToSendNotification = avatarStates
+                .Where(NeedsRefillNotification)
+                .ToList();
+
+            if (avatarStatesToSendNotification.Any())
             {
                 var notification = new Notification(NotificationEnum.Refill);
                 StandaloneContext.NotificationSubject.OnNext(notification);
             }
 
-            foreach (var avatarState in avatarStatesCanRefill)
+            foreach (var avatarState in avatarStatesToSendNotification)
             {
-                Log.Debug("Record notification for {AvatarAddress}", avatarState.address.ToHex());
+                Log.Debug(
+                    "Record notification for {AvatarAddress}",
+                    avatarState.address.ToHex());
                 NotificationRecords[avatarState.address] = avatarState.dailyRewardReceivedIndex;
             }
         }

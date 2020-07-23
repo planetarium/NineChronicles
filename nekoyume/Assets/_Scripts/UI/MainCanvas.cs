@@ -217,6 +217,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<StageInformation>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Combination>());
