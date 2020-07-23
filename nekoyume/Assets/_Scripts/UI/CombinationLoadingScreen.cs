@@ -163,9 +163,11 @@ namespace Nekoyume.UI
                 item.ItemBase.Value.GetIconSprite(),
                 speechBubble.ItemView.transform.position,
                 endPosition,
+                Vector2.one * 1.5f,
+                false,
                 false,
                 1f,
-                0.82f,
+                0,
                 ItemMoveAnimation.EndPoint.Workshop);
 
             yield return null;
