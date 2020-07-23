@@ -54,6 +54,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private string worldName = null;
 
+        [SerializeField]
+        private GameObject lockImage = null;
+
+        [SerializeField]
+        private GameObject unlockImage = null;
+
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Locked);
 
         private readonly ReactiveProperty<AnimationState> _animationState =
@@ -136,6 +142,8 @@ namespace Nekoyume.UI.Module
                     grayImage.enabled = false;
                     colorImage.enabled = true;
                     nameImage.enabled = true;
+                    lockImage.SetActive(false);
+                    unlockImage.SetActive(true);
                     _animationState.SetValueAndForceNotify(AnimationState.Idle);
                     break;
                 case State.Locked:
@@ -143,6 +151,8 @@ namespace Nekoyume.UI.Module
                     grayImage.enabled = true;
                     colorImage.enabled = false;
                     nameImage.enabled = false;
+                    lockImage.SetActive(true);
+                    unlockImage.SetActive(false);
                     _animationState.SetValueAndForceNotify(AnimationState.None);
                     break;
                 default:
