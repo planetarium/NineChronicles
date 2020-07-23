@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.NetworkInformation;
 using Assets.SimpleLocalization;
 using Libplanet;
 using Libplanet.Crypto;
@@ -69,12 +68,12 @@ namespace Nekoyume.Game
             Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             base.Awake();
             _options = CommandLineOptions.Load(
-               CommandLineOptionsJsonPath
+                CommandLineOptionsJsonPath
             );
             // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
+            var address = new PrivateKey(ByteUtil.ParseHex(_options.PrivateKey)).ToAddress();
 #if !UNITY_EDITOR
             Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-            var address = new PrivateKey(ByteUtil.ParseHex(_options.PrivateKey)).PublicKey.ToAddress();
             Mixpanel.Identify(address.ToString());
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
@@ -157,10 +156,14 @@ namespace Nekoyume.Game
         private IEnumerator CoInitializeTableSheets()
         {
             TableSheets = new TableSheets();
-            var request = Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            var request =
+                Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
             yield return request;
             if (!(request.asset is AddressableAssetsContainer addressableAssetsContainer))
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            {
+                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
+                    AddressableAssetsContainerPath);
+            }
 
             List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
             foreach (var asset in csvAssets)
@@ -174,7 +177,8 @@ namespace Nekoyume.Game
 
         public static IDictionary<string, string> GetTableCsvAssets()
         {
-            var container = Resources.Load<AddressableAssetsContainer>(AddressableAssetsContainerPath);
+            var container =
+                Resources.Load<AddressableAssetsContainer>(AddressableAssetsContainerPath);
             return container.tableCsvAssets.ToDictionary(asset => asset.name, asset => asset.text);
         }
 
@@ -226,7 +230,10 @@ namespace Nekoyume.Game
                 Mixpanel.Track("Unity/Player Quit");
                 Mixpanel.Flush();
             }
+
+#if !UNITY_EDITOR
             Application.OpenURL("https://forms.gle/sgGWJ6g9sBugoACS6");
+#endif
         }
 
         public static void Quit()
@@ -250,8 +257,14 @@ namespace Nekoyume.Game
                 Widget.Find<Login>().Show();
                 Widget.Find<Menu>().Close();
             };
-            confirm.Show("UI_CONFIRM_QUIT_TITLE", "UI_CONFIRM_QUIT_CONTENT", "UI_QUIT", "UI_CHARACTER_SELECT",
-                blurRadius: 2, submittable: false);
+
+            confirm.Show(
+                "UI_CONFIRM_QUIT_TITLE",
+                "UI_CONFIRM_QUIT_CONTENT",
+                "UI_QUIT",
+                "UI_CHARACTER_SELECT",
+                blurRadius: 2,
+                submittable: false);
         }
 
         private static void PlayMouseOnClickVFX(Vector3 position)
@@ -292,6 +305,7 @@ namespace Nekoyume.Game
                     {
                         Application.OpenURL(GameConfig.DiscordLink);
                     }
+
 #if UNITY_EDITOR
                     UnityEditor.EditorApplication.ExitPlaymode();
 #else
@@ -332,8 +346,12 @@ namespace Nekoyume.Game
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
+                {
                     return;
+                }
+
                 StoreUtils.ResetStore(storagePath);
+
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.ExitPlaymode();
 #else
@@ -349,7 +367,10 @@ namespace Nekoyume.Game
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.No)
+                {
                     return;
+                }
+
                 var keyPath = _options.KeyStorePath;
                 if (Directory.Exists(keyPath))
                 {
@@ -362,6 +383,7 @@ namespace Nekoyume.Game
                 Application.Quit();
 #endif
             };
+
             confirm.Show("UI_CONFIRM_RESET_KEYSTORE_TITLE", "UI_CONFIRM_RESET_KEYSTORE_CONTENT");
         }
     }

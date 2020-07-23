@@ -40,9 +40,6 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
-        public readonly Subject<InventoryItemView> OnDoubleClickItemView =
-            new Subject<InventoryItemView>();
-
         private ItemSubType[] _itemSubTypesForNotification =
         {
             ItemSubType.Weapon,
@@ -74,7 +71,6 @@ namespace Nekoyume.UI.Model
             SelectedItemView.Dispose();
             DimmedFunc.Dispose();
             EquippedEnabledFunc.Dispose();
-            OnDoubleClickItemView.Dispose();
         }
 
         public void ResetItems(Nekoyume.Model.Item.Inventory inventory)
@@ -101,25 +97,6 @@ namespace Nekoyume.UI.Model
         {
             var item = new InventoryItem(itemBase, count);
             item.Dimmed.Value = DimmedFunc.Value(item);
-            item.OnClick.Subscribe(model =>
-            {
-                if (!(model is InventoryItem inventoryItem))
-                {
-                    return;
-                }
-
-                SubscribeItemOnClick(inventoryItem.View);
-            });
-            item.OnDoubleClick.Subscribe(model =>
-            {
-                if (!(model is InventoryItem inventoryItem))
-                {
-                    return;
-                }
-
-                DeselectItemView();
-                OnDoubleClickItemView.OnNext(inventoryItem.View);
-            });
 
             return item;
         }
@@ -428,7 +405,7 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        private void SubscribeItemOnClick(InventoryItemView view)
+        public void SubscribeItemOnClick(InventoryItemView view)
         {
             if (view != null &&
                 view == SelectedItemView.Value)

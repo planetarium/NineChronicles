@@ -160,22 +160,59 @@ namespace Nekoyume.UI
             }
         }
 
+        // NOTE: 아이템 툴팁 쪽에서 타겟의 상태를 관찰하면서 꺼주는 구조는 양방향으로 간섭이 일어나서 좋지 않아 보입니다.
+        // 타겟 쪽에서 확실히 툴팁을 꺼주는 방식이 읽기 쉬울 것 같습니다.
         private IEnumerator CoUpdate()
         {
-            var temp = EventSystem.current.currentSelectedGameObject;
+            var selectedGameObjectCache = EventSystem.current.currentSelectedGameObject;
+            while (selectedGameObjectCache is null)
+            {
+                selectedGameObjectCache = EventSystem.current.currentSelectedGameObject;
+                yield return null;
+            }
+
+            var positionCache = selectedGameObjectCache.transform.position;
 
             while (enabled)
             {
-                if (EventSystem.current.currentSelectedGameObject != temp)
+                var current = EventSystem.current.currentSelectedGameObject;
+                if (current == selectedGameObjectCache)
                 {
-                    var current = EventSystem.current.currentSelectedGameObject;
-                    if (current == submitButton.gameObject || current == submitButtonForRetrieve.gameObject)
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        positionCache = selectedGameObjectCache.transform.position;
+                        yield return null;
+                        continue;
+                    }
+
+                    if (!Input.GetMouseButton(0) &&
+                        Input.mouseScrollDelta == default)
+                    {
+                        yield return null;
+                        continue;
+                    }
+
+                    var position = selectedGameObjectCache.transform.position;
+                    if (position != positionCache)
+                    {
+                        Model.OnCloseClick.OnNext(this);
+                        Close();
                         yield break;
+                    }
+                }
+                else
+                {
+                    if (current == submitButton.gameObject ||
+                        current == submitButtonForRetrieve.gameObject)
+                    {
+                        yield break;
+                    }
 
                     Model.OnCloseClick.OnNext(this);
                     Close();
                     yield break;
                 }
+
                 yield return null;
             }
         }

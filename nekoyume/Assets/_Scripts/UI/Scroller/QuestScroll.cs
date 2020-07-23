@@ -1,18 +1,17 @@
 using System;
 using DG.Tweening;
-using FancyScrollView;
 using UnityEngine;
-using UnityEngine.UI;
 using QuestModel = Nekoyume.Model.Quest.Quest;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class QuestScroll : BaseScroll<QuestModel, QuestScroll.ContextModel>
+    public class QuestScroll : RectScroll<QuestModel, QuestScroll.ContextModel>
     {
-        public class ContextModel : IFancyScrollRectContext
+        public class ContextModel : RectScrollDefaultContext, IDisposable
         {
-            public ScrollDirection ScrollDirection { get; set; }
-            public Func<(float ScrollSize, float ReuseMargin)> CalculateScrollSize { get; set; }
+            public void Dispose()
+            {
+            }
         }
 
         [SerializeField]
