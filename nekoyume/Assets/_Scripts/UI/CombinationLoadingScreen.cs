@@ -8,6 +8,7 @@ using Nekoyume.UI.Tween;
 using System.Collections;
 using _Scripts.UI;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -137,6 +138,7 @@ namespace Nekoyume.UI
             _fireVFX = VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos, new Vector3(-.7f, -.35f));
             speechBubble.SetKey("SPEECH_COMBINATION_START_");
             StartCoroutine(speechBubble.CoShowText(true));
+            StartCoroutine(CoWorkshopItemMove());
 
             var format = LocalizationManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
 
@@ -147,6 +149,26 @@ namespace Nekoyume.UI
             }
 
             StartCoroutine(CoDisappearNPC());
+        }
+
+        private IEnumerator CoWorkshopItemMove()
+        {
+            var item = speechBubble.item;
+
+            yield return new WaitForSeconds(speechBubble.bubbleTweenTime);
+
+            var endPosition = Find<BottomMenu>().combinationButton.transform.position;
+
+            ItemMoveAnimation.Show(
+                item.ItemBase.Value.GetIconSprite(),
+                speechBubble.ItemView.transform.position,
+                endPosition,
+                false,
+                1f,
+                0.82f,
+                ItemMoveAnimation.EndPoint.Workshop);
+
+            yield return null;
         }
 
         private IEnumerator CoDisappearNPC()

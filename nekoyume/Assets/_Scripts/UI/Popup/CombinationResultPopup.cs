@@ -52,7 +52,7 @@ namespace Nekoyume.UI
                     false,
                     1f,
                     0.82f,
-                    true);
+                    ItemMoveAnimation.EndPoint.Inventory);
                 Close();
             }).AddTo(gameObject);
             touchHandler.OnClick.Subscribe(pointerEventData =>

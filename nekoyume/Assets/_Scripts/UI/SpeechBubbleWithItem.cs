@@ -11,8 +11,12 @@ namespace _Scripts.UI
         [SerializeField]
         private SimpleItemView itemView = null;
 
+        public Item item { get; private set; }
+        public SimpleItemView ItemView => itemView;
+
         public void SetItemMaterial(Item item, bool isConsumable)
         {
+            this.item = item;
             itemView.SetData(item, isConsumable);
         }
 
