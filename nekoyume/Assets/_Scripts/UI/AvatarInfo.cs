@@ -118,7 +118,7 @@ namespace Nekoyume.UI
             inventory.SharedModel.SelectedItemView
                 .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            inventory.SharedModel.OnDoubleClickItemView
+            inventory.OnDoubleClickItemView
                 .Subscribe(itemView =>
                 {
                     if (itemView is null ||

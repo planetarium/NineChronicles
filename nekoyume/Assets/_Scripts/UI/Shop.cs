@@ -91,7 +91,7 @@ namespace Nekoyume.UI
 
             inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
                 .AddTo(gameObject);
-            inventory.SharedModel.OnDoubleClickItemView
+            inventory.OnDoubleClickItemView
                 .Subscribe(view => ShowActionPopup(view.Model))
                 .AddTo(gameObject);
             shopItems.SharedModel.SelectedItemView.Subscribe(ShowTooltip)

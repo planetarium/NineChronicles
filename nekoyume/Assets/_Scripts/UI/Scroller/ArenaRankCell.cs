@@ -12,10 +12,17 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Scroller
 {
-    public class ArenaRankCell : BaseCell<
-        (int rank, ArenaInfo arenaInfo, ArenaInfo currentAvatarArenaInfo),
+    public class ArenaRankCell : RectCell<
+        ArenaRankCell.ViewModel,
         ArenaRankScroll.ContextModel>
     {
+        public class ViewModel
+        {
+            public int rank;
+            public ArenaInfo arenaInfo;
+            public ArenaInfo currentAvatarArenaInfo;
+        }
+
         [SerializeField]
         private Image backgroundImage = null;
 
@@ -110,10 +117,24 @@ namespace Nekoyume.UI.Scroller
                 .AddTo(gameObject);
         }
 
-        public override void UpdateContent(
-            (int rank, ArenaInfo arenaInfo, ArenaInfo currentAvatarArenaInfo) itemData)
+        public void Show((
+            int rank,
+            ArenaInfo arenaInfo,
+            ArenaInfo currentAvatarArenaInfo) itemData)
         {
-            var (rank, arenaInfo, currentAvatarArenaInfo) = itemData;
+            Show(new ViewModel
+            {
+                rank = itemData.rank,
+                arenaInfo = itemData.arenaInfo,
+                currentAvatarArenaInfo = itemData.currentAvatarArenaInfo
+            });
+        }
+
+        public override void UpdateContent(ViewModel itemData)
+        {
+            var rank = itemData.rank;
+            var arenaInfo = itemData.arenaInfo;
+            var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
 
             ArenaInfo = arenaInfo ?? throw new ArgumentNullException(nameof(arenaInfo));
             _isCurrentUser = States.Instance.CurrentAvatarState?.address == ArenaInfo.AvatarAddress;

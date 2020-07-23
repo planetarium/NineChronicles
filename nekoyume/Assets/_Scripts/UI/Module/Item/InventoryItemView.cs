@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Nekoyume.UI.Scroller;
 using UniRx;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -18,18 +16,7 @@ namespace Nekoyume.UI.Module
 
         private readonly List<IDisposable> _disposablesAtSetData = new List<IDisposable>();
 
-        public InventoryCellView InventoryCellView { get; private set; }
-
         #region Mono
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            InventoryCellView = transform.parent.GetComponent<InventoryCellView>();
-            if(InventoryCellView is null)
-                Debug.LogError("InventoryCellView not attached to the parent GameObject!");
-        }
 
         protected override void OnDestroy()
         {
@@ -73,6 +60,7 @@ namespace Nekoyume.UI.Module
             effectImage.color = isDim ? DimmedColor : OriginColor;
             glowImage.color = isDim ? DimmedColor : OriginColor;
             equippedIcon.color = isDim ? DimmedColor : OriginColor;
+            hasNotificationImage.color = isDim ? DimmedColor : OriginColor;
         }
 
         #endregion

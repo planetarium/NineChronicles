@@ -172,7 +172,7 @@ namespace Nekoyume.UI
                 list = list.FindAll(mail => mail.MailType == (MailType) state);
             }
 
-            scroll.UpdateData(list);
+            scroll.UpdateData(list, true);
             emptyImage.SetActive(list.Count == 0);
         }
 
