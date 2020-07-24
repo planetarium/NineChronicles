@@ -181,7 +181,7 @@ namespace Nekoyume.UI
                 string.Format(CultureInfo.InvariantCulture, format,
                     result.itemUsable.GetLocalizedName())
             );
-            Notification.Remove(result.itemUsable.ItemId);
+            Notification.CancelReserve(result.itemUsable.ItemId);
             Game.Game.instance.ActionManager.RapidCombination(_slotIndex);
         }
     }
