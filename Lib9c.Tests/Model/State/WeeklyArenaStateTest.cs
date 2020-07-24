@@ -9,6 +9,15 @@ namespace Lib9c.Tests.Model.State
 
     public class WeeklyArenaStateTest
     {
+        [Theory]
+        [InlineData(1, "44971f56cDDe257b355B7faD618DbD67085e8BB8")]
+        [InlineData(2, "866F0C71E0F701cCCCEBAfA17daAbdaB9ee702C1")]
+        public void DeriveAddress(int index, string expected)
+        {
+            var state = new WeeklyArenaState(index);
+            Assert.Equal(new Address(expected), state.address);
+        }
+
         [Fact]
         public void Serialize()
         {

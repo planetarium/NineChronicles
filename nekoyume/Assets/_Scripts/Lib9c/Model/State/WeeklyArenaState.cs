@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using Bencodex;
 using Bencodex.Types;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -41,6 +42,9 @@ namespace Nekoyume.Model.State
 
                 return _addresses;
             }
+        public static Address DeriveAddress(int index)
+        {
+            return _baseAddress.Derive($"weekly_arena_{index}");
         }
 
         #endregion
@@ -55,6 +59,12 @@ namespace Nekoyume.Model.State
         private Dictionary<TierType, BigInteger> _rewardMap = new Dictionary<TierType, BigInteger>();
 
         public List<ArenaInfo> OrderedArenaInfos { get; private set; }
+
+        public WeeklyArenaState(int index) : base(DeriveAddress(index))
+        {
+            _map = new Dictionary<Address, ArenaInfo>();
+            ResetOrderedArenaInfos();
+        }
 
         public WeeklyArenaState(Address address) : base(address)
         {
