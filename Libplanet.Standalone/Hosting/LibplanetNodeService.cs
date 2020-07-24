@@ -31,8 +31,6 @@ namespace Libplanet.Standalone.Hosting
 
         public AsyncManualResetEvent PreloadEnded { get; }
 
-        public PrivateKey PrivateKey { get; private set; }
-
         private Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> _minerLoopAction;
 
         private LibplanetNodeServiceProperties<T> _properties;
@@ -172,13 +170,6 @@ namespace Libplanet.Standalone.Hosting
         // 이 privateKey는 swarm에서 사용하는 privateKey와 다를 수 있습니다.
         public void StartMining(PrivateKey privateKey)
         {
-            if (PrivateKey is null)
-            {
-                throw new InvalidOperationException(
-                    $"An exception occurred during {nameof(StartMining)}(). " +
-                    $"{nameof(PrivateKey)} is null.");
-            }
-
             if (BlockChain is null)
             {
                 throw new InvalidOperationException(
@@ -193,7 +184,6 @@ namespace Libplanet.Standalone.Hosting
                     $"{nameof(Swarm)} is null.");
             }
 
-            PrivateKey = privateKey;
             _miningCancellationTokenSource =
                 CancellationTokenSource.CreateLinkedTokenSource(_swarmCancellationToken);
             Task.Run(
