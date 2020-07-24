@@ -234,7 +234,8 @@ namespace Nekoyume.UI
         private static void SubscribeBlockIndex(long blockIndex)
         {
             foreach (var reservationModel in ReservationList
-                .Where(i => i.requiredBlockIndex <= blockIndex))
+                .Where(i => i.requiredBlockIndex <= blockIndex)
+                .ToList())
             {
                 Push(reservationModel.mailType, reservationModel.message);
                 ReservationList.Remove(reservationModel);

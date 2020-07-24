@@ -196,7 +196,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -40, y: -160}
+  m_SizeDelta: {x: -40, y: -320}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6161650533754291027
 MonoBehaviour:
@@ -243,4 +243,4 @@ MonoBehaviour:
   scroller: {fileID: 6161650533754291027}
   cellPrefab: {fileID: 7229920985389256675, guid: 49c6ae1a22b0f487a97710274258a943,
     type: 3}
-  cellSize: 30
+  cellSize: 32
