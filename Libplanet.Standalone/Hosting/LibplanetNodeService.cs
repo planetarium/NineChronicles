@@ -97,16 +97,20 @@ namespace Libplanet.Standalone.Hosting
         {
             var peers = _properties.Peers.ToImmutableArray();
 
+            Task BootstrapSwarmAsync(int depth)
+                => Swarm.BootstrapAsync(
+                    peers,
+                    pingSeedTimeout: TimeSpan.FromSeconds(5),
+                    findNeighborsTimeout: TimeSpan.FromSeconds(5),
+                    depth: depth,
+                    cancellationToken: cancellationToken
+                );
+
             if (peers.Any())
             {
                 try
                 {
-                    await Swarm.BootstrapAsync(
-                        peers,
-                        TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(5),
-                        depth: 1,
-                        cancellationToken: cancellationToken);
+                    await BootstrapSwarmAsync(1);
                     BootstrapEnded.Set();
                 }
                 catch (PeerDiscoveryException e)
@@ -133,13 +137,31 @@ namespace Libplanet.Standalone.Hosting
                 PreloadEnded.Set();
             }
 
+            async Task ReconnectToSeedPeers(CancellationToken token)
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(5));
+                    await BootstrapSwarmAsync(0).ContinueWith(t =>
+                    {
+                        if (t.IsFaulted)
+                        {
+                            Log.Error(t.Exception, "Periodic bootstrap failed.");
+                        }
+                    });
+                    token.ThrowIfCancellationRequested();
+                }
+            }
             _swarmCancellationToken = cancellationToken;
-
             try
             {
-                await Swarm.StartAsync(
-                    cancellationToken: cancellationToken,
-                    millisecondsBroadcastTxInterval: 15000);
+                await await Task.WhenAny(
+                    Swarm.StartAsync(
+                        cancellationToken: cancellationToken,
+                        millisecondsBroadcastTxInterval: 15000
+                    ),
+                    ReconnectToSeedPeers(cancellationToken)
+                );
             }
             catch (Exception e)
             {
