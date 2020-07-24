@@ -38,5 +38,21 @@ namespace Lib9c.Tests.Action
                 Assert.Equal("for testing", deserialized.Message);
             }
         }
+
+        [Fact]
+        public void FailedLoadStateExceptionSerializable()
+        {
+            var exc = new FailedLoadStateException("for testing");
+
+            var formatter = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                formatter.Serialize(ms, exc);
+
+                ms.Seek(0, SeekOrigin.Begin);
+                var deserialized = (FailedLoadStateException)formatter.Deserialize(ms);
+                Assert.Equal("for testing", deserialized.Message);
+            }
+        }
     }
 }

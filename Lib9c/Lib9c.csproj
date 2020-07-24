@@ -10,15 +10,6 @@
   <ItemGroup>
     <Compile Include="..\nekoyume\Assets\_Scripts\Lib9c\**\*.cs" />
     <Compile Include="..\nekoyume\Assets\BTAI\**\*.cs" />
-    <Compile Update="..\nekoyume\Assets\_Scripts\Lib9c\Action\FailedLoadStateException.cs">
-      <Link>Action\FailedLoadStateException.cs</Link>
-    </Compile>
-    <Compile Update="..\nekoyume\Assets\_Scripts\Lib9c\Action\AlreadyReceivedException.cs">
-      <Link>Action\AlreadyReceivedException.cs</Link>
-    </Compile>
-    <Compile Update="..\nekoyume\Assets\_Scripts\Lib9c\Action\ArenaNotEndedException.cs">
-      <Link>Action\ArenaNotEndedException.cs</Link>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DecimalMath.DecimalEx" Version="1.0.1" />
