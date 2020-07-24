@@ -75,7 +75,7 @@ namespace Lib9c.Tests.Action
             });
 
             nextState.TryGetGoldBalance(agentAddress, out var reward);
-            var nextInfo = nextState.GetWeeklyArenaState(default)[avatarAddress];
+            var nextInfo = nextState.GetWeeklyArenaState(default(Address))[avatarAddress];
 
             Assert.True(nextInfo.Receive);
             Assert.True(reward > 0);

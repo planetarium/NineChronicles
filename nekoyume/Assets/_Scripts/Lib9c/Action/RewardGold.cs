@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Security.Principal;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Model.State;
@@ -34,15 +35,25 @@ namespace Nekoyume.Action
                 return states.SetState(ctx.Miner, MarkChanged);
             }
 
-            var index = (int) ctx.BlockIndex / GameConfig.WeeklyArenaInterval;
-            var weekly = states.GetWeeklyArenaState(WeeklyArenaState.Addresses[index]);
+            var index = Math.Max((int) ctx.BlockIndex / GameConfig.WeeklyArenaInterval, 0);
+            var weekly = states.GetWeeklyArenaState(index);
+            var nextIndex = index + 1;
+            var nextWeekly = states.GetWeeklyArenaState(nextIndex);
+            if (nextWeekly is null)
+            {
+                nextWeekly = new WeeklyArenaState(nextIndex);
+                states = states.SetState(nextWeekly.address, nextWeekly.Serialize());
+            }
             if (ctx.BlockIndex % GameConfig.WeeklyArenaInterval == 0 && index > 0)
             {
-                var prevWeekly = states.GetWeeklyArenaState(WeeklyArenaState.Addresses[index - 1]);
-                prevWeekly.End();
-                weekly.Update(prevWeekly, ctx.BlockIndex);
-                states = states.SetState(prevWeekly.address, prevWeekly.Serialize());
-                states = states.SetState(weekly.address, weekly.Serialize());
+                var prevWeekly = states.GetWeeklyArenaState(index - 1);
+                if (!prevWeekly.Ended)
+                {
+                    prevWeekly.End();
+                    weekly.Update(prevWeekly, ctx.BlockIndex);
+                    states = states.SetState(prevWeekly.address, prevWeekly.Serialize());
+                    states = states.SetState(weekly.address, weekly.Serialize());
+                }
             }
             else if (ctx.BlockIndex - weekly.ResetIndex >= GameConfig.DailyArenaInterval)
             {

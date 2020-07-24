@@ -21,27 +21,11 @@ namespace Nekoyume.Model.State
     {
         #region static
 
-        private static List<Address> _addresses = null;
-
-        public static List<Address> Addresses
+        private static Address _baseAddress = new Address(new byte[]
         {
-            get
-            {
-                if (!(_addresses is null))
-                    return _addresses;
+            0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 10
+        });
 
-                _addresses = new List<Address>();
-                for (byte i = 0x10; i < 0x62; i++)
-                {
-                    var addr = new Address(new byte[]
-                    {
-                        0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, i
-                    });
-                    _addresses.Add(addr);
-                }
-
-                return _addresses;
-            }
         public static Address DeriveAddress(int index)
         {
             return _baseAddress.Derive($"weekly_arena_{index}");
