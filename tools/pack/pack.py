@@ -32,7 +32,6 @@ parser = argparse.ArgumentParser(description=__doc__.replace('\n', ' '))
 parser.add_argument('out_dir')
 parser.add_argument('platform', choices={'macOS', 'Windows'})
 parser.add_argument('game_dir')
-parser.add_argument('launcher_dir')
 parser.add_argument('private_key')
 parser.add_argument('timestamp')
 parser.add_argument(
@@ -46,7 +45,7 @@ def main() -> None:
     logging.basicConfig(level=args.verbose)
 
     temp_dir = tempfile.mkdtemp()
-    for root in args.launcher_dir, args.game_dir:
+    for root in [args.game_dir]:
         for name in os.listdir(root):
             path = os.path.join(root, name)
             tmppath = os.path.join(temp_dir, name)
