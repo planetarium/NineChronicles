@@ -11,7 +11,7 @@ executors:
       docker_layer_caching: true
   macos:
     macos:
-      xcode: "11.5"  
+      xcode: "11.5"
 
 jobs:
   unittest_macos:
@@ -20,12 +20,11 @@ jobs:
       - checkout
       - run:
           name: setup-dotnet-core
-          command: brew install dotnet-sdk 
+          command: brew install dotnet-sdk
       - run:
           name: unittest
           command: |
             dotnet test ./NineChronicles.Standalone.Executable/
-            dotnet test --runtime osx-x64 ./NineChronicles.Launcher/
   unittest_windows:
     executor: win/default
     steps:
@@ -34,7 +33,6 @@ jobs:
           name: unittest
           command: |
             dotnet test ./NineChronicles.Standalone.Executable/
-            dotnet test --runtime win-x64 ./NineChronicles.Launcher/
   build-lib9c:
     docker:
       - image: mcr.microsoft.com/dotnet/core/sdk:2.2
