@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Bencodex.Types;
@@ -30,8 +30,10 @@ namespace Nekoyume.Model.Item
         }
 
         public static ItemUsable CreateItemUsable(ItemSheet.Row itemRow, Guid id,
-            long requiredBlockIndex)
+            long requiredBlockIndex, int level = 0)
         {
+            Equipment equipment = null;
+
             switch (itemRow.ItemSubType)
             {
                 // Consumable
@@ -40,19 +42,31 @@ namespace Nekoyume.Model.Item
                         requiredBlockIndex);
                 // Equipment
                 case ItemSubType.Weapon:
-                    return new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Weapon((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
                 case ItemSubType.Armor:
-                    return new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Armor((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
                 case ItemSubType.Belt:
-                    return new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Belt((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
                 case ItemSubType.Necklace:
-                    return new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Necklace((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
                 case ItemSubType.Ring:
-                    return new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    equipment = new Ring((EquipmentItemSheet.Row) itemRow, id, requiredBlockIndex);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(
                         itemRow.Id.ToString(CultureInfo.InvariantCulture));
             }
+
+            for (int i = 0; i < level; ++i)
+            {
+                equipment.LevelUp();
+            }
+
+            return equipment;
         }
 
         public static Chest CreateChest(MaterialItemSheet.Row row, List<RedeemRewardSheet.RewardInfo> rewards)

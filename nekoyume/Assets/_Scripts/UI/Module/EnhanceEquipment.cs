@@ -26,6 +26,8 @@ namespace Nekoyume.UI.Module
             States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
             !(baseMaterial is null) &&
             !baseMaterial.IsEmpty &&
+            baseMaterial.Model.ItemBase.Value is Equipment equipment &&
+            equipment.level < 10 &&
             otherMaterials.Count(e => !e.IsEmpty) > 0 &&
             Widget.Find<Combination>().selectedIndex >= 0;
 
@@ -90,7 +92,19 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
-        protected override BigInteger GetCostNCG() => 0;
+        protected override BigInteger GetCostNCG()
+        {
+            if (baseMaterial.IsEmpty ||
+                !(baseMaterial.Model.ItemBase.Value is Equipment equipment) ||
+                equipment.level >= 10)
+                return 0;
+
+            var row = Game.Game.instance.TableSheets
+                .EnhancementCostSheet.Values
+                .FirstOrDefault(x => x.Grade == equipment.Grade && x.Level == equipment.level + 1);
+
+            return row is null ? 0 : row.Cost;
+        }
 
         protected override int GetCostAP()
         {
