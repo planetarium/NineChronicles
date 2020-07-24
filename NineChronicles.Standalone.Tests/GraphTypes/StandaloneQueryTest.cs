@@ -313,6 +313,7 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             };
 
             var service = new NineChroniclesNodeService(properties, null);
+            service.PrivateKey = userPrivateKey;
             StandaloneContextFx.NineChroniclesNodeService = service;
             StandaloneContextFx.BlockChain = service.Swarm.BlockChain;
 

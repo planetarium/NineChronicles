@@ -55,6 +55,7 @@ namespace Nekoyume.TableData
         public RedeemRewardSheet RedeemRewardSheet { get; private set; }
         public RedeemCodeListSheet RedeemCodeListSheet { get; private set; }
         public CombinationEquipmentQuestSheet CombinationEquipmentQuestSheet { get; private set; }
+        public EnhancementCostSheet EnhancementCostSheet { get; private set; }
 
         #endregion
 
