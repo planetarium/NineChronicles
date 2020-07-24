@@ -32,7 +32,7 @@ namespace Nekoyume.UI
             var win = result == BattleLog.Result.Win;
             victoryImageContainer.SetActive(win);
             defeatImageContainer.SetActive(!win);
-            scoreText.text = $"{score} ({diffScore:+#;-#;+0})";
+            scoreText.text = $"{score}";
         }
 
         public void BackToRanking()
