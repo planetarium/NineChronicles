@@ -1,10 +1,8 @@
-﻿using Nekoyume.UI;
-using Nekoyume.UI.Model;
+﻿using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace _Scripts.UI
+namespace Nekoyume.UI
 {
     public class SpeechBubbleWithItem : SpeechBubble
     {

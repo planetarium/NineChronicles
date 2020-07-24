@@ -6,7 +6,6 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
-using _Scripts.UI;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
