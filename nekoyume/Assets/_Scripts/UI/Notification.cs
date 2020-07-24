@@ -1,9 +1,12 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using EasingCore;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -12,43 +15,43 @@ namespace Nekoyume.UI
     /// </summary>
     public class Notification : SystemInfoWidget
     {
-        private const float LifeTimeOfEachNotification = 10f;
+        private class ReservationModel
+        {
+            public MailType mailType;
+            public string message;
+            public long requiredBlockIndex;
+            public Guid itemId;
+        }
 
-        private static readonly ReactiveCollection<NotificationCellView.Model> Models =
-            new ReactiveCollection<NotificationCellView.Model>();
+        private const float InternalTimeToAddCell = 1f;
+        private const float LifeTimeOfEachNotification = 3f;
+
+        private static readonly int LifeTimeOfEachNotificationCeil =
+            Mathf.CeilToInt(LifeTimeOfEachNotification);
+
+        private static readonly List<NotificationCell.ViewModel> SharedModel =
+            new List<NotificationCell.ViewModel>();
+
+        private static readonly Queue<NotificationCell.ViewModel> AddQueue =
+            new Queue<NotificationCell.ViewModel>();
+
+        private static readonly Subject<Unit> OnEnqueueToAddQueue = new Subject<Unit>();
+
+        private static readonly List<ReservationModel> ReservationList =
+            new List<ReservationModel>();
 
         private static readonly List<Type> WidgetTypesForUX = new List<Type>();
 
         private static int _widgetEnableCount;
 
-        private static readonly List<(MailType mailType, string message, long requiredBlockIndex, Guid itemId)> ReservationList =
-            new List<(MailType mailType, string message, long requiredBlockIndex, Guid itemId)>();
+        [SerializeField]
+        private NotificationScroll scroll = null;
 
-        public static IReadOnlyCollection<NotificationCellView.Model> SharedModels => Models;
+        private float _lastTimeToAddCell;
+        private Coroutine _coAddCell;
+        private Coroutine _coRemoveCell;
 
-        public NotificationScrollerController scroller;
-
-        public static void Push(MailType mailType, string message)
-        {
-            Push(mailType, message, string.Empty, null);
-        }
-
-        public static void Push(MailType mailType, string message, string submitText, System.Action submitAction)
-        {
-            if (_widgetEnableCount > 0)
-            {
-                return;
-            }
-
-            Models.Add(new NotificationCellView.Model
-            {
-                mailType = mailType,
-                message = message,
-                submitText = submitText,
-                submitAction = submitAction,
-                addedAt = DateTime.Now
-            });
-        }
+        #region Control
 
         /// <summary>
         /// This class consider if there is any widget raise `OnEnableSubject` subject in the `WidgetTypesForUX` property.
@@ -65,44 +68,137 @@ namespace Nekoyume.UI
             WidgetTypesForUX.Add(type);
         }
 
-        public static void Reserve(MailType mailType, string message, long requiredBlockIndex, Guid itemId)
+        public static void Push(MailType mailType, string message)
         {
-            ReservationList.Add((mailType, message, requiredBlockIndex, itemId));
+            if (_widgetEnableCount > 0)
+            {
+                return;
+            }
+
+            AddQueue.Enqueue(new NotificationCell.ViewModel
+            {
+                mailType = mailType,
+                message = message
+            });
+            OnEnqueueToAddQueue.OnNext(Unit.Default);
         }
+
+        public static void Reserve(
+            MailType mailType,
+            string message,
+            long requiredBlockIndex,
+            Guid itemId)
+        {
+            ReservationList.Add(new ReservationModel
+            {
+                mailType = mailType,
+                message = message,
+                requiredBlockIndex = requiredBlockIndex,
+                itemId = itemId
+            });
+        }
+
+        public static void CancelReserve(Guid itemUsableItemId)
+        {
+            if (!ReservationList.Any())
+            {
+                return;
+            }
+
+            var message = ReservationList
+                .FirstOrDefault(m => m.itemId == itemUsableItemId);
+            if (message is null)
+            {
+                return;
+            }
+
+            ReservationList.Remove(message);
+        }
+
+        #endregion
 
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
+
+            scroll.UpdateData(SharedModel);
+
             OnEnableStaticObservable.Subscribe(SubscribeOnEnable).AddTo(gameObject);
             OnDisableStaticObservable.Subscribe(SubscribeOnDisable).AddTo(gameObject);
-            scroller.onRequestToRemoveModelByIndex.Subscribe(SubscribeToRemoveModel).AddTo(gameObject);
-            scroller.SetModel(Models);
+            OnEnqueueToAddQueue
+                .Where(_ => _coAddCell is null)
+                .Subscribe(_ => _coAddCell = StartCoroutine(CoAddCell()))
+                .AddTo(gameObject);
 
             CloseWidget = null;
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+            Game.Game.instance.Agent.BlockIndexSubject
+                .ObserveOnMainThread()
+                .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
-        }
-
-        protected override void Update()
-        {
-            var now = DateTime.Now;
-            for (var i = 0; i < Models.Count; i++)
-            {
-                var model = Models[i];
-                var timeSpan = now - model.addedAt;
-                if (timeSpan.TotalSeconds < LifeTimeOfEachNotification)
-                    continue;
-
-                SubscribeToRemoveModel(i);
-                break;
-            }
         }
 
         #endregion
 
-        private static void SubscribeOnEnable(Widget widget)
+        private IEnumerator CoAddCell()
+        {
+            while (AddQueue.Count > 0)
+            {
+                var deltaTime = Time.time - _lastTimeToAddCell;
+                if (deltaTime < InternalTimeToAddCell)
+                {
+                    yield return new WaitForSeconds(InternalTimeToAddCell - deltaTime);
+                }
+
+                // NOTE: `LifeTimeOfEachNotificationCeil`개 이상의 노티가 쌓이기 시작하면
+                // 노티가 더해지는 연출과 시간이 다 된 노티가 사라지는 연출이 겹치게 되는데, 이러면 연출에 문제가 생깁니다.
+                // 그래서 최대 개수를 `LifeTimeOfEachNotificationCeil`로 제한합니다.
+                while (SharedModel.Count >= LifeTimeOfEachNotificationCeil)
+                {
+                    yield return null;
+                }
+
+                var viewModel = AddQueue.Dequeue();
+                viewModel.addedTime = Time.time;
+                SharedModel.Add(viewModel);
+                scroll.UpdateData(SharedModel);
+                _lastTimeToAddCell = Time.time;
+
+                if (_coRemoveCell is null)
+                {
+                    _coRemoveCell = StartCoroutine(CoRemoveCell());
+                }
+            }
+
+            _coAddCell = null;
+        }
+
+        private IEnumerator CoRemoveCell()
+        {
+            while (SharedModel.Count > 0)
+            {
+                var target = SharedModel[0];
+                var deltaTime = Time.time - target.addedTime;
+                if (deltaTime < LifeTimeOfEachNotification)
+                {
+                    yield return new WaitForSeconds(LifeTimeOfEachNotification - deltaTime);
+                }
+
+                var observable = scroll.PlayCellRemoveAnimation(0).First();
+                scroll.ScrollTo(1, .5f, Ease.InCirc);
+                yield return new WaitForSeconds(.5f);
+                yield return observable.ToYieldInstruction();
+                SharedModel.RemoveAt(0);
+                scroll.UpdateData(SharedModel);
+            }
+
+            _coRemoveCell = null;
+        }
+
+        #region Subscribe
+
+        private void SubscribeOnEnable(Widget widget)
         {
             var type = widget.GetType();
             if (!WidgetTypesForUX.Contains(type))
@@ -114,7 +210,8 @@ namespace Nekoyume.UI
 
             if (_widgetEnableCount == 1)
             {
-                Models.Clear();
+                SharedModel.Clear();
+                scroll.ClearData();
             }
         }
 
@@ -134,36 +231,16 @@ namespace Nekoyume.UI
             _widgetEnableCount--;
         }
 
-        private void SubscribeToRemoveModel(int index)
-        {
-            if (index >= Models.Count)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            Models.RemoveAt(index);
-        }
-
         private static void SubscribeBlockIndex(long blockIndex)
         {
-            var list = ReservationList
-                .Where(i => i.requiredBlockIndex <= blockIndex).ToList();
-            foreach (var valueTuple in list)
+            foreach (var reservationModel in ReservationList
+                .Where(i => i.requiredBlockIndex <= blockIndex))
             {
-                Push(valueTuple.mailType, valueTuple.message);
-                ReservationList.Remove(valueTuple);
+                Push(reservationModel.mailType, reservationModel.message);
+                ReservationList.Remove(reservationModel);
             }
         }
 
-        public static void Remove(Guid itemUsableItemId)
-        {
-            if (ReservationList.Any())
-            {
-                var message =
-                    ReservationList.FirstOrDefault(m => m.itemId == itemUsableItemId);
-                if (message != default)
-                {
-                    ReservationList.Remove(message);
-                }
-            }
-        }
+        #endregion
     }
 }
