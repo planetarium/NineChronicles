@@ -43,6 +43,12 @@ namespace Libplanet.Standalone.Hosting
 
         private CancellationTokenSource _miningCancellationTokenSource;
 
+        private static readonly TimeSpan PingSeedTimeout = TimeSpan.FromSeconds(5);
+        
+        private static readonly TimeSpan FindNeighborsTimeout = TimeSpan.FromSeconds(5);
+
+        private static readonly TimeSpan BootstrapInterval = TimeSpan.FromMinutes(5);
+
         public LibplanetNodeService(
             LibplanetNodeServiceProperties<T> properties,
             IBlockPolicy<T> blockPolicy,
@@ -98,8 +104,8 @@ namespace Libplanet.Standalone.Hosting
             Task BootstrapSwarmAsync(int depth)
                 => Swarm.BootstrapAsync(
                     peers,
-                    pingSeedTimeout: TimeSpan.FromSeconds(5),
-                    findNeighborsTimeout: TimeSpan.FromSeconds(5),
+                    pingSeedTimeout: PingSeedTimeout,
+                    findNeighborsTimeout: FindNeighborsTimeout,
                     depth: depth,
                     cancellationToken: cancellationToken
                 );
@@ -139,7 +145,7 @@ namespace Libplanet.Standalone.Hosting
             {
                 while (!token.IsCancellationRequested)
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(5));
+                    await Task.Delay(BootstrapInterval);
                     await BootstrapSwarmAsync(0).ContinueWith(t =>
                     {
                         if (t.IsFaulted)
