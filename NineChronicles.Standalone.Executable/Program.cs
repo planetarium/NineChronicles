@@ -172,6 +172,12 @@ namespace NineChronicles.Standalone.Executable
 
                 if (!graphQLServer)
                 {
+                    if (!properties.NoMiner)
+                    {
+                        nineChroniclesNodeService.PrivateKey = properties.PrivateKey;
+                        nineChroniclesNodeService.StartMining();
+                    }
+
                     IHostBuilder nineChroniclesNodeHostBuilder = Host.CreateDefaultBuilder();
                     nineChroniclesNodeHostBuilder =
                         nineChroniclesNodeService.Configure(nineChroniclesNodeHostBuilder);
