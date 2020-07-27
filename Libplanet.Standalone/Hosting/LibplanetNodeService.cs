@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Net;
@@ -32,19 +31,23 @@ namespace Libplanet.Standalone.Hosting
 
         public AsyncManualResetEvent PreloadEnded { get; }
 
-        private readonly IBlockPolicy<T> _blockPolicy;
-
         private Func<BlockChain<T>, Swarm<T>, PrivateKey, CancellationToken, Task> _minerLoopAction;
-
-        private PrivateKey _privateKey;
-
-        private Address _address;
 
         private LibplanetNodeServiceProperties<T> _properties;
 
         private Progress<PreloadState> _preloadProgress;
 
         private bool _ignoreBootstrapFailure;
+
+        private CancellationToken _swarmCancellationToken;
+
+        private CancellationTokenSource _miningCancellationTokenSource;
+
+        private static readonly TimeSpan PingSeedTimeout = TimeSpan.FromSeconds(5);
+        
+        private static readonly TimeSpan FindNeighborsTimeout = TimeSpan.FromSeconds(5);
+
+        private static readonly TimeSpan BootstrapInterval = TimeSpan.FromMinutes(5);
 
         public LibplanetNodeService(
             LibplanetNodeServiceProperties<T> properties,
@@ -73,14 +76,11 @@ namespace Libplanet.Standalone.Hosting
                 Log.Debug($"chainId: {chainId}");
             }
 
-            _blockPolicy = blockPolicy;
-            BlockChain = new BlockChain<T>(_blockPolicy, Store, genesisBlock, _properties.Render);
-            _privateKey = _properties.PrivateKey;
-            _address = _privateKey.PublicKey.ToAddress();
+            BlockChain = new BlockChain<T>(blockPolicy, Store, genesisBlock, _properties.Render);
             _minerLoopAction = minerLoopAction;
             Swarm = new Swarm<T>(
                 BlockChain,
-                _privateKey,
+                _properties.PrivateKey,
                 _properties.AppProtocolVersion,
                 trustedAppProtocolVersionSigners: _properties.TrustedAppProtocolVersionSigners,
                 host: _properties.Host,
@@ -101,16 +101,20 @@ namespace Libplanet.Standalone.Hosting
         {
             var peers = _properties.Peers.ToImmutableArray();
 
+            Task BootstrapSwarmAsync(int depth)
+                => Swarm.BootstrapAsync(
+                    peers,
+                    pingSeedTimeout: PingSeedTimeout,
+                    findNeighborsTimeout: FindNeighborsTimeout,
+                    depth: depth,
+                    cancellationToken: cancellationToken
+                );
+
             if (peers.Any())
             {
                 try
                 {
-                    await Swarm.BootstrapAsync(
-                        peers,
-                        TimeSpan.FromSeconds(5),
-                        TimeSpan.FromSeconds(5),
-                        depth: 1,
-                        cancellationToken: cancellationToken);
+                    await BootstrapSwarmAsync(1);
                     BootstrapEnded.Set();
                 }
                 catch (PeerDiscoveryException e)
@@ -137,31 +141,70 @@ namespace Libplanet.Standalone.Hosting
                 PreloadEnded.Set();
             }
 
-            var tasks = new List<Task>
+            async Task ReconnectToSeedPeers(CancellationToken token)
             {
-                Swarm.StartAsync(cancellationToken: cancellationToken, millisecondsBroadcastTxInterval: 15000),
-            };
-
-            if (!_properties.NoMiner)
-            {
-                var minerLoopTask = Task.Run(
-                    async () => await _minerLoopAction(BlockChain, Swarm, _privateKey, cancellationToken),
-                    cancellationToken: cancellationToken);
-                tasks.Add(minerLoopTask);
+                while (!token.IsCancellationRequested)
+                {
+                    await Task.Delay(BootstrapInterval);
+                    await BootstrapSwarmAsync(0).ContinueWith(t =>
+                    {
+                        if (t.IsFaulted)
+                        {
+                            Log.Error(t.Exception, "Periodic bootstrap failed.");
+                        }
+                    });
+                    token.ThrowIfCancellationRequested();
+                }
             }
-
+            _swarmCancellationToken = cancellationToken;
             try
             {
-                await Task.WhenAll(tasks);
+                await await Task.WhenAny(
+                    Swarm.StartAsync(
+                        cancellationToken: cancellationToken,
+                        millisecondsBroadcastTxInterval: 15000
+                    ),
+                    ReconnectToSeedPeers(cancellationToken)
+                );
             }
             catch (Exception e)
             {
-                Log.Debug("Unexpected exception occurred during waiting tasks. {e}", e);
+                Log.Error(e, "Unexpected exception occurred during Swarm.StartAsync(). {e}", e);
             }
+        }
+
+        // 이 privateKey는 swarm에서 사용하는 privateKey와 다를 수 있습니다.
+        public void StartMining(PrivateKey privateKey)
+        {
+            if (BlockChain is null)
+            {
+                throw new InvalidOperationException(
+                    $"An exception occurred during {nameof(StartMining)}(). " +
+                    $"{nameof(BlockChain)} is null.");
+            }
+
+            if (Swarm is null)
+            {
+                throw new InvalidOperationException(
+                    $"An exception occurred during {nameof(StartMining)}(). " +
+                    $"{nameof(Swarm)} is null.");
+            }
+
+            _miningCancellationTokenSource =
+                CancellationTokenSource.CreateLinkedTokenSource(_swarmCancellationToken);
+            Task.Run(
+                () => _minerLoopAction(BlockChain, Swarm, privateKey, _miningCancellationTokenSource.Token),
+                _miningCancellationTokenSource.Token);
+        }
+
+        public void StopMining()
+        {
+            _miningCancellationTokenSource?.Cancel();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
+            StopMining();
             return Swarm.StopAsync(cancellationToken);
         }
 

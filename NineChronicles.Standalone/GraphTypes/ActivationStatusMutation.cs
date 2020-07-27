@@ -30,6 +30,7 @@ namespace NineChronicles.Standalone.GraphTypes
                         string encodedActivationKey =
                             context.GetArgument<string>("encodedActivationKey");
                         NineChroniclesNodeService service = context.Source;
+                        // FIXME: Private key may not exists at this moment.
                         PrivateKey privateKey = service.PrivateKey;
                         ActivationKey activationKey = ActivationKey.Decode(encodedActivationKey);
                         BlockChain<NineChroniclesActionType> blockChain = service.Swarm.BlockChain;

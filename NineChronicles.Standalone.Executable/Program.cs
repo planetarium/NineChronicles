@@ -1,6 +1,10 @@
 using System;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Cocona;
+using Libplanet.KeyStore;
 using Libplanet.Standalone.Hosting;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
@@ -24,6 +28,7 @@ namespace NineChronicles.Standalone.Executable
 
         static void ConfigureSentryOptions(SentryOptions o)
         {
+            o.SendDefaultPii = true;
             o.Dsn = new Dsn(SentryDsn);
             // TODO: o.Release 설정하면 좋을 것 같은데 빌드 버전 체계가 아직 없어서 어떻게 해야 할 지...
             // https://docs.sentry.io/workflow/releases/?platform=csharp
@@ -86,26 +91,35 @@ namespace NineChronicles.Standalone.Executable
 #endif
             Log.Logger = loggerConf.CreateLogger();
 
-            IHostBuilder hostBuilder = Host.CreateDefaultBuilder();
-
-            // GraphQL 서비스를 실행할 때는 런처를 통해 실행 된 GraphQL을 이용하여 노드 서비스가 실행되게 설계되었습니다.
-            // 따라서 graphQLServer가 true라면, 노드 서비스가 실행되지 않는 것이 의도된 사항입니다.
-            if (graphQLServer)
+            var tasks = new List<Task>();
+            try
             {
-                var graphQLNodeServiceProperties = new GraphQLNodeServiceProperties
+                IHostBuilder graphQLHostBuilder = Host.CreateDefaultBuilder();
+
+                var standaloneContext = new StandaloneContext
                 {
-                    GraphQLServer = graphQLServer,
-                    GraphQLListenHost = graphQLHost,
-                    GraphQLListenPort = graphQLPort,
+                    KeyStore = Web3KeyStore.DefaultKeyStore,
                 };
 
-                await StandaloneServices.RunGraphQLAsync(
-                    graphQLNodeServiceProperties,
-                    hostBuilder,
-                    Context.CancellationToken);
-            }
-            else
-            {
+                if (graphQLServer)
+                {
+                    var graphQLNodeServiceProperties = new GraphQLNodeServiceProperties
+                    {
+                        GraphQLServer = graphQLServer,
+                        GraphQLListenHost = graphQLHost,
+                        GraphQLListenPort = graphQLPort,
+                    };
+
+
+                    var graphQLService = new GraphQLService(graphQLNodeServiceProperties);
+                    graphQLHostBuilder =
+                        graphQLService.Configure(graphQLHostBuilder, standaloneContext);
+                    tasks.Add(graphQLHostBuilder.RunConsoleAsync(Context.CancellationToken));
+
+                    await WaitForGraphQLService(graphQLNodeServiceProperties,
+                        Context.CancellationToken);
+                }
+
                 if (appProtocolVersionToken is null)
                 {
                     throw new CommandExitedException(
@@ -122,38 +136,28 @@ namespace NineChronicles.Standalone.Executable
                     );
                 }
 
-                var properties = new LibplanetNodeServiceProperties<NineChroniclesActionType>();
                 RpcNodeServiceProperties? rpcProperties = null;
-                try
+                var properties = NineChroniclesNodeServiceProperties
+                    .GenerateLibplanetNodeServiceProperties(
+                        appProtocolVersionToken,
+                        genesisBlockPath,
+                        host,
+                        port,
+                        minimumDifficulty,
+                        privateKeyString,
+                        storeType,
+                        storePath,
+                        100,
+                        iceServerStrings,
+                        peerStrings,
+                        noTrustedStateValidators,
+                        trustedAppProtocolVersionSigners,
+                        noMiner);
+                if (rpcServer)
                 {
-                    properties = NineChroniclesNodeServiceProperties
-                        .GenerateLibplanetNodeServiceProperties(
-                            appProtocolVersionToken,
-                            genesisBlockPath,
-                            host,
-                            port,
-                            minimumDifficulty,
-                            privateKeyString,
-                            storeType,
-                            storePath,
-                            3000,
-                            iceServerStrings,
-                            peerStrings,
-                            noTrustedStateValidators,
-                            trustedAppProtocolVersionSigners,
-                            noMiner);
-                    if (rpcServer)
-                    {
-                        rpcProperties = NineChroniclesNodeServiceProperties
-                            .GenerateRpcNodeServiceProperties(rpcListenHost, rpcListenPort);
-                        properties.Render = true;
-                    }
-                }
-                catch (Exception e)
-                {
-                    throw new CommandExitedException(
-                        e.Message,
-                        -1);
+                    rpcProperties = NineChroniclesNodeServiceProperties
+                        .GenerateRpcNodeServiceProperties(rpcListenHost, rpcListenPort);
+                    properties.Render = true;
                 }
 
                 var nineChroniclesProperties = new NineChroniclesNodeServiceProperties()
@@ -161,11 +165,35 @@ namespace NineChronicles.Standalone.Executable
                     Rpc = rpcProperties,
                     Libplanet = properties
                 };
-                await StandaloneServices.RunHeadlessAsync(
-                    nineChroniclesProperties,
-                    hostBuilder,
-                    cancellationToken: Context.CancellationToken);
+
+                NineChroniclesNodeService nineChroniclesNodeService =
+                    StandaloneServices.CreateHeadless(nineChroniclesProperties, standaloneContext);
+                standaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
+
+                if (!graphQLServer)
+                {
+                    if (!properties.NoMiner)
+                    {
+                        nineChroniclesNodeService.PrivateKey = properties.PrivateKey;
+                        nineChroniclesNodeService.StartMining();
+                    }
+
+                    IHostBuilder nineChroniclesNodeHostBuilder = Host.CreateDefaultBuilder();
+                    nineChroniclesNodeHostBuilder =
+                        nineChroniclesNodeService.Configure(nineChroniclesNodeHostBuilder);
+                    tasks.Add(
+                        nineChroniclesNodeHostBuilder.RunConsoleAsync(Context.CancellationToken));
+                }
             }
+            catch (Exception e)
+            {
+                Log.Error(e, "Unexpected exception occurred during Run. {e}", e);
+            }
+            finally
+            {
+                await Task.WhenAll(tasks);
+            }
+
 #if SENTRY || ! DEBUG
             }
             catch (CommandExitedException)
@@ -178,6 +206,28 @@ namespace NineChronicles.Standalone.Executable
                 throw;
             }
 #endif
+        }
+
+        private async Task WaitForGraphQLService(
+            GraphQLNodeServiceProperties properties,
+            CancellationToken cancellationToken)
+        {
+            using var httpClient = new HttpClient();
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                Log.Debug("Trying to check GraphQL server started...");
+                try
+                {
+                    await httpClient.GetAsync($"http://{properties.GraphQLListenHost}:{properties.GraphQLListenPort}/health-check", cancellationToken);
+                    break;
+                }
+                catch (HttpRequestException e)
+                {
+                    Log.Error(e, "An exception occurred during connecting to GraphQL server. {e}", e);
+                }
+
+                await Task.Delay(1000, cancellationToken);
+            }
         }
     }
 }

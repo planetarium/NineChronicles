@@ -217,6 +217,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<StageInformation>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<Status>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Combination>());
@@ -226,8 +228,6 @@ namespace Nekoyume.UI
 
             // 모듈류.
             _secondWidgets.Add(Widget.Create<StatusDetail>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<Inventory>());
             yield return null;
             _secondWidgets.Add(Widget.Create<Mail>());
             yield return null;

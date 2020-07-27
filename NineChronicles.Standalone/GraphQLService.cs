@@ -1,7 +1,4 @@
-using System.Threading;
-using System.Threading.Tasks;
 using GraphQL.Server;
-using Libplanet.KeyStore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,26 +18,18 @@ namespace NineChronicles.Standalone
             GraphQlNodeServiceProperties = properties;
         }
 
-        public async Task Run(
-            IHostBuilder hostBuilder,
-            CancellationToken cancellationToken = default)
+        public IHostBuilder Configure(IHostBuilder hostBuilder, StandaloneContext standaloneContext)
         {
             var listenHost = GraphQlNodeServiceProperties.GraphQLListenHost;
             var listenPort = GraphQlNodeServiceProperties.GraphQLListenPort;
 
-            await hostBuilder.ConfigureWebHostDefaults(builder =>
+            return hostBuilder.ConfigureWebHostDefaults(builder =>
             {
-                var standaloneContext = new StandaloneContext
-                {
-                    KeyStore = Web3KeyStore.DefaultKeyStore,
-                    CancellationToken = cancellationToken,
-                };
-
                 builder.UseStartup<GraphQLStartup>();
                 builder.ConfigureServices(
                     services => services.AddSingleton(standaloneContext));
                 builder.UseUrls($"http://{listenHost}:{listenPort}/");
-            }).RunConsoleAsync(cancellationToken);
+            });
         }
 
         class GraphQLStartup

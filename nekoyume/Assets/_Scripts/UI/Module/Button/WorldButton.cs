@@ -1,6 +1,7 @@
 using System;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
+using Nekoyume.TableData;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -50,6 +51,15 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private GameObject hasNotificationImage = null;
 
+        [SerializeField]
+        private string worldName = null;
+
+        [SerializeField]
+        private GameObject lockImage = null;
+
+        [SerializeField]
+        private GameObject unlockImage = null;
+
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Locked);
 
         private readonly ReactiveProperty<AnimationState> _animationState =
@@ -61,6 +71,10 @@ namespace Nekoyume.UI.Module
         public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         private bool IsLocked => _state.Value == State.Locked;
+        public string WorldName => worldName;
+        public int Id { get; private set; }
+        public int StageBegin { get; private set; }
+        public int StageEnd { get; private set; }
 
         private void Awake()
         {
@@ -128,6 +142,8 @@ namespace Nekoyume.UI.Module
                     grayImage.enabled = false;
                     colorImage.enabled = true;
                     nameImage.enabled = true;
+                    lockImage.SetActive(false);
+                    unlockImage.SetActive(true);
                     _animationState.SetValueAndForceNotify(AnimationState.Idle);
                     break;
                 case State.Locked:
@@ -135,6 +151,8 @@ namespace Nekoyume.UI.Module
                     grayImage.enabled = true;
                     colorImage.enabled = false;
                     nameImage.enabled = false;
+                    lockImage.SetActive(true);
+                    unlockImage.SetActive(false);
                     _animationState.SetValueAndForceNotify(AnimationState.None);
                     break;
                 default:
@@ -174,6 +192,13 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+        }
+
+        public void Set(WorldSheet.Row worldRow)
+        {
+            Id = worldRow.Id;
+            StageBegin = worldRow.StageBegin;
+            StageEnd = worldRow.StageEnd;
         }
     }
 }

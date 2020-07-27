@@ -49,54 +49,9 @@ jobs:
         name: unity.tar
         path: /tmp/unity.tar
 
-  build-launcher:
-    strategy:
-      matrix:
-        os: [windows-2019, macos-10.15]
-    name: "Build Launcher (${{ matrix.os }})"
-    runs-on: ${{ matrix.os }}
-    steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '3.1.201'
-    - run: |
-        set -evx
-        if [[ "${{ matrix.os }}" = windows-* ]]; then
-          rid=win-x64
-          # FIXME: https://github.com/planetarium/nekoyume-unity/issues/1864
-          choco install wget
-          dotnet nuget remove source "Microsoft Visual Studio Offline Packages"
-          dotnet nuget list source
-        elif [[ "${{ matrix.os }}" = macos-* ]]; then
-          rid=osx-x64
-        else
-          echo "Unspected platform: ${{ matrix.os }}" > /dev/stderr
-          exit 1
-        fi
-        dotnet publish \
-          --output launcher-bin/ \
-          --runtime "$rid" \
-          --configuration=Release \
-          NineChronicles.Launcher/Launcher/Launcher.csproj
-      shell: bash
-    # GitHub Actions의 아티펙트 기능을 쓰면 권한 등의 속성이 다 날아감.
-    # 그런 파일 속성들을 보존할 수 있는 타볼 형식으로 한 번 감싸야 함.
-    # https://github.com/actions/upload-artifact/issues/38
-    - run: |
-        set -evx
-        pushd launcher-bin/
-        tar cvf ../launcher-${{ matrix.os }}.tar ./*
-        popd
-      shell: bash
-    - uses: actions/upload-artifact@master
-      with:
-        name: launcher-${{ matrix.os }}.tar
-        path: launcher-${{ matrix.os }}.tar
-
   package:
     name: Package everything
-    needs: [build-unity, build-launcher]
+    needs: [build-unity]
     runs-on: macos-10.15
     steps:
     - uses: actions/checkout@master
@@ -104,20 +59,12 @@ jobs:
       with:
         name: unity.tar
         path: /tmp/
-    - uses: actions/download-artifact@master
-      with:
-        name: launcher-windows-2019.tar
-        path: /tmp/
-    - uses: actions/download-artifact@master
-      with:
-        name: launcher-macos-10.15.tar
-        path: /tmp/
     - run: |
         set -vx
         brew update || true
         brew install tree || true || true || true || true
         tree -afp /tmp/ || true
-        for d in unity launcher-windows-2019 launcher-macos-10.15; do
+        for d in unity; do
           mkdir -p "/tmp/$d/" || true
           pushd "/tmp/$d/" || true
           tar xvf "/tmp/$d.tar" || true
@@ -147,7 +94,6 @@ jobs:
           /tmp/package \
           Windows \
           /tmp/unity/Windows/ \
-          /tmp/launcher-windows-2019/ \
           "${{ secrets.APV_SIGNING_PRIVATE_KEY }}" \
           "$timestamp"
 
@@ -155,7 +101,6 @@ jobs:
           /tmp/package \
           macOS \
           /tmp/unity/MacOS/ \
-          /tmp/launcher-macos-10.15/ \
           "${{ secrets.APV_SIGNING_PRIVATE_KEY }}" \
           "$timestamp"
       env:

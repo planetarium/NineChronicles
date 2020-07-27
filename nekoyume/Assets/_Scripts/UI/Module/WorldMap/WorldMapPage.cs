@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
@@ -8,10 +10,14 @@ namespace Nekoyume.UI.Module
     {
         [SerializeField]
         private List<WorldMapStage> stages = null;
+        [SerializeField]
+        private Image line = null;
+        [SerializeField]
+        private Image line2 = null;
 
         public IReadOnlyList<WorldMapStage> Stages => stages;
 
-        public void Show(List<WorldMapStage.ViewModel> stageModels)
+        public void Show(List<WorldMapStage.ViewModel> stageModels, string imageKey)
         {
             if (stageModels is null)
             {
@@ -28,18 +34,22 @@ namespace Nekoyume.UI.Module
                     $"Model.stages.Count({modelStagesCount}) > stages.Length({viewStagesCount})");
             }
 
+            var activeCount = stageModels.Count(i => i.State.Value == WorldMapStage.State.Normal);
             for (var i = 0; i < viewStagesCount; i++)
             {
                 var view = stages[i];
                 if (modelStagesCount > i)
                 {
-                    view.Show(stageModels[i]);
+                    view.Show(stageModels[i], imageKey);
                 }
                 else
                 {
                     view.Hide();
                 }
             }
+            var enable = activeCount > 10;
+            line.gameObject.SetActive(enable);
+            line2.gameObject.SetActive(!enable);
         }
     }
 }

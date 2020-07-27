@@ -1,29 +1,11 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Libplanet.Net;
-using Microsoft.Extensions.Hosting;
-using NineChronicles.Standalone.GraphTypes;
 using NineChronicles.Standalone.Properties;
 
 namespace NineChronicles.Standalone
 {
     public static class StandaloneServices
     {
-        public static Task RunHeadlessAsync(
-            NineChroniclesNodeServiceProperties properties,
-            IHostBuilder hostBuilder,
-            StandaloneContext standaloneContext = null,
-            CancellationToken cancellationToken = default)
-        {
-
-            NineChroniclesNodeService service = CreateHeadless(
-                properties,
-                standaloneContext,
-                ignoreBootstrapFailure: true);
-            return service.Run(hostBuilder, cancellationToken);
-        }
-
         public static NineChroniclesNodeService CreateHeadless(
             NineChroniclesNodeServiceProperties properties,
             StandaloneContext standaloneContext = null,
@@ -63,15 +45,6 @@ namespace NineChronicles.Standalone
             service.ConfigureStandaloneContext(standaloneContext);
 
             return service;
-        }
-
-        public static Task RunGraphQLAsync(
-            GraphQLNodeServiceProperties graphQLProperties,
-            IHostBuilder hostBuilder,
-            CancellationToken cancellationToken = default)
-        {
-            var service = new GraphQLService(graphQLProperties);
-            return service.Run(hostBuilder, cancellationToken);
         }
 
         internal static void ConfigureStandaloneContext(this NineChroniclesNodeService service, StandaloneContext standaloneContext)
