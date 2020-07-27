@@ -99,7 +99,6 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                             RankingState = new RankingState(),
                             ShopState = new ShopState(),
                             TableSheetsState = new TableSheetsState(),
-                            WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                             GameConfigState = new GameConfigState(),
                             RedeemCodeState = new RedeemCodeState(Bencodex.Types.Dictionary.Empty
                                 .Add("address", RedeemCodeState.Address.Serialize())

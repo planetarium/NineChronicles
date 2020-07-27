@@ -640,9 +640,9 @@ namespace Nekoyume.State
         /// 현재 바라보고 있는 주간 아레나 상태의 `Gold`를 변경한다.(휘발)
         /// </summary>
         /// <param name="gold"></param>
-        public static void ModifyWeeklyArenaGold(decimal gold)
+        public static void ModifyWeeklyArenaGold(BigInteger gold)
         {
-            if (gold is 0m)
+            if (gold == 0)
             {
                 return;
             }

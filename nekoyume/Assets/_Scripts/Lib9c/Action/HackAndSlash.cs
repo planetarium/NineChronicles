@@ -220,24 +220,27 @@ namespace Nekoyume.Action
             if (states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
             {
                 var weekly = new WeeklyArenaState(weeklyDict);
-                if (weekly.ContainsKey(avatarAddress))
+                if (!weekly.Ended)
                 {
-                    var info = weekly[avatarAddress];
-                    info.Update(avatarState, tableSheets.CharacterSheet);
-                    weekly.Update(info);
-                }
-                else
-                {
-                    weekly.Set(avatarState, tableSheets.CharacterSheet);
-                }
-                sw.Stop();
-                Log.Debug("HAS Update WeeklyArenaState: {Elapsed}", sw.Elapsed);
-                sw.Restart();
+                    if (weekly.ContainsKey(avatarAddress))
+                    {
+                        var info = weekly[avatarAddress];
+                        info.Update(avatarState, tableSheets.CharacterSheet);
+                        weekly.Update(info);
+                    }
+                    else
+                    {
+                        weekly.Set(avatarState, tableSheets.CharacterSheet);
+                    }
+                    sw.Stop();
+                    Log.Debug("HAS Update WeeklyArenaState: {Elapsed}", sw.Elapsed);
+                    sw.Restart();
 
-                var weeklySerialized = weekly.Serialize();
-                sw.Stop();
-                Log.Debug("HAS Serialize RankingState: {Elapsed}", sw.Elapsed);
-                states = states.SetState(weekly.address, weekly.Serialize());
+                    var weeklySerialized = weekly.Serialize();
+                    sw.Stop();
+                    Log.Debug("HAS Serialize RankingState: {Elapsed}", sw.Elapsed);
+                    states = states.SetState(weekly.address, weeklySerialized);
+                }
             }
 
             Result = simulator.Log;
