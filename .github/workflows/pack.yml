@@ -118,7 +118,7 @@ jobs:
     - uses: shallwefootball/s3-upload-action@master
       with:
         source_dir: package
-        destination_dir: ${{ github.sha }}/
+        destination_dir: ${{ github.sha }}
         aws_bucket: 9c-artifacts
         aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
