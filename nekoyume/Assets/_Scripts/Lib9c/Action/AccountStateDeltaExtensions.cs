@@ -193,6 +193,12 @@ namespace Nekoyume.Action
             }
         }
 
+        public static WeeklyArenaState GetWeeklyArenaState(this IAccountStateDelta states, int index)
+        {
+            var address = WeeklyArenaState.DeriveAddress(index);
+            return GetWeeklyArenaState(states, address);
+        }
+
         public static CombinationSlotState GetCombinationSlotState(this IAccountStateDelta states,
             Address avatarAddress, int index)
         {
