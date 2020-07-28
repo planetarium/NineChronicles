@@ -68,7 +68,7 @@ namespace Nekoyume.UI.Scroller
             selectedSubmitText.text = submitText.text;
             buttonRectTransform.offsetMin = isNew ? LeftBottom : Vector2.zero;
             buttonRectTransform.offsetMax = isNew ? MinusRightTop : Vector2.zero;
-            iconImage.overrideSprite = Mail.mailIcons[_mail.MailType];
+            iconImage.overrideSprite = SpriteHelper.GetMailIcon(_mail.MailType);
             content.text = _mail.ToInfo();
             content.color = isNew
                 ? ColorHelper.HexToColorRGB("fff9dd")

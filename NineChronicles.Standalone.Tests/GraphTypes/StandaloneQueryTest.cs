@@ -154,6 +154,35 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
             await seedNode.StopAsync(cts.Token);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task ValidateMetadata(bool valid)
+        {
+            var minerAddress = new PrivateKey().ToAddress();
+            var lowMetadata = "{\\\"Index\\\":1}";
+            var highMetadata = "{\\\"Index\\\":13340}";
+
+            for (int i = 0; i < 10; i++)
+            {
+                await BlockChain.MineBlock(minerAddress);
+            }
+            var query = $@"query {{
+                validation {{
+                    metadata(raw: ""{(valid ? highMetadata : lowMetadata)}"")
+                }}
+            }}";
+
+            var result = await ExecuteQueryAsync(query);
+
+            var validationResult =
+                result.Data
+                    .As<Dictionary<string, object>>()["validation"]
+                    .As<Dictionary<string, object>>()["metadata"];
+            Assert.IsType<bool>(validationResult);
+            Assert.Equal(valid, validationResult);
+        }
+
         // TODO: partial class로 세부 쿼리 별 테스트 분리하기.
         [Theory]
         [InlineData(true)]
@@ -281,7 +310,6 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                             RankingState = new RankingState(),
                             ShopState = new ShopState(),
                             TableSheetsState = new TableSheetsState(),
-                            WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                             GameConfigState = new GameConfigState(),
                             RedeemCodeState = new RedeemCodeState(Bencodex.Types.Dictionary.Empty
                                 .Add("address", RedeemCodeState.Address.Serialize())

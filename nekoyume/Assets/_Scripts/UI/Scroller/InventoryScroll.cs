@@ -11,14 +11,16 @@ namespace Nekoyume.UI.Scroller
         InventoryScroll.ContextModel,
         InventoryScroll.CellCellGroup>
     {
-        public class ContextModel : GridScrollDefaultContext, IDisposable
+        public class ContextModel : GridScrollDefaultContext
         {
             public readonly Subject<InventoryCell> OnClick = new Subject<InventoryCell>();
             public readonly Subject<InventoryCell> OnDoubleClick = new Subject<InventoryCell>();
 
-            public void Dispose()
+            public override void Dispose()
             {
                 OnClick?.Dispose();
+                OnDoubleClick?.Dispose();
+                base.Dispose();
             }
         }
 

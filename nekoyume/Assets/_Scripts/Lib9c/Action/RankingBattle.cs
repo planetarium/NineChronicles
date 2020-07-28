@@ -92,6 +92,12 @@ namespace Nekoyume.Action
 
             var weeklyArenaState = states.GetWeeklyArenaState(WeeklyArenaAddress);
 
+            //FIXME 오류던지게 고쳐야함
+            if (weeklyArenaState.Ended)
+            {
+                return LogError(context, "Aborted as the weekly arena state already ended.");
+            }
+
             if (!weeklyArenaState.ContainsKey(AvatarAddress))
             {
                 return LogError(context, "Aborted as the weekly arena state was failed to load.");

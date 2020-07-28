@@ -94,7 +94,8 @@ namespace Nekoyume.BlockChain
         private Transaction<PolymorphicAction<ActionBase>> RankingReward()
         {
             // private 테스트용 임시 로직 변경
-            var weeklyArenaAddress = WeeklyArenaState.Addresses[0];
+            var index = (int) _chain.Tip.Index / GameConfig.WeeklyArenaInterval;
+            var weeklyArenaAddress = WeeklyArenaState.DeriveAddress(index);
             var weeklyArenaState = new WeeklyArenaState(_chain.GetState(weeklyArenaAddress));
             var actions = new List<PolymorphicAction<ActionBase>>
             {

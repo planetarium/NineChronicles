@@ -33,29 +33,21 @@ namespace Nekoyume.UI.Scroller
 
         protected override void SetupCellTemplate() => Setup<TCellGroup>(CellTemplate);
 
-        /// <summary>
-        /// FancyScrollRect.ScrollLength
-        /// </summary>
+        #region FancyScrollRect
+
         private float ScrollLength => 1f / Mathf.Max(cellInterval, 1e-2f) - 1f;
 
-        /// <summary>
-        /// FancyScrollRect.ViewportLength
-        /// </summary>
         private float ViewportLength => ScrollLength - reuseCellMarginCount * 2f;
 
-        /// <summary>
-        /// FancyScrollRect.PaddingHeadLength
-        /// </summary>
         private float PaddingHeadLength => (paddingHead - spacing * 0.5f) / (CellSize + spacing);
 
-        /// <summary>
-        /// FancyScrollRect.MaxScrollPosition
-        /// </summary>
         private float MaxScrollPosition =>
             ItemsSource.Count
             - ScrollLength
             + reuseCellMarginCount * 2f
             + (paddingHead + paddingTail - spacing) / (CellSize + spacing);
+
+        #endregion
 
         #region MonoBehaviour
 

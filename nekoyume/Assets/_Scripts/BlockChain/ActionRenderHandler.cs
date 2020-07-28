@@ -279,7 +279,7 @@ namespace Nekoyume.BlockChain
         private void WeeklyArenaReward()
         {
             _renderer.EveryRender<WeeklyArenaReward>()
-                .Where(ValidateEvaluationForAgentState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseWeeklyArenaReward).AddTo(_disposables);
         }
@@ -415,12 +415,12 @@ namespace Nekoyume.BlockChain
                 .Where(x => !x.Complete)
                 .OrderBy(x => x.StageId)
                 .FirstOrDefault(x =>
-                gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
+                    gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
 
             if (!(nextQuest is null))
             {
                 var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId &&
-                        nextQuest.SubRecipeId == eval.Action.SubRecipeId;
+                                    nextQuest.SubRecipeId == eval.Action.SubRecipeId;
 
                 if (isRecipeMatch)
                 {
@@ -734,27 +734,30 @@ namespace Nekoyume.BlockChain
 
         private void ResponseWeeklyArenaReward(ActionBase.ActionEvaluation<WeeklyArenaReward> eval)
         {
-            //[TentuPlay] ArenaReward 기록
-            //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            Address agentAddress = States.Instance.AgentState.address;
-            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger balance))
+            //TODO 오류별 핸들링
+            if (eval.Exception is null)
             {
-                GoldBalanceState prevBalanceState = States.Instance.GoldBalanceState;
-                BigInteger earned = balance - prevBalanceState.gold;
+                //[TentuPlay] ArenaReward 기록
+                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
+                Address agentAddress = States.Instance.AgentState.address;
+                if (eval.OutputStates.TryGetGoldBalance(agentAddress, out BigInteger balance))
+                {
+                    GoldBalanceState prevBalanceState = States.Instance.GoldBalanceState;
+                    BigInteger earned = balance - prevBalanceState.gold;
 
-                new TPStashEvent().CurrencyGet(
-                    player_uuid: agentAddress.ToHex(),
-                    currency_slug: "gold",
-                    currency_quantity: (float)earned,
-                    currency_total_quantity: (float)balance,
-                    reference_entity: "quests",
-                    reference_category_slug: "arena",
-                    reference_slug: "WeeklyArenaReward");
-                UI.Notification.Push(MailType.System, $"Get Arena Reward: {earned}");
+                    new TPStashEvent().CurrencyGet(
+                        player_uuid: agentAddress.ToHex(),
+                        currency_slug: "gold",
+                        currency_quantity: (float)earned,
+                        currency_total_quantity: (float)balance,
+                        reference_entity: "quests",
+                        reference_category_slug: "arena",
+                        reference_slug: "WeeklyArenaReward");
+                    UI.Notification.Push(MailType.System, $"Get Arena Reward: {earned}");
+                }
+
+                UpdateAgentState(eval);
             }
-
-            UpdateAgentState(eval);
-            Widget.Find<LoadingScreen>().Close();
         }
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
