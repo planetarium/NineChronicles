@@ -72,8 +72,12 @@ namespace Nekoyume.Game
         public bool IsInStage { get; private set; }
         public Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
-        public Vector3 SelectPositionBegin(int index) => new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
-        public Vector3 SelectPositionEnd(int index) => new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
+
+        public Vector3 SelectPositionBegin(int index) =>
+            new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
+
+        public Vector3 SelectPositionEnd(int index) =>
+            new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
         public bool showLoadingScreen;
 
@@ -159,15 +163,23 @@ namespace Nekoyume.Game
                     var moveTo = new Vector3(-0.05f, -0.5f);
                     playerObject.transform.DOScale(1.1f, 2.0f).SetDelay(0.2f);
                     playerObject.transform.DOMove(moveTo, 1.3f).SetDelay(0.2f);
-                    var seqPos = new Vector3(moveTo.x, moveTo.y - UnityEngine.Random.Range(0.05f, 0.1f), 0.0f);
+                    var seqPos = new Vector3(
+                        moveTo.x,
+                        moveTo.y - UnityEngine.Random.Range(0.05f, 0.1f),
+                        0.0f);
                     var seq = DOTween.Sequence();
-                    seq.Append(playerObject.transform.DOMove(seqPos, UnityEngine.Random.Range(4.0f, 5.0f)));
-                    seq.Append(playerObject.transform.DOMove(moveTo, UnityEngine.Random.Range(4.0f, 5.0f)));
+                    seq.Append(playerObject.transform.DOMove(
+                        seqPos,
+                        UnityEngine.Random.Range(4.0f, 5.0f)));
+                    seq.Append(playerObject.transform.DOMove(
+                        moveTo,
+                        UnityEngine.Random.Range(4.0f, 5.0f)));
                     seq.Play().SetDelay(2.6f).SetLoops(-1);
                     if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
-                        var skeleton = anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
+                        var skeleton =
+                            anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
                         skeleton.A = 0.0f;
                         DOTween.To(() => skeleton.A, x => skeleton.A = x, 1.0f, 1.0f);
                         player.SpineController.Appear();
@@ -274,11 +286,11 @@ namespace Nekoyume.Game
             new TPStashEvent().PlayerStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "HackAndSlash",
-                stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId,
                 stage_status: stageStatus.Start,
-                stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_level: log.worldId + "_" + log.stageId,
                 is_autocombat_committed: isAutocombat.AutocombatOn
-                );
+            );
 
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
@@ -301,7 +313,7 @@ namespace Nekoyume.Game
                 stage_status: stageStatus.Start,
                 stage_level: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
-                );
+            );
 
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
@@ -409,7 +421,7 @@ namespace Nekoyume.Game
             zone = data.Background;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
-            RunPlayer(new Vector2(-15f, -1.2f),false);
+            RunPlayer(new Vector2(-15f, -1.2f), false);
 
             yield return new WaitForSeconds(2.0f);
 
@@ -425,8 +437,8 @@ namespace Nekoyume.Game
             yield return new WaitForSeconds(1f);
             Boss = null;
             Widget.Find<UI.Battle>().BossStatus.Close();
-            var passed = log.IsClear;
-            if (passed)
+            var isClear = log.IsClear;
+            if (isClear)
             {
                 yield return StartCoroutine(CoGuidedQuest(log.stageId));
                 yield return new WaitForSeconds(1f);
@@ -446,7 +458,7 @@ namespace Nekoyume.Game
             {
                 var playerCharacter = GetPlayer();
                 playerCharacter.DisableHUD();
-                if (passed)
+                if (isClear)
                 {
                     yield return StartCoroutine(CoDialog(log.stageId));
                 }
@@ -455,7 +467,7 @@ namespace Nekoyume.Game
                 playerCharacter.ShowSpeech("PLAYER_WIN");
                 yield return new WaitForSeconds(2.2f);
                 objectPool.ReleaseExceptForPlayer();
-                if (passed)
+                if (isClear)
                 {
                     StartCoroutine(CoSlideBg());
                 }
@@ -469,16 +481,49 @@ namespace Nekoyume.Game
             var avatarState = new AvatarState(
                 (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(avatarAddress));
             _battleResultModel.State = log.result;
-            var stage = Game.instance.TableSheets.StageSheet.Values.First(i => i.Id == stageId);
-            var apNotEnough = avatarState.actionPoint < stage.CostAP;
-            _battleResultModel.ActionPointNotEnough = apNotEnough;
-            _battleResultModel.ShouldExit = apNotEnough || isExitReserved;
-            _battleResultModel.ShouldRepeat = !apNotEnough && (repeatStage || !passed);
 
-            if (!_battleResultModel.ShouldRepeat)
+            if (isExitReserved)
             {
-                Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow, true);
-                if (stageId == worldRow.StageEnd)
+                _battleResultModel.ActionPointNotEnough = false;
+                _battleResultModel.ShouldExit = true;
+                _battleResultModel.ShouldRepeat = false;
+            }
+            else if (repeatStage || !isClear)
+            {
+                var apNotEnough = true;
+                if (Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
+                {
+                    apNotEnough = avatarState.actionPoint < stageRow.CostAP;
+                }
+
+                _battleResultModel.ActionPointNotEnough = apNotEnough;
+                _battleResultModel.ShouldExit = apNotEnough;
+                _battleResultModel.ShouldRepeat = !apNotEnough;
+            }
+            else
+            {
+                var apNotEnough = true;
+                if (Game.instance.TableSheets.StageSheet.TryGetValue(stageId + 1, out var stageRow))
+                {
+                    apNotEnough = avatarState.actionPoint < stageRow.CostAP;
+                }
+
+                _battleResultModel.ActionPointNotEnough = apNotEnough;
+                _battleResultModel.ShouldExit = apNotEnough;
+                _battleResultModel.ShouldRepeat = false;
+            }
+
+            if (!_battleResultModel.ShouldExit &&
+                !_battleResultModel.ShouldRepeat)
+            {
+                if (Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+                {
+                    if (stageId == worldRow.StageEnd)
+                    {
+                        _battleResultModel.ShouldExit = true;
+                    }
+                }
+                else
                 {
                     _battleResultModel.ShouldExit = true;
                 }
@@ -502,16 +547,17 @@ namespace Nekoyume.Game
                     stage_status = stageStatus.Timeout;
                     break;
             }
+
             new TPStashEvent().PlayerStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "HackAndSlash",
-                stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId,
                 stage_status: stage_status,
-                stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_level: log.worldId + "_" + log.stageId,
                 stage_score: log.clearedWaveNumber,
                 stage_playtime: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
-                );
+            );
             var props = new Value
             {
                 ["StageId"] = log.stageId
@@ -562,6 +608,7 @@ namespace Nekoyume.Game
                     stage_status = stageStatus.Timeout;
                     break;
             }
+
             new TPStashEvent().PlayerStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "RankingBattle",
@@ -571,7 +618,7 @@ namespace Nekoyume.Game
                 stage_score: log.diffScore,
                 stage_playtime: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
-                );
+            );
         }
 
         public IEnumerator CoSpawnPlayer(Player character)
@@ -611,6 +658,7 @@ namespace Nekoyume.Game
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
             }
+
             yield return null;
         }
 
@@ -621,58 +669,85 @@ namespace Nekoyume.Game
             battle.EnemyPlayerStatus.Show();
             battle.EnemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
 
-            var sprite = SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
+            var sprite =
+                SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
             battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
             yield return StartCoroutine(spawner.CoSetData(character, new Vector3(8f, -1.2f)));
         }
 
         #region Skill
 
-        public IEnumerator CoNormalAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoNormalAttack(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
+                character.actions.Add(CoSkill(
+                    character,
+                    skillInfos,
+                    buffInfos,
+                    character.CoNormalAttack));
                 yield return null;
             }
         }
 
-        public IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoBlowAttack(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoBlowAttack));
+                character.actions.Add(CoSkill(
+                    character,
+                    skillInfos,
+                    buffInfos,
+                    character.CoBlowAttack));
                 yield return null;
             }
         }
 
-        public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoDoubleAttack(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoDoubleAttack));
+                character.actions.Add(CoSkill(
+                    character,
+                    skillInfos,
+                    buffInfos,
+                    character.CoDoubleAttack));
                 yield return null;
             }
         }
 
-        public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoAreaAttack(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoAreaAttack));
+                character.actions.Add(CoSkill(
+                    character,
+                    skillInfos,
+                    buffInfos,
+                    character.CoAreaAttack));
                 yield return null;
             }
         }
 
-        public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoHeal(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
@@ -683,7 +758,9 @@ namespace Nekoyume.Game
             }
         }
 
-        public IEnumerator CoBuff(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoBuff(
+            CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
@@ -694,7 +771,9 @@ namespace Nekoyume.Game
             }
         }
 
-        private IEnumerator CoSkill(Character.CharacterBase character, IEnumerable<Skill.SkillInfo> skillInfos,
+        private IEnumerator CoSkill(
+            Character.CharacterBase character,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos,
             Func<IReadOnlyList<Skill.SkillInfo>, IEnumerator> func)
         {
@@ -745,10 +824,12 @@ namespace Nekoyume.Game
 
             character.StartRun();
             var time = Time.time;
-            yield return new WaitUntil(() => Time.time - time > 2f || character.TargetInAttackRange(enemy));
+            yield return new WaitUntil(() =>
+                Time.time - time > 2f || character.TargetInAttackRange(enemy));
         }
 
-        private IEnumerator CoAfterSkill(Character.CharacterBase character,
+        private IEnumerator CoAfterSkill(
+            Character.CharacterBase character,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             if (!character)
@@ -805,7 +886,11 @@ namespace Nekoyume.Game
 
         #region wave
 
-        public IEnumerator CoSpawnWave(int waveNumber, int waveTurn, List<Enemy> enemies, bool hasBoss)
+        public IEnumerator CoSpawnWave(
+            int waveNumber,
+            int waveTurn,
+            List<Enemy> enemies,
+            bool hasBoss)
         {
             this.waveNumber = waveNumber;
             this.waveTurn = waveTurn;
@@ -847,7 +932,9 @@ namespace Nekoyume.Game
                 var battle = Widget.Find<UI.Battle>();
                 battle.BossStatus.Show();
                 battle.BossStatus.SetHp(boss.HP, boss.HP);
-                battle.BossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
+                battle.BossStatus.SetProfile(
+                    boss.Level,
+                    LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
                     sprite);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
@@ -930,7 +1017,7 @@ namespace Nekoyume.Game
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
-            if(chasePlayer)
+            if (chasePlayer)
                 RunAndChasePlayer(player);
             else
                 player.StartRun();
@@ -940,7 +1027,7 @@ namespace Nekoyume.Game
         public Character.Player RunPlayer(Vector2 position, bool chasePlayer = true)
         {
             var player = GetPlayer(position);
-            if(chasePlayer)
+            if (chasePlayer)
                 RunAndChasePlayer(player);
             else
                 player.StartRun();
@@ -960,7 +1047,8 @@ namespace Nekoyume.Game
             if (caster is null)
                 throw new ArgumentNullException(nameof(caster));
 
-            var character = GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.Id);
+            var character = GetComponentsInChildren<Character.CharacterBase>()
+                .FirstOrDefault(c => c.Id == caster.Id);
             if (!(character is null))
                 character.Set(caster);
             return character;
