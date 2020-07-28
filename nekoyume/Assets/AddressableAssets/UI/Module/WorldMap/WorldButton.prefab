@@ -296,7 +296,7 @@ MonoBehaviour:
   hoverScaleSpeed: 0.7
   hasNotificationImage: {fileID: 5278882704292126604}
   worldName: 
-  lockImage: {fileID: 6905887094752087735}
+  lockImage: {fileID: 7201889764676850070}
   unlockImage: {fileID: 3444717624973401390}
 --- !u!114 &6161030281167708283
 MonoBehaviour:
@@ -581,7 +581,7 @@ GameObject:
   - component: {fileID: 1943900728876951607}
   - component: {fileID: 3842547115165747461}
   m_Layer: 5
-  m_Name: LockNameImage
+  m_Name: LockName
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
