@@ -192,7 +192,7 @@ UI_GO_MAIN,Main,메인,Principal
 UI_QUIT,Quit,종료,Quit
 UI_EXIT,Exit,나가기,Sair
 UI_ERROR,Error,에러,Erro
-UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and can only include alphanumeric characters.,닉네임은 2~20자여야 하며 한글[comma] 영문자[comma] 숫자만 사용할 수 있습니다.,O apelido deve ter entre 2 e 20 caracteres e pode incluir apenas caracteres alfanuméricos.
+UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and can only include alphanumeric characters.,닉네임은 2~20자여야 하며[newline]영문자[comma] 숫자만 사용할 수 있습니다.,O apelido deve ter entre 2 e 20 caracteres e pode incluir apenas caracteres alfanuméricos.
 UI_ERROR_FORMAT,Error occurred.[newline]({0})[newline]Please restart the game.,오류가 발생했습니다. ({0})[newline]게임을 다시 실행해 주세요.,Ocorreu um erro.[newline] ({0})[newline]Por favor reinicie o jogo.
 UI_ERROR_RPC_CONNECTION,RPC server connection failed.[newline][newline]Check if the game launcher is running[newline] and try again.,RPC 서버 연결 실패[newline][newline]게임 론처가 실행 중인지[newline] 확인 후 다시 실행해주세요.,Falha na conexão do servidor RPC.[newline][newline]Verifique se o iniciador de jogos está executando[newline]e tente novamente.
 UI_MAIL,Mail,우편,Correio

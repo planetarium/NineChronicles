@@ -7,9 +7,13 @@ namespace Nekoyume.UI.Tween
     {
         protected Tweener Tweener { get; set; }
 
+        public bool IsPlaying => Tweener?.IsPlaying() ?? false;
+
         public abstract Tweener PlayTween();
 
         public abstract Tweener PlayReverse();
+
+        public abstract void ResetToOrigin();
 
         public void KillTween()
         {

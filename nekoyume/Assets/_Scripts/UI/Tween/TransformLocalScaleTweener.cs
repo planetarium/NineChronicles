@@ -96,6 +96,12 @@ namespace Nekoyume.UI.Tween
             return PlayReverse(duration);
         }
 
+        public override void ResetToOrigin()
+        {
+            KillTween();
+            Transform.localScale = OriginLocalScale;
+        }
+
         public Tweener PlayReverse(float newDuration)
         {
             KillTween();

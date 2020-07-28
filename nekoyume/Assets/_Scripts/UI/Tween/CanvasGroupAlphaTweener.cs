@@ -120,5 +120,11 @@ namespace Nekoyume.UI.Tween
             Tweener.onComplete = onReverseComplete;
             return Tweener.Play();
         }
+
+        public override void ResetToOrigin()
+        {
+            KillTween();
+            CanvasGroup.alpha = OriginAlpha;
+        }
     }
 }

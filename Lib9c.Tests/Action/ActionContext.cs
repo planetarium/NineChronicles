@@ -15,6 +15,6 @@ namespace Lib9c.Tests.Action
 
         public IAccountStateDelta PreviousStates { get; set; }
 
-        public IRandom Random => throw new System.NotImplementedException();
+        public IRandom Random { get; set; }
     }
 }
