@@ -40,7 +40,7 @@ namespace Nekoyume.Helper
         private const string MailIconPathFormat = "UI/Icons/Mail/{0}";
 
         private static readonly string MailIconDefaultPath =
-            string.Format(MailIconPathFormat, "icon_mail_System");
+            string.Format(MailIconPathFormat, "icon_mail_system");
 
         public static Sprite GetCharacterIcon(int characterId)
         {
@@ -142,15 +142,15 @@ namespace Nekoyume.Helper
             {
                 case MailType.Workshop:
                     result = Resources.Load<Sprite>(
-                        string.Format(MailIconPathFormat, "icon_mail_Workshop"));
+                        string.Format(MailIconPathFormat, "icon_mail_workshop"));
                     break;
                 case MailType.Auction:
                     result = Resources.Load<Sprite>(
-                        string.Format(MailIconPathFormat, "icon_mail_Auction"));
+                        string.Format(MailIconPathFormat, "icon_mail_auction"));
                     break;
                 case MailType.System:
                     result = Resources.Load<Sprite>(
-                        string.Format(MailIconPathFormat, "icon_mail_System"));
+                        string.Format(MailIconPathFormat, "icon_mail_system"));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
