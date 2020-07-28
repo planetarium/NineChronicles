@@ -24,7 +24,9 @@ namespace Nekoyume.Model
             public bool IsUnlocked => UnlockedBlockIndex != -1;
             public bool IsStageCleared => StageClearedBlockIndex != -1;
 
-            public World(WorldSheet.Row worldRow, long unlockedBlockIndex = -1,
+            public World(
+                WorldSheet.Row worldRow,
+                long unlockedBlockIndex = -1,
                 long stageClearedBlockIndex = -1,
                 int stageClearedId = -1)
             {
@@ -115,11 +117,15 @@ namespace Nekoyume.Model
         /// </summary>
         private readonly Dictionary<int, World> _worlds = new Dictionary<int, World>();
 
-        public WorldInformation(long blockIndex, WorldSheet worldSheet,
+        public WorldInformation(
+            long blockIndex,
+            WorldSheet worldSheet,
             bool openAllOfWorldsAndStages = false)
         {
             if (worldSheet is null)
+            {
                 return;
+            }
 
             var orderedSheet = worldSheet.OrderedList;
 
@@ -152,7 +158,9 @@ namespace Nekoyume.Model
         public WorldInformation(long blockIndex, WorldSheet worldSheet, int clearStageId = 0)
         {
             if (worldSheet is null)
+            {
                 return;
+            }
 
             var orderedSheet = worldSheet.OrderedList;
 
@@ -216,6 +224,36 @@ namespace Nekoyume.Model
         public bool IsStageCleared(int stageId) =>
             TryGetLastClearedStageId(out var clearedStageId)
             && stageId <= clearedStageId;
+
+        public WorldInformation AddWorld(WorldSheet.Row worldRow)
+        {
+            if (worldRow is null ||
+                _worlds.ContainsKey(worldRow.Id))
+            {
+                return this;
+            }
+
+            _worlds.Add(worldRow.Id, new World(worldRow));
+            return this;
+        }
+
+        public WorldInformation UpdateWorld(WorldSheet.Row worldRow)
+        {
+            if (worldRow is null ||
+                !_worlds.ContainsKey(worldRow.Id))
+            {
+                return this;
+            }
+
+            var world = _worlds[worldRow.Id];
+            _worlds[worldRow.Id] = new World(
+                worldRow,
+                world.UnlockedBlockIndex,
+                world.StageClearedBlockIndex,
+                world.StageClearedId
+            );
+            return this;
+        }
 
         /// <summary>
         /// 인자로 받은 `worldId`에 해당하는 `World` 객체를 얻는다.
@@ -314,13 +352,18 @@ namespace Nekoyume.Model
         /// <param name="worldId"></param>
         /// <param name="stageId"></param>
         /// <param name="clearedAt"></param>
-        /// <exception cref="ArgumentException"></exception>
-        public void ClearStage(int worldId, int stageId, long clearedAt,
+        /// <param name="unlockSheet"></param>
+        public void ClearStage(
+            int worldId,
+            int stageId,
+            long clearedAt,
             WorldUnlockSheet unlockSheet)
         {
             var world = _worlds[worldId];
             if (stageId <= world.StageClearedId)
+            {
                 return;
+            }
 
             _worlds[worldId] = new World(world, clearedAt, stageId);
 
@@ -342,10 +385,14 @@ namespace Nekoyume.Model
         private void UnlockWorld(int worldId, long unlockedAt)
         {
             if (!_worlds.ContainsKey(worldId))
+            {
                 throw new KeyNotFoundException($"{nameof(worldId)}: {worldId}");
+            }
 
             if (_worlds[worldId].IsUnlocked)
+            {
                 return;
+            }
 
             var world = _worlds[worldId];
             _worlds[worldId] = new World(world, unlockedAt);
