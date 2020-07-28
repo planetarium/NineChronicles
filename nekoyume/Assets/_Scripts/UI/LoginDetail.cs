@@ -37,6 +37,7 @@ namespace Nekoyume.UI
         public Button archerButton;
         public Button mageButton;
         public Button acolyteButton;
+        public Button backButton;
 
         private int _selectedIndex;
         private bool _isCreateMode;
@@ -62,6 +63,11 @@ namespace Nekoyume.UI
 
             CloseWidget = BackClick;
             SubmitWidget = CreateClick;
+
+            backButton.OnClickAsObservable()
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
+                .Subscribe(_ => BackClick())
+                .AddTo(gameObject);
         }
 
         public void CreateClick()
