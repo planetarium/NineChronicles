@@ -13,7 +13,7 @@ acc_L_01
   index: -1
 acc_L_02
   rotate: false
-  xy: 748, 1475
+  xy: 366, 865
   size: 33, 66
   orig: 33, 66
   offset: 0, 0
@@ -54,15 +54,15 @@ belt_01
   offset: 0, 0
   index: -1
 belt_02
-  rotate: false
-  xy: 366, 872
+  rotate: true
+  xy: 940, 1689
   size: 35, 59
   orig: 35, 59
   offset: 0, 0
   index: -1
 belt_03
   rotate: false
-  xy: 940, 1678
+  xy: 467, 1365
   size: 46, 46
   orig: 46, 46
   offset: 0, 0
@@ -177,6 +177,13 @@ eyebrow_03
   xy: 1217, 1719
   size: 85, 50
   orig: 85, 50
+  offset: 0, 0
+  index: -1
+eyebrow_04
+  rotate: true
+  xy: 748, 1464
+  size: 77, 34
+  orig: 77, 34
   offset: 0, 0
   index: -1
 hair_00
@@ -313,8 +320,8 @@ head
   offset: 0, 0
   index: -1
 mouth_02
-  rotate: true
-  xy: 988, 1688
+  rotate: false
+  xy: 467, 1334
   size: 36, 29
   orig: 36, 29
   offset: 0, 0
