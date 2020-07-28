@@ -151,6 +151,11 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                     return Subscription;
                 }
 
+                if (serviceType == typeof(ValidationQuery))
+                {
+                    return new ValidationQuery(StandaloneContext);
+                }
+
                 if (serviceType == typeof(ActivationStatusQuery))
                 {
                     return new ActivationStatusQuery(StandaloneContext);
