@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using EasingCore;
@@ -32,8 +33,8 @@ namespace Nekoyume.UI
         private static readonly List<NotificationCell.ViewModel> SharedModel =
             new List<NotificationCell.ViewModel>();
 
-        private static readonly Queue<NotificationCell.ViewModel> AddQueue =
-            new Queue<NotificationCell.ViewModel>();
+        private static readonly ConcurrentQueue<NotificationCell.ViewModel> AddQueue =
+            new ConcurrentQueue<NotificationCell.ViewModel>();
 
         private static readonly Subject<Unit> OnEnqueueToAddQueue = new Subject<Unit>();
 
@@ -143,7 +144,7 @@ namespace Nekoyume.UI
 
         private IEnumerator CoAddCell()
         {
-            while (AddQueue.Count > 0)
+            while (AddQueue.TryDequeue(out var viewModel))
             {
                 var deltaTime = Time.time - _lastTimeToAddCell;
                 if (deltaTime < InternalTimeToAddCell)
@@ -159,7 +160,6 @@ namespace Nekoyume.UI
                     yield return null;
                 }
 
-                var viewModel = AddQueue.Dequeue();
                 viewModel.addedTime = Time.time;
                 SharedModel.Add(viewModel);
                 scroll.UpdateData(SharedModel);
