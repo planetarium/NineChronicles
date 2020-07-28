@@ -129,7 +129,9 @@ namespace Nekoyume.UI.Module
             {
                 var cellView = Instantiate(cellViewPrefab, cellViewParent);
                 cellView.Set(recipeRow);
-                cellView.OnClick.Subscribe(SubscribeOnClickCellView)
+                cellView.OnClick.AsObservable()
+                    .ThrottleFirst(new TimeSpan(0, 0, 1))
+                    .Subscribe(SubscribeOnClickCellView)
                     .AddTo(_disposablesAtLoadRecipeList);
                 cellViews[idx] = cellView;
                 ++idx;

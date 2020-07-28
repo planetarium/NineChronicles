@@ -142,7 +142,7 @@ namespace Planetarium.Nekoyume.Editor
             gameObject.name = prefabName;
             gameObject.layer = LayerMask.NameToLayer("Character");
             gameObject.transform.position = Position;
-            gameObject.transform.localScale = LocalScale;
+            gameObject.transform.localScale = GetPrefabLocalScale(prefabName);
 
             var meshRenderer = gameObject.GetComponent<MeshRenderer>();
             meshRenderer.lightProbeUsage = LightProbeUsage.Off;
@@ -447,6 +447,21 @@ namespace Planetarium.Nekoyume.Editor
                 }
 
                 CreateSpinePrefabInternal(skeletonDataAsset);
+            }
+        }
+
+        // NOTE: 모든 캐릭터는 원본의 해상도를 보여주기 위해서 Vector3.one 사이즈로 스케일되어야 맞습니다.
+        // 하지만 이 프로젝트는 2D 리소스의 ppu와 카메라 사이즈가 호환되지 않아서 임의의 스케일을 설정합니다.(LocalScale)
+        // 이마저도 아트 단에서 예상하지 못한 스케일 이슈가 생기면 "300005"와 같이 예외적인 케이스가 발생합니다.
+        // 앞으로 이런 예외가 많아질 것을 대비해서 별도의 함수로 뺍니다.
+        private static Vector3 GetPrefabLocalScale(string prefabName)
+        {
+            switch (prefabName)
+            {
+                default:
+                    return LocalScale;
+                case "300005":
+                    return new Vector3(.8f, .8f, 1f);
             }
         }
     }

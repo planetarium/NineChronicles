@@ -33,7 +33,6 @@ namespace Lib9c.Tests
                             RankingState = new RankingState(),
                             ShopState = new ShopState(),
                             TableSheetsState = new TableSheetsState(),
-                            WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                             GameConfigState = new GameConfigState(),
                             RedeemCodeState = new RedeemCodeState(Dictionary.Empty
                                 .Add("address", RedeemCodeState.Address.Serialize())
@@ -77,7 +76,6 @@ namespace Lib9c.Tests
                             RankingState = new RankingState(),
                             ShopState = new ShopState(),
                             TableSheetsState = new TableSheetsState(),
-                            WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                             GameConfigState = new GameConfigState(),
                             RedeemCodeState = new RedeemCodeState(Dictionary.Empty
                                 .Add("address", RedeemCodeState.Address.Serialize())
