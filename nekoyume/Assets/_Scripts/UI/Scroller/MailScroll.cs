@@ -1,14 +1,9 @@
-using System;
-
 namespace Nekoyume.UI.Scroller
 {
     public class MailScroll : RectScroll<Nekoyume.Model.Mail.Mail, MailScroll.ContextModel>
     {
-        public class ContextModel : RectScrollDefaultContext, IDisposable
+        public class ContextModel : RectScrollDefaultContext
         {
-            public void Dispose()
-            {
-            }
         }
     }
 }

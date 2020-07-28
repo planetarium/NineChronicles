@@ -40,7 +40,7 @@ namespace Nekoyume.UI.Scroller
         #endregion
 
         public void SetData(Nekoyume.Model.Mail.Mail mail)
-        {   
+        {
             _mail = Widget.Find<Mail>();
             data = mail;
             var text = mail.ToInfo();
@@ -53,7 +53,7 @@ namespace Nekoyume.UI.Scroller
             submitTextSelected.text = submitText.text;
             buttonImage.rectTransform.offsetMin = isNew ? _leftBottom : Vector2.zero;
             buttonImage.rectTransform.offsetMax = isNew ? _minusRightTop : Vector2.zero;
-            icon.overrideSprite = Mail.mailIcons[mail.MailType];
+            icon.overrideSprite = SpriteHelper.GetMailIcon(mail.MailType);
             content.text = text;
             content.color = color;
             submitText.gameObject.SetActive(!isNew);
