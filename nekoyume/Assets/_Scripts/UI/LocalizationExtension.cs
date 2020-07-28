@@ -129,6 +129,23 @@ namespace Nekoyume.UI
                         combinationQuest.ItemSubType.GetLocalizedString()
                     );
                 case GeneralQuest generalQuest:
+                    switch (generalQuest.Event)
+                    {
+                        case QuestEventType.Create:
+                            break;
+                        case QuestEventType.Enhancement:
+                        case QuestEventType.Level:
+                        case QuestEventType.Die:
+                        case QuestEventType.Complete:
+                        case QuestEventType.Equipment:
+                        case QuestEventType.Consumable:
+                            return string.Format(
+                                LocalizationManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT"),
+                                generalQuest.Goal
+                            );
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
                     return LocalizationManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT");
                 case GoldQuest goldQuest:
                     return string.Format(
@@ -139,17 +156,18 @@ namespace Nekoyume.UI
                     return string.Format(
                         LocalizationManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT"),
                         itemEnhancementQuest.Grade,
-                        itemEnhancementQuest.Goal
+                        itemEnhancementQuest.Goal,
+                        itemEnhancementQuest.Count
                     );
                 case ItemGradeQuest itemGradeQuest:
                     return string.Format(
                         LocalizationManager.Localize("QUEST_ITEM_GRADE_FORMAT"),
-                        itemGradeQuest.Grade
+                        itemGradeQuest.Grade, itemGradeQuest.Goal
                     );
                 case ItemTypeCollectQuest itemTypeCollectQuest:
                     return string.Format(
                         LocalizationManager.Localize("QUEST_ITEM_TYPE_FORMAT"),
-                        itemTypeCollectQuest.ItemType.GetLocalizedString()
+                        itemTypeCollectQuest.ItemType.GetLocalizedString(), itemTypeCollectQuest.Goal
                     );
                 case MonsterQuest monsterQuest:
                     return string.Format(
@@ -159,7 +177,7 @@ namespace Nekoyume.UI
                 case TradeQuest tradeQuest:
                     return string.Format(
                         LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT"),
-                        tradeQuest.Type.GetLocalizedString()
+                        tradeQuest.Type.GetLocalizedString(), tradeQuest.Goal
                     );
                 case WorldQuest worldQuest:
                     if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal, out var worldRow))
@@ -172,7 +190,7 @@ namespace Nekoyume.UI
                         else
                         {
                             var format = LocalizationManager.Localize("QUEST_CLEAR_STAGE_FORMAT");
-                            return string.Format(format, worldQuest.Goal);
+                            return string.Format(format, worldRow.GetLocalizedName(), worldQuest.Goal);
                         }
                     }
                     throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
