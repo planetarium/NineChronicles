@@ -13,6 +13,7 @@ namespace Nekoyume.Model.Quest
     {
         public readonly int Grade;
         private readonly int _count;
+        public int Count => _count;
 
         public ItemEnhancementQuest(ItemEnhancementQuestSheet.Row data, QuestReward reward) 
             : base(data, reward)
@@ -42,7 +43,7 @@ namespace Nekoyume.Model.Quest
                 CultureInfo.InvariantCulture,
                 GoalFormat,
                 Math.Min(_count, _current),
-               _count 
+               _count
             );
 
         public void Update(Equipment equipment)
