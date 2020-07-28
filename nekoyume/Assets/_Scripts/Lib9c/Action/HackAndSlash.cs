@@ -41,7 +41,8 @@ namespace Nekoyume.Action
             }.ToImmutableDictionary();
 
 
-        protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
+        protected override void LoadPlainValueInternal(
+            IImmutableDictionary<string, IValue> plainValue)
         {
             costumes = ((Bencodex.Types.List) plainValue["costumes"]).Select(
                 e => e.ToInteger()
@@ -69,24 +70,98 @@ namespace Nekoyume.Action
                 states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
             }
+
             var sw = new Stopwatch();
             sw.Start();
             var started = DateTimeOffset.UtcNow;
             Log.Debug("HAS exec started.");
 
-            if (!states.TryGetAgentAvatarStates(ctx.Signer, avatarAddress, out AgentState agentState,
+            if (!states.TryGetAgentAvatarStates(
+                ctx.Signer,
+                avatarAddress,
+                out AgentState agentState,
                 out AvatarState avatarState))
             {
-                return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
+                return LogError(
+                    context,
+                    "Aborted as the avatar state of the signer was failed to load.");
             }
+
             sw.Stop();
             Log.Debug("HAS Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
 
-            var worldInformation = avatarState.worldInformation;
+            sw.Restart();
+            var tableSheetState = TableSheetsState.FromActionContext(ctx);
+            sw.Stop();
+            Log.Debug("HAS Get TableSheetsState: {Elapsed}", sw.Elapsed);
 
+            sw.Restart();
+            var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
+            sw.Stop();
+            Log.Debug("HAS Initialize TableSheets: {Elapsed}", sw.Elapsed);
+
+            // worldId와 stageId가 유효한지 확인합니다.
+
+            if (!tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+            {
+                return LogError(
+                    context,
+                    "Not fount {WorldId} in TableSheets.WorldSheet.",
+                    worldId
+                );
+            }
+
+            if (stageId < worldRow.StageBegin ||
+                stageId > worldRow.StageEnd)
+            {
+                return LogError(
+                    context,
+                    "{WorldId} world is not contains {StageId} stage: {StageBegin}-{StageEnd}",
+                    stageId,
+                    worldRow.Id,
+                    worldRow.StageBegin,
+                    worldRow.StageEnd
+                );
+            }
+
+            if (!tableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
+            {
+                return LogError(
+                    context,
+                    "Not fount stage id in TableSheets.StageSheet: {StageId}",
+                    stageId
+                );
+            }
+
+            var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
+                // NOTE: 이 경우는 아바타 생성 시에는 WorldSheet에 없던 worldId가 새로 추가된 경우로 볼 수 있습니다.
+                if (!worldInformation.TryAddWorld(worldRow, out world))
+                {
+                    return LogError(context, "Failed to add {WorldId} world to WorldInformation.", worldId);
+                }
+            }
+
+            if (!world.IsUnlocked)
+            {
                 return LogError(context, "Aborted as the world {WorldId} is locked.", worldId);
+            }
+
+            if (world.StageBegin != worldRow.StageBegin ||
+                world.StageEnd != worldRow.StageEnd)
+            {
+                // NOTE: 이 경우는 아바타 생성 이후에 worldId가 포함하는 stageId의 범위가 바뀐 경우로 볼 수 있습니다.
+                if (!worldInformation.TryUpdateWorld(worldRow, out world))
+                {
+                    return LogError(context, "Failed to update {WorldId} world in WorldInformation.", worldId);
+                }
+
+                if (world.StageBegin != worldRow.StageBegin ||
+                    world.StageEnd != worldRow.StageEnd)
+                {
+                    return LogError(context, "Failed to update {WorldId} world in WorldInformation.", worldId);
+                }
             }
 
             if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
@@ -101,8 +176,6 @@ namespace Nekoyume.Action
                 );
             }
 
-            sw.Restart();
-
             // 장비가 유효한지 검사한다.
             if (!avatarState.ValidateEquipments(equipments, context.BlockIndex))
             {
@@ -110,39 +183,26 @@ namespace Nekoyume.Action
                 return LogError(context, "Aborted as the equipment is invalid.");
             }
 
-            var tableSheetState = TableSheetsState.FromActionContext(ctx);
-
-            sw.Stop();
-            Log.Debug("HAS Get TableSheetsState: {Elapsed}", sw.Elapsed);
             sw.Restart();
-
-            var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
-
-            sw.Stop();
-            Log.Debug("HAS Initialize TableSheets: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
-            var stage = tableSheets.StageSheet.Values.First(i => i.Id == stageId);
-            if (avatarState.actionPoint < stage.CostAP)
+            if (avatarState.actionPoint < stageRow.CostAP)
             {
                 return LogError(
                     context,
                     "Aborted due to insufficient action point: {ActionPointBalance} < {ActionCost}",
                     avatarState.actionPoint,
-                    stage.CostAP
+                    stageRow.CostAP
                 );
             }
 
-            avatarState.actionPoint -= stage.CostAP;
+            avatarState.actionPoint -= stageRow.CostAP;
 
             avatarState.EquipCostumes(costumes);
 
             avatarState.EquipEquipments(equipments);
             sw.Stop();
             Log.Debug("HAS Unequip items: {Elapsed}", sw.Elapsed);
+
             sw.Restart();
-
-
             var simulator = new StageSimulator(
                 ctx.Random,
                 avatarState,
@@ -154,13 +214,11 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Debug("HAS Initialize Simulator: {Elapsed}", sw.Elapsed);
+
             sw.Restart();
-
             simulator.Simulate();
-
             sw.Stop();
             Log.Debug("HAS Simulator.Simulate(): {Elapsed}", sw.Elapsed);
-            sw.Restart();
 
             Log.Debug(
                 "Execute HackAndSlash({AvatarAddress}); worldId: {WorldId}, stageId: {StageId}, result: {Result}, " +
@@ -173,6 +231,7 @@ namespace Nekoyume.Action
                 simulator.Log.waveCount
             );
 
+            sw.Restart();
             if (simulator.Log.IsClear)
             {
                 simulator.Player.worldInformation.ClearStage(
@@ -185,8 +244,8 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Debug("HAS ClearStage: {Elapsed}", sw.Elapsed);
-            sw.Restart();
 
+            sw.Restart();
             avatarState.Update(simulator);
 
             avatarState.UpdateQuestRewards(ctx);
@@ -196,6 +255,7 @@ namespace Nekoyume.Action
 
             sw.Stop();
             Log.Debug("HAS Set AvatarState: {Elapsed}", sw.Elapsed);
+
             sw.Restart();
             if (states.TryGetState(RankingState.Address, out Dictionary d) && simulator.Log.IsClear)
             {
@@ -213,10 +273,11 @@ namespace Nekoyume.Action
                 sw.Restart();
                 states = states.SetState(RankingState.Address, serialized);
             }
+
             sw.Stop();
             Log.Debug("HAS Set RankingState: {Elapsed}", sw.Elapsed);
-            sw.Restart();
 
+            sw.Restart();
             if (states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
             {
                 var weekly = new WeeklyArenaState(weeklyDict);
@@ -232,13 +293,15 @@ namespace Nekoyume.Action
                     {
                         weekly.Set(avatarState, tableSheets.CharacterSheet);
                     }
+
                     sw.Stop();
                     Log.Debug("HAS Update WeeklyArenaState: {Elapsed}", sw.Elapsed);
-                    sw.Restart();
 
+                    sw.Restart();
                     var weeklySerialized = weekly.Serialize();
                     sw.Stop();
                     Log.Debug("HAS Serialize RankingState: {Elapsed}", sw.Elapsed);
+
                     states = states.SetState(weekly.address, weeklySerialized);
                 }
             }
