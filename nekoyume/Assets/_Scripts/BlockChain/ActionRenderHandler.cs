@@ -417,6 +417,11 @@ namespace Nekoyume.BlockChain
                 .FirstOrDefault(x =>
                     gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
 
+            UpdateAgentState(eval);
+            UpdateCurrentAvatarState(eval);
+            UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
+            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
+
             if (!(nextQuest is null))
             {
                 var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId &&
@@ -444,11 +449,6 @@ namespace Nekoyume.BlockChain
                         });
                 }
             }
-            
-            UpdateAgentState(eval);
-            UpdateCurrentAvatarState(eval);
-            UpdateCombinationSlotState(slot, eval.Action.SlotIndex);
-            RenderQuest(avatarAddress, avatarState.questList.completedQuestIds);
         }
 
         private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
