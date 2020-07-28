@@ -36,29 +36,15 @@ namespace Nekoyume.UI.Scroller
 
         protected override float CellSize => cellSize;
 
-        /// <summary>
-        /// FancyScrollRect.ScrollLength
-        /// </summary>
+        #region FancyScrollRect
+
         private float ScrollLength => 1f / Mathf.Max(cellInterval, 1e-2f) - 1f;
 
-        /// <summary>
-        /// FancyScrollRect.ViewportLength
-        /// </summary>
         private float ViewportLength => ScrollLength - reuseCellMarginCount * 2f;
 
-        /// <summary>
-        /// FancyScrollRect.PaddingHeadLength
-        /// </summary>
         private float PaddingHeadLength => (paddingHead - spacing * 0.5f) / (CellSize + spacing);
 
-        /// <summary>
-        /// FancyScrollRect.MaxScrollPosition
-        /// </summary>
-        private float MaxScrollPosition =>
-            ItemsSource.Count
-            - ScrollLength
-            + reuseCellMarginCount * 2f
-            + (paddingHead + paddingTail - spacing) / (CellSize + spacing);
+        #endregion
 
         #region MonoBehaviour
 
@@ -150,12 +136,13 @@ namespace Nekoyume.UI.Scroller
             Ease ease = Ease.Linear,
             System.Action onComplete = null)
         {
-            ScrollTo(
-                itemData,
-                GetAlignmentToIncludeWithinViewport(itemData),
-                duration,
-                ease,
-                onComplete);
+            var itemIndex = ItemsSource.IndexOf(itemData);
+            if (itemIndex < 0)
+            {
+                return;
+            }
+
+            ScrollTo(itemIndex, duration, ease, onComplete);
         }
 
         public void ScrollTo(
@@ -171,16 +158,36 @@ namespace Nekoyume.UI.Scroller
                 return;
             }
 
-            base.ScrollTo(itemIndex, duration, ease, alignment, onComplete);
+            ScrollTo(itemIndex, alignment, duration, ease, onComplete);
+        }
+
+        public void ScrollTo(
+            int index,
+            float duration = .1f,
+            Ease ease = Ease.Linear,
+            System.Action onComplete = null)
+        {
+            ScrollTo(
+                index,
+                GetAlignmentToIncludeWithinViewport(index),
+                duration,
+                ease,
+                onComplete);
+        }
+
+        public void ScrollTo(
+            int index,
+            float alignment,
+            float duration = .1f,
+            Ease ease = Ease.Linear,
+            System.Action onComplete = null)
+        {
+            ScrollTo(index, duration, ease, alignment, onComplete);
         }
 
         #endregion
 
         #region Getter
-
-        public float GetCellSize() => CellSize;
-
-        public float GetViewportSize() => Scroller.ViewportSize;
 
         private bool TryGetCellIndex(TItemData itemData, out int itemIndex)
         {
@@ -226,24 +233,26 @@ namespace Nekoyume.UI.Scroller
 
         private float GetAlignmentToIncludeWithinViewport(TItemData itemData)
         {
-            if (!TryGetCellIndex(itemData, out var cellGroupIndex))
-            {
-                return 0f;
-            }
+            return TryGetCellIndex(itemData, out var cellIndex)
+                ? GetAlignmentToIncludeWithinViewport(cellIndex)
+                : 0f;
+        }
 
-            if (cellGroupIndex < currentPosition)
+        private float GetAlignmentToIncludeWithinViewport(int index)
+        {
+            if (index < currentPosition)
             {
                 return 0f;
             }
 
             var length = ViewportLength - PaddingHeadLength - 1f;
 
-            if (cellGroupIndex > currentPosition + length)
+            if (index > currentPosition + length)
             {
                 return 1f;
             }
 
-            return (cellGroupIndex - currentPosition) / length;
+            return (index - currentPosition) / length;
         }
     }
 }

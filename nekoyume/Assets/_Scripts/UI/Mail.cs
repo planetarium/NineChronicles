@@ -61,11 +61,6 @@ namespace Nekoyume.UI
             }
         }
 
-        // FIXME: Notification에서 mailIcons에 대한 의존이 있는데, 이것의 초기화가 Mail의 Initialize()에서 이루어지고 있어서 문제가 됩니다.
-        // mailIcons의 내용으로 보아 리소스 캐싱으로 보이는데, Resources.Load<T>()는 내부에서 일정 용량까지 캐싱을 하고 있기 때문에 별도로 캐싱을 구현하지 않아도 됩니다.
-        public static readonly Dictionary<MailType, Sprite> mailIcons =
-            new Dictionary<MailType, Sprite>();
-
         [SerializeField]
         private MailTabState tabState = default;
 
@@ -97,13 +92,6 @@ namespace Nekoyume.UI
         {
             base.Initialize();
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
-
-            var path = "UI/Textures/icon_mail_Auction";
-            mailIcons.Add(MailType.Auction, Resources.Load<Sprite>(path));
-            path = "UI/Textures/icon_mail_Workshop";
-            mailIcons.Add(MailType.Workshop, Resources.Load<Sprite>(path));
-            path = "UI/Textures/icon_mail_System";
-            mailIcons.Add(MailType.System, Resources.Load<Sprite>(path));
 
             tabButtons[0].Init("ALL");
             tabButtons[1].Init("UI_COMBINATION");
