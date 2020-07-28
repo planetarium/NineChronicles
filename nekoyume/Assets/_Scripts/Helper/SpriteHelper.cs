@@ -1,4 +1,6 @@
+using System;
 using Nekoyume.Data;
+using Nekoyume.Model.Mail;
 using Nekoyume.UI;
 using UnityEngine;
 
@@ -34,6 +36,11 @@ namespace Nekoyume.Helper
 
         private static readonly string MenuIllustrateDefaultPath =
             string.Format(MenuIllustratePathFormat, "UI_bg_combination");
+
+        private const string MailIconPathFormat = "UI/Icons/Mail/{0}";
+
+        private static readonly string MailIconDefaultPath =
+            string.Format(MailIconPathFormat, "icon_mail_system");
 
         public static Sprite GetCharacterIcon(int characterId)
         {
@@ -126,6 +133,30 @@ namespace Nekoyume.Helper
             }
 
             return result ? result : Resources.Load<Sprite>(MenuIllustrateDefaultPath);
+        }
+
+        public static Sprite GetMailIcon(MailType mailType)
+        {
+            Sprite result = null;
+            switch (mailType)
+            {
+                case MailType.Workshop:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_workshop"));
+                    break;
+                case MailType.Auction:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_auction"));
+                    break;
+                case MailType.System:
+                    result = Resources.Load<Sprite>(
+                        string.Format(MailIconPathFormat, "icon_mail_system"));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mailType), mailType, null);
+            }
+
+            return result ? result : Resources.Load<Sprite>(MailIconDefaultPath);
         }
     }
 }
