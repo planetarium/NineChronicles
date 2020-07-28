@@ -20,7 +20,7 @@ namespace Nekoyume.Model.Item
 
         public decimal GetIncrementAmountOfEnhancement()
         {
-            return StatsMap.GetStat(UniqueStatType, true) * 0.1m;
+            return Math.Max(1.0m, StatsMap.GetStat(UniqueStatType, true) * 0.1m);
         }
 
         public Equipment(EquipmentItemSheet.Row data, Guid id, long requiredBlockIndex)

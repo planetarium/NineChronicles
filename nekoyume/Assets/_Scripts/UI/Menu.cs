@@ -334,7 +334,7 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
-            arenaPendingNCG.Show();
+            arenaPendingNCG.Hide();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()

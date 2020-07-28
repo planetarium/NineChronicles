@@ -128,12 +128,6 @@ namespace Editor
             {
                 stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);
             }
-
-            for (var index = 0; index < WeeklyArenaState.Addresses.Count; index++)
-            {
-                var address = WeeklyArenaState.Addresses[index];
-                stateProxy.RegisterAlias($"weekly{index}", address);
-            }
         }
     }
 

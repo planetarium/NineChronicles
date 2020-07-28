@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.Serialization;
+using Bencodex;
 using Bencodex.Types;
-using DecimalMath;
 using Libplanet;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -14,43 +16,39 @@ using Nekoyume.TableData;
 
 namespace Nekoyume.Model.State
 {
-    public class WeeklyArenaState : State, IDictionary<Address, ArenaInfo>
+    [Serializable]
+    public class WeeklyArenaState : State, IDictionary<Address, ArenaInfo>, ISerializable
     {
         #region static
 
-        private static List<Address> _addresses = null;
-
-        public static List<Address> Addresses
+        private static Address _baseAddress = new Address(new byte[]
         {
-            get
-            {
-                if (!(_addresses is null))
-                    return _addresses;
+            0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 10
+        });
 
-                _addresses = new List<Address>();
-                for (byte i = 0x10; i < 0x62; i++)
-                {
-                    var addr = new Address(new byte[]
-                    {
-                        0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, i
-                    });
-                    _addresses.Add(addr);
-                }
-
-                return _addresses;
-            }
+        public static Address DeriveAddress(int index)
+        {
+            return _baseAddress.Derive($"weekly_arena_{index}");
         }
 
         #endregion
 
-        public decimal Gold;
+        public BigInteger Gold;
 
         public long ResetIndex;
+
+        public bool Ended;
 
         private readonly Dictionary<Address, ArenaInfo> _map;
         private Dictionary<TierType, BigInteger> _rewardMap = new Dictionary<TierType, BigInteger>();
 
         public List<ArenaInfo> OrderedArenaInfos { get; private set; }
+
+        public WeeklyArenaState(int index) : base(DeriveAddress(index))
+        {
+            _map = new Dictionary<Address, ArenaInfo>();
+            ResetOrderedArenaInfos();
+        }
 
         public WeeklyArenaState(Address address) : base(address)
         {
@@ -74,11 +72,17 @@ namespace Nekoyume.Model.State
                     kv => kv.Value.ToBigInteger());
             }
 
-            Gold = serialized.GetDecimal("gold");
+            Gold = serialized["gold"].ToBigInteger();
+            Ended = serialized["ended"].ToBoolean();
             ResetOrderedArenaInfos();
         }
 
         public WeeklyArenaState(IValue iValue) : this((Dictionary)iValue)
+        {
+        }
+
+        protected WeeklyArenaState(SerializationInfo info, StreamingContext context)
+            : this((Dictionary)new Codec().Decode((byte[]) info.GetValue("serialized", typeof(byte[]))))
         {
         }
 
@@ -99,6 +103,7 @@ namespace Nekoyume.Model.State
                    )
                 )),
                 [(Text)"gold"] = Gold.Serialize(),
+                [(Text)"ended"] = Ended.Serialize(),
             }.Union((Dictionary)base.Serialize()));
 
         private void ResetOrderedArenaInfos()
@@ -180,6 +185,7 @@ namespace Nekoyume.Model.State
         public void End()
         {
             SetRewardMap();
+            Ended = true;
         }
 
         public void Update(WeeklyArenaState prevState, long index)
@@ -191,6 +197,11 @@ namespace Nekoyume.Model.State
                 _map[kv.Key] = value;
             }
             ResetIndex = index;
+        }
+
+        public void SetReceive(Address avatarAddress)
+        {
+            _map[avatarAddress].Receive = true;
         }
 
         public TierType GetTier(ArenaInfo info)
@@ -333,6 +344,11 @@ namespace Nekoyume.Model.State
         public ICollection<ArenaInfo> Values => _map.Values;
 
         #endregion
+
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue("serialized", new Codec().Encode(Serialize()));
+        }
     }
 
     public class ArenaInfo : IState
@@ -401,6 +417,7 @@ namespace Nekoyume.Model.State
             Active = serialized.GetBoolean("active");
             DailyChallengeCount = serialized.GetInteger("dailyChallengeCount");
             Score = serialized.GetInteger("score");
+            Receive = serialized["receive"].ToBoolean();
         }
 
         public ArenaInfo(ArenaInfo prevInfo)
@@ -430,6 +447,7 @@ namespace Nekoyume.Model.State
                 [(Text)"active"] = Active.Serialize(),
                 [(Text)"dailyChallengeCount"] = DailyChallengeCount.Serialize(),
                 [(Text)"score"] = Score.Serialize(),
+                [(Text)"receive"] = Receive.Serialize(),
             });
 
         public void Update(AvatarState state, CharacterSheet characterSheet)
