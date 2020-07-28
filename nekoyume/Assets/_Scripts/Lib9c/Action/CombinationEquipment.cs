@@ -169,6 +169,8 @@ namespace Nekoyume.Action
                 }
 
                 requiredBlockIndex += subRecipe.RequiredBlockIndex;
+                requiredGold += subRecipe.RequiredGold;
+                requiredActionPoint += subRecipe.RequiredActionPoint;
 
                 foreach (var materialInfo in subRecipe.Materials)
                 {
@@ -194,9 +196,6 @@ namespace Nekoyume.Action
 
                     var subMaterial = ItemFactory.CreateMaterial(materialSheet, materialInfo.Id);
                     materials[subMaterial] = materialInfo.Count;
-
-                    requiredGold += subRecipe.RequiredGold;
-                    requiredActionPoint += subRecipe.RequiredActionPoint;
                 }
 
                 optionIds = SelectOption(tableSheets, subRecipe, ctx.Random, equipment);
