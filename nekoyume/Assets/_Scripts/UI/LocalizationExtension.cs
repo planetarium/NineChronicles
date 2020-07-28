@@ -63,27 +63,39 @@ namespace Nekoyume.UI
             switch (quest)
             {
                 case CollectQuest collectQuest:
-                    return LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_TITLE");
                 case CombinationQuest combinationQuest:
-                    return LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_TITLE");
+                    return LocalizationManager.Localize("QUEST_TITLE_CRAFT");
                 case GeneralQuest generalQuest:
-                    return LocalizationManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_TITLE");
-                case GoldQuest goldQuest:
-                    return LocalizationManager.Localize($"QUEST_GOLD_{goldQuest.Type}_TITLE");
+                    var key = string.Empty;
+                    switch (generalQuest.Event)
+                    {
+                        case QuestEventType.Create:
+                        case QuestEventType.Level:
+                        case QuestEventType.Die:
+                        case QuestEventType.Complete:
+                            key = "ADVENTURE";
+                            break;
+                        case QuestEventType.Enhancement:
+                        case QuestEventType.Equipment:
+                        case QuestEventType.Consumable:
+                            key = "CRAFT";
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    return LocalizationManager.Localize($"QUEST_TITLE_{key}");
                 case ItemEnhancementQuest itemEnhancementQuest:
-                    return LocalizationManager.Localize("QUEST_ITEM_ENHANCEMENT_TITLE");
                 case ItemGradeQuest itemGradeQuest:
-                    return LocalizationManager.Localize("QUEST_ITEM_GRADE_TITLE");
                 case ItemTypeCollectQuest itemTypeCollectQuest:
-                    return LocalizationManager.Localize("QUEST_ITEM_TYPE_TITLE");
                 case MonsterQuest monsterQuest:
-                    return LocalizationManager.Localize("QUEST_MONSTER_TITLE");
+                    return LocalizationManager.Localize("QUEST_TITLE_ADVENTURE");
+                case GoldQuest goldQuest:
                 case TradeQuest tradeQuest:
-                    return LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_TITLE");
+                    return LocalizationManager.Localize("QUEST_TITLE_TRADE");
                 case WorldQuest worldQuest:
                     if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal, out var worldRow))
                     {
-                        return LocalizationManager.Localize("QUEST_WORLD_TITLE");;
+                        return LocalizationManager.Localize("QUEST_TITLE_ADVENTURE");
                     }
                     throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
                 case CombinationEquipmentQuest combinationEquipmentQuest:
