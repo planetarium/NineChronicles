@@ -1,4 +1,5 @@
 using System;
+using System.Numerics;
 using Nekoyume.JsonConvertibles;
 using Nekoyume.Model.State;
 using UnityEngine;
@@ -9,13 +10,13 @@ namespace Nekoyume.State.Modifiers
     public class WeeklyArenaGoldModifier : WeeklyArenaStateModifier
     {
         [SerializeField]
-        private JsonConvertibleDecimal gold;
+        private JsonConvertibleBigInteger gold;
 
-        public override bool IsEmpty => gold == 0m;
+        public override bool IsEmpty => gold == 0;
         
-        public WeeklyArenaGoldModifier(decimal gold)
+        public WeeklyArenaGoldModifier(BigInteger gold)
         {
-            this.gold = new JsonConvertibleDecimal(gold);
+            this.gold = new JsonConvertibleBigInteger(gold);
         }
 
         public override void Add(IAccumulatableStateModifier<WeeklyArenaState> modifier)

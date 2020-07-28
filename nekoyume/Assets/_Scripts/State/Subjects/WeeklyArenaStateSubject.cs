@@ -1,3 +1,4 @@
+using System.Numerics;
 using Nekoyume.Model.State;
 using UniRx;
 using UnityEngine;
@@ -11,7 +12,7 @@ namespace Nekoyume.State.Subjects
     public static class WeeklyArenaStateSubject
     {
         public static readonly Subject<WeeklyArenaState> WeeklyArenaState = new Subject<WeeklyArenaState>();
-        public static readonly Subject<decimal> Gold = new Subject<decimal>();
+        public static readonly Subject<BigInteger> Gold = new Subject<BigInteger>();
         public static readonly Subject<long> ResetIndex = new Subject<long>();
         
         public static void OnNext(WeeklyArenaState state)
