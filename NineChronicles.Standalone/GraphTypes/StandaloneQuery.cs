@@ -57,7 +57,7 @@ namespace NineChronicles.Standalone.GraphTypes
             Field<NonNullGraphType<ValidationQuery>>(
                 name: "validation",
                 description: "The validation method provider for Libplanet types.",
-                resolve: context => new ValidationQuery());
+                resolve: context => new ValidationQuery(standaloneContext));
 
             Field<NonNullGraphType<ActivationStatusQuery>>(
                 name: "activationStatus",

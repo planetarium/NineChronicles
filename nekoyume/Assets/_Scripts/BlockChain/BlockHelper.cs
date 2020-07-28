@@ -73,7 +73,6 @@ namespace Nekoyume.BlockChain
                 RankingState = new RankingState(),
                 ShopState = new ShopState(),
                 TableSheetsState = tableSheetsState,
-                WeeklyArenaAddresses = WeeklyArenaState.Addresses,
                 GameConfigState = gameConfigState,
                 RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
                 AdminAddressState = new AdminState(

@@ -15,11 +15,12 @@ namespace Nekoyume
         public static bool TryGetThisWeekAddress(long blockIndex, out Address weeklyArenaAddress)
         {
             var index = (int) blockIndex / GameConfig.WeeklyArenaInterval;
-            if (index < 0 ||
-                index >= WeeklyArenaState.Addresses.Count)
+            if (index < 0)
+            {
                 return false;
+            }
 
-            weeklyArenaAddress = WeeklyArenaState.Addresses[index];
+            weeklyArenaAddress = WeeklyArenaState.DeriveAddress(index);
             return true;
         }
 
@@ -53,7 +54,7 @@ namespace Nekoyume
         public static Address GetPrevWeekAddress(long thisWeekBlockIndex)
         {
             var index = Math.Max((int) thisWeekBlockIndex / GameConfig.WeeklyArenaInterval, 0);
-            return WeeklyArenaState.Addresses[index];
+            return WeeklyArenaState.DeriveAddress(index);
         }
 
         public static bool TryGetThisWeekStateAndArenaInfo(Address avatarAddress, out WeeklyArenaState weeklyArenaState,
