@@ -1,4 +1,3 @@
-using System;
 using DG.Tweening;
 using UnityEngine;
 using QuestModel = Nekoyume.Model.Quest.Quest;
@@ -7,11 +6,8 @@ namespace Nekoyume.UI.Scroller
 {
     public class QuestScroll : RectScroll<QuestModel, QuestScroll.ContextModel>
     {
-        public class ContextModel : RectScrollDefaultContext, IDisposable
+        public class ContextModel : RectScrollDefaultContext
         {
-            public void Dispose()
-            {
-            }
         }
 
         [SerializeField]

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Scroller
 {
-    public abstract class GridScrollDefaultContext : IFancyGridViewContext
+    public class GridScrollDefaultContext : IDisposable, IFancyGridViewContext
     {
         public ScrollDirection ScrollDirection { get; set; }
         public Func<(float ScrollSize, float ReuseMargin)> CalculateScrollSize { get; set; }
@@ -12,5 +12,9 @@ namespace Nekoyume.UI.Scroller
         public Func<int> GetGroupCount { get; set; }
         public Func<float> GetStartAxisSpacing { get; set; }
         public Func<float> GetCellSize { get; set; }
+
+        public virtual void Dispose()
+        {
+        }
     }
 }

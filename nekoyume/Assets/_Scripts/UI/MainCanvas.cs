@@ -295,8 +295,6 @@ namespace Nekoyume.UI
                 last = value;
             }
 
-            Notification.RegisterWidgetTypeForUX<Mail>();
-
             UpdateLayers();
         }
 
