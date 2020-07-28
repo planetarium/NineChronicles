@@ -137,18 +137,31 @@ namespace Nekoyume.Action
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
                 // NOTE: 이 경우는 아바타 생성 시에는 WorldSheet에 없던 worldId가 새로 추가된 경우로 볼 수 있습니다.
-                avatarState.worldInformation = worldInformation.AddWorld(worldRow);
-                if (!worldInformation.TryGetWorld(worldId, out world))
+                if (!worldInformation.TryAddWorld(worldRow, out world))
                 {
-                    return LogError(context, "Aborted as the world {WorldId} is locked.", worldId);
+                    return LogError(context, "Failed to add {WorldId} world to WorldInformation.", worldId);
                 }
+            }
+
+            if (!world.IsUnlocked)
+            {
+                return LogError(context, "Aborted as the world {WorldId} is locked.", worldId);
             }
 
             if (world.StageBegin != worldRow.StageBegin ||
                 world.StageEnd != worldRow.StageEnd)
             {
                 // NOTE: 이 경우는 아바타 생성 이후에 worldId가 포함하는 stageId의 범위가 바뀐 경우로 볼 수 있습니다.
-                avatarState.worldInformation = worldInformation.UpdateWorld(worldRow);
+                if (!worldInformation.TryUpdateWorld(worldRow, out world))
+                {
+                    return LogError(context, "Failed to update {WorldId} world in WorldInformation.", worldId);
+                }
+
+                if (world.StageBegin != worldRow.StageBegin ||
+                    world.StageEnd != worldRow.StageEnd)
+                {
+                    return LogError(context, "Failed to update {WorldId} world in WorldInformation.", worldId);
+                }
             }
 
             if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||

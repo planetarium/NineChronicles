@@ -225,34 +225,38 @@ namespace Nekoyume.Model
             TryGetLastClearedStageId(out var clearedStageId)
             && stageId <= clearedStageId;
 
-        public WorldInformation AddWorld(WorldSheet.Row worldRow)
+        public bool TryAddWorld(WorldSheet.Row worldRow, out World world)
         {
             if (worldRow is null ||
                 _worlds.ContainsKey(worldRow.Id))
             {
-                return this;
+                world = default;
+                return false;
             }
 
-            _worlds.Add(worldRow.Id, new World(worldRow));
-            return this;
+            world = new World(worldRow);
+            _worlds.Add(worldRow.Id, world);
+            return true;
         }
 
-        public WorldInformation UpdateWorld(WorldSheet.Row worldRow)
+        public bool TryUpdateWorld(WorldSheet.Row worldRow, out World world)
         {
             if (worldRow is null ||
                 !_worlds.ContainsKey(worldRow.Id))
             {
-                return this;
+                world = default;
+                return false;
             }
 
-            var world = _worlds[worldRow.Id];
-            _worlds[worldRow.Id] = new World(
+            var originWorld = _worlds[worldRow.Id];
+            world = new World(
                 worldRow,
-                world.UnlockedBlockIndex,
-                world.StageClearedBlockIndex,
-                world.StageClearedId
+                originWorld.UnlockedBlockIndex,
+                originWorld.StageClearedBlockIndex,
+                originWorld.StageClearedId
             );
-            return this;
+            _worlds[worldRow.Id] = world;
+            return true;
         }
 
         /// <summary>
