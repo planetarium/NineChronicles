@@ -214,6 +214,11 @@ namespace Nekoyume.UI.Scroller
                     }
                     else
                     {
+                        if (diff == 0 && tempLocked)
+                        {
+                            lockVFX.Play();
+                            shakeTweener.PlayLoop();
+                        }
                         unlockConditionText.text = string.Format(
                             LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             unlockStage.ToString());
@@ -258,8 +263,14 @@ namespace Nekoyume.UI.Scroller
             SetLocked(false, EquipmentRowData.UnlockStage);
         }
 
-        public void Set(AvatarState avatarState, bool? hasNotification = false, bool isLocked = false)
+        public void Set(AvatarState avatarState, bool? hasNotification = false, bool isFirstOpen = false)
         {
+            if (!isFirstOpen)
+            {
+                lockVFX.Stop();
+                shakeTweener.KillTween();
+            }
+
             if (EquipmentRowData is null)
             {
                 return;
@@ -274,24 +285,15 @@ namespace Nekoyume.UI.Scroller
             }
 
             if (hasNotification.HasValue)
+            {
                 HasNotification.Value = hasNotification.Value;
-
-            SetLocked(isLocked, EquipmentRowData.UnlockStage);
-
-            tempLocked = isLocked;
-
-            if (isLocked)
-            {
-                lockVFX?.Play();
-                shakeTweener.PlayLoop();
-            }
-            else
-            {
-                lockVFX?.Stop();
-                shakeTweener.KillTween();
             }
 
-            if (isLocked)
+            tempLocked = isFirstOpen;
+
+            SetLocked(isFirstOpen, EquipmentRowData.UnlockStage);
+
+            if (tempLocked)
             {
                 return;
             }

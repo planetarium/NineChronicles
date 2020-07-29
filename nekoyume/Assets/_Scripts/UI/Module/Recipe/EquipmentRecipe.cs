@@ -112,6 +112,7 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(ringTabButton);
 
             LoadRecipes(_state.Value, false);
+            LoadRecipes(_state.Value);
             _itemFilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
             // _state.Subscribe(SubscribeState).AddTo(gameObject);
         }
@@ -131,6 +132,10 @@ namespace Nekoyume.UI.Module
                     localPositionX,
                     -cellView.transform.localPosition.y);
             }
+            else
+            {
+                SetToggledOnType(_itemFilterType.Value);
+            }
 
             scrollAlphaTweener.Play();
             scrollPositionTweener.PlayTween();
@@ -138,6 +143,7 @@ namespace Nekoyume.UI.Module
             foreach (var view in cellViews)
             {
                 view.SetInteractable(true);
+                view.Show();
             }
         }
 
@@ -151,33 +157,34 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void LoadRecipes(State state, bool shouldUpdateRecipes = true)
+        private void LoadRecipes(State state)
         {
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
 
-
             var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
-            var totalCount = recipeSheet.Count;
-            cellViews = new RecipeCellView[totalCount];
+            var ids = recipeSheet.Values.Select(r => r.ResultEquipmentId).ToList();
+            var equipments = Game.Game.instance.TableSheets.EquipmentItemSheet.Values.Where(r => ids.Contains(r.Id));
+            var maxCount = equipments.GroupBy(r => r.ItemSubType).Select(x => x.Count()).Max();
+            cellViews = new RecipeCellView[maxCount];
 
             var idx = 0;
             foreach (var recipeRow in recipeSheet)
             {
-                var cellView = Instantiate(cellViewPrefab, cellViewParent);
-                cellView.Set(recipeRow);
-                cellView.OnClick.AsObservable()
-                    .ThrottleFirst(new TimeSpan(0, 0, 1))
-                    .Subscribe(SubscribeOnClickCellView)
-                    .AddTo(_disposablesAtLoadRecipeList);
-                cellViews[idx++] = cellView;
+                if (idx < maxCount)
+                {
+                    var cellView = Instantiate(cellViewPrefab, cellViewParent);
+                    cellView.Set(recipeRow);
+                    cellView.OnClick.AsObservable()
+                        .ThrottleFirst(new TimeSpan(0, 0, 1))
+                        .Subscribe(SubscribeOnClickCellView)
+                        .AddTo(_disposablesAtLoadRecipeList);
+                    cellViews[idx++] = cellView;
+                }
+                else
+                {
+                    break;
+                }
             }
-
-            if (!shouldUpdateRecipes)
-            {
-                return;
-            }
-
-            UpdateRecipes();
         }
 
         public void UpdateRecipes()
@@ -188,38 +195,35 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var currentAvatarState = Game.Game.instance
-                .States.CurrentAvatarState;
             var tableSheets = Game.Game.instance.TableSheets;
-            var quest = GetNextGuidedQuest();
-
-            weaponTabButton.HasNotification.Value = false;
-            armorTabButton.HasNotification.Value = false;
-            beltTabButton.HasNotification.Value = false;
-            necklaceTabButton.HasNotification.Value = false;
-            ringTabButton.HasNotification.Value = false;
-
-            var _recipeIdToNotify = quest is null ? 0 : quest.RecipeId;
-
+            var equipmentIds = tableSheets.EquipmentItemSheet.Values
+                .Where(r => r.ItemSubType == _itemFilterType.Value)
+                .Select(r => r.Id).ToList();
+            var rows = tableSheets.EquipmentItemRecipeSheet.Values
+                .Where(r => equipmentIds.Contains(r.ResultEquipmentId)).ToList();
             var combination = Widget.Find<Combination>();
 
             combination.LoadRecipeVFXSkipMap();
 
-            foreach (var cellView in cellViews)
+            for (var index = 0; index < cellViews.Length; index++)
             {
-                var hasNotification = (_recipeIdToNotify > 0) ? quest.RecipeId == cellView.EquipmentRowData.Id : false;
-                var isUnlocked = currentAvatarState.worldInformation
-                    .IsStageCleared(cellView.EquipmentRowData.UnlockStage);
-                var isFirstOpen =
-                    !combination.RecipeVFXSkipMap
-                    .ContainsKey(cellView.EquipmentRowData.Id) && isUnlocked;
-
-                cellView.Set(avatarState, hasNotification, isFirstOpen);
-
-                if (hasNotification && isUnlocked)
+                var cellView = cellViews[index];
+                if (index < rows.Count)
                 {
-                    var btn = GetButton(cellView.ItemSubType);
-                    btn.HasNotification.Value = true;
+                    cellView.Set(rows[index]);
+                    var hasNotification = _notificationId == cellView.EquipmentRowData.Id;
+                    var isUnlocked = avatarState.worldInformation
+                        .IsStageCleared(cellView.EquipmentRowData.UnlockStage);
+                    var isFirstOpen =
+                        !combination.RecipeVFXSkipMap
+                            .ContainsKey(cellView.EquipmentRowData.Id) && isUnlocked;
+
+                    cellView.Set(avatarState, hasNotification, isFirstOpen);
+                    cellView.Show();
+                }
+                else
+                {
+                    cellView.Hide();
                 }
             }
         }
@@ -316,17 +320,7 @@ namespace Nekoyume.UI.Module
 
         private void SubScribeFilterType(ItemSubType itemSubType)
         {
-            foreach (var cellView in cellViews)
-            {
-                if (cellView.ItemSubType == itemSubType)
-                {
-                    cellView.Show();
-                }
-                else
-                {
-                    cellView.Hide();
-                }
-            }
+            UpdateRecipes();
 
             scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
         }
@@ -390,10 +384,10 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case State.Equipment:
-                    LoadRecipes(state, false);
+                    LoadRecipes(state);
                     break;
                 case State.Consumable:
-                    LoadRecipes(state, false);
+                    LoadRecipes(state);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
