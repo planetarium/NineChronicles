@@ -204,7 +204,7 @@ namespace Nekoyume.UI
                 ActionCombineConsumable();
                 var rowData =
                     Game.Game.instance.TableSheets.ConsumableItemSheet.Values.FirstOrDefault(r =>
-                        r.Id == (selectedRecipe as ConsumableRecipeCellView).RowData
+                        r.Id == selectedRecipe.ConsumableRowData
                         .ResultConsumableItemId);
                 var itemBase = new Consumable(rowData, Guid.Empty, 0);
                     StartCoroutine(CoCombineNPCAnimation(itemBase, consumableCombinationPanel.SubscribeOnClickSubmit, true));
@@ -523,9 +523,8 @@ namespace Nekoyume.UI
             ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
             consumableRecipe.HideCellViews();
 
-            var recipeCellView = selectedRecipe as ConsumableRecipeCellView;
-            consumableCombinationPanel.TweenCellView(recipeCellView, OnTweenRecipeCompleted);
-            consumableCombinationPanel.SetData(recipeCellView.RowData);
+            consumableCombinationPanel.TweenCellView(selectedRecipe, OnTweenRecipeCompleted);
+            consumableCombinationPanel.SetData(selectedRecipe.ConsumableRowData);
         }
 
         private void OnClickEquipmentRecipe(bool isElemental)
@@ -536,20 +535,18 @@ namespace Nekoyume.UI
             ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
             equipmentRecipe.HideCellViews();
 
-            var recipeCellView = selectedRecipe as EquipmentRecipeCellView;
-
             if (isElemental)
             {
                 equipmentCombinationPanel.Hide();
                 elementalCombinationPanel.TweenCellViewInOption(
-                    recipeCellView,
+                    selectedRecipe,
                     OnTweenRecipeCompleted);
-                elementalCombinationPanel.SetData(recipeCellView.RowData);
+                elementalCombinationPanel.SetData(selectedRecipe.EquipmentRowData);
             }
             else
             {
-                equipmentCombinationPanel.TweenCellView(recipeCellView, OnTweenRecipeCompleted);
-                equipmentCombinationPanel.SetData(recipeCellView.RowData);
+                equipmentCombinationPanel.TweenCellView(selectedRecipe, OnTweenRecipeCompleted);
+                equipmentCombinationPanel.SetData(selectedRecipe.EquipmentRowData);
                 elementalCombinationPanel.Hide();
             }
         }
@@ -625,7 +622,7 @@ namespace Nekoyume.UI
 
         private void ActionCombineConsumable()
         {
-            var rowData = (selectedRecipe as ConsumableRecipeCellView).RowData;
+            var rowData = selectedRecipe.ConsumableRowData;
 
             var materialInfoList = rowData.MaterialItemIds
                 .Select(id =>
@@ -644,8 +641,8 @@ namespace Nekoyume.UI
 
         private void ActionCombinationEquipment(CombinationPanel combinationPanel)
         {
-            var cellview = (combinationPanel.recipeCellView as EquipmentRecipeCellView);
-            var model = cellview.RowData;
+            var cellview = combinationPanel.recipeCellView;
+            var model = cellview.EquipmentRowData;
             var subRecipeId = (combinationPanel is ElementalCombinationPanel elementalPanel)
                 ? elementalPanel.SelectedSubRecipeId
                 : (int?) null;

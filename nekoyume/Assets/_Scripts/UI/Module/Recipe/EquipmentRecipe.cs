@@ -12,6 +12,7 @@ using Nekoyume.Model.Quest;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game;
 using Nekoyume.Game.VFX;
+using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Module
 {
@@ -19,10 +20,10 @@ namespace Nekoyume.UI.Module
     public class EquipmentRecipe : MonoBehaviour
     {
         [SerializeField]
-        private EquipmentRecipeCellView cellViewPrefab = null;
+        private RecipeCellView cellViewPrefab = null;
 
         [SerializeField]
-        private EquipmentRecipeCellView[] cellViews = null;
+        private RecipeCellView[] cellViews = null;
 
         [SerializeField]
         private TabButton weaponTabButton = null;
@@ -54,10 +55,21 @@ namespace Nekoyume.UI.Module
         private bool _initialized = false;
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
-        private readonly ReactiveProperty<ItemSubType> _filterType =
+        private readonly ReactiveProperty<ItemSubType> _itemFilterType =
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
 
+        private readonly ReactiveProperty<StatType> _statFilterType =
+            new ReactiveProperty<StatType>(StatType.HP);
+
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
+
+        private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Equipment);
+
+        private enum State
+        {
+            Equipment,
+            Consumable,
+        }
 
         private void Awake()
         {
@@ -79,7 +91,8 @@ namespace Nekoyume.UI.Module
 
         private void OnDestroy()
         {
-            _filterType.Dispose();
+            _itemFilterType.Dispose();
+            _statFilterType.Dispose();
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
         }
 
@@ -98,8 +111,9 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(necklaceTabButton);
             _toggleGroup.RegisterToggleable(ringTabButton);
 
-            LoadRecipes(false);
-            _filterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
+            LoadRecipes(_state.Value, false);
+            _itemFilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
+            // _state.Subscribe(SubscribeState).AddTo(gameObject);
         }
 
         public void ShowCellViews(int? recipeId = null)
@@ -107,7 +121,7 @@ namespace Nekoyume.UI.Module
             if (recipeId.HasValue &&
                 TryGetCellView(recipeId.Value, out var cellView) &&
                 Game.Game.instance.TableSheets.EquipmentItemSheet.TryGetValue(
-                    cellView.RowData.ResultEquipmentId,
+                    cellView.EquipmentRowData.ResultEquipmentId,
                     out var row))
             {
                 SetToggledOnType(row.ItemSubType);
@@ -137,13 +151,14 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void LoadRecipes(bool shouldUpdateRecipes = true)
+        private void LoadRecipes(State state, bool shouldUpdateRecipes = true)
         {
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
 
+
             var recipeSheet = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet;
             var totalCount = recipeSheet.Count;
-            cellViews = new EquipmentRecipeCellView[totalCount];
+            cellViews = new RecipeCellView[totalCount];
 
             var idx = 0;
             foreach (var recipeRow in recipeSheet)
@@ -192,12 +207,12 @@ namespace Nekoyume.UI.Module
 
             foreach (var cellView in cellViews)
             {
-                var hasNotification = (_recipeIdToNotify > 0) ? quest.RecipeId == cellView.RowData.Id : false;
+                var hasNotification = (_recipeIdToNotify > 0) ? quest.RecipeId == cellView.EquipmentRowData.Id : false;
                 var isUnlocked = currentAvatarState.worldInformation
-                    .IsStageCleared(cellView.RowData.UnlockStage);
+                    .IsStageCleared(cellView.EquipmentRowData.UnlockStage);
                 var isFirstOpen =
                     !combination.RecipeVFXSkipMap
-                    .ContainsKey(cellView.RowData.Id) && isUnlocked;
+                    .ContainsKey(cellView.EquipmentRowData.Id) && isUnlocked;
 
                 cellView.Set(avatarState, hasNotification, isFirstOpen);
 
@@ -257,9 +272,9 @@ namespace Nekoyume.UI.Module
             return quest;
         }
 
-        public bool TryGetCellView(int recipeId, out EquipmentRecipeCellView cellView)
+        public bool TryGetCellView(int recipeId, out RecipeCellView cellView)
         {
-            cellView = cellViews.FirstOrDefault(item => item.RowData.Id == recipeId);
+            cellView = cellViews.FirstOrDefault(item => item.EquipmentRowData.Id == recipeId);
             return !(cellView is null);
         }
 
@@ -320,23 +335,23 @@ namespace Nekoyume.UI.Module
         {
             if (toggleable.Name.Equals(weaponTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Weapon);
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Weapon);
             }
             else if (toggleable.Name.Equals(armorTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Armor);
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Armor);
             }
             else if (toggleable.Name.Equals(beltTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Belt);
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Belt);
             }
             else if (toggleable.Name.Equals(necklaceTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Necklace);
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Necklace);
             }
             else if (toggleable.Name.Equals(ringTabButton.Name))
             {
-                _filterType.SetValueAndForceNotify(ItemSubType.Ring);
+                _itemFilterType.SetValueAndForceNotify(ItemSubType.Ring);
             }
         }
 
@@ -353,22 +368,36 @@ namespace Nekoyume.UI.Module
             {
                 AudioController.instance.PlaySfx(AudioController.SfxCode.UnlockRecipe);
                 var avatarState = Game.Game.instance.States.CurrentAvatarState;
-                var equipmentCellView = cellView as EquipmentRecipeCellView;
 
-                combination.RecipeVFXSkipMap[equipmentCellView.RowData.Id]
+                combination.RecipeVFXSkipMap[cellView.EquipmentRowData.Id]
                     = new int[3] { 0, 0, 0 };
                 combination.SaveRecipeVFXSkipMap();
 
                 var centerPos = cellView.GetComponent<RectTransform>()
                     .GetWorldPositionOfCenter();
-                var vfx = VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
+                VFXController.instance.CreateAndChaseCam<RecipeUnlockVFX>(centerPos);
 
-                equipmentCellView?.Set(avatarState, null, false);
+                cellView.Set(avatarState, null, false);
                 return;
             }
 
             combination.selectedRecipe = cellView;
             combination.State.SetValueAndForceNotify(Combination.StateType.CombinationConfirm);
+        }
+
+        private void SubscribeState(State state)
+        {
+            switch (state)
+            {
+                case State.Equipment:
+                    LoadRecipes(state, false);
+                    break;
+                case State.Consumable:
+                    LoadRecipes(state, false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
         }
     }
 }
