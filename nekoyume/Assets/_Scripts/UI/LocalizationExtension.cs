@@ -119,7 +119,8 @@ namespace Nekoyume.UI
                 case CombinationQuest combinationQuest:
                     return string.Format(
                         LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT"),
-                        combinationQuest.ItemSubType.GetLocalizedString()
+                        combinationQuest.ItemSubType.GetLocalizedString(),
+                        combinationQuest.Goal
                     );
                 case GeneralQuest generalQuest:
                     switch (generalQuest.Event)
