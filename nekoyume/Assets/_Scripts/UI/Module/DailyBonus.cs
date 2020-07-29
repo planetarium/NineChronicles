@@ -195,6 +195,8 @@ namespace Nekoyume.UI.Module
             ItemMoveAnimation.Show(actionPoint.Image.sprite,
                 boxImageTransform.position,
                 actionPoint.Image.transform.position,
+                Vector2.one,
+                true,
                 true,
                 1f,
                 0.8f);

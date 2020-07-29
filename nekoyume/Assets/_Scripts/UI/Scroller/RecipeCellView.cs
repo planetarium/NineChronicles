@@ -69,6 +69,7 @@ namespace Nekoyume.UI.Scroller
         public ItemSubType ItemSubType { get; protected set; }
         public ElementalType ElementalType { get; protected set; }
         public StatType StatType { get; protected set; }
+        public SimpleCountableItemView ItemView => itemView;
 
         public bool tempLocked = false;
 

@@ -72,6 +72,7 @@ namespace Nekoyume.UI.Module
 
         public CanvasGroup canvasGroup;
         public VFX inventoryVFX;
+        public VFX workshopVFX;
 
         private Animator _inventoryAnimator;
         private long _blockIndex;
@@ -320,6 +321,12 @@ namespace Nekoyume.UI.Module
         {
             characterButton.Animator.Play("GetItem");
             inventoryVFX.Play();
+        }
+
+        public void PlayWorkShopVFX()
+        {
+            combinationButton.Animator.Play("GetItem");
+            workshopVFX.Play();
         }
 
         #region Subscribe
