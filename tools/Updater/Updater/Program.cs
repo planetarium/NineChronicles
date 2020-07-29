@@ -78,19 +78,6 @@ namespace Updater
                 {
                     string tempPath = await DownloadBinariesAsync(u, cts.Token);
                     ExtractBinaries(tempPath);
-
-                    if (args.Length == 0)
-                    {
-                        // 인스톨러 모드 - 스냅샷 다운로드
-                        Log.Information("Start downloading the latest blockchain snapshot...");
-                        using (var progress = new DownloadProgress(Downloader.SnapshotUrl))
-                        {
-                            await Downloader.DownloadBlockchainSnapshot(
-                                progress,
-                                cts.Token
-                            );
-                        }
-                    }
                 }
                 catch (OperationCanceledException)
                 {
