@@ -81,8 +81,48 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var row = Game.Game.instance.TableSheets.ItemSheet.Values
-                .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
+            ItemSheet.Row row;
+
+            row = Game.Game.instance.TableSheets.ItemSheet.Values
+                    .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
+
+            if (row is null)
+            {
+                throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), model.ItemBase.Value.Id, null);
+            }
+            base.SetData(row);
+            _disposablesAtSetData.DisposeAllAndClear();
+            Model = model;
+            Model.GradeEnabled.SubscribeTo(gradeImage).AddTo(_disposablesAtSetData);
+            Model.Enhancement.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
+            Model.EnhancementEnabled.SubscribeTo(enhancementText).AddTo(_disposablesAtSetData);
+            Model.Dimmed.Subscribe(SetDim).AddTo(_disposablesAtSetData);
+            Model.Selected.SubscribeTo(selectionImage).AddTo(_disposablesAtSetData);
+
+            UpdateView();
+        }
+
+        public void SetData(TViewModel model, bool isConsumable)
+        {
+            if (model is null)
+            {
+                Clear();
+                return;
+            }
+
+            ItemSheet.Row row;
+
+            if (isConsumable)
+            {
+                row = Game.Game.instance.TableSheets.ConsumableItemSheet.Values
+                    .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
+            }
+            else
+            {
+                row = Game.Game.instance.TableSheets.ItemSheet.Values
+                    .FirstOrDefault(r => r.Id == model.ItemBase.Value.Id);
+            }
+
             if (row is null)
             {
                 throw new ArgumentOutOfRangeException(nameof(ItemSheet.Row), model.ItemBase.Value.Id, null);

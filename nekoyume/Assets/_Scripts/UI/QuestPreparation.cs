@@ -384,7 +384,9 @@ namespace Nekoyume.UI
             var animation = ItemMoveAnimation.Show(actionPointImage.sprite,
                 actionPointImage.transform.position,
                 buttonStarImageTransform.position,
+                Vector2.one,
                 moveToLeft,
+                true,
                 animationTime,
                 middleXGap);
             LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
