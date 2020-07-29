@@ -6,6 +6,7 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -27,6 +28,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image toggledOnImage = null;
+
+        [SerializeField]
+        private Canvas sortingGroup;
 
         public string localizationKey = null;
 
@@ -67,6 +71,8 @@ namespace Nekoyume.UI.Module
                 toggledOffText.text = text;
                 toggledOnText.text = text;
             }
+
+            sortingGroup.sortingLayerName = "UI";
         }
 
         #endregion
@@ -200,6 +206,16 @@ namespace Nekoyume.UI.Module
                 toggledOffText.color = _originalTextColor * imageColor;
                 toggledOffText.color = _originalTextColor * imageColor;
             }
+        }
+
+        public void SetSortOrderToTop()
+        {
+            sortingGroup.sortingOrder = 100;
+        }
+
+        public void SetSortOrderToNormal()
+        {
+            sortingGroup.sortingOrder = 0;
         }
 
         private void SubscribeOnClick(Unit unit)
