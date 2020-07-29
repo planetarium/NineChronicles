@@ -47,7 +47,7 @@ namespace Nekoyume.UI
         private int _ear;
         private int _tail;
 
-        private const int HairCount = 6;
+        private const int HairCount = 7;
         private const int LensCount = 6;
         private const int EarCount = 10;
         private const int TailCount = 10;

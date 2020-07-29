@@ -64,9 +64,10 @@ namespace Nekoyume.UI
             {
                 case CollectQuest collectQuest:
                 case CombinationQuest combinationQuest:
+                case CombinationEquipmentQuest combinationEquipmentQuest:
                     return L10nManager.Localize("QUEST_TITLE_CRAFT");
                 case GeneralQuest generalQuest:
-                    var key = string.Empty;
+                    string key;
                     switch (generalQuest.Event)
                     {
                         case QuestEventType.Create:
@@ -98,14 +99,6 @@ namespace Nekoyume.UI
                         return L10nManager.Localize("QUEST_TITLE_ADVENTURE");
                     }
                     throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
-                case CombinationEquipmentQuest combinationEquipmentQuest:
-                    var unlockFormat = L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
-                    var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
-                        .First(r => r.Id == combinationEquipmentQuest.RecipeId).ResultEquipmentId;
-                    return string.Format(
-                        unlockFormat,
-                        L10nManager.LocalizeItemName(itemId)
-                    );
                 default:
                     throw new NotSupportedException(
                         $"Given quest[{quest}] doesn't support {nameof(GetTitle)}() method."
@@ -126,7 +119,8 @@ namespace Nekoyume.UI
                 case CombinationQuest combinationQuest:
                     return string.Format(
                         L10nManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT"),
-                        combinationQuest.ItemSubType.GetLocalizedString()
+                        combinationQuest.ItemSubType.GetLocalizedString(),
+                        combinationQuest.Goal
                     );
                 case GeneralQuest generalQuest:
                     switch (generalQuest.Event)

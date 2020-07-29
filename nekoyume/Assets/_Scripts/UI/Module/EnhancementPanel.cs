@@ -175,6 +175,11 @@ namespace Nekoyume.UI.Module
             return false;
         }
 
+        public void SubscribeOnClickSubmit()
+        {
+
+        }
+
         protected virtual BigInteger GetCostNCG()
         {
             return CostNCG;

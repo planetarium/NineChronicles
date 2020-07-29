@@ -48,7 +48,6 @@ namespace Nekoyume.UI.Module
         protected virtual void Awake()
         {
             cancelButton.OnClickAsObservable().Subscribe(_ => SubscribeOnClickCancel()).AddTo(gameObject);
-            submitButton.OnSubmitClick.Subscribe(_ => SubscribeOnClickSubmit()).AddTo(gameObject);
             cancelButtonText.text = L10nManager.Localize("UI_CANCEL");
             submitButton.HideHourglass();
         }
@@ -83,7 +82,7 @@ namespace Nekoyume.UI.Module
             combination.State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
         }
 
-        protected virtual void SubscribeOnClickSubmit()
+        public virtual void SubscribeOnClickSubmit()
         {
             var combination = Widget.Find<Combination>();
             if (!combination.CanHandleInputEvent)
