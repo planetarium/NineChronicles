@@ -592,6 +592,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec91522f1096c47e0ac615f0792c176a, type: 3}
 --- !u!114 &4981335680133857202 stripped
@@ -928,6 +938,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec91522f1096c47e0ac615f0792c176a, type: 3}
 --- !u!224 &6394101011662590089 stripped
@@ -1162,6 +1182,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_textInfo.pageCount
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec91522f1096c47e0ac615f0792c176a, type: 3}
@@ -1479,6 +1509,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec91522f1096c47e0ac615f0792c176a, type: 3}
 --- !u!224 &7744406737706259099 stripped
@@ -1699,6 +1739,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec91522f1096c47e0ac615f0792c176a, type: 3}
 --- !u!224 &7207184561882084239 stripped
@@ -1730,6 +1780,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: MainButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_GO_MAIN
       objectReference: {fileID: 0}
     - target: {fileID: 1813416641739944105, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
@@ -1836,11 +1891,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
-        type: 3}
-      propertyPath: localizationKey
-      value: UI_GO_MAIN
-      objectReference: {fileID: 0}
     - target: {fileID: 1701704652269669235, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
       propertyPath: m_text
@@ -1936,6 +1986,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_text
       value: Main
+      objectReference: {fileID: 0}
+    - target: {fileID: 7974119884456850237, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 7974119884456850237, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: feefaf169a2ee4d669ff9f5135627d71, type: 3}
@@ -2157,6 +2217,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec91522f1096c47e0ac615f0792c176a, type: 3}
 --- !u!114 &8191687358167311825 stripped
@@ -2188,6 +2258,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BackButton
+      objectReference: {fileID: 0}
+    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_GO_BACK
       objectReference: {fileID: 0}
     - target: {fileID: 1813416641739944105, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
@@ -2294,11 +2369,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
-    - target: {fileID: 5897111543424348245, guid: feefaf169a2ee4d669ff9f5135627d71,
-        type: 3}
-      propertyPath: localizationKey
-      value: UI_GO_BACK
-      objectReference: {fileID: 0}
     - target: {fileID: 1701704652269669235, guid: feefaf169a2ee4d669ff9f5135627d71,
         type: 3}
       propertyPath: m_text
@@ -2380,6 +2450,16 @@ PrefabInstance:
       propertyPath: m_text
       value: Back
       objectReference: {fileID: 0}
+    - target: {fileID: 7974119884456850237, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 7974119884456850237, guid: feefaf169a2ee4d669ff9f5135627d71,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: feefaf169a2ee4d669ff9f5135627d71, type: 3}
 --- !u!224 &5738739132880797527 stripped
@@ -2411,16 +2491,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: QuitButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 4281266422768423368, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
-        type: 3}
-      propertyPath: localizationKey
-      value: UI_QUIT
-      objectReference: {fileID: 0}
-    - target: {fileID: 4959037106413081965, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
-        type: 3}
-      propertyPath: m_text
-      value: Quit
       objectReference: {fileID: 0}
     - target: {fileID: 2099635483518142312, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
         type: 3}
@@ -2527,6 +2597,16 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 4281266422768423368, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_QUIT
+      objectReference: {fileID: 0}
+    - target: {fileID: 4959037106413081965, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: m_text
+      value: Quit
+      objectReference: {fileID: 0}
     - target: {fileID: 4595522571919587317, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
         type: 3}
       propertyPath: m_text
@@ -2576,6 +2656,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_fontColor.b
       value: 0.63999647
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417836372510081622, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4417836372510081622, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab3e37dfe7c3b1e49bc593b81dcc91d9, type: 3}
@@ -2821,6 +2911,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec91522f1096c47e0ac615f0792c176a, type: 3}
 --- !u!224 &4380832864592290528 stripped
@@ -3041,6 +3141,16 @@ PrefabInstance:
       propertyPath: m_textInfo.pageCount
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 4576468077077929011, guid: ec91522f1096c47e0ac615f0792c176a,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec91522f1096c47e0ac615f0792c176a, type: 3}
 --- !u!224 &4414374196595774875 stripped
@@ -3072,11 +3182,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ExitButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 2029377069817069961, guid: fad22e1d013efca48b8f810cc5c1e81d,
-        type: 3}
-      propertyPath: localizationKey
-      value: UI_EXIT
       objectReference: {fileID: 0}
     - target: {fileID: 1813416641739944105, guid: fad22e1d013efca48b8f810cc5c1e81d,
         type: 3}
@@ -3183,6 +3288,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2029377069817069961, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: localizationKey
+      value: UI_EXIT
+      objectReference: {fileID: 0}
     - target: {fileID: 1701704652269669235, guid: fad22e1d013efca48b8f810cc5c1e81d,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -3247,6 +3357,16 @@ PrefabInstance:
         type: 3}
       propertyPath: EndValue
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5353322485626172718, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: 555532309
+      objectReference: {fileID: 0}
+    - target: {fileID: 5353322485626172718, guid: fad22e1d013efca48b8f810cc5c1e81d,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fad22e1d013efca48b8f810cc5c1e81d, type: 3}

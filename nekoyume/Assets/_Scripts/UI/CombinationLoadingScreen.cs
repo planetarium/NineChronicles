@@ -53,6 +53,7 @@ namespace Nekoyume.UI
 
         private const int ContinueTime = 3;
         private const int NPCId = 300001;
+        private System.Action _closeAction;
 
         protected override WidgetType WidgetType => WidgetType.Popup;
 
@@ -66,6 +67,7 @@ namespace Nekoyume.UI
         {
             _buttonCanvasGroup.alpha = 0f;
             _bgCanvasGroup.alpha = 0f;
+            Find<BottomMenu>().combinationButton.SetSortOrderToTop();
             base.Show(ignoreShowAnimation);
         }
 
@@ -87,6 +89,7 @@ namespace Nekoyume.UI
                 _fireVFX.Stop();
                 _fireVFX = null;
             }
+            Find<BottomMenu>().combinationButton.SetSortOrderToNormal();
 
             base.Close(ignoreCloseAnimation);
         }
@@ -118,6 +121,11 @@ namespace Nekoyume.UI
         public void SetItemMaterial(Item item, bool isConsumable = false)
         {
             speechBubble.SetItemMaterial(item, isConsumable);
+        }
+
+        public void SetCloseAction(System.Action closeAction)
+        {
+            _closeAction = closeAction;
         }
 
         private IEnumerator CoAnimateNPC()
@@ -187,6 +195,7 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(.5f);
             _npc.gameObject.SetActive(false);
             OnDisappear?.Invoke();
+            _closeAction?.Invoke();
             Close();
         }
     }

@@ -3,6 +3,7 @@ using Nekoyume.Game.Controller;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -18,6 +19,9 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private string localizationKey = null;
 
+        [SerializeField]
+        private Canvas sortingGroup;
+
         public readonly Subject<NormalButton> OnClick = new Subject<NormalButton>();
 
         #region Mono
@@ -30,6 +34,8 @@ namespace Nekoyume.UI.Module
                 AudioController.PlayClick();
                 OnClick.OnNext(this);
             }).AddTo(gameObject);
+
+            sortingGroup.sortingLayerName = "UI";
         }
 
         #endregion
@@ -42,6 +48,16 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        public void SetSortOrderToTop()
+        {
+            sortingGroup.sortingOrder = 100;
+        }
+
+        public void SetSortOrderToNormal()
+        {
+            sortingGroup.sortingOrder = 0;
         }
     }
 }

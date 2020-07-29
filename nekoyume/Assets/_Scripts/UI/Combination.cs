@@ -195,18 +195,16 @@ namespace Nekoyume.UI
             {
                 ActionEnhanceEquipment();
                 var itemBase = enhanceEquipment.baseMaterial.Model.ItemBase.Value;
-                StartCoroutine(CoCombineNPCAnimation(itemBase));
+                StartCoroutine(CoCombineNPCAnimation(itemBase, enhanceEquipment.SubscribeOnClickSubmit));
             }).AddTo(gameObject);
 
             equipmentCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
                 Mixpanel.Track("Unity/Craft Sword");
-                if (State.Value == StateType.CombinationConfirm)
-                    return;
 
                 ActionCombinationEquipment(equipmentCombinationPanel);
                 var itemBase = equipmentCombinationPanel.recipeCellView.ItemView.Model.ItemBase.Value;
-                StartCoroutine(CoCombineNPCAnimation(itemBase));
+                StartCoroutine(CoCombineNPCAnimation(itemBase, equipmentCombinationPanel.SubscribeOnClickSubmit));
             }).AddTo(gameObject);
 
             equipmentCombinationPanel.RequiredBlockIndexSubject.ObserveOnMainThread()
@@ -214,26 +212,20 @@ namespace Nekoyume.UI
 
             elementalCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
-                if (State.Value == StateType.CombinationConfirm)
-                    return;
-
                 ActionCombinationEquipment(elementalCombinationPanel);
                 var itemBase = elementalCombinationPanel.recipeCellView.ItemView.Model.ItemBase.Value;
-                StartCoroutine(CoCombineNPCAnimation(itemBase));
+                StartCoroutine(CoCombineNPCAnimation(itemBase, elementalCombinationPanel.SubscribeOnClickSubmit));
             }).AddTo(gameObject);
 
             consumableCombinationPanel.submitButton.OnSubmitClick.Subscribe(_ =>
             {
-                if (State.Value == StateType.CombinationConfirm)
-                    return;
-
                 ActionCombineConsumable();
                 var rowData =
                     Game.Game.instance.TableSheets.ConsumableItemSheet.Values.FirstOrDefault(r =>
                         r.Id == (selectedRecipe as ConsumableRecipeCellView).RowData
                         .ResultConsumableItemId);
                 var itemBase = new Consumable(rowData, Guid.Empty, 0);
-                    StartCoroutine(CoCombineNPCAnimation(itemBase, true));
+                    StartCoroutine(CoCombineNPCAnimation(itemBase, consumableCombinationPanel.SubscribeOnClickSubmit, true));
             }).AddTo(gameObject);
 
             elementalCombinationPanel.RequiredBlockIndexSubject.ObserveOnMainThread()
@@ -872,11 +864,12 @@ namespace Nekoyume.UI
             }
         }
 
-        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, bool isConsumable = false)
+        private IEnumerator CoCombineNPCAnimation(ItemBase itemBase, System.Action action, bool isConsumable = false)
         {
             var loadingScreen = Find<CombinationLoadingScreen>();
             loadingScreen.Show();
             loadingScreen.SetItemMaterial(new Item(itemBase), isConsumable);
+            loadingScreen.SetCloseAction(action);
             canvasGroup.interactable = false;
             canvasGroup.blocksRaycasts = false;
             Find<BottomMenu>().SetIntractable(false);

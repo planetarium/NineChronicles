@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineConsumable);
         }
 
-        protected override void SubscribeOnClickSubmit()
+        public override void SubscribeOnClickSubmit()
         {
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineConsumable);
         }
