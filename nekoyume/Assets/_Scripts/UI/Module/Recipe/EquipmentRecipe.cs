@@ -53,6 +53,7 @@ namespace Nekoyume.UI.Module
         private AnchoredPositionYTweener scrollPositionTweener = null;
 
         private bool _initialized = false;
+        private int _notificationId;
         private readonly ToggleGroup _toggleGroup = new ToggleGroup();
 
         private readonly ReactiveProperty<ItemSubType> _itemFilterType =
@@ -64,6 +65,8 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposablesAtLoadRecipeList = new List<IDisposable>();
 
         private readonly ReactiveProperty<State> _state = new ReactiveProperty<State>(State.Equipment);
+
+        public bool HasNotification { get; private set; }
 
         private enum State
         {
@@ -111,10 +114,11 @@ namespace Nekoyume.UI.Module
             _toggleGroup.RegisterToggleable(necklaceTabButton);
             _toggleGroup.RegisterToggleable(ringTabButton);
 
-            LoadRecipes(_state.Value, false);
             LoadRecipes(_state.Value);
             _itemFilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
             // _state.Subscribe(SubscribeState).AddTo(gameObject);
+            ReactiveAvatarState.QuestList.Subscribe(SubscribeHasNotification)
+                .AddTo(gameObject);
         }
 
         public void ShowCellViews(int? recipeId = null)
@@ -226,54 +230,6 @@ namespace Nekoyume.UI.Module
                     cellView.Hide();
                 }
             }
-        }
-
-        public bool HasNotification()
-        {
-            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
-            var tableSheets = Game.Game.instance.TableSheets;
-            var quest = GetNextGuidedQuest();
-
-            if (quest is null)
-                return false;
-
-            var recipeRow = tableSheets
-                .EquipmentItemRecipeSheet[quest.RecipeId];
-
-            var isMainRecipeUnlocked = currentAvatarState
-                    .worldInformation.IsStageCleared(recipeRow.UnlockStage);
-
-            var isElemental = !(quest.SubRecipeId is null);
-
-            if (!isMainRecipeUnlocked)
-                return false;
-
-            if (!isElemental)
-                return true;
-            else
-            {
-                var subRecipeRow = tableSheets
-                    .EquipmentItemSubRecipeSheet[quest.SubRecipeId.Value];
-
-                var isSubRecipeUnlocked = currentAvatarState
-                    .worldInformation.IsStageCleared(subRecipeRow.UnlockStage);
-
-                return isSubRecipeUnlocked;
-            }
-        }
-
-        private CombinationEquipmentQuest GetNextGuidedQuest()
-        {
-            var gameInstance = Game.Game.instance;
-
-            var quest = gameInstance.States.CurrentAvatarState.questList?
-                .OfType<CombinationEquipmentQuest>()
-                .Where(x => !x.Complete)
-                .OrderBy(x => x.StageId)
-                .FirstOrDefault(x =>
-                    gameInstance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(x.RecipeId, out _));
-
-            return quest;
         }
 
         public bool TryGetCellView(int recipeId, out RecipeCellView cellView)
@@ -392,6 +348,59 @@ namespace Nekoyume.UI.Module
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+        }
+
+        private void SubscribeHasNotification(QuestList questList)
+        {
+            var hasNotification = false;
+            weaponTabButton.HasNotification.Value = false;
+            armorTabButton.HasNotification.Value = false;
+            beltTabButton.HasNotification.Value = false;
+            necklaceTabButton.HasNotification.Value = false;
+            ringTabButton.HasNotification.Value = false;
+
+            var quest = questList?
+                .OfType<CombinationEquipmentQuest>()
+                .Where(x => !x.Complete)
+                .OrderBy(x => x.StageId)
+                .FirstOrDefault();
+
+            if (!(quest is null))
+            {
+                var tableSheets = Game.Game.instance.TableSheets;
+                var row = tableSheets.EquipmentItemRecipeSheet.Values
+                    .FirstOrDefault(r => r.Id == quest.RecipeId);
+                if (!(row is null))
+                {
+                    var stageId = row.UnlockStage;
+                    if (quest.SubRecipeId.HasValue)
+                    {
+                        var subRow = tableSheets.EquipmentItemSubRecipeSheet.Values
+                            .FirstOrDefault(r => r.Id == quest.SubRecipeId);
+                        if (!(subRow is null))
+                        {
+                            stageId = subRow.UnlockStage;
+                        }
+                    }
+
+                    if (Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
+                    {
+                        var equipRow = tableSheets.EquipmentItemSheet.Values
+                            .FirstOrDefault(r => r.Id == row.ResultEquipmentId);
+
+                        if (!(equipRow is null))
+                        {
+                            hasNotification = true;
+                            var button = GetButton(equipRow.ItemSubType);
+                            button.HasNotification.Value = true;
+
+                            _notificationId = row.Id;
+                        }
+                    }
+                }
+            }
+
+            HasNotification = hasNotification;
         }
     }
 }

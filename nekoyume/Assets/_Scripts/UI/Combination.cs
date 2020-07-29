@@ -126,7 +126,7 @@ namespace Nekoyume.UI
 
         public Dictionary<int, int[]> RecipeVFXSkipMap { get; private set; }
 
-        public bool HasNotification => equipmentRecipe.HasNotification();
+        public bool HasNotification => equipmentRecipe.HasNotification;
 
         public override bool CanHandleInputEvent => State.Value == StateType.CombinationConfirm
             ? AnimationState == AnimationStateType.Shown
