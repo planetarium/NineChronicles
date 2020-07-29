@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Libplanet;
 using Libplanet.Crypto;
 using mixpanel;
@@ -11,6 +10,7 @@ using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Pattern;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -24,8 +24,6 @@ namespace Nekoyume.Game
     [RequireComponent(typeof(Agent), typeof(RPCAgent))]
     public class Game : MonoSingleton<Game>
     {
-        private IAgent _agent;
-
         [SerializeField]
         private Stage stage = null;
 
@@ -33,15 +31,16 @@ namespace Nekoyume.Game
         private bool useSystemLanguage = true;
 
         [SerializeField]
-        private LocalizationManager.LanguageType languageType = default;
+        private LanguageType languageType = default;
 
-        public Prologue prologue;
+        [SerializeField]
+        private Prologue prologue = null;
 
         public States States { get; private set; }
 
         public LocalStateSettings LocalStateSettings { get; private set; }
 
-        public IAgent Agent => _agent;
+        public IAgent Agent { get; private set; }
 
         public Stage Stage => stage;
 
@@ -52,6 +51,8 @@ namespace Nekoyume.Game
         public ActionManager ActionManager { get; private set; }
 
         public bool IsInitialized { get; private set; }
+
+        public Prologue Prologue => prologue;
 
         public const string AddressableAssetsContainerPath = nameof(AddressableAssetsContainer);
 
@@ -81,34 +82,39 @@ namespace Nekoyume.Game
 
             if (_options.RpcClient)
             {
-                _agent = GetComponent<RPCAgent>();
+                Agent = GetComponent<RPCAgent>();
             }
             else
             {
-                _agent = GetComponent<Agent>();
+                Agent = GetComponent<Agent>();
             }
-
-            LocalizationManager.Initialize();
-#if UNITY_EDITOR
-            if (!useSystemLanguage)
-            {
-                LocalizationManager.CurrentLanguage = languageType;
-            }
-#endif
 
             States = new States();
             LocalStateSettings = new LocalStateSettings();
-            prologue = GetComponent<Prologue>();
-            MainCanvas.instance.InitializeFirst();
+            MainCanvas.instance.InitializeTitle();
         }
 
         private IEnumerator Start()
         {
+#if UNITY_EDITOR
+            if (useSystemLanguage)
+            {
+                yield return L10nManager.Initialize().ToYieldInstruction();
+            }
+            else
+            {
+                yield return L10nManager.Initialize(languageType).ToYieldInstruction();
+            }
+#else
+            yield return L10nManager.Initialize().ToYieldInstruction();
+#endif
+
+            MainCanvas.instance.InitializeFirst();
             yield return Addressables.InitializeAsync();
             yield return StartCoroutine(CoInitializeTableSheets());
             AudioController.instance.Initialize();
             yield return null;
-            ActionManager = new ActionManager(_agent);
+            ActionManager = new ActionManager(Agent);
             // Agent 초기화.
             // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
@@ -192,19 +198,19 @@ namespace Nekoyume.Game
             else
             {
                 // FIXME 콜백 인자를 구조화 하면 타입 쿼리 없앨 수 있을 것 같네요.
-                if (_agent is Agent agent && agent.BlockDownloadFailed)
+                if (Agent is Agent agent && agent.BlockDownloadFailed)
                 {
-                    var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
-                        LocalizationManager.Localize("BLOCK_DOWNLOAD_FAIL"));
+                    var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
+                        L10nManager.Localize("BLOCK_DOWNLOAD_FAIL"));
 
                     Widget.Find<SystemPopup>().Show(
-                        LocalizationManager.Localize("UI_ERROR"),
+                        L10nManager.Localize("UI_ERROR"),
                         errorMsg,
-                        LocalizationManager.Localize("UI_QUIT"),
+                        L10nManager.Localize("UI_QUIT"),
                         false
                     );
                 }
-                else if (_agent is RPCAgent rpcAgent && !rpcAgent.Connected)
+                else if (Agent is RPCAgent rpcAgent && !rpcAgent.Connected)
                 {
                     Widget.Find<SystemPopup>().Show(
                         "UI_ERROR",
@@ -332,7 +338,7 @@ namespace Nekoyume.Game
                 title.Close();
             }
 
-            _agent.Initialize(
+            Agent.Initialize(
                 _options,
                 loginPopup.GetPrivateKey(),
                 callback
