@@ -80,9 +80,14 @@ namespace Nekoyume.UI
             {
                 bubbleImages[i].gameObject.SetActive(index == i);
             }
+            SetBubbleImageInternal();
         }
 
-        public void Hide()
+        protected virtual void SetBubbleImageInternal()
+        {
+        }
+
+        public virtual void Hide()
         {
             text.text = "";
             gameObject.SetActive(false);
@@ -204,7 +209,7 @@ namespace Nekoyume.UI
 
             bubbleContainer.DOKill();
             textSize.transform.DOKill();
-            gameObject.SetActive(false);
+            Hide();
         }
 
         public void ResetKey()
