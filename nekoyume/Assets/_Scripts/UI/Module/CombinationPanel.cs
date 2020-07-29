@@ -1,5 +1,5 @@
 using System.Numerics;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using TMPro;
@@ -49,7 +49,7 @@ namespace Nekoyume.UI.Module
         {
             cancelButton.OnClickAsObservable().Subscribe(_ => SubscribeOnClickCancel()).AddTo(gameObject);
             submitButton.OnSubmitClick.Subscribe(_ => SubscribeOnClickSubmit()).AddTo(gameObject);
-            cancelButtonText.text = LocalizationManager.Localize("UI_CANCEL");
+            cancelButtonText.text = L10nManager.Localize("UI_CANCEL");
             submitButton.HideHourglass();
         }
 

@@ -1,4 +1,3 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -10,6 +9,7 @@ using UniRx;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Scroller
@@ -200,20 +200,20 @@ namespace Nekoyume.UI.Scroller
                     if (diff > 50)
                     {
                         unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             "???");
                     }
                     else
                     {
                         unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             unlockStage.ToString());
                     }
                 }
                 else
                 {
                     unlockConditionText.text = string.Format(
-                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                         "???");
                 }
             }

@@ -1,4 +1,3 @@
-using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -6,6 +5,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,7 +36,7 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI continueText = null;
-        
+
         [SerializeField]
         private SpeechBubble speechBubble = null;
 
@@ -131,7 +131,7 @@ namespace Nekoyume.UI
             speechBubble.SetKey("SPEECH_COMBINATION_START_");
             StartCoroutine(speechBubble.CoShowText(true));
 
-            var format = LocalizationManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
 
             for (int timer = ContinueTime; timer >= 0; --timer)
             {

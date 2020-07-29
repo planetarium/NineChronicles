@@ -3,8 +3,8 @@ using DG.Tweening;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
 using UnityEngine.UI;
@@ -68,10 +68,10 @@ namespace Nekoyume.UI.Module
             }
 
             var unlockConditionString = string.Format(
-                LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                 _requireStage);
             _messageForCat =
-                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                $"{L10nManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()

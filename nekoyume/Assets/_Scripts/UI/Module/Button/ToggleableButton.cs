@@ -1,6 +1,6 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using System;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UniRx.Triggers;
@@ -63,7 +63,7 @@ namespace Nekoyume.UI.Module
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                var text = LocalizationManager.Localize(localizationKey);
+                var text = L10nManager.Localize(localizationKey);
                 toggledOffText.text = text;
                 toggledOnText.text = text;
             }

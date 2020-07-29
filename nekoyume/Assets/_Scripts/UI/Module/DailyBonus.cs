@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using JetBrains.Annotations;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;
@@ -169,12 +169,12 @@ namespace Nekoyume.UI.Module
             }
 
             Notification.Push(Nekoyume.Model.Mail.MailType.System,
-                LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
+                L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 
             Game.Game.instance.ActionManager.DailyReward().Subscribe(_ =>
             {
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
-                    LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
+                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
             });
 
             StartCoroutine(CoGetDailyRewardAnimation());

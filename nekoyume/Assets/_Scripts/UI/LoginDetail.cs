@@ -1,5 +1,4 @@
 using System;
-using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
 using Nekoyume.State;
 using Nekoyume.Game.Controller;
@@ -14,6 +13,7 @@ using Nekoyume.TableData;
 using Nekoyume.Model.State;
 using System.Collections;
 using mixpanel;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
@@ -56,8 +56,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            btnCreateText.text = LocalizationManager.Localize("UI_CREATE_CHARACTER_CONFIRM");
-            jobDescriptionText.text = LocalizationManager.Localize("UI_WARRIOR_DESCRIPTION");
+            btnCreateText.text = L10nManager.Localize("UI_CREATE_CHARACTER_CONFIRM");
+            jobDescriptionText.text = L10nManager.Localize("UI_WARRIOR_DESCRIPTION");
 
             Game.Event.OnLoginDetail.AddListener(Init);
 
@@ -230,10 +230,10 @@ namespace Nekoyume.UI
             if (_isCreateMode)
             {
                 _hair = _lens = _ear = _tail = 0;
-                paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair + 1}";
-                paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens + 1}";
-                paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear + 1}";
-                paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
+                paletteHairText.text = $"{L10nManager.Localize("UI_HAIR")} {_hair + 1}";
+                paletteLensText.text = $"{L10nManager.Localize("UI_LENS")} {_lens + 1}";
+                paletteEarText.text = $"{L10nManager.Localize("UI_EAR")} {_ear + 1}";
+                paletteTailText.text = $"{L10nManager.Localize("UI_TAIL")} {_tail + 1}";
             }
 
             base.Show(ignoreShowAnimation);
@@ -259,7 +259,7 @@ namespace Nekoyume.UI
 
             _ear = ear;
 
-            paletteEarText.text = $"{LocalizationManager.Localize("UI_EAR")} {_ear + 1}";
+            paletteEarText.text = $"{L10nManager.Localize("UI_EAR")} {_ear + 1}";
 
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
@@ -290,7 +290,7 @@ namespace Nekoyume.UI
 
             _lens = lens;
 
-            paletteLensText.text = $"{LocalizationManager.Localize("UI_LENS")} {_lens + 1}";
+            paletteLensText.text = $"{L10nManager.Localize("UI_LENS")} {_lens + 1}";
 
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
@@ -321,7 +321,7 @@ namespace Nekoyume.UI
 
             _hair = hair;
 
-            paletteHairText.text = $"{LocalizationManager.Localize("UI_HAIR")} {_hair + 1}";
+            paletteHairText.text = $"{L10nManager.Localize("UI_HAIR")} {_hair + 1}";
 
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)
@@ -352,7 +352,7 @@ namespace Nekoyume.UI
 
             _tail = tail;
 
-            paletteTailText.text = $"{LocalizationManager.Localize("UI_TAIL")} {_tail + 1}";
+            paletteTailText.text = $"{L10nManager.Localize("UI_TAIL")} {_tail + 1}";
 
             var player = Game.Game.instance.Stage.selectedPlayer;
             if (player is null)

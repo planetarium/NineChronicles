@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game;
+using Nekoyume.L10n;
 using Nekoyume.Model.BattleStatus;
 using TMPro;
 using UnityEngine;
@@ -19,7 +19,7 @@ namespace Nekoyume.UI
         protected override void Awake()
         {
             base.Awake();
-            submitButtonText.text = LocalizationManager.Localize("UI_BACK_TO_ARENA");
+            submitButtonText.text = L10nManager.Localize("UI_BACK_TO_ARENA");
 
             CloseWidget = null;
             SubmitWidget = BackToRanking;

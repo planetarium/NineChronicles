@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
-using Assets.SimpleLocalization;
 using DG.Tweening;
-using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -71,7 +70,7 @@ namespace Nekoyume.UI
             base.Awake();
 
             SharedModel = new Model.Shop();
-            noticeText.text = LocalizationManager.Localize("UI_SHOP_NOTICE");
+            noticeText.text = L10nManager.Localize("UI_SHOP_NOTICE");
 
             CloseWidget = null;
         }
@@ -267,7 +266,7 @@ namespace Nekoyume.UI
                     view.RectTransform,
                     view.Model,
                     value => !DimmedFuncForSell(value as InventoryItem),
-                    LocalizationManager.Localize("UI_SELL"),
+                    L10nManager.Localize("UI_SELL"),
                     _ =>
                         ShowSellPopup(tooltip.itemInformation.Model.item.Value as InventoryItem),
                     _ => inventory.SharedModel.DeselectItemView());
@@ -292,7 +291,7 @@ namespace Nekoyume.UI
                     view.RectTransform,
                     view.Model,
                     ButtonEnabledFuncForBuy,
-                    LocalizationManager.Localize("UI_BUY"),
+                    L10nManager.Localize("UI_BUY"),
                     _ => ShowBuyPopup(tooltip.itemInformation.Model.item.Value as ShopItem),
                     _ => shopItems.SharedModel.DeselectItemView());
             }
@@ -302,7 +301,7 @@ namespace Nekoyume.UI
                     view.RectTransform,
                     view.Model,
                     ButtonEnabledFuncForSell,
-                    LocalizationManager.Localize("UI_RETRIEVE"),
+                    L10nManager.Localize("UI_RETRIEVE"),
                     _ =>
                         ShowRetrievePopup(tooltip.itemInformation.Model.item.Value as ShopItem),
                     _ => shopItems.SharedModel.DeselectItemView());
@@ -318,9 +317,9 @@ namespace Nekoyume.UI
             }
 
             SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
-                LocalizationManager.Localize("UI_SELL");
+                L10nManager.Localize("UI_SELL");
             SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
-                LocalizationManager.Localize("UI_SELL_INFO");
+                L10nManager.Localize("UI_SELL_INFO");
             SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = true;
             SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
                 !DimmedFuncForSell(inventoryItem);
@@ -341,9 +340,9 @@ namespace Nekoyume.UI
             }
 
             SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
-                LocalizationManager.Localize("UI_BUY");
+                L10nManager.Localize("UI_BUY");
             SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
-                LocalizationManager.Localize("UI_BUY_INFO");
+                L10nManager.Localize("UI_BUY_INFO");
             SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = false;
             SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
                 ButtonEnabledFuncForBuy(shopItem);
@@ -365,9 +364,9 @@ namespace Nekoyume.UI
             }
 
             SharedModel.ItemCountAndPricePopup.Value.TitleText.Value =
-                LocalizationManager.Localize("UI_RETRIEVE");
+                L10nManager.Localize("UI_RETRIEVE");
             SharedModel.ItemCountAndPricePopup.Value.InfoText.Value =
-                LocalizationManager.Localize("UI_RETRIEVE_INFO");
+                L10nManager.Localize("UI_RETRIEVE_INFO");
             SharedModel.ItemCountAndPricePopup.Value.CountEnabled.Value = false;
             SharedModel.ItemCountAndPricePopup.Value.Submittable.Value =
                 ButtonEnabledFuncForSell(shopItem);
@@ -549,7 +548,7 @@ namespace Nekoyume.UI
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            var format = LocalizationManager.Localize("NOTIFICATION_SELL_START");
+            var format = L10nManager.Localize("NOTIFICATION_SELL_START");
             Notification.Push(MailType.Auction,
                 string.Format(format, item.ItemBase.Value.GetLocalizedName()));
         }
@@ -565,7 +564,7 @@ namespace Nekoyume.UI
             shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
-            var format = LocalizationManager.Localize("NOTIFICATION_SELL_CANCEL_START");
+            var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
             Notification.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }
@@ -583,7 +582,7 @@ namespace Nekoyume.UI
             shopItems.SharedModel.RemoveOtherProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
-            var format = LocalizationManager.Localize("NOTIFICATION_BUY_START");
+            var format = L10nManager.Localize("NOTIFICATION_BUY_START");
             Notification.Push(MailType.Auction,
                 string.Format(format, shopItem.ItemBase.Value.GetLocalizedName()));
         }

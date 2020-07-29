@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -24,7 +24,7 @@ namespace Nekoyume.UI.Module
 
         protected virtual void Awake()
         {
-            text.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
+            text.text = L10nManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();

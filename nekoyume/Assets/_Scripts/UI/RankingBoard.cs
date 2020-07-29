@@ -1,19 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Scroller;
-using Nekoyume.UI.Tween;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -287,7 +285,7 @@ namespace Nekoyume.UI
             {
                 arenaRecordContainer.SetActive(true);
                 arenaRecordText.text = string.Format(
-                    LocalizationManager.Localize("UI_WIN_DRAW_LOSE_FORMAT"), record.Win,
+                    L10nManager.Localize("UI_WIN_DRAW_LOSE_FORMAT"), record.Win,
                     record.Draw, record.Lose);
                 currentAvatarCellView.Show((rank, arenaInfo, arenaInfo));
                 arenaActivationButton.Hide();

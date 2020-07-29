@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -39,8 +39,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
-            submitButtonText.text = LocalizationManager.Localize("UI_OK");
+            materialText.text = L10nManager.Localize("UI_COMBINATION_MATERIALS");
+            submitButtonText.text = L10nManager.Localize("UI_OK");
 
             submitButton.OnClickAsObservable().Subscribe(_ =>
             {
@@ -115,7 +115,7 @@ namespace Nekoyume.UI
         {
             if (Model is null)
             {
-                itemNameText.text = LocalizationManager.Localize("UI_COMBINATION_ERROR");
+                itemNameText.text = L10nManager.Localize("UI_COMBINATION_ERROR");
                 itemInformation.gameObject.SetActive(false);
                 return;
             }
@@ -131,7 +131,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                itemNameText.text = LocalizationManager.Localize("UI_COMBINATION_FAIL");
+                itemNameText.text = L10nManager.Localize("UI_COMBINATION_FAIL");
                 itemInformation.gameObject.SetActive(false);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }

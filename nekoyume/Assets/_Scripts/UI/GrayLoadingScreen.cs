@@ -1,4 +1,4 @@
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 
@@ -13,7 +13,7 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            text.text = LocalizationManager.Localize("UI_IN_MINING_A_BLOCK");
+            text.text = L10nManager.Localize("UI_IN_MINING_A_BLOCK");
         }
     }
 }

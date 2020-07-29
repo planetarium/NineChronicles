@@ -2,8 +2,8 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -39,15 +39,15 @@ namespace Nekoyume.UI.Module
                 throw new SerializeFieldNullException();
 
             baseMaterial.titleText.text =
-                LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE");
+                L10nManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE");
             foreach (var otherMaterial in otherMaterials)
             {
                 otherMaterial.titleText.text =
-                    LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
+                    L10nManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
             }
 
             message.SetActive(false);
-            submitButton.SetSubmitText(LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT"));
+            submitButton.SetSubmitText(L10nManager.Localize("UI_COMBINATION_ENHANCEMENT"));
         }
 
         public override bool Show(bool forced = false)
@@ -212,7 +212,7 @@ namespace Nekoyume.UI.Module
 
             message.SetActive(true);
             messageText.text = string.Format(
-                LocalizationManager.Localize("UI_ENHANCEMENT_GUIDE"),
+                L10nManager.Localize("UI_ENHANCEMENT_GUIDE"),
                 count);
         }
     }

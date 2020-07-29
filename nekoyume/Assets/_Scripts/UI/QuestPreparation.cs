@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
@@ -20,6 +19,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
@@ -156,8 +156,8 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             inventory.SharedModel.State.Value = ItemType.Equipment;
 
-            consumableTitleText.text = LocalizationManager.Localize("UI_EQUIP_CONSUMABLES");
-            equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIP_EQUIPMENTS");
+            consumableTitleText.text = L10nManager.Localize("UI_EQUIP_CONSUMABLES");
+            equipmentTitleText.text = L10nManager.Localize("UI_EQUIP_EQUIPMENTS");
 
             Mixpanel.Track("Unity/Click Stage");
             _stage = Game.Game.instance.Stage;
@@ -252,8 +252,8 @@ namespace Nekoyume.UI
                 view.Model,
                 value => !view.Model.Dimmed.Value,
                 view.Model.EquippedEnabled.Value
-                    ? LocalizationManager.Localize("UI_UNEQUIP")
-                    : LocalizationManager.Localize("UI_EQUIP"),
+                    ? L10nManager.Localize("UI_UNEQUIP")
+                    : L10nManager.Localize("UI_EQUIP"),
                 _ => Equip(tooltip.itemInformation.Model.item.Value),
                 _ =>
                 {
