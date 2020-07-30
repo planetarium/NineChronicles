@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Module
     {
         public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
         {
-            (recipeCellView as ConsumableRecipeCellView).Set(recipeRow);
+            recipeCellView.Set(recipeRow);
             materialPanel.SetData(recipeRow, true, Widget.Find<Combination>().selectedIndex >= 0);
 
             gameObject.SetActive(true);

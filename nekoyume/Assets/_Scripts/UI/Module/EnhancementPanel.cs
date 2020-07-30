@@ -2,22 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using JetBrains.Annotations;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using UniRx;
-using UnityEngine;
 using Material = Nekoyume.Model.Item.Material;
 
 namespace Nekoyume.UI.Module
 {
-    public class EnhancementPanel<TMaterialView> : MonoBehaviour, ICombinationPanel
+    public class EnhancementPanel<TMaterialView> : Widget, ICombinationPanel
         where TMaterialView : CombinationMaterialView
     {
         private readonly List<IDisposable> _disposablesAtShow = new List<IDisposable>();
 
-        [CanBeNull] public TMaterialView baseMaterial;
+        public TMaterialView baseMaterial;
         public TMaterialView[] otherMaterials;
         public SubmitWithCostButton submitButton;
 
@@ -42,7 +40,7 @@ namespace Nekoyume.UI.Module
 
         #region Initialize & Terminate
 
-        protected virtual void Awake()
+        protected override void Awake()
         {
             if (!(baseMaterial is null))
             {
@@ -60,7 +58,7 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        protected virtual void OnDestroy()
+        protected override void OnDestroy()
         {
             OnMaterialAdd.Dispose();
             OnBaseMaterialAdd.Dispose();
