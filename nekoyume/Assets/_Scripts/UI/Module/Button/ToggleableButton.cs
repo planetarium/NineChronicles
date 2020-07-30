@@ -30,8 +30,8 @@ namespace Nekoyume.UI.Module
         private Image toggledOnImage = null;
 
         [SerializeField]
-        private Canvas sortingGroup;
-
+        private Canvas sortingGroup = null;
+        
         public string localizationKey = null;
 
         private IToggleListener _toggleListener;
@@ -67,9 +67,7 @@ namespace Nekoyume.UI.Module
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                var text = LocalizationManager.Localize(localizationKey);
-                toggledOffText.text = text;
-                toggledOnText.text = text;
+                SetText(LocalizationManager.Localize(localizationKey));
             }
 
             // (object) sortingGroup == (Canvas) "null" 이기 때문에 `is`나 `ReferenceEquals`를 사용하지 않습니다.
@@ -221,6 +219,19 @@ namespace Nekoyume.UI.Module
         public void SetSortOrderToNormal()
         {
             sortingGroup.sortingOrder = 0;
+        }
+
+        protected virtual void SetText(string text)
+        {
+            if (!(toggledOffText is null))
+            {
+                toggledOffText.text = text;
+            }
+
+            if (!(toggledOnText is null))
+            {
+                toggledOnText.text = text;
+            }
         }
 
         private void SubscribeOnClick(Unit unit)

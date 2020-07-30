@@ -20,7 +20,7 @@ namespace Nekoyume.UI.Module
         private string localizationKey = null;
 
         [SerializeField]
-        private Canvas sortingGroup;
+        private Canvas sortingGroup = null;
 
         public readonly Subject<NormalButton> OnClick = new Subject<NormalButton>();
 
