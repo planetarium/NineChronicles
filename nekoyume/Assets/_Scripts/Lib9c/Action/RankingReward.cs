@@ -42,7 +42,7 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                return states.MarkBalanceChanged(Currencies.Gold, agentAddresses);
+                return states.MarkBalanceChanged(GoldCurrencyMock, agentAddresses);
             }
 
             if (ctx.Signer != ctx.Miner)
@@ -76,9 +76,13 @@ namespace Nekoyume.Action
                     break;
                 }
 
-                // FIXME: 사실 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
-                // 근데 RankingBattle 액션에서 입장료 받아다 WeeklyArenaAddress에다 쌓아두는데 그거 빼서 주면 안되는지?
-                states = states.MintAsset(address, Currencies.Gold, reward);
+                // FIXME: RankingBattle 액션에서 입장료 받아다 WeeklyArenaAddress에다 쌓아두는데 그거 빼서 주면 안되는지?
+                states = states.TransferAsset(
+                    GoldCurrencyState.Address,
+                    address,
+                    states.GetGoldCurrency(),
+                    reward
+                );
             }
 
             return states;

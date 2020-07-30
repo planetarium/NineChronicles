@@ -26,6 +26,9 @@ namespace Nekoyume.Action
     {
         public static readonly IValue MarkChanged = default(Null);
 
+        // FIXME GoldCurrencyState 에 정의된 것과 다른데 괜찮을지 점검해봐야 합니다.
+        protected static readonly Currency GoldCurrencyMock = new Currency();
+
         public abstract IValue PlainValue { get; }
         public abstract void LoadPlainValue(IValue plainValue);
         public abstract IAccountStateDelta Execute(IActionContext context);
@@ -327,15 +330,24 @@ namespace Nekoyume.Action
             );
         }
 
-        protected void CheckPermission(IActionContext ctx)
+        protected bool TryGetAdminState(IActionContext ctx, out AdminState state)
         {
-            IAccountStateDelta prevState = ctx.PreviousStates;
-            IValue rawState = prevState.GetState(AdminState.Address);
-
+            state = default;
+            
+            IValue rawState = ctx.PreviousStates.GetState(AdminState.Address);
             if (rawState is Bencodex.Types.Dictionary asDict)
             {
-                var policy = new AdminState(asDict);
+                state = new AdminState(asDict);
+                return true;
+            }
 
+            return false;
+        }
+
+        protected void CheckPermission(IActionContext ctx)
+        {
+            if (TryGetAdminState(ctx, out AdminState policy))
+            {
                 if (ctx.BlockIndex > policy.ValidUntil)
                 {
                     throw new PolicyExpiredException(policy, ctx.BlockIndex);

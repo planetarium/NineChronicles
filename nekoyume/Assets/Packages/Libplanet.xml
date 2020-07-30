@@ -1904,15 +1904,17 @@
             <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.#ctor(System.Int64,System.Int64,Libplanet.Nonce,System.Nullable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}})">
+        <member name="M:Libplanet.Blocks.Block`1.#ctor(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Nonce,System.Nullable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.Block`1"/> instance by manually filling all field values.
-            For a more automated way, see also <see cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/> method.
+            For a more automated way, see also <see cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/> method.
             </summary>
             <param name="index">The height of the block to create.  Goes to the <see cref="P:Libplanet.Blocks.Block`1.Index"/>.
             </param>
             <param name="difficulty">The mining difficulty that <paramref name="nonce"/> has to
             satisfy.  Goes to the <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>.</param>
+            <param name="totalDifficulty">The total mining difficulty until this block.
+            See also <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>.</param>
             <param name="nonce">The nonce which satisfy the given <paramref name="difficulty"/> with
             any other field values.  Goes to the <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>.</param>
             <param name="miner">An optional address refers to who mines this block.
@@ -1926,7 +1928,13 @@
             Transactions become sorted in an unpredicted-before-mined order and then go to
             the <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> property.
             </param>
-            <seealso cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/>
+            <param name="preEvaluationHash">The hash derived from the block <em>except of</em>
+            <paramref name="evaluationDigest"/> (i.e., without action evaluation).
+            Automatically determined if <c>null</c> is passed (which is default).</param>
+            <param name="evaluationDigest">The hash derived from the result states of every
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of the block's entire
+            <paramref name="transactions"/>.</param>
+            <seealso cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.#ctor(Bencodex.Types.Dictionary)">
             <summary>
@@ -1936,13 +1944,40 @@
             representation of <see cref="T:Libplanet.Blocks.Block`1"/> instance.
             </param>
         </member>
-        <member name="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
+        <member name="P:Libplanet.Blocks.Block`1.Hash">
+            <summary>
+            <see cref="P:Libplanet.Blocks.Block`1.Hash"/> is derived from a serialized <see cref="T:Libplanet.Blocks.Block`1"/>
+            after <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> are evaluated.
+            </summary>
+            <seealso cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/>
+            <seealso cref="P:Libplanet.Blocks.Block`1.EvaluationDigest"/>
+        </member>
+        <member name="P:Libplanet.Blocks.Block`1.PreEvaluationHash">
+            <summary>
+            The hash derived from the block <em>except of</em>
+            <see cref="P:Libplanet.Blocks.Block`1.EvaluationDigest"/> (i.e., without action evaluation).
+            Used for <see cref="M:Libplanet.Blocks.BlockHeader.Validate(System.DateTimeOffset)"/> checking <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>.
+            </summary>
+            <seealso cref="P:Libplanet.Blocks.Block`1.Nonce"/>
+            <seealso cref="M:Libplanet.Blocks.BlockHeader.Validate(System.DateTimeOffset)"/>
+        </member>
+        <member name="P:Libplanet.Blocks.Block`1.EvaluationDigest">
+            <summary>
+            <see cref="P:Libplanet.Blocks.Block`1.EvaluationDigest"/> derived from the result states of every
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of the block's entire
+            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>.
+            </summary>
+            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address)"/>
+        </member>
+        <member name="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
             <summary>
             Generate a block with given <paramref name="transactions"/>.
             </summary>
             <param name="index">Index of the block.</param>
             <param name="difficulty">Difficulty to find the <see cref="T:Libplanet.Blocks.Block`1"/>
             <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>.</param>
+            <param name="previousTotalDifficulty">The total difficulty until the previous
+            <see cref="T:Libplanet.Blocks.Block`1"/>.</param>
             <param name="miner">The <see cref="T:Libplanet.Address"/> of miner that mined the block.</param>
             <param name="previousHash">
             The <see cref="T:Libplanet.HashDigest`1"/> of previous block.
@@ -2102,7 +2137,7 @@
             Block header containing information about <see cref="T:Libplanet.Blocks.Block`1"/>s except transactions.
             </summary>
         </member>
-        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(System.Int64,System.String,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Int64,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte})">
+        <member name="M:Libplanet.Blocks.BlockHeader.#ctor(System.Int64,System.String,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Int64,System.Numerics.BigInteger,System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte},System.Collections.Immutable.ImmutableArray{System.Byte})">
             <summary>
             Creates a <see cref="T:Libplanet.Blocks.BlockHeader"/> instance.
             </summary>
@@ -2116,6 +2151,8 @@
             Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Miner"/>.</param>
             <param name="difficulty">The mining difficulty that <paramref name="nonce"/>
             has to satisfy.  Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Difficulty"/>.</param>
+            <param name="totalDifficulty">The total mining difficulty until this block.
+            See also <see cref="P:Libplanet.Blocks.BlockHeader.Difficulty"/>.</param>
             <param name="previousHash">The previous block's <see cref="P:Libplanet.Blocks.BlockHeader.Hash"/>.  If it's a genesis
             block (i.e., <paramref name="index"/> is 0) this should be <c>null</c>.
             Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.PreviousHash"/>.</param>
@@ -2123,6 +2160,12 @@
             Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.TxHash"/>.</param>
             <param name="hash">The hash of the <see cref="T:Libplanet.Blocks.Block`1"/>.
             Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Hash"/>.</param>
+            <param name="preEvaluationHash">The hash derived from the block <em>except of</em>
+            <paramref name="evaluationDigest"/> (i.e., without action evaluation).
+            Used for <see cref="M:Libplanet.Blocks.BlockHeader.Validate(System.DateTimeOffset)"/> checking <paramref name="nonce"/>.
+            </param>
+            <param name="evaluationDigest">The hash derived from the result states of every
+            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of the block's entire transactions.</param>
         </member>
         <member name="M:Libplanet.Blocks.BlockHeader.Deserialize(System.Byte[])">
             <summary>
@@ -2271,12 +2314,28 @@
             Global cryptography backend to sign and verify messages.
             </summary>
         </member>
-        <member name="T:Libplanet.Crypto.ICryptoBackend">
+        <member name="T:Libplanet.Crypto.ICryptoBackend`1">
             <summary>
             Cryptography backend interface.
             </summary>
+            <typeparam name="T">A <see cref="T:System.Security.Cryptography.HashAlgorithm"/> which corresponds to a digest.</typeparam>
+            <seealso cref="T:System.Security.Cryptography.HashAlgorithm"/>
         </member>
-        <member name="M:Libplanet.Crypto.ICryptoBackend.Verify(Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.Byte[],Libplanet.Crypto.PublicKey)">
+        <member name="M:Libplanet.Crypto.ICryptoBackend`1.Sign(Libplanet.HashDigest{`0},Libplanet.Crypto.PrivateKey)">
+            <summary>
+            Creates a signature from <paramref name="messageHash"/> with the corresponding
+            <paramref name="privateKey"/>.
+            </summary>
+            <param name="messageHash">A 32 bytes message hash digest hashed with SHA256 to sign.
+            </param>
+            <param name="privateKey"><see cref="T:Libplanet.Crypto.PrivateKey"/> to sign
+            <paramref name="messageHash"/>.
+            </param>
+            <returns> Created a signature from <paramref name="messageHash"/> with the corresponding
+            <paramref name="privateKey"/>.
+            </returns>
+        </member>
+        <member name="M:Libplanet.Crypto.ICryptoBackend`1.Verify(Libplanet.HashDigest{`0},System.Byte[],Libplanet.Crypto.PublicKey)">
             <summary>
             Verifies whether a <paramref name="signature"/> was created from
             a <paramref name="messageHash"/> with the corresponding <see cref="T:Libplanet.Crypto.PrivateKey"/>.
@@ -2784,6 +2843,22 @@
             <paramref name="hashDigest"/> is <c>null</c>.</exception>
             <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
             <paramref name="hashDigest"/>'s <see cref="P:System.Array.Length"/> is not
+            the same to the <see cref="F:Libplanet.HashDigest`1.Size"/> the hash algorithm
+            (i.e., <typeparamref name="T"/> requires.</exception>
+        </member>
+        <member name="M:Libplanet.HashDigest`1.#ctor(System.Collections.Immutable.ImmutableArray{System.Byte})">
+            <summary>
+            Converts a <see cref="T:System.Collections.Immutable.ImmutableArray"/> of <see cref="T:System.Byte"/> array into a
+            <see cref="T:Libplanet.HashDigest`1"/>.
+            </summary>
+            <param name="hashDigest">A <see cref="T:System.Byte"/> array that encodes
+            a <see cref="T:Libplanet.HashDigest`1"/>.  It must not be <c>null</c>,
+            and its <see cref="P:System.Array.Length"/> must be the same to
+            <see cref="F:Libplanet.HashDigest`1.Size"/>.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when the given
+            <paramref name="hashDigest"/> is <c>null</c>.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when the given
+            <paramref name="hashDigest"/>'s <see cref="P:System.Collections.Immutable.ImmutableArray`1.Length"/> is not
             the same to the <see cref="F:Libplanet.HashDigest`1.Size"/> the hash algorithm
             (i.e., <typeparamref name="T"/> requires.</exception>
         </member>
@@ -3801,6 +3876,17 @@
             Message containing demand block hashes with their index numbers.
             </summary>
         </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.GetChainStatus">
+            <summary>
+            Request current chain status of the peer.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Net.Messages.Message.MessageType.ChainStatus">
+            <summary>
+            A reply to <see cref="F:Libplanet.Net.Messages.Message.MessageType.GetChainStatus"/>.
+            Contains the chain status of the peer at the moment.
+            </summary>
+        </member>
         <member name="P:Libplanet.Net.Messages.RecentStates.StateReferences">
             <summary>
             State references of all available accounts.  Each value has a list of
@@ -3869,6 +3955,29 @@
         </member>
         <member name="M:Libplanet.Net.Peer.ToString">
             <inheritdoc/>
+        </member>
+        <member name="T:Libplanet.Net.PeerChainState">
+            <summary>
+            The blockchain state of <see cref="T:Libplanet.Net.BoundPeer"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerChainState.Peer">
+            <summary>
+            The peer with chain.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerChainState.TipIndex">
+            <summary>
+            The blockchain tip of the <see cref="P:Libplanet.Net.PeerChainState.Peer"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.PeerChainState.TotalDifficulty">
+            <summary>
+            The total difficulty of the blockchain of the <see cref="P:Libplanet.Net.PeerChainState.Peer"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Net.PeerChainState.ToString">
+            <inheritdoc />
         </member>
         <member name="T:Libplanet.Net.PeerState">
             <summary>
@@ -4037,7 +4146,7 @@
         <member name="P:Libplanet.Net.StateDownloadState.CurrentPhase">
             <inheritdoc />
         </member>
-        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Collections.Generic.IEnumerable{Libplanet.Crypto.PublicKey})">
+        <member name="M:Libplanet.Net.Swarm`1.#ctor(Libplanet.Blockchain.BlockChain{`0},Libplanet.Crypto.PrivateKey,Libplanet.Net.AppProtocolVersion,System.Int32,System.String,System.Nullable{System.Int32},System.Collections.Generic.IEnumerable{Libplanet.Net.IceServer},Libplanet.Net.DifferentAppProtocolVersionEncountered,System.Collections.Generic.IEnumerable{Libplanet.Crypto.PublicKey},Libplanet.Net.SwarmOptions)">
             <summary>
             Creates a <see cref="T:Libplanet.Net.Swarm`1"/>.  This constructor in only itself does not start
             any communication with the network.
@@ -4063,6 +4172,7 @@
             <param name="trustedAppProtocolVersionSigners"><see cref="T:Libplanet.Crypto.PublicKey"/>s of parties
             to trust <see cref="T:Libplanet.Net.AppProtocolVersion"/>s they signed.  To trust any party, pass
             <c>null</c>, which is default.</param>
+            <param name="options">Options for <see cref="T:Libplanet.Net.Swarm`1"/>.</param>
         </member>
         <member name="P:Libplanet.Net.Swarm`1.BlockChain">
             <summary>
@@ -4117,6 +4227,17 @@
             <exception cref="T:Libplanet.Net.SwarmException">Thrown when this <see cref="T:Libplanet.Net.Swarm`1"/> instance is
             not <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
         </member>
+        <member name="M:Libplanet.Net.Swarm`1.GetPeerChainStateAsync(System.Nullable{System.TimeSpan},System.Threading.CancellationToken)">
+            <summary>
+            Gets the <see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.
+            </summary>
+            <param name="dialTimeout">A timeout value for dialing.</param>
+            <param name="cancellationToken">
+            A cancellation token used to propagate notification that this
+            operation should be canceled.
+            </param>
+            <returns><see cref="T:Libplanet.Net.PeerChainState"/> of the connected <see cref="P:Libplanet.Net.Swarm`1.Peers"/>.</returns>
+        </member>
         <member name="M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)">
             <summary>
             Preemptively downloads blocks from registered <see cref="T:Libplanet.Net.Peer"/>s.
@@ -4161,6 +4282,26 @@
             <param name="cancellationToken">A cancellation token used to propagate notification
             that this operation should be canceled.</param>
             <returns>An awaitable task without value.</returns>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.MaxTimeout">
+            <summary>
+            The maximum timeout used in <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockRecvTimeout">
+            <summary>
+            The base timeout used to receive <see cref="T:Libplanet.Blocks.Block`1"/> from other peers.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.TxRecvTimeout">
+            <summary>
+            The base timeout used to receive <see cref="T:Libplanet.Tx.Transaction`1"/> from other peers.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.RecentStateRecvTimeout">
+            <summary>
+            The timeout used to receive recent states from other peers.
+            </summary>
         </member>
         <member name="T:Libplanet.Nonce">
             <summary>

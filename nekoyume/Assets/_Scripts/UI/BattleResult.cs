@@ -2,13 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -149,7 +149,7 @@ namespace Nekoyume.UI
             SubmitWidget = submitButton.onClick.Invoke;
             defeatTextArea.root.SetActive(false);
             defeatTextArea.defeatText.text =
-                LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
+                L10nManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
         }
@@ -204,7 +204,7 @@ namespace Nekoyume.UI
             topArea.SetActive(true);
             defeatTextArea.root.SetActive(false);
             closeButton.interactable = true;
-            closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
+            closeButtonText.text = L10nManager.Localize("UI_MAIN");
             stageProgressBar.Show();
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
@@ -255,12 +255,12 @@ namespace Nekoyume.UI
                 key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
             }
 
-            defeatTextArea.defeatText.text = LocalizationManager.Localize(key);
+            defeatTextArea.defeatText.text = L10nManager.Localize(key);
             defeatTextArea.expText.text = $"EXP + {SharedModel.Exp}";
             bottomText.enabled = false;
             closeButton.interactable = true;
-            closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
-            submitButtonText.text = LocalizationManager.Localize("UI_BATTLE_AGAIN");
+            closeButtonText.text = L10nManager.Localize("UI_MAIN");
+            submitButtonText.text = L10nManager.Localize("UI_BATTLE_AGAIN");
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
             StartCoroutine(CoUpdateRewards());
@@ -306,29 +306,29 @@ namespace Nekoyume.UI
 
         private IEnumerator CoUpdateBottomText(int limitSeconds)
         {
-            var secondsFormat = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
+            var secondsFormat = L10nManager.Localize("UI_AFTER_N_SECONDS");
             string fullFormat;
             submitButton.gameObject.SetActive(false);
             SubmitWidget = closeButton.onClick.Invoke;
             if (SharedModel.ActionPointNotEnough)
             {
                 fullFormat =
-                    LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
+                    L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
             }
             else if (SharedModel.ShouldExit)
             {
-                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                fullFormat = L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
             }
             else
             {
                 fullFormat = SharedModel.ShouldRepeat
-                    ? LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
-                    : LocalizationManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
+                    ? L10nManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
+                    : L10nManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
                 submitButton.interactable = true;
                 SubmitWidget = submitButton.onClick.Invoke;
                 submitButtonText.text = SharedModel.ShouldRepeat
-                    ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
-                    : LocalizationManager.Localize("UI_NEXT_STAGE");
+                    ? L10nManager.Localize("UI_BATTLE_AGAIN")
+                    : L10nManager.Localize("UI_NEXT_STAGE");
                 submitButton.gameObject.SetActive(true);
             }
 
