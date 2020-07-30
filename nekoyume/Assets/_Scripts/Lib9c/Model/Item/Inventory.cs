@@ -15,7 +15,7 @@ namespace Nekoyume.Model.Item
     {
         // ToDo. Item 클래스를 FungibleItem과 NonFungibleItem으로 분리하기.
         [Serializable]
-        public class Item : IState
+        public class Item : IState, IComparer<Item>, IComparable<Item>
         {
             public ItemBase item;
             public int count = 0;
@@ -43,6 +43,20 @@ namespace Nekoyume.Model.Item
             protected bool Equals(Item other)
             {
                 return Equals(item, other.item) && count == other.count;
+            }
+
+            public int Compare(Item x, Item y)
+            {
+                return x.item.Grade != y.item.Grade
+                    ? y.item.Grade.CompareTo(x.item.Grade)
+                    : x.item.Id.CompareTo(y.item.Id);
+            }
+
+            public int CompareTo(Item other)
+            {
+                if (ReferenceEquals(this, other)) return 0;
+                if (ReferenceEquals(null, other)) return 1;
+                return Compare(this, other);
             }
 
             public override bool Equals(object obj)
@@ -98,6 +112,7 @@ namespace Nekoyume.Model.Item
             {
                 _items.Add(new Item((Bencodex.Types.Dictionary) item));
             }
+            _items.Sort();
         }
 
         public IValue Serialize() =>
@@ -120,6 +135,7 @@ namespace Nekoyume.Model.Item
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+            _items.Sort();
             return new KeyValuePair<int, int>(itemBase.Id, count);
         }
 
