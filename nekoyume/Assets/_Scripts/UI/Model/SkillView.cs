@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 using Nekoyume.Model.Skill;
-using Nekoyume.TableData;
 using UniRx;
 using UnityEngine;
 
@@ -20,10 +18,10 @@ namespace Nekoyume.UI.Model
         {
             iconSprite.Value = skill.SkillRow.GetIcon();
             name.Value = skill.SkillRow.GetLocalizedName();
-            power.Value = $"{LocalizationManager.Localize("UI_SKILL_POWER")}: {skill.Power}";
-            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
+            power.Value = $"{L10nManager.Localize("UI_SKILL_POWER")}: {skill.Power}";
+            chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
         }
-        
+
         public SkillView(BuffSkill skill)
         {
             var powerValue = string.Empty;
@@ -34,11 +32,11 @@ namespace Nekoyume.UI.Model
                 var buff = buffs[0];
                 powerValue = buff.RowData.StatModifier.ToString();
             }
-            
+
             iconSprite.Value = skill.SkillRow.GetIcon();
             name.Value = skill.SkillRow.GetLocalizedName();
-            power.Value = $"{LocalizationManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
-            chance.Value = $"{LocalizationManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
+            power.Value = $"{L10nManager.Localize("UI_SKILL_EFFECT")}: {powerValue}";
+            chance.Value = $"{L10nManager.Localize("UI_SKILL_CHANCE")}: {skill.Chance}%";
         }
 
         public void Dispose()

@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
-using DG.Tweening;
+using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -24,9 +21,9 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            var message = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+            var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
             indicator.UpdateMessage(message);
-            _tips = LocalizationManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
+            _tips = L10nManager.LocalizePattern("^UI_TIPS_[0-9]+$").Values.ToList();
 
             var pos = transform.localPosition;
             pos.z = -5f;
@@ -57,14 +54,14 @@ namespace Nekoyume.UI
         protected override void OnEnable()
         {
             base.OnEnable();
-            
+
             toolTip.text = _tips[new System.Random().Next(0, _tips.Count)];
         }
 
         protected override void OnDisable()
         {
-            Message = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX");
-            
+            Message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX");
+
             base.OnDisable();
         }
 

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using Nekoyume.TableData;
 
 namespace Nekoyume.UI
@@ -37,7 +37,7 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedName(this WorldSheet.Row worldRow)
         {
-            return LocalizationManager.Localize($"WORLD_NAME_{worldRow.Name.ToUpper().Replace(" ", "_")}");
+            return L10nManager.Localize($"WORLD_NAME_{worldRow.Name.ToUpper().Replace(" ", "_")}");
         }
 
         public static bool ContainsStageId(this WorldSheet.Row worldRow, int stageId)

@@ -2,9 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -96,7 +96,7 @@ namespace Nekoyume.UI.Module
         {
             rewardItems.gameObject.SetActive(false);
             failedText.text = GetFailedText();
-            _stageClearText = LocalizationManager.Localize("UI_BATTLE_RESULT_CLEAR");
+            _stageClearText = L10nManager.Localize("UI_BATTLE_RESULT_CLEAR");
             _star = starArea.stars[index];
             StartCoroutine(_star.Set(false));
             failedText.gameObject.SetActive(true);
@@ -132,7 +132,7 @@ namespace Nekoyume.UI.Module
             rewardItems.gameObject.SetActive(true);
             rewardItems.Set(items);
             rewardText.gameObject.SetActive(false);
-            failedText.text = stageId == 1 ? LocalizationManager.Localize("UI_BATTLE_RESULT_STAGE_1") : GetFailedText();
+            failedText.text = stageId == 1 ? L10nManager.Localize("UI_BATTLE_RESULT_STAGE_1") : GetFailedText();
             failedText.gameObject.SetActive(!items.Any());
         }
 
@@ -152,11 +152,11 @@ namespace Nekoyume.UI.Module
             switch (index)
             {
                 case 0:
-                    return LocalizationManager.Localize("UI_BATTLE_RESULT_FAILED_PHASE_0");
+                    return L10nManager.Localize("UI_BATTLE_RESULT_FAILED_PHASE_0");
                 case 1:
-                    return LocalizationManager.Localize("UI_BATTLE_RESULT_FAILED_PHASE_1");
+                    return L10nManager.Localize("UI_BATTLE_RESULT_FAILED_PHASE_1");
                 case 2:
-                    return LocalizationManager.Localize("UI_BATTLE_RESULT_FAILED_PHASE_2");
+                    return L10nManager.Localize("UI_BATTLE_RESULT_FAILED_PHASE_2");
                 default:
                     return string.Empty;
             }

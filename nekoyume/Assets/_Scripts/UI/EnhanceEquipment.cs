@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
-using Assets.SimpleLocalization;
 using Nekoyume.Action;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
@@ -46,15 +46,15 @@ namespace Nekoyume.UI
                 throw new SerializeFieldNullException();
 
             baseMaterial.titleText.text =
-                LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE");
+                L10nManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_ENHANCE");
             foreach (var otherMaterial in otherMaterials)
             {
                 otherMaterial.titleText.text =
-                    LocalizationManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
+                    L10nManager.Localize("UI_ENHANCEMENT_EQUIPMENT_TO_CONSUME");
             }
 
             message.SetActive(false);
-            submitButton.SetSubmitText(LocalizationManager.Localize("UI_COMBINATION_ENHANCEMENT"));
+            submitButton.SetSubmitText(L10nManager.Localize("UI_COMBINATION_ENHANCEMENT"));
         }
 
         public override void Initialize()
@@ -249,7 +249,7 @@ namespace Nekoyume.UI
 
             message.SetActive(true);
             messageText.text = string.Format(
-                LocalizationManager.Localize("UI_ENHANCEMENT_GUIDE"),
+                L10nManager.Localize("UI_ENHANCEMENT_GUIDE"),
                 count);
         }
 
@@ -292,7 +292,7 @@ namespace Nekoyume.UI
             int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotItemEnhancement(this, otherItemGuidList, slotIndex);
-            var msg = LocalizationManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
+            var msg = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
             Notification.Push(MailType.Workshop, msg);
             Game.Game.instance.ActionManager
                 .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
@@ -316,7 +316,7 @@ namespace Nekoyume.UI
                 view.RectTransform,
                 view.Model,
                 value => !view.Model?.Dimmed.Value ?? false,
-                LocalizationManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
+                L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
                 _ => StageMaterial(view),
                 _ => inventory.SharedModel.DeselectItemView());
         }
