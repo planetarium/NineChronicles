@@ -71,9 +71,10 @@ namespace Nekoyume.Action
                     );
                     states = states.SetState(slotAddress, MarkChanged);
                 }
+
                 return states
                     .SetState(avatarAddress, MarkChanged)
-                    .MarkBalanceChanged(Currencies.Gold, context.Signer);
+                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
 
             if (!Regex.IsMatch(name, GameConfig.AvatarNickNamePattern))
@@ -108,8 +109,12 @@ namespace Nekoyume.Action
             if (existingAgentState is null)
             {
                 // 첫 아바타 생성이면 계정당 기본 소지금 부여.
-                // FIXME: 그런데 제대로 하려면 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
-                states = states.MintAsset(ctx.Signer, Currencies.Gold, InitialGoldBalance);
+                states = states.TransferAsset(
+                    GoldCurrencyState.Address,
+                    ctx.Signer,
+                    states.GetGoldCurrency(),
+                    InitialGoldBalance
+                );
             }
 
             Log.Debug("Execute CreateAvatar; player: {AvatarAddress}", avatarAddress);

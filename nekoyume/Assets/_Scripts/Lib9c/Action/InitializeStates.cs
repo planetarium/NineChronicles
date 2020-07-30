@@ -20,6 +20,8 @@ namespace Nekoyume.Action
 
         public ActivatedAccountsState ActivatedAccountsState { get; set; }
 
+        public GoldCurrencyState GoldCurrencyState { get; set; }
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;
@@ -35,6 +37,7 @@ namespace Nekoyume.Action
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);
                 states = states.SetState(AdminState.Address, MarkChanged);
                 states = states.SetState(ActivatedAccountsState.Address, MarkChanged);
+                states = states.SetState(GoldCurrencyState.Address, MarkChanged);
                 return states;
             }
 
@@ -51,7 +54,10 @@ namespace Nekoyume.Action
                 .SetState(GameConfigState.Address, GameConfigState.Serialize())
                 .SetState(RedeemCodeState.Address, RedeemCodeState.Serialize())
                 .SetState(AdminState.Address, AdminAddressState.Serialize())
-                .SetState(ActivatedAccountsState.Address, ActivatedAccountsState.Serialize());
+                .SetState(ActivatedAccountsState.Address, ActivatedAccountsState.Serialize())
+                .SetState(GoldCurrencyState.Address, GoldCurrencyState.Serialize());
+
+            states = states.MintAsset(GoldCurrencyState.Address, GoldCurrencyState.Currency, 1000000000);
             return states;
         }
 
@@ -63,7 +69,8 @@ namespace Nekoyume.Action
                 .Add("game_config_state", GameConfigState.Serialize())
                 .Add("redeem_code_state", RedeemCodeState.Serialize())
                 .Add("admin_address_state", AdminAddressState.Serialize())
-                .Add("activated_accounts_state", ActivatedAccountsState.Serialize());
+                .Add("activated_accounts_state", ActivatedAccountsState.Serialize())
+                .Add("gold_currency_state", GoldCurrencyState.Serialize());
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
@@ -75,6 +82,9 @@ namespace Nekoyume.Action
             AdminAddressState = new AdminState((Bencodex.Types.Dictionary)plainValue["admin_address_state"]);
             ActivatedAccountsState = new ActivatedAccountsState(
                 (Bencodex.Types.Dictionary)plainValue["activated_accounts_state"]
+            );
+            GoldCurrencyState = new GoldCurrencyState(
+                (Bencodex.Types.Dictionary)plainValue["gold_currency_state"]
             );
         }
     }

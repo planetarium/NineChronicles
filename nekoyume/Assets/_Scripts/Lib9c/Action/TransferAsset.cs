@@ -62,6 +62,16 @@ namespace Nekoyume.Action
                 throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
             }
 
+            if (!(Currency.Minters is null) &&
+                (Currency.Minters.Contains(Sender) || Currency.Minters.Contains(Recipient)))
+            {
+                throw new InvalidTransferMinterException(
+                    Currency.Minters,
+                    Sender,
+                    Recipient
+               );
+            }
+
             return state.TransferAsset(Sender, Recipient, Currency, Amount);
         }
 
