@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -18,7 +18,7 @@ namespace Nekoyume.UI
                 throw new System.ArgumentNullException(nameof(row));
             }
 
-            return LocalizationManager.Localize($"SKILL_NAME_{row.Id}");
+            return L10nManager.Localize($"SKILL_NAME_{row.Id}");
         }
 
         public static Sprite GetIcon(this SkillSheet.Row row)

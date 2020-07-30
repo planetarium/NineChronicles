@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI.Scroller
 {
@@ -48,8 +48,8 @@ namespace Nekoyume.UI.Scroller
             var color = isNew ? ColorHelper.HexToColorRGB("fff9dd") : ColorHelper.HexToColorRGB("7a7a7a");
             button.interactable = isNew;
             submitText.text = isNew
-                ? LocalizationManager.Localize("UI_RECEIVE")
-                : LocalizationManager.Localize("UI_RECEIVED");
+                ? L10nManager.Localize("UI_RECEIVE")
+                : L10nManager.Localize("UI_RECEIVED");
             submitTextSelected.text = submitText.text;
             buttonImage.rectTransform.offsetMin = isNew ? _leftBottom : Vector2.zero;
             buttonImage.rectTransform.offsetMax = isNew ? _minusRightTop : Vector2.zero;
@@ -62,7 +62,7 @@ namespace Nekoyume.UI.Scroller
 
         private void Read()
         {
-            submitText.text = LocalizationManager.Localize("UI_RECEIVED");
+            submitText.text = L10nManager.Localize("UI_RECEIVED");
             buttonImage.rectTransform.offsetMin = Vector2.zero;
             buttonImage.rectTransform.offsetMax = Vector2.zero;
             if (!data.New)

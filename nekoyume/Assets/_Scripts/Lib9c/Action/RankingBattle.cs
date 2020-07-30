@@ -39,7 +39,7 @@ namespace Nekoyume.Action
                     .SetState(AvatarAddress, MarkChanged)
                     .SetState(WeeklyArenaAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
-                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer, WeeklyArenaAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, WeeklyArenaAddress);
             }
 
             if (AvatarAddress.Equals(EnemyAddress))
@@ -112,14 +112,14 @@ namespace Nekoyume.Action
 
             if (!arenaInfo.Active)
             {
-                BigInteger agentBalance = states.GetBalance(ctx.Signer, Currencies.Gold);
+                BigInteger agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
 
                 if (agentBalance >= EntranceFee)
                 {
                     states = states.TransferAsset(
                         ctx.Signer,
                         WeeklyArenaAddress,
-                        Currencies.Gold,
+                        states.GetGoldCurrency(),
                         EntranceFee);
                     arenaInfo.Activate();
                 }

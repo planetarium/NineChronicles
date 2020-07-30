@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using System;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UnityEngine.UI;
@@ -27,7 +27,7 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
 
-            toggledOnText.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
+            toggledOnText.text = L10nManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
             SharedModel.IsEnabled.SubscribeTo(glowImage.gameObject).AddTo(gameObject);
         }
     }

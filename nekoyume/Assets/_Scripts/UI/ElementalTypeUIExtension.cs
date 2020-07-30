@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Stat;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace Nekoyume.UI
             if (statType != StatType.ATK &&
                 statType != StatType.DEF)
                 return new List<string>();
-            
+
             if (GetOptionsCache.ContainsKey(from) &&
                 GetOptionsCache[from].ContainsKey(statType))
             {
@@ -34,16 +34,16 @@ namespace Nekoyume.UI
             {
                 GetOptionsCache[from] = new Dictionary<StatType, List<string>>(StatTypeComparer.Instance);
             }
-            
+
             var dict = GetOptionsCache[from];
 
             if (!dict.ContainsKey(statType))
             {
                 dict[statType] = new List<string>();
             }
-            
+
             var list = dict[statType];
-            
+
             if (from == ElementalType.Normal)
                 return list;
 
@@ -51,7 +51,7 @@ namespace Nekoyume.UI
             {
                 if (from.TryGetWinCase(out var lose))
                 {
-                    var format = LocalizationManager.Localize("ELEMENTAL_TYPE_OPTION_ATK_WIN_FORMAT");
+                    var format = L10nManager.Localize("ELEMENTAL_TYPE_OPTION_ATK_WIN_FORMAT");
                     list.Add(string.Format(format, lose.GetLocalizedString(), ElementalTypeExtension.WinMultiplier - 1));
                 }
             }
@@ -59,7 +59,7 @@ namespace Nekoyume.UI
             {
                 if (from.TryGetLoseCase(out var win))
                 {
-                    var format = LocalizationManager.Localize("ELEMENTAL_TYPE_OPTION_DEF_LOSE_FORMAT");
+                    var format = L10nManager.Localize("ELEMENTAL_TYPE_OPTION_DEF_LOSE_FORMAT");
                     list.Add(string.Format(format, win.GetLocalizedString(), ElementalTypeExtension.WinMultiplier - 1));
                 }
             }

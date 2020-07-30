@@ -1,8 +1,8 @@
-using Assets.SimpleLocalization;
 using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.L10n;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
@@ -73,7 +73,7 @@ namespace Nekoyume.UI
                 _rects.Add(rect);
             }
 
-            var message = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+            var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
             indicator.Show(message);
             base.Show();
             StartCoroutine(CoRun());

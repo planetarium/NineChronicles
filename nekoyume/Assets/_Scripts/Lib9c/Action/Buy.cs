@@ -107,7 +107,7 @@ namespace Nekoyume.Action
                     .SetState(buyerAvatarAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(sellerAvatarAddress, MarkChanged)
-                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer, sellerAgentAddress);
+                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, sellerAgentAddress);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
 
@@ -184,7 +184,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             // 돈은 있냐?
-            BigInteger buyerBalance = states.GetBalance(context.Signer, Currencies.Gold);
+            BigInteger buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
             if (buyerBalance < outPair.Value.Price)
             {
                 return LogError(
@@ -199,7 +199,7 @@ namespace Nekoyume.Action
             var taxedPrice = (BigInteger)decimal.Round((decimal)outPair.Value.Price * 0.92m);
 
             // 구매자의 돈을 판매자에게 송금한다.
-            states = states.TransferAsset(context.Signer, sellerAgentAddress, Currencies.Gold, outPair.Value.Price);
+            states = states.TransferAsset(context.Signer, sellerAgentAddress, states.GetGoldCurrency(), outPair.Value.Price);
 
             // 상점에서 구매할 아이템을 제거한다.
             if (!shopState.Unregister(sellerAgentAddress, outPair.Value))

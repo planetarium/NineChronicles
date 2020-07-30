@@ -61,8 +61,12 @@ namespace Nekoyume.Action
                 states = states.SetState(weekly.address, weekly.Serialize());
             }
 
-            // FIXME: 사실 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
-            return states.MintAsset(ctx.Miner, Currencies.Gold, Gold);
+            return states.TransferAsset(
+                GoldCurrencyState.Address,
+                ctx.Miner,
+                states.GetGoldCurrency(),
+                Gold
+            );
         }
     }
 }

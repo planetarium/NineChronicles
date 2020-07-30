@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -48,13 +48,13 @@ namespace Nekoyume.UI.Module
                 AudioController.PlayClick();
                 SelectSlot();
             }).AddTo(gameObject);
-            unlockText.text = LocalizationManager.Localize("UI_COMBINATION_SLOT_AVAILABLE");
+            unlockText.text = L10nManager.Localize("UI_COMBINATION_SLOT_AVAILABLE");
             HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
         }
 
         public void SetData(CombinationSlotState state, long blockIndex, int slotIndex)
         {
-            lockText.text = string.Format(LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+            lockText.text = string.Format(L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                 state.UnlockStage);
             _data = state;
             _slotIndex = slotIndex;

@@ -122,6 +122,70 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
+        public void ExecuteWithMinterAsSender()
+        {
+            var currencyBySender = new Currency("NCG", _sender);
+            var balance = ImmutableDictionary<(Address, Currency), BigInteger>.Empty
+                .Add((_sender, currencyBySender), 1000)
+                .Add((_recipient, currencyBySender), 10);
+            var prevState = new State(
+                balance: balance
+            );
+            var action = new TransferAsset(
+                sender: _sender,
+                recipient: _recipient,
+                amount: 100,
+                currency: currencyBySender
+            );
+            var ex = Assert.Throws<InvalidTransferMinterException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = prevState,
+                    Signer = _sender,
+                    Rehearsal = false,
+                    BlockIndex = 1,
+                });
+            });
+
+            Assert.Equal(new[] { _sender }, ex.Minters);
+            Assert.Equal(_sender, ex.Sender);
+            Assert.Equal(_recipient, ex.Recipient);
+        }
+
+        [Fact]
+        public void ExecuteWithMinterAsRecipient()
+        {
+            var currencyByRecipient = new Currency("NCG", _sender);
+            var balance = ImmutableDictionary<(Address, Currency), BigInteger>.Empty
+                .Add((_sender, currencyByRecipient), 1000)
+                .Add((_recipient, currencyByRecipient), 10);
+            var prevState = new State(
+                balance: balance
+            );
+            var action = new TransferAsset(
+                sender: _sender,
+                recipient: _recipient,
+                amount: 100,
+                currency: currencyByRecipient
+            );
+            var ex = Assert.Throws<InvalidTransferMinterException>(() =>
+            {
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = prevState,
+                    Signer = _sender,
+                    Rehearsal = false,
+                    BlockIndex = 1,
+                });
+            });
+
+            Assert.Equal(new[] { _sender }, ex.Minters);
+            Assert.Equal(_sender, ex.Sender);
+            Assert.Equal(_recipient, ex.Recipient);
+        }
+
+        [Fact]
         public void Rehearsal()
         {
             var action = new TransferAsset(
