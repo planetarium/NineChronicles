@@ -105,7 +105,6 @@ namespace Nekoyume.UI
                         StartCoroutine(CreateAndLoginAnimation(avatarState));
                         ActionRenderHandler.Instance.RenderQuest(avatarState.address,
                             avatarState.questList.completedQuestIds);
-                        Find<Combination>().LoadRecipeVFXSkipMap();
                     },
                     onError: e =>
                         Find<ActionFailPopup>().Show("Action timeout during CreateAvatar."));
@@ -370,6 +369,7 @@ namespace Nekoyume.UI
 
         private void OnDidAvatarStateLoaded(AvatarState avatarState)
         {
+            Find<Combination>().LoadRecipeVFXSkipMap();
             if (_isCreateMode)
             {
                 Close();
