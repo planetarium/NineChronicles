@@ -65,7 +65,7 @@ namespace Nekoyume.Game.Character
                 .Merge(touchHandler.OnMultipleClick)
                 .Subscribe(_ =>
                 {
-                    if (Game.instance.Stage.IsInStage)
+                    if (Game.instance.Stage.IsInStage || ActionCamera.instance.InPrologue)
                     {
                         return;
                     }
