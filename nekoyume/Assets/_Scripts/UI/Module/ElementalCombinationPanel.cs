@@ -47,11 +47,11 @@ namespace Nekoyume.UI.Module
             optionYTweener.PlayTween();
         }
 
-        private void OnSelectOption(EquipmentRecipeCellView recipeView, EquipmentOptionRecipeView optionRecipeView)
+        private void OnSelectOption(RecipeCellView recipeView, EquipmentOptionRecipeView optionRecipeView)
         {
             SelectedSubRecipeId = optionRecipeView.SubRecipeId;
             equipmentOptionRecipe.gameObject.SetActive(false);
-            SetData(recipeView.RowData, SelectedSubRecipeId);
+            SetData(recipeView.EquipmentRowData, SelectedSubRecipeId);
             confirmArea.SetActive(true);
             TweenCellView(recipeView, equipmentOptionRecipe.KillCellViewTween);
 
