@@ -71,11 +71,18 @@ namespace Nekoyume.Game
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
-            // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
-            var address = new PrivateKey(ByteUtil.ParseHex(_options.PrivateKey)).ToAddress();
+                        
 #if !UNITY_EDITOR
+            // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
             Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-            Mixpanel.Identify(address.ToString());
+            
+            if (!(_options.PrivateKey is null))
+            {
+                var privateKey = new PrivateKey(ByteUtil.ParseHex(_options.PrivateKey));
+                Address address = privateKey.ToAddress();
+                Mixpanel.Identify(address.ToString());
+            }
+            
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
 #endif

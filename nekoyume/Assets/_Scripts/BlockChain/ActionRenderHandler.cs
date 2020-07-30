@@ -34,6 +34,8 @@ namespace Nekoyume.BlockChain
 
         public static ActionRenderHandler Instance => Singleton.Value;
 
+        public Currency GoldCurrency { get; internal set; }
+
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private ActionRenderer _renderer;
@@ -588,7 +590,7 @@ namespace Nekoyume.BlockChain
 
                 //[TentuPlay] 아이템 판매완료, 골드 증가
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                BigInteger sellerAgentBalance = eval.OutputStates.GetBalance(sellerAgentAddress, Currencies.Gold);
+                BigInteger sellerAgentBalance = eval.OutputStates.GetBalance(sellerAgentAddress, GoldCurrency);
                 new TPStashEvent().CurrencyGet(
                     player_uuid: sellerAgentAddress.ToHex(), // seller == 본인인지 확인필요
                     currency_slug: "gold",

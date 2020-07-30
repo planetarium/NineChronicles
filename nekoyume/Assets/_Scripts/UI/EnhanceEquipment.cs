@@ -1,23 +1,30 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Nekoyume.UI.Module
+namespace Nekoyume.UI
 {
     public class EnhanceEquipment : EnhancementPanel<EnhancementMaterialView>
     {
         public Image arrowImage;
         public GameObject message;
         public TextMeshProUGUI messageText;
+
+        [SerializeField]
+        private Module.Inventory inventory = null;
 
         public override bool IsSubmittable =>
             !(States.Instance.AgentState is null) &&
@@ -29,7 +36,7 @@ namespace Nekoyume.UI.Module
             baseMaterial.Model.ItemBase.Value is Equipment equipment &&
             equipment.level < 10 &&
             otherMaterials.Count(e => !e.IsEmpty) > 0 &&
-            Widget.Find<Combination>().selectedIndex >= 0;
+            Find<Combination>().selectedIndex >= 0;
 
         protected override void Awake()
         {
@@ -50,6 +57,28 @@ namespace Nekoyume.UI.Module
             submitButton.SetSubmitText(L10nManager.Localize("UI_COMBINATION_ENHANCEMENT"));
         }
 
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            RemoveMaterialsAll();
+            OnMaterialChange.Subscribe(SubscribeOnMaterialChange)
+                .AddTo(gameObject);
+            submitButton.OnSubmitClick.Subscribe(_ =>
+            {
+                var itemBase = baseMaterial.Model.ItemBase.Value;
+                StartCoroutine(Find<Combination>().CoCombineNPCAnimation(itemBase, SubscribeOnClickSubmit));
+                ActionEnhanceEquipment();
+            }).AddTo(gameObject);
+
+            inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip).AddTo(gameObject);
+            inventory.OnDoubleClickItemView.Subscribe(StageMaterial).AddTo(gameObject);
+            inventory.SharedModel.DeselectItemView();
+            inventory.SharedModel.State.Value = ItemType.Equipment;
+            inventory.SharedModel.DimmedFunc.Value = DimFunc;
+            inventory.SharedModel.EffectEnabledFunc.Value = Contains;
+        }
+
         public override bool Show(bool forced = false)
         {
             if (!base.Show(forced))
@@ -64,6 +93,14 @@ namespace Nekoyume.UI.Module
 
             return true;
         }
+
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            base.Close(ignoreCloseAnimation);
+
+            RemoveMaterialsAll();
+        }
+
 
         public override bool DimFunc(InventoryItem inventoryItem)
         {
@@ -214,6 +251,81 @@ namespace Nekoyume.UI.Module
             messageText.text = string.Format(
                 L10nManager.Localize("UI_ENHANCEMENT_GUIDE"),
                 count);
+        }
+
+        private void SubscribeOnMaterialChange(EnhancementPanel<EnhancementMaterialView> viewModel)
+        {
+            inventory.SharedModel.UpdateDimAll();
+            inventory.SharedModel.UpdateEffectAll();
+        }
+
+        private void ActionEnhanceEquipment()
+        {
+            var baseEquipmentGuid =
+                ((Equipment) baseMaterial.Model.ItemBase.Value).ItemId;
+            var otherEquipmentGuidList = otherMaterials
+                .Select(e => ((Equipment) e.Model.ItemBase.Value).ItemId)
+                .ToList();
+
+            UpdateCurrentAvatarState(baseEquipmentGuid, otherEquipmentGuidList);
+            CreateItemEnhancementAction(baseEquipmentGuid, otherEquipmentGuidList, Widget.Find<Combination>().selectedIndex);
+            RemoveMaterialsAll();
+        }
+
+        private void UpdateCurrentAvatarState(Guid baseItemGuid, IEnumerable<Guid> otherItemGuidList)
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+
+            LocalStateModifier.ModifyAgentGold(agentAddress, -CostNCG);
+            LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -CostAP);
+            LocalStateModifier.RemoveItem(avatarAddress, baseItemGuid);
+            foreach (var itemGuid in otherItemGuidList)
+            {
+                LocalStateModifier.RemoveItem(avatarAddress, itemGuid);
+            }
+        }
+
+        private void CreateItemEnhancementAction(
+            Guid baseItemGuid,
+            List<Guid> otherItemGuidList,
+            int slotIndex)
+        {
+            LocalStateModifier.ModifyCombinationSlotItemEnhancement(this, otherItemGuidList, slotIndex);
+            var msg = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_START");
+            Notification.Push(MailType.Workshop, msg);
+            Game.Game.instance.ActionManager
+                .ItemEnhancement(baseItemGuid, otherItemGuidList, slotIndex)
+                .Subscribe(
+                    _ => { },
+                    _ => Widget.Find<ActionFailPopup>().Show("Timeout occurred during ItemEnhancement"));
+        }
+
+
+        private void ShowTooltip(InventoryItemView view)
+        {
+            var tooltip = Find<ItemInformationTooltip>();
+            if (view is null ||
+                view.RectTransform == tooltip.Target)
+            {
+                tooltip.Close();
+                return;
+            }
+
+            tooltip.Show(
+                view.RectTransform,
+                view.Model,
+                value => !view.Model?.Dimmed.Value ?? false,
+                L10nManager.Localize("UI_COMBINATION_REGISTER_MATERIAL"),
+                _ => StageMaterial(view),
+                _ => inventory.SharedModel.DeselectItemView());
+        }
+
+
+        private void StageMaterial(InventoryItemView itemView)
+        {
+            Find<Combination>().ShowSpeech("SPEECH_COMBINE_STAGE_MATERIAL_");
+            TryAddMaterial(itemView);
         }
     }
 }

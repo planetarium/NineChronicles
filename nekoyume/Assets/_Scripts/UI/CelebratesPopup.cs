@@ -46,7 +46,7 @@ namespace Nekoyume.UI
         private SimpleCountableItemView[] questRewardViews = null;
 
         [SerializeField]
-        private EquipmentRecipeCellView equipmentRecipeCellView = null;
+        private RecipeCellView recipeCellView = null;
 
         [SerializeField]
         private GameObject menuContainer = null;
@@ -124,7 +124,7 @@ namespace Nekoyume.UI
 
             menuContainer.SetActive(true);
             questRewards.SetActive(false);
-            equipmentRecipeCellView.Hide();
+            recipeCellView.Hide();
 
             _rewards = null;
 
@@ -193,7 +193,7 @@ namespace Nekoyume.UI
 
             menuContainer.SetActive(false);
             questRewards.SetActive(true);
-            equipmentRecipeCellView.Hide();
+            recipeCellView.Hide();
 
             _rewards = rewards;
 
@@ -223,11 +223,11 @@ namespace Nekoyume.UI
             titleText.text = L10nManager.Localize("UI_NEW_EQUIPMENT_RECIPE");
             continueText.alpha = 0f;
 
-            equipmentRecipeCellView.Set(row);
+            recipeCellView.Set(row);
 
             menuContainer.SetActive(false);
             questRewards.SetActive(false);
-            equipmentRecipeCellView.Show();
+            recipeCellView.Show();
 
             _rewards = null;
 
@@ -272,7 +272,7 @@ namespace Nekoyume.UI
                 _coShowSomethingCoroutine = StartCoroutine(CoShowQuestRewards(_rewards));
             }
 
-            if (equipmentRecipeCellView.gameObject.activeSelf)
+            if (recipeCellView.gameObject.activeSelf)
             {
                 _coShowSomethingCoroutine = StartCoroutine(CoShowEquipmentRecipe());
             }

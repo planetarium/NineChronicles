@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Libplanet;
+using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.State;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
@@ -14,8 +17,8 @@ namespace Nekoyume.UI.Module
     public class ShopItems : MonoBehaviour
     {
         public List<ShopItemView> items;
-        public Button refreshButton;
-        public Text refreshButtonText;
+        public TouchHandler refreshButtonTouchHandler;
+        public RefreshButton refreshButton;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
@@ -32,9 +35,7 @@ namespace Nekoyume.UI.Module
             SharedModel.CurrentAgentsProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(gameObject);
             SharedModel.CurrentAgentsProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(gameObject);
 
-            refreshButtonText.text = L10nManager.Localize("UI_REFRESH");
-
-            refreshButton.onClick.AsObservable().Subscribe(_ =>
+            refreshButtonTouchHandler.OnClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 SharedModel?.ResetOtherProducts();
@@ -82,6 +83,7 @@ namespace Nekoyume.UI.Module
                 case Shop.StateType.Buy:
                     UpdateViewWithItems(SharedModel.OtherProducts);
                     refreshButton.gameObject.SetActive(true);
+                    refreshButton.PlayAnimation(NPCAnimation.Type.Appear);
                     break;
                 case Shop.StateType.Sell:
                     UpdateViewWithItems(SharedModel.CurrentAgentsProducts);

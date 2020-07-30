@@ -12,15 +12,15 @@ namespace Nekoyume.UI.Module
     public class EquipmentOptionRecipe : MonoBehaviour
     {
         [SerializeField]
-        private EquipmentRecipeCellView equipmentRecipeCellView = null;
+        private RecipeCellView recipeCellView = null;
 
         [SerializeField]
         private EquipmentOptionRecipeView[] equipmentOptionRecipeViews = null;
 
         public readonly Subject<Unit> OnOptionClick = new Subject<Unit>();
 
-        public readonly Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)> OnOptionClickVFXCompleted =
-            new Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)>();
+        public readonly Subject<(RecipeCellView recipeCellView, EquipmentOptionRecipeView item)> OnOptionClickVFXCompleted =
+            new Subject<(RecipeCellView, EquipmentOptionRecipeView)>();
 
         protected int _recipeId;
 
@@ -35,7 +35,7 @@ namespace Nekoyume.UI.Module
 
                 view.OnClick.Subscribe(_ => OnOptionClick.OnNext(_));
                 view.OnClickVFXCompleted
-                    .Subscribe(item => OnOptionClickVFXCompleted.OnNext((equipmentRecipeCellView, item)))
+                    .Subscribe(item => OnOptionClickVFXCompleted.OnNext((recipeCellView, item)))
                     .AddTo(gameObject);
             }
         }
@@ -53,7 +53,7 @@ namespace Nekoyume.UI.Module
         public void Show(EquipmentItemRecipeSheet.Row recipeRow)
         {
             _recipeId = recipeRow.Id;
-            equipmentRecipeCellView.Set(recipeRow);
+            recipeCellView.Set(recipeRow);
             InitializeOptionRecipes(recipeRow);
             Show();
         }
