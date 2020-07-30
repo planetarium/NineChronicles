@@ -10,6 +10,7 @@ using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
+using Nekoyume.UI;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.State

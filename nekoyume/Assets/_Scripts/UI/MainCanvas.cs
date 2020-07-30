@@ -223,6 +223,8 @@ namespace Nekoyume.UI
             yield return null;
             _secondWidgets.Add(Widget.Create<Combination>());
             yield return null;
+            _secondWidgets.Add(Widget.Create<EnhanceEquipment>());
+            yield return null;
             _secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
 
