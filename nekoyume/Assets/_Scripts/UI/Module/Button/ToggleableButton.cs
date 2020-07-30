@@ -72,7 +72,12 @@ namespace Nekoyume.UI.Module
                 toggledOnText.text = text;
             }
 
-            sortingGroup.sortingLayerName = "UI";
+            // (object) sortingGroup == (Canvas) "null" 이기 때문에 `is`나 `ReferenceEquals`를 사용하지 않습니다.
+            // `SerializedField`는 `null`을 할당해도 객체 생성시 `"null"`이 되어버립니다.
+            if (sortingGroup)
+            {
+                sortingGroup.sortingLayerName = "UI";
+            }
         }
 
         #endregion
