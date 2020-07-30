@@ -14,10 +14,10 @@ namespace Nekoyume.UI.Module
     public class ConsumableRecipe : MonoBehaviour
     {
         [SerializeField]
-        private ConsumableRecipeCellView cellViewPrefab = null;
+        private RecipeCellView cellViewPrefab = null;
 
         [SerializeField]
-        private ConsumableRecipeCellView[] cellViews = null;
+        private RecipeCellView[] cellViews = null;
 
         [SerializeField]
         private TabButton hpTabButton = null;
@@ -122,7 +122,7 @@ namespace Nekoyume.UI.Module
 
             var recipeSheet = Game.Game.instance.TableSheets.ConsumableItemRecipeSheet;
             var totalCount = recipeSheet.Count;
-            cellViews = new ConsumableRecipeCellView[totalCount];
+            cellViews = new RecipeCellView[totalCount];
 
             var idx = 0;
             foreach (var recipeRow in recipeSheet)
