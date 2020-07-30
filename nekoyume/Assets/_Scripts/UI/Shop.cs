@@ -59,6 +59,7 @@ namespace Nekoyume.UI
         public SpriteRenderer sellImage;
         public SpriteRenderer buyImage;
         public CanvasGroup rightCanvasGroup;
+        public RefreshButton refreshButton;
 
         public Model.Shop SharedModel { get; private set; }
 
@@ -132,13 +133,6 @@ namespace Nekoyume.UI
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(
-                NPCId,
-                NPCPosition,
-                LayerType.InGameBackground,
-                3);
-            _npc = go.GetComponent<NPC>();
-            go.SetActive(true);
             _sequenceOfShopItems = null;
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Shop);
@@ -146,8 +140,19 @@ namespace Nekoyume.UI
 
         protected override void OnCompleteOfShowAnimationInternal()
         {
+            refreshButton.gameObject.SetActive(true);
             canvasGroup.interactable = true;
             SharedModel.State.Value = StateType.Buy;
+
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                NPCPosition,
+                LayerType.InGameBackground,
+                3);
+            _npc = go.GetComponent<NPC>();
+            _npc.SpineController.Appear();
+            go.SetActive(true);
+
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
         }
 
@@ -653,6 +658,11 @@ namespace Nekoyume.UI
 
             speechBubble.SetKey(key);
             StartCoroutine(speechBubble.CoShowText());
+        }
+
+        private void RefreshAppearAnimation()
+        {
+            refreshButton.PlayAnimation(NPCAnimation.Type.Appear);
         }
     }
 }
