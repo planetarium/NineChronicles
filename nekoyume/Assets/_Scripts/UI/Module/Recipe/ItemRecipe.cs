@@ -17,7 +17,7 @@ using Nekoyume.Model.Stat;
 namespace Nekoyume.UI.Module
 {
     // FIXME: `ConsumableRecipe`과 거의 똑같은 구조입니다.
-    public class EquipmentRecipe : MonoBehaviour
+    public class ItemRecipe : MonoBehaviour
     {
         [SerializeField]
         private RecipeCellView cellViewPrefab = null;
@@ -41,6 +41,21 @@ namespace Nekoyume.UI.Module
         private TabButton ringTabButton = null;
 
         [SerializeField]
+        private TabButton hpTabButton = null;
+
+        [SerializeField]
+        private TabButton atkTabButton = null;
+
+        [SerializeField]
+        private TabButton criTabButton = null;
+
+        [SerializeField]
+        private TabButton hitTabButton = null;
+
+        [SerializeField]
+        private TabButton defTabButton = null;
+
+        [SerializeField]
         private Transform cellViewParent = null;
 
         [SerializeField]
@@ -52,9 +67,18 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private AnchoredPositionYTweener scrollPositionTweener = null;
 
+        [SerializeField]
+        private GameObject equipmentTabs;
+
+        [SerializeField]
+        private GameObject consumableTabs;
+
         private bool _initialized = false;
         private int _notificationId;
-        private readonly ToggleGroup _toggleGroup = new ToggleGroup();
+        
+        private readonly ToggleGroup _equipmentToggleGroup = new ToggleGroup();
+        
+        private readonly ToggleGroup _consumableToggleGroup = new ToggleGroup();
 
         private readonly ReactiveProperty<ItemSubType> _itemFilterType =
             new ReactiveProperty<ItemSubType>(ItemSubType.Weapon);
@@ -68,7 +92,7 @@ namespace Nekoyume.UI.Module
 
         public bool HasNotification { get; private set; }
 
-        private enum State
+        public enum State
         {
             Equipment,
             Consumable,
@@ -79,10 +103,10 @@ namespace Nekoyume.UI.Module
             Initialize();
         }
 
-        private void OnEnable()
-        {
-            UpdateRecipes();
-        }
+        // private void OnEnable()
+        // {
+        //     UpdateRecipes();
+        // }
 
         private void OnDisable()
         {
@@ -107,21 +131,29 @@ namespace Nekoyume.UI.Module
             }
 
             _initialized = true;
-            _toggleGroup.OnToggledOn.Subscribe(SubscribeOnToggledOn).AddTo(gameObject);
-            _toggleGroup.RegisterToggleable(weaponTabButton);
-            _toggleGroup.RegisterToggleable(armorTabButton);
-            _toggleGroup.RegisterToggleable(beltTabButton);
-            _toggleGroup.RegisterToggleable(necklaceTabButton);
-            _toggleGroup.RegisterToggleable(ringTabButton);
+            _equipmentToggleGroup.OnToggledOn.Subscribe(SubscribeOnEquipmentToggledOn).AddTo(gameObject);
+            _equipmentToggleGroup.RegisterToggleable(weaponTabButton);
+            _equipmentToggleGroup.RegisterToggleable(armorTabButton);
+            _equipmentToggleGroup.RegisterToggleable(beltTabButton);
+            _equipmentToggleGroup.RegisterToggleable(necklaceTabButton);
+            _equipmentToggleGroup.RegisterToggleable(ringTabButton);
+            
+            _consumableToggleGroup.OnToggledOn.Subscribe(SubscribeOnConsumableToggledOn).AddTo(gameObject);
+            _consumableToggleGroup.RegisterToggleable(hpTabButton);
+            _consumableToggleGroup.RegisterToggleable(atkTabButton);
+            _consumableToggleGroup.RegisterToggleable(criTabButton);
+            _consumableToggleGroup.RegisterToggleable(hitTabButton);
+            _consumableToggleGroup.RegisterToggleable(defTabButton);
 
-            LoadRecipes(_state.Value);
+            LoadRecipes();
             _itemFilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
-            // _state.Subscribe(SubscribeState).AddTo(gameObject);
+            _statFilterType.Subscribe(SubScribeFilterType).AddTo(gameObject);
+            _state.Subscribe(SubscribeState).AddTo(gameObject);
             ReactiveAvatarState.QuestList.Subscribe(SubscribeHasNotification)
                 .AddTo(gameObject);
         }
 
-        public void ShowCellViews(int? recipeId = null)
+        public void ShowEquipmentCellViews(int? recipeId = null)
         {
             if (recipeId.HasValue &&
                 TryGetCellView(recipeId.Value, out var cellView) &&
@@ -129,7 +161,7 @@ namespace Nekoyume.UI.Module
                     cellView.EquipmentRowData.ResultEquipmentId,
                     out var row))
             {
-                SetToggledOnType(row.ItemSubType);
+                SetToggledOnItemType(row.ItemSubType);
                 var content = scrollRect.content;
                 var localPositionX = content.localPosition.x;
                 content.localPosition = new Vector2(
@@ -138,7 +170,7 @@ namespace Nekoyume.UI.Module
             }
             else
             {
-                SetToggledOnType(_itemFilterType.Value);
+                SetToggledOnItemType(_itemFilterType.Value);
             }
 
             scrollAlphaTweener.Play();
@@ -148,6 +180,18 @@ namespace Nekoyume.UI.Module
             {
                 view.SetInteractable(true);
                 view.Show();
+            }
+        }
+
+        public void ShowConsumableCellViews()
+        {
+            SetToggledOnFilterType(_statFilterType.Value);
+            scrollAlphaTweener.Play();
+            scrollPositionTweener.PlayTween();
+
+            foreach (var view in cellViews)
+            {
+                view.SetInteractable(true);
             }
         }
 
@@ -161,7 +205,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        private void LoadRecipes(State state)
+        private void LoadRecipes()
         {
             _disposablesAtLoadRecipeList.DisposeAllAndClear();
 
@@ -191,7 +235,7 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public void UpdateRecipes()
+        public void UpdateRecipes(ItemSubType type)
         {
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
@@ -201,7 +245,7 @@ namespace Nekoyume.UI.Module
 
             var tableSheets = Game.Game.instance.TableSheets;
             var equipmentIds = tableSheets.EquipmentItemSheet.Values
-                .Where(r => r.ItemSubType == _itemFilterType.Value)
+                .Where(r => r.ItemSubType == type)
                 .Select(r => r.Id).ToList();
             var rows = tableSheets.EquipmentItemRecipeSheet.Values
                 .Where(r => equipmentIds.Contains(r.ResultEquipmentId)).ToList();
@@ -223,6 +267,40 @@ namespace Nekoyume.UI.Module
                             .ContainsKey(cellView.EquipmentRowData.Id) && isUnlocked;
 
                     cellView.Set(avatarState, hasNotification, isFirstOpen);
+                    cellView.Show();
+                }
+                else
+                {
+                    cellView.Hide();
+                }
+            }
+        }
+
+        private void UpdateRecipes(StatType type)
+        {
+            var avatarState = States.Instance.CurrentAvatarState;
+            if (avatarState is null)
+            {
+                return;
+            }
+
+            var tableSheets = Game.Game.instance.TableSheets;
+            var consumableIds = tableSheets.ConsumableItemSheet.Values
+                .Where(r => r.Stats.FirstOrDefault()?.StatType == type)
+                .Select(r => r.Id).ToList();
+            var rows = tableSheets.ConsumableItemRecipeSheet.Values
+                .Where(r => consumableIds.Contains(r.ResultConsumableItemId)).ToList();
+            var combination = Widget.Find<Combination>();
+
+            combination.LoadRecipeVFXSkipMap();
+
+            for (var index = 0; index < cellViews.Length; index++)
+            {
+                var cellView = cellViews[index];
+                if (index < rows.Count)
+                {
+                    cellView.Set(rows[index]);
+                    cellView.Set(avatarState);
                     cellView.Show();
                 }
                 else
@@ -259,29 +337,62 @@ namespace Nekoyume.UI.Module
                 case ItemSubType.Ring:
                     btn = ringTabButton;
                     break;
-                default:
+            }
+
+            return btn;
+        }
+
+        private TabButton GetButton(StatType statType)
+        {
+            TabButton btn = null;
+
+            switch (statType)
+            {
+                case StatType.HP:
+                    btn = hpTabButton;
+                    break;
+                case StatType.ATK:
+                    btn = atkTabButton;
+                    break;
+                case StatType.DEF:
+                    btn = defTabButton;
+                    break;
+                case StatType.CRI:
+                    btn = criTabButton;
+                    break;
+                case StatType.HIT:
+                    btn = hitTabButton;
                     break;
             }
 
             return btn;
         }
 
-        private void SetToggledOnType(ItemSubType itemSubType)
+        private void SetToggledOnItemType(ItemSubType itemSubType)
         {
             IToggleable toggleable = GetButton(itemSubType);
 
-            _toggleGroup.SetToggledOn(toggleable);
-            SubscribeOnToggledOn(toggleable);
+            _equipmentToggleGroup.SetToggledOn(toggleable);
+            SubscribeOnEquipmentToggledOn(toggleable);
         }
+
+        private void SetToggledOnFilterType(StatType statType)
+        {
+            IToggleable toggleable = GetButton(statType);
+
+            _equipmentToggleGroup.SetToggledOn(toggleable);
+            SubscribeOnEquipmentToggledOn(toggleable);
+        }
+
 
         private void SubScribeFilterType(ItemSubType itemSubType)
         {
-            UpdateRecipes();
+            UpdateRecipes(itemSubType);
 
             scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
         }
 
-        private void SubscribeOnToggledOn(IToggleable toggleable)
+        private void SubscribeOnEquipmentToggledOn(IToggleable toggleable)
         {
             if (toggleable.Name.Equals(weaponTabButton.Name))
             {
@@ -340,10 +451,14 @@ namespace Nekoyume.UI.Module
             switch (state)
             {
                 case State.Equipment:
-                    LoadRecipes(state);
+                    consumableTabs.gameObject.SetActive(false);
+                    equipmentTabs.gameObject.SetActive(true);
+                    UpdateRecipes(_itemFilterType.Value);
                     break;
                 case State.Consumable:
-                    LoadRecipes(state);
+                    consumableTabs.gameObject.SetActive(true);
+                    equipmentTabs.gameObject.SetActive(false);
+                    UpdateRecipes(_statFilterType.Value);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
@@ -401,6 +516,42 @@ namespace Nekoyume.UI.Module
             }
 
             HasNotification = hasNotification;
+        }
+
+        private void SubScribeFilterType(StatType statType)
+        {
+            UpdateRecipes(statType);
+
+            scrollRect.normalizedPosition = new Vector2(0.5f, 1.0f);
+        }
+
+        public void SetState(State state)
+        {
+            _state.Value = state;
+        }
+        
+        private void SubscribeOnConsumableToggledOn(IToggleable toggleable)
+        {
+            if (toggleable.Name.Equals(hpTabButton.Name))
+            {
+                _statFilterType.SetValueAndForceNotify(StatType.HP);
+            }
+            else if (toggleable.Name.Equals(atkTabButton.Name))
+            {
+                _statFilterType.SetValueAndForceNotify(StatType.ATK);
+            }
+            else if (toggleable.Name.Equals(criTabButton.Name))
+            {
+                _statFilterType.SetValueAndForceNotify(StatType.CRI);
+            }
+            else if (toggleable.Name.Equals(hitTabButton.Name))
+            {
+                _statFilterType.SetValueAndForceNotify(StatType.HIT);
+            }
+            else if (toggleable.Name.Equals(defTabButton.Name))
+            {
+                _statFilterType.SetValueAndForceNotify(StatType.DEF);
+            }
         }
     }
 }
