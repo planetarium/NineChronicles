@@ -150,10 +150,7 @@ namespace Nekoyume.UI
                 LayerType.InGameBackground,
                 3);
             _npc = go.GetComponent<NPC>();
-            DOTween.To(
-                () => _npc.SpineController.SkeletonAnimation.skeleton.A,
-                value => _npc.SpineController.SkeletonAnimation.skeleton.A = value,
-                1, 1.0f).From(0).Play();
+            _npc.SpineController.Appear();
             go.SetActive(true);
 
             ShowSpeech("SPEECH_SHOP_GREETING_", CharacterAnimation.Type.Greeting);
