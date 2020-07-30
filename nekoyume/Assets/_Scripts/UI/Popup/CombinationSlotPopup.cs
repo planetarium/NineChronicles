@@ -1,10 +1,10 @@
 using System.Globalization;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -35,8 +35,8 @@ namespace Nekoyume.UI
             base.Awake();
 
             submitButton.SetSubmitText(
-                LocalizationManager.Localize("UI_COMBINATION_WAITING"),
-                LocalizationManager.Localize("UI_RAPID_COMBINATION")
+                L10nManager.Localize("UI_COMBINATION_WAITING"),
+                L10nManager.Localize("UI_RAPID_COMBINATION")
             );
 
             submitButton.OnSubmitClick.Subscribe(_ =>
@@ -129,8 +129,8 @@ namespace Nekoyume.UI
             if (diff < 0)
             {
                 submitButton.SetSubmitText(
-                    LocalizationManager.Localize("UI_COMBINATION_WAITING"),
-                    LocalizationManager.Localize("UI_RAPID_COMBINATION")
+                    L10nManager.Localize("UI_COMBINATION_WAITING"),
+                    L10nManager.Localize("UI_RAPID_COMBINATION")
                 );
                 submitButton.SetSubmittable(result.id != default);
                 submitButton.HideHourglass();
@@ -148,13 +148,13 @@ namespace Nekoyume.UI
                 if (result.id != default)
                 {
                     submitButton.SetSubmitText(
-                        LocalizationManager.Localize("UI_RAPID_COMBINATION"));
+                        L10nManager.Localize("UI_RAPID_COMBINATION"));
                     submitButton.SetSubmittable(isEnough);
                 }
                 else
                 {
                     submitButton.SetSubmitText(
-                        LocalizationManager.Localize("UI_COMBINATION_WAITING"));
+                        L10nManager.Localize("UI_COMBINATION_WAITING"));
                     submitButton.SetSubmittable(false);
                 }
 
@@ -174,7 +174,7 @@ namespace Nekoyume.UI
             var result = (CombinationConsumable.ResultModel) slotState.Result;
             LocalStateModifier.AddNewResultAttachmentMail(
                 States.Instance.CurrentAvatarState.address, result.id, blockIndex);
-            var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             Notification.Push(
                 MailType.Workshop,
                 string.Format(CultureInfo.InvariantCulture, format,

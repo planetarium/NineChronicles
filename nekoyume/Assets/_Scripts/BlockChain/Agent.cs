@@ -11,7 +11,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Assets.SimpleLocalization;
 using AsyncIO;
 using Bencodex.Types;
 using Libplanet;
@@ -27,6 +26,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
@@ -345,7 +345,7 @@ namespace Nekoyume.BlockChain
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<PreloadingScreen>();
             BootstrapStarted += (_, state) =>
-                loadingScreen.Message = LocalizationManager.Localize("UI_LOADING_BOOTSTRAP_START");
+                loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
             PreloadProcessed += (_, state) =>
             {
                 if (loadingScreen)
@@ -979,7 +979,7 @@ namespace Nekoyume.BlockChain
                     throw new Exception("Unknown state was reported during preload.");
             }
 
-            string format = LocalizationManager.Localize(localizationKey);
+            string format = L10nManager.Localize(localizationKey);
             string text = string.Format(format, count, totalCount);
             return $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
         }

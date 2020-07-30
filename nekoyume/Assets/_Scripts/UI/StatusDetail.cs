@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -31,8 +31,8 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            statusTitleText.text = LocalizationManager.Localize("UI_STATUS");
-            equipmentTitleText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
+            statusTitleText.text = L10nManager.Localize("UI_STATUS");
+            equipmentTitleText.text = L10nManager.Localize("UI_EQUIPMENTS");
         }
 
         protected override void OnDisable()

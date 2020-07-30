@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -50,8 +50,8 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             receiveButton.SetSubmitText(
-                LocalizationManager.Localize("UI_PROGRESS"),
-                LocalizationManager.Localize("UI_RECEIVE"));
+                L10nManager.Localize("UI_PROGRESS"),
+                L10nManager.Localize("UI_RECEIVE"));
             receiveButton.SetSubmitTextColor(ColorHelper.HexToColorRGB("955c4a"));
             receiveButton.OnSubmitClick
                 .ThrottleFirst(new TimeSpan(0, 0, 1))

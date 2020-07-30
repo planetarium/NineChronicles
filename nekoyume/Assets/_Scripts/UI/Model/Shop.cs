@@ -1,4 +1,3 @@
-using Assets.SimpleLocalization;
 using System;
 using UniRx;
 

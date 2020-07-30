@@ -1,9 +1,6 @@
 using System;
 using System.Numerics;
-using Assets.SimpleLocalization;
-using Nekoyume.TableData;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {

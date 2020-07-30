@@ -1,5 +1,5 @@
 using System;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -19,7 +19,7 @@ namespace Nekoyume.UI.Model
 
         public ItemCountPopup()
         {
-            SubmitText.Value = LocalizationManager.Localize("UI_OK");
+            SubmitText.Value = L10nManager.Localize("UI_OK");
 
             Item.Subscribe(value =>
             {

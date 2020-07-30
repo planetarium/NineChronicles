@@ -1,5 +1,4 @@
-﻿using Assets.SimpleLocalization;
-using Nekoyume.Helper;
+﻿using Nekoyume.Helper;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
@@ -7,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,7 +51,7 @@ namespace Nekoyume.UI
                     throw new SerializeFieldNullException(nameof(button));
                 }
 
-                var localized = LocalizationManager.Localize(localizationKey);
+                var localized = L10nManager.Localize(localizationKey);
                 var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
                 text.text = content;
                 textSelected.text = content;
