@@ -5,17 +5,19 @@ using UnityEngine.EventSystems;
 
 namespace Nekoyume.Game.Character
 {
-    public class TouchHandler : MonoBehaviour, IPointerClickHandler
+    public class TouchHandler : MonoBehaviour, IPointerClickHandler, IPointerDownHandler
     {
         private readonly Subject<PointerEventData> _onClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onDoubleClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onMultipleClick = new Subject<PointerEventData>();
+        private readonly Subject<PointerEventData> _onMouseDown = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onMiddleClick = new Subject<PointerEventData>();
         private readonly Subject<PointerEventData> _onRightClick = new Subject<PointerEventData>();
 
         public IObservable<PointerEventData> OnClick => _onClick;
         public IObservable<PointerEventData> OnDoubleClick => _onDoubleClick;
         public IObservable<PointerEventData> OnMultipleClick => _onMultipleClick;
+        public IObservable<PointerEventData> OnMouseDown => _onMouseDown;
         public IObservable<PointerEventData> OnMiddleClick => _onMiddleClick;
         public IObservable<PointerEventData> OnRightClick => _onRightClick;
 
@@ -43,6 +45,22 @@ namespace Nekoyume.Game.Character
                     break;
                 case PointerEventData.InputButton.Right:
                     _onRightClick.OnNext(eventData);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            switch (eventData.button)
+            {
+                case PointerEventData.InputButton.Left:
+                    _onMouseDown.OnNext(eventData);
+                    break;
+                case PointerEventData.InputButton.Middle:
+                    break;
+                case PointerEventData.InputButton.Right:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
