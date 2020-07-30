@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
@@ -65,10 +65,10 @@ namespace Nekoyume.UI
             if (localize)
             {
                 if (titleExists)
-                    this.title.text = LocalizationManager.Localize(title);
-                this.content.text = LocalizationManager.Localize(content);
-                submitButton.SetSubmitText(LocalizationManager.Localize(labelYes));
-                this.labelNo.text = LocalizationManager.Localize(labelNo);
+                    this.title.text = L10nManager.Localize(title);
+                this.content.text = L10nManager.Localize(content);
+                submitButton.SetSubmitText(L10nManager.Localize(labelYes));
+                this.labelNo.text = L10nManager.Localize(labelNo);
             }
             else
             {

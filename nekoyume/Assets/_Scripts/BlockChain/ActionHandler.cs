@@ -1,7 +1,6 @@
 using System.Linq;
-using Assets.SimpleLocalization;
-using Bencodex.Types;
 using Nekoyume.Action;
+using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -150,13 +149,13 @@ namespace Nekoyume.BlockChain
                 if (questList.Count == 1)
                 {
                     var quest = questList.First();
-                    var format = LocalizationManager.Localize("NOTIFICATION_QUEST_COMPLETE");
+                    var format = L10nManager.Localize("NOTIFICATION_QUEST_COMPLETE");
                     var msg = string.Format(format, quest.GetContent());
                     UI.Notification.Push(MailType.System, msg);
                 }
                 else
                 {
-                    var format = LocalizationManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
+                    var format = L10nManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
                     var msg = string.Format(format, questList.Count);
                     UI.Notification.Push(MailType.System, msg);
                 }

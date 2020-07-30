@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -35,9 +35,9 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            cancelButtonText.text = LocalizationManager.Localize("UI_CANCEL");
-            submitButton.SetSubmitText(LocalizationManager.Localize("UI_OK"));
-            informationText.text = LocalizationManager.Localize("UI_RETRIEVE_INFO");
+            cancelButtonText.text = L10nManager.Localize("UI_CANCEL");
+            submitButton.SetSubmitText(L10nManager.Localize("UI_OK"));
+            informationText.text = L10nManager.Localize("UI_RETRIEVE_INFO");
 
             cancelButton.OnClickAsObservable()
                 .Subscribe(_ =>

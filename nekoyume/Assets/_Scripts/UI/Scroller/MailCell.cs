@@ -1,7 +1,7 @@
 using System;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -63,8 +63,8 @@ namespace Nekoyume.UI.Scroller
             var isNew = _mail.New;
             button.interactable = isNew;
             submitText.text = isNew
-                ? LocalizationManager.Localize("UI_RECEIVE")
-                : LocalizationManager.Localize("UI_RECEIVED");
+                ? L10nManager.Localize("UI_RECEIVE")
+                : L10nManager.Localize("UI_RECEIVED");
             selectedSubmitText.text = submitText.text;
             buttonRectTransform.offsetMin = isNew ? LeftBottom : Vector2.zero;
             buttonRectTransform.offsetMax = isNew ? MinusRightTop : Vector2.zero;
@@ -81,7 +81,7 @@ namespace Nekoyume.UI.Scroller
         {
             AudioController.PlayClick();
 
-            submitText.text = LocalizationManager.Localize("UI_RECEIVED");
+            submitText.text = L10nManager.Localize("UI_RECEIVED");
             buttonRectTransform.offsetMin = Vector2.zero;
             buttonRectTransform.offsetMax = Vector2.zero;
             if (!_mail.New)

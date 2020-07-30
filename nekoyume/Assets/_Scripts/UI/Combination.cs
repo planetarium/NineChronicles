@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -24,6 +23,7 @@ using Nekoyume.Game.VFX;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using mixpanel;
+using Nekoyume.L10n;
 using Nekoyume.UI.Model;
 
 namespace Nekoyume.UI
@@ -739,7 +739,7 @@ namespace Nekoyume.UI
 
             _npc01.PlayAnimation(NPCAnimation.Type.Emotion_01);
 
-            var cost = string.Format(LocalizationManager.Localize("UI_COST_BLOCK"),
+            var cost = string.Format(L10nManager.Localize("UI_COST_BLOCK"),
                 requiredBlockIndex);
             _selectedSpeechBubble.onGoing = true;
             StartCoroutine(_selectedSpeechBubble.CoShowText(cost, true));

@@ -1,18 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
-using Nekoyume.Battle;
-using Nekoyume.Game.Controller;
 using Nekoyume.Model;
 using Nekoyume.Model.Quest;
-using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Module;
-using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using mixpanel;
 
 namespace Nekoyume.UI
