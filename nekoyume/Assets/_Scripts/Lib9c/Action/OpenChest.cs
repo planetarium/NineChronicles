@@ -26,7 +26,7 @@ namespace Nekoyume.Action
                 states = states
                     .SetState(context.Signer, MarkChanged)
                     .SetState(avatarAddress, MarkChanged)
-                    .MarkBalanceChanged(Currencies.Gold, context.Signer);
+                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer);
                 return states;
             }
 
@@ -60,8 +60,12 @@ namespace Nekoyume.Action
                                 avatarState.inventory.AddItem(material, info.Quantity);
                                 break;
                             case RewardType.Gold:
-                                // FIXME: 사실 여기서 mint를 바로 하면 안되고 미리 펀드 같은 걸 만들어서 거기로부터 TransferAsset()해야 함...
-                                states = states.MintAsset(context.Signer, Currencies.Gold, info.Quantity);
+                                states = states.TransferAsset(
+                                    GoldCurrencyState.Address,
+                                    context.Signer,
+                                    states.GetGoldCurrency(),
+                                    info.Quantity
+                                );
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException(nameof(info.Type), info.Type, null);
