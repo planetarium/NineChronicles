@@ -651,13 +651,13 @@ namespace Nekoyume.BlockChain
 #if !UNITY_EDITOR
                 if (!Application.isBatchMode && (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled))
                 {
-                    var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
-                        LocalizationManager.Localize("BOOTSTRAP_FAIL"));
+                    var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
+                        L10nManager.Localize("BOOTSTRAP_FAIL"));
 
                     Widget.Find<SystemPopup>().Show(
-                        LocalizationManager.Localize("UI_ERROR"),
+                        L10nManager.Localize("UI_ERROR"),
                         errorMsg,
-                        LocalizationManager.Localize("UI_QUIT"),
+                        L10nManager.Localize("UI_QUIT"),
                         false
                     );
                     yield break;
