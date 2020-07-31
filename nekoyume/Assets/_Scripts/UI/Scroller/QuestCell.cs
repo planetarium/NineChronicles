@@ -178,7 +178,6 @@ namespace Nekoyume.UI.Scroller
 
         public void UpdateTab()
         {
-            Widget.Find<CelebratesPopup>().Show(_quest);
             UpdateView();
             Widget.Find<Quest>().UpdateTabs();
         }
