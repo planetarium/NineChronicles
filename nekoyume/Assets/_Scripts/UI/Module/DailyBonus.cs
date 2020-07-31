@@ -161,13 +161,33 @@ namespace Nekoyume.UI.Module
             Widget.Find<VanilaTooltip>().Close();
         }
 
-        public void GetDailyReward()
+        public void RequestDailyReward()
         {
             if (!_isFull)
             {
                 return;
             }
 
+            if (actionPoint.IsRemained)
+            {
+                var confirm = Widget.Find<Confirm>();
+                confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
+                confirm.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.No)
+                        return;
+
+                    GetDailyReward();
+                };
+            }
+            else
+            {
+                GetDailyReward();
+            }
+        }
+
+        private void GetDailyReward()
+        {
             Notification.Push(Nekoyume.Model.Mail.MailType.System,
                 L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 
