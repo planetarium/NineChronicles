@@ -15,7 +15,10 @@ namespace Nekoyume.Model.Item
     {
         // ToDo. Item 클래스를 FungibleItem과 NonFungibleItem으로 분리하기.
         [Serializable]
+        // FIXME 구현해야 합니다.
+#pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
         public class Item : IState, IComparer<Item>, IComparable<Item>
+#pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
         {
             public ItemBase item;
             public int count = 0;

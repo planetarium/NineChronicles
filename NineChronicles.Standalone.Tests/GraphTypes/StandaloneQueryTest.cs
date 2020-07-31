@@ -317,6 +317,7 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                             ),
                             AdminAddressState = new AdminState(adminAddress, 1500000),
                             ActivatedAccountsState = new ActivatedAccountsState(activatedAccounts),
+                            GoldCurrencyState = new GoldCurrencyState(new Currency("NCG", minter: null)),
                         },
                     }
                 );

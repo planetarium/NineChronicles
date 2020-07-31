@@ -16,6 +16,7 @@ namespace Lib9c.Tests.Action
     {
         private readonly AvatarState _avatarState;
         private TableSheets _tableSheets;
+        private State _baseState;
 
         public RewardGoldTest()
         {
@@ -35,6 +36,11 @@ namespace Lib9c.Tests.Action
 
             var avatarAddress = agentAddress.Derive("avatar");
             _avatarState = new AvatarState(avatarAddress, agentAddress, 0, _tableSheets, new GameConfigState());
+
+            var gold = new GoldCurrencyState(new Currency("NCG", minter: null));
+            _baseState = (State)new State()
+                .SetState(GoldCurrencyState.Address, gold.Serialize())
+                .MintAsset(GoldCurrencyState.Address, gold.Currency, 100000);
         }
 
         public void Dispose()
@@ -46,8 +52,8 @@ namespace Lib9c.Tests.Action
         public void ExecuteCreateNextWeeklyArenaState()
         {
             var weekly = new WeeklyArenaState(0);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(weekly.address, weekly.Serialize()));
+            var state = _baseState
+                .SetState(weekly.address, weekly.Serialize());
 
             var action = new RewardGold()
             {
@@ -76,9 +82,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(4, weekly[_avatarState.address].DailyChallengeCount);
 
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(weekly.address, weekly.Serialize()));
-
+            var state = _baseState.SetState(weekly.address, weekly.Serialize());
             var action = new RewardGold()
             {
                 Gold = 1,
@@ -111,9 +115,9 @@ namespace Lib9c.Tests.Action
             Assert.True(prevWeekly[_avatarState.address].Active);
 
             var weekly = new WeeklyArenaState(1);
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(prevWeekly.address, prevWeekly.Serialize())
-                .Add(weekly.address, weekly.Serialize()));
+            var state = _baseState
+                .SetState(prevWeekly.address, prevWeekly.Serialize())
+                .SetState(weekly.address, weekly.Serialize());
 
             var action = new RewardGold()
             {
