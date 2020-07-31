@@ -2,6 +2,7 @@
 using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.UI.AnimatedGraphics;
+using UniRx;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -10,13 +11,18 @@ namespace Nekoyume.UI
     {
         private readonly List<MessageCat> _pool = new List<MessageCat>();
 
-        [SerializeField] private GameObject messageCatPrefab = null;
+        [SerializeField]
+        private GameObject messageCatPrefab = null;
 
         protected override WidgetType WidgetType => WidgetType.Tooltip;
 
         protected override void Awake()
         {
             base.Awake();
+
+            OnDisableStaticObservable
+                .Subscribe(_ => HideAll(false))
+                .AddTo(gameObject);
 
             CloseWidget = null;
         }

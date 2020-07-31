@@ -251,7 +251,7 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls:
         - m_Target: {fileID: 7434278619177023938}
-          m_MethodName: GetDailyReward
+          m_MethodName: RequestDailyReward
           m_Mode: 1
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
