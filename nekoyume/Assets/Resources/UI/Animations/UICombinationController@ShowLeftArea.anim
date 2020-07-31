@@ -126,7 +126,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: LeftArea/EquipmentRecipeArea/Tabs/Tabs
+    path: LeftArea/RecipeArea/Tabs/StatTabs
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -154,7 +154,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: LeftArea/EquipmentRecipeArea/Tabs/Tabs
+    path: LeftArea/RecipeArea/Tabs/StatTabs
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -182,7 +182,17 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: LeftArea/EquipmentRecipeArea/Tabs/Tabs
+    path: LeftArea/RecipeArea/Tabs/StatTabs
+    classID: 224
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_AnchoredPosition.z
+    path: LeftArea/RecipeArea/Tabs/StatTabs
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -210,7 +220,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: LeftArea/EquipmentRecipeArea/Tabs/StatTabs
+    path: LeftArea/RecipeArea/Tabs/Tabs
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -238,7 +248,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: LeftArea/EquipmentRecipeArea/Tabs/StatTabs
+    path: LeftArea/RecipeArea/Tabs/Tabs
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -266,7 +276,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: LeftArea/EquipmentRecipeArea/Tabs/StatTabs
+    path: LeftArea/RecipeArea/Tabs/Tabs
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -276,7 +286,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.z
-    path: LeftArea/EquipmentRecipeArea/Tabs/StatTabs
+    path: LeftArea/RecipeArea/Tabs/Tabs
     classID: 224
     script: {fileID: 0}
   m_PPtrCurves: []
@@ -302,28 +312,28 @@ AnimationClip:
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3356713872
+      path: 1930660452
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3356713872
+      path: 1930660452
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3136242782
+      path: 3547307428
       attribute: 1574349066
       script: {fileID: 0}
       typeID: 225
       customType: 0
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3136242782
+      path: 3547307428
       attribute: 538195251
       script: {fileID: 0}
       typeID: 224
@@ -337,14 +347,14 @@ AnimationClip:
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3356713872
+      path: 1930660452
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
       customType: 28
       isPPtrCurve: 0
     - serializedVersion: 2
-      path: 3136242782
+      path: 3547307428
       attribute: 1460864421
       script: {fileID: 0}
       typeID: 224
@@ -481,7 +491,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: LeftArea/EquipmentRecipeArea/Tabs/Tabs
+    path: LeftArea/RecipeArea/Tabs/StatTabs
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -509,7 +519,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: LeftArea/EquipmentRecipeArea/Tabs/Tabs
+    path: LeftArea/RecipeArea/Tabs/StatTabs
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -537,7 +547,17 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: LeftArea/EquipmentRecipeArea/Tabs/Tabs
+    path: LeftArea/RecipeArea/Tabs/StatTabs
+    classID: 224
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_AnchoredPosition.z
+    path: LeftArea/RecipeArea/Tabs/StatTabs
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -565,7 +585,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_Alpha
-    path: LeftArea/EquipmentRecipeArea/Tabs/StatTabs
+    path: LeftArea/RecipeArea/Tabs/Tabs
     classID: 225
     script: {fileID: 0}
   - curve:
@@ -593,7 +613,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.x
-    path: LeftArea/EquipmentRecipeArea/Tabs/StatTabs
+    path: LeftArea/RecipeArea/Tabs/Tabs
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -621,7 +641,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.y
-    path: LeftArea/EquipmentRecipeArea/Tabs/StatTabs
+    path: LeftArea/RecipeArea/Tabs/Tabs
     classID: 224
     script: {fileID: 0}
   - curve:
@@ -631,7 +651,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_AnchoredPosition.z
-    path: LeftArea/EquipmentRecipeArea/Tabs/StatTabs
+    path: LeftArea/RecipeArea/Tabs/Tabs
     classID: 224
     script: {fileID: 0}
   m_EulerEditorCurves: []
