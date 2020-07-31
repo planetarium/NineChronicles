@@ -54,6 +54,8 @@ namespace Nekoyume.UI.Module
             cancelButton.OnClickAsObservable().Subscribe(_ => SubscribeOnClickCancel()).AddTo(gameObject);
             cancelButtonText.text = L10nManager.Localize("UI_CANCEL");
             submitButton.HideHourglass();
+            var submitText = L10nManager.Localize("UI_COMBINATION_ITEM");
+            submitButton.SetSubmitText(submitText, submitText);
         }
 
         protected virtual void OnDisable()
