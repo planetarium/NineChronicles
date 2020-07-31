@@ -27,8 +27,16 @@ namespace Nekoyume.UI.Module
         {
             base.Awake();
 
-            toggledOnText.text = L10nManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
             SharedModel.IsEnabled.SubscribeTo(glowImage.gameObject).AddTo(gameObject);
+        }
+
+        protected override void SetText(string text)
+        {
+            base.SetText(text);
+            if (!(glowText is null))
+            {
+                glowText.text = text;
+            }
         }
     }
 }
