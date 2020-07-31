@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Collections.Immutable;
 using Bencodex.Types;
@@ -22,6 +23,8 @@ namespace Nekoyume.Action
 
         public GoldCurrencyState GoldCurrencyState { get; set; }
 
+        public GoldDistribution[] GoldDistributions { get; set; }
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;
@@ -38,6 +41,7 @@ namespace Nekoyume.Action
                 states = states.SetState(AdminState.Address, MarkChanged);
                 states = states.SetState(ActivatedAccountsState.Address, MarkChanged);
                 states = states.SetState(GoldCurrencyState.Address, MarkChanged);
+                states = states.SetState(Addresses.GoldDistribution, MarkChanged);
                 return states;
             }
 
@@ -55,7 +59,8 @@ namespace Nekoyume.Action
                 .SetState(RedeemCodeState.Address, RedeemCodeState.Serialize())
                 .SetState(AdminState.Address, AdminAddressState.Serialize())
                 .SetState(ActivatedAccountsState.Address, ActivatedAccountsState.Serialize())
-                .SetState(GoldCurrencyState.Address, GoldCurrencyState.Serialize());
+                .SetState(GoldCurrencyState.Address, GoldCurrencyState.Serialize())
+                .SetState(Addresses.GoldDistribution, GoldDistributions.Select(v => v.Serialize()).Serialize());
 
             states = states.MintAsset(GoldCurrencyState.Address, GoldCurrencyState.Currency, 1000000000);
             return states;
@@ -70,7 +75,8 @@ namespace Nekoyume.Action
                 .Add("redeem_code_state", RedeemCodeState.Serialize())
                 .Add("admin_address_state", AdminAddressState.Serialize())
                 .Add("activated_accounts_state", ActivatedAccountsState.Serialize())
-                .Add("gold_currency_state", GoldCurrencyState.Serialize());
+                .Add("gold_currency_state", GoldCurrencyState.Serialize())
+                .Add("gold_distributions", GoldDistributions.Select(v => v.Serialize()).Serialize());
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
@@ -86,6 +92,9 @@ namespace Nekoyume.Action
             GoldCurrencyState = new GoldCurrencyState(
                 (Bencodex.Types.Dictionary)plainValue["gold_currency_state"]
             );
+            GoldDistributions = ((Bencodex.Types.List) plainValue["gold_distributions"])
+                .Select(e => new GoldDistribution(e))
+                .ToArray();
         }
     }
 }
