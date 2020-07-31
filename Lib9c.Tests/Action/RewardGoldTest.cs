@@ -1,9 +1,12 @@
 namespace Lib9c.Tests.Action
 {
     using System;
-    using System.Collections.Immutable;
+    using System.IO;
+    using System.Linq;
+    using System.Numerics;
     using Bencodex.Types;
     using Libplanet;
+    using Libplanet.Action;
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
@@ -40,7 +43,8 @@ namespace Lib9c.Tests.Action
             var gold = new GoldCurrencyState(new Currency("NCG", minter: null));
             _baseState = (State)new State()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
-                .MintAsset(GoldCurrencyState.Address, gold.Currency, 100000);
+                .SetState(Addresses.GoldDistribution, GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize())
+                .MintAsset(GoldCurrencyState.Address, gold.Currency, 100000000000);
         }
 
         public void Dispose()
@@ -140,6 +144,135 @@ namespace Lib9c.Tests.Action
             Assert.True(prev.Ended);
             Assert.Equal(GameConfig.WeeklyArenaInterval, current.ResetIndex);
             Assert.Contains(_avatarState.address, current);
+        }
+
+        [Fact]
+        public void GoldDistributedEachAccount()
+        {
+            Currency currency = new Currency("NCG", minters: null);
+            Address fund = GoldCurrencyState.Address;
+            Address address1 = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9");
+            Address address2 = new Address("Fb90278C67f9b266eA309E6AE8463042f5461449");
+            var action = new RewardGold()
+            {
+                Gold = 1,
+            };
+
+            var ctx = new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = _baseState,
+            };
+
+            IAccountStateDelta delta;
+
+            // 제너시스에 받아야 할 돈들 검사
+            delta = action.GenesisGoldDistribution(ctx, _baseState);
+            Assert.Equal(99999000000, delta.GetBalance(fund, currency));
+            Assert.Equal(1000000, delta.GetBalance(address1, currency));
+            Assert.Equal(0, delta.GetBalance(address2, currency));
+
+            // 1번 블록에 받아야 할 것들 검사
+            ctx.BlockIndex = 1;
+            delta = action.GenesisGoldDistribution(ctx, _baseState);
+            Assert.Equal(99999999900, delta.GetBalance(fund, currency));
+            Assert.Equal(100, delta.GetBalance(address1, currency));
+            Assert.Equal(0, delta.GetBalance(address2, currency));
+
+            // 3599번 블록에 받아야 할 것들 검사
+            ctx.BlockIndex = 3599;
+            delta = action.GenesisGoldDistribution(ctx, _baseState);
+            Assert.Equal(99999999900, delta.GetBalance(fund, currency));
+            Assert.Equal(100, delta.GetBalance(address1, currency));
+            Assert.Equal(0, delta.GetBalance(address2, currency));
+
+            // 3600번 블록에 받아야 할 것들 검사
+            ctx.BlockIndex = 3600;
+            delta = action.GenesisGoldDistribution(ctx, _baseState);
+            Assert.Equal(99999996900, delta.GetBalance(fund, currency));
+            Assert.Equal(100, delta.GetBalance(address1, currency));
+            Assert.Equal(3000, delta.GetBalance(address2, currency));
+
+            // 13600번 블록에 받아야 할 것들 검사
+            ctx.BlockIndex = 13600;
+            delta = action.GenesisGoldDistribution(ctx, _baseState);
+            Assert.Equal(99999996900, delta.GetBalance(fund, currency));
+            Assert.Equal(100, delta.GetBalance(address1, currency));
+            Assert.Equal(3000, delta.GetBalance(address2, currency));
+
+            // 13601번 블록에 받아야 할 것들 검사
+            ctx.BlockIndex = 13601;
+            delta = action.GenesisGoldDistribution(ctx, _baseState);
+            Assert.Equal(99999999900, delta.GetBalance(fund, currency));
+            Assert.Equal(100, delta.GetBalance(address1, currency));
+            Assert.Equal(0, delta.GetBalance(address2, currency));
+
+            // Fund 잔액을 초과해서 송금하는 경우
+            // EndBlock이 긴 순서대로 송금을 진행하기 때문에, 100이 송금 성공하고 10억이 송금 실패한다.
+            ctx.BlockIndex = 2;
+            delta = action.GenesisGoldDistribution(ctx, _baseState);
+            Assert.Equal(99999999900, delta.GetBalance(fund, currency));
+            Assert.Equal(100, delta.GetBalance(address1, currency));
+            Assert.Equal(0, delta.GetBalance(address2, currency));
+        }
+    }
+
+    public class GoldDistributionTest
+    {
+        public static readonly GoldDistribution[] Fixture =
+        {
+            new GoldDistribution
+            {
+                Address = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
+                AmountPerBlock = 100,
+                StartBlock = 1,
+                EndBlock = 100000,
+            },
+            new GoldDistribution
+            {
+                Address = new Address("Fb90278C67f9b266eA309E6AE8463042f5461449"),
+                AmountPerBlock = 3000,
+                StartBlock = 3600,
+                EndBlock = 13600,
+            },
+            new GoldDistribution
+            {
+                Address = new Address("Fb90278C67f9b266eA309E6AE8463042f5461449"),
+                AmountPerBlock = 100000000000,
+                StartBlock = 2,
+                EndBlock = 2,
+            },
+            new GoldDistribution
+            {
+                Address = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
+                AmountPerBlock = 1000000,
+                StartBlock = 0,
+                EndBlock = 0,
+            },
+        };
+
+        public static string CreateFixtureCsvFile()
+        {
+            string csvPath = Path.GetTempFileName();
+            using (StreamWriter writer = File.CreateText(csvPath))
+            {
+                writer.Write(@"Address,AmountPerBlock,StartBlock,EndBlock
+F9A15F870701268Bd7bBeA6502eB15F4997f32f9,1000000,0,0
+F9A15F870701268Bd7bBeA6502eB15F4997f32f9,100,1,100000
+Fb90278C67f9b266eA309E6AE8463042f5461449,3000,3600,13600
+Fb90278C67f9b266eA309E6AE8463042f5461449,100000000000,2,2
+");
+            }
+
+            return csvPath;
+        }
+
+        [Fact]
+        public void LoadInDescendingEndBlockOrder()
+        {
+            string fixturePath = CreateFixtureCsvFile();
+            GoldDistribution[] records = GoldDistribution.LoadInDescendingEndBlockOrder(fixturePath);
+            Assert.Equal(Fixture, records);
         }
     }
 }
