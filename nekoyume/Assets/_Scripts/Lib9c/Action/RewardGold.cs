@@ -181,13 +181,15 @@ namespace Nekoyume.Action
         public IAccountStateDelta MinerReward(IActionContext ctx, IAccountStateDelta states)
         {
             // 마이닝 보상
-            // TODO: 반감기 구현 [TODO-NCG]
+            // TODO: 더 이상 마이닝 보상을 줄 수 없을 경우를 처리해야 함. [TODO-NCG]
             // https://www.notion.so/planetarium/Mining-Reward-b7024ef463c24ebca40a2623027d497d
+            var countOfHalfLife = Convert.ToInt64(ctx.BlockIndex / 12614400) + 1;
+            var miningReward = Gold / countOfHalfLife;
             return states.TransferAsset(
                 GoldCurrencyState.Address,
                 ctx.Miner,
                 states.GetGoldCurrency(),
-                Gold
+                miningReward
             );
         }
     }
