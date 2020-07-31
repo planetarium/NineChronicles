@@ -16,7 +16,6 @@ using Nekoyume.Model.Stat;
 
 namespace Nekoyume.UI.Module
 {
-    // FIXME: `ConsumableRecipe`과 거의 똑같은 구조입니다.
     public class ItemRecipe : MonoBehaviour
     {
         [SerializeField]
@@ -103,10 +102,6 @@ namespace Nekoyume.UI.Module
             Initialize();
         }
 
-        // private void OnEnable()
-        // {
-        //     UpdateRecipes();
-        // }
 
         private void OnDisable()
         {

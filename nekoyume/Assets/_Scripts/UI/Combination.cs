@@ -238,7 +238,6 @@ namespace Nekoyume.UI
 
             if (_shouldGoToEquipmentRecipe.HasValue)
             {
-                // equipmentRecipe.UpdateRecipes();
                 if (_shouldGoToEquipmentRecipe.Value.subRecipeId.HasValue)
                 {
                     if (itemRecipe.TryGetCellView(
@@ -496,7 +495,6 @@ namespace Nekoyume.UI
 
         public void UpdateRecipe()
         {
-            // equipmentRecipe.UpdateRecipes();
             combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
@@ -646,7 +644,6 @@ namespace Nekoyume.UI
                 model,
                 combinationPanel
             );
-            // equipmentRecipe.UpdateRecipes();
             combineEquipmentCategoryButton.HasNotification.Value = HasNotification;
         }
 
