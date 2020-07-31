@@ -75,12 +75,11 @@ namespace Lib9c.Tests.Action
                 throw new InsufficientBalanceException(sender, currency, senderBalance, msg);
             }
 
-            return new State(
-                _state,
-                _balance
-                    .SetItem((sender, currency), senderBalance - amount)
-                    .SetItem((recipient, currency), recipientBalance + amount)
-            );
+            IImmutableDictionary<(Address, Currency), BigInteger> newBalance = _balance
+                .SetItem((sender, currency), senderBalance - amount)
+                .SetItem((recipient, currency), recipientBalance + amount);
+            var result = new State(_state, newBalance);
+            return result;
         }
     }
 }
