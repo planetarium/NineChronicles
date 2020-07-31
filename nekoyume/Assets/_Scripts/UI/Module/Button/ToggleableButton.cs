@@ -6,7 +6,6 @@ using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -31,7 +30,7 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Canvas sortingGroup = null;
-        
+
         public string localizationKey = null;
 
         private IToggleListener _toggleListener;
@@ -67,7 +66,7 @@ namespace Nekoyume.UI.Module
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                SetText(LocalizationManager.Localize(localizationKey));
+                SetText(L10nManager.Localize(localizationKey));
             }
 
             // (object) sortingGroup == (Canvas) "null" 이기 때문에 `is`나 `ReferenceEquals`를 사용하지 않습니다.
