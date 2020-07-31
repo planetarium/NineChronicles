@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.Game.Controller;
 using Nekoyume.Pool;
@@ -16,6 +15,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
@@ -392,7 +392,7 @@ namespace Nekoyume.UI
             _timeSinceStartText = 0f;
 
             var pageModel = viewModel.pages[_pageIndex];
-            titleText.text = LocalizationManager.Localize(pageModel.titleL10nKey);
+            titleText.text = L10nManager.Localize(pageModel.titleL10nKey);
 
             UpdatePageImagesAndTexts();
             UpdateButtons();
@@ -466,7 +466,7 @@ namespace Nekoyume.UI
 
             var text = textPool.Rent();
             text.rectTransform.anchoredPosition = textModel.anchoredPosition;
-            text.text = LocalizationManager.Localize(textModel.textL10nKey);
+            text.text = L10nManager.Localize(textModel.textL10nKey);
             text.fontSize = textModel.fontSize;
             _texts.Add((
                 text,

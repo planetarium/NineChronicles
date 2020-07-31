@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -22,7 +21,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            materialText.text = LocalizationManager.Localize("UI_MATERIALS");
+            materialText.text = L10nManager.Localize("UI_MATERIALS");
         }
 
         public virtual void SetData(

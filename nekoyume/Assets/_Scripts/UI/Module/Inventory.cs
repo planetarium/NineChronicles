@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
@@ -73,14 +73,14 @@ namespace Nekoyume.UI.Module
             _switchButtonTransforms.Add(ItemType.Material,
                 materialsButton.button.GetComponent<RectTransform>());
 
-            consumablesButton.text.text = LocalizationManager.Localize("UI_CONSUMABLES");
-            consumablesButton.selectedText.text = LocalizationManager.Localize("UI_CONSUMABLES");
-            costumesButton.text.text = LocalizationManager.Localize("UI_COSTUME");
-            costumesButton.selectedText.text = LocalizationManager.Localize("UI_COSTUME");
-            equipmentsButton.text.text = LocalizationManager.Localize("UI_EQUIPMENTS");
-            equipmentsButton.selectedText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
-            materialsButton.text.text = LocalizationManager.Localize("UI_MATERIALS");
-            materialsButton.selectedText.text = LocalizationManager.Localize("UI_MATERIALS");
+            consumablesButton.text.text = L10nManager.Localize("UI_CONSUMABLES");
+            consumablesButton.selectedText.text = L10nManager.Localize("UI_CONSUMABLES");
+            costumesButton.text.text = L10nManager.Localize("UI_COSTUME");
+            costumesButton.selectedText.text = L10nManager.Localize("UI_COSTUME");
+            equipmentsButton.text.text = L10nManager.Localize("UI_EQUIPMENTS");
+            equipmentsButton.selectedText.text = L10nManager.Localize("UI_EQUIPMENTS");
+            materialsButton.text.text = L10nManager.Localize("UI_MATERIALS");
+            materialsButton.selectedText.text = L10nManager.Localize("UI_MATERIALS");
 
             SharedModel = new Model.Inventory();
             SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);

@@ -1,4 +1,4 @@
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 
@@ -52,9 +52,9 @@ namespace Nekoyume.UI
             if (localize)
             {
                 if (titleExists)
-                    this.title.text = LocalizationManager.Localize(title);
-                this.content.text = LocalizationManager.Localize(content);
-                this.labelOK.text = LocalizationManager.Localize(labelOK);
+                    this.title.text = L10nManager.Localize(title);
+                this.content.text = L10nManager.Localize(content);
+                this.labelOK.text = L10nManager.Localize(labelOK);
             }
             else
             {

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Nekoyume.Game.Controller;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using UniRx;
 
 namespace Nekoyume.UI.Module
@@ -74,8 +74,8 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                enabledText.text = LocalizationManager.Localize(localizationKey);
-                disabledText.text = LocalizationManager.Localize(localizationKey);
+                enabledText.text = L10nManager.Localize(localizationKey);
+                disabledText.text = L10nManager.Localize(localizationKey);
             }
         }
 

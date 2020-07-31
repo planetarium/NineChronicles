@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using System;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UnityEngine.UI;

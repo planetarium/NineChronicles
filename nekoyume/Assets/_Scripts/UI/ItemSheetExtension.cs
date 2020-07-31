@@ -1,5 +1,4 @@
-﻿using Assets.SimpleLocalization;
-using Nekoyume.Model.Item;
+﻿using Nekoyume.L10n;
 using Nekoyume.TableData;
 
 namespace Nekoyume.UI
@@ -8,7 +7,7 @@ namespace Nekoyume.UI
     {
         public static string GetLocalizedName(this ItemSheet.Row value)
         {
-            return LocalizationManager.Localize($"ITEM_NAME_{value.Id}");
+            return L10nManager.Localize($"ITEM_NAME_{value.Id}");
         }
     }
 }

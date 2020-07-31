@@ -14,6 +14,7 @@ using Libplanet.Blockchain;
 using Nekoyume.Model.State;
 using System;
 using System.Net;
+using Libplanet.Crypto;
 
 namespace Nekoyume.BlockChain
 {
@@ -68,6 +69,10 @@ namespace Nekoyume.BlockChain
             var gameConfigState = new GameConfigState(csv);
             var tableSheetsState = new TableSheetsState(tableSheets);
             var redeemCodeListSheet = TableSheets.FromTableSheetsState(tableSheetsState).RedeemCodeListSheet;
+
+            // FIXME 메인넷때는 따로 지정해야합니다.
+            var minterKey = new PrivateKey();
+            var ncg = new Currency("NCG", minterKey.ToAddress());
             var initialStatesAction = new InitializeStates
             {
                 RankingState = new RankingState(),
@@ -80,13 +85,14 @@ namespace Nekoyume.BlockChain
                     1500000
                 ),
                 ActivatedAccountsState = new ActivatedAccountsState(),
+                GoldCurrencyState = new GoldCurrencyState(ncg)
             };
             var actions = new PolymorphicAction<ActionBase>[]
             {
                 initialStatesAction,
             };
             return
-                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(actions);
+                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(actions, privateKey: minterKey);
         }
 
         /// <summary>

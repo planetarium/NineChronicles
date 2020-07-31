@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -22,12 +21,12 @@ using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
 using Spine.Unity;
 using UnityEngine;
 using TentuPlay.Api;
 using UniRx;
 using mixpanel;
+using Nekoyume.L10n;
 
 namespace Nekoyume.Game
 {
@@ -934,7 +933,7 @@ namespace Nekoyume.Game
                 battle.BossStatus.SetHp(boss.HP, boss.HP);
                 battle.BossStatus.SetProfile(
                     boss.Level,
-                    LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
+                    L10nManager.LocalizeCharacterName(boss.RowData.Id),
                     sprite);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }

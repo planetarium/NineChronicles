@@ -1,6 +1,6 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using System;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UniRx.Triggers;
