@@ -104,18 +104,13 @@ namespace Nekoyume.Action
     [ActionType("reward_gold")]
     public class RewardGold : ActionBase
     {
-        public BigInteger Gold;
-
         public override IValue PlainValue =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "gold"] = Gold.Serialize(),
             });
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var dict = (Bencodex.Types.Dictionary) plainValue;
-            Gold = dict["gold"].ToBigInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -181,8 +176,9 @@ namespace Nekoyume.Action
         {
             // 마이닝 보상
             // https://www.notion.so/planetarium/Mining-Reward-b7024ef463c24ebca40a2623027d497d
+            BigInteger defaultMiningReward = 10;
             var countOfHalfLife = Convert.ToInt64(ctx.BlockIndex / 12614400) + 1;
-            var miningReward = Gold / countOfHalfLife;
+            var miningReward = defaultMiningReward / countOfHalfLife;
             return states.TransferAsset(
                 GoldCurrencyState.Address,
                 ctx.Miner,

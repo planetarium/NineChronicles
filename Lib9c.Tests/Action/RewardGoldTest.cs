@@ -59,10 +59,7 @@ namespace Lib9c.Tests.Action
             var state = _baseState
                 .SetState(weekly.address, weekly.Serialize());
 
-            var action = new RewardGold()
-            {
-                Gold = 1,
-            };
+            var action = new RewardGold();
 
             var nextState = action.Execute(new ActionContext()
             {
@@ -87,10 +84,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(4, weekly[_avatarState.address].DailyChallengeCount);
 
             var state = _baseState.SetState(weekly.address, weekly.Serialize());
-            var action = new RewardGold()
-            {
-                Gold = 1,
-            };
+            var action = new RewardGold();
 
             var nextState = action.Execute(new ActionContext()
             {
@@ -123,10 +117,8 @@ namespace Lib9c.Tests.Action
                 .SetState(prevWeekly.address, prevWeekly.Serialize())
                 .SetState(weekly.address, weekly.Serialize());
 
-            var action = new RewardGold()
-            {
-                Gold = 1,
-            };
+            var action = new RewardGold();
+
             var nextState = action.Execute(new ActionContext()
             {
                 PreviousStates = state,
@@ -153,10 +145,7 @@ namespace Lib9c.Tests.Action
             Address fund = GoldCurrencyState.Address;
             Address address1 = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9");
             Address address2 = new Address("Fb90278C67f9b266eA309E6AE8463042f5461449");
-            var action = new RewardGold()
-            {
-                Gold = 1,
-            };
+            var action = new RewardGold();
 
             var ctx = new ActionContext()
             {
@@ -231,10 +220,7 @@ namespace Lib9c.Tests.Action
                 Miner = miner,
             };
 
-            var action = new RewardGold()
-            {
-                Gold = 10,
-            };
+            var action = new RewardGold();
 
             IAccountStateDelta delta;
 
