@@ -68,9 +68,6 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
             });
 
-            nextState.TryGetGoldBalance(default, out var reward);
-
-            Assert.Equal(1, reward);
             Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.UpdatedAddresses);
         }
 
@@ -94,9 +91,7 @@ namespace Lib9c.Tests.Action
             });
 
             var current = nextState.GetWeeklyArenaState(0);
-            nextState.TryGetGoldBalance(default, out var reward);
 
-            Assert.Equal(1, reward);
             Assert.Contains(WeeklyArenaState.DeriveAddress(1), nextState.UpdatedAddresses);
             Assert.Equal(GameConfig.DailyArenaInterval, current.ResetIndex);
             Assert.Equal(5, current[_avatarState.address].DailyChallengeCount);
@@ -126,11 +121,9 @@ namespace Lib9c.Tests.Action
                 BlockIndex = GameConfig.WeeklyArenaInterval,
             });
 
-            nextState.TryGetGoldBalance(default, out var reward);
             var prev = nextState.GetWeeklyArenaState(0);
             var current = nextState.GetWeeklyArenaState(1);
 
-            Assert.Equal(1, reward);
             Assert.Equal(prevWeekly.address, prev.address);
             Assert.Equal(weekly.address, current.address);
             Assert.True(prev.Ended);

@@ -117,7 +117,7 @@ namespace Nekoyume.Action
         {
             var states = context.PreviousStates;
             states = GenesisGoldDistribution(context, states);
-            states = WeeklyArenaReward(context, states);
+            states = WeeklyArenaRankingBoard(context, states);
             return MinerReward(context, states);
         }
 
@@ -141,7 +141,7 @@ namespace Nekoyume.Action
             return states;
         }
 
-        public IAccountStateDelta WeeklyArenaReward(IActionContext ctx, IAccountStateDelta states)
+        public IAccountStateDelta WeeklyArenaRankingBoard(IActionContext ctx, IAccountStateDelta states)
         {
             var index = Math.Max((int) ctx.BlockIndex / GameConfig.WeeklyArenaInterval, 0);
             var weekly = states.GetWeeklyArenaState(index);
