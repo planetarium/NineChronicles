@@ -1,3 +1,4 @@
+using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using TMPro;
@@ -22,12 +23,29 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private Canvas sortingGroup = null;
 
+        private int _originalSortingOrderOffset;
+
         public readonly Subject<NormalButton> OnClick = new Subject<NormalButton>();
 
         #region Mono
 
         protected virtual void Awake()
         {
+            if (sortingGroup)
+            {
+                var widget = GetComponentInParent<Widget>();
+                if (widget)
+                {
+                    var layerSortingOrder =
+                        MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                    _originalSortingOrderOffset = sortingGroup.sortingOrder - layerSortingOrder;
+                }
+                else
+                {
+                    _originalSortingOrderOffset = sortingGroup.sortingOrder;
+                }
+            }
+
             text.text = L10nManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
             button.OnClickAsObservable().Subscribe(_ =>
             {
@@ -52,12 +70,34 @@ namespace Nekoyume.UI.Module
 
         public void SetSortOrderToTop()
         {
-            sortingGroup.sortingOrder = 100;
+            if (!sortingGroup)
+            {
+                return;
+            }
+
+            var systemInfoSortingOrder =
+                MainCanvas.instance.GetLayer(WidgetType.SystemInfo).root.sortingOrder;
+            sortingGroup.sortingOrder = systemInfoSortingOrder;
         }
 
         public void SetSortOrderToNormal()
         {
-            sortingGroup.sortingOrder = 0;
+            if (!sortingGroup)
+            {
+                return;
+            }
+
+            var widget = GetComponentInParent<Widget>();
+            if (widget)
+            {
+                var layerSortingOrder =
+                    MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                sortingGroup.sortingOrder = layerSortingOrder + _originalSortingOrderOffset;
+            }
+            else
+            {
+                sortingGroup.sortingOrder = _originalSortingOrderOffset;
+            }
         }
     }
 }

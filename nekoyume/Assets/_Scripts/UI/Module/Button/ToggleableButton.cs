@@ -1,5 +1,6 @@
 using Nekoyume.Game.Controller;
 using System;
+using Nekoyume.EnumType;
 using Nekoyume.L10n;
 using TMPro;
 using UniRx;
@@ -37,6 +38,7 @@ namespace Nekoyume.UI.Module
 
         private Animator _animatorCache;
         private Color _originalTextColor;
+        private int _originalSortingOrderOffset;
 
         public Animator Animator => !_animatorCache
             ? _animatorCache = GetComponent<Animator>()
@@ -53,6 +55,21 @@ namespace Nekoyume.UI.Module
             if (toggledOffText)
             {
                 _originalTextColor = toggledOffText.color;
+            }
+
+            if (sortingGroup)
+            {
+                var widget = GetComponentInParent<Widget>();
+                if (widget)
+                {
+                    var layerSortingOrder =
+                        MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                    _originalSortingOrderOffset = sortingGroup.sortingOrder - layerSortingOrder;
+                }
+                else
+                {
+                    _originalSortingOrderOffset = sortingGroup.sortingOrder;
+                }
             }
 
             Toggleable = true;
@@ -212,12 +229,34 @@ namespace Nekoyume.UI.Module
 
         public void SetSortOrderToTop()
         {
-            sortingGroup.sortingOrder = 100;
+            if (!sortingGroup)
+            {
+                return;
+            }
+
+            var systemInfoSortingOrder =
+                MainCanvas.instance.GetLayer(WidgetType.SystemInfo).root.sortingOrder;
+            sortingGroup.sortingOrder = systemInfoSortingOrder;
         }
 
         public void SetSortOrderToNormal()
         {
-            sortingGroup.sortingOrder = 0;
+            if (!sortingGroup)
+            {
+                return;
+            }
+
+            var widget = GetComponentInParent<Widget>();
+            if (widget)
+            {
+                var layerSortingOrder =
+                    MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                sortingGroup.sortingOrder = layerSortingOrder + _originalSortingOrderOffset;
+            }
+            else
+            {
+                sortingGroup.sortingOrder = _originalSortingOrderOffset;
+            }
         }
 
         protected virtual void SetText(string text)
