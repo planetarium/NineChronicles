@@ -170,7 +170,11 @@ namespace NineChronicles.Standalone.Executable
                     StandaloneServices.CreateHeadless(nineChroniclesProperties, standaloneContext);
                 standaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
 
-                if (!graphQLServer)
+                bool startNineChroniclesNodeService = !graphQLServer
+                                                      || !(peerStrings is null)
+                                                      || !(host is null || port is null);
+
+                if (startNineChroniclesNodeService)
                 {
                     if (!properties.NoMiner)
                     {
