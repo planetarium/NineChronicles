@@ -53,7 +53,7 @@ namespace Nekoyume
         private int[,] _stageRange;
         private Model.Skill.Skill[] _skills;
         private Model.Skill.Skill _selectedSkill;
-        protected override WidgetType WidgetType => WidgetType.Development;
+        public override WidgetType WidgetType => WidgetType.Development;
 
         public class DebugRandom : IRandom
         {
