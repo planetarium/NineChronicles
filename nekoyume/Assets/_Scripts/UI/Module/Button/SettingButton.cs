@@ -4,7 +4,7 @@ namespace Nekoyume.UI.Module
 {
     public class SettingButton : Widget
     {
-        protected override WidgetType WidgetType => WidgetType.Development;
+        public override WidgetType WidgetType => WidgetType.Development;
 
         protected override void Awake()
         {
