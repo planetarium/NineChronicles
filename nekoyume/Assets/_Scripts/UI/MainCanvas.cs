@@ -18,26 +18,19 @@ namespace Nekoyume.UI
         {
             public Canvas root;
 
-            public IReadOnlyList<Canvas> Children { get; private set; }
-
-            public void UpdateChildren()
-            {
-                Children = root.GetComponentsInChildren<Canvas>(true)
-                    .Where(canvas => !canvas.Equals(root))
-                    .ToList();
-            }
-
             public void SetSortingOrder(int sortingOrder)
             {
                 var rootSortingOrderBackup = root.sortingOrder;
-                root.sortingOrder = sortingOrder;
-
-                if (Children is null)
+                if (rootSortingOrderBackup == sortingOrder)
                 {
-                    UpdateChildren();
+                    return;
                 }
 
-                foreach (var childCanvas in Children)
+                root.sortingOrder = sortingOrder;
+
+                foreach (var childCanvas in root.GetComponentsInChildren<Canvas>(true)
+                    .Where(canvas => !canvas.Equals(root))
+                    .ToList())
                 {
                     childCanvas.sortingOrder =
                         sortingOrder + (childCanvas.sortingOrder - rootSortingOrderBackup);
@@ -136,14 +129,9 @@ namespace Nekoyume.UI
                     systemInfoLayer,
                     developmentLayer,
                 };
-
-                _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
             }
 
-            foreach (var layer in _layers)
-            {
-                layer.UpdateChildren();
-            }
+            _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
         }
 
         public void InitializeTitle()
@@ -305,8 +293,10 @@ namespace Nekoyume.UI
             UpdateLayers();
         }
 
-        public void SetLayerSortingOrderToTarget(WidgetType fromWidgetType,
-            WidgetType toWidgetType)
+        public void SetLayerSortingOrderToTarget(
+            WidgetType fromWidgetType,
+            WidgetType toWidgetType,
+            bool checkFromIsSmallerThanTo = true)
         {
             if (fromWidgetType == toWidgetType)
             {
@@ -318,6 +308,12 @@ namespace Nekoyume.UI
             var to = GetLayer(toWidgetType);
             var toSortingOrder = to.root.sortingOrder;
             if (fromSortingOrder == toSortingOrder)
+            {
+                return;
+            }
+
+            if (checkFromIsSmallerThanTo &&
+                fromSortingOrder > toSortingOrder)
             {
                 return;
             }
@@ -343,7 +339,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
+            UpdateLayers();
         }
     }
 }
