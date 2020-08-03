@@ -22,7 +22,7 @@ namespace Nekoyume.UI
 
             public void UpdateChildren()
             {
-                Children = root.GetComponentsInChildren<Canvas>()
+                Children = root.GetComponentsInChildren<Canvas>(true)
                     .Where(canvas => !canvas.Equals(root))
                     .ToList();
             }
