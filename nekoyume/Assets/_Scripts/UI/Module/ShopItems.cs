@@ -1,16 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Libplanet;
-using Nekoyume.EnumType;
+using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model;
-using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 using ShopItem = Nekoyume.UI.Model.ShopItem;
 
 namespace Nekoyume.UI.Module
@@ -18,15 +13,15 @@ namespace Nekoyume.UI.Module
     public class ShopItems : MonoBehaviour
     {
         public List<ShopItemView> items;
-        public Button refreshButton;
-        public Text refreshButtonText;
+        public TouchHandler refreshButtonTouchHandler;
+        public RefreshButton refreshButton;
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
-        
+
         public Model.ShopItems SharedModel { get; private set; }
-        
+
         #region Mono
-        
+
         private void Awake()
         {
             SharedModel = new Model.ShopItems();
@@ -36,15 +31,13 @@ namespace Nekoyume.UI.Module
             SharedModel.CurrentAgentsProducts.ObserveAdd().Subscribe(_ => UpdateView()).AddTo(gameObject);
             SharedModel.CurrentAgentsProducts.ObserveRemove().Subscribe(_ => UpdateView()).AddTo(gameObject);
 
-            refreshButtonText.text = LocalizationManager.Localize("UI_REFRESH");
-
-            refreshButton.onClick.AsObservable().Subscribe(_ =>
+            refreshButtonTouchHandler.OnClick.Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 SharedModel?.ResetOtherProducts();
             }).AddTo(gameObject);
         }
-        
+
         private void OnEnable()
         {
             ReactiveShopState.Items.Subscribe(ResetProducts)
@@ -63,7 +56,7 @@ namespace Nekoyume.UI.Module
         }
 
         #endregion
-        
+
         public void ResetProducts(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> products)
         {
             SharedModel?.ResetProducts(products);
@@ -77,15 +70,16 @@ namespace Nekoyume.UI.Module
                 {
                     item.Clear();
                 }
-                
+
                 return;
             }
-            
+
             switch (SharedModel.State.Value)
             {
                 case Shop.StateType.Buy:
                     UpdateViewWithItems(SharedModel.OtherProducts);
                     refreshButton.gameObject.SetActive(true);
+                    refreshButton.PlayAnimation(NPCAnimation.Type.Appear);
                     break;
                 case Shop.StateType.Sell:
                     UpdateViewWithItems(SharedModel.CurrentAgentsProducts);
@@ -103,13 +97,13 @@ namespace Nekoyume.UI.Module
                 {
                     if (itemViews.Current is null)
                         continue;
-                    
+
                     if (!itemModels.MoveNext())
                     {
                         itemViews.Current.Clear();
                         continue;
                     }
-                        
+
                     itemViews.Current.SetData(itemModels.Current);
                 }
             }

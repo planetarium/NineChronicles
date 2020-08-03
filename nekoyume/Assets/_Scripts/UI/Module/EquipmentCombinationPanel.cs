@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Module
     {
         public void SetData(EquipmentItemRecipeSheet.Row recipeRow, int? subRecipeId = null)
         {
-            (recipeCellView as EquipmentRecipeCellView).Set(recipeRow);
+            recipeCellView.Set(recipeRow);
             materialPanel.SetData(recipeRow, subRecipeId);
 
             gameObject.SetActive(true);

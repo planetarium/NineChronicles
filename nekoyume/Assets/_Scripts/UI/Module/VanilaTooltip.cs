@@ -1,5 +1,5 @@
-﻿using Assets.SimpleLocalization;
-using Nekoyume.EnumType;
+﻿using Nekoyume.EnumType;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,8 +15,8 @@ namespace Nekoyume.UI.Module
 
         public void Show(string title, string content, Vector2 position, bool localize = true)
         {
-            titleText.text = LocalizationManager.Localize(title);
-            contentText.text = LocalizationManager.Localize(content);
+            titleText.text = L10nManager.Localize(title);
+            contentText.text = L10nManager.Localize(content);
             panelImage.rectTransform.position = position;
 
             base.Show();

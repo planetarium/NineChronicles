@@ -1,8 +1,9 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -18,18 +19,23 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         private string localizationKey = null;
 
+        [SerializeField]
+        private Canvas sortingGroup = null;
+
         public readonly Subject<NormalButton> OnClick = new Subject<NormalButton>();
 
         #region Mono
 
         protected virtual void Awake()
         {
-            text.text = LocalizationManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
+            text.text = L10nManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 OnClick.OnNext(this);
             }).AddTo(gameObject);
+
+            sortingGroup.sortingLayerName = "UI";
         }
 
         #endregion
@@ -42,6 +48,16 @@ namespace Nekoyume.UI.Module
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        public void SetSortOrderToTop()
+        {
+            sortingGroup.sortingOrder = 100;
+        }
+
+        public void SetSortOrderToNormal()
+        {
+            sortingGroup.sortingOrder = 0;
         }
     }
 }

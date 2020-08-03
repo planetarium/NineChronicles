@@ -1,7 +1,7 @@
-﻿using Assets.SimpleLocalization;
-using DG.Tweening;
+﻿using DG.Tweening;
 using Nekoyume.Game;
 using System.Collections;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -49,7 +49,7 @@ namespace Nekoyume.UI
         public void Init(bool active = true)
         {
             enable = active;
-            SpeechCount = LocalizationManager.LocalizedCount(localizationKey);
+            SpeechCount = L10nManager.LocalizedCount(localizationKey);
             gameObject.SetActive(false);
         }
 
@@ -70,7 +70,7 @@ namespace Nekoyume.UI
         public bool SetKey(string value)
         {
             localizationKey = value;
-            SpeechCount = LocalizationManager.LocalizedCount(localizationKey);
+            SpeechCount = L10nManager.LocalizedCount(localizationKey);
             return SpeechCount > 0;
         }
 
@@ -80,9 +80,14 @@ namespace Nekoyume.UI
             {
                 bubbleImages[i].gameObject.SetActive(index == i);
             }
+            SetBubbleImageInternal();
         }
 
-        public void Hide()
+        protected virtual void SetBubbleImageInternal()
+        {
+        }
+
+        public virtual void Hide()
         {
             text.text = "";
             gameObject.SetActive(false);
@@ -107,7 +112,7 @@ namespace Nekoyume.UI
 
             BeforeSpeech();
             var speech =
-                LocalizationManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
+                L10nManager.Localize($"{localizationKey}{Random.Range(0, SpeechCount)}");
             _coroutine = StartCoroutine(ShowText(speech, instant));
             yield return _coroutine;
         }
@@ -204,7 +209,7 @@ namespace Nekoyume.UI
 
             bubbleContainer.DOKill();
             textSize.transform.DOKill();
-            gameObject.SetActive(false);
+            Hide();
         }
 
         public void ResetKey()

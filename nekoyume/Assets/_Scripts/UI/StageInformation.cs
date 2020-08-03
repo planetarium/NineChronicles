@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -19,17 +19,17 @@ namespace Nekoyume.UI
         [SerializeField]
         private HelpButton stageHelpButton = null;
         [SerializeField]
-        private TextMeshProUGUI titleText;
+        private TextMeshProUGUI titleText = null;
         [SerializeField]
-        private TextMeshProUGUI monstersAreaText;
+        private TextMeshProUGUI monstersAreaText = null;
         [SerializeField]
-        private List<VanillaCharacterView> monstersAreaCharacterViews;
+        private List<VanillaCharacterView> monstersAreaCharacterViews = null;
         [SerializeField]
-        private TextMeshProUGUI rewardsAreaText;
+        private TextMeshProUGUI rewardsAreaText = null;
         [SerializeField]
-        private List<StageRewardItemView> rewardsAreaItemViews;
+        private List<StageRewardItemView> rewardsAreaItemViews = null;
         [SerializeField]
-        private TextMeshProUGUI expText;
+        private TextMeshProUGUI expText = null;
         [SerializeField]
         private SubmitButton submitButton = null;
         [SerializeField]
@@ -43,9 +43,9 @@ namespace Nekoyume.UI
         public override void Initialize()
         {
             base.Initialize();
-            monstersAreaText.text = LocalizationManager.Localize("UI_WORLD_MAP_MONSTERS");
-            rewardsAreaText.text = LocalizationManager.Localize("UI_REWARDS");
-            submitButton.SetSubmitText(LocalizationManager.Localize("UI_WORLD_MAP_ENTER"));
+            monstersAreaText.text = L10nManager.Localize("UI_WORLD_MAP_MONSTERS");
+            rewardsAreaText.text = L10nManager.Localize("UI_REWARDS");
+            submitButton.SetSubmitText(L10nManager.Localize("UI_WORLD_MAP_ENTER"));
 
             var tooltip = Find<ItemInformationTooltip>();
             foreach (var view in rewardsAreaItemViews)

@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using Assets.SimpleLocalization;
 using Libplanet;
 using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.Factory;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
 using Nekoyume.Model.State;
@@ -641,8 +641,8 @@ namespace Nekoyume.UI
                 case ItemType.Equipment:
                     submitEnabledFunc = DimmedFuncForEquipments;
                     submitText = inventoryItem.EquippedEnabled.Value
-                        ? LocalizationManager.Localize("UI_UNEQUIP")
-                        : LocalizationManager.Localize("UI_EQUIP");
+                        ? L10nManager.Localize("UI_UNEQUIP")
+                        : L10nManager.Localize("UI_EQUIP");
                     onSubmit = Equip;
                     break;
                 case ItemType.Material:
@@ -650,7 +650,7 @@ namespace Nekoyume.UI
                     {
                         case ItemSubType.ApStone:
                             submitEnabledFunc = DimmedFuncForChargeActionPoint;
-                            submitText = LocalizationManager.Localize("UI_CHARGE_AP");
+                            submitText = L10nManager.Localize("UI_CHARGE_AP");
                             onSubmit = ChargeActionPoint;
                             break;
                         case ItemSubType.Chest:
@@ -695,7 +695,7 @@ namespace Nekoyume.UI
             if (item.ItemBase.Value is Nekoyume.Model.Item.Material material)
             {
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
-                    LocalizationManager.Localize("UI_CHARGE_AP"));
+                    L10nManager.Localize("UI_CHARGE_AP"));
                 Game.Game.instance.ActionManager.ChargeActionPoint();
                 LocalStateModifier.RemoveItem(States.Instance.CurrentAvatarState.address,
                     material.ItemId, 1);
@@ -710,7 +710,7 @@ namespace Nekoyume.UI
             if (item.ItemBase.Value is Chest chest)
             {
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
-                    LocalizationManager.Localize("UI_OPEN_CHEST"));
+                    L10nManager.Localize("UI_OPEN_CHEST"));
                 var dict = new Dictionary<HashDigest<SHA256>, int>
                 {
                     [chest.ItemId] = 1,

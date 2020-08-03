@@ -1,10 +1,10 @@
 using System.Globalization;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
@@ -19,8 +19,7 @@ namespace Nekoyume.UI
 {
     public class CombinationSlotPopup : PopupWidget
     {
-        public EquipmentRecipeCellView equipmentCellView;
-        public ConsumableRecipeCellView consumableCellView;
+        public RecipeCellView recipeCellView;
         public CombinationMaterialPanel materialPanel;
         public EquipmentOptionRecipeView optionView;
         public SubmitWithCostButton submitButton;
@@ -36,8 +35,8 @@ namespace Nekoyume.UI
             base.Awake();
 
             submitButton.SetSubmitText(
-                LocalizationManager.Localize("UI_COMBINATION_WAITING"),
-                LocalizationManager.Localize("UI_RAPID_COMBINATION")
+                L10nManager.Localize("UI_COMBINATION_WAITING"),
+                L10nManager.Localize("UI_RAPID_COMBINATION")
             );
 
             submitButton.OnSubmitClick.Subscribe(_ =>
@@ -72,7 +71,7 @@ namespace Nekoyume.UI
             base.OnCompleteOfShowAnimationInternal();
             _frontVFX =
                 VFXController.instance.CreateAndChase<CombinationSelectSmallFrontVFX>(
-                    equipmentCellView.transform,
+                    recipeCellView.transform,
                     new Vector3(0.53f, -0.5f));
         }
 
@@ -91,7 +90,7 @@ namespace Nekoyume.UI
                         Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
 
-                    equipmentCellView.Set(recipeRow);
+                    recipeCellView.Set(recipeRow);
                     if (subRecipeEnabled)
                     {
                         optionView.Show(
@@ -117,7 +116,7 @@ namespace Nekoyume.UI
                         Game.Game.instance.TableSheets.ConsumableItemRecipeSheet.Values.First(r =>
                             r.Id == result.recipeId);
 
-                    consumableCellView.Set(recipeRow);
+                    recipeCellView.Set(recipeRow);
                     materialPanel.SetData(recipeRow, false, true);
                     materialPanel.gameObject.SetActive(true);
                     break;
@@ -130,8 +129,8 @@ namespace Nekoyume.UI
             if (diff < 0)
             {
                 submitButton.SetSubmitText(
-                    LocalizationManager.Localize("UI_COMBINATION_WAITING"),
-                    LocalizationManager.Localize("UI_RAPID_COMBINATION")
+                    L10nManager.Localize("UI_COMBINATION_WAITING"),
+                    L10nManager.Localize("UI_RAPID_COMBINATION")
                 );
                 submitButton.SetSubmittable(result.id != default);
                 submitButton.HideHourglass();
@@ -149,13 +148,13 @@ namespace Nekoyume.UI
                 if (result.id != default)
                 {
                     submitButton.SetSubmitText(
-                        LocalizationManager.Localize("UI_RAPID_COMBINATION"));
+                        L10nManager.Localize("UI_RAPID_COMBINATION"));
                     submitButton.SetSubmittable(isEnough);
                 }
                 else
                 {
                     submitButton.SetSubmitText(
-                        LocalizationManager.Localize("UI_COMBINATION_WAITING"));
+                        L10nManager.Localize("UI_COMBINATION_WAITING"));
                     submitButton.SetSubmittable(false);
                 }
 
@@ -175,7 +174,7 @@ namespace Nekoyume.UI
             var result = (CombinationConsumable.ResultModel) slotState.Result;
             LocalStateModifier.AddNewResultAttachmentMail(
                 States.Instance.CurrentAvatarState.address, result.id, blockIndex);
-            var format = LocalizationManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
+            var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
             Notification.Push(
                 MailType.Workshop,
                 string.Format(CultureInfo.InvariantCulture, format,

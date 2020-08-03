@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Linq;
-using Assets.SimpleLocalization;
 using DG.Tweening;
 using DG.Tweening.Core;
 using DG.Tweening.Plugins.Options;
@@ -13,6 +12,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using mixpanel;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
@@ -83,7 +83,7 @@ namespace Nekoyume.UI
                 if (script.text != null)
                 {
                     script.scripts =
-                        LocalizationManager.Localize(script.scriptsLocalizationKey);
+                        L10nManager.Localize(script.scriptsLocalizationKey);
                     script.text.text = string.Empty;
                 }
 
@@ -112,7 +112,7 @@ namespace Nekoyume.UI
                 {
                     yield return StartCoroutine(Find<Blind>().FadeIn(2f, ""));
                     Close();
-                    Game.Game.instance.prologue.StartPrologue();
+                    Game.Game.instance.Prologue.StartPrologue();
                     yield return null;
                 }
 

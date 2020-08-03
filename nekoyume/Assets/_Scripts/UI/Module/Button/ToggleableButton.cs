@@ -1,6 +1,6 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using System;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UniRx.Triggers;
@@ -27,6 +27,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image toggledOnImage = null;
+
+        [SerializeField]
+        private Canvas sortingGroup = null;
 
         public string localizationKey = null;
 
@@ -63,9 +66,14 @@ namespace Nekoyume.UI.Module
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                var text = LocalizationManager.Localize(localizationKey);
-                toggledOffText.text = text;
-                toggledOnText.text = text;
+                SetText(L10nManager.Localize(localizationKey));
+            }
+
+            // (object) sortingGroup == (Canvas) "null" 이기 때문에 `is`나 `ReferenceEquals`를 사용하지 않습니다.
+            // `SerializedField`는 `null`을 할당해도 객체 생성시 `"null"`이 되어버립니다.
+            if (sortingGroup)
+            {
+                sortingGroup.sortingLayerName = "UI";
             }
         }
 
@@ -199,6 +207,29 @@ namespace Nekoyume.UI.Module
             {
                 toggledOffText.color = _originalTextColor * imageColor;
                 toggledOffText.color = _originalTextColor * imageColor;
+            }
+        }
+
+        public void SetSortOrderToTop()
+        {
+            sortingGroup.sortingOrder = 100;
+        }
+
+        public void SetSortOrderToNormal()
+        {
+            sortingGroup.sortingOrder = 0;
+        }
+
+        protected virtual void SetText(string text)
+        {
+            if (!(toggledOffText is null))
+            {
+                toggledOffText.text = text;
+            }
+
+            if (!(toggledOnText is null))
+            {
+                toggledOnText.text = text;
             }
         }
 

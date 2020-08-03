@@ -1,4 +1,5 @@
-using Assets.SimpleLocalization;
+using System;
+using System.Linq;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -10,6 +11,9 @@ using UniRx;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
+using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Scroller
@@ -69,6 +73,11 @@ namespace Nekoyume.UI.Scroller
         public ItemSubType ItemSubType { get; protected set; }
         public ElementalType ElementalType { get; protected set; }
         public StatType StatType { get; protected set; }
+        public EquipmentItemRecipeSheet.Row EquipmentRowData { get; private set; }
+        public ConsumableItemRecipeSheet.Row ConsumableRowData { get; private set; }
+        public int UnlockStage { get; private set; }
+
+        public SimpleCountableItemView ItemView => itemView;
 
         public bool tempLocked = false;
 
@@ -200,20 +209,25 @@ namespace Nekoyume.UI.Scroller
                     if (diff > 50)
                     {
                         unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             "???");
                     }
                     else
                     {
+                        if (diff == 0 && tempLocked)
+                        {
+                            lockVFX.Play();
+                            shakeTweener.PlayLoop();
+                        }
                         unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             unlockStage.ToString());
                     }
                 }
                 else
                 {
                     unlockConditionText.text = string.Format(
-                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                         "???");
                 }
             }
@@ -223,6 +237,156 @@ namespace Nekoyume.UI.Scroller
             }
 
             SetCellViewLocked(value);
+        }
+
+        public void Set(EquipmentItemRecipeSheet.Row recipeRow)
+        {
+            if (recipeRow is null)
+            {
+                return;
+            }
+
+            var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            if (!equipmentSheet.TryGetValue(recipeRow.ResultEquipmentId, out var row))
+            {
+                return;
+            }
+
+            EquipmentRowData = recipeRow;
+
+            var equipment = (Equipment) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
+            Set(equipment);
+
+            StatType = equipment.UniqueStatType;
+            var text = $"{equipment.Stat.Type} +{equipment.Stat.Value}";
+            optionText.text = text;
+            SetLocked(false, EquipmentRowData.UnlockStage);
+        }
+
+        public void Set(AvatarState avatarState, bool? hasNotification = false, bool isFirstOpen = false)
+        {
+            if (!isFirstOpen)
+            {
+                lockVFX.Stop();
+                shakeTweener.KillTween();
+            }
+
+            if (EquipmentRowData is null)
+            {
+                return;
+            }
+
+            // 해금 검사.
+            if (!avatarState.worldInformation.IsStageCleared(EquipmentRowData.UnlockStage))
+            {
+                HasNotification.Value = false;
+                SetLocked(true, EquipmentRowData.UnlockStage);
+                return;
+            }
+
+            if (hasNotification.HasValue)
+            {
+                HasNotification.Value = hasNotification.Value;
+            }
+
+            tempLocked = isFirstOpen;
+
+            SetLocked(isFirstOpen, EquipmentRowData.UnlockStage);
+
+            if (tempLocked)
+            {
+                return;
+            }
+
+            // 메인 재료 검사.
+            var inventory = avatarState.inventory;
+            var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            if (materialSheet.TryGetValue(EquipmentRowData.MaterialId, out var materialRow) &&
+                inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
+                fungibleItem.count >= EquipmentRowData.MaterialCount)
+            {
+                // 서브 재료 검사.
+                if (EquipmentRowData.SubRecipeIds.Any())
+                {
+                    var subSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
+                    var shouldDimmed = false;
+                    foreach (var subRow in EquipmentRowData.SubRecipeIds
+                        .Select(subRecipeId =>
+                            subSheet.TryGetValue(subRecipeId, out var subRow) ? subRow : null)
+                        .Where(item => !(item is null)))
+                    {
+                        foreach (var info in subRow.Materials)
+                        {
+                            if (materialSheet.TryGetValue(info.Id, out materialRow) &&
+                                inventory.TryGetMaterial(materialRow.ItemId,
+                                    out fungibleItem) &&
+                                fungibleItem.count >= info.Count)
+                            {
+                                continue;
+                            }
+
+                            shouldDimmed = true;
+                            break;
+                        }
+
+                        if (!shouldDimmed)
+                        {
+                            break;
+                        }
+                    }
+
+                    SetDimmed(shouldDimmed);
+                }
+                else
+                {
+                    SetDimmed(false);
+                }
+            }
+            else
+            {
+                SetDimmed(true);
+            }
+        }
+
+        public void Set(ConsumableItemRecipeSheet.Row recipeRow)
+        {
+            if (recipeRow is null)
+                return;
+
+            UnlockStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
+            var sheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
+            if (!sheet.TryGetValue(recipeRow.ResultConsumableItemId, out var row))
+                return;
+
+            ConsumableRowData = recipeRow;
+
+            var consumable = (Consumable)ItemFactory.CreateItemUsable(row, Guid.Empty, default);
+            Set(consumable);
+
+            StatType = consumable.MainStat;
+
+            var optionString = $"{consumable.MainStat} +{consumable.Stats.First(stat => stat.StatType == consumable.MainStat).ValueAsInt}";
+            optionText.text = optionString;
+            SetLocked(false, UnlockStage);
+        }
+
+        public void Set(AvatarState avatarState)
+        {
+            if (ConsumableRowData is null)
+                return;
+
+            // 해금 검사.
+            if (!avatarState.worldInformation.IsStageCleared(UnlockStage))
+            {
+                SetLocked(true, UnlockStage);
+                return;
+            }
+
+            SetLocked(false, UnlockStage);
+
+            //재료 검사.
+            var inventory = avatarState.inventory;
+            SetDimmed(!ConsumableRowData.MaterialItemIds.All(itemId => inventory.HasItem(itemId)));
         }
     }
 }

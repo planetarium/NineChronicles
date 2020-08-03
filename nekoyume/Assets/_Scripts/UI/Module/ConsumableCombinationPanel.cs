@@ -8,7 +8,7 @@ namespace Nekoyume.UI.Module
     {
         public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
         {
-            (recipeCellView as ConsumableRecipeCellView).Set(recipeRow);
+            recipeCellView.Set(recipeRow);
             materialPanel.SetData(recipeRow, true, Widget.Find<Combination>().selectedIndex >= 0);
 
             gameObject.SetActive(true);
@@ -44,7 +44,7 @@ namespace Nekoyume.UI.Module
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineConsumable);
         }
 
-        protected override void SubscribeOnClickSubmit()
+        public override void SubscribeOnClickSubmit()
         {
             Widget.Find<Combination>().State.SetValueAndForceNotify(Combination.StateType.CombineConsumable);
         }

@@ -1,4 +1,3 @@
-using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game;
 using Nekoyume.Game.Character;
@@ -6,6 +5,9 @@ using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.UI.Tween;
 using System.Collections;
+using Nekoyume.L10n;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -36,9 +38,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI continueText = null;
-        
+
         [SerializeField]
-        private SpeechBubble speechBubble = null;
+        private SpeechBubbleWithItem speechBubble = null;
 
         private NPC _npc = null;
         private Coroutine _npcAppearCoroutine = null;
@@ -51,6 +53,7 @@ namespace Nekoyume.UI
 
         private const int ContinueTime = 3;
         private const int NPCId = 300001;
+        private System.Action _closeAction;
 
         protected override WidgetType WidgetType => WidgetType.Popup;
 
@@ -64,6 +67,7 @@ namespace Nekoyume.UI
         {
             _buttonCanvasGroup.alpha = 0f;
             _bgCanvasGroup.alpha = 0f;
+            Find<BottomMenu>().combinationButton.SetSortOrderToTop();
             base.Show(ignoreShowAnimation);
         }
 
@@ -85,6 +89,7 @@ namespace Nekoyume.UI
                 _fireVFX.Stop();
                 _fireVFX = null;
             }
+            Find<BottomMenu>().combinationButton.SetSortOrderToNormal();
 
             base.Close(ignoreCloseAnimation);
         }
@@ -113,6 +118,16 @@ namespace Nekoyume.UI
             StartCoroutine(CoDisappearNPC());
         }
 
+        public void SetItemMaterial(Item item, bool isConsumable = false)
+        {
+            speechBubble.SetItemMaterial(item, isConsumable);
+        }
+
+        public void SetCloseAction(System.Action closeAction)
+        {
+            _closeAction = closeAction;
+        }
+
         private IEnumerator CoAnimateNPC()
         {
             var go = Game.Game.instance.Stage.npcFactory.Create(
@@ -130,8 +145,9 @@ namespace Nekoyume.UI
             _fireVFX = VFXController.instance.CreateAndChaseCam<CombinationBGFireVFX>(pos, new Vector3(-.7f, -.35f));
             speechBubble.SetKey("SPEECH_COMBINATION_START_");
             StartCoroutine(speechBubble.CoShowText(true));
+            StartCoroutine(CoWorkshopItemMove());
 
-            var format = LocalizationManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
 
             for (int timer = ContinueTime; timer >= 0; --timer)
             {
@@ -140,6 +156,28 @@ namespace Nekoyume.UI
             }
 
             StartCoroutine(CoDisappearNPC());
+        }
+
+        private IEnumerator CoWorkshopItemMove()
+        {
+            var item = speechBubble.item;
+
+            yield return new WaitForSeconds(speechBubble.bubbleTweenTime);
+
+            var endPosition = Find<BottomMenu>().combinationButton.transform.position;
+
+            ItemMoveAnimation.Show(
+                item.ItemBase.Value.GetIconSprite(),
+                speechBubble.ItemView.transform.position,
+                endPosition,
+                Vector2.one * 1.5f,
+                false,
+                false,
+                1f,
+                0,
+                ItemMoveAnimation.EndPoint.Workshop);
+
+            yield return null;
         }
 
         private IEnumerator CoDisappearNPC()
@@ -157,6 +195,7 @@ namespace Nekoyume.UI
             yield return new WaitForSeconds(.5f);
             _npc.gameObject.SetActive(false);
             OnDisappear?.Invoke();
+            _closeAction?.Invoke();
             Close();
         }
     }
