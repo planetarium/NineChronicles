@@ -34,7 +34,13 @@ namespace Nekoyume.UI.Module
             if (sortingGroup)
             {
                 var widget = GetComponentInParent<Widget>();
-                if (widget)
+                if (widget is BottomMenu)
+                {
+                    _originalSortingOrderOffset = 0;
+                    sortingGroup.sortingOrder =
+                        MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                }
+                else if (widget)
                 {
                     var layerSortingOrder =
                         MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
@@ -46,7 +52,10 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            text.text = L10nManager.Localize(string.IsNullOrEmpty(localizationKey) ? "null" : localizationKey);
+            text.text =
+                L10nManager.Localize(string.IsNullOrEmpty(localizationKey)
+                    ? "null"
+                    : localizationKey);
             button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();

@@ -60,7 +60,13 @@ namespace Nekoyume.UI.Module
             if (sortingGroup)
             {
                 var widget = GetComponentInParent<Widget>();
-                if (widget)
+                if (widget is BottomMenu)
+                {
+                    _originalSortingOrderOffset = 0;
+                    sortingGroup.sortingOrder =
+                        MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                }
+                else if (widget)
                 {
                     var layerSortingOrder =
                         MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
