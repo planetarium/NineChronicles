@@ -210,7 +210,10 @@ namespace Lib9c.Tests.Action
             // Fund 잔액을 초과해서 송금하는 경우
             // EndBlock이 긴 순서대로 송금을 진행하기 때문에, 100이 송금 성공하고 10억이 송금 실패한다.
             ctx.BlockIndex = 2;
-            delta = action.GenesisGoldDistribution(ctx, _baseState);
+            Assert.Throws<InsufficientBalanceException>(() =>
+            {
+                delta = action.GenesisGoldDistribution(ctx, _baseState);
+            });
             Assert.Equal(99999999900, delta.GetBalance(fund, currency));
             Assert.Equal(100, delta.GetBalance(address1, currency));
             Assert.Equal(0, delta.GetBalance(address2, currency));

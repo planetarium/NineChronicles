@@ -136,7 +136,6 @@ namespace Nekoyume.Action
             {
                 BigInteger amount = distribution.GetAmount(index);
                 if (amount <= 0) continue;
-                if (amount > states.GetBalance(fund, goldCurrency)) continue;
                 states = states.TransferAsset(
                     fund,
                     distribution.Address,
@@ -181,7 +180,6 @@ namespace Nekoyume.Action
         public IAccountStateDelta MinerReward(IActionContext ctx, IAccountStateDelta states)
         {
             // 마이닝 보상
-            // TODO: 더 이상 마이닝 보상을 줄 수 없을 경우를 처리해야 함. [TODO-NCG]
             // https://www.notion.so/planetarium/Mining-Reward-b7024ef463c24ebca40a2623027d497d
             var countOfHalfLife = Convert.ToInt64(ctx.BlockIndex / 12614400) + 1;
             var miningReward = Gold / countOfHalfLife;
