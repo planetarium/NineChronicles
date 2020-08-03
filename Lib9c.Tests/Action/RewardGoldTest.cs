@@ -218,6 +218,41 @@ namespace Lib9c.Tests.Action
             Assert.Equal(100, delta.GetBalance(address1, currency));
             Assert.Equal(0, delta.GetBalance(address2, currency));
         }
+
+        [Fact]
+        public void MiningReward()
+        {
+            Address miner = new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9");
+            Currency currency = _baseState.GetGoldCurrency();
+            var ctx = new ActionContext()
+            {
+                BlockIndex = 0,
+                PreviousStates = _baseState,
+                Miner = miner,
+            };
+
+            var action = new RewardGold()
+            {
+                Gold = 10,
+            };
+
+            IAccountStateDelta delta;
+
+            // 반감기가 오기 전 마이닝 보상
+            ctx.BlockIndex = 1;
+            delta = action.MinerReward(ctx, _baseState);
+            Assert.Equal(10, delta.GetBalance(miner, currency));
+
+            // 첫 번째 반감기
+            ctx.BlockIndex = 12614400;
+            delta = action.MinerReward(ctx, _baseState);
+            Assert.Equal(5, delta.GetBalance(miner, currency));
+
+            // 두 번째 반감기
+            ctx.BlockIndex = 25228880;
+            delta = action.MinerReward(ctx, _baseState);
+            Assert.Equal(3, delta.GetBalance(miner, currency));
+        }
     }
 
     public class GoldDistributionTest
