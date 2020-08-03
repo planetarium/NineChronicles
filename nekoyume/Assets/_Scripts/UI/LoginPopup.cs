@@ -31,7 +31,7 @@ namespace Nekoyume.UI
 
         public IKeyStore KeyStore = Web3KeyStore.DefaultKeyStore;
 
-        protected override WidgetType WidgetType => WidgetType.SystemInfo;
+        public override WidgetType WidgetType => WidgetType.SystemInfo;
         public InputField passPhraseField;
         public InputField retypeField;
         public InputField loginField;
