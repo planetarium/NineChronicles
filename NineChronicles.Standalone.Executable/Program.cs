@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cocona;
 using Libplanet.KeyStore;
-using Libplanet.Standalone.Hosting;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
 using Sentry;
@@ -71,7 +70,9 @@ namespace NineChronicles.Standalone.Executable
             [Option("graphql-host")]
             string graphQLHost = "0.0.0.0",
             [Option("graphql-port")]
-            int? graphQLPort = null
+            int? graphQLPort = null,
+            [Option("start-node-service")]
+            bool startNodeService = false
         )
         {
 #if SENTRY || ! DEBUG
@@ -170,11 +171,7 @@ namespace NineChronicles.Standalone.Executable
                     StandaloneServices.CreateHeadless(nineChroniclesProperties, standaloneContext);
                 standaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
 
-                bool startNineChroniclesNodeService = !graphQLServer
-                                                      || !(peerStrings is null)
-                                                      || !(host is null || port is null);
-
-                if (startNineChroniclesNodeService)
+                if (startNodeService)
                 {
                     if (!properties.NoMiner)
                     {
