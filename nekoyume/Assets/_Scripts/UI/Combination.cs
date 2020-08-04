@@ -856,7 +856,6 @@ namespace Nekoyume.UI
 
                     ActionCombinationEquipment(combinationPanel);
                     itemBase = panel.recipeCellView.ItemView.Model.ItemBase.Value;
-                    StartCoroutine(CoCombineNPCAnimation(itemBase, panel.SubscribeOnClickSubmit));
                     break;
                 case StateType.CombineConsumable:
                     ActionCombineConsumable();
@@ -870,7 +869,6 @@ namespace Nekoyume.UI
                 default:
                     throw new ArgumentOutOfRangeException(nameof(panel.stateType), panel.stateType, null);
             }
-
             StartCoroutine(CoCombineNPCAnimation(itemBase, panel.SubscribeOnClickSubmit, isConsumable));
         }
     }
