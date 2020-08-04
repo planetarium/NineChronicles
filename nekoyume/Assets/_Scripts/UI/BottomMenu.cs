@@ -96,7 +96,7 @@ namespace Nekoyume.UI.Module
         public readonly Subject<bool> HasNotificationInSettings = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInCombination = new Subject<bool>();
 
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {

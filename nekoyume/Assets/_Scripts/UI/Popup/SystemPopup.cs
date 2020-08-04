@@ -6,7 +6,7 @@ namespace Nekoyume.UI
 {
     public class SystemPopup : Alert
     {
-        protected override WidgetType WidgetType => WidgetType.SystemInfo;
+        public override WidgetType WidgetType => WidgetType.SystemInfo;
 
         public override void Show(string title, string content, string labelOK = "UI_OK", bool localize = true)
         {

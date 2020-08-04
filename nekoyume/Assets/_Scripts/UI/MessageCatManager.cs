@@ -14,7 +14,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private GameObject messageCatPrefab = null;
 
-        protected override WidgetType WidgetType => WidgetType.Tooltip;
+        public override WidgetType WidgetType => WidgetType.Tooltip;
 
         protected override void Awake()
         {
