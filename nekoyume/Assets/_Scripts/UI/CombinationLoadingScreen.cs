@@ -55,7 +55,7 @@ namespace Nekoyume.UI
         private const int NPCId = 300001;
         private System.Action _closeAction;
 
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Screen;
 
         protected override void Awake()
         {

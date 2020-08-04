@@ -73,7 +73,7 @@ namespace Nekoyume.UI
         private List<CountableItem> _rewards;
         private PraiseVFX _praiseVFX;
 
-        protected override WidgetType WidgetType => WidgetType.Tooltip;
+        public override WidgetType WidgetType => WidgetType.Tooltip;
 
         #region override
 

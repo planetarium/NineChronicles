@@ -29,7 +29,7 @@ namespace Nekoyume.UI
         private Coroutine _coroutine = null;
         private string _text;
         private int _callCount = 1;
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {
