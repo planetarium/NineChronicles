@@ -40,7 +40,7 @@ namespace Nekoyume.UI
         private string _itemTextColor;
         private Dictionary<int, DialogEffect> _effects = new Dictionary<int, DialogEffect>();
 
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         public static string GetPlayerPrefsKeyOfCurrentAvatarState(int dialogId)
         {

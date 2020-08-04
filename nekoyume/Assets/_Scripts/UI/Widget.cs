@@ -50,7 +50,7 @@ namespace Nekoyume.UI
         protected System.Action CloseWidget;
         protected System.Action SubmitWidget;
 
-        protected virtual WidgetType WidgetType => WidgetType.Widget;
+        public virtual WidgetType WidgetType => WidgetType.Widget;
 
         protected RectTransform RectTransform { get; private set; }
 
