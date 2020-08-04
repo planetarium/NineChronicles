@@ -62,9 +62,9 @@ namespace Nekoyume.UI
         {
             switch (quest)
             {
-                case CollectQuest collectQuest:
-                case CombinationQuest combinationQuest:
-                case CombinationEquipmentQuest combinationEquipmentQuest:
+                case CollectQuest _:
+                case CombinationQuest _:
+                case CombinationEquipmentQuest _:
                     return L10nManager.Localize("QUEST_TITLE_CRAFT");
                 case GeneralQuest generalQuest:
                     string key;
@@ -85,20 +85,16 @@ namespace Nekoyume.UI
                             throw new ArgumentOutOfRangeException();
                     }
                     return L10nManager.Localize($"QUEST_TITLE_{key}");
-                case ItemEnhancementQuest itemEnhancementQuest:
-                case ItemGradeQuest itemGradeQuest:
-                case ItemTypeCollectQuest itemTypeCollectQuest:
-                case MonsterQuest monsterQuest:
+                case ItemEnhancementQuest _:
+                case ItemGradeQuest _:
+                case ItemTypeCollectQuest _:
+                case MonsterQuest _:
                     return L10nManager.Localize("QUEST_TITLE_ADVENTURE");
-                case GoldQuest goldQuest:
-                case TradeQuest tradeQuest:
+                case GoldQuest _:
+                case TradeQuest _:
                     return L10nManager.Localize("QUEST_TITLE_TRADE");
-                case WorldQuest worldQuest:
-                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal, out var worldRow))
-                    {
-                        return L10nManager.Localize("QUEST_TITLE_ADVENTURE");
-                    }
-                    throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
+                case WorldQuest _:
+                    return L10nManager.Localize("QUEST_TITLE_ADVENTURE");
                 default:
                     throw new NotSupportedException(
                         $"Given quest[{quest}] doesn't support {nameof(GetTitle)}() method."
@@ -174,20 +170,27 @@ namespace Nekoyume.UI
                         tradeQuest.Type.GetLocalizedString(), tradeQuest.Goal
                     );
                 case WorldQuest worldQuest:
-                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal, out var worldRow))
+                    if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(
+                        worldQuest.Goal,
+                        out var worldRow))
                     {
-                        if (worldQuest.Goal == worldRow.StageBegin)
+                        worldRow = Game.Game.instance.TableSheets.WorldSheet.Last;
+                        if (worldRow is null)
                         {
-                            var format = L10nManager.Localize("QUEST_WORLD_FORMAT");
-                            return string.Format(format, worldRow.GetLocalizedName());
-                        }
-                        else
-                        {
-                            var format = L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT");
-                            return string.Format(format, worldRow.GetLocalizedName(), worldQuest.Goal);
+                            return string.Empty;
                         }
                     }
-                    throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
+
+                    if (worldQuest.Goal == worldRow.StageBegin)
+                    {
+                        var format = L10nManager.Localize("QUEST_WORLD_FORMAT");
+                        return string.Format(format, worldRow.GetLocalizedName());
+                    }
+                    else
+                    {
+                        var format = L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT");
+                        return string.Format(format, worldRow.GetLocalizedName(), worldQuest.Goal);
+                    }
                 case CombinationEquipmentQuest combinationEquipmentQuest:
                     var unlockFormat = L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
                     var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
