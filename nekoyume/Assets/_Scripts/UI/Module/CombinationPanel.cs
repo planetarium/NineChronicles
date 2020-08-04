@@ -1,5 +1,7 @@
 using System.Numerics;
 using Nekoyume.L10n;
+using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using TMPro;
@@ -45,11 +47,15 @@ namespace Nekoyume.UI.Module
 
         protected System.Action onTweenCompleted = null;
 
+        public Combination.StateType stateType = Combination.StateType.CombineEquipment;
+
         protected virtual void Awake()
         {
             cancelButton.OnClickAsObservable().Subscribe(_ => SubscribeOnClickCancel()).AddTo(gameObject);
             cancelButtonText.text = L10nManager.Localize("UI_CANCEL");
             submitButton.HideHourglass();
+            var submitText = L10nManager.Localize("UI_COMBINATION_ITEM");
+            submitButton.SetSubmitText(submitText, submitText);
         }
 
         protected virtual void OnDisable()
@@ -79,7 +85,7 @@ namespace Nekoyume.UI.Module
             if (!combination.CanHandleInputEvent)
                 return;
 
-            combination.State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
+            combination.State.SetValueAndForceNotify(stateType);
         }
 
         public virtual void SubscribeOnClickSubmit()
@@ -88,7 +94,7 @@ namespace Nekoyume.UI.Module
             if (!combination.CanHandleInputEvent)
                 return;
 
-            combination.State.SetValueAndForceNotify(Combination.StateType.CombineEquipment);
+            combination.State.SetValueAndForceNotify(stateType);
         }
 
         protected void OnTweenCompleted()
@@ -96,6 +102,61 @@ namespace Nekoyume.UI.Module
             cellViewFrontVfx.SetActive(true);
             cellViewBackVfx.SetActive(true);
             onTweenCompleted?.Invoke();
+        }
+
+        protected void Enable()
+        {
+            gameObject.SetActive(true);
+            confirmAreaYTweener.onComplete = OnTweenCompleted;
+            confirmAreaYTweener.PlayTween();
+            confirmAreaAlphaTweener.PlayDelayed(0.2f);
+
+            CostNCG = (int) materialPanel.costNCG;
+            CostAP = materialPanel.costAP;
+            if (CostAP > 0)
+            {
+                submitButton.ShowAP(CostAP, States.Instance.CurrentAvatarState.actionPoint >= CostAP);
+            }
+            else
+            {
+                submitButton.HideAP();
+            }
+
+            if (CostNCG > 0)
+            {
+                submitButton.ShowNCG(CostNCG, States.Instance.GoldBalanceState.gold >= CostNCG);
+            }
+            else
+            {
+                submitButton.HideNCG();
+            }
+            submitButton.SetSubmittable(materialPanel.IsCraftable);
+        }
+
+        public void SetData(EquipmentItemRecipeSheet.Row recipeRow, int? subRecipeId = null)
+        {
+            recipeCellView.Set(recipeRow);
+            materialPanel.SetData(recipeRow, subRecipeId);
+            Enable();
+            var requiredBlockIndex = recipeRow.RequiredBlockIndex;
+            if (subRecipeId.HasValue)
+            {
+                var subSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
+                if (subSheet.TryGetValue((int) subRecipeId, out var subRecipe))
+                {
+                    requiredBlockIndex += subRecipe.RequiredBlockIndex;
+
+                }
+            }
+            RequiredBlockIndexSubject.OnNext(requiredBlockIndex);
+            stateType = Combination.StateType.CombineEquipment;
+        }
+        public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
+        {
+            recipeCellView.Set(recipeRow);
+            materialPanel.SetData(recipeRow, true, Widget.Find<Combination>().selectedIndex >= 0);
+            Enable();
+            stateType = Combination.StateType.CombineConsumable;
         }
     }
 }
