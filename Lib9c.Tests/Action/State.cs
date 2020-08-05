@@ -78,8 +78,7 @@ namespace Lib9c.Tests.Action
             IImmutableDictionary<(Address, Currency), BigInteger> newBalance = _balance
                 .SetItem((sender, currency), senderBalance - amount)
                 .SetItem((recipient, currency), recipientBalance + amount);
-            var result = new State(_state, newBalance);
-            return result;
+            return new State(_state, newBalance);
         }
     }
 }
