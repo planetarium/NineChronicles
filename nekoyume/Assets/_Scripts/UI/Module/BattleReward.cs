@@ -76,6 +76,43 @@ namespace Nekoyume.UI.Module
         {
             public GameObject gameObject;
             public SimpleCountableItemView[] items;
+            private static Dictionary<int, List<Vector2>> _positionsDict = new Dictionary<int, List<Vector2>>()
+            {
+                {
+                    1,
+                    new List<Vector2>()
+                    {
+                        new Vector2(0, -5.5f)
+                    }
+                },
+                {
+                    2,
+                    new List<Vector2>()
+                    {
+                        new Vector2(-32f, -5.5f),
+                        new Vector2(32, -5.5f)
+                    }
+                },
+                {
+                    3,
+                    new List<Vector2>()
+                    {
+                        new Vector2(-32f, 26.5f),
+                        new Vector2(32f, 26.5f),
+                        new Vector2(0, -37.5f)
+                    }
+                },
+                {
+                    4,
+                    new List<Vector2>()
+                    {
+                        new Vector2(-32f, 26.5f),
+                        new Vector2(32f, 26.5f),
+                        new Vector2(-32f, -37.5f),
+                        new Vector2(32f, -37.5f)
+                    }
+                }
+            };
 
             public void Set(IReadOnlyList<CountableItem> rewardItems)
             {
@@ -86,6 +123,8 @@ namespace Nekoyume.UI.Module
 
                 for (var i = 0; i < rewardItems.Count; i++)
                 {
+                    ((RectTransform) items[i].transform).anchoredPosition =
+                        _positionsDict[rewardItems.Count][i];
                     items[i].SetData(rewardItems[i]);
                     items[i].gameObject.SetActive(true);
                 }
