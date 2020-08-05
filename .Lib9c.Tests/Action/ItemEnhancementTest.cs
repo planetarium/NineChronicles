@@ -51,7 +51,7 @@ namespace Lib9c.Tests.Action
             _tableSheetsState = null;
         }
 
-        [Fact]
+        [Fact(Skip = "The test depends on the unity project.")]
         public void Execute()
         {
             var privateKey = new PrivateKey();
