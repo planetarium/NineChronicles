@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UnityEngine.UI;
@@ -41,14 +41,14 @@ namespace Nekoyume.UI
             text = inputField.text = string.Empty;
             if (localize)
             {
-                this.inputFieldPlaceHolder.text = LocalizationManager.Localize(placeHolderText);
-                this.content.text = LocalizationManager.Localize(content);
-                this.labelYes.text = LocalizationManager.Localize(labelYes);
-                this.labelNo.text = LocalizationManager.Localize(labelNo);
+                inputFieldPlaceHolder.text = L10nManager.Localize(placeHolderText);
+                this.content.text = L10nManager.Localize(content);
+                this.labelYes.text = L10nManager.Localize(labelYes);
+                this.labelNo.text = L10nManager.Localize(labelNo);
             }
             else
             {
-                this.inputFieldPlaceHolder.text = placeHolderText;
+                inputFieldPlaceHolder.text = placeHolderText;
                 this.content.text = content;
                 this.labelYes.text = "OK";
                 this.labelNo.text = "CANCEL";

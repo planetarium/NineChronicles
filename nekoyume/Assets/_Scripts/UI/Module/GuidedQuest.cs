@@ -6,6 +6,7 @@ using DG.Tweening;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
 using Nekoyume.State;
+using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using NUnit.Framework;
@@ -481,10 +482,19 @@ namespace Nekoyume.UI.Module
             }
             #pragma warning restore 0162
 
-            return questList?
+            var targetQuest = questList?
                 .OfType<WorldQuest>()
                 .OrderBy(quest => quest.Goal)
                 .FirstOrDefault(quest => !quest.Complete);
+            if (targetQuest is null)
+            {
+                return null;
+            }
+
+            var targetStageId = targetQuest.Goal;
+            return !Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(targetStageId, out _)
+                ? null
+                : targetQuest;
         }
 
         private static CombinationEquipmentQuest GetTargetCombinationEquipmentQuest(

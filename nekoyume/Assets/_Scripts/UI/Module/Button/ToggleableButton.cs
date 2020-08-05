@@ -1,12 +1,12 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using System;
+using Nekoyume.EnumType;
+using Nekoyume.L10n;
 using TMPro;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
@@ -30,7 +30,7 @@ namespace Nekoyume.UI.Module
         private Image toggledOnImage = null;
 
         [SerializeField]
-        private Canvas sortingGroup;
+        private Canvas sortingGroup = null;
 
         public string localizationKey = null;
 
@@ -38,6 +38,7 @@ namespace Nekoyume.UI.Module
 
         private Animator _animatorCache;
         private Color _originalTextColor;
+        private int _originalSortingOrderOffset;
 
         public Animator Animator => !_animatorCache
             ? _animatorCache = GetComponent<Animator>()
@@ -56,6 +57,27 @@ namespace Nekoyume.UI.Module
                 _originalTextColor = toggledOffText.color;
             }
 
+            if (sortingGroup)
+            {
+                var widget = GetComponentInParent<Widget>();
+                if (widget is BottomMenu)
+                {
+                    _originalSortingOrderOffset = 0;
+                    sortingGroup.sortingOrder =
+                        MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                }
+                else if (widget)
+                {
+                    var layerSortingOrder =
+                        MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                    _originalSortingOrderOffset = sortingGroup.sortingOrder - layerSortingOrder;
+                }
+                else
+                {
+                    _originalSortingOrderOffset = sortingGroup.sortingOrder;
+                }
+            }
+
             Toggleable = true;
             IsWidgetControllable = true;
 
@@ -67,12 +89,15 @@ namespace Nekoyume.UI.Module
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                var text = LocalizationManager.Localize(localizationKey);
-                toggledOffText.text = text;
-                toggledOnText.text = text;
+                SetText(L10nManager.Localize(localizationKey));
             }
 
-            sortingGroup.sortingLayerName = "UI";
+            // (object) sortingGroup == (Canvas) "null" 이기 때문에 `is`나 `ReferenceEquals`를 사용하지 않습니다.
+            // `SerializedField`는 `null`을 할당해도 객체 생성시 `"null"`이 되어버립니다.
+            if (sortingGroup)
+            {
+                sortingGroup.sortingLayerName = "UI";
+            }
         }
 
         #endregion
@@ -210,12 +235,47 @@ namespace Nekoyume.UI.Module
 
         public void SetSortOrderToTop()
         {
-            sortingGroup.sortingOrder = 100;
+            if (!sortingGroup)
+            {
+                return;
+            }
+
+            var systemInfoSortingOrder =
+                MainCanvas.instance.GetLayer(WidgetType.SystemInfo).root.sortingOrder;
+            sortingGroup.sortingOrder = systemInfoSortingOrder;
         }
 
         public void SetSortOrderToNormal()
         {
-            sortingGroup.sortingOrder = 0;
+            if (!sortingGroup)
+            {
+                return;
+            }
+
+            var widget = GetComponentInParent<Widget>();
+            if (widget)
+            {
+                var layerSortingOrder =
+                    MainCanvas.instance.GetLayer(widget.WidgetType).root.sortingOrder;
+                sortingGroup.sortingOrder = layerSortingOrder + _originalSortingOrderOffset;
+            }
+            else
+            {
+                sortingGroup.sortingOrder = _originalSortingOrderOffset;
+            }
+        }
+
+        protected virtual void SetText(string text)
+        {
+            if (!(toggledOffText is null))
+            {
+                toggledOffText.text = text;
+            }
+
+            if (!(toggledOnText is null))
+            {
+                toggledOnText.text = text;
+            }
         }
 
         private void SubscribeOnClick(Unit unit)

@@ -50,14 +50,17 @@ namespace Lib9c.Tests.Action
             weekly.Set(avatar, _tableSheets.CharacterSheet);
             weekly.End();
 
+            var gold = new GoldCurrencyState(new Currency("NCG", minter: null));
+
             var state = new State(ImmutableDictionary<Address, IValue>.Empty
                 .Add(default, weekly.Serialize())
                 .Add(agentAddress, agent.Serialize())
-                .Add(avatarAddress, avatar.Serialize()));
+                .Add(avatarAddress, avatar.Serialize())
+                .Add(GoldCurrencyState.Address, gold.Serialize()));
 
-            state = (State)state.MintAsset(default, Currencies.Gold, 1000);
+            state = (State)state.MintAsset(GoldCurrencyState.Address, state.GetGoldCurrency(), 1000);
             state.TryGetGoldBalance(agentAddress, out var agentBalance);
-            state.TryGetGoldBalance(default, out var arenaBalance);
+            state.TryGetGoldBalance(GoldCurrencyState.Address, out var arenaBalance);
 
             Assert.Equal(1000, arenaBalance);
             Assert.Equal(0, agentBalance);

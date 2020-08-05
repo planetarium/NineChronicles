@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
 using UniRx;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Nekoyume.UI.Module
 {
@@ -97,7 +96,7 @@ namespace Nekoyume.UI.Module
         public readonly Subject<bool> HasNotificationInSettings = new Subject<bool>();
         public readonly Subject<bool> HasNotificationInCombination = new Subject<bool>();
 
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {
@@ -469,11 +468,11 @@ namespace Nekoyume.UI.Module
                     }
 
                     var unlockConditionString = string.Format(
-                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                         requiredStage);
 
                     var message =
-                        $"{LocalizationManager.Localize(chatButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                        $"{L10nManager.Localize(chatButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message);
                 }).AddTo(chatButton.gameObject);
                 disposables.exit = chatButton.onPointerExit.Subscribe(_ =>
@@ -524,10 +523,10 @@ namespace Nekoyume.UI.Module
                     }
 
                     var unlockConditionString = string.Format(
-                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                         requiredStage);
                     var message =
-                        $"{LocalizationManager.Localize(mailButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                        $"{L10nManager.Localize(mailButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message, true);
                 }).AddTo(mailButton.gameObject);
                 disposables.exit = mailButton.onPointerExit.Subscribe(_ =>
@@ -580,10 +579,10 @@ namespace Nekoyume.UI.Module
                     }
 
                     var unlockConditionString = string.Format(
-                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                         requiredStage);
                     var message =
-                        $"{LocalizationManager.Localize(questButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                        $"{L10nManager.Localize(questButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message, true);
                 }).AddTo(questButton.gameObject);
                 disposables.exit = questButton.onPointerExit.Subscribe(_ =>
@@ -639,10 +638,10 @@ namespace Nekoyume.UI.Module
                     }
 
                     var unlockConditionString = string.Format(
-                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                         requiredStage);
                     var message =
-                        $"{LocalizationManager.Localize(characterButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                        $"{L10nManager.Localize(characterButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message, true);
                 }).AddTo(characterButton.gameObject);
                 disposables.exit = characterButton.onPointerExit.Subscribe(_ =>
@@ -714,10 +713,10 @@ namespace Nekoyume.UI.Module
                     }
 
                     var unlockConditionString = string.Format(
-                        LocalizationManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                        L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
                         requiredStage);
                     var message =
-                        $"{LocalizationManager.Localize(combinationButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
+                        $"{L10nManager.Localize(combinationButton.localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
                     _cat = Find<MessageCatManager>().Show(true, message);
                 }).AddTo(combinationButton.gameObject);
                 disposables.exit = combinationButton.onPointerExit.Subscribe(_ =>

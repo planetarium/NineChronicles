@@ -5,7 +5,7 @@ namespace Nekoyume.UI
 {
     public class ScreenWidget : Widget
     {
-        protected override WidgetType WidgetType => WidgetType.Screen;
+        public override WidgetType WidgetType => WidgetType.Screen;
 
         protected override void Awake()
         {

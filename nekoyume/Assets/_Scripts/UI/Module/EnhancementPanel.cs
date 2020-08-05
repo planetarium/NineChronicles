@@ -96,10 +96,12 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public virtual bool Show(bool forced = false)
+        public new virtual bool Show(bool forced = false)
         {
             if (!forced && gameObject.activeSelf)
+            {
                 return false;
+            }
 
             gameObject.SetActive(true);
             submitButton.gameObject.SetActive(true);

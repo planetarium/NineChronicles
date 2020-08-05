@@ -1,6 +1,6 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -211,7 +211,7 @@ namespace Nekoyume.UI.Module
                 if (rowData is null)
                 {
                     unlockConditionText.text = string.Format(
-                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                         "???");
                 }
 
@@ -222,20 +222,20 @@ namespace Nekoyume.UI.Module
                     if (diff > 50)
                     {
                         unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             "???");
                     }
                     else
                     {
                         unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             rowData.UnlockStage.ToString());
                     }
                 }
                 else
                 {
                     unlockConditionText.text = string.Format(
-                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                         "???");
                 }
             }

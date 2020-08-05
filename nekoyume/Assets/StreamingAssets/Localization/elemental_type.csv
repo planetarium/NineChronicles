@@ -1,0 +1,10 @@
+Key,English,Korean,Portuguese
+ELEMENTAL_TYPE_NORMAL,"Normal","무속성","Normal"
+ELEMENTAL_TYPE_FIRE,"Fire","불속성","Fogo"
+ELEMENTAL_TYPE_WATER,"Water","물속성","Água"
+ELEMENTAL_TYPE_LAND,"Land","땅속성","Terra"
+ELEMENTAL_TYPE_WIND,"Wind","바람속성","Vento"
+ELEMENTAL_TYPE_OPTION_ATK_WIN_FORMAT,"Deals {1:P0} +damage when attack {0}","{0}에게 공격 시 {1:P0} 만큼 피해량 추가","Causa {1:P0} +dano quando ataca {0}"
+ELEMENTAL_TYPE_OPTION_ATK_LOSE_FORMAT,"Deals {1:P0} -damage when attack {0}","{0}에게 공격 시 {1:P0} 만큼 피해량 감소","Causa {1:P0} -dano quando ataca {0}"
+ELEMENTAL_TYPE_OPTION_DEF_WIN_FORMAT,"{1:P0} -damage when hit by {0}","{0}에게 피격 시 {1:P0} 만큼 피해량 감소","{1:P0} -dano quando atingido por {0}"
+ELEMENTAL_TYPE_OPTION_DEF_LOSE_FORMAT,"{1:P0} +damage when hit by {0}","{0}에게 피격 시 {1:P0} 만큼 피해량 추가","{1:P0} +dano quando atingido por {0}"

@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Action;
-using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
@@ -43,7 +42,7 @@ namespace Nekoyume.UI
             public void Init(string localizationKey)
             {
                 if (!button) return;
-                var localized = LocalizationManager.Localize(localizationKey);
+                var localized = L10nManager.Localize(localizationKey);
                 var content = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(localized.ToLower());
                 text.text = content;
                 textSelected.text = content;
@@ -99,7 +98,7 @@ namespace Nekoyume.UI
             tabButtons[3].Init("SYSTEM");
             ReactiveAvatarState.MailBox?.Subscribe(SetList).AddTo(gameObject);
 
-            emptyText.text = LocalizationManager.Localize(emptyTextL10nKey);
+            emptyText.text = L10nManager.Localize(emptyTextL10nKey);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -215,8 +214,8 @@ namespace Nekoyume.UI
             //TODO 관련 기획이 끝나면 별도 UI를 생성
             var popup = Find<ItemCountAndPricePopup>();
             var model = new UI.Model.ItemCountAndPricePopup();
-            model.TitleText.Value = LocalizationManager.Localize("UI_RETRIEVE");
-            model.InfoText.Value = LocalizationManager.Localize("UI_SELL_CANCEL_INFO");
+            model.TitleText.Value = L10nManager.Localize("UI_RETRIEVE");
+            model.InfoText.Value = L10nManager.Localize("UI_SELL_CANCEL_INFO");
             model.PriceInteractable.Value = false;
             model.Price.Value = attachment.shopItem.Price;
             model.CountEnabled.Value = false;
