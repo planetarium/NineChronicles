@@ -288,7 +288,7 @@ namespace Nekoyume.Action
             var value = states.GetState(Addresses.GoldDistribution);
             if (value is null)
             {
-                Log.Warning("GoldDistribution is null ({0})", Addresses.GoldDistribution.ToHex());
+                Log.Warning($"{nameof(GoldDistribution)} is null ({0})", Addresses.GoldDistribution.ToHex());
                 return null;
             }
 
