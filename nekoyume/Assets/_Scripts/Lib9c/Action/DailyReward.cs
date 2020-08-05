@@ -31,8 +31,7 @@ namespace Nekoyume.Action
             var gameConfigState = states.GetGameConfigState();
             if (gameConfigState is null)
             {
-                LogError(context, "Aborted as the game config was failed to load.");
-                return states;
+                throw new ArgumentNullException(nameof(gameConfigState), "Aborted as the game config was failed to load.");
             }
 
             if (ctx.BlockIndex - avatarState.dailyRewardReceivedIndex >= GameConfig.DailyRewardInterval)
