@@ -3,7 +3,7 @@ WORKDIR /app
 
 # Copy csproj and restore as distinct layers
 COPY ./Libplanet.Standalone/Libplanet.Standalone.csproj ./Libplanet.Standalone/
-COPY ./Lib9c/Lib9c.csproj ./Lib9c/
+COPY ./nekoyume/Assets/_Scripts/Lib9c/Lib9c/Lib9c/Lib9c.csproj ./Lib9c/
 COPY ./NineChronicles.Standalone/NineChronicles.Standalone.csproj ./NineChronicles.Standalone/
 COPY ./NineChronicles.Standalone.Executable/NineChronicles.Standalone.Executable.csproj ./NineChronicles.Standalone.Executable/
 RUN dotnet restore Libplanet.Standalone
