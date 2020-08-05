@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public class ElementalCombinationPanel : EquipmentCombinationPanel
+    public class ElementalCombinationPanel : CombinationPanel
     {
         public int SelectedSubRecipeId { get; protected set; }
 

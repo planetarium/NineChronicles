@@ -267,8 +267,7 @@ namespace Nekoyume.UI.Scroller
         {
             if (!isFirstOpen)
             {
-                lockVFX.Stop();
-                shakeTweener.KillTween();
+                StopLockEffect();
             }
 
             if (EquipmentRowData is null)
@@ -350,6 +349,8 @@ namespace Nekoyume.UI.Scroller
 
         public void Set(ConsumableItemRecipeSheet.Row recipeRow)
         {
+            StopLockEffect();
+            HasNotification.Value = false;
             if (recipeRow is null)
                 return;
 
@@ -387,6 +388,12 @@ namespace Nekoyume.UI.Scroller
             //재료 검사.
             var inventory = avatarState.inventory;
             SetDimmed(!ConsumableRowData.MaterialItemIds.All(itemId => inventory.HasItem(itemId)));
+        }
+
+        private void StopLockEffect()
+        {
+            shakeTweener?.KillTween();
+            lockVFX?.Stop();
         }
     }
 }

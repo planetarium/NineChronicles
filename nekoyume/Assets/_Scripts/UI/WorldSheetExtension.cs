@@ -25,14 +25,16 @@ namespace Nekoyume.UI
             foreach (var row in sheet.OrderedList)
             {
                 if (stageId < row.StageBegin || stageId > row.StageEnd)
+                {
                     continue;
+                }
 
                 worldRow = row;
                 return true;
             }
 
-            worldRow = sheet.Last;
-            return true;
+            worldRow = null;
+            return false;
         }
 
         public static string GetLocalizedName(this WorldSheet.Row worldRow)
