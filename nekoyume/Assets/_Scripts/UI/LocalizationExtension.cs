@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.EnumType;
@@ -26,22 +26,22 @@ namespace Nekoyume.UI
             {
                 case BuyerMail buyerMail:
                     return string.Format(
-                        LocalizationManager.Localize("UI_BUYER_MAIL_FORMAT"),
+                        L10nManager.Localize("UI_BUYER_MAIL_FORMAT"),
                         GetLocalizedNonColoredName(buyerMail.attachment.itemUsable)
                     );
                 case CombinationMail combinationMail:
                     return string.Format(
-                        LocalizationManager.Localize("UI_COMBINATION_NOTIFY_FORMAT"),
+                        L10nManager.Localize("UI_COMBINATION_NOTIFY_FORMAT"),
                         GetLocalizedNonColoredName(combinationMail.attachment.itemUsable)
                     );
                 case ItemEnhanceMail itemEnhanceMail:
                     return string.Format(
-                        LocalizationManager.Localize("UI_ITEM_ENHANCEMENT_MAIL_FORMAT"),
+                        L10nManager.Localize("UI_ITEM_ENHANCEMENT_MAIL_FORMAT"),
                         GetLocalizedNonColoredName(itemEnhanceMail.attachment.itemUsable)
                     );
                 case SellCancelMail sellCancelMail:
                     return string.Format(
-                        LocalizationManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
+                        L10nManager.Localize("UI_SELL_CANCEL_MAIL_FORMAT"),
                         GetLocalizedNonColoredName(sellCancelMail.attachment.itemUsable)
                     );
                 case SellerMail sellerMail:
@@ -49,7 +49,7 @@ namespace Nekoyume.UI
                     if (!(attachment is Buy.SellerResult sellerResult))
                         throw new InvalidCastException($"({nameof(Buy.SellerResult)}){nameof(attachment)}");
 
-                    var format = LocalizationManager.Localize("UI_SELLER_MAIL_FORMAT");
+                    var format = L10nManager.Localize("UI_SELLER_MAIL_FORMAT");
                     return string.Format(format, sellerResult.gold, GetLocalizedNonColoredName(attachment.itemUsable));
                 default:
                     throw new NotSupportedException(
@@ -62,10 +62,10 @@ namespace Nekoyume.UI
         {
             switch (quest)
             {
-                case CollectQuest collectQuest:
-                case CombinationQuest combinationQuest:
-                case CombinationEquipmentQuest combinationEquipmentQuest:
-                    return LocalizationManager.Localize("QUEST_TITLE_CRAFT");
+                case CollectQuest _:
+                case CombinationQuest _:
+                case CombinationEquipmentQuest _:
+                    return L10nManager.Localize("QUEST_TITLE_CRAFT");
                 case GeneralQuest generalQuest:
                     string key;
                     switch (generalQuest.Event)
@@ -84,21 +84,17 @@ namespace Nekoyume.UI
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    return LocalizationManager.Localize($"QUEST_TITLE_{key}");
-                case ItemEnhancementQuest itemEnhancementQuest:
-                case ItemGradeQuest itemGradeQuest:
-                case ItemTypeCollectQuest itemTypeCollectQuest:
-                case MonsterQuest monsterQuest:
-                    return LocalizationManager.Localize("QUEST_TITLE_ADVENTURE");
-                case GoldQuest goldQuest:
-                case TradeQuest tradeQuest:
-                    return LocalizationManager.Localize("QUEST_TITLE_TRADE");
-                case WorldQuest worldQuest:
-                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal, out var worldRow))
-                    {
-                        return LocalizationManager.Localize("QUEST_TITLE_ADVENTURE");
-                    }
-                    throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
+                    return L10nManager.Localize($"QUEST_TITLE_{key}");
+                case ItemEnhancementQuest _:
+                case ItemGradeQuest _:
+                case ItemTypeCollectQuest _:
+                case MonsterQuest _:
+                    return L10nManager.Localize("QUEST_TITLE_ADVENTURE");
+                case GoldQuest _:
+                case TradeQuest _:
+                    return L10nManager.Localize("QUEST_TITLE_TRADE");
+                case WorldQuest _:
+                    return L10nManager.Localize("QUEST_TITLE_ADVENTURE");
                 default:
                     throw new NotSupportedException(
                         $"Given quest[{quest}] doesn't support {nameof(GetTitle)}() method."
@@ -113,12 +109,12 @@ namespace Nekoyume.UI
             {
                 case CollectQuest collectQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT"),
-                        LocalizationManager.LocalizeItemName(collectQuest.ItemId)
+                        L10nManager.Localize("QUEST_COLLECT_CURRENT_INFO_FORMAT"),
+                        L10nManager.LocalizeItemName(collectQuest.ItemId)
                     );
                 case CombinationQuest combinationQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT"),
+                        L10nManager.Localize("QUEST_COMBINATION_CURRENT_INFO_FORMAT"),
                         combinationQuest.ItemSubType.GetLocalizedString(),
                         combinationQuest.Goal
                     );
@@ -134,67 +130,74 @@ namespace Nekoyume.UI
                         case QuestEventType.Equipment:
                         case QuestEventType.Consumable:
                             return string.Format(
-                                LocalizationManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT"),
+                                L10nManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT"),
                                 generalQuest.Goal
                             );
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    return LocalizationManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT");
+                    return L10nManager.Localize($"QUEST_GENERAL_{generalQuest.Event}_FORMAT");
                 case GoldQuest goldQuest:
                     return string.Format(
-                        LocalizationManager.Localize($"QUEST_GOLD_{goldQuest.Type}_FORMAT"),
+                        L10nManager.Localize($"QUEST_GOLD_{goldQuest.Type}_FORMAT"),
                         goldQuest.Goal
                     );
                 case ItemEnhancementQuest itemEnhancementQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT"),
+                        L10nManager.Localize("QUEST_ITEM_ENHANCEMENT_FORMAT"),
                         itemEnhancementQuest.Grade,
                         itemEnhancementQuest.Goal,
                         itemEnhancementQuest.Count
                     );
                 case ItemGradeQuest itemGradeQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_ITEM_GRADE_FORMAT"),
+                        L10nManager.Localize("QUEST_ITEM_GRADE_FORMAT"),
                         itemGradeQuest.Grade, itemGradeQuest.Goal
                     );
                 case ItemTypeCollectQuest itemTypeCollectQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_ITEM_TYPE_FORMAT"),
+                        L10nManager.Localize("QUEST_ITEM_TYPE_FORMAT"),
                         itemTypeCollectQuest.ItemType.GetLocalizedString(), itemTypeCollectQuest.Goal
                     );
                 case MonsterQuest monsterQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_MONSTER_FORMAT"),
-                        LocalizationManager.LocalizeCharacterName(monsterQuest.MonsterId)
+                        L10nManager.Localize("QUEST_MONSTER_FORMAT"),
+                        L10nManager.LocalizeCharacterName(monsterQuest.MonsterId)
                     );
                 case TradeQuest tradeQuest:
                     return string.Format(
-                        LocalizationManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT"),
+                        L10nManager.Localize("QUEST_TRADE_CURRENT_INFO_FORMAT"),
                         tradeQuest.Type.GetLocalizedString(), tradeQuest.Goal
                     );
                 case WorldQuest worldQuest:
-                    if (Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(worldQuest.Goal, out var worldRow))
+                    if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(
+                        worldQuest.Goal,
+                        out var worldRow))
                     {
-                        if (worldQuest.Goal == worldRow.StageBegin)
+                        worldRow = Game.Game.instance.TableSheets.WorldSheet.Last;
+                        if (worldRow is null)
                         {
-                            var format = LocalizationManager.Localize("QUEST_WORLD_FORMAT");
-                            return string.Format(format, worldRow.GetLocalizedName());
-                        }
-                        else
-                        {
-                            var format = LocalizationManager.Localize("QUEST_CLEAR_STAGE_FORMAT");
-                            return string.Format(format, worldRow.GetLocalizedName(), worldQuest.Goal);
+                            return string.Empty;
                         }
                     }
-                    throw new SheetRowNotFoundException("WorldSheet", "TryGetByStageId()", worldQuest.Goal.ToString());
+
+                    if (worldQuest.Goal == worldRow.StageBegin)
+                    {
+                        var format = L10nManager.Localize("QUEST_WORLD_FORMAT");
+                        return string.Format(format, worldRow.GetLocalizedName());
+                    }
+                    else
+                    {
+                        var format = L10nManager.Localize("QUEST_CLEAR_STAGE_FORMAT");
+                        return string.Format(format, worldRow.GetLocalizedName(), worldQuest.Goal);
+                    }
                 case CombinationEquipmentQuest combinationEquipmentQuest:
-                    var unlockFormat = LocalizationManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
+                    var unlockFormat = L10nManager.Localize("QUEST_COMBINATION_EQUIPMENT_FORMAT");
                     var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
                         .First(r => r.Id == combinationEquipmentQuest.RecipeId).ResultEquipmentId;
                     return string.Format(
                         unlockFormat,
-                        LocalizationManager.LocalizeItemName(itemId)
+                        L10nManager.LocalizeItemName(itemId)
                     );
                 default:
                     throw new NotSupportedException(
@@ -206,27 +209,27 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedString(this ItemType value)
         {
-            return LocalizationManager.Localize($"ITEM_TYPE_{value}");
+            return L10nManager.Localize($"ITEM_TYPE_{value}");
         }
 
         public static string GetLocalizedString(this ItemSubType value)
         {
-            return LocalizationManager.Localize($"ITEM_SUB_TYPE_{value}");
+            return L10nManager.Localize($"ITEM_SUB_TYPE_{value}");
         }
 
         public static string GetLocalizedString(this TradeType value)
         {
-            return LocalizationManager.Localize($"TRADE_TYPE_{value}");
+            return L10nManager.Localize($"TRADE_TYPE_{value}");
         }
 
         public static string GetLocalizedString(this StatType value)
         {
-            return LocalizationManager.Localize($"STAT_TYPE_{value}");
+            return L10nManager.Localize($"STAT_TYPE_{value}");
         }
 
         public static string GetLocalizedString(this ElementalType value)
         {
-            return LocalizationManager.Localize($"ELEMENTAL_TYPE_{value.ToString().ToUpper()}");
+            return L10nManager.Localize($"ELEMENTAL_TYPE_{value.ToString().ToUpper()}");
         }
 
         public static IEnumerable<string> GetOptions(this Player player)
@@ -260,7 +263,7 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedNonColoredName(this ItemBase item)
         {
-            return LocalizationManager.Localize($"ITEM_NAME_{item.Id}");
+            return L10nManager.Localize($"ITEM_NAME_{item.Id}");
         }
 
         public static Color GetItemGradeColor(this ItemBase item)
@@ -270,7 +273,7 @@ namespace Nekoyume.UI
 
         public static string GetLocalizedDescription(this ItemBase item)
         {
-            return LocalizationManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
+            return L10nManager.Localize($"ITEM_DESCRIPTION_{item.Id}");
         }
         private static string GetColorHexByGrade(ItemBase item)
         {

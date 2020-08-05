@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 
@@ -29,7 +29,7 @@ namespace Nekoyume.UI
         private Coroutine _coroutine = null;
         private string _text;
         private int _callCount = 1;
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         protected override void Awake()
         {
@@ -45,7 +45,7 @@ namespace Nekoyume.UI
             base.Show(ignoreShowAnimation);
             _dialogKey = $"DIALOG_0_{_callCount}_";
             _dialogIndex = 0;
-            _dialogNum = LocalizationManager.LocalizedCount(_dialogKey);
+            _dialogNum = L10nManager.LocalizedCount(_dialogKey);
             _coroutine = StartCoroutine(CoShowText());
         }
 
@@ -94,7 +94,7 @@ namespace Nekoyume.UI
 
         public IEnumerator CoShowText()
         {
-            var text = LocalizationManager.Localize($"{_dialogKey}{_dialogIndex}");
+            var text = L10nManager.Localize($"{_dialogKey}{_dialogIndex}");
             if (string.IsNullOrEmpty(text))
                 yield break;
 
@@ -137,7 +137,7 @@ namespace Nekoyume.UI
                 string localizedName;
                 try
                 {
-                    localizedName = LocalizationManager.Localize($"NPC_{_npc}_NAME");
+                    localizedName = L10nManager.Localize($"NPC_{_npc}_NAME");
                 }
                 catch (KeyNotFoundException)
                 {

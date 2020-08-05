@@ -161,6 +161,11 @@ namespace NineChronicles.Standalone.Tests.GraphTypes
                     return new ActivationStatusQuery(StandaloneContext);
                 }
 
+                if (serviceType == typeof(PeerChainStateQuery))
+                {
+                    return new PeerChainStateQuery(StandaloneContext);
+                }
+
                 return Activator.CreateInstance(serviceType);
             }
         }

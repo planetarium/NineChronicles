@@ -18,26 +18,19 @@ namespace Nekoyume.UI
         {
             public Canvas root;
 
-            public IReadOnlyList<Canvas> Children { get; private set; }
-
-            public void UpdateChildren()
-            {
-                Children = root.GetComponentsInChildren<Canvas>()
-                    .Where(canvas => !canvas.Equals(root))
-                    .ToList();
-            }
-
             public void SetSortingOrder(int sortingOrder)
             {
                 var rootSortingOrderBackup = root.sortingOrder;
-                root.sortingOrder = sortingOrder;
-
-                if (Children is null)
+                if (rootSortingOrderBackup == sortingOrder)
                 {
-                    UpdateChildren();
+                    return;
                 }
 
-                foreach (var childCanvas in Children)
+                root.sortingOrder = sortingOrder;
+
+                foreach (var childCanvas in root.GetComponentsInChildren<Canvas>(true)
+                    .Where(canvas => !canvas.Equals(root))
+                    .ToList())
                 {
                     childCanvas.sortingOrder =
                         sortingOrder + (childCanvas.sortingOrder - rootSortingOrderBackup);
@@ -73,8 +66,6 @@ namespace Nekoyume.UI
         private CanvasLayer developmentLayer = default;
 
         private List<CanvasLayer> _layers;
-        private List<Widget> _firstWidgets;
-        private List<Widget> _secondWidgets;
 
         public RectTransform RectTransform { get; private set; }
         public Canvas Canvas { get; private set; }
@@ -138,26 +129,28 @@ namespace Nekoyume.UI
                     systemInfoLayer,
                     developmentLayer,
                 };
-
-                _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
             }
 
-            foreach (var layer in _layers)
-            {
-                layer.UpdateChildren();
-            }
+            _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
+        }
+
+        public void InitializeTitle()
+        {
+            var title = Widget.Create<Title>(true);
+            title.Initialize();
+
+            UpdateLayers();
         }
 
         public void InitializeFirst()
         {
-            _firstWidgets = new List<Widget>
+            var firstWidgets = new List<Widget>
             {
                 // 스크린 영역. 로딩창류.
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<StageLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
                 Widget.Create<PreloadingScreen>(),
-                Widget.Create<Title>(true),
 
                 // 팝업 영역.
                 Widget.Create<Settings>(),
@@ -175,7 +168,7 @@ namespace Nekoyume.UI
                 Widget.Create<Notification>(true),
             };
 
-            foreach (var value in _firstWidgets)
+            foreach (var value in firstWidgets)
             {
                 value.Initialize();
             }
@@ -187,104 +180,104 @@ namespace Nekoyume.UI
 
         public IEnumerator InitializeSecond()
         {
-            _secondWidgets = new List<Widget>();
+            var secondWidgets = new List<Widget>();
 
-            _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
+            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
             // 일반.
-            _secondWidgets.Add(Widget.Create<Synopsis>());
+            secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Login>());
+            secondWidgets.Add(Widget.Create<Login>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<LoginDetail>());
+            secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Menu>());
+            secondWidgets.Add(Widget.Create<Menu>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<RankingBattleLoadingScreen>());
+            secondWidgets.Add(Widget.Create<RankingBattleLoadingScreen>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
+            secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
             yield return null;
             // 메뉴보단 더 앞에 나와야 합니다.
-            _secondWidgets.Add(Widget.Create<VanilaTooltip>());
+            secondWidgets.Add(Widget.Create<VanilaTooltip>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Battle>());
+            secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Blind>());
+            secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Shop>());
+            secondWidgets.Add(Widget.Create<Shop>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<QuestPreparation>());
+            secondWidgets.Add(Widget.Create<QuestPreparation>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<WorldMap>());
+            secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<StageInformation>());
+            secondWidgets.Add(Widget.Create<StageInformation>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Status>());
+            secondWidgets.Add(Widget.Create<Status>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Combination>());
+            secondWidgets.Add(Widget.Create<Combination>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<EnhanceEquipment>());
+            secondWidgets.Add(Widget.Create<EnhanceEquipment>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<RankingBoard>());
+            secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
 
             // 모듈류.
-            _secondWidgets.Add(Widget.Create<StatusDetail>());
+            secondWidgets.Add(Widget.Create<StatusDetail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Mail>());
+            secondWidgets.Add(Widget.Create<Mail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Quest>());
+            secondWidgets.Add(Widget.Create<Quest>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationSlots>());
+            secondWidgets.Add(Widget.Create<CombinationSlots>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<AvatarInfo>());
+            secondWidgets.Add(Widget.Create<AvatarInfo>());
             yield return null;
 
             // 팝업류.
-            _secondWidgets.Add(Widget.Create<BattleResult>());
+            secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<RankingBattleResult>());
+            secondWidgets.Add(Widget.Create<RankingBattleResult>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
+            secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationResultPopup>());
+            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<StageTitle>());
+            secondWidgets.Add(Widget.Create<StageTitle>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Alert>());
+            secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<InputBox>());
+            secondWidgets.Add(Widget.Create<InputBox>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
+            secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<RedeemRewardPopup>());
+            secondWidgets.Add(Widget.Create<RedeemRewardPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<FriendInfoPopup>());
+            secondWidgets.Add(Widget.Create<FriendInfoPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
+            secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
             // 임시로 팝업보다 상단에 배치합니다.
-            _secondWidgets.Add(Widget.Create<BottomMenu>());
+            secondWidgets.Add(Widget.Create<BottomMenu>());
             yield return null;
             // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
-            _secondWidgets.Add(Widget.Create<Dialog>());
+            secondWidgets.Add(Widget.Create<Dialog>());
             // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
-            _secondWidgets.Add(Widget.Create<PrologueDialog>());
+            secondWidgets.Add(Widget.Create<PrologueDialog>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
+            secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CelebratesPopup>());
+            secondWidgets.Add(Widget.Create<CelebratesPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<HelpPopup>());
+            secondWidgets.Add(Widget.Create<HelpPopup>());
 
             // 툴팁류.
-            _secondWidgets.Add(Widget.Create<AvatarTooltip>());
+            secondWidgets.Add(Widget.Create<AvatarTooltip>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<MessageCatManager>(true));
+            secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
             Widget last = null;
-            foreach (var value in _secondWidgets)
+            foreach (var value in secondWidgets)
             {
                 if (value is null)
                 {
@@ -300,8 +293,10 @@ namespace Nekoyume.UI
             UpdateLayers();
         }
 
-        public void SetLayerSortingOrderToTarget(WidgetType fromWidgetType,
-            WidgetType toWidgetType)
+        public void SetLayerSortingOrderToTarget(
+            WidgetType fromWidgetType,
+            WidgetType toWidgetType,
+            bool checkFromIsSmallerThanTo = true)
         {
             if (fromWidgetType == toWidgetType)
             {
@@ -313,6 +308,12 @@ namespace Nekoyume.UI
             var to = GetLayer(toWidgetType);
             var toSortingOrder = to.root.sortingOrder;
             if (fromSortingOrder == toSortingOrder)
+            {
+                return;
+            }
+
+            if (checkFromIsSmallerThanTo &&
+                fromSortingOrder > toSortingOrder)
             {
                 return;
             }
@@ -338,7 +339,7 @@ namespace Nekoyume.UI
                 }
             }
 
-            _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
+            UpdateLayers();
         }
     }
 }

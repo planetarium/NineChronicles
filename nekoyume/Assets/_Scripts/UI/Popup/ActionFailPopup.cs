@@ -1,4 +1,4 @@
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 
 namespace Nekoyume.UI
 {
@@ -13,11 +13,11 @@ namespace Nekoyume.UI
 
         public void Show(string msg)
         {
-            var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
-                LocalizationManager.Localize("ACTION_HANDLE"));
+            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
+                L10nManager.Localize("ACTION_HANDLE"));
 
-            base.Show(LocalizationManager.Localize("UI_ERROR"), errorMsg,
-                LocalizationManager.Localize("UI_OK"), false);
+            base.Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                L10nManager.Localize("UI_OK"), false);
             content.text += $"\n{msg}";
             base.Show();
         }

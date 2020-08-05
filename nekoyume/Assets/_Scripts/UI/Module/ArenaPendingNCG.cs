@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -23,7 +23,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            arenaText.text = LocalizationManager.Localize("UI_ARENA_FOUNDATION");
+            arenaText.text = L10nManager.Localize("UI_ARENA_FOUNDATION");
         }
 
         private void OnDisable()
@@ -40,10 +40,10 @@ namespace Nekoyume.UI.Module
         {
             gameObject.SetActive(true);
             SetNCGText(weeklyArenaState);
-            
+
             if (!subscribeSubject)
                 return;
-            
+
             WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(SetNCGText)
                 .AddTo(_disposablesAtOnDisable);
         }

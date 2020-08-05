@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.UI.AnimatedGraphics;
 using TMPro;
 using UniRx;
@@ -46,7 +46,7 @@ namespace Nekoyume.UI.Module
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                var localization = LocalizationManager.Localize(localizationKey);
+                var localization = L10nManager.Localize(localizationKey);
                 normalText.text = localization;
                 selectedText.text = localization;
             }

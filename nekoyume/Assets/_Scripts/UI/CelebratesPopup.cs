@@ -1,4 +1,3 @@
-using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
@@ -13,6 +12,7 @@ using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
@@ -73,7 +73,7 @@ namespace Nekoyume.UI
         private List<CountableItem> _rewards;
         private PraiseVFX _praiseVFX;
 
-        protected override WidgetType WidgetType => WidgetType.Tooltip;
+        public override WidgetType WidgetType => WidgetType.Tooltip;
 
         #region override
 
@@ -100,7 +100,7 @@ namespace Nekoyume.UI
         /// <param name="ignoreShowAnimation"></param>
         public void Show(string menuName, bool ignoreShowAnimation = false)
         {
-            titleText.text = LocalizationManager.Localize("UI_NEW_MENU");
+            titleText.text = L10nManager.Localize("UI_NEW_MENU");
             continueText.alpha = 0f;
 
             menuImage.overrideSprite = SpriteHelper.GetMenuIllustrate(menuName);
@@ -112,13 +112,13 @@ namespace Nekoyume.UI
                     menuText.text = string.Empty;
                     break;
                 case nameof(Combination):
-                    menuText.text = LocalizationManager.Localize("UI_COMBINATION");
+                    menuText.text = L10nManager.Localize("UI_COMBINATION");
                     break;
                 case nameof(RankingBoard):
-                    menuText.text = LocalizationManager.Localize("UI_RANKING");
+                    menuText.text = L10nManager.Localize("UI_RANKING");
                     break;
                 case nameof(Shop):
-                    menuText.text = LocalizationManager.Localize("UI_SHOP");
+                    menuText.text = L10nManager.Localize("UI_SHOP");
                     break;
             }
 
@@ -183,7 +183,7 @@ namespace Nekoyume.UI
             List<CountableItem> rewards,
             bool ignoreShowAnimation = false)
         {
-            titleText.text = LocalizationManager.Localize("UI_QUEST_COMPLETED");
+            titleText.text = L10nManager.Localize("UI_QUEST_COMPLETED");
             continueText.alpha = 0f;
 
             foreach (var view in questRewardViews)
@@ -220,7 +220,7 @@ namespace Nekoyume.UI
                 return;
             }
 
-            titleText.text = LocalizationManager.Localize("UI_NEW_EQUIPMENT_RECIPE");
+            titleText.text = L10nManager.Localize("UI_NEW_EQUIPMENT_RECIPE");
             continueText.alpha = 0f;
 
             recipeCellView.Set(row);
@@ -296,7 +296,7 @@ namespace Nekoyume.UI
 
         private static void MakeNotification(string questContent)
         {
-            var format = LocalizationManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
+            var format = L10nManager.Localize("NOTIFICATION_QUEST_REQUEST_REWARD");
             var msg = string.IsNullOrEmpty(questContent)
                 ? string.Empty
                 : string.Format(format, questContent);
@@ -452,7 +452,7 @@ namespace Nekoyume.UI
         private IEnumerator CoContinueTimer(float timer)
         {
             blur.button.interactable = true;
-            var format = LocalizationManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
+            var format = L10nManager.Localize("UI_PRESS_TO_CONTINUE_FORMAT");
             continueText.alpha = 1f;
 
             var prevFlooredTime = Mathf.Round(timer);

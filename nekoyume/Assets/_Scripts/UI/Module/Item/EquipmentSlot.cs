@@ -1,5 +1,5 @@
 using System;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.AnimatedGraphics;
 using TMPro;
@@ -137,7 +137,7 @@ namespace Nekoyume.UI.Module
             }
 
             _messageForCat =
-                $"{LocalizationManager.Localize($"ITEM_SUB_TYPE_{ItemSubType.ToString()}")}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requireLevel}";
+                $"{L10nManager.Localize($"ITEM_SUB_TYPE_{ItemSubType.ToString()}")}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requireLevel}";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()

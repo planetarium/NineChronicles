@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using Nekoyume.UI.Model;
@@ -21,8 +21,8 @@ namespace Nekoyume.UI
             base.Initialize();
 
             submitButton.SetSubmitText(
-                LocalizationManager.Localize("UI_CLOSE"),
-                LocalizationManager.Localize("UI_CLOSE")
+                L10nManager.Localize("UI_CLOSE"),
+                L10nManager.Localize("UI_CLOSE")
             );
 
             submitButton.OnSubmitClick.Subscribe(_ =>

@@ -1,10 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using Assets.SimpleLocalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;
@@ -40,7 +40,7 @@ namespace Nekoyume.UI
         private string _itemTextColor;
         private Dictionary<int, DialogEffect> _effects = new Dictionary<int, DialogEffect>();
 
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         public static string GetPlayerPrefsKeyOfCurrentAvatarState(int dialogId)
         {
@@ -72,7 +72,7 @@ namespace Nekoyume.UI
 
             _dialogKey = $"DIALOG_{dialogId}_{1}_";
             _dialogIndex = 0;
-            _dialogNum = LocalizationManager.LocalizedCount(_dialogKey);
+            _dialogNum = L10nManager.LocalizedCount(_dialogKey);
 
             _coroutine = StartCoroutine(CoShowText());
         }
@@ -108,7 +108,7 @@ namespace Nekoyume.UI
 
         public IEnumerator CoShowText()
         {
-            var text = LocalizationManager.Localize($"{_dialogKey}{_dialogIndex}");
+            var text = L10nManager.Localize($"{_dialogKey}{_dialogIndex}");
             if (string.IsNullOrEmpty(text))
                 yield break;
 
@@ -120,7 +120,7 @@ namespace Nekoyume.UI
 
             if (Game.Game.instance.TableSheets.CharacterSheet.TryGetValue(_characterId, out var characterData))
             {
-                var localizedName = LocalizationManager.LocalizeCharacterName(_characterId);
+                var localizedName = L10nManager.LocalizeCharacterName(_characterId);
                 var res = Resources.Load<Sprite>($"Images/character_{characterData.Id}");
                 imgCharacter.overrideSprite = res;
                 imgCharacter.SetNativeSize();
@@ -134,7 +134,7 @@ namespace Nekoyume.UI
                 string localizedName;
                 try
                 {
-                    localizedName = LocalizationManager.Localize($"NPC_{_npc}_NAME");
+                    localizedName = L10nManager.Localize($"NPC_{_npc}_NAME");
                 }
                 catch (KeyNotFoundException)
                 {

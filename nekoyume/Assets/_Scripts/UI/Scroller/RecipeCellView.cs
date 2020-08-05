@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Model;
@@ -12,6 +11,7 @@ using UniRx;
 using Nekoyume.Model.Stat;
 using Nekoyume.State;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Tween;
@@ -209,7 +209,7 @@ namespace Nekoyume.UI.Scroller
                     if (diff > 50)
                     {
                         unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             "???");
                     }
                     else
@@ -220,14 +220,14 @@ namespace Nekoyume.UI.Scroller
                             shakeTweener.PlayLoop();
                         }
                         unlockConditionText.text = string.Format(
-                            LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                             unlockStage.ToString());
                     }
                 }
                 else
                 {
                     unlockConditionText.text = string.Format(
-                        LocalizationManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                         "???");
                 }
             }
@@ -267,8 +267,7 @@ namespace Nekoyume.UI.Scroller
         {
             if (!isFirstOpen)
             {
-                lockVFX.Stop();
-                shakeTweener.KillTween();
+                StopLockEffect();
             }
 
             if (EquipmentRowData is null)
@@ -350,6 +349,8 @@ namespace Nekoyume.UI.Scroller
 
         public void Set(ConsumableItemRecipeSheet.Row recipeRow)
         {
+            StopLockEffect();
+            HasNotification.Value = false;
             if (recipeRow is null)
                 return;
 
@@ -387,6 +388,12 @@ namespace Nekoyume.UI.Scroller
             //재료 검사.
             var inventory = avatarState.inventory;
             SetDimmed(!ConsumableRowData.MaterialItemIds.All(itemId => inventory.HasItem(itemId)));
+        }
+
+        private void StopLockEffect()
+        {
+            shakeTweener?.KillTween();
+            lockVFX?.Stop();
         }
     }
 }

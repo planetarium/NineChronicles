@@ -77,7 +77,7 @@ namespace Nekoyume.Action
             if (ctx.Rehearsal)
             {
                 return states
-                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer, BlacksmithAddress)
+                    .MarkBalanceChanged(GoldCurrencyMock, BlacksmithAddress)
                     .SetState(avatarAddress, MarkChanged)
                     .SetState(slotAddress, MarkChanged);
             }
@@ -171,7 +171,7 @@ namespace Nekoyume.Action
 
             if (requiredNCG > 0)
             {
-                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, Currencies.Gold, requiredNCG);
+                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, states.GetGoldCurrency(), requiredNCG);
             }
 
             sw.Stop();

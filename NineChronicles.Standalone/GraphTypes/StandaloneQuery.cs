@@ -6,7 +6,6 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Nekoyume.Action;
-using NineChronicles.Standalone.Controllers;
 
 namespace NineChronicles.Standalone.GraphTypes
 {
@@ -63,6 +62,11 @@ namespace NineChronicles.Standalone.GraphTypes
                 name: "activationStatus",
                 description: "Check if the provided address is activated.",
                 resolve: context => new ActivationStatusQuery(standaloneContext));
+
+            Field<NonNullGraphType<PeerChainStateQuery>>(
+                name: "peerChainState",
+                description: "Get the peer's block chain state",
+                resolve: context => new PeerChainStateQuery(standaloneContext));
         }
     }
 }

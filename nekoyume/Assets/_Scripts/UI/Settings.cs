@@ -1,11 +1,10 @@
-﻿using System;
-using Assets.SimpleLocalization;
-using TMPro;
+﻿using TMPro;
 using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
 using Libplanet;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using UniRx;
 
 namespace Nekoyume.UI
@@ -36,17 +35,17 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            addressTitleText.text = LocalizationManager.Localize("UI_YOUR_ADDRESS");
-            privateKeyTitleText.text = LocalizationManager.Localize("UI_YOUR_PRIVATE_KEY");
-            warningText.text = LocalizationManager.Localize("UI_ACCOUNT_WARNING");
+            addressTitleText.text = L10nManager.Localize("UI_YOUR_ADDRESS");
+            privateKeyTitleText.text = L10nManager.Localize("UI_YOUR_PRIVATE_KEY");
+            warningText.text = L10nManager.Localize("UI_ACCOUNT_WARNING");
 
             volumeMasterSlider.onValueChanged.AddListener(SetVolumeMaster);
             volumeMasterToggle.onValueChanged.AddListener(SetVolumeMasterMute);
 
-            resetStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
-            resetKeyStoreText.text = LocalizationManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");
-            confirmText.text = LocalizationManager.Localize("UI_CLOSE");
-            redeemCodeText.text = LocalizationManager.Localize("UI_REDEEM_CODE");
+            resetStoreText.text = L10nManager.Localize("UI_CONFIRM_RESET_STORE_TITLE");
+            resetKeyStoreText.text = L10nManager.Localize("UI_CONFIRM_RESET_KEYSTORE_TITLE");
+            confirmText.text = L10nManager.Localize("UI_CLOSE");
+            redeemCodeText.text = L10nManager.Localize("UI_REDEEM_CODE");
 
             addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard());
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard());
@@ -68,7 +67,7 @@ namespace Nekoyume.UI
                 privateKeyContentInputField.text = ByteUtil.Hex(Game.Game.instance.Agent.PrivateKey.ByteArray);
             }
 
-            var muteString = LocalizationManager.Localize("UI_MUTE_AUDIO");
+            var muteString = L10nManager.Localize("UI_MUTE_AUDIO");
             foreach (var text in muteTexts)
             {
                 text.text = muteString;
@@ -141,8 +140,8 @@ namespace Nekoyume.UI
         private void UpdateVolumeMasterText()
         {
             var volumeString = Mathf.Approximately(AudioListener.volume, 0.0f) ?
-                LocalizationManager.Localize("UI_MUTE_AUDIO") : $"{Mathf.CeilToInt(AudioListener.volume * 100.0f)}%";
-            volumeMasterText.text = $"{LocalizationManager.Localize("UI_MASTER_VOLUME")} : {volumeString}";
+                L10nManager.Localize("UI_MUTE_AUDIO") : $"{Mathf.CeilToInt(AudioListener.volume * 100.0f)}%";
+            volumeMasterText.text = $"{L10nManager.Localize("UI_MASTER_VOLUME")} : {volumeString}";
         }
 
         private void SetVolumeSfx(float value)

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -174,16 +172,16 @@ namespace Nekoyume.UI.Module
                 {
                     if (!statMapEx.StatType.Equals(uniqueStatType))
                         continue;
-                    
+
                     AddStat(statMapEx, true);
                     statCount++;
                 }
-                
+
                 foreach (var statMapEx in equipment.StatsMap.GetStats())
                 {
                     if (statMapEx.StatType.Equals(uniqueStatType))
                         continue;
-                    
+
                     AddStat(statMapEx);
                     statCount++;
                 }

@@ -23,7 +23,7 @@ namespace Nekoyume.Action
             {
                 return states
                     .SetState(WeeklyArenaAddress, MarkChanged)
-                    .MarkBalanceChanged(Currencies.Gold, ctx.Signer);
+                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer);
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState, out _))
@@ -61,9 +61,17 @@ namespace Nekoyume.Action
 
             var tier = weeklyArenaState.GetTier(info);
             var gold = weeklyArenaState.GetReward(tier);
-            //FIXME TransferAsset실행시 InsufficientBalanceException이 발생할 경우 역직렬화 오류가 발생합니다.
-            states = states.MintAsset(ctx.Signer, Currencies.Gold, gold);
+
+            // FIXME: RankingBattle 액션에서 입장료 받아다 WeeklyArenaAddress에다 쌓아두는데 그거 빼서 주면 안되는지?
+            states = states.TransferAsset(
+                GoldCurrencyState.Address,
+                ctx.Signer,
+                states.GetGoldCurrency(),
+                gold
+            );
+
             weeklyArenaState.SetReceive(AvatarAddress);
+
             return states.SetState(WeeklyArenaAddress, weeklyArenaState.Serialize());
         }
 

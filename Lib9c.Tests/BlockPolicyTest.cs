@@ -24,25 +24,8 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminAddress = new Address(adminPrivateKey.PublicKey);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = BlockPolicy.GetPolicy(10000);
-            Block<PolymorphicAction<ActionBase>> genesis =
-                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
-                    new PolymorphicAction<ActionBase>[]
-                    {
-                        new InitializeStates()
-                        {
-                            RankingState = new RankingState(),
-                            ShopState = new ShopState(),
-                            TableSheetsState = new TableSheetsState(),
-                            GameConfigState = new GameConfigState(),
-                            RedeemCodeState = new RedeemCodeState(Dictionary.Empty
-                                .Add("address", RedeemCodeState.Address.Serialize())
-                                .Add("map", Dictionary.Empty)
-                            ),
-                            AdminAddressState = new AdminState(adminAddress, 1500000),
-                            ActivatedAccountsState = new ActivatedAccountsState(),
-                        },
-                    }
-                );
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
+
             using var store = new DefaultStore(null);
             _ = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
@@ -67,31 +50,10 @@ namespace Lib9c.Tests
             var activatedAddress = activatedPrivateKey.ToAddress();
 
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = BlockPolicy.GetPolicy(10000);
-            Block<PolymorphicAction<ActionBase>> genesis =
-                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
-                    new PolymorphicAction<ActionBase>[]
-                    {
-                        new InitializeStates()
-                        {
-                            RankingState = new RankingState(),
-                            ShopState = new ShopState(),
-                            TableSheetsState = new TableSheetsState(),
-                            GameConfigState = new GameConfigState(),
-                            RedeemCodeState = new RedeemCodeState(Dictionary.Empty
-                                .Add("address", RedeemCodeState.Address.Serialize())
-                                .Add("map", Dictionary.Empty)
-                            ),
-                            AdminAddressState = new AdminState(adminAddress, 1500000),
-                            ActivatedAccountsState = new ActivatedAccountsState(
-                                new[]
-                                {
-                                    activatedAddress,
-                                    adminAddress,
-                                }.ToImmutableHashSet()
-                            ),
-                        },
-                    }
-                );
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                adminAddress,
+                ImmutableHashSet.Create(activatedAddress).Add(adminAddress)
+            );
             using var store = new DefaultStore(null);
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
@@ -130,6 +92,34 @@ namespace Lib9c.Tests
 
             // 활성화 된 계정이기 때문에 테스트에 성공합니다.
             Assert.True(policy.DoesTransactionFollowsPolicy(txByNewActivated));
+        }
+
+        private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(
+            Address adminAddress,
+            IImmutableSet<Address> activatedAddresses
+        )
+        {
+            return BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
+                    new PolymorphicAction<ActionBase>[]
+                    {
+                        new InitializeStates()
+                        {
+                            RankingState = new RankingState(),
+                            ShopState = new ShopState(),
+                            TableSheetsState = new TableSheetsState(),
+                            GameConfigState = new GameConfigState(),
+                            RedeemCodeState = new RedeemCodeState(Dictionary.Empty
+                                .Add("address", RedeemCodeState.Address.Serialize())
+                                .Add("map", Dictionary.Empty)
+                            ),
+                            AdminAddressState = new AdminState(adminAddress, 1500000),
+                            ActivatedAccountsState = new ActivatedAccountsState(activatedAddresses),
+                            GoldCurrencyState = new GoldCurrencyState(
+                                new Currency("NCG", minter: null)
+                            ),
+                        },
+                    }
+                );
         }
     }
 }
