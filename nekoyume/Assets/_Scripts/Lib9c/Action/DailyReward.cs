@@ -13,7 +13,6 @@ namespace Nekoyume.Action
     public class DailyReward : GameAction
     {
         public Address avatarAddress;
-        public int refillPoint;
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -29,10 +28,16 @@ namespace Nekoyume.Action
                 return LogError(context, "Aborted as the avatar state of the signer was failed to load.");
             }
 
+            var gameConfigState = states.GetGameConfigState();
+            if (gameConfigState is null)
+            {
+                return states;
+            }
+
             if (ctx.BlockIndex - avatarState.dailyRewardReceivedIndex >= GameConfig.DailyRewardInterval)
             {
                 avatarState.dailyRewardReceivedIndex = ctx.BlockIndex;
-                avatarState.actionPoint = refillPoint;
+                avatarState.actionPoint = gameConfigState.ActionPointMax;
             }
 
             return states.SetState(avatarAddress, avatarState.Serialize());
@@ -41,13 +46,11 @@ namespace Nekoyume.Action
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
             ["avatarAddress"] = avatarAddress.Serialize(),
-            ["refillPoint"] = (Integer) refillPoint,
         }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
             avatarAddress = plainValue["avatarAddress"].ToAddress();
-            refillPoint = (int) ((Integer) plainValue["refillPoint"]).Value;
         }
     }
 }
