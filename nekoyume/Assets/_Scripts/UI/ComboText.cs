@@ -40,6 +40,11 @@ namespace Nekoyume.UI
                 if (++_combo > comboMax)
                     _combo = 1;
 
+                if (_combo == comboMax)
+                {
+                    CutSceneTest.Show(CutSceneTest.AnimationType.Type5);
+                }
+
                 group.alpha = 1f;
                 comboSubject.OnNext(_combo);
                 gameObject.SetActive(true);
