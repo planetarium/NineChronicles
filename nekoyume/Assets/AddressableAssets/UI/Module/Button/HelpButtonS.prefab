@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2092428802851178608}
   - component: {fileID: 960197548761837445}
   - component: {fileID: 5931873267396129474}
+  - component: {fileID: 2301521792478220761}
   m_Layer: 5
   m_Name: HelpButtonS
   m_TagString: Untagged
@@ -98,6 +99,18 @@ MonoBehaviour:
   button: {fileID: 960197548761837445}
   helpId: 0
   showOnceForEachAgentAddress: 0
+--- !u!225 &2301521792478220761
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 432179639104244028}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4287450176860846136
 GameObject:
   m_ObjectHideFlags: 0
