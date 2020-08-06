@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-using System.Security.Principal;
 using Bencodex.Types;
+using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.State;
 
@@ -12,29 +12,45 @@ namespace Nekoyume.Action
     [ActionType("reward_gold")]
     public class RewardGold : ActionBase
     {
-        public BigInteger Gold;
-
         public override IValue PlainValue =>
             new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "gold"] = Gold.Serialize(),
             });
 
         public override void LoadPlainValue(IValue plainValue)
         {
-            var dict = (Bencodex.Types.Dictionary) plainValue;
-            Gold = dict["gold"].ToBigInteger();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
-            IActionContext ctx = context;
-            var states = ctx.PreviousStates;
-            if (ctx.Rehearsal)
-            {
-                return states.SetState(ctx.Miner, MarkChanged);
-            }
+            var states = context.PreviousStates;
+            states = GenesisGoldDistribution(context, states);
+            states = WeeklyArenaRankingBoard(context, states);
+            return MinerReward(context, states);
+        }
 
+        public IAccountStateDelta GenesisGoldDistribution(IActionContext ctx, IAccountStateDelta states)
+        {
+            IEnumerable<GoldDistribution> goldDistributions = states.GetGoldDistribution();
+            var index = ctx.BlockIndex;
+            Currency goldCurrency = states.GetGoldCurrency();
+            Address fund = GoldCurrencyState.Address;
+            foreach(GoldDistribution distribution in goldDistributions)
+            {
+                BigInteger amount = distribution.GetAmount(index);
+                if (amount <= 0) continue;
+                states = states.TransferAsset(
+                    fund,
+                    distribution.Address,
+                    goldCurrency,
+                    amount
+                );
+            }
+            return states;
+        }
+
+        public IAccountStateDelta WeeklyArenaRankingBoard(IActionContext ctx, IAccountStateDelta states)
+        {
             var index = Math.Max((int) ctx.BlockIndex / GameConfig.WeeklyArenaInterval, 0);
             var weekly = states.GetWeeklyArenaState(index);
             var nextIndex = index + 1;
@@ -61,11 +77,21 @@ namespace Nekoyume.Action
                 states = states.SetState(weekly.address, weekly.Serialize());
             }
 
+            return states;
+        }
+
+        public IAccountStateDelta MinerReward(IActionContext ctx, IAccountStateDelta states)
+        {
+            // 마이닝 보상
+            // https://www.notion.so/planetarium/Mining-Reward-b7024ef463c24ebca40a2623027d497d
+            BigInteger defaultMiningReward = 10;
+            var countOfHalfLife = Convert.ToInt64(ctx.BlockIndex / 12614400) + 1;
+            var miningReward = defaultMiningReward / countOfHalfLife;
             return states.TransferAsset(
                 GoldCurrencyState.Address,
                 ctx.Miner,
                 states.GetGoldCurrency(),
-                Gold
+                miningReward
             );
         }
     }

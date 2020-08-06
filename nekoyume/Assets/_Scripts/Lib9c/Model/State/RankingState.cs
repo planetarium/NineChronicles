@@ -16,12 +16,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class RankingState : State
     {
-        public static readonly Address Address = new Address(new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1
-            }
-        );
-
+        public static readonly Address Address = Addresses.Ranking;
         private readonly Dictionary<Address, RankingInfo> _map;
 
         public List<RankingInfo> OrderedRankingInfos { get; private set; }

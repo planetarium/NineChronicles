@@ -13,13 +13,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class PendingActivationState : State, ISerializable
     {
-        private static Address BaseAddress = new Address(new byte[]
-        {
-            0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x00,
-            0x00, 0x00, 0x00, 0x00, 0x07,
-        });
+        private static Address BaseAddress = Addresses.PendingActivation;
 
         public byte[] Nonce { get; }
 

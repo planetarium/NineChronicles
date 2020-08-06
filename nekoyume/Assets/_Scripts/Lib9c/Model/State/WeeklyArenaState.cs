@@ -21,10 +21,7 @@ namespace Nekoyume.Model.State
     {
         #region static
 
-        private static Address _baseAddress = new Address(new byte[]
-        {
-            0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 10
-        });
+        private static Address _baseAddress = Addresses.WeeklyArena;
 
         public static Address DeriveAddress(int index)
         {

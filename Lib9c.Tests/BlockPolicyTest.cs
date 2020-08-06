@@ -117,6 +117,7 @@ namespace Lib9c.Tests
                             GoldCurrencyState = new GoldCurrencyState(
                                 new Currency("NCG", minter: null)
                             ),
+                            GoldDistributions = new GoldDistribution[0],
                         },
                     }
                 );
