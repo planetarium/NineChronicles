@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using EasingCore;
 using UniRx;
 using UnityEngine;
@@ -50,6 +51,12 @@ namespace Nekoyume.UI.Scroller
 
         protected override GameObject CellPrefab => cellPrefab;
 
+        public IObservable<NotificationCell> OnCompleteOfAddAnimation =>
+            Context.OnCompleteOfAddAnimation;
+
+        public IObservable<NotificationCell> OnCompleteOfRemoveAnimation =>
+            Context.OnCompleteOfRemoveAnimation;
+
         #region FancyScrollRect
 
         private float ScrollLength => 1f / Mathf.Max(cellInterval, 1e-2f) - 1f;
@@ -86,7 +93,9 @@ namespace Nekoyume.UI.Scroller
 
         #region Control
 
-        public void UpdateData(IEnumerable<NotificationCell.ViewModel> items)
+        public void UpdateData(
+            IReadOnlyList<NotificationCell.ViewModel> items,
+            bool jumpToFirst = default)
         {
             if (!initialized)
             {
@@ -98,6 +107,12 @@ namespace Nekoyume.UI.Scroller
 
             UpdateContents(itemsSource);
             scroller.SetTotalCount(itemsSource.Count);
+
+            if (jumpToFirst &&
+                items.Any())
+            {
+                scroller.JumpTo(0);
+            }
         }
 
         public void ClearData()
