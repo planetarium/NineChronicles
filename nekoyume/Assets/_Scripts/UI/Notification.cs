@@ -16,6 +16,14 @@ namespace Nekoyume.UI
     /// </summary>
     public class Notification : SystemInfoWidget
     {
+        private enum State
+        {
+            None,
+            Idle,
+            Add,
+            Remove
+        }
+
         private class ReservationModel
         {
             public MailType mailType;
@@ -24,10 +32,12 @@ namespace Nekoyume.UI
             public Guid itemId;
         }
 
-        private const float InternalTimeToAddCell = 1f;
+        private const float InternalTimeToAddOrRemoveCell = 1f;
         private const float LifeTimeOfEachNotification = 3f;
 
-        private static readonly int LifeTimeOfEachNotificationCeil =
+        private static State _state = State.None;
+
+        private static readonly int CellMaxCount =
             Mathf.CeilToInt(LifeTimeOfEachNotification);
 
         private static readonly List<NotificationCell.ViewModel> SharedModel =
@@ -36,17 +46,13 @@ namespace Nekoyume.UI
         private static readonly ConcurrentQueue<NotificationCell.ViewModel> AddQueue =
             new ConcurrentQueue<NotificationCell.ViewModel>();
 
-        private static readonly Subject<Unit> OnEnqueueToAddQueue = new Subject<Unit>();
-
         private static readonly List<ReservationModel> ReservationList =
             new List<ReservationModel>();
 
         [SerializeField]
         private NotificationScroll scroll = null;
 
-        private float _lastTimeToAddCell;
-        private Coroutine _coAddCell;
-        private Coroutine _coRemoveCell;
+        private float _lastTimeToAddOrRemoveCell;
 
         #region Control
 
@@ -57,7 +63,6 @@ namespace Nekoyume.UI
                 mailType = mailType,
                 message = message
             });
-            OnEnqueueToAddQueue.OnNext(Unit.Default);
         }
 
         public static void Reserve(
@@ -100,11 +105,12 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            scroll.UpdateData(SharedModel);
-
-            OnEnqueueToAddQueue
-                .Where(_ => _coAddCell is null)
-                .Subscribe(_ => _coAddCell = StartCoroutine(CoAddCell()))
+            scroll.UpdateData(SharedModel, true);
+            scroll.OnCompleteOfAddAnimation
+                .Merge(scroll.OnCompleteOfRemoveAnimation)
+                .Where(_ => SharedModel.All(item =>
+                    item.animationState == NotificationCell.AnimationState.Idle))
+                .Subscribe(_ => _state = State.Idle)
                 .AddTo(gameObject);
 
             CloseWidget = null;
@@ -112,80 +118,86 @@ namespace Nekoyume.UI
                 .ObserveOnMainThread()
                 .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
+
+            _state = State.Idle;
+            StartCoroutine(CoUpdate());
         }
 
-        #endregion
-
-        private IEnumerator CoAddCell()
+        private IEnumerator CoUpdate()
         {
-            while (AddQueue.TryDequeue(out var viewModel))
+            while (true)
             {
-                var deltaTime = Time.time - _lastTimeToAddCell;
-                if (deltaTime < InternalTimeToAddCell)
+                var deltaTime = Time.time - _lastTimeToAddOrRemoveCell;
+                if (deltaTime < InternalTimeToAddOrRemoveCell)
                 {
-                    yield return new WaitForSeconds(InternalTimeToAddCell - deltaTime);
+                    yield return new WaitForSeconds(InternalTimeToAddOrRemoveCell - deltaTime);
                 }
 
-                // NOTE: `LifeTimeOfEachNotificationCeil`개 이상의 노티가 쌓이기 시작하면
-                // 노티가 더해지는 연출과 시간이 다 된 노티가 사라지는 연출이 겹치게 되는데, 이러면 연출에 문제가 생깁니다.
-                // 그래서 최대 개수를 `LifeTimeOfEachNotificationCeil`로 제한합니다.
-                while (SharedModel.Count >= LifeTimeOfEachNotificationCeil)
+                while (_state != State.Idle)
                 {
                     yield return null;
                 }
 
-                viewModel.addedTime = Time.time;
-                SharedModel.Add(viewModel);
-                scroll.UpdateData(SharedModel);
-                _lastTimeToAddCell = Time.time;
-
-                if (_coRemoveCell is null)
+                if (TryAddCell())
                 {
-                    _coRemoveCell = StartCoroutine(CoRemoveCell());
+                    _state = State.Add;
+                    _lastTimeToAddOrRemoveCell = Time.time;
                 }
-            }
+                else if (TryRemoveCell())
+                {
+                    _state = State.Remove;
+                    _lastTimeToAddOrRemoveCell = Time.time;
+                }
 
-            _coAddCell = null;
+                yield return null;
+            }
         }
 
-        private IEnumerator CoRemoveCell()
-        {
-            while (SharedModel.Count > 0)
-            {
-                var target = SharedModel[0];
-                var deltaTime = Time.time - target.addedTime;
-                if (deltaTime < LifeTimeOfEachNotification)
-                {
-                    yield return new WaitForSeconds(LifeTimeOfEachNotification - deltaTime);
-                }
+        #endregion
 
-                var observable = scroll.PlayCellRemoveAnimation(0).First();
-                scroll.ScrollTo(1, .5f, Ease.InCirc);
-                yield return new WaitForSeconds(.5f);
-                yield return observable.ToYieldInstruction();
-                SharedModel.RemoveAt(0);
-                scroll.UpdateData(SharedModel);
+        private bool TryAddCell()
+        {
+            if (AddQueue.Count == 0 ||
+                SharedModel.Count >= CellMaxCount ||
+                !AddQueue.TryDequeue(out var viewModel))
+            {
+                return false;
             }
 
-            _coRemoveCell = null;
+            viewModel.addedTime = Time.time;
+            SharedModel.Add(viewModel);
+            scroll.UpdateData(SharedModel, true);
+            return true;
+        }
+
+        private bool TryRemoveCell()
+        {
+            if (SharedModel.Count == 0)
+            {
+                return false;
+            }
+
+            var target = SharedModel[0];
+            var deltaTime = Time.time - target.addedTime;
+            if (deltaTime < LifeTimeOfEachNotification)
+            {
+                return false;
+            }
+
+            scroll
+                .PlayCellRemoveAnimation(0)
+                .First()
+                .Subscribe(_ =>
+                {
+                    SharedModel.RemoveAt(0);
+                    scroll.UpdateData(SharedModel, true);
+                });
+
+            scroll.ScrollTo(1, .5f, Ease.InCirc);
+            return true;
         }
 
         #region Subscribe
-
-        {
-            {
-            }
-
-        }
-
-        {
-            {
-            }
-
-            {
-            }
-
-        }
 
         private static void SubscribeBlockIndex(long blockIndex)
         {
