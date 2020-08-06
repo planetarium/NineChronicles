@@ -21,8 +21,8 @@ namespace Nekoyume.UI.Scroller
     {
         public enum AnimationState
         {
-            None,
             New,
+            Idle,
             Add,
             Remove
         }
@@ -55,9 +55,13 @@ namespace Nekoyume.UI.Scroller
 
         private void OnDisable()
         {
-            _coCheckCompleteOfAnimation = null;
-
             KillTweeners();
+            _coCheckCompleteOfAnimation = null;
+        }
+
+        private void OnDestroy()
+        {
+            _disposablesForSetContext.DisposeAllAndClear();
         }
 
         public override void SetContext(NotificationScroll.DefaultContext context)
@@ -68,13 +72,19 @@ namespace Nekoyume.UI.Scroller
             context.OnCompleteOfAddAnimation
                 .Merge(context.OnCompleteOfRemoveAnimation)
                 .Where(cell => cell.Index == Index)
-                .Subscribe(cell => cell._viewModel.animationState = AnimationState.None)
+                .Subscribe(cell => cell._viewModel.animationState = AnimationState.Idle)
                 .AddTo(_disposablesForSetContext);
             context.PlayRemoveAnimation
                 .Where(tuple => tuple.index == Index)
                 .Subscribe(tuple =>
                 {
-                    tuple.viewModel.animationState = AnimationState.Remove;
+                    var (_, viewModel) = tuple;
+                    if (viewModel.animationState != AnimationState.Idle)
+                    {
+                        return;
+                    }
+
+                    viewModel.animationState = AnimationState.Remove;
                     PlayAnimation(removeTweeners, Context.OnCompleteOfRemoveAnimation);
                 })
                 .AddTo(_disposablesForSetContext);
@@ -86,13 +96,13 @@ namespace Nekoyume.UI.Scroller
 
             switch (_viewModel.animationState)
             {
-                case AnimationState.None:
-                    ResetTweeners();
-                    break;
                 case AnimationState.New:
                     _viewModel.animationState = AnimationState.Add;
                     PlayAnimation(addTweeners, Context.OnCompleteOfAddAnimation);
                     AudioController.instance.PlaySfx(AudioController.SfxCode.Notice);
+                    break;
+                case AnimationState.Idle:
+                    ResetTweeners();
                     break;
                 case AnimationState.Add:
                 case AnimationState.Remove:
