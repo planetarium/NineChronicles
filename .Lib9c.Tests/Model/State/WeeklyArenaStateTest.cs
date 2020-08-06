@@ -30,8 +30,8 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Theory]
-        [InlineData(1, "44971f56cDDe257b355B7faD618DbD67085e8BB8")]
-        [InlineData(2, "866F0C71E0F701cCCCEBAfA17daAbdaB9ee702C1")]
+        [InlineData(1, "e0c15f3CEF3FCdCb02e181b0077D2813Ebc925CA")]
+        [InlineData(2, "93C3EA9EFB1edFE6106E047579964bfCF72B6000")]
         public void DeriveAddress(int index, string expected)
         {
             var state = new WeeklyArenaState(index);

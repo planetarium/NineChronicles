@@ -26,12 +26,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class ShopState : State
     {
-        public static readonly Address Address = new Address(new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
-            }
-        );
-
+        public static readonly Address Address = Addresses.Shop; 
         public readonly Dictionary<Address, List<ShopItem>> AgentProducts = new Dictionary<Address, List<ShopItem>>();
 
         public ShopState() : base(Address)
