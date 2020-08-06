@@ -104,8 +104,8 @@ namespace Nekoyume.BlockChain
                         new TPStashEvent().CurrencyGet(
                             player_uuid: agentAddress.ToHex(),
                             currency_slug: "gold",
-                            currency_quantity: (float)ReactiveAgentState.Gold.Value,
-                            currency_total_quantity: (float)(balance + ReactiveAgentState.Gold.Value),
+                            currency_quantity: (float)(balance - ReactiveAgentState.Gold.Value),
+                            currency_total_quantity: (float)(balance),
                             reference_entity: "bonuses",
                             reference_category_slug: "reward_gold",
                             reference_slug: "RewardGold");
