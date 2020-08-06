@@ -4475,8 +4475,9 @@ GameObject:
   - component: {fileID: 8969187869023161125}
   - component: {fileID: 8969187869041512037}
   - component: {fileID: 8969187869041620933}
+  - component: {fileID: -4340592321509659108}
   m_Layer: 0
-  m_Name: bg_sandstorm
+  m_Name: bgvfx_sandstorm
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4513,7 +4514,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -9131,3 +9132,15 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &-4340592321509659108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8969187869022869253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10b555ab7e236ff428e2f4eb134632c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
