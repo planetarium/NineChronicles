@@ -66,6 +66,7 @@ namespace Nekoyume.Game
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
 
+        public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public bool IsInStage { get; private set; }
@@ -79,6 +80,8 @@ namespace Nekoyume.Game
             new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
         public bool showLoadingScreen;
+
+        private Character.Player _stageRunningPlayer = null;
 
         #region Events
 
@@ -389,6 +392,8 @@ namespace Nekoyume.Game
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
+            ReleaseWhiteList.Clear();
+            ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
             var battle = Widget.Find<UI.Battle>();
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
@@ -455,17 +460,16 @@ namespace Nekoyume.Game
 
             if (log.result == BattleLog.Result.Win)
             {
-                var playerCharacter = GetPlayer();
-                playerCharacter.DisableHUD();
+                _stageRunningPlayer.DisableHUD();
                 if (isClear)
                 {
                     yield return StartCoroutine(CoDialog(log.stageId));
                 }
 
-                playerCharacter.Animator.Win(log.clearedWaveNumber);
-                playerCharacter.ShowSpeech("PLAYER_WIN");
+                _stageRunningPlayer.Animator.Win(log.clearedWaveNumber);
+                _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
                 yield return new WaitForSeconds(2.2f);
-                objectPool.ReleaseExceptForPlayer();
+                objectPool.ReleaseExcept(ReleaseWhiteList);
                 if (isClear)
                 {
                     StartCoroutine(CoSlideBg());
@@ -473,7 +477,8 @@ namespace Nekoyume.Game
             }
             else
             {
-                objectPool.ReleaseAll();
+                ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
+                objectPool.ReleaseExcept(ReleaseWhiteList);
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -1011,16 +1016,16 @@ namespace Nekoyume.Game
 
         private Character.Player RunPlayer(bool chasePlayer = true)
         {
-            var player = GetPlayer();
-            var playerTransform = player.transform;
+            _stageRunningPlayer = GetPlayer();
+            var playerTransform = _stageRunningPlayer.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
             if (chasePlayer)
-                RunAndChasePlayer(player);
+                RunAndChasePlayer(_stageRunningPlayer);
             else
-                player.StartRun();
-            return player;
+                _stageRunningPlayer.StartRun();
+            return _stageRunningPlayer;
         }
 
         public Character.Player RunPlayer(Vector2 position, bool chasePlayer = true)

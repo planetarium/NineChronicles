@@ -86,6 +86,9 @@ namespace Nekoyume.UI
             _levelUpVFX = VFXController.instance.CreateAndChaseCam<LevelUpVFX>(position, new Vector3(0f, 0.7f));
             _levelUpVFX.Play();
             _levelUpVFX.OnFinished = () => Close();
+
+            var stage = Game.Game.instance.Stage;
+            stage.ReleaseWhiteList.Add(_levelUpVFX.gameObject);
             base.Show(ignoreShowAnimation);
         }
 
