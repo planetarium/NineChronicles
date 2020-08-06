@@ -92,6 +92,14 @@ namespace NineChronicles.Standalone.Executable
 #endif
             Log.Logger = loggerConf.CreateLogger();
 
+            if (!graphQLServer && !startNodeService)
+            {
+                throw new CommandExitedException(
+                    "Either --graphql-server or --start-node-service must be present.",
+                    -1
+                );
+            }
+
             var tasks = new List<Task>();
             try
             {
