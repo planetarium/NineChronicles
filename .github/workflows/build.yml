@@ -9,8 +9,12 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
+      with:
+        submodules: true
       if: github.event_name != 'pull_request'
     - uses: actions/checkout@master
+      with:
+        submodules: true
       if: github.event_name == 'pull_request'
       with:
         ref: ${{ github.pull_request.head.sha }}
