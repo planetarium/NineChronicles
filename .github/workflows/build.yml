@@ -9,15 +9,14 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@master
-      with:
-        submodules: true
       if: github.event_name != 'pull_request'
-    - uses: actions/checkout@master
       with:
         submodules: true
+    - uses: actions/checkout@master
       if: github.event_name == 'pull_request'
       with:
         ref: ${{ github.pull_request.head.sha }}
+        submodules: true
     - run: hooks/pre-commit
     - uses: unsplash/comment-on-pr@master
       env:
