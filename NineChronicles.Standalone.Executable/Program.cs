@@ -71,8 +71,8 @@ namespace NineChronicles.Standalone.Executable
             string graphQLHost = "0.0.0.0",
             [Option("graphql-port")]
             int? graphQLPort = null,
-            [Option("start-node-service")]
-            bool startNodeService = false
+            [Option("libplanet-node")]
+            bool libplanetNode = false
         )
         {
 #if SENTRY || ! DEBUG
@@ -92,10 +92,10 @@ namespace NineChronicles.Standalone.Executable
 #endif
             Log.Logger = loggerConf.CreateLogger();
 
-            if (!graphQLServer && !startNodeService)
+            if (!graphQLServer && !libplanetNode)
             {
                 throw new CommandExitedException(
-                    "Either --graphql-server or --start-node-service must be present.",
+                    "Either --graphql-server or --libplanet-node must be present.",
                     -1
                 );
             }
@@ -179,7 +179,7 @@ namespace NineChronicles.Standalone.Executable
                     StandaloneServices.CreateHeadless(nineChroniclesProperties, standaloneContext);
                 standaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
 
-                if (startNodeService)
+                if (libplanetNode)
                 {
                     if (!properties.NoMiner)
                     {
