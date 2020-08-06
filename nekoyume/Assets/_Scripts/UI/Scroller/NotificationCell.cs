@@ -108,7 +108,6 @@ namespace Nekoyume.UI.Scroller
         public override void UpdatePosition(float position)
         {
             var scrollSize = Context.CalculateScrollSize();
-            // var normalizedPosition = math.lerp(0f, scrollSize, position) / scrollSize;
             var start = 0.5f * scrollSize;
             var end = -start;
             var localPosition = math.lerp(start, end, position);
