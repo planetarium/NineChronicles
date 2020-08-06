@@ -824,10 +824,7 @@ namespace Nekoyume.UI
             foreach (var recipe in recipeTable.Values
                 .Where(x => worldInfo.IsStageCleared(x.UnlockStage)))
             {
-                var unlockedSubRecipes = recipe.SubRecipeIds
-                    .Where(id => worldInfo.IsStageCleared(subRecipeTable[id].UnlockStage));
-
-                RecipeVFXSkipMap[recipe.Id] = unlockedSubRecipes.Take(3).ToArray();
+                RecipeVFXSkipMap[recipe.Id] = recipe.SubRecipeIds.Take(3).ToArray();
             }
 
             SaveRecipeVFXSkipMap();

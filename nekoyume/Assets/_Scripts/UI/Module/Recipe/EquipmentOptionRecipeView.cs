@@ -15,9 +15,6 @@ namespace Nekoyume.UI.Module
     public class EquipmentOptionRecipeView : EquipmentOptionView
     {
         [SerializeField]
-        private TextMeshProUGUI unlockConditionText = null;
-
-        [SerializeField]
         private RequiredItemRecipeView requiredItemRecipeView = null;
 
         [SerializeField]
@@ -147,14 +144,6 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            // 해금 검사.
-            if (!avatarState.worldInformation.IsStageCleared(rowData.UnlockStage))
-            {
-                HasNotification.Value = false;
-                SetLocked(true);
-                return;
-            }
-
             if (hasNotification.HasValue)
                 HasNotification.Value = hasNotification.Value;
 
@@ -203,47 +192,6 @@ namespace Nekoyume.UI.Module
 
         private void SetLocked(bool value)
         {
-            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
-            if (value)
-            {
-                unlockConditionText.enabled = true;
-
-                if (rowData is null)
-                {
-                    unlockConditionText.text = string.Format(
-                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                        "???");
-                }
-
-                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
-                    out var stageId))
-                {
-                    var diff = rowData.UnlockStage - stageId;
-                    if (diff > 50)
-                    {
-                        unlockConditionText.text = string.Format(
-                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                            "???");
-                    }
-                    else
-                    {
-                        unlockConditionText.text = string.Format(
-                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                            rowData.UnlockStage.ToString());
-                    }
-                }
-                else
-                {
-                    unlockConditionText.text = string.Format(
-                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                        "???");
-                }
-            }
-            else
-            {
-                unlockConditionText.enabled = false;
-            }
-
             lockParent.SetActive(value);
             header.SetActive(!value);
             options.SetActive(!value);
