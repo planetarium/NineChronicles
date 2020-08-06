@@ -35,17 +35,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected LockChainJitterVFX lockVFX = null;
 
-        [SerializeField]
-        protected Image hasNotificationImage = null;
-
         public RectTransformShakeTweener shakeTweener = null;
         public TransformLocalScaleTweener scaleTweener = null;
 
         private bool _tempLocked = false;
 
         private (int parentItemId, int index) _parentInfo;
-
-        protected readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         public EquipmentItemSubRecipeSheet.Row rowData;
 
@@ -76,7 +71,7 @@ namespace Nekoyume.UI.Module
                     var combination = Widget.Find<Combination>();
                     combination.RecipeVFXSkipMap[_parentInfo.parentItemId][_parentInfo.index] = rowData.Id;
                     combination.SaveRecipeVFXSkipMap();
-                    Set(avatarState, null, false);
+                    Set(avatarState, false);
                     var centerPos = GetComponent<RectTransform>()
                         .GetWorldPositionOfCenter();
                     VFXController.instance.CreateAndChaseCam<ElementalRecipeUnlockVFX>(centerPos);
@@ -91,10 +86,6 @@ namespace Nekoyume.UI.Module
                 OnClick.OnNext(Unit.Default);
                 recipeClickVFX.Play();
             }).AddTo(gameObject);
-
-            if (hasNotificationImage)
-                HasNotification.SubscribeTo(hasNotificationImage)
-                    .AddTo(gameObject);
         }
 
         private void OnDisable()
@@ -137,15 +128,12 @@ namespace Nekoyume.UI.Module
             Show(recipeName, subRecipeId);
         }
 
-        public void Set(AvatarState avatarState, bool? hasNotification = false, bool tempLocked = false)
+        public void Set(AvatarState avatarState, bool tempLocked = false)
         {
             if (rowData is null)
             {
                 return;
             }
-
-            if (hasNotification.HasValue)
-                HasNotification.Value = hasNotification.Value;
 
             _tempLocked = tempLocked;
             SetLocked(tempLocked);

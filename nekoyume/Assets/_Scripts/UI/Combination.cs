@@ -289,12 +289,11 @@ namespace Nekoyume.UI
             Show();
         }
 
-        public void ShowByEquipmentRecipe(int recipeId, int? subRecipeId)
+        public void ShowByEquipmentRecipe(int recipeId)
         {
             _shouldGoToEquipmentRecipe = new RecipeIdSet
             {
                 recipeId = recipeId,
-                subRecipeId = subRecipeId
             };
 
             Show();
