@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blockchain;
+using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
 using Libplanet.Tx;
@@ -23,7 +24,7 @@ namespace Nekoyume.BlockChain
 
         public Address Address { get; }
 
-        public async Task MineBlockAsync(CancellationToken cancellationToken)
+        public async Task<Block<PolymorphicAction<ActionBase>>> MineBlockAsync(CancellationToken cancellationToken)
         {
             var txs = new HashSet<Transaction<PolymorphicAction<ActionBase>>>();
 
@@ -39,10 +40,13 @@ namespace Nekoyume.BlockChain
             }
 
             var invalidTxs = txs;
-
+            Block<PolymorphicAction<ActionBase>> block = null;
             try
             {
-                var block = await _chain.MineBlock(Address, DateTimeOffset.UtcNow, cancellationToken: cancellationToken);
+                block = await _chain.MineBlock(
+                    Address,
+                    DateTimeOffset.UtcNow,
+                    cancellationToken: cancellationToken);
 
                 if (_swarm.Running)
                 {
@@ -80,6 +84,8 @@ namespace Nekoyume.BlockChain
                     _chain.UnstageTransaction(invalidTx);
                 }
             }
+
+            return block;
         }
 
         public Miner(BlockChain<PolymorphicAction<ActionBase>> chain, Swarm<PolymorphicAction<ActionBase>> swarm, PrivateKey privateKey)
