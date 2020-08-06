@@ -8,7 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Libplanet.Standalone\Libplanet.Standalone.csproj" />
     <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
-    <ProjectReference Include="..\shared\shared.csproj" />
+    <ProjectReference Include="..\nekoyume\Assets\_Scripts\NineChronicles.RPC.Shared\NineChronicles.RPC.Shared\NineChronicles.RPC.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="3.5.0-alpha0046" />

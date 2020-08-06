@@ -20,11 +20,7 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
-        public static readonly Address BlacksmithAddress = new Address(new byte[]
-        {
-            0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
-            0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x9,
-        });
+        public static readonly Address BlacksmithAddress = Addresses.Blacksmith;
 
         public Guid itemId;
         public IEnumerable<Guid> materialIds;
