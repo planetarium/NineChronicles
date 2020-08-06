@@ -41,10 +41,6 @@ namespace Nekoyume.UI
         private static readonly List<ReservationModel> ReservationList =
             new List<ReservationModel>();
 
-        private static readonly List<Type> WidgetTypesForUX = new List<Type>();
-
-        private static int _widgetEnableCount;
-
         [SerializeField]
         private NotificationScroll scroll = null;
 
@@ -54,28 +50,8 @@ namespace Nekoyume.UI
 
         #region Control
 
-        /// <summary>
-        /// This class consider if there is any widget raise `OnEnableSubject` subject in the `WidgetTypesForUX` property.
-        /// Widget type can registered once and cannot unregistered.
-        /// </summary>
-        public static void RegisterWidgetTypeForUX<T>() where T : Widget
-        {
-            var type = typeof(T);
-            if (WidgetTypesForUX.Contains(type))
-            {
-                return;
-            }
-
-            WidgetTypesForUX.Add(type);
-        }
-
         public static void Push(MailType mailType, string message)
         {
-            if (_widgetEnableCount > 0)
-            {
-                return;
-            }
-
             AddQueue.Enqueue(new NotificationCell.ViewModel
             {
                 mailType = mailType,
@@ -126,8 +102,6 @@ namespace Nekoyume.UI
 
             scroll.UpdateData(SharedModel);
 
-            OnEnableStaticObservable.Subscribe(SubscribeOnEnable).AddTo(gameObject);
-            OnDisableStaticObservable.Subscribe(SubscribeOnDisable).AddTo(gameObject);
             OnEnqueueToAddQueue
                 .Where(_ => _coAddCell is null)
                 .Subscribe(_ => _coAddCell = StartCoroutine(CoAddCell()))
@@ -198,37 +172,19 @@ namespace Nekoyume.UI
 
         #region Subscribe
 
-        private void SubscribeOnEnable(Widget widget)
         {
-            var type = widget.GetType();
-            if (!WidgetTypesForUX.Contains(type))
             {
-                return;
             }
 
-            _widgetEnableCount++;
-
-            if (_widgetEnableCount == 1)
-            {
-                SharedModel.Clear();
-                scroll.ClearData();
-            }
         }
 
-        private static void SubscribeOnDisable(Widget widget)
         {
-            var type = widget.GetType();
-            if (!WidgetTypesForUX.Contains(type))
             {
-                return;
             }
 
-            if (_widgetEnableCount == 0)
             {
-                return;
             }
 
-            _widgetEnableCount--;
         }
 
         private static void SubscribeBlockIndex(long blockIndex)
