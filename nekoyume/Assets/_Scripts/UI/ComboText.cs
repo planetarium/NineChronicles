@@ -20,7 +20,7 @@ namespace Nekoyume.UI
         public TextMeshProUGUI labelText;
         public CanvasGroup group;
 
-        private int _combo = 0;
+        public int _combo { get; private set; }
         private Subject<int> comboSubject = new Subject<int>();
         [System.NonSerialized] public int comboMax;
 
@@ -39,11 +39,6 @@ namespace Nekoyume.UI
             {
                 if (++_combo > comboMax)
                     _combo = 1;
-
-                if (_combo == comboMax)
-                {
-                    CutSceneTest.Show(CutSceneTest.AnimationType.Type5);
-                }
 
                 group.alpha = 1f;
                 comboSubject.OnNext(_combo);

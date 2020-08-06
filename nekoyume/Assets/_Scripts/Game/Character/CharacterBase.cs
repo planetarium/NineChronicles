@@ -593,6 +593,18 @@ namespace Nekoyume.Game.Character
                 yield break;
 
             var skillInfosCount = skillInfos.Count;
+            var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
+
+            if ((this is Player && !(this is EnemyPlayer)) &&
+                skillInfos.Any(skillInfo => skillInfo.Effect > 0 && skillInfo.Critical))
+            {
+                if (battleWidget.ComboText._combo + 1 == battleWidget.ComboText.comboMax)
+                {
+                    CutSceneTest.Show(CutSceneTest.AnimationType.Type5);
+
+                    yield return new WaitForSeconds(CutSceneTest.DestroyDelay);
+                }
+            }
 
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
@@ -602,7 +614,7 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessAttack(target, info, info.Target.IsDead, false);
                 if (this is Player && !(this is EnemyPlayer))
-                    Widget.Find<Nekoyume.UI.Battle>().ShowComboText(info.Effect > 0);
+                    battleWidget.ShowComboText(info.Effect > 0);
             }
         }
 

@@ -10,7 +10,7 @@ namespace Nekoyume.UI
             Type4,
             Type5,
         }
-        private const float DestroyDelay = 1.5f;
+        public const float DestroyDelay = 1.5f;
 
         private SkeletonAnimator skeletonAnimator;
         public Animator animator;
