@@ -12,6 +12,7 @@
     <Compile Include="..\nekoyume\Assets\BTAI\**\*.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="15.0.5" />
     <PackageReference Include="DecimalMath.DecimalEx" Version="1.0.1" />
     <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
     <PackageReference Include="Libplanet" Version="0.10.0-nightly.20200802" />

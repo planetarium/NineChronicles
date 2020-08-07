@@ -10,12 +10,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class GameConfigState : State
     {
-        public static readonly Address Address = new Address(new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x4
-            }
-        );
-
+        public static readonly Address Address = Addresses.GameConfig;
         public int HourglassPerBlock { get; private set; }
         public int ActionPointMax { get; private set; }
 

@@ -11,12 +11,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class RedeemCodeState : State
     {
-        public static readonly Address Address = new Address(new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x5
-            }
-        );
-
+        public static readonly Address Address = Addresses.RedeemCode;
         public IReadOnlyDictionary<PublicKey, Reward> Map => _map;
 
         public class Reward
