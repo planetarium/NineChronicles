@@ -12,15 +12,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class ActivatedAccountsState : State, ISerializable
     {
-        public static readonly Address Address = new Address(
-            new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x8,
-            }
-        );
+        public static readonly Address Address = Addresses.ActivatedAccount;
 
         public IImmutableSet<Address> Accounts { get; private set; }
 

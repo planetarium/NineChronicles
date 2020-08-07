@@ -11,15 +11,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class GoldCurrencyState : State, ISerializable
     {
-        public static readonly Address Address = new Address(
-            new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0xA,
-            }
-        );
+        public static readonly Address Address = Addresses.GoldCurrency;
 
         public Currency Currency { get; private set; }
 
