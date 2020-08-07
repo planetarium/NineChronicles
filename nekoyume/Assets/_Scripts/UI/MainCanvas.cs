@@ -173,8 +173,6 @@ namespace Nekoyume.UI
                 value.Initialize();
             }
 
-            Notification.RegisterWidgetTypeForUX<Mail>();
-
             UpdateLayers();
         }
 
