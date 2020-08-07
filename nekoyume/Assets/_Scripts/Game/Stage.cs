@@ -1059,8 +1059,7 @@ namespace Nekoyume.Game
             {
                 if (defaultBGVFX)
                     defaultBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-                if (bosswaveBGVFX)
-                    bosswaveBGVFX.Play(true);
+                bosswaveBGVFX.Play(true);
             }
             else
             {
