@@ -612,6 +612,41 @@ namespace Nekoyume.BlockChain
 
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
+            if (!(eval.Exception is null))
+            {
+                // TODO: 로딩 화면 걷어내고 메인으로 돌아가는 것이 좋을까?
+                // 실패 이유를 팝업으로 알려줘야 하겠다.
+                Widget
+                    .Find<ActionFailPopup>()
+                    .Show<HackAndSlash>(L10nManager.Localize("ERROR_FAILED_TO_UNLOCK_WORLD"));
+
+                var loadingScreen = Widget.Find<LoadingScreen>();
+                if (loadingScreen.IsActive())
+                {
+                    var questPreparation = Widget.Find<QuestPreparation>();
+                    if (questPreparation.IsActive())
+                    {
+                        Game.Event.OnRoomEnter.Invoke(true);
+                        questPreparation.Close(true);
+                    }
+
+                    loadingScreen.Close();
+                }
+                else
+                {
+                    var stageLoadingScreen = Widget.Find<StageLoadingScreen>();
+                    var battleResult = Widget.Find<BattleResult>();
+                    if (stageLoadingScreen.IsActive() &&
+                        battleResult.IsActive())
+                    {
+                        stageLoadingScreen.Close();
+                        battleResult.GoToMain();
+                    }
+                }
+
+                return;
+            }
+
             Game.Game.instance.Stage.onEnterToStageEnd
                 .First()
                 .Subscribe(_ =>
