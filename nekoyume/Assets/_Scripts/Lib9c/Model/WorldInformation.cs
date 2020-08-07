@@ -414,6 +414,7 @@ namespace Nekoyume.Model
         }
     }
 
+    [Serializable]
     public class FailedToUnlockWorldException : Exception
     {
         public FailedToUnlockWorldException(string message) : base(message)
