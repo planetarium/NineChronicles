@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Threading;
@@ -80,7 +81,14 @@ namespace NineChronicles.Standalone
                         if (swarm.Running)
                         {
                             Log.Debug("Start mining.");
-                            await miner.MineBlockAsync(cancellationToken);
+                            var block = await miner.MineBlockAsync(cancellationToken);
+
+                            const int txCountThreshold = 10;
+                            var txCount = block?.Transactions.Count() ?? 0;
+                            if (!(block is null) && txCount >= txCountThreshold)
+                            {
+                                Log.Error($"Block {block.Index}({block.Hash}) transaction count is {txCount}.");
+                            }
                         }
                         else
                         {

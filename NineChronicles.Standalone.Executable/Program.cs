@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Cocona;
 using Libplanet.KeyStore;
-using Libplanet.Standalone.Hosting;
 using Microsoft.Extensions.Hosting;
 using NineChronicles.Standalone.Properties;
 using Sentry;
@@ -71,7 +70,9 @@ namespace NineChronicles.Standalone.Executable
             [Option("graphql-host")]
             string graphQLHost = "0.0.0.0",
             [Option("graphql-port")]
-            int? graphQLPort = null
+            int? graphQLPort = null,
+            [Option("libplanet-node")]
+            bool libplanetNode = false
         )
         {
 #if SENTRY || ! DEBUG
@@ -90,6 +91,14 @@ namespace NineChronicles.Standalone.Executable
                 });
 #endif
             Log.Logger = loggerConf.CreateLogger();
+
+            if (!graphQLServer && !libplanetNode)
+            {
+                throw new CommandExitedException(
+                    "Either --graphql-server or --libplanet-node must be present.",
+                    -1
+                );
+            }
 
             var tasks = new List<Task>();
             try
@@ -170,7 +179,7 @@ namespace NineChronicles.Standalone.Executable
                     StandaloneServices.CreateHeadless(nineChroniclesProperties, standaloneContext);
                 standaloneContext.NineChroniclesNodeService = nineChroniclesNodeService;
 
-                if (!graphQLServer)
+                if (libplanetNode)
                 {
                     if (!properties.NoMiner)
                     {
