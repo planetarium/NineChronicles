@@ -54,7 +54,7 @@ namespace Nekoyume.BlockChain
             return new DebugPolicy();
 #else
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
-                new RewardGold { Gold = 10 },
+                new RewardGold(),
                 BlockInterval,
                 minimumDifficulty,
                 2048,
@@ -82,7 +82,7 @@ namespace Nekoyume.BlockChain
 
         private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
         {
-            public IAction BlockAction { get; } = new RewardGold { Gold = 10 };
+            public IAction BlockAction { get; } = new RewardGold();
 
             public InvalidBlockException ValidateNextBlock(
                 BlockChain<PolymorphicAction<ActionBase>> blocks,

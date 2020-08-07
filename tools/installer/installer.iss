@@ -36,8 +36,7 @@ Name: "CreateDesktopIcon"; Description: "{cm:CreateDesktopIcon}"; GroupDescripti
 Name: "RegisterStartup"; Description: "{cm:RegisterStartup}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Files]
-Source: "..\..\NineChronicles.Launcher\out\win-x64\Nine Chronicles Updater.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\NineChronicles.Launcher\Launcher\icon.ico"; DestDir: "{app}"
+Source: "..\Updater\out\win-x64\Nine Chronicles Updater.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: ".\windowsdesktop-runtime-3.1.3-win-x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Source: ".\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 
@@ -45,6 +44,9 @@ Source: ".\vc_redist.x64.exe"; DestDir: "{tmp}"; Flags: deleteafterinstall
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; IconFilename: "{app}\{#GameIconName}"; Tasks: CreateDesktopIcon
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
+
+[Run]
+Filename: "{cmd}"; Parameters: "/C ""taskkill /im ""{#MyAppName}.exe"""" /f /t"
 
 [Run]
 Filename: {tmp}\windowsdesktop-runtime-3.1.3-win-x64.exe; \
@@ -67,6 +69,9 @@ Filename: "{app}\{#GameExeName}"; Flags: nowait postinstall skipifsilent
 [InstallDelete] 
 Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles"  
 Type: filesandordirs; Name: "{%TEMP}\.net\Nine Chronicles Updater"
+
+[UninstallRun]
+Filename: "{cmd}"; Parameters: "/C ""taskkill /im ""{#MyAppName}.exe"""" /f /t"
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
