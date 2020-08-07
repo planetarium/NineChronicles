@@ -246,7 +246,8 @@ namespace Nekoyume.Action
                 }
                 catch (FailedToUnlockWorldException e)
                 {
-                    return LogError(context, e.Message);
+                    Log.Error(e.Message);
+                    throw;
                 }
             }
 
