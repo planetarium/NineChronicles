@@ -99,7 +99,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(
                 ImmutableHashSet.Create(
-                    address
+                    address, GoldCurrencyState.Address
                 ),
                 nextState.UpdatedAddresses
             );
