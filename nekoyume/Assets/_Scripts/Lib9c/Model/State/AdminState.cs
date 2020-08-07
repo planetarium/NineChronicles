@@ -9,15 +9,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class AdminState : State
     {
-        public static readonly Address Address = new Address(
-            new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x0,
-                0x0, 0x0, 0x0, 0x0, 0x6
-            }
-        );
+        public static readonly Address Address = Addresses.Admin;
 
         public Address AdminAddress { get; private set; }
 

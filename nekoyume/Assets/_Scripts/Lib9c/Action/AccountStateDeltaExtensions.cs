@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
@@ -277,6 +278,28 @@ namespace Nekoyume.Action
             catch (Exception e)
             {
                 Log.Error(e, $"Unexpected error occurred during {nameof(GetCombinationSlotState)}()");
+                throw;
+            }
+        }
+
+        public static IEnumerable<GoldDistribution> GetGoldDistribution(
+            this IAccountStateDelta states)
+        {
+            var value = states.GetState(Addresses.GoldDistribution);
+            if (value is null)
+            {
+                Log.Warning($"{nameof(GoldDistribution)} is null ({0})", Addresses.GoldDistribution.ToHex());
+                return null;
+            }
+
+            try
+            {
+                 var goldDistributions = (Bencodex.Types.List)value;
+                 return goldDistributions.Select(v => new GoldDistribution(v));
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Unexpected error occurred during {nameof(GetGoldDistribution)}()");
                 throw;
             }
         }

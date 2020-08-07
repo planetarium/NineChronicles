@@ -219,10 +219,16 @@ namespace Nekoyume.UI
 
             if (_shouldGoToEquipmentRecipe.HasValue)
             {
+                var recipeId = _shouldGoToEquipmentRecipe.Value.recipeId;
+                var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
+                    .First(r => r.Id == recipeId).ResultEquipmentId;
+                var itemRow = Game.Game.instance.TableSheets.EquipmentItemSheet.Values
+                    .First(r => r.Id == itemId);
+                itemRecipe.SetToggledOnItemType(itemRow.ItemSubType);
                 if (_shouldGoToEquipmentRecipe.Value.subRecipeId.HasValue)
                 {
                     if (itemRecipe.TryGetCellView(
-                        _shouldGoToEquipmentRecipe.Value.recipeId,
+                        recipeId,
                         out var cellView))
                     {
                         if (cellView.IsLocked)
@@ -237,7 +243,7 @@ namespace Nekoyume.UI
                     }
                     else
                     {
-                        Debug.LogError($"Not found cell view with {_shouldGoToEquipmentRecipe.Value.recipeId} in {nameof(itemRecipe)}");
+                        Debug.LogError($"Not found cell view with {recipeId} in {nameof(itemRecipe)}");
                         State.SetValueAndForceNotify(StateType.CombineEquipment);
                     }
                 }
@@ -819,8 +825,7 @@ namespace Nekoyume.UI
                 .Where(x => worldInfo.IsStageCleared(x.UnlockStage)))
             {
                 var unlockedSubRecipes = recipe.SubRecipeIds
-                    .Where(id => worldInfo
-                    .IsStageCleared(subRecipeTable[id].UnlockStage));
+                    .Where(id => worldInfo.IsStageCleared(subRecipeTable[id].UnlockStage));
 
                 RecipeVFXSkipMap[recipe.Id] = unlockedSubRecipes.Take(3).ToArray();
             }
