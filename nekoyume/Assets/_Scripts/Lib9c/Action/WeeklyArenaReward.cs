@@ -23,7 +23,7 @@ namespace Nekoyume.Action
             {
                 return states
                     .SetState(WeeklyArenaAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer);
+                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, ctx.Signer);
             }
 
             if (!states.TryGetAgentAvatarStates(ctx.Signer, AvatarAddress, out var agentState, out _))

@@ -131,12 +131,12 @@ namespace Nekoyume.Game.Util
                 }
             }
 
-            public void ReleaseExceptForPlayer()
+            public void ReleaseExcept(IEnumerable<GameObject> whiteList)
             {
                 foreach (var go in _objects
                     .Select(pair => pair.Value)
                     .SelectMany(l =>
-                        l.Where(go => go != null && !go.GetComponent<Character.Player>())))
+                        l.Where(o => o != null && !whiteList.Contains(o))))
                 {
                     go.SetActive(false);
                 }
@@ -219,9 +219,9 @@ namespace Nekoyume.Game.Util
             _impl.ReleaseAll();
         }
 
-        public void ReleaseExceptForPlayer()
+        public void ReleaseExcept(IEnumerable<GameObject> whiteList)
         {
-            _impl.ReleaseExceptForPlayer();
+            _impl.ReleaseExcept(whiteList);
         }
 
         public GameObject Get(string objName, bool create, Vector3 position = default)
