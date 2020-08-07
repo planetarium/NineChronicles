@@ -602,7 +602,7 @@ namespace Nekoyume.Game.Character
                 {
                     CutSceneTest.Show(CutSceneTest.AnimationType.Type5);
 
-                    yield return new WaitForSeconds(CutSceneTest.DestroyDelay);
+                    yield return new WaitForSeconds(CutSceneTest.DestroyDelay - 0.5f);
                 }
             }
 
@@ -815,7 +815,7 @@ namespace Nekoyume.Game.Character
                 var coroutine = StartCoroutine(action);
                 yield return coroutine;
                 actions.Remove(action);
-                yield return new WaitForSeconds(0.5f);
+                yield return null;
                 action = null;
             }
         }
