@@ -1,3 +1,4 @@
+using Nekoyume.Action;
 using Nekoyume.L10n;
 
 namespace Nekoyume.UI
@@ -20,6 +21,11 @@ namespace Nekoyume.UI
                 L10nManager.Localize("UI_OK"), false);
             content.text += $"\n{msg}";
             base.Show();
+        }
+
+        public void Show<T>(string msg) where T : ActionBase
+        {
+            Show($"[{typeof(T).Name}] {msg}");
         }
     }
 }
