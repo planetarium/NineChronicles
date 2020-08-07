@@ -42,7 +42,8 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                return states.MarkBalanceChanged(GoldCurrencyMock, agentAddresses);
+                var addresses = agentAddresses.Append(GoldCurrencyState.Address);
+                return states.MarkBalanceChanged(GoldCurrencyMock, addresses.ToArray());
             }
 
             if (ctx.Signer != ctx.Miner)
