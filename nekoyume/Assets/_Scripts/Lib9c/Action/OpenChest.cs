@@ -26,7 +26,7 @@ namespace Nekoyume.Action
                 states = states
                     .SetState(context.Signer, MarkChanged)
                     .SetState(avatarAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, context.Signer);
+                    .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address ,context.Signer);
                 return states;
             }
 
