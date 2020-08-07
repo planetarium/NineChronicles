@@ -66,6 +66,7 @@ namespace Nekoyume.Game
         private BattleLog _battleLog;
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
+        private Coroutine _battleCoroutine;
 
         public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
@@ -138,6 +139,11 @@ namespace Nekoyume.Game
             _rankingBattle = true;
             if (_battleLog?.id != log.id)
             {
+                if (!(_battleCoroutine is null))
+                {
+                    StopCoroutine(_battleCoroutine);
+                    objectPool.ReleaseAll();
+                }
                 _battleLog = log;
                 PlayRankingBattle(_battleLog);
             }
@@ -279,7 +285,7 @@ namespace Nekoyume.Game
         {
             if (log?.Count > 0)
             {
-                StartCoroutine(CoPlayRankingBattle(log));
+                _battleCoroutine = StartCoroutine(CoPlayRankingBattle(log));
             }
         }
 
@@ -328,6 +334,7 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(CoRankingBattleEnd(log));
             IsInStage = false;
+            _battleCoroutine = null;
         }
 
         private static IEnumerator CoDialog(int worldStage)
