@@ -363,7 +363,7 @@ namespace Nekoyume.UI.Module
             return btn;
         }
 
-        private void SetToggledOnItemType(ItemSubType itemSubType)
+        public void SetToggledOnItemType(ItemSubType itemSubType)
         {
             IToggleable toggleable = GetButton(itemSubType);
 

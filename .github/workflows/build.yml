@@ -10,10 +10,13 @@ jobs:
     steps:
     - uses: actions/checkout@master
       if: github.event_name != 'pull_request'
+      with:
+        submodules: true
     - uses: actions/checkout@master
       if: github.event_name == 'pull_request'
       with:
         ref: ${{ github.pull_request.head.sha }}
+        submodules: true
     - run: hooks/pre-commit
     - uses: unsplash/comment-on-pr@master
       env:

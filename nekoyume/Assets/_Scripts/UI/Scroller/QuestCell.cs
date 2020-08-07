@@ -90,6 +90,7 @@ namespace Nekoyume.UI.Scroller
                     Widget.Find<Quest>().DisappearAnimation(
                         Mathf.FloorToInt(-rectTransform.anchoredPosition.y /
                                          rectTransform.sizeDelta.y));
+                    lastVFX.OnFinished = null;
                 };
             }
 

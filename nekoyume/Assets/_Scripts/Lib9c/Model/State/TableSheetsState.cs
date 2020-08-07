@@ -13,12 +13,7 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class TableSheetsState : State, IEquatable<TableSheetsState>, ISerializable
     {
-        public static readonly Address Address = new Address(new byte[]
-            {
-                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x3
-            }
-        );
-
+        public static readonly Address Address = Addresses.TableSheet;
         private IValue _serialized;
 
         private int _hashCode;
