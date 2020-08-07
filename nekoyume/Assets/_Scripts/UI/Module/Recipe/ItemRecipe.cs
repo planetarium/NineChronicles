@@ -67,16 +67,16 @@ namespace Nekoyume.UI.Module
         private AnchoredPositionYTweener scrollPositionTweener = null;
 
         [SerializeField]
-        private GameObject equipmentTabs;
+        private GameObject equipmentTabs = null;
 
         [SerializeField]
-        private GameObject consumableTabs;
+        private GameObject consumableTabs = null;
 
         private bool _initialized = false;
         private int _notificationId;
-        
+
         private readonly ToggleGroup _equipmentToggleGroup = new ToggleGroup();
-        
+
         private readonly ToggleGroup _consumableToggleGroup = new ToggleGroup();
 
         private readonly ReactiveProperty<ItemSubType> _itemFilterType =
@@ -132,7 +132,7 @@ namespace Nekoyume.UI.Module
             _equipmentToggleGroup.RegisterToggleable(beltTabButton);
             _equipmentToggleGroup.RegisterToggleable(necklaceTabButton);
             _equipmentToggleGroup.RegisterToggleable(ringTabButton);
-            
+
             _consumableToggleGroup.OnToggledOn.Subscribe(SubscribeOnConsumableToggledOn).AddTo(gameObject);
             _consumableToggleGroup.RegisterToggleable(hpTabButton);
             _consumableToggleGroup.RegisterToggleable(atkTabButton);
@@ -524,7 +524,7 @@ namespace Nekoyume.UI.Module
         {
             _state.Value = state;
         }
-        
+
         private void SubscribeOnConsumableToggledOn(IToggleable toggleable)
         {
             if (toggleable.Name.Equals(hpTabButton.Name))
