@@ -2,8 +2,6 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@6.12.2
   aws-cli: circleci/aws-cli@1.2.1
-  azure-cli: circleci/azure-cli@1.1.0
-  kubernetes: circleci/kubernetes@0.3.0
   win: circleci/windows@2.4.0
 
 executors:
@@ -21,29 +19,6 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "6a:38:0c:b2:8b:c8:e9:46:97:b0:df:b4:5b:df:ff:54"
-  unittest_macos:
-    executor: macos
-    steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run:
-          name: setup-dotnet-core
-          command: brew install dotnet-sdk
-      - run:
-          name: unittest
-          command: |
-            dotnet test ./NineChronicles.Standalone.Executable/
-  unittest_windows:
-    executor: win/default
-    steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - run:
-          name: unittest
-          command: |
-            dotnet test ./NineChronicles.Standalone.Executable/
   build-and-push-unity-image:
     docker:
       - image: circleci/python:3.7.1
@@ -63,37 +38,12 @@ jobs:
       - aws-ecr/push-image:
           repo: $CIRCLE_PROJECT_REPONAME
           tag: "git-$CIRCLE_SHA1"
-  build-and-push-standalone-image:
-    docker:
-      - image: circleci/python:3.7.1
-    steps:
-      - checkout
-      - run: git submodule sync
-      - run: git submodule update --init
-      - setup_remote_docker
-      - aws-ecr/build-image:
-          repo: $CIRCLE_PROJECT_REPONAME
-          tag: "standalone-git-$CIRCLE_SHA1"
-          dockerfile: Dockerfile.standalone
-      - aws-cli/install
-      - aws-ecr/ecr-login
-      - aws-ecr/push-image:
-          repo: $CIRCLE_PROJECT_REPONAME
-          tag: "standalone-git-$CIRCLE_SHA1"
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
       - add-ssh-keys
-      # TODO macos trial plan이 끝나서 run할 수 없습니다.
-      # - unittest_macos
-      - unittest_windows:
-          requires:
-            - add-ssh-keys
-      - build-and-push-standalone-image:
-          requires:
-            - add-ssh-keys
       - build-and-push-unity-image:
           requires:
             - add-ssh-keys
