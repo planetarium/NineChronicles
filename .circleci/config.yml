@@ -44,14 +44,6 @@ jobs:
           name: unittest
           command: |
             dotnet test ./NineChronicles.Standalone.Executable/
-  build-lib9c:
-    docker:
-      - image: mcr.microsoft.com/dotnet/core/sdk:2.2
-    steps:
-      - checkout
-      - run:
-          name: build-lib9c
-          command: dotnet build ./Lib9c/Lib9c.csproj
   build-and-push-unity-image:
     docker:
       - image: circleci/python:3.7.1
@@ -99,12 +91,9 @@ workflows:
       - unittest_windows:
           requires:
             - add-ssh-keys
-      - build-lib9c
       - build-and-push-standalone-image:
           requires:
             - add-ssh-keys
-            - build-lib9c
       - build-and-push-unity-image:
           requires:
             - add-ssh-keys
-            - build-lib9c
