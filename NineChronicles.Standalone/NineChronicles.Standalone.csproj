@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Libplanet.Standalone\Libplanet.Standalone.csproj" />
-    <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
+    <ProjectReference Include="..\nekoyume\Assets\_Scripts\Lib9c\Lib9c\Lib9c\Lib9c.csproj" />
     <ProjectReference Include="..\nekoyume\Assets\_Scripts\NineChronicles.RPC.Shared\NineChronicles.RPC.Shared\NineChronicles.RPC.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
