@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BTAI;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -86,9 +87,9 @@ namespace Nekoyume.Game.Character
         protected BoxCollider HitPointBoxCollider { get; private set; }
         protected Vector3 HitPointLocalOffset { get; set; }
 
-        public List<IEnumerator> actions = new List<IEnumerator>();
+        public List<ActionParams> actions = new List<ActionParams>();
 
-        public IEnumerator action;
+        public ActionParams action;
 
         #region Mono
 
@@ -812,10 +813,25 @@ namespace Nekoyume.Game.Character
             if (action is null)
             {
                 action = actions.First();
-                var coroutine = StartCoroutine(action);
+
+                var stage = Game.instance.Stage;
+                var waitSeconds = 0.5f;
+                if ((this is Player && !(this is EnemyPlayer)) &&
+                    action.func.GetMethodInfo().Name == nameof(CoNormalAttack) &&
+                    action.skillInfos.Any(skillInfo => skillInfo.Effect > 0 && skillInfo.Critical))
+                {
+                    var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
+                    Debug.Log($"Combo {battleWidget.ComboText._combo + 1}, {battleWidget.ComboText.comboMax}");
+                    if (battleWidget.ComboText._combo + 1 == battleWidget.ComboText.comboMax)
+                    {
+                        waitSeconds = 0f;
+                    }
+                }
+                Debug.Log($"wait seconds: {waitSeconds}");
+                yield return new WaitForSeconds(waitSeconds);
+                var coroutine = StartCoroutine(stage.CoSkill(action));
                 yield return coroutine;
                 actions.Remove(action);
-                yield return null;
                 action = null;
             }
         }
@@ -850,6 +866,22 @@ namespace Nekoyume.Game.Character
         public void Ready()
         {
             AttackEndCalled = false;
+        }
+    }
+
+    public class ActionParams
+    {
+        public CharacterBase character;
+        public IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos;
+        public IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos;
+        public Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> func;
+
+        public ActionParams(CharacterBase characterBase, IEnumerable<Model.BattleStatus.Skill.SkillInfo> enumerable, IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos1, Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> coNormalAttack)
+        {
+            character = characterBase;
+            skillInfos = enumerable;
+            buffInfos = buffInfos1;
+            func = coNormalAttack;
         }
     }
 }

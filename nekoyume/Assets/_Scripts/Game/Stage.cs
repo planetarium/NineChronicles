@@ -26,6 +26,7 @@ using UnityEngine;
 using TentuPlay.Api;
 using UniRx;
 using mixpanel;
+using Nekoyume.Game.Character;
 using Nekoyume.L10n;
 
 namespace Nekoyume.Game
@@ -70,7 +71,7 @@ namespace Nekoyume.Game
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public bool IsInStage { get; private set; }
-        public Enemy Boss { get; private set; }
+        public Model.Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
 
         public Vector3 SelectPositionBegin(int index) =>
@@ -625,7 +626,7 @@ namespace Nekoyume.Game
             );
         }
 
-        public IEnumerator CoSpawnPlayer(Player character)
+        public IEnumerator CoSpawnPlayer(Model.Player character)
         {
             var playerCharacter = RunPlayer(false);
             playerCharacter.Set(character, true);
@@ -666,7 +667,7 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character)
+        public IEnumerator CoSpawnEnemyPlayer(Model.EnemyPlayer character)
         {
             var battle = Widget.Find<UI.Battle>();
             battle.BossStatus.Close();
@@ -682,97 +683,94 @@ namespace Nekoyume.Game
         #region Skill
 
         public IEnumerator CoNormalAttack(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(
-                    character,
-                    skillInfos,
-                    buffInfos,
-                    character.CoNormalAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
         public IEnumerator CoBlowAttack(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(
-                    character,
-                    skillInfos,
-                    buffInfos,
-                    character.CoBlowAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
         public IEnumerator CoDoubleAttack(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(
-                    character,
-                    skillInfos,
-                    buffInfos,
-                    character.CoDoubleAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
+                character.actions.Add(actionParams);
+
                 yield return null;
             }
         }
 
         public IEnumerator CoAreaAttack(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(
-                    character,
-                    skillInfos,
-                    buffInfos,
-                    character.CoAreaAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoAreaAttack);
+                character.actions.Add(actionParams);
+
                 yield return null;
             }
         }
 
         public IEnumerator CoHeal(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoHeal));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
         public IEnumerator CoBuff(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoBuff));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoBuff);
+                character.actions.Add(actionParams);
                 yield return null;
             }
+        }
+
+        public IEnumerator CoSkill(ActionParams param)
+        {
+            yield return StartCoroutine(CoSkill(param.character, param.skillInfos, param.buffInfos, param.func));
         }
 
         private IEnumerator CoSkill(
@@ -860,7 +858,7 @@ namespace Nekoyume.Game
                 character.StartRun();
         }
 
-        public IEnumerator CoRemoveBuffs(CharacterBase caster)
+        public IEnumerator CoRemoveBuffs(Model.CharacterBase caster)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -893,7 +891,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnWave(
             int waveNumber,
             int waveTurn,
-            List<Enemy> enemies,
+            List<Model.Enemy> enemies,
             bool hasBoss)
         {
             this.waveNumber = waveNumber;
@@ -973,7 +971,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(player.CoGetExp(exp));
         }
 
-        public IEnumerator CoDead(CharacterBase model)
+        public IEnumerator CoDead(Model.CharacterBase model)
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
@@ -993,7 +991,7 @@ namespace Nekoyume.Game
 
             if (selectedPlayer)
             {
-                objectPool.Remove<Player>(selectedPlayer.gameObject);
+                objectPool.Remove<Model.Player>(selectedPlayer.gameObject);
             }
 
             var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
@@ -1046,7 +1044,7 @@ namespace Nekoyume.Game
         /// <param name="caster"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public Character.CharacterBase GetCharacter(CharacterBase caster)
+        public Character.CharacterBase GetCharacter(Model.CharacterBase caster)
         {
             if (caster is null)
                 throw new ArgumentNullException(nameof(caster));
