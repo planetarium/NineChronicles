@@ -1,19 +1,6 @@
 #!/bin/bash
 set -e
 
-build_lib9c() {
-  cd Lib9c/
-  if command -v dotnet > /dev/null; then
-    dotnet build -v q
-  elif command -v msbuild > /dev/null; then
-    msbuild /r /v:q
-  else
-    echo "You need .NET Core SDK or Mono SDK or Visual Studio." > /dev/stderr
-    exit 1
-  fi
-  cd ..
-}
-
 validate_libplanet_versions() {
   SLN_PROJECT="NineChronicles.Standalone.Executable"
   SLN_PATH="$SLN_PROJECT/$SLN_PROJECT.sln"
@@ -50,4 +37,3 @@ validate_libplanet_versions() {
 }
 
 validate_libplanet_versions
-build_lib9c
