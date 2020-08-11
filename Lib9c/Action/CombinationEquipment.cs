@@ -158,16 +158,6 @@ namespace Nekoyume.Action
                     );
                 }
 
-                // 서브 레시피 해금 검사.
-                if (!avatarState.worldInformation.IsStageCleared(subRecipe.UnlockStage))
-                {
-                    return LogError(
-                        context,
-                        "Aborted as the signer is not cleared the minimum stage level required to use the subrecipe {@SubRecipe} yet.",
-                        subRecipe
-                    );
-                }
-
                 requiredBlockIndex += subRecipe.RequiredBlockIndex;
                 requiredGold += subRecipe.RequiredGold;
                 requiredActionPoint += subRecipe.RequiredActionPoint;
@@ -244,7 +234,7 @@ namespace Nekoyume.Action
                 requiredBlockIndex);
             result.id = mail.id;
             avatarState.Update(mail);
-            avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId, SubRecipeId);
+            avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
             avatarState.UpdateFromCombination(equipment);
             avatarState.UpdateQuestRewards(ctx);
             return states
