@@ -1,10 +1,8 @@
 namespace Lib9c.Tests.Action
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
@@ -24,21 +22,7 @@ namespace Lib9c.Tests.Action
 
         public ItemEnhancementTest()
         {
-            var sheets = new Dictionary<string, string>();
-            var dir = Path.Combine("Data", "TableCSV");
-            var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
-            foreach (var filePath in files)
-            {
-                var fileName = Path.GetFileName(filePath);
-                if (fileName.EndsWith(".csv"))
-                {
-                    fileName = fileName.Split(".csv")[0];
-                }
-
-                sheets[fileName] = File.ReadAllText(filePath);
-            }
-
-            _tableSheetsState = new TableSheetsState(sheets);
+            _tableSheetsState = TableSheetsImporter.ImportTableSheets();
             _random = new TestRandom();
         }
 
