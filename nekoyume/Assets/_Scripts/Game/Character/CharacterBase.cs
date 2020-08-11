@@ -112,6 +112,7 @@ namespace Nekoyume.Game.Character
             RunSpeed = 0.0f;
             _root = null;
             actions.Clear();
+            action = null;
             if (!_applicationQuitting)
                 DisableHUD();
         }
