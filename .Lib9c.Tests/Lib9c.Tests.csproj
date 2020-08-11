@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Lib9c\Lib9c.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Data/**/*.*" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+
 </Project>
