@@ -154,10 +154,9 @@ namespace Nekoyume.UI
             }
 
             var recipeId = combinationEquipmentQuest.RecipeId;
-            var subRecipeId = combinationEquipmentQuest.SubRecipeId;
 
             CombinationClickInternal(() =>
-                Find<Combination>().ShowByEquipmentRecipe(recipeId, subRecipeId));
+                Find<Combination>().ShowByEquipmentRecipe(recipeId));
         }
 
         private void UpdateButtons()

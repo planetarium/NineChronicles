@@ -368,14 +368,8 @@ namespace Nekoyume.Game
         private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
         {
             var questResult = Widget.Find<CelebratesPopup>();
-            var subRecipeIds = Game.instance.TableSheets.EquipmentItemSubRecipeSheet.OrderedList
-                .Where(row => row.UnlockStage == stageIdToFirstClear)
-                .Select(row => row.Id)
-                .ToList();
             var rows = Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
-                .Where(row => row.UnlockStage == stageIdToFirstClear ||
-                              row.SubRecipeIds.Any(
-                                  subRecipeId => subRecipeIds.Contains(subRecipeId)))
+                .Where(row => row.UnlockStage == stageIdToFirstClear)
                 .Distinct()
                 .ToList();
             foreach (var row in rows)

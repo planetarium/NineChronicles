@@ -48,12 +48,6 @@ namespace Nekoyume.UI
             public CategoryButton enhanceEquipmentButton;
         }
 
-        private struct RecipeIdSet
-        {
-            public int recipeId;
-            public int? subRecipeId;
-        }
-
         public readonly ReactiveProperty<StateType> State =
             new ReactiveProperty<StateType>(StateType.SelectMenu);
 
@@ -116,7 +110,7 @@ namespace Nekoyume.UI
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
         private SpeechBubble _selectedSpeechBubble;
-        private RecipeIdSet? _shouldGoToEquipmentRecipe;
+        private int? _equipmentRecipeIdToGo;
         private EnhanceEquipment _enhanceEquipment;
 
         public Dictionary<int, int[]> RecipeVFXSkipMap { get; private set; }
@@ -217,38 +211,31 @@ namespace Nekoyume.UI
             var player = stage.GetPlayer();
             player.gameObject.SetActive(false);
 
-            if (_shouldGoToEquipmentRecipe.HasValue)
+            if (_equipmentRecipeIdToGo.HasValue)
             {
-                var recipeId = _shouldGoToEquipmentRecipe.Value.recipeId;
+                var recipeId = _equipmentRecipeIdToGo.Value;
                 var itemId = Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.Values
                     .First(r => r.Id == recipeId).ResultEquipmentId;
                 var itemRow = Game.Game.instance.TableSheets.EquipmentItemSheet.Values
                     .First(r => r.Id == itemId);
                 itemRecipe.SetToggledOnItemType(itemRow.ItemSubType);
-                if (_shouldGoToEquipmentRecipe.Value.subRecipeId.HasValue)
+                if (itemRecipe.TryGetCellView(
+                    recipeId,
+                    out var cellView))
                 {
-                    if (itemRecipe.TryGetCellView(
-                        recipeId,
-                        out var cellView))
+                    if (cellView.IsLocked)
                     {
-                        if (cellView.IsLocked)
-                        {
-                            State.SetValueAndForceNotify(StateType.CombineEquipment);
-                        }
-                        else
-                        {
-                            selectedRecipe = cellView;
-                            State.SetValueAndForceNotify(StateType.CombinationConfirm);
-                        }
+                        State.SetValueAndForceNotify(StateType.CombineEquipment);
                     }
                     else
                     {
-                        Debug.LogError($"Not found cell view with {recipeId} in {nameof(itemRecipe)}");
-                        State.SetValueAndForceNotify(StateType.CombineEquipment);
+                        selectedRecipe = cellView;
+                        State.SetValueAndForceNotify(StateType.CombinationConfirm);
                     }
                 }
                 else
                 {
+                    Debug.LogError($"Not found cell view with {recipeId} in {nameof(itemRecipe)}");
                     State.SetValueAndForceNotify(StateType.CombineEquipment);
                 }
             }
@@ -289,13 +276,9 @@ namespace Nekoyume.UI
             Show();
         }
 
-        public void ShowByEquipmentRecipe(int recipeId, int? subRecipeId)
+        public void ShowByEquipmentRecipe(int recipeId)
         {
-            _shouldGoToEquipmentRecipe = new RecipeIdSet
-            {
-                recipeId = recipeId,
-                subRecipeId = subRecipeId
-            };
+            _equipmentRecipeIdToGo = recipeId;
 
             Show();
         }
@@ -311,7 +294,7 @@ namespace Nekoyume.UI
             _npc01 = null;
 
             _lockSlotIndex = false;
-            _shouldGoToEquipmentRecipe = null;
+            _equipmentRecipeIdToGo = null;
 
             base.Close(ignoreCloseAnimation);
         }
@@ -398,9 +381,9 @@ namespace Nekoyume.UI
 
                     categoryTabArea.SetActive(true);
                     itemRecipe.gameObject.SetActive(true);
-                    itemRecipe.ShowEquipmentCellViews(_shouldGoToEquipmentRecipe?.recipeId);
+                    itemRecipe.ShowEquipmentCellViews(_equipmentRecipeIdToGo);
                     itemRecipe.SetState(ItemRecipe.State.Equipment);
-                    _shouldGoToEquipmentRecipe = null;
+                    _equipmentRecipeIdToGo = null;
                     Animator.Play("ShowLeftArea", -1, 0.0f);
                     OnTweenRecipe();
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
@@ -439,7 +422,7 @@ namespace Nekoyume.UI
                     _toggleGroup.SetToggledOffAll();
                     OnTweenRecipe();
 
-                    if (_shouldGoToEquipmentRecipe.HasValue)
+                    if (_equipmentRecipeIdToGo.HasValue)
                     {
                         if (selectedRecipe.ItemSubType == ItemSubType.Food)
                         {
@@ -451,7 +434,7 @@ namespace Nekoyume.UI
                             OnClickEquipmentRecipe(isElemental);
                         }
 
-                        _shouldGoToEquipmentRecipe = null;
+                        _equipmentRecipeIdToGo = null;
                         break;
                     }
 
@@ -824,10 +807,7 @@ namespace Nekoyume.UI
             foreach (var recipe in recipeTable.Values
                 .Where(x => worldInfo.IsStageCleared(x.UnlockStage)))
             {
-                var unlockedSubRecipes = recipe.SubRecipeIds
-                    .Where(id => worldInfo.IsStageCleared(subRecipeTable[id].UnlockStage));
-
-                RecipeVFXSkipMap[recipe.Id] = unlockedSubRecipes.Take(3).ToArray();
+                RecipeVFXSkipMap[recipe.Id] = recipe.SubRecipeIds.Take(3).ToArray();
             }
 
             SaveRecipeVFXSkipMap();
