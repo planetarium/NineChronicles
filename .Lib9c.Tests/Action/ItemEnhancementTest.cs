@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Action
             Assert.Equal(default, resultEquipment.ItemId);
         }
 
-        private class TestRandom : IRandom
+        public class TestRandom : IRandom
         {
             private readonly System.Random _random = new System.Random();
 
