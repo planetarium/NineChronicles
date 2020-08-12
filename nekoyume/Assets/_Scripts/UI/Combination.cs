@@ -389,7 +389,6 @@ namespace Nekoyume.UI
                     itemRecipe.gameObject.SetActive(true);
                     itemRecipe.ShowEquipmentCellViews(_equipmentRecipeIdToGo);
                     itemRecipe.SetState(ItemRecipe.State.Equipment);
-                    _shouldGoToEquipmentRecipe = null;
                     _equipmentRecipeIdToGo = null;
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
                     break;
