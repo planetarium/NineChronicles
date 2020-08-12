@@ -916,7 +916,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &372551787865866461
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5126,14 +5126,14 @@ MonoBehaviour:
     skeletonAnimation: {fileID: 0}
     sprite: {fileID: 21300000, guid: 6a400ffe013eba14d8b0f4e6dbc38eba, type: 3}
     imageAnmationType: 0
-    imageAnimationTime: 0.5
+    imageAnimationTime: 0
     imageAnimationEndTerm: 0
     text: {fileID: 6311271108809071861}
     shadowText: {fileID: 6489382495529919965}
     scriptsLocalizationKey: UI_SYNOPSIS_8
     textAnimationTypes: 1
     scriptsAnimationTime: 0
-    scriptsEndTerm: 1.8
+    scriptsEndTerm: 0
   - image: {fileID: 7941417804623930047}
     hasSkeletonAnimation: 0
     skeletonAnimation: {fileID: 0}
