@@ -26,19 +26,7 @@ namespace Nekoyume.UI
 
         public void RequestRedeemCode()
         {
-            var hex = codeField.text;
-            PublicKey key;
-            try
-            {
-                key = new PrivateKey(ByteUtil.ParseHex(hex)).PublicKey;
-            }
-            catch (Exception)
-            {
-                //TODO 실패 안내
-                Close();
-                return;
-            }
-            Game.Game.instance.ActionManager.RedeemCode(key);
+            Game.Game.instance.ActionManager.RedeemCode(codeField.text.Trim());
             Notification.Push(MailType.System, "Request Redeem Code.");
             Close();
         }

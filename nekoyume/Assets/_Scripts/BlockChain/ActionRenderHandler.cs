@@ -766,7 +766,7 @@ namespace Nekoyume.BlockChain
             var key = "UI_REDEEM_CODE_INVALID_CODE";
             if (eval.Exception is null)
             {
-                var code = eval.Action.code;
+                var code = eval.Action.Code;
                 RedeemCodeState redeemCodeState = null;
                 if (Game.Game.instance.Agent.GetState(RedeemCodeState.Address) is Dictionary d)
                 {
@@ -778,17 +778,8 @@ namespace Nekoyume.BlockChain
                     return;
                 }
 
-                if (redeemCodeState.Map.TryGetValue(code, out var reward))
-                {
-                    var tableSheets = Game.Game.instance.TableSheets;
-                    var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == reward.RewardId);
-                    var rewards = row.Rewards;
-                    var chestRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
-                    var chest = ItemFactory.CreateChest(chestRow, rewards);
-                    Widget.Find<RedeemRewardPopup>().Pop(new List<(ItemBase, int)> { (chest, 1) }, tableSheets);
-                    key = "UI_REDEEM_CODE_SUCCESS";
-                    UpdateCurrentAvatarState(eval);
-                }
+                key = "UI_REDEEM_CODE_SUCCESS";
+                UpdateCurrentAvatarState(eval);
             }
             else
             {
