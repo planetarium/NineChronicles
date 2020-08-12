@@ -11,6 +11,8 @@ namespace Nekoyume.BlockChain
     public interface IAgent
     {
         Subject<long> BlockIndexSubject { get; }
+
+        Subject<ReorgInfo> ReorgSubject { get; }
         
         long BlockIndex { get; }
         

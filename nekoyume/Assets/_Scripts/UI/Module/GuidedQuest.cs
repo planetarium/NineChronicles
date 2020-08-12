@@ -205,10 +205,9 @@ namespace Nekoyume.UI.Module
             WorldQuestCell.SetToInProgress(true);
         }
 
-        public void SetCombinationEquipmentToInProgress(int recipeId, int? subRecipeId)
+        public void SetCombinationEquipmentToInProgress(int recipeId)
         {
-            if (SharedViewModel.combinationEquipmentQuest.Value?.RecipeId != recipeId ||
-                SharedViewModel.combinationEquipmentQuest.Value?.SubRecipeId != subRecipeId)
+            if (SharedViewModel.combinationEquipmentQuest.Value?.RecipeId != recipeId)
             {
                 return;
             }
@@ -254,12 +253,10 @@ namespace Nekoyume.UI.Module
         /// `ClearWorldQuest`와는 다르게 `QuestResult`를 띄우지 않습니다.
         /// </summary>
         /// <param name="recipeId"></param>
-        /// <param name="subRecipeId"></param>
         /// <param name="onComplete">함께 전달 받은 `recipeId`와 `subRecipeId` 인자가 현재 노출된 장비 조합 가이드 퀘스트와 같다면 보상 연출이
         /// 끝난 후에 `true` 인자와 함께 `onComplete`가 호출됩니다. 그렇지 않다면 `false` 인자와 함께 호출됩니다.</param>
         public void ClearCombinationEquipmentQuest(
             int recipeId,
-            int? subRecipeId,
             Action<bool> onComplete)
         {
             if (_state.Value != ViewState.Shown)
@@ -269,8 +266,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            if (recipeId != SharedViewModel.combinationEquipmentQuest.Value.RecipeId ||
-                subRecipeId != SharedViewModel.combinationEquipmentQuest.Value.SubRecipeId)
+            if (recipeId != SharedViewModel.combinationEquipmentQuest.Value.RecipeId)
             {
                 return;
             }
@@ -278,8 +274,7 @@ namespace Nekoyume.UI.Module
             // NOTE: 이 라인까지 로직이 흐르면 `EnterToClearExistGuidedQuest()` 호출을 통해서
             // `_onClearCombinationEquipmentQuestComplete`가 반드시 호출되는 것을 기대합니다.
             _onClearCombinationEquipmentQuestComplete
-                .Where(quest => quest.RecipeId == recipeId &&
-                                quest.SubRecipeId == subRecipeId)
+                .Where(quest => quest.RecipeId == recipeId)
                 .First()
                 .Subscribe(_ => onComplete?.Invoke(true));
 
