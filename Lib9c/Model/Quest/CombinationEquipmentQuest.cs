@@ -12,13 +12,11 @@ namespace Nekoyume.Model.Quest
     {
         public readonly int RecipeId;
         public readonly int StageId;
-        public readonly int? SubRecipeId;
 
         public CombinationEquipmentQuest(QuestSheet.Row data, QuestReward reward, int stageId) : base(data, reward)
         {
             var row = (CombinationEquipmentQuestSheet.Row) data;
             RecipeId = row.RecipeId;
-            SubRecipeId = row.SubRecipeId;
             StageId = stageId;
         }
 
@@ -26,10 +24,6 @@ namespace Nekoyume.Model.Quest
         {
             RecipeId = serialized["recipe_id"].ToInteger();
             StageId = serialized["stage_id"].ToInteger();
-            if (serialized.TryGetValue((Text) "sub_recipe_id", out var value))
-            {
-                SubRecipeId = value.ToNullableInteger();
-            }
         }
 
         //임시처리. 새 타입을 만들어서 위젯에 띄워줘야합니다.
@@ -50,12 +44,12 @@ namespace Nekoyume.Model.Quest
                 Goal
             );
 
-        public void Update(int recipeId, int? subRecipeId)
+        public void Update(int recipeId)
         {
             if (Complete)
                 return;
 
-            if (recipeId == RecipeId && subRecipeId == SubRecipeId)
+            if (recipeId == RecipeId)
             {
                 _current++;
             }
@@ -69,10 +63,6 @@ namespace Nekoyume.Model.Quest
                 [(Text) "recipe_id"] = RecipeId.Serialize(),
                 [(Text) "stage_id"] = StageId.Serialize(),
             };
-            if (SubRecipeId.HasValue)
-            {
-                dict[(Text) "sub_recipe_id"] = SubRecipeId.Serialize();
-            }
             return new Dictionary(dict.Union((Dictionary) base.Serialize()));
         }
     }

@@ -211,16 +211,6 @@ namespace Nekoyume.Model.Quest
                         }
 
                         stageId = recipeRow.UnlockStage;
-                        if (row10.SubRecipeId.HasValue)
-                        {
-                            var subRow = equipmentItemSubRecipeSheet.Values
-                                .FirstOrDefault(r => r.Id == row10.SubRecipeId);
-                            if (subRow is null)
-                            {
-                                throw new ArgumentException($"Invalid Sub Recipe Id : {row10.SubRecipeId}");
-                            }
-                            stageId = Math.Max(stageId, subRow.UnlockStage);
-                        }
                         quest = new CombinationEquipmentQuest(row10, reward, stageId);
                         _quests.Add(quest);
                         break;
@@ -368,13 +358,13 @@ namespace Nekoyume.Model.Quest
             [(Text) "completedQuestIds"] = new List(completedQuestIds.Select(i => i.Serialize()))
         });
 
-        public void UpdateCombinationEquipmentQuest(int recipeId, int? subRecipeId)
+        public void UpdateCombinationEquipmentQuest(int recipeId)
         {
             var targets = _quests.OfType<CombinationEquipmentQuest>()
                 .Where(q => !q.Complete);
             foreach (var target in targets)
             {
-                target.Update(recipeId, subRecipeId);
+                target.Update(recipeId);
             }
         }
 
