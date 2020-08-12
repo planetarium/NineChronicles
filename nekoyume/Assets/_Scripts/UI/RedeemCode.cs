@@ -4,6 +4,7 @@ using Libplanet.Crypto;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using TMPro;
+using UnityEngine.Events;
 
 namespace Nekoyume.UI
 {
@@ -14,6 +15,8 @@ namespace Nekoyume.UI
         public TextMeshProUGUI cancelButtonText;
         public TextMeshProUGUI submitButtonText;
         public TMP_InputField codeField;
+
+        public UnityEvent OnRequested = new UnityEvent();
 
         protected override void Awake()
         {
@@ -28,6 +31,7 @@ namespace Nekoyume.UI
         {
             Game.Game.instance.ActionManager.RedeemCode(codeField.text.Trim());
             Notification.Push(MailType.System, "Request Redeem Code.");
+            OnRequested.Invoke();
             Close();
         }
     }
