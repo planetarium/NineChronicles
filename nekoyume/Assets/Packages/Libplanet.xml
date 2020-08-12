@@ -1463,6 +1463,11 @@
             An event which is invoked when <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed.
             </summary>
         </member>
+        <member name="E:Libplanet.Blockchain.BlockChain`1.Reorged">
+            <summary>
+            An event which is invoked when the chain is reorged.
+            </summary>
+        </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Tip">
             <summary>
             The topmost <see cref="T:Libplanet.Blocks.Block`1"/> of the current blockchain.
@@ -1550,37 +1555,27 @@
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no
             <see cref="T:Libplanet.Tx.Transaction`1"/> with a given <paramref name="txId"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GetState(Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Boolean)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetState(Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Blockchain.StateCompleter{`0})">
             <summary>
             Gets the state of the given <paramref name="address"/> in the
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>.
             </summary>
-            <param name="address">An <see cref="T:Libplanet.Address"/> to get
-            the states of.</param>
-            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
-            start finding the state. It will be The tip of the
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> if it is <c>null</c>.</param>
-            <param name="completeStates">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/>
-            instance does not contain states dirty of the block which lastly
-            updated states of a requested address, this option makes
-            the incomplete states calculated and filled on the fly.
-            If this option is turned off (which is default) this method throws
-            <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead
-            for the same situation.
-            Just-in-time calculation of states could take a long time so that
-            the overall latency of an application may rise.</param>
+            <param name="address">An <see cref="T:Libplanet.Address"/> to get the states of.</param>
+            <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to start finding
+            the state.  It will be The tip of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> if it is <c>null</c>.
+            </param>
+            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
+            contain states dirty of the block which lastly updated states of a requested address,
+            this delegate is called and its return value is used instead.
+            <para><see cref="F:Libplanet.Blockchain.StateCompleters`1.Recalculate"/> makes the incomplete states
+            recalculated and filled on the fly.</para>
+            <para><see cref="F:Libplanet.Blockchain.StateCompleters`1.Reject"/> (which is default) makes the incomplete
+            states (if needed) to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead.</para>
+            </param>
             <returns>The current state of given <paramref name="address"/>.  This can be <c>null</c>
             if <paramref name="address"/> has no value.</returns>
-            <exception cref="T:Libplanet.Blockchain.IncompleteBlockStatesException">Thrown when
-            the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not contain
-            states dirty of the block which lastly updated states of a requested
-            address, because actions in the block have never been executed.
-            If <paramref name="completeStates"/> option is turned on
-            this exception is not thrown and incomplete states are calculated
-            and filled on the fly instead.
-            </exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Currency,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Boolean)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Currency,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Blockchain.FungibleAssetStateCompleter{`0})">
             <summary>
             Queries <paramref name="address"/>'s balance of the <paramref name="currency"/> in the
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/> from <paramref name="offset"/>.
@@ -1590,23 +1585,17 @@
             <param name="offset">The <see cref="T:Libplanet.HashDigest`1"/> of the block to
             start finding the state. It will be the tip of the
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/> if it is <c>null</c>.</param>
-            <param name="completeStates">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
+            <param name="stateCompleter">When the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not
             contain states dirty of the block which lastly updated states of a requested address,
-            this option makes the incomplete states calculated and filled on the fly.
-            If this option is turned off (which is default) this method throws
-            <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/> instead for the same situation.
-            Just-in-time calculation of states could take a long time so that the overall latency of
-            an application may rise.</param>
+            this delegate is called and its return value is used instead.
+            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Recalculate"/> makes the incomplete
+            states recalculated and filled on the fly.</para>
+            <para><see cref="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Reject"/> (which is default) makes
+            the incomplete states (if needed) to cause <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/>
+            instead.</para></param>
             <returns>The <paramref name="address"/>'s current balance (or balance as of the given
             <paramref name="offset"/>) of the <paramref name="currency"/>.
             </returns>
-            <exception cref="T:Libplanet.Blockchain.IncompleteBlockStatesException">Thrown when the
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance does not contain states dirty of the block which
-            lastly updated states of a requested address, because actions in the block have never
-            been executed.
-            If <paramref name="completeStates"/> option is turned on this exception is not thrown
-            and incomplete states are calculated and filled on the fly instead.
-            </exception>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0})">
             <summary>
@@ -1706,19 +1695,23 @@
             <paramref name="privateKey"/>.</returns>
             <seealso cref="M:Libplanet.Tx.Transaction`1.Create(System.Int64,Libplanet.Crypto.PrivateKey,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Collections.Generic.IEnumerable{`0},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.Nullable{System.DateTimeOffset})" />
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlocks(System.Int64)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlocks(System.Int64,System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Render actions from block index of <paramref name="offset"/>.
             </summary>
             <param name="offset">Index of the block to start rendering from.</param>
+            <param name="stateCompleters">The strategy to complement incomplete block states.
+            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.RenderBlock(System.Collections.Generic.IReadOnlyList{Libplanet.Action.ActionEvaluation},Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Render actions of the given <paramref name="block"/>.
             </summary>
             <param name="evaluations"><see cref="T:Libplanet.Action.ActionEvaluation"/>s of the block.  If it is
             <c>null</c>, evaluate actions of the <paramref name="block"/> again.</param>
             <param name="block"><see cref="T:Libplanet.Blocks.Block`1"/> to render actions.</param>
+            <param name="stateCompleters">The strategy to complement incomplete block states.
+            <see cref="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate"/> by default.</param>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.ExecuteActions(Libplanet.Blocks.Block{`0})">
             <summary>
@@ -1740,6 +1733,13 @@
             <param name="locator">A block locator that contains candidate common ancestors.</param>
             <returns>An approximate to the topmost common ancestor.  If it failed to find anything
             returns <c>null</c>.</returns>
+        </member>
+        <member name="M:Libplanet.Blockchain.BlockChain`1.ComplementBlockStates(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
+            <summary>
+            Calculates and complements a block's incomplete states on the fly.
+            </summary>
+            <param name="blockHash">The hash of a block which has incomplete states.</param>
+            <returns>The dirty states made from actions in the requested block.</returns>
         </member>
         <member name="T:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs">
             <summary>
@@ -1766,6 +1766,62 @@
         <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.Hash">
             <summary>
             The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>after</em> changed.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Blockchain.BlockChain`1.ReorgedEventArgs">
+            <summary>
+            Provides data for the <see cref="E:Libplanet.Blockchain.BlockChain`1.Reorged"/> event.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.ReorgedEventArgs.OldTip">
+            <summary>
+            The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> before the chain is reorged.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.ReorgedEventArgs.NewTip">
+            <summary>
+            The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> after the chain is reorged.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.BlockChain`1.ReorgedEventArgs.Branchpoint">
+            <summary>
+            The <see cref="T:Libplanet.Blocks.Block`1"/> point of the chain branches off.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1">
+            <summary>
+            A delegate to be called when <see cref="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Currency,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/> method encounters
+            a block having incomplete dirty states. <see cref="M:Libplanet.Blockchain.BlockChain`1.GetBalance(Libplanet.Address,Libplanet.Currency,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Blockchain.FungibleAssetStateCompleter{`0})"/> method
+            returns this delegate's return value instead for such case.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+            <param name="blockChain">The blockchain to query.</param>
+            <param name="blockHash">The hash of a block to lacks its dirty states.</param>
+            <param name="address">The account to query its balance.</param>
+            <param name="currency">The currency to query.</param>
+            <returns>A complement balance value.</returns>
+            <seealso cref="T:Libplanet.Blockchain.FungibleAssetStateCompleters`1"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.FungibleAssetStateCompleters`1">
+            <summary>
+            Predefined built-in state completers that satisfy
+            <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1"/> delegate.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Recalculate">
+            <summary>
+            Recalculates and complements a block's incomplete states on the fly.
+            Incomplete states are filled with the recalculated states and the states are
+            permanently remained in the store.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Blockchain.FungibleAssetStateCompleters`1.Reject">
+            <summary>
+            Rejects to complement incomplete state and throws
+            an <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/>.
             </summary>
         </member>
         <member name="T:Libplanet.Blockchain.IncompleteBlockStatesException">
@@ -1903,6 +1959,70 @@
             followed by a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</param>
             <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
+        </member>
+        <member name="T:Libplanet.Blockchain.StateCompleter`1">
+            <summary>
+            A delegate to be called when <see cref="M:Libplanet.Blockchain.BlockChain`1.GetState(Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Blockchain.StateCompleter{`0})"/> method encounters a block
+            having incomplete dirty states. <see cref="M:Libplanet.Blockchain.BlockChain`1.GetState(Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.Blockchain.StateCompleter{`0})"/> method returns this
+            delegate's return value instead for such case.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+            <param name="blockChain">The blockchain to query.</param>
+            <param name="blockHash">The hash of a block to lacks its dirty states.</param>
+            <param name="address">The address to query its state value.</param>
+            <returns>A complement state.  This can be <c>null</c>.</returns>
+            <seealso cref="T:Libplanet.Blockchain.StateCompleters`1"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.StateCompleters`1">
+            <summary>
+            Predefined built-in state completers that satisfy <see cref="T:Libplanet.Blockchain.StateCompleter`1"/> delegate.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="F:Libplanet.Blockchain.StateCompleters`1.Recalculate">
+            <summary>
+            Recalculates and complements a block's incomplete states on the fly.
+            Incomplete states are filled with the recalculated states and the states are
+            permanently remained in the store.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Blockchain.StateCompleters`1.Reject">
+            <summary>
+            Rejects to complement incomplete state and throws
+            an <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/>.
+            </summary>
+        </member>
+        <member name="T:Libplanet.Blockchain.StateCompleterSet`1">
+            <summary>
+            Groups two kinds of state completers.
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
+            to <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="F:Libplanet.Blockchain.StateCompleterSet`1.Recalculate">
+            <summary>
+            Recalculates and complements a block's incomplete states on the fly.
+            Incomplete states are filled with the recalculated states and the states are
+            permanently remained in the store.
+            </summary>
+        </member>
+        <member name="F:Libplanet.Blockchain.StateCompleterSet`1.Reject">
+            <summary>
+            Rejects to complement incomplete state and throws
+            an <see cref="T:Libplanet.Blockchain.IncompleteBlockStatesException"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.StateCompleterSet`1.StateCompleter">
+            <summary>
+            Holds a <see cref="T:Libplanet.Blockchain.StateCompleter`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.StateCompleterSet`1.FungibleAssetStateCompleter">
+            <summary>
+            Holds a <see cref="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1"/>.
+            </summary>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.#ctor(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Nonce,System.Nullable{Libplanet.Address},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}})">
             <summary>
@@ -4286,6 +4406,11 @@
         <member name="P:Libplanet.Net.SwarmOptions.MaxTimeout">
             <summary>
             The maximum timeout used in <see cref="T:Libplanet.Net.Swarm`1"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Net.SwarmOptions.BlockHashRecvTimeout">
+            <summary>
+            The base timeout used to receive the block hashes from other peers.
             </summary>
         </member>
         <member name="P:Libplanet.Net.SwarmOptions.BlockRecvTimeout">
