@@ -10,6 +10,19 @@ namespace Nekoyume.Model.Item
 {
     public static class ItemFactory
     {
+        public static ItemBase CreateItem(ItemSheet.Row row)
+        {
+            switch (row)
+            {
+                case CostumeItemSheet.Row costumeRow:
+                    return CreateCostume(costumeRow);
+                case MaterialItemSheet.Row materialRow:
+                    return CreateMaterial(materialRow);
+                default:
+                    return CreateItemUsable(row, Guid.NewGuid(), 0);
+            }
+        }
+
         public static Costume CreateCostume(CostumeItemSheet.Row row)
         {
             return new Costume(row);

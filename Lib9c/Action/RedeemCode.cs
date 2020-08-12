@@ -5,7 +5,6 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Crypto;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -17,8 +16,19 @@ namespace Nekoyume.Action
     [ActionType("redeem_code")]
     public class RedeemCode : GameAction
     {
-        public PublicKey code;
-        public Address avatarAddress;
+        public string Code { get; internal set; }
+
+        public Address AvatarAddress {get; internal set; }
+
+        public RedeemCode()
+        {
+        }
+
+        public RedeemCode(string code, Address avatarAddress)
+        {
+            Code = code;
+            AvatarAddress = avatarAddress;
+        }
 
         public override IAccountStateDelta Execute(IActionContext context)
         {
@@ -26,12 +36,14 @@ namespace Nekoyume.Action
             if (context.Rehearsal)
             {
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);
-                states = states.SetState(avatarAddress, MarkChanged);
+                states = states.SetState(AvatarAddress, MarkChanged);
                 states = states.SetState(context.Signer, MarkChanged);
+                states = states.MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address);
+                states = states.MarkBalanceChanged(GoldCurrencyMock, context.Signer);
                 return states;
             }
 
-            if (!states.TryGetAgentAvatarStates(context.Signer, avatarAddress, out AgentState agentState,
+            if (!states.TryGetAgentAvatarStates(context.Signer, AvatarAddress, out AgentState agentState,
                 out AvatarState avatarState))
             {
                 return states;
@@ -46,7 +58,7 @@ namespace Nekoyume.Action
             int redeemId;
             try
             {
-                redeemId = redeemState.Redeem(code, avatarAddress);
+                redeemId = redeemState.Redeem(Code, AvatarAddress);
             }
             catch (InvalidRedeemCodeException)
             {
@@ -62,10 +74,38 @@ namespace Nekoyume.Action
             var tableSheets = TableSheets.FromActionContext(context);
             var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == redeemId);
             var rewards = row.Rewards;
-            var materialRow = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Chest);
-            var chest = ItemFactory.CreateChest(materialRow, rewards);
-            avatarState.inventory.AddItem(chest, 1);
-            states = states.SetState(avatarAddress, avatarState.Serialize());
+
+            var itemSheets = tableSheets.ItemSheet;
+            foreach (RedeemRewardSheet.RewardInfo info in row.Rewards)
+            {
+                switch (info.Type)
+                {
+                    case RewardType.Item:
+                        for (var i = 0; i < info.Quantity; i++)
+                        {
+                            if (info.ItemId is int itemId)
+                            {
+                                ItemBase item = ItemFactory.CreateItem(itemSheets[itemId]);
+                                // We should fix count as 1 because ItemFactory.CreateItem
+                                // will create a new item every time.
+                                avatarState.inventory.AddItem(item, 1);
+                            }
+                        }
+                        states = states.SetState(AvatarAddress, avatarState.Serialize());
+                        break;
+                    case RewardType.Gold:
+                        states = states.TransferAsset(
+                            GoldCurrencyState.Address,
+                            context.Signer,
+                            states.GetGoldCurrency(),
+                            info.Quantity
+                        );
+                        break;
+                    default:
+                        // FIXME: We should raise exception here.
+                        break;
+                }
+            }
             states = states.SetState(RedeemCodeState.Address, redeemState.Serialize());
             states = states.SetState(context.Signer, agentState.Serialize());
             return states;
@@ -74,14 +114,14 @@ namespace Nekoyume.Action
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
-                ["code"] = code.Serialize(),
-                ["avatarAddress"] = avatarAddress.Serialize()
+                [nameof(Code)] = Code.Serialize(),
+                [nameof(AvatarAddress)] = AvatarAddress.Serialize()
             }.ToImmutableDictionary();
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
-            code = plainValue["code"].ToPublicKey();
-            avatarAddress = plainValue["avatarAddress"].ToAddress();
+            Code = (Text) plainValue[nameof(Code)];
+            AvatarAddress = plainValue[nameof(AvatarAddress)].ToAddress();
         }
     }
 }

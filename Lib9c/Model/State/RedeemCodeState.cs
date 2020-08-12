@@ -59,16 +59,18 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public RedeemCodeState(Dictionary serialized) : base(serialized)
-        {
-            _map = ((Dictionary) serialized["map"]).ToDictionary(
+        public RedeemCodeState(Dictionary serialized)
+            : this(((Dictionary) serialized["map"]).ToDictionary(
                 kv => kv.Key.ToPublicKey(),
                 kv => new Reward((Dictionary) kv.Value)
-            );
+            ))
+        {
         }
 
-        public RedeemCodeState(IValue iValue) : base(iValue)
+        public RedeemCodeState(Dictionary<PublicKey, Reward> rewardMap)
+            : base(Address)
         {
+            _map = rewardMap;
         }
 
         public override IValue Serialize() =>
@@ -80,21 +82,24 @@ namespace Nekoyume.Model.State
                 )))
             }.Union((Dictionary) base.Serialize()));
 
-        public int Redeem(PublicKey key, Address userAddress)
+        public int Redeem(string code, Address userAddress)
         {
-            if (!_map.ContainsKey(key))
+            var privateKey = new PrivateKey(ByteUtil.ParseHex(code));
+            PublicKey publicKey = privateKey.PublicKey;
+
+            if (!_map.ContainsKey(publicKey))
             {
                 throw new InvalidRedeemCodeException();
             }
 
-            var result = _map[key];
+            var result = _map[publicKey];
             if (result.UserAddress.HasValue)
             {
                 throw new DuplicateRedeemException($"Code already used by {result.UserAddress}");
             }
 
             result.UserAddress = userAddress;
-            _map[key] = result;
+            _map[publicKey] = result;
             return result.RewardId;
         }
     }

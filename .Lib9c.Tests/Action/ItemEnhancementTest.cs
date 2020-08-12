@@ -1,11 +1,8 @@
 namespace Lib9c.Tests.Action
 {
     using System;
-    using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Diagnostics;
     using System.Globalization;
-    using System.IO;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
@@ -25,24 +22,7 @@ namespace Lib9c.Tests.Action
 
         public ItemEnhancementTest()
         {
-            var sheets = new Dictionary<string, string>();
-            var currentDir = Path.GetDirectoryName(Directory.GetCurrentDirectory());
-            Debug.Assert(currentDir != null, nameof(currentDir) + " != null");
-            var baseDir = currentDir.Split(nameof(Lib9c))[0];
-            var dir = Path.Combine(baseDir, "nekoyume", "Assets", "AddressableAssets", "TableCSV");
-            var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
-            foreach (var filePath in files)
-            {
-                var fileName = Path.GetFileName(filePath);
-                if (fileName.EndsWith(".csv"))
-                {
-                    fileName = fileName.Split(".csv")[0];
-                }
-
-                sheets[fileName] = File.ReadAllText(filePath);
-            }
-
-            _tableSheetsState = new TableSheetsState(sheets);
+            _tableSheetsState = TableSheetsImporter.ImportTableSheets();
             _random = new TestRandom();
         }
 
@@ -51,7 +31,7 @@ namespace Lib9c.Tests.Action
             _tableSheetsState = null;
         }
 
-        [Fact(Skip = "The test depends on the unity project.")]
+        [Fact]
         public void Execute()
         {
             var privateKey = new PrivateKey();
