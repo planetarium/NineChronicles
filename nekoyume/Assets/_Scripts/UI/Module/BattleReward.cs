@@ -166,13 +166,17 @@ namespace Nekoyume.UI.Module
             rewardText.gameObject.SetActive(enable);
         }
 
-        public void Set(IReadOnlyList<CountableItem> items, int stageId)
+        public void Set(IReadOnlyList<CountableItem> items, int stageId, bool cleared)
         {
-            rewardItems.gameObject.SetActive(true);
+            rewardItems.gameObject.SetActive(cleared);
             rewardItems.Set(items);
-            rewardText.gameObject.SetActive(false);
-            failedText.text = stageId == 1 ? L10nManager.Localize("UI_BATTLE_RESULT_STAGE_1") : GetFailedText();
-            failedText.gameObject.SetActive(!items.Any());
+            rewardText.gameObject.SetActive((stageId == 1 || !items.Any()) && cleared);
+            rewardText.text = stageId == 1
+                ? L10nManager.Localize("UI_BATTLE_RESULT_STAGE_1")
+                : GetFailedText();
+
+            failedText.gameObject.SetActive(!cleared);
+            failedText.text = GetFailedText();
         }
 
         public void Set(bool cleared)
