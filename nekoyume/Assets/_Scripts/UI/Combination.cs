@@ -396,13 +396,17 @@ namespace Nekoyume.UI
                     elementalCombinationPanel.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
+                    if (!categoryTabArea.activeSelf)
+                    {
+                        Animator.Play("ShowLeftArea", -1, 0.0f);
+                        OnTweenRecipe();
+                    }
+
                     categoryTabArea.SetActive(true);
                     itemRecipe.gameObject.SetActive(true);
                     itemRecipe.ShowEquipmentCellViews(_shouldGoToEquipmentRecipe?.recipeId);
                     itemRecipe.SetState(ItemRecipe.State.Equipment);
                     _shouldGoToEquipmentRecipe = null;
-                    Animator.Play("ShowLeftArea", -1, 0.0f);
-                    OnTweenRecipe();
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
                     break;
                 case StateType.CombineConsumable:
@@ -414,12 +418,15 @@ namespace Nekoyume.UI
                     elementalCombinationPanel.Hide();
                     ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
 
+                    if (!categoryTabArea.activeSelf)
+                    {
+                        Animator.Play("ShowLeftArea", -1, 0.0f);
+                        OnTweenRecipe();
+                    }
                     categoryTabArea.SetActive(true);
                     itemRecipe.gameObject.SetActive(true);
                     itemRecipe.ShowConsumableCellViews();
                     itemRecipe.SetState(ItemRecipe.State.Consumable);
-                    Animator.Play("ShowLeftArea", -1, 0.0f);
-                    OnTweenRecipe();
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
                     break;
                 case StateType.EnhanceEquipment:
