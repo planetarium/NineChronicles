@@ -15,9 +15,6 @@ namespace Nekoyume.UI.Module
     public class EquipmentOptionRecipeView : EquipmentOptionView
     {
         [SerializeField]
-        private TextMeshProUGUI unlockConditionText = null;
-
-        [SerializeField]
         private RequiredItemRecipeView requiredItemRecipeView = null;
 
         [SerializeField]
@@ -38,17 +35,12 @@ namespace Nekoyume.UI.Module
         [SerializeField]
         protected LockChainJitterVFX lockVFX = null;
 
-        [SerializeField]
-        protected Image hasNotificationImage = null;
-
         public RectTransformShakeTweener shakeTweener = null;
         public TransformLocalScaleTweener scaleTweener = null;
 
         private bool _tempLocked = false;
 
         private (int parentItemId, int index) _parentInfo;
-
-        protected readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         public EquipmentItemSubRecipeSheet.Row rowData;
 
@@ -79,7 +71,7 @@ namespace Nekoyume.UI.Module
                     var combination = Widget.Find<Combination>();
                     combination.RecipeVFXSkipMap[_parentInfo.parentItemId][_parentInfo.index] = rowData.Id;
                     combination.SaveRecipeVFXSkipMap();
-                    Set(avatarState, null, false);
+                    Set(avatarState, false);
                     var centerPos = GetComponent<RectTransform>()
                         .GetWorldPositionOfCenter();
                     VFXController.instance.CreateAndChaseCam<ElementalRecipeUnlockVFX>(centerPos);
@@ -94,10 +86,6 @@ namespace Nekoyume.UI.Module
                 OnClick.OnNext(Unit.Default);
                 recipeClickVFX.Play();
             }).AddTo(gameObject);
-
-            if (hasNotificationImage)
-                HasNotification.SubscribeTo(hasNotificationImage)
-                    .AddTo(gameObject);
         }
 
         private void OnDisable()
@@ -140,23 +128,12 @@ namespace Nekoyume.UI.Module
             Show(recipeName, subRecipeId);
         }
 
-        public void Set(AvatarState avatarState, bool? hasNotification = false, bool tempLocked = false)
+        public void Set(AvatarState avatarState, bool tempLocked = false)
         {
             if (rowData is null)
             {
                 return;
             }
-
-            // 해금 검사.
-            if (!avatarState.worldInformation.IsStageCleared(rowData.UnlockStage))
-            {
-                HasNotification.Value = false;
-                SetLocked(true);
-                return;
-            }
-
-            if (hasNotification.HasValue)
-                HasNotification.Value = hasNotification.Value;
 
             _tempLocked = tempLocked;
             SetLocked(tempLocked);
@@ -203,47 +180,6 @@ namespace Nekoyume.UI.Module
 
         private void SetLocked(bool value)
         {
-            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
-            if (value)
-            {
-                unlockConditionText.enabled = true;
-
-                if (rowData is null)
-                {
-                    unlockConditionText.text = string.Format(
-                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                        "???");
-                }
-
-                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
-                    out var stageId))
-                {
-                    var diff = rowData.UnlockStage - stageId;
-                    if (diff > 50)
-                    {
-                        unlockConditionText.text = string.Format(
-                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                            "???");
-                    }
-                    else
-                    {
-                        unlockConditionText.text = string.Format(
-                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                            rowData.UnlockStage.ToString());
-                    }
-                }
-                else
-                {
-                    unlockConditionText.text = string.Format(
-                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
-                        "???");
-                }
-            }
-            else
-            {
-                unlockConditionText.enabled = false;
-            }
-
             lockParent.SetActive(value);
             header.SetActive(!value);
             options.SetActive(!value);
