@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a6b194f808b1af6499c93410e504af42, type: 3}
+  m_Name: Cut_Test_Atlas
+  m_EditorClassIdentifier: 
+  atlasFile: {fileID: 4900000, guid: db6fdce12c0610b429437513b38b6e0c, type: 3}
+  materials:
+  - {fileID: 2100000, guid: ac320064b7c11f3439cdbc238f50cac9, type: 2}
+  - {fileID: 2100000, guid: 148801f701f56b74a926a7fbff2bb6f5, type: 2}

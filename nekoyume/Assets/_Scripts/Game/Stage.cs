@@ -26,6 +26,7 @@ using UnityEngine;
 using TentuPlay.Api;
 using UniRx;
 using mixpanel;
+using Nekoyume.Game.Character;
 using Nekoyume.L10n;
 
 namespace Nekoyume.Game
@@ -65,11 +66,13 @@ namespace Nekoyume.Game
         private BattleLog _battleLog;
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
+        private Coroutine _battleCoroutine;
 
+        public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public bool IsInStage { get; private set; }
-        public Enemy Boss { get; private set; }
+        public Model.Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
 
         public Vector3 SelectPositionBegin(int index) =>
@@ -79,6 +82,8 @@ namespace Nekoyume.Game
             new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
         public bool showLoadingScreen;
+
+        private Character.Player _stageRunningPlayer = null;
 
         #region Events
 
@@ -134,6 +139,11 @@ namespace Nekoyume.Game
             _rankingBattle = true;
             if (_battleLog?.id != log.id)
             {
+                if (!(_battleCoroutine is null))
+                {
+                    StopCoroutine(_battleCoroutine);
+                    objectPool.ReleaseAll();
+                }
                 _battleLog = log;
                 PlayRankingBattle(_battleLog);
             }
@@ -275,7 +285,7 @@ namespace Nekoyume.Game
         {
             if (log?.Count > 0)
             {
-                StartCoroutine(CoPlayRankingBattle(log));
+                _battleCoroutine = StartCoroutine(CoPlayRankingBattle(log));
             }
         }
 
@@ -324,6 +334,7 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(CoRankingBattleEnd(log));
             IsInStage = false;
+            _battleCoroutine = null;
         }
 
         private static IEnumerator CoDialog(int worldStage)
@@ -389,6 +400,8 @@ namespace Nekoyume.Game
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
+            ReleaseWhiteList.Clear();
+            ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
             var battle = Widget.Find<UI.Battle>();
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
@@ -455,17 +468,16 @@ namespace Nekoyume.Game
 
             if (log.result == BattleLog.Result.Win)
             {
-                var playerCharacter = GetPlayer();
-                playerCharacter.DisableHUD();
+                _stageRunningPlayer.DisableHUD();
                 if (isClear)
                 {
                     yield return StartCoroutine(CoDialog(log.stageId));
                 }
 
-                playerCharacter.Animator.Win(log.clearedWaveNumber);
-                playerCharacter.ShowSpeech("PLAYER_WIN");
+                _stageRunningPlayer.Animator.Win(log.clearedWaveNumber);
+                _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
                 yield return new WaitForSeconds(2.2f);
-                objectPool.ReleaseExceptForPlayer();
+                objectPool.ReleaseExcept(ReleaseWhiteList);
                 if (isClear)
                 {
                     StartCoroutine(CoSlideBg());
@@ -473,7 +485,8 @@ namespace Nekoyume.Game
             }
             else
             {
-                objectPool.ReleaseAll();
+                ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
+                objectPool.ReleaseExcept(ReleaseWhiteList);
             }
 
             var avatarAddress = States.Instance.CurrentAvatarState.address;
@@ -620,7 +633,7 @@ namespace Nekoyume.Game
             );
         }
 
-        public IEnumerator CoSpawnPlayer(Player character)
+        public IEnumerator CoSpawnPlayer(Model.Player character)
         {
             var playerCharacter = RunPlayer(false);
             playerCharacter.Set(character, true);
@@ -661,7 +674,7 @@ namespace Nekoyume.Game
             yield return null;
         }
 
-        public IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character)
+        public IEnumerator CoSpawnEnemyPlayer(Model.EnemyPlayer character)
         {
             var battle = Widget.Find<UI.Battle>();
             battle.BossStatus.Close();
@@ -677,97 +690,94 @@ namespace Nekoyume.Game
         #region Skill
 
         public IEnumerator CoNormalAttack(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(
-                    character,
-                    skillInfos,
-                    buffInfos,
-                    character.CoNormalAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
         public IEnumerator CoBlowAttack(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(
-                    character,
-                    skillInfos,
-                    buffInfos,
-                    character.CoBlowAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
         public IEnumerator CoDoubleAttack(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(
-                    character,
-                    skillInfos,
-                    buffInfos,
-                    character.CoDoubleAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
+                character.actions.Add(actionParams);
+
                 yield return null;
             }
         }
 
         public IEnumerator CoAreaAttack(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(
-                    character,
-                    skillInfos,
-                    buffInfos,
-                    character.CoAreaAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoAreaAttack);
+                character.actions.Add(actionParams);
+
                 yield return null;
             }
         }
 
         public IEnumerator CoHeal(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoHeal));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
         public IEnumerator CoBuff(
-            CharacterBase caster,
+            Model.CharacterBase caster,
             IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoBuff));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoBuff);
+                character.actions.Add(actionParams);
                 yield return null;
             }
+        }
+
+        public IEnumerator CoSkill(ActionParams param)
+        {
+            yield return StartCoroutine(CoSkill(param.character, param.skillInfos, param.buffInfos, param.func));
         }
 
         private IEnumerator CoSkill(
@@ -855,7 +865,7 @@ namespace Nekoyume.Game
                 character.StartRun();
         }
 
-        public IEnumerator CoRemoveBuffs(CharacterBase caster)
+        public IEnumerator CoRemoveBuffs(Model.CharacterBase caster)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -888,7 +898,7 @@ namespace Nekoyume.Game
         public IEnumerator CoSpawnWave(
             int waveNumber,
             int waveTurn,
-            List<Enemy> enemies,
+            List<Model.Enemy> enemies,
             bool hasBoss)
         {
             this.waveNumber = waveNumber;
@@ -968,7 +978,7 @@ namespace Nekoyume.Game
             yield return StartCoroutine(player.CoGetExp(exp));
         }
 
-        public IEnumerator CoDead(CharacterBase model)
+        public IEnumerator CoDead(Model.CharacterBase model)
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
@@ -988,7 +998,7 @@ namespace Nekoyume.Game
 
             if (selectedPlayer)
             {
-                objectPool.Remove<Player>(selectedPlayer.gameObject);
+                objectPool.Remove<Model.Player>(selectedPlayer.gameObject);
             }
 
             var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
@@ -1011,16 +1021,16 @@ namespace Nekoyume.Game
 
         private Character.Player RunPlayer(bool chasePlayer = true)
         {
-            var player = GetPlayer();
-            var playerTransform = player.transform;
+            _stageRunningPlayer = GetPlayer();
+            var playerTransform = _stageRunningPlayer.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
             if (chasePlayer)
-                RunAndChasePlayer(player);
+                RunAndChasePlayer(_stageRunningPlayer);
             else
-                player.StartRun();
-            return player;
+                _stageRunningPlayer.StartRun();
+            return _stageRunningPlayer;
         }
 
         public Character.Player RunPlayer(Vector2 position, bool chasePlayer = true)
@@ -1041,7 +1051,7 @@ namespace Nekoyume.Game
         /// <param name="caster"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public Character.CharacterBase GetCharacter(CharacterBase caster)
+        public Character.CharacterBase GetCharacter(Model.CharacterBase caster)
         {
             if (caster is null)
                 throw new ArgumentNullException(nameof(caster));
@@ -1055,18 +1065,17 @@ namespace Nekoyume.Game
 
         private void PlayBGVFX(bool isBoss)
         {
-            if (isBoss)
+            if (isBoss && bosswaveBGVFX)
             {
                 if (defaultBGVFX)
                     defaultBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-                if (bosswaveBGVFX)
-                    bosswaveBGVFX.Play(true);
+                bosswaveBGVFX.Play(true);
             }
             else
             {
                 if (bosswaveBGVFX)
                     bosswaveBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-                if (defaultBGVFX)
+                if (defaultBGVFX && !defaultBGVFX.isPlaying)
                     defaultBGVFX.Play(true);
             }
         }
