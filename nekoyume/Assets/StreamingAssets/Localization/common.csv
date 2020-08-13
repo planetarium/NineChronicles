@@ -321,6 +321,10 @@ NPC_09_NAME,Alex,알렉스,Alex
 NPC_10_NAME,Pig Trespasser,돼지부족 도살자,Porco Invasor
 NPC_11_NAME,Fenrir,펜리르,Fenrir
 NPC_12_NAME,Mushroom spore of Yggdrasil,이그드라실의 버섯포자,Esporos de Cogumelos de Yggdrasill
+NPC_13_NAME,Flower of Yggdrasill,이그드라실의 꽃,Flor de Yggdrasill
+NPC_14_NAME,Vines of Yggdrasil,이그드라실의 덩굴,Vinhas de Yggdrasill
+NPC_15_NAME,Leaf bundle of Yggdrasil,이그드라실의 덤불,Conjunto de Folhas de Yggdrasill
+NPC_16_NAME,Eggplant of Yggdrasill,이그드라실의 모종,Berinjela de Yggdrasill
 UI_COMBINE_EQUIPMENT,Equipment,장비 제작,Equipamento
 UI_COMBINE_CONSUMABLE,Consumables,소모품 제작,Consumíveis
 UI_UPGRADE_EQUIPMENT,Upgrade,장비 강화,Upgrade
@@ -626,7 +630,7 @@ UI_OPEN_CHEST,Open Chest,상자 열기,Abrir baú
 UI_QUEST_COMPLETED,Quest Completed!,퀘스트 완료!,Missão concluída
 UI_PRESS_TO_CONTINUE_FORMAT,Press to continue .. {0},클릭하여 계속 .. {0},Pressione para continuar .. {0}
 UI_NEW_EQUIPMENT_RECIPE,New Equipment Recipe!,새로운 장비 레시피!,Receita de novos equipamentos!
-UI_BATTLE_RESULT_STAGE_1,"From the next stage, you can earn various items!","다음 스테이지부터 다양한 재료를 얻을 수 있어요!","A partir da próxima fase , você pode ganhar vários itens!"
+UI_BATTLE_RESULT_STAGE_1,"From the next stage, you can earn various items!",다음 스테이지부터 다양한 재료를 얻을 수 있어요!,"A partir da próxima fase , você pode ganhar vários itens!"
 PLAYER_PROLOGUE_SPEECH_0,!!!,!!!,!!!
 UI_HELP,Help,도움말,Ajuda
 UI_PRELOADING_MESSAGE,Waiting for Initialize.. Complete in few seconds.,초기화 중입니다.. 잠시만 기다려 주세요.,Waiting for Initialize.. Complete in few seconds.
