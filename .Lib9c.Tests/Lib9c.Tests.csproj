@@ -28,12 +28,6 @@
 
   <ItemGroup>
     <Content Include="Data/**/*.*" CopyToOutputDirectory="Always" />
-    <Content Update="Data\WeeklyRewardSheet.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Data\TableCSV\WeeklyArenaRewardSheet.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
 </Project>
