@@ -398,13 +398,12 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(PublicKey key)
+        public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(string code)
         {
-            var action = new RedeemCode
-            {
-                avatarAddress = States.Instance.CurrentAvatarState.address,
-                code = key
-            };
+            var action = new RedeemCode(
+                code, 
+                States.Instance.CurrentAvatarState.address
+            );
             ProcessAction(action);
 
             return _renderer.EveryRender<RedeemCode>()
