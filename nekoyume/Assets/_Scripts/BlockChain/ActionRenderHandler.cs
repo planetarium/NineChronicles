@@ -447,8 +447,7 @@ namespace Nekoyume.BlockChain
 
             if (!(nextQuest is null))
             {
-                var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId &&
-                                    nextQuest.SubRecipeId == eval.Action.SubRecipeId;
+                var isRecipeMatch = nextQuest.RecipeId == eval.Action.RecipeId;
 
                 if (isRecipeMatch)
                 {

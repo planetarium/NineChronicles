@@ -101,24 +101,18 @@ namespace Nekoyume.UI.Module
         {
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
+            {
                 return;
-
-            var quest = Game.Game.instance
-                .States.CurrentAvatarState.questList?
-                .OfType<CombinationEquipmentQuest>()
-                .Where(x => !x.Complete && !(x.SubRecipeId is null))
-                .OrderBy(x => x.RecipeId)
-                .FirstOrDefault();
+            }
 
             foreach (var recipeView in equipmentOptionRecipeViews)
             {
-                var hasNotification = !(quest is null) && quest.SubRecipeId == recipeView.rowData.Id;
                 var isFirstOpen =
                     !Widget.Find<Combination>()
                     .RecipeVFXSkipMap[_recipeId]
                     .Contains(recipeView.SubRecipeId);
 
-                recipeView.Set(avatarState, hasNotification, isFirstOpen);
+                recipeView.Set(avatarState, isFirstOpen);
             }
         }
 

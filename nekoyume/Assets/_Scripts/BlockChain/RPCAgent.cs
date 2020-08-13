@@ -7,6 +7,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
@@ -17,7 +18,6 @@ using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using MagicOnion.Client;
-using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -52,6 +52,8 @@ namespace Nekoyume.BlockChain
         public ActionRenderer ActionRenderer { get; private set; }
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
+
+        public Subject<ReorgInfo> ReorgSubject { get; } = new Subject<ReorgInfo>();
 
         public long BlockIndex { get; private set; }
 
@@ -283,6 +285,15 @@ namespace Nekoyume.BlockChain
             {
                 OnDisconnected?.Invoke();
             }
+        }
+
+        public void OnReorged(byte[] branchpointHash, byte[] oldTipHash, byte[] newTipHash)
+        {
+            ReorgSubject.OnNext(new ReorgInfo(
+                new HashDigest<SHA256>(branchpointHash),
+                new HashDigest<SHA256>(oldTipHash),
+                new HashDigest<SHA256>(newTipHash)
+            ));
         }
     }
 }

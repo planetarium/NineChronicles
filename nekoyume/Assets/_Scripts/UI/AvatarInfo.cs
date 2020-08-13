@@ -177,12 +177,17 @@ namespace Nekoyume.UI
                     _player = stage.GetPlayer();
                     _player.Set(avatarState);
                     _previousAvatarPosition = _player.transform.position;
+                    if (_player.Costumes.Any(value => value.Id == 40100002))
+                    {
+                        _previousAvatarPosition -= new Vector3(-0.17f, -0.05f);
+                    }
                     _previousSortingLayerID = _player.sortingGroup.sortingLayerID;
                     _previousSortingLayerOrder = _player.sortingGroup.sortingOrder;
                 }
             }
 
             _player.transform.position = avatarPosition.position;
+
             var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
             _player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
 
@@ -241,6 +246,10 @@ namespace Nekoyume.UI
 
             // NOTE: 플레이어를 강제로 재생성해서 플레이어의 모델이 장비 변경 상태를 반영하도록 합니다.
             _player = Game.Game.instance.Stage.GetPlayer(_previousAvatarPosition, true);
+            if (_player.Costumes.Any(value => value.Id == 40100002))
+            {
+                _player.transform.position += new Vector3(-0.17f, -0.05f);
+            }
             var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
             _player.Set(currentAvatarState);
             _player.SetSortingLayer(_previousSortingLayerID, _previousSortingLayerOrder);

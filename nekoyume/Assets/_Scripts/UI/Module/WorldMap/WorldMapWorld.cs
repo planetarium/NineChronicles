@@ -104,7 +104,7 @@ namespace Nekoyume.UI.Module
             var imageKey = worldRow.Id == 101 ? "99" : $"0{worldRow.Id}";
             backgroundImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}");
             backgroundImage2.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}");
-            titleImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/UI_bg_worldmap_{imageKey}");
+            titleImage.overrideSprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/UI_bg_worldmap_{imageKey}");
             titleImage.SetNativeSize();
             var stageOffset = 0;
             var nextPageShouldHide = false;

@@ -483,16 +483,6 @@ namespace Nekoyume.UI.Module
                 if (!(row is null))
                 {
                     var stageId = row.UnlockStage;
-                    if (quest.SubRecipeId.HasValue)
-                    {
-                        var subRow = tableSheets.EquipmentItemSubRecipeSheet.Values
-                            .FirstOrDefault(r => r.Id == quest.SubRecipeId);
-                        if (!(subRow is null))
-                        {
-                            stageId = subRow.UnlockStage;
-                        }
-                    }
-
                     if (Game.Game.instance.States.CurrentAvatarState.worldInformation.IsStageCleared(stageId))
                     {
                         var equipRow = tableSheets.EquipmentItemSheet.Values
