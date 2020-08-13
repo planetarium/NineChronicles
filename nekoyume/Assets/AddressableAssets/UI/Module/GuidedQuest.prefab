@@ -180,14 +180,14 @@ MonoBehaviour:
   m_text: Quest
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8a682b7747d4a664089b7b1065aa0035, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: 7721c898419b5d3439390484c2636cea, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 1271e14845fd2d64988fb1fd175a3ca2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4292146175
+  m_fontColor: {r: 1, g: 0.9529412, b: 0.83137256, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -365,6 +365,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6482507596812157862}
     m_Modifications:
+    - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Name
+      value: GuidedQuestCell
+      objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -470,11 +475,6 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Name
-      value: GuidedQuestCell
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b7da2e478063a4ce983620ce161c9005, type: 3}
 --- !u!224 &5393157893329361940 stripped
@@ -502,6 +502,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6482507596812157862}
     m_Modifications:
+    - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
+        type: 3}
+      propertyPath: m_Name
+      value: GuidedQuestCell (1)
+      objectReference: {fileID: 0}
     - target: {fileID: 5483001106216337619, guid: b7da2e478063a4ce983620ce161c9005,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -606,11 +611,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4240006799511237031, guid: b7da2e478063a4ce983620ce161c9005,
-        type: 3}
-      propertyPath: m_Name
-      value: GuidedQuestCell (1)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b7da2e478063a4ce983620ce161c9005, type: 3}
