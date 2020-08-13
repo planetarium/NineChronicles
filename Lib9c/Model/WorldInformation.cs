@@ -402,4 +402,12 @@ namespace Nekoyume.Model
             _worlds[worldId] = new World(world, unlockedAt);
         }
     }
+
+    [Serializable]
+    public class FailedToUnlockWorldException : Exception
+    {
+        public FailedToUnlockWorldException(string message) : base(message)
+        {
+        }
+    }
 }
