@@ -13,18 +13,13 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class RankingBattleTest : IDisposable
+    public class RankingBattleTest
     {
         private TableSheetsState _tableSheetsState;
 
         public RankingBattleTest()
         {
             _tableSheetsState = TableSheetsImporter.ImportTableSheets();
-        }
-
-        public void Dispose()
-        {
-            _tableSheetsState = null;
         }
 
         [Fact]
