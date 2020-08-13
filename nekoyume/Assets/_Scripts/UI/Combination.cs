@@ -379,13 +379,17 @@ namespace Nekoyume.UI
                     elementalCombinationPanel.Hide();
                     ShowSpeech("SPEECH_COMBINE_EQUIPMENT_");
 
+                    if (!categoryTabArea.activeSelf)
+                    {
+                        Animator.Play("ShowLeftArea", -1, 0.0f);
+                        OnTweenRecipe();
+                    }
+
                     categoryTabArea.SetActive(true);
                     itemRecipe.gameObject.SetActive(true);
                     itemRecipe.ShowEquipmentCellViews(_equipmentRecipeIdToGo);
                     itemRecipe.SetState(ItemRecipe.State.Equipment);
                     _equipmentRecipeIdToGo = null;
-                    Animator.Play("ShowLeftArea", -1, 0.0f);
-                    OnTweenRecipe();
                     _toggleGroup.SetToggledOn(combineEquipmentCategoryButton);
                     break;
                 case StateType.CombineConsumable:
@@ -397,12 +401,15 @@ namespace Nekoyume.UI
                     elementalCombinationPanel.Hide();
                     ShowSpeech("SPEECH_COMBINE_CONSUMABLE_");
 
+                    if (!categoryTabArea.activeSelf)
+                    {
+                        Animator.Play("ShowLeftArea", -1, 0.0f);
+                        OnTweenRecipe();
+                    }
                     categoryTabArea.SetActive(true);
                     itemRecipe.gameObject.SetActive(true);
                     itemRecipe.ShowConsumableCellViews();
                     itemRecipe.SetState(ItemRecipe.State.Consumable);
-                    Animator.Play("ShowLeftArea", -1, 0.0f);
-                    OnTweenRecipe();
                     _toggleGroup.SetToggledOn(combineConsumableCategoryButton);
                     break;
                 case StateType.EnhanceEquipment:
@@ -444,12 +451,22 @@ namespace Nekoyume.UI
 
                     if (selectedRecipe.ItemSubType == ItemSubType.Food)
                     {
-                        recipeClickVFX.OnFinished = OnClickConsumableRecipe;
+                        recipeClickVFX.OnFinished = () =>
+                        {
+                            OnClickConsumableRecipe();
+                            categoryTabArea.SetActive(false);
+                            itemRecipe.gameObject.SetActive(false);
+                        };
                     }
                     else
                     {
                         var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
-                        recipeClickVFX.OnFinished = () => OnClickEquipmentRecipe(isElemental);
+                        recipeClickVFX.OnFinished = () =>
+                        {
+                            OnClickEquipmentRecipe(isElemental);
+                            categoryTabArea.SetActive(false);
+                            itemRecipe.gameObject.SetActive(false);
+                        };
                     }
 
                     recipeClickVFX.Play();
