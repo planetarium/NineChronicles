@@ -451,12 +451,22 @@ namespace Nekoyume.UI
 
                     if (selectedRecipe.ItemSubType == ItemSubType.Food)
                     {
-                        recipeClickVFX.OnFinished = OnClickConsumableRecipe;
+                        recipeClickVFX.OnFinished = () =>
+                        {
+                            OnClickConsumableRecipe();
+                            categoryTabArea.SetActive(false);
+                            itemRecipe.gameObject.SetActive(false);
+                        };
                     }
                     else
                     {
                         var isElemental = selectedRecipe.ElementalType != ElementalType.Normal;
-                        recipeClickVFX.OnFinished = () => OnClickEquipmentRecipe(isElemental);
+                        recipeClickVFX.OnFinished = () =>
+                        {
+                            OnClickEquipmentRecipe(isElemental);
+                            categoryTabArea.SetActive(false);
+                            itemRecipe.gameObject.SetActive(false);
+                        };
                     }
 
                     recipeClickVFX.Play();
