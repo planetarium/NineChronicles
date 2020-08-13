@@ -110,7 +110,15 @@ namespace Nekoyume.TableData
             var tableSheets = new TableSheets();
             tableSheets.InitializeWithTableSheetsState(tableSheetsState);
 
-            Cache.Add(tableSheetsState, tableSheets);
+            // Avoid Exception when run parallel tests
+            try
+            {
+                Cache.Add(tableSheetsState, tableSheets);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e);
+            }
             return tableSheets;
         }
 
