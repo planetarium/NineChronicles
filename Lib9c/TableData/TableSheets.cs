@@ -56,6 +56,7 @@ namespace Nekoyume.TableData
         public RedeemCodeListSheet RedeemCodeListSheet { get; private set; }
         public CombinationEquipmentQuestSheet CombinationEquipmentQuestSheet { get; private set; }
         public EnhancementCostSheet EnhancementCostSheet { get; private set; }
+        public WeeklyArenaRewardSheet WeeklyArenaRewardSheet { get; private set; }
 
         #endregion
 
@@ -109,7 +110,15 @@ namespace Nekoyume.TableData
             var tableSheets = new TableSheets();
             tableSheets.InitializeWithTableSheetsState(tableSheetsState);
 
-            Cache.Add(tableSheetsState, tableSheets);
+            // Avoid Exception when run parallel tests
+            try
+            {
+                Cache.Add(tableSheetsState, tableSheets);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e);
+            }
             return tableSheets;
         }
 
