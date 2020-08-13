@@ -356,13 +356,27 @@ namespace Nekoyume.Model
         /// <param name="worldId"></param>
         /// <param name="stageId"></param>
         /// <param name="clearedAt"></param>
-        /// <param name="unlockSheet"></param>
+        /// <param name="worldSheet"></param>
+        /// <param name="worldUnlockSheet"></param>
+        /// <exception cref="FailedToUnlockWorldException"></exception>
         public void ClearStage(
             int worldId,
             int stageId,
             long clearedAt,
-            WorldUnlockSheet unlockSheet)
+            WorldSheet worldSheet,
+            WorldUnlockSheet worldUnlockSheet)
         {
+            // NOTE: 패치 테이블로 인해서 언락 정보가 갱신된 것을 반영하기 위해서
+            // 이미 클리어한 스테이지인지와는 별개로 항상 언락 정보를 참조해서 업데이트 합니다.
+            // 왜냐하면 이미 클리어한 스테이지도 테이블 패치로 인해서 월드 해금의 트리거가될 수 있기 때문입니다.
+            if (worldUnlockSheet.TryGetUnlockedInformation(worldId, stageId, out var worldIdsToUnlock))
+            {
+                foreach (var worldIdToUnlock in worldIdsToUnlock)
+                {
+                    UnlockWorld(worldIdToUnlock, clearedAt, worldSheet);
+                }
+            }
+
             var world = _worlds[worldId];
             if (stageId <= world.StageClearedId)
             {
@@ -370,14 +384,6 @@ namespace Nekoyume.Model
             }
 
             _worlds[worldId] = new World(world, clearedAt, stageId);
-
-            if (unlockSheet.TryGetUnlockedInformation(worldId, stageId, out var worldIdsToUnlock))
-            {
-                foreach (var worldIdToUnlock in worldIdsToUnlock)
-                {
-                    UnlockWorld(worldIdToUnlock, clearedAt);
-                }
-            }
         }
 
         /// <summary>
@@ -385,20 +391,26 @@ namespace Nekoyume.Model
         /// </summary>
         /// <param name="worldId"></param>
         /// <param name="unlockedAt"></param>
-        /// <exception cref="KeyNotFoundException"></exception>
-        private void UnlockWorld(int worldId, long unlockedAt)
+        /// <param name="worldSheet"></param>
+        /// <exception cref="FailedToUnlockWorldException"></exception>
+        private void UnlockWorld(int worldId, long unlockedAt, WorldSheet worldSheet)
         {
-            if (!_worlds.ContainsKey(worldId))
+            World world;
+            if (_worlds.ContainsKey(worldId))
             {
-                throw new KeyNotFoundException($"{nameof(worldId)}: {worldId}");
+                world = _worlds[worldId];
+            }
+            else if (!worldSheet.TryGetValue(worldId, out var worldRow) ||
+                     !TryAddWorld(worldRow, out world))
+            {
+                throw new FailedToUnlockWorldException($"{nameof(worldId)}: {worldId}");
             }
 
-            if (_worlds[worldId].IsUnlocked)
+            if (world.IsUnlocked)
             {
                 return;
             }
 
-            var world = _worlds[worldId];
             _worlds[worldId] = new World(world, unlockedAt);
         }
     }
