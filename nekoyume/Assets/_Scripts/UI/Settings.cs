@@ -49,6 +49,10 @@ namespace Nekoyume.UI
 
             addressCopyButton.OnClickAsObservable().Subscribe(_ => CopyAddressToClipboard());
             privateKeyCopyButton.OnClickAsObservable().Subscribe(_ => CopyPrivateKeyToClipboard());
+            redeemCode.OnRequested.AddListener(() =>
+            {
+                Close();
+            });
             redeemCode.Close();
         }
 
