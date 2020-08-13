@@ -260,7 +260,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 인자로 받은 `worldId`에 해당하는 `World` 객체를 얻는다.
+        /// Get `World` object that equals to `worldId` argument.
         /// </summary>
         /// <param name="worldId"></param>
         /// <param name="world"></param>
@@ -291,7 +291,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 인자로 받은 `stageId`가 속한 `World` 객체를 얻는다.
+        /// Get `World` object that contains `stageId` argument.
         /// </summary>
         /// <param name="stageId"></param>
         /// <param name="world"></param>
@@ -310,7 +310,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 새롭게 스테이지를 클리어한 시간이 가장 최근인 월드를 얻는다.
+        /// Get `World` object that contains the most recent stage clear.
         /// </summary>
         /// <param name="world"></param>
         /// <returns></returns>
@@ -332,7 +332,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 마지막으로 클리어한 스테이지 ID를 반환한다.
+        /// Get stage id of the most recent cleared.
         /// </summary>
         /// <param name="stageId"></param>
         /// <returns></returns>
@@ -351,7 +351,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 스테이지를 클리어 시킨다.
+        /// Clear a specific stage. And consider world unlock.
         /// </summary>
         /// <param name="worldId"></param>
         /// <param name="stageId"></param>
@@ -366,9 +366,8 @@ namespace Nekoyume.Model
             WorldSheet worldSheet,
             WorldUnlockSheet worldUnlockSheet)
         {
-            // NOTE: 패치 테이블로 인해서 언락 정보가 갱신된 것을 반영하기 위해서
-            // 이미 클리어한 스테이지인지와는 별개로 항상 언락 정보를 참조해서 업데이트 합니다.
-            // 왜냐하면 이미 클리어한 스테이지도 테이블 패치로 인해서 월드 해금의 트리거가될 수 있기 때문입니다.
+            // NOTE: Always consider world unlock.
+            // Because even a stage that has already been cleared can be a trigger for world unlock due to the table patch.
             if (worldUnlockSheet.TryGetUnlockedInformation(worldId, stageId, out var worldIdsToUnlock))
             {
                 foreach (var worldIdToUnlock in worldIdsToUnlock)
@@ -387,7 +386,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 특정 월드를 잠금 해제한다.
+        /// Unlock a specific world.
         /// </summary>
         /// <param name="worldId"></param>
         /// <param name="unlockedAt"></param>
