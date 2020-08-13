@@ -60,8 +60,8 @@ DIALOG_1_1_4,"Go to Yggdrasil and clear some monsters before coming back!
 I just don't have time for everyone right now.","이그드라실에 가서 골치 아픈 녀석들을 몇 마리만 잡고 있어보라옹.
 너같은 애들이 지금 너무 많아서 조금 있다 다시 와서 설명해줄게","Vá para Yggdrasil e mate alguns monstros antes de voltar!
  Eu simplesmente não tenho tempo para todos no momento."
-DIALOG_1_1_5,"(The cat disappeared.)","(고양이는 어디론가 사라졌다.)","(O gato desapareceu.)"
-DIALOG_2_1_0,"[npc:09]Whew… Was that all?","[npc:09]휴 당장은 좀 사그러든건가...","[npc:09] Ufa ... Isso foi tudo?"
+DIALOG_1_1_5,(The cat disappeared.),(고양이는 어디론가 사라졌다.),(O gato desapareceu.)
+DIALOG_2_1_0,[npc:09]Whew… Was that all?,[npc:09]휴 당장은 좀 사그러든건가...,[npc:09] Ufa ... Isso foi tudo?
 DIALOG_2_1_1,"Those ones came out of Yggdrasill.
 They're quite vicious.","네가 조금 전에 없앤 녀석들은 세계수, 이그드라실에서 떨어져나온 생명체들이야. 
 악랄한 녀석들이지.","Aqueles saíram de Yggdrasill. 
@@ -76,7 +76,7 @@ DIALOG_2_1_3,"I think they're using a special way to multiply because they're in
 Go deeper into Yggdrasil to find out more about them!","아무래도 이런 속도로 늘어나는 것을 보니, 증식을 위한 특별한 방법을 쓰고 있는 것 같아.
 좀 더 이그드라실 깊숙히 들어가서 원인을 찾아봐줘!","Acho que estão usando uma forma especial de multiplicar, porque eles estão a aumentar a esta altura.
 Vá mais fundo na Yggdrasil para descobrir mais sobre eles!"
-DIALOG_3_1_0,"[npc:07](The goddess Freya reappeared with a stiff face.)","[npc:07](여신 프레이야가 굳은 얼굴로 다시 나타났다.)","[npc:07](A Freya deusa reapareceu com um cara duro.)"
+DIALOG_3_1_0,[npc:07](The goddess Freya reappeared with a stiff face.),[npc:07](여신 프레이야가 굳은 얼굴로 다시 나타났다.),[npc:07](A Freya deusa reapareceu com um cara duro.)
 DIALOG_3_1_1,"I congratulate you on arriving in this world.
  You are a cat of Midgard. You've had a much too short life.","무사히 이 세계에 안착한 것을 축하합니다.
 당신은 인간의 세계, 미드가르드의 고양이였던 존재.
@@ -84,7 +84,7 @@ DIALOG_3_1_1,"I congratulate you on arriving in this world.
  Você é um gato de Midgard. 
  Você teve uma vida muito curta."
 DIALOG_3_1_2,"Your memories of the past have almost disappeared,
-but there's a way to save them.","이미 예전의 기억은 거의 소실되어서 본디 당신이 어디에 있던 누구였는지는 희미할 테지요.","Suas memórias do passado quase desapareceram, 
+but there's a way to save them.",이미 예전의 기억은 거의 소실되어서 본디 당신이 어디에 있던 누구였는지는 희미할 테지요.,"Suas memórias do passado quase desapareceram, 
 mas há uma maneira de salvá-las."
 DIALOG_3_1_3,"Here is in danger.
 The Yggdrasil supporting the Nine Worlds, is creating strange creatures all over the worlds.","이곳은 위험에 빠져있습니다.
@@ -102,7 +102,7 @@ DIALOG_3_1_6,"But if you do not help me…
 You will be trapped with me in eternal darkness.","하지만 저를 도와주시지 않는다면.. 당신은 이미 살아있지 않은 몸.
 영원한 어둠 속에 갇힐테지요.","Mas se você não me ajudar ... 
  Você ficará preso comigo na escuridão eterna."
-DIALOG_4_1_0,"[npc:05]You've gathered a lot of useful things.","[npc:05]자네, 벌써 쓸만한 재료를 꽤 모았구만.","[npc:05] Você reuniu muitas coisas úteis."
+DIALOG_4_1_0,[npc:05]You've gathered a lot of useful things.,"[npc:05]자네, 벌써 쓸만한 재료를 꽤 모았구만.",[npc:05] Você reuniu muitas coisas úteis.
 DIALOG_4_1_1,"What? You can't eat it or use it yet?
 Haha!","뭐? 먹지도 못하고 쓰지도 못하는데 뭐가 쓸만한 거냐고?
 핫하하!!","O quê? Você não pode comê-lo ou usá-lo ainda? 
@@ -161,9 +161,9 @@ DIALOG_7_1_2,"Living under the protection of the Gods
 but worshiping another living being- this is a challenge for the Goddess!","신들의 보호 아래 살고 있으면서 신이 아닌 다른 것을 숭배하다니..
 이건 여신님에 대한 도전이야..!","Viver sob a proteção dos deuses 
  mas adorar outro ser vivo - esse é um desafio para a deusa!"
-DIALOG_8_1_0,"[npc:06]There you~","[npc:06]거기 너~","[npc:06] Aí está você ~"
+DIALOG_8_1_0,[npc:06]There you~,[npc:06]거기 너~,[npc:06] Aí está você ~
 DIALOG_8_1_1,"Yeah, you.
-You've made a bunch of pretty things.","그래 너 말야. 괜찮아 보이는 물건들을 꽤나 만든 것 같아보여서 말이야.","Sim , você.
+You've made a bunch of pretty things.",그래 너 말야. 괜찮아 보이는 물건들을 꽤나 만든 것 같아보여서 말이야.,"Sim , você.
  Você fez um monte de coisas bonitas."
 DIALOG_8_1_2,"I work here as a link between cats who want to return to Midgard like you.
 If you have something you don't use anymore,
@@ -180,9 +180,9 @@ I really like Gold, you know…","물론 다른 고양이들이 내게 맡긴 �
  Mas não de graça!
  Eu realmente gosto de ouro , você sabe…"
 DIALOG_8_1_4,"Ugh! Another guest came in the store.
-Come hang out with me anytime~","헉! 가게에 또 손님이 들어왔어. 그럼 언제든 놀러와~","Argh! Outro hóspede entrou na loja. 
+Come hang out with me anytime~",헉! 가게에 또 손님이 들어왔어. 그럼 언제든 놀러와~,"Argh! Outro hóspede entrou na loja. 
  Venha sair comigo a qualquer momento ~"
-DIALOG_8_1_5,"(The cat that loves money disappeared into the woods.)","(유독 돈을 좋아하는 고양이는 쏜살같이 사라졌다)","(O gato que ama dinheiro desapareceu na floresta.)"
+DIALOG_8_1_5,(The cat that loves money disappeared into the woods.),(유독 돈을 좋아하는 고양이는 쏜살같이 사라졌다),(O gato que ama dinheiro desapareceu na floresta.)
 DIALOG_9_1_0,"[npc:02]Ugh… 
 Do you know what you're trying to do with your sword…?","[npc:02] 크흑..
 네가 무슨 짓을 하려는 건지 알고서 이 칼을 휘두르는 것이냐?","[npc:02] Ugh… 
@@ -197,28 +197,28 @@ Just… please, the roots of Yggdrasill…
  (cai)"
 DIALOG_10_1_0,"[npc:09]Well done.
 Now you're really starting to look like a warrior!
-I'm here to deliver a message from the Goddess.","[npc:09]잘 했어. 이제 슬슬 전사의 위용이 나기 시작하는걸? 여신님의 메시지를 전하러 왔어.","[npc:09] Muito bem. 
+I'm here to deliver a message from the Goddess.",[npc:09]잘 했어. 이제 슬슬 전사의 위용이 나기 시작하는걸? 여신님의 메시지를 전하러 왔어.,"[npc:09] Muito bem. 
  Agora você está realmente começando a parecer um guerreiro!newline] Estou aqui para entregar uma mensagem da Deusa."
 DIALOG_10_1_1,"Listen,
-it’s the root of Yggdrasill that the fox tribe was trying to defend to the end.","잘 들어. 여우부족이 마지막까지 사수하려고 하는 건 이그드라실의 뿌리야.","Ouça , 
+it’s the root of Yggdrasill that the fox tribe was trying to defend to the end.",잘 들어. 여우부족이 마지막까지 사수하려고 하는 건 이그드라실의 뿌리야.,"Ouça , 
  é a raiz de Yggdrasill que a tribo das raposas estava tentando defender até o fim."
 DIALOG_10_1_2,"The roots of Yggdrasill extend to all Nine Worlds.
 For now, we have no choice but to cut off the roots of each world
 in order to silence Yggdrasill.
-There’s no other way.","이그드라실의 뿌리는 아홉 세계에 모두 뻗어 있어. 지금으로서는 이그드라실을 잠재우기 위해 각 세계의 뿌리를 잘라내는 수밖에.. 다른 방법이 없어.","As raízes de Yggdrasill se estendem a todos os Nove Mundos.
+There’s no other way.",이그드라실의 뿌리는 아홉 세계에 모두 뻗어 있어. 지금으로서는 이그드라실을 잠재우기 위해 각 세계의 뿌리를 잘라내는 수밖에.. 다른 방법이 없어.,"As raízes de Yggdrasill se estendem a todos os Nove Mundos.
  Por enquanto , não temos escolha a não ser cortar as raízes de cada mundo 
  para silenciar Yggdrasill.
  Não há outro caminho."
 DIALOG_10_1_3,"This is the only way to save this world.
-It is said that the leader of the fox tribe has a powerful ingredient to cut down the roots of Alfheim.","이것이 유일하게 이 세계를 구하는 길. 알프헤임의 뿌리를 베어낼 수 있는 강력한 재료는 여우부족의 대장이 가지고 있다고 해.","Esta é a única maneira de salvar este mundo. 
+It is said that the leader of the fox tribe has a powerful ingredient to cut down the roots of Alfheim.",이것이 유일하게 이 세계를 구하는 길. 알프헤임의 뿌리를 베어낼 수 있는 강력한 재료는 여우부족의 대장이 가지고 있다고 해.,"Esta é a única maneira de salvar este mundo. 
  Dizem que o líder da tribo das raposas tem um ingrediente poderoso para cortar as raízes de Alfheim."
 DIALOG_10_1_4,"If you go to the deepest forest of Alfheim, you'll find the fox captain.
-Come on, let's go!","알프헤임의 가장 깊은 숲까지 들어가면 여우대장을 만날 수 있을거야. 자 어서 가보자구!","Se você for para a floresta mais profunda de Alfheim , encontrará o capitão da raposa. 
+Come on, let's go!",알프헤임의 가장 깊은 숲까지 들어가면 여우대장을 만날 수 있을거야. 자 어서 가보자구!,"Se você for para a floresta mais profunda de Alfheim , encontrará o capitão da raposa. 
  Vamos lá , vamos lá!"
-DIALOG_10_1_5,"(The cat jumped into the forest and disappeared.)","(하얀 고양이는 숲 속으로 뛰어들어가 사라졌다)","(O gato pulou na floresta e desapareceu.)"
-DIALOG_11_1_0,"[npc:03]Why do you want to touch the roots of the sacred tree?","[npc:03] 어찌하여 너는 신성한 이그드라실의 뿌리를 건드리려 하는 것이냐..","[npc:03] Por que você quer tocar as raízes da árvore sagrada?"
-DIALOG_11_1_1,"… What? To silence the World Tree? Where did you…","… 뭐..? 세계수를 잠재우기 위해서라고..? 어디서 그런 이야기를....","… O quê? Silenciar a Árvore do Mundo? Onde você...?"
-DIALOG_11_1_2,"Yes, I can imagine who told you that… and you're not from here.","훗.. 누가 그런 이야기를 했는지 짐작이 가는군..... 너도 본디 이곳에서 난 생명은 아닌 것을 보니..","Sim , Eu posso imaginar quem te disse isso ... e você não é daqui."
+DIALOG_10_1_5,(The cat jumped into the forest and disappeared.),(하얀 고양이는 숲 속으로 뛰어들어가 사라졌다),(O gato pulou na floresta e desapareceu.)
+DIALOG_11_1_0,[npc:03]Why do you want to touch the roots of the sacred tree?,[npc:03] 어찌하여 너는 신성한 이그드라실의 뿌리를 건드리려 하는 것이냐..,[npc:03] Por que você quer tocar as raízes da árvore sagrada?
+DIALOG_11_1_1,… What? To silence the World Tree? Where did you…,… 뭐..? 세계수를 잠재우기 위해서라고..? 어디서 그런 이야기를....,… O quê? Silenciar a Árvore do Mundo? Onde você...?
+DIALOG_11_1_2,"Yes, I can imagine who told you that… and you're not from here.",훗.. 누가 그런 이야기를 했는지 짐작이 가는군..... 너도 본디 이곳에서 난 생명은 아닌 것을 보니..,"Sim , Eu posso imaginar quem te disse isso ... e você não é daqui."
 DIALOG_11_1_3,"… I fear for this world.
 We haven't been able to protect the roots of this place… What will this bring to Alfheim…","… 두렵군..
 이곳의 뿌리를 사수하지 못한 것이.. 이 세계에 어떠한 일을 가져올지….","… Temo por este mundo. 
@@ -250,13 +250,13 @@ I’ll teach you how to enhance your equipment.","[npc:05]자네, 전투가 조�
 장비를 강화할 수 있는 법을 알려주지..","[npc:05] Talvez , você ache que a batalha está ficando um pouco mais difícil? 
  Vou ensiná-lo a melhorar seu equipamento."
 DIALOG_14_1_1,"You can combine two equipments of the same grade and the same level.
-Enhancing the equipment raises the basic stat of the equipment.","같은 등급과 같은 강화도를 가진 장비를 하나로 합칠 수 있다네. 그러면 장비의 기본 능력치가 향상되지.","Você pode combinar dois equipamentos da mesma classe e do mesmo nível.
+Enhancing the equipment raises the basic stat of the equipment.",같은 등급과 같은 강화도를 가진 장비를 하나로 합칠 수 있다네. 그러면 장비의 기본 능력치가 향상되지.,"Você pode combinar dois equipamentos da mesma classe e do mesmo nível.
  O aprimoramento do equipamento eleva as estatísticas básicas do equipamento."
-DIALOG_14_1_2,"Come to me if you're interested.","관심이 있으면 내게로 오게나.","Venha até mim se estiver interessado."
-DIALOG_15_1_0,"[npc:10]You're the one who's been running around in the world.","[npc:10]이 세계를 휘젓고 다닌다는 녀석이 네놈이었군..
-우리 땅에서는 더이상 네놈이 활개치지 못하도록 해주겠다!!!!!!!!!!","[npc:10] Você é quem está circulando pelo mundo."
+DIALOG_14_1_2,Come to me if you're interested.,관심이 있으면 내게로 오게나.,Venha até mim se estiver interessado.
+DIALOG_15_1_0,[npc:10]You're the one who's been running around in the world.,"[npc:10]이 세계를 휘젓고 다닌다는 녀석이 네놈이었군..
+우리 땅에서는 더이상 네놈이 활개치지 못하도록 해주겠다!!!!!!!!!!",[npc:10] Você é quem está circulando pelo mundo.
 DIALOG_15_1_1,"I won't let you walk on our land!!!!!!!!!!!!!!!!!!!
-Don't even look inside Svartalfheim!!","스바르트알프헤임에는 얼씬도 하지 마라!","Eu não vou deixar você andar em nossa terra !!!!!!!!!!!!!!!!!!! 
+Don't even look inside Svartalfheim!!",스바르트알프헤임에는 얼씬도 하지 마라!,"Eu não vou deixar você andar em nossa terra !!!!!!!!!!!!!!!!!!! 
  Nem olhe dentro de Svartalfheim !!"
 DIALOG_16_1_0,"[npc:11]You're an extraordinary cat…
 Rumors about you have circulated and reached my ears.","[npc:11]범상치 않은 고양이로구나…
@@ -267,7 +267,7 @@ If you come to Asgard, you won't get out alive.","왜 이 세계를 이리 어�
 아스가르드에 오면 너는 살아서 나가지 못할 것이다.","Por que você está perturbando o equilíbrio deste mundo? Você deve parar por aqui. 
  Se você vier a Asgard , não sairá vivo."
 DIALOG_17_1_0,"[npc:01]You're become so strong!
-Oh, who am I? You don't have to know that.","[npc:01]정말 많이 강해졌구나! 아 내가 누구냐고? 그건 몰라도 돼.","[npc:01] Você se tornou tão forte! [Oh , quem sou eu? Você não tem que saber."
+Oh, who am I? You don't have to know that.",[npc:01]정말 많이 강해졌구나! 아 내가 누구냐고? 그건 몰라도 돼.,"[npc:01] Você se tornou tão forte! [Oh , quem sou eu? Você não tem que saber."
 DIALOG_17_1_1,"Anyway, You need special training to become stronger.
 I made a very challenging training camp for you. Check the worldmap!","그나저나, 더 강해지기 위해서는 특별한 수련이 필요하지.
 너를 위해 아주 도전적인 수련장을 만들었어. 월드맵에서 확인해봐!","Enfim , Você precisa de treinamento especial para se tornar mais forte. 
@@ -277,7 +277,7 @@ DIALOG_18_1_0,"[npc:07]You're a cat warrior. Right?
 I'm Freya.
 The head of Valkyrie and one of the gods who follows Odin’s.","[npc:07]당신은 고양이 전사.. 맞지요?
 맞아요. 제가 당신을 이곳으로 데리고 왔어요.
-나는 프레이야. 발키리의 수장이자 오딘의 뜻을 따르는 신 중 하나입니다. ","[npc:07]Você é um guerreiro de gato. Certo?
+나는 프레이야. 발키리의 수장이자 오딘의 뜻을 따르는 신 중 하나입니다.","[npc:07]Você é um guerreiro de gato. Certo?
  Isso mesmo. Eu trouxe você aqui. Frey.
 Ele é o chefe da Valquíria e um dos deuses que segue de Odin."
 DIALOG_18_1_1,"This is around the giant world tree Yggdrasil.
@@ -317,3 +317,279 @@ Well
 흐음.. 같이 놀아줄 게 아니라면.. 날 따라오지마. 따라오지 말라고!","[npc:12]Quem é você?
 Vai jogar comigo?
 Bem, se você não vai brincar comigo… Não me siga. Não me siga!"
+DIALOG_21_1_0,"[npc:09]Whoa! What are these?
+
+Come on. Please help me. T_T","[npc:09]으악!! 얘들은 뭐야
+
+어서 나 좀 살려줘 ㅠㅠ","[npc:09]Whoa! O que é isto?
+
+Vamos, me ajude. T_T"
+DIALOG_21_2_0,"[npc:13]@$%%^%^&#.. Let's go blossom. Let's go seeding.
+
+We're gonna keep growing pretty, and we're gonna bloom.","[npc:13]@$%%^%^&#.. 꽃을 피우러 가자. 씨를 뿌리러 가자.
+
+우리는 계속 예쁘게 자라나서 꽃을 피울거야.","[npc:13]@ $ % ^ % ^ & # ... Vamos em flor. Vamos seeding.
+
+Nós vamos continuar a crescer muito, e nós vamos florescer."
+DIALOG_21_2_1,"No matter how hard you try to get rid of us, it won't work.
+
+We've already got a lot more.
+
+Wow, exciting!! There are so many pretty flowers!","아무리 우리를 없애려고 해도 소용 없을걸?
+
+우리는 이미 엄청 많아졌거든.
+
+와 신난다!! 예쁜 꽃들이 많아졌어!","Não importa o quão duro você tentar se livrar de nós, não vai funcionar.
+
+Nós já temos muito mais.
+
+Uau, emocionante! Há muitas bonitas flores!"
+DIALOG_21_2_2,(The flocks of flowers roared away),(꽃 무리들은 우르르 사라졌다),(Os bandos de flores me embora)
+DIALOG_21_3_0,"[npc:09]We’re in trouble. I think it's already out of control.
+
+I almost stepped on it completely just now.","[npc:09]큰일났어. 이미 걷잡을 수 없을 만큼 많아진 것 같아.
+
+나 방금 완전히 밟힐 뻔 했어.","[npc:09]Eu estou em apuros.
+
+Acho que já está fora de controle. Eu quase pisei em que só agora."
+DIALOG_22_1_0,"[npc:06]I'll tell you one thing about the thoughtful Freya goddess.
+
+You're going to need money.
+
+Of course, there are ways to make things and sell them to other cats.
+
+But, with the power of the Goddess, you can return energy beyond the dimension to Gold in this world.","[npc:06]사려깊은 프레이야 여신의 은혜 한 가지를 알려줄게.
+
+이제 슬슬 돈이 필요할거야.
+
+물론 물건을 만들어서 다른 고양이들에게 파는 방법도 있겠지만.
+
+여신님의 힘으로, 차원 너머의 에너지를 이 세계에서 골드로 환원할 수 있어.","[npc:06]Eu vou te dizer uma coisa sobre a deusa atencioso Freya.
+
+Você vai precisar de dinheiro.
+
+Claro, existem formas de tornar as coisas e vendê-los para outros gatos.
+
+Mas, com o poder da Deusa, você poderia devolver a energia para além da dimensão para o Gold nesta mundo."
+DIALOG_22_1_1,"However, once the connection to this world is lost, energy cannot be returned.
+
+Only if you are connected to this world can the power of Goddess work.","다만, 이 세계와의 연결이 끊어지면 에너지를 환원할 수 없기 때문에
+
+계속 이 세계와 연결되어 있어야만 여신님의 힘이 작용할 수 있어.","No entanto, uma vez que a conexão com este mundo está perdido, a energia não pode ser devolvida. 
+
+Só se você estiver conectado a esse mundo o poder da Deusa."
+DIALOG_23_1_0,"[npc:06]I heard from Deberg.
+
+You're having fun making equipment these days, right?
+
+Deberg, he’s a little slow, but you should know at least he's good at making things.","[npc:06]드베르그에게 소식 들었어.
+
+요즘 한창 장비 만드는데 재미를 올리고 있다던데?
+
+드베르그 그 녀석, 조금 굼뜨긴 하지만 물건 만드는 솜씨 하나만큼은 알아줘야해.","[npc:06]Eu ouvi de Deberg.
+
+Está se divertindo a disponibilização de equipamento de hoje em dia, certo?
+
+Deberg, ele é meio lento, mas você deve saber, pelo menos, ele é bom para fazer coisas."
+DIALOG_23_2_0,"[npc:09] That's right, Deverg's craft is really the best!
+
+It takes some time, but he always makes something great.","[npc:09]맞아, 드베르그의 솜씨는 정말 최고야!
+
+시간은 좀 걸리지만, 그만큼 항상 대단한걸 만들어주잖아.","[npc:09]que é certo, de Deverg é o melhor!
+
+É preciso um tempo, mas ele sempre faz algo grande."
+DIALOG_23_3_0,"[npc:06]You'll need more money to make better equipment.
+
+It's also a way to make easy-to-make equipment and sell it at the market.
+
+It takes some time, but Gold is really rare in this world.","[npc:06]더 좋은 장비를 만드려면 돈이 더 필요할걸?
+
+쉽게 만들 수 있는 장비를 만들어서 마켓에서 파는 것도 방법이야.
+
+시간이 조금 걸리지만, 이 세계에서 골드는 정말 귀하거든.","[npc:06]Você vai precisar de mais dinheiro para equipamento melhor.
+
+É também uma maneira de fazer mais fácil de fazer com que os equipamentos e vender no mercado.
+
+Demora algum tempo, mas O ouro é muito raro neste mundo."
+DIALOG_24_1_0,"[npc:08]Look. It's easy to overlook,
+
+One of the virtues of warriors is to stock up on supplies.
+
+It's because the higher the nutritional quality, the better the battle.","[npc:08]이봐. 간과하기 쉽지만,
+
+전사의 덕목 중 하나는 보급품을 잘 비축하는 것이다.
+
+양질의 영양분을 섭취할 수록 전투에 유리해지기 때문이지.","[npc:08]Olha. É fácil de passar despercebido.
+
+Uma das virtudes de guerreiros é para me abastecer de suprimentos.
+
+É porque quanto maior for a qualidade nutricional, melhor a batalha."
+DIALOG_24_1_1,"There has been a shortage of food since this place began to become chaotic.
+
+A good warrior will be given out the supplies stored in the kingdom.
+
+Don't forget, of course, that we will give a lot of supplies to more capable warriors.","이곳이 흉흉해지기 시작한 후로 음식이 많이 부족한 상태.
+
+훌륭한 전사에게는 왕국에 비축된 보급품을 나누어 줄 것이다.
+
+물론 더 유능한 전사에게 많은 보급품을 줄 것이라는 점을 잊지 말도록.","Não foi uma escassez de alimentos, uma vez que este lugar começou a se tornar caótico.
+
+Um guerreiro vai ser concedido o material armazenado no reino. 
+
+Não se esqueça, é claro, que vamos dar uma bastante mantimentos para mais guerreiros capazes."
+DIALOG_25_1_0,"[npc:14]Sob.. Sob…
+
+I didn't want to grow up like this.
+
+It's not my fault!!","[npc:14]흑흑..
+
+나는 이렇게 자라고 싶지 않았어.
+
+내 탓이 아니야!!","[npc:14]eu não queria crescer assim,
+
+não é minha culpa!"
+DIALOG_25_1_1,"Everyone hates me. It hurts just to pass me by.
+
+Then I'll hit you first..
+
+If you come near me, I'll hurt you.","모두 다 나를 싫어하잖아. 스치기만 해도 아프니까.
+
+그렇다면 내가 먼저 때려주겠어.
+
+근처에 가까이 오기만 하면 상처를 내줄거야.","Todo mundo me odeia. Dói só para passar por mim.
+
+Então eu vou bater em você primeiro.
+
+Se você chegar perto de mim, eu vou machucar você."
+DIALOG_25_2_0,"[npc:05]Well, I think you need to arm yourself to deal with that.
+
+If it starts beating with that whip in the distance, it won't be easy to hold out.","[npc:05]음.. 저 녀석을 상대하려면 단단히 무장을 해야 할 것 같군.
+
+멀리서 저 채찍같은 덩굴로 때리기 시작하면, 버티기가 쉽지는 않을거야.","[npc:05]Bem, eu acho que precisamos de nos armar para lidar com isso.
+
+Se começa a bater com o chicote na distância, ele não vai ser fácil de aguentar."
+DIALOG_26_1_0,"[npc:09](The earth began to roar from afar.)
+
+What’s this sound?
+
+Is there an earthquake or something?","[npc:09](먼 곳에서 우르르르 땅이 울리기 시작했다)
+
+이게 무슨 소리지..?
+
+어디서 지진이라도 일어나고 있는 건가?","[npc:09](A Terra começou a trabalhar de longe.)
+
+O que é este som..?
+
+Há um terremoto?"
+DIALOG_26_2_0,"[npc:15]Let's go, let's go, Hurry up!
+
+Don't push me! It's annoying, so let's go!
+
+(Rumble Rumble)","[npc:15]빨리 가자 빨리빨리!!
+
+밀치지 마! 짜증나니까 빨리 가자고!!
+
+(우르르르르르르)","[npc:15]Vamos, vamos, apresse -se!
+
+Não me empurre! É irritante, vamos!
+
+(Um ajuste Um ajuste)"
+DIALOG_26_3_0,"[npc:09]Gee... I thought the rock was rolling.
+
+They always stare at anything that covers the front.
+
+You should take care of yourself, too.","[npc:09]어휴.. 바위가 굴러오는 줄 알았어.
+
+쟤들은 앞에 가리는 게 있으면 무조건 박고 보더라고.
+
+너도 몸조심 해야 할거야.","[npc:09]Caramba ... Pensei que a pedra estava rolando.
+
+Eles sempre olhar para qualquer coisa que cobre a frente.
+
+Você deveria cuidar de si, também."
+DIALOG_27_1_0,"[npc:16]Why don't you stop now?
+
+No one can stop us.
+
+We are all embodied in the many emotions Yggdrasil feels in the world.","[npc:16]이제 그만 하는게 어때?
+
+누구도 우리를 막을 순 없어.
+
+우리는 이그드라실이 느끼는 이 세계의 수많은 감정들이 모두 형상화된 존재들이지.","[npc:16]Por que você não parar agora?
+
+Ninguém pode nos impedir.
+
+Estamos todos em muitos Yggdrasil as emoções se sente no mundo."
+DIALOG_27_1_1,"On your way here, you've seen creatures who are happy, happy, angry, or sad, right?
+
+These weren't born wild and ugly from the start.
+
+This is how we are becoming because more people are getting angry and sad in the world.","여기까지 오면서, 즐거워하고 기뻐하고 화가 나있거나 또는 슬퍼하는 애들을 봤지?
+
+이 아이들은 처음부터 난폭하고 흉측한 모습으로 태어난 게 아니야.
+
+이 세계에 점점 화나고 슬퍼하는 이들이 많아지기 때문에 우리도 이렇게 되어가는거야.","No caminho para cá, você viu criaturas que é feliz, feliz, zangado, ou triste, certo?
+
+Estes não nasceu selvagem e feio desde o início.
+
+É assim que estão a tornar-se porque mais pessoas estão a ficar triste e zangada no mundo."
+DIALOG_27_1_2,"So it's no use doing anything now.
+
+Stop going back here, now.","그러니까 이제 뭘 해도 소용 없어.
+
+이쯤에서 그만 돌아가.","Então não adianta fazer nada agora.
+
+Pare de voltar aqui, agora."
+DIALOG_28_1_0,"[npc:07]Sigh... we've somewhat neutralized the largest breeding of Yggdrasil.
+
+But I spent too much time waiting for you to come here.
+
+As I am now, I'm not good enough to stop the Yggdrasil mob.","[npc:07]하아.. 가장 거대하게 증식한 이그드라실의 모종을 어느정도 무력화 시켰습니다.
+
+하지만 당신이 이곳에 오는걸 기다리느라 힘을 너무 많이 써버렸어요.
+
+지금 제 상태로는 이그드라실 무리의 폭주를 모두 막기에 부족합니다.","[npc:07]Prossiga ... estamos um pouco, pois neutralizaram o maior de Yggdrasil.
+
+Mas já gastei muito tempo esperando por você aqui.
+
+Como eu sou agora, eu não sou bom o suficiente para parar a máfia Yggdrasil."
+DIALOG_28_1_1,"The rest is in your hands now.
+
+Please destroy the root to the end.","이제 나머지는 당신의 손에 달렸습니다.
+
+부디 그 뿌리를 마지막까지 섬멸해주세요.","O resto está nas tuas mãos agora.
+
+Por favor, destrói a raiz até o fim."
+DIALOG_29_1_0,"[npc:16]Ha... ha... So, this is what happened.
+
+I'm getting tired. 
+
+But even if you get rid of me... They're not gonna get rid of us all.","[npc:16]하아… 하아….. 결국.. 이렇게 되어버렸네..
+
+점점 힘이 빠지고 있어. 
+
+하지만 나를 없애도.. 우리를 모두 없애지는 못할 거다..","[npc:16]Ha.. ha.. Então, isso é o que aconteceu.
+
+Eu estou cansado. Mas mesmo se você se livrar de mim..
+
+Eles não vão se livrar de todos nós."
+DIALOG_29_1_1,"But you... It's not yet time to come to this world…
+
+I don't think I should be here yet. Why..","그런데 너는.. 아직 이 세계로 오기에는…
+
+아직 여기 오면 안될 것 같은 존재인데 어째서……..","Mas você.. Ainda não é hora de vir para este mundo..
+
+Acho que eu não deveria estar aqui ainda. Por que.."
+DIALOG_29_1_2,"You said you wanted to go back to Midgard, right..?
+
+But why do you have to go back? Do you remember what you had to do to get there..?
+
+(The Yggdrasil seedling left this word behind and breathed its last breath.)","미드가르드로 돌아가고 싶다고 했지..?
+
+그런데, 왜 돌아가야 하는지.. 뭐 때문에 가야 하는지.. 기억하고 있어..?
+
+(이그드라실 모종은 이 말을 남기고 마지막 숨을 내쉬었다)","Você disse que queria ir para Midgard, certo?
+
+Mas por que é que tens de ir de volta? Você se lembra o que você tinha que fazer para chegar lá …?
+
+( O seedling Yggdrasil deixou esta palavra para trás e deu o seu último suspiro. )."
