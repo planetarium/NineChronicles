@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -418,6 +419,11 @@ namespace Nekoyume.Model
     public class FailedToUnlockWorldException : Exception
     {
         public FailedToUnlockWorldException(string message) : base(message)
+        {
+        }
+
+        protected FailedToUnlockWorldException(SerializationInfo info, StreamingContext context) :
+            base(info, context)
         {
         }
     }
