@@ -7,8 +7,8 @@ using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Battle;
+using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -234,12 +234,21 @@ namespace Nekoyume.Action
             sw.Restart();
             if (simulator.Log.IsClear)
             {
-                simulator.Player.worldInformation.ClearStage(
-                    worldId,
-                    stageId,
-                    ctx.BlockIndex,
-                    tableSheets.WorldUnlockSheet
-                );
+                try
+                {
+                    simulator.Player.worldInformation.ClearStage(
+                        worldId,
+                        stageId,
+                        ctx.BlockIndex,
+                        tableSheets.WorldSheet,
+                        tableSheets.WorldUnlockSheet
+                    );
+                }
+                catch (FailedToUnlockWorldException e)
+                {
+                    Log.Error(e.Message);
+                    throw;
+                }
             }
 
             sw.Stop();

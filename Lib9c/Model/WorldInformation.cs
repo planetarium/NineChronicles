@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using Bencodex.Types;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -260,7 +261,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 인자로 받은 `worldId`에 해당하는 `World` 객체를 얻는다.
+        /// Get `World` object that equals to `worldId` argument.
         /// </summary>
         /// <param name="worldId"></param>
         /// <param name="world"></param>
@@ -291,7 +292,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 인자로 받은 `stageId`가 속한 `World` 객체를 얻는다.
+        /// Get `World` object that contains `stageId` argument.
         /// </summary>
         /// <param name="stageId"></param>
         /// <param name="world"></param>
@@ -310,7 +311,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 새롭게 스테이지를 클리어한 시간이 가장 최근인 월드를 얻는다.
+        /// Get `World` object that contains the most recent stage clear.
         /// </summary>
         /// <param name="world"></param>
         /// <returns></returns>
@@ -332,7 +333,7 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 마지막으로 클리어한 스테이지 ID를 반환한다.
+        /// Get stage id of the most recent cleared.
         /// </summary>
         /// <param name="stageId"></param>
         /// <returns></returns>
@@ -351,18 +352,31 @@ namespace Nekoyume.Model
         }
 
         /// <summary>
-        /// 스테이지를 클리어 시킨다.
+        /// Clear a specific stage. And consider world unlock.
         /// </summary>
         /// <param name="worldId"></param>
         /// <param name="stageId"></param>
         /// <param name="clearedAt"></param>
-        /// <param name="unlockSheet"></param>
+        /// <param name="worldSheet"></param>
+        /// <param name="worldUnlockSheet"></param>
+        /// <exception cref="FailedToUnlockWorldException"></exception>
         public void ClearStage(
             int worldId,
             int stageId,
             long clearedAt,
-            WorldUnlockSheet unlockSheet)
+            WorldSheet worldSheet,
+            WorldUnlockSheet worldUnlockSheet)
         {
+            // NOTE: Always consider world unlock.
+            // Because even a stage that has already been cleared can be a trigger for world unlock due to the table patch.
+            if (worldUnlockSheet.TryGetUnlockedInformation(worldId, stageId, out var worldIdsToUnlock))
+            {
+                foreach (var worldIdToUnlock in worldIdsToUnlock)
+                {
+                    UnlockWorld(worldIdToUnlock, clearedAt, worldSheet);
+                }
+            }
+
             var world = _worlds[worldId];
             if (stageId <= world.StageClearedId)
             {
@@ -370,36 +384,47 @@ namespace Nekoyume.Model
             }
 
             _worlds[worldId] = new World(world, clearedAt, stageId);
-
-            if (unlockSheet.TryGetUnlockedInformation(worldId, stageId, out var worldIdsToUnlock))
-            {
-                foreach (var worldIdToUnlock in worldIdsToUnlock)
-                {
-                    UnlockWorld(worldIdToUnlock, clearedAt);
-                }
-            }
         }
 
         /// <summary>
-        /// 특정 월드를 잠금 해제한다.
+        /// Unlock a specific world.
         /// </summary>
         /// <param name="worldId"></param>
         /// <param name="unlockedAt"></param>
-        /// <exception cref="KeyNotFoundException"></exception>
-        private void UnlockWorld(int worldId, long unlockedAt)
+        /// <param name="worldSheet"></param>
+        /// <exception cref="FailedToUnlockWorldException"></exception>
+        private void UnlockWorld(int worldId, long unlockedAt, WorldSheet worldSheet)
         {
-            if (!_worlds.ContainsKey(worldId))
+            World world;
+            if (_worlds.ContainsKey(worldId))
             {
-                throw new KeyNotFoundException($"{nameof(worldId)}: {worldId}");
+                world = _worlds[worldId];
+            }
+            else if (!worldSheet.TryGetValue(worldId, out var worldRow) ||
+                     !TryAddWorld(worldRow, out world))
+            {
+                throw new FailedToUnlockWorldException($"{nameof(worldId)}: {worldId}");
             }
 
-            if (_worlds[worldId].IsUnlocked)
+            if (world.IsUnlocked)
             {
                 return;
             }
 
-            var world = _worlds[worldId];
             _worlds[worldId] = new World(world, unlockedAt);
+        }
+    }
+
+    [Serializable]
+    public class FailedToUnlockWorldException : Exception
+    {
+        public FailedToUnlockWorldException(string message) : base(message)
+        {
+        }
+
+        protected FailedToUnlockWorldException(SerializationInfo info, StreamingContext context) :
+            base(info, context)
+        {
         }
     }
 }
