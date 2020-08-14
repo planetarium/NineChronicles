@@ -57,7 +57,7 @@ namespace Lib9c.Tests.Action
             avatarState.inventory.AddItem(equipment, 1);
             avatarState.inventory.AddItem(material, 1);
 
-            avatarState.worldInformation.ClearStage(1, 1, 1, new WorldUnlockSheet());
+            avatarState.worldInformation.ClearStage(1, 1, 1, tableSheets.WorldSheet, tableSheets.WorldUnlockSheet);
 
             var slotAddress =
                 avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));

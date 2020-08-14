@@ -37,7 +37,8 @@ namespace Lib9c.Tests.Action
                 1,
                 GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                 1,
-                new WorldUnlockSheet()
+                tableSheets.WorldSheet,
+                tableSheets.WorldUnlockSheet
             );
             agent.avatarAddresses.Add(0, avatarAddress);
 
@@ -49,7 +50,8 @@ namespace Lib9c.Tests.Action
                 1,
                 GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                 1,
-                new WorldUnlockSheet()
+                tableSheets.WorldSheet,
+                tableSheets.WorldUnlockSheet
             );
             agent.avatarAddresses.Add(1, avatarAddress);
 
