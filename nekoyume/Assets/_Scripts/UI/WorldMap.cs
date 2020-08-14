@@ -71,10 +71,12 @@ namespace Nekoyume.UI
             {
                 if (!sheet.TryGetByName(worldButton.WorldName, out var row))
                 {
-                    throw new SheetRowNotFoundException("WorldSheet", "Name", worldButton.WorldName);
+                    worldButton.Hide();
+                    continue;
                 }
 
                 worldButton.Set(row);
+                worldButton.Show();
                 worldButton.OnClickSubject
                     .Subscribe(_ => ShowWorld(row.Id));
             }
@@ -93,15 +95,21 @@ namespace Nekoyume.UI
 
             foreach (var worldButton in _worldButtons)
             {
+                if (!worldButton.IsShown)
+                {
+                    continue;
+                }
+
                 var worldId = worldButton.Id;
-                if (!worldInformation.TryGetWorld(worldId, out var worldModel))
-                    throw new Exception(nameof(worldId));
+                var worldIsUnlocked =
+                    worldInformation.TryGetWorld(worldId, out var worldModel) &&
+                    worldModel.IsUnlocked;
 
                 UpdateNotificationInfo();
 
                 var isIncludedInQuest = StageIdToNotify >= worldButton.StageBegin && StageIdToNotify <= worldButton.StageEnd;
 
-                if (worldModel.IsUnlocked)
+                if (worldIsUnlocked)
                 {
                     worldButton.HasNotification.Value = isIncludedInQuest;
                     worldButton.Unlock();

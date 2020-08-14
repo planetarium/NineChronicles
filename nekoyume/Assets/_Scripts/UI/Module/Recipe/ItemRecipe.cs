@@ -67,10 +67,10 @@ namespace Nekoyume.UI.Module
         private AnchoredPositionYTweener scrollPositionTweener = null;
 
         [SerializeField]
-        private GameObject equipmentTabs;
+        private GameObject equipmentTabs = null;
 
         [SerializeField]
-        private GameObject consumableTabs;
+        private GameObject consumableTabs = null;
 
         private bool _initialized = false;
         private int _notificationId;
