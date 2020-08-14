@@ -9,13 +9,14 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
 
     public class RankingBattleTest
     {
-        private TableSheetsState _tableSheetsState;
+        private readonly TableSheetsState _tableSheetsState;
 
         public RankingBattleTest()
         {
@@ -89,8 +90,10 @@ namespace Lib9c.Tests.Action
             });
 
             var newState = nextState.GetAvatarState(avatarAddress);
+
             Assert.True(newState.inventory.HasItem(itemId));
             Assert.NotNull(action.Result);
+            Assert.Contains(typeof(GetReward), action.Result.Select(e => e.GetType()));
         }
     }
 }
