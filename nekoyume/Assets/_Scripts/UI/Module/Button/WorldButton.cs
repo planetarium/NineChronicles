@@ -70,6 +70,7 @@ namespace Nekoyume.UI.Module
         public readonly Subject<WorldButton> OnClickSubject = new Subject<WorldButton>();
         public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
+        public bool IsShown => gameObject.activeSelf;
         private bool IsLocked => _state.Value == State.Locked;
         public string WorldName => worldName;
         public int Id { get; private set; }
@@ -115,6 +116,16 @@ namespace Nekoyume.UI.Module
         {
             _tweener?.Kill();
             _tweener = null;
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
         }
 
         public void Unlock()

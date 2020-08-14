@@ -113,24 +113,29 @@ namespace Nekoyume.UI.Module
 
             CostNCG = (int) materialPanel.costNCG;
             CostAP = materialPanel.costAP;
+
+            var hasEnoughAP = States.Instance.CurrentAvatarState.actionPoint >= CostAP;
             if (CostAP > 0)
             {
-                submitButton.ShowAP(CostAP, States.Instance.CurrentAvatarState.actionPoint >= CostAP);
+                submitButton.ShowAP(CostAP, hasEnoughAP);
             }
             else
             {
                 submitButton.HideAP();
             }
 
+            var hasEnoughGold = States.Instance.GoldBalanceState.gold >= CostNCG;
             if (CostNCG > 0)
             {
-                submitButton.ShowNCG(CostNCG, States.Instance.GoldBalanceState.gold >= CostNCG);
+                submitButton.ShowNCG(CostNCG, hasEnoughGold);
             }
             else
             {
                 submitButton.HideNCG();
             }
-            submitButton.SetSubmittable(materialPanel.IsCraftable);
+
+            var isCraftable = materialPanel.IsCraftable && hasEnoughGold && hasEnoughAP;
+            submitButton.SetSubmittable(isCraftable);
         }
 
         public void SetData(EquipmentItemRecipeSheet.Row recipeRow, int? subRecipeId = null)
@@ -151,6 +156,7 @@ namespace Nekoyume.UI.Module
             RequiredBlockIndexSubject.OnNext(requiredBlockIndex);
             stateType = Combination.StateType.CombineEquipment;
         }
+
         public void SetData(ConsumableItemRecipeSheet.Row recipeRow)
         {
             recipeCellView.Set(recipeRow);
