@@ -59,7 +59,7 @@ namespace Nekoyume.Model.Quest
         /// </summary>
         public bool IsPaidInAction { get; set; }
 
-        public float Progress => (float) _current / Goal;
+        public virtual float Progress => (float) _current / Goal;
 
         public const string GoalFormat = "({0}/{1})";
 
