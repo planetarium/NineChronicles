@@ -14,6 +14,7 @@ namespace Nekoyume.Model.Quest
         public readonly int Grade;
         private readonly int _count;
         public int Count => _count;
+        public override float Progress => (float) _current / _count;
 
         public ItemEnhancementQuest(ItemEnhancementQuestSheet.Row data, QuestReward reward) 
             : base(data, reward)
