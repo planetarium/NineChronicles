@@ -8,6 +8,7 @@ using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Manager;
+using Nekoyume.Model;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
 using Nekoyume.UI;
@@ -146,7 +147,7 @@ namespace Nekoyume.BlockChain
         private void HackAndSlash()
         {
             _renderer.EveryRender<HackAndSlash>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
+                .Where(ValidateEvaluationForCurrentAgent)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
         }
@@ -614,36 +615,50 @@ namespace Nekoyume.BlockChain
 
         private void ResponseHackAndSlash(ActionBase.ActionEvaluation<HackAndSlash> eval)
         {
-            Game.Game.instance.Stage.onEnterToStageEnd
-                .First()
-                .Subscribe(_ =>
-                {
-                    UpdateCurrentAvatarState(eval);
-                    UpdateWeeklyArenaState(eval);
-                    var avatarState = eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
-                    States.Instance.SetCombinationSlotStates(avatarState);
-                    RenderQuest(eval.Action.avatarAddress, avatarState.questList.completedQuestIds);
-                });
-
-            var actionFailPopup = Widget.Find<ActionFailPopup>();
-            actionFailPopup.CloseCallback = null;
-            actionFailPopup.Close();
-
-            if (Widget.Find<LoadingScreen>().IsActive())
+            if (eval.Exception is null)
             {
-                if (Widget.Find<QuestPreparation>().IsActive())
+                Game.Game.instance.Stage.onEnterToStageEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        UpdateCurrentAvatarState(eval);
+                        UpdateWeeklyArenaState(eval);
+                        var avatarState =
+                            eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
+                        States.Instance.SetCombinationSlotStates(avatarState);
+                        RenderQuest(eval.Action.avatarAddress,
+                            avatarState.questList.completedQuestIds);
+                    });
+
+                var actionFailPopup = Widget.Find<ActionFailPopup>();
+                actionFailPopup.CloseCallback = null;
+                actionFailPopup.Close();
+
+                if (Widget.Find<LoadingScreen>().IsActive())
                 {
-                    Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
+                    if (Widget.Find<QuestPreparation>().IsActive())
+                    {
+                        Widget.Find<QuestPreparation>().GoToStage(eval.Action.Result);
+                    }
+                    else if (Widget.Find<Menu>().IsActive())
+                    {
+                        Widget.Find<Menu>().GoToStage(eval.Action.Result);
+                    }
                 }
-                else if (Widget.Find<Menu>().IsActive())
+                else if (Widget.Find<StageLoadingScreen>().IsActive() &&
+                         Widget.Find<BattleResult>().IsActive())
                 {
-                    Widget.Find<Menu>().GoToStage(eval.Action.Result);
+                    Widget.Find<BattleResult>().NextStage(eval);
                 }
+
+                return;
             }
-            else if (Widget.Find<StageLoadingScreen>().IsActive() &&
-                     Widget.Find<BattleResult>().IsActive())
+
+            if (eval.Exception is FailedToUnlockWorldException)
             {
-                Widget.Find<BattleResult>().NextStage(eval);
+                Widget
+                    .Find<ActionFailPopup>()
+                    .Show<HackAndSlash>(L10nManager.Localize("ERROR_FAILED_TO_UNLOCK_WORLD"));
             }
         }
 
