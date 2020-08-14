@@ -25,7 +25,7 @@ namespace Nekoyume.Battle
         private bool IsCleared { get; }
         private int Exp { get; }
         private int TurnLimit { get; }
-        public IEnumerable<ItemBase> Rewards => _waveRewards;
+        public override IEnumerable<ItemBase> Reward => _waveRewards;
 
         public StageSimulator(
             IRandom random,
@@ -53,7 +53,13 @@ namespace Nekoyume.Battle
             TurnLimit = stageRow.TurnLimit;
 
             SetWave(stageRow, stageWaveRow);
-            _waveRewards = SetReward(stageRow, random, tableSheets);
+            var itemSelector = SetItemSelector(stageRow, Random);
+            _waveRewards = SetReward(
+                itemSelector,
+                Random.Next(stageRow.DropItemMin, stageRow.DropItemMax),
+                random,
+                tableSheets
+            );
         }
 
         public StageSimulator(
@@ -269,7 +275,7 @@ namespace Nekoyume.Battle
             return wave;
         }
 
-        public static List<ItemBase> SetReward(StageSheet.Row stageRow, IRandom random, TableSheets tableSheets)
+        public static WeightedSelector<StageSheet.RewardData> SetItemSelector(StageSheet.Row stageRow, IRandom random)
         {
             var itemSelector = new WeightedSelector<StageSheet.RewardData>(random);
             foreach (var r in stageRow.Rewards)
@@ -277,37 +283,7 @@ namespace Nekoyume.Battle
                 itemSelector.Add(r, r.Ratio);
             }
 
-            var reward = new List<ItemBase>();
-            var maxCount = random.Next(stageRow.DropItemMin, stageRow.DropItemMax);
-            while (reward.Count < maxCount)
-            {
-                try
-                {
-                    var data = itemSelector.Select(1).First();
-                    if (tableSheets.MaterialItemSheet.TryGetValue(data.ItemId, out var itemData))
-                    {
-                        var count = random.Next(data.Min, data.Max + 1);
-                        for (var i = 0; i < count; i++)
-                        {
-                            var item = ItemFactory.CreateMaterial(itemData);
-                            if (reward.Count < maxCount)
-                            {
-                                reward.Add(item);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-                catch (ListEmptyException)
-                {
-                    break;
-                }
-            }
-
-            return reward;
+            return itemSelector;
         }
     }
 }

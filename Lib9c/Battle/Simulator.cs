@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
@@ -23,6 +24,7 @@ namespace Nekoyume.Battle
         public int TurnNumber;
         public int WaveNumber;
         public int WaveTurn;
+        public abstract IEnumerable<ItemBase> Reward { get; }
 
         protected Simulator(
             IRandom random,
@@ -39,5 +41,46 @@ namespace Nekoyume.Battle
         }
 
         public abstract Player Simulate();
+
+        public static List<ItemBase> SetReward(
+            WeightedSelector<StageSheet.RewardData> itemSelector,
+            int maxCount,
+            IRandom random,
+            TableSheets tableSheets
+        )
+        {
+            var reward = new List<ItemBase>();
+
+            while (reward.Count < maxCount)
+            {
+                try
+                {
+                    var data = itemSelector.Select(1).First();
+                    if (tableSheets.MaterialItemSheet.TryGetValue(data.ItemId, out var itemData))
+                    {
+                        var count = random.Next(data.Min, data.Max + 1);
+                        for (var i = 0; i < count; i++)
+                        {
+                            var item = ItemFactory.CreateMaterial(itemData);
+                            if (reward.Count < maxCount)
+                            {
+                                reward.Add(item);
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                }
+                catch (ListEmptyException)
+                {
+                    break;
+                }
+            }
+
+            return reward;
+        }
+
     }
 }

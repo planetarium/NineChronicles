@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet.Action;
+using Libplanet.Crypto;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -16,7 +17,9 @@ namespace Nekoyume.Battle
     public class RankingSimulator : Simulator
     {
         private readonly EnemyPlayer _enemyPlayer;
-        private readonly int stageId;
+        private readonly int _stageId;
+        private List<ItemBase> _reward;
+        public override IEnumerable<ItemBase> Reward => _reward;
 
         public RankingSimulator(
             IRandom random,
@@ -28,7 +31,7 @@ namespace Nekoyume.Battle
         {
             _enemyPlayer = new EnemyPlayer(enemyAvatarState, this);
             _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
-            this.stageId = stageId;
+            _stageId = stageId;
         }
 
         public override Player Simulate()
@@ -36,7 +39,7 @@ namespace Nekoyume.Battle
 #if TEST_LOG
             var sb = new System.Text.StringBuilder();
 #endif
-            Log.stageId = stageId;
+            Log.stageId = _stageId;
             Spawn();
             Characters = new SimplePriorityQueue<CharacterBase, decimal>();
             Characters.Enqueue(Player, TurnPriority / Player.SPD);
@@ -78,7 +81,7 @@ namespace Nekoyume.Battle
                 // 플레이어가 죽은 경우 break;
                 if (Player.IsDead)
                 {
-                    Result = BattleLog.Result.Lose;              
+                    Result = BattleLog.Result.Lose;
 #if TEST_LOG
                     sb.Clear();
                     sb.Append($"{nameof(TurnNumber)}: {TurnNumber}");
@@ -110,6 +113,17 @@ namespace Nekoyume.Battle
                 Characters.Enqueue(character, TurnPriority / character.SPD);
             }
 
+            var itemSelector = new WeightedSelector<StageSheet.RewardData>(Random);
+            var rewardSheet = TableSheets.WeeklyArenaRewardSheet;
+            foreach (var row in rewardSheet.Values)
+            {
+                var reward = row.Reward;
+                itemSelector.Add(reward, reward.Ratio);
+            }
+
+            _reward = SetReward(itemSelector, Random.Next(1, 6), Random, TableSheets);
+            var getReward = new GetReward(null, _reward);
+            Log.Add(getReward);
             Log.result = Result;
 #if TEST_LOG
             sb.Clear();
