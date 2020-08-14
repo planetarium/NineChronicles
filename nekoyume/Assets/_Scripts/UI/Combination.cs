@@ -8,7 +8,6 @@ using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -305,6 +304,10 @@ namespace Nekoyume.UI
             {
                 return;
             }
+            if (State.Value != StateType.SelectMenu)
+            {
+                State.SetValueAndForceNotify(StateType.SelectMenu);
+            }
 
             categoryTabArea.SetActive(false);
             itemRecipe.gameObject.SetActive(false);
@@ -563,7 +566,7 @@ namespace Nekoyume.UI
                         : StateType.CombineEquipment);
                     break;
                 default:
-                    State.SetValueAndForceNotify(StateType.SelectMenu);
+                    Animator.Play("CloseLeftArea");
                     break;
             }
         }
