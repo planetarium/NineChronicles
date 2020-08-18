@@ -597,7 +597,7 @@ namespace Nekoyume.Game
             Widget.Find<Status>().Close();
 
             ActionRenderHandler.Instance.Pending = false;
-            Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
+            Widget.Find<RankingBattleResult>().Show(log, _battleResultModel.Rewards);
             yield return null;
 
             //[TentuPlay] RankingBattle 끝 기록
