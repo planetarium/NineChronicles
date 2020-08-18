@@ -314,11 +314,11 @@ namespace Nekoyume.UI.Scroller
                             subSheet.TryGetValue(subRecipeId, out var subRow) ? subRow : null)
                         .Where(item => !(item is null)))
                     {
+                        shouldDimmed = false;
                         foreach (var info in subRow.Materials)
                         {
                             if (materialSheet.TryGetValue(info.Id, out materialRow) &&
-                                inventory.TryGetMaterial(materialRow.ItemId,
-                                    out fungibleItem) &&
+                                inventory.TryGetMaterial(materialRow.ItemId, out fungibleItem) &&
                                 fungibleItem.count >= info.Count)
                             {
                                 continue;
