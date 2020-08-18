@@ -229,9 +229,9 @@ UI_DELETE,Delete,삭제,Apagar
 UI_COMBINATION_ITEM,Combine,아이템 제작,Combinar
 UI_COMBINATION_ERROR,Error,조합 에러,Erro
 UI_COMBINATION_SUCCESS,Success!,조합 성공!,Sucesso!
-UI_COMBINATION_NOTIFY_FORMAT,"<size=12><color=#a2b4d6>[Workshop Cat]</color></size>
-I've finished crafting {0}","<size=12><color=#a2b4d6>[대장장이 고양이]</color></size>
-{0} 제작을 완료하였네.","<size=12><color=#a2b4d6> [Workshop Cat]</color></size>
+UI_COMBINATION_NOTIFY_FORMAT,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+I've finished crafting {0}","<size=12><color=#FFA78B>[대장장이 고양이]</color></size>
+{0} 제작을 완료하였네.","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
 Eu terminei de fabricar {0}"
 UI_COMBINATION_FAIL,"Oh, I failed crafting. My hand slipped...","어이쿠, 조합을 실패헸네. 손이 미끄러졌어.","Oh , eu falhei em fabricar. Minha mão escorregou ..."
 UI_COMBINATION_MATERIAL_COUNT_SELECTION,Material Amount,재료 수량 선택,Quantidade de Material
@@ -394,17 +394,22 @@ UI_LOADING_ACTION_EXECUTE,Executing actions... {0} / {1},액션 실행 중... {0
 UI_RECEIVE,Receive,받기,Receber
 UI_RECEIVED,Received,받음,Recebido
 UI_GET_REWARDS,Receive Rewards,보상 받기,Receba as recompensas
-UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<size=12><color=#a2b4d6>[Workshop Cat]</color></size>
-I've finished upgrade the {0}",{0} 강화를 완료했소,"<size=12><color=#a2b4d6> [Workshop Cat]</color></size>
- Concluí o upgrade do {0}"
-UI_SELL_CANCEL_MAIL_FORMAT,"<size=12><color=#a2b4d6>[Market Cat]</color></size>
-I canceled the sales of the {0}",{0} 판매를 취소했어!,"<size=12><color=#a2b4d6> [Market Cat]</color></size>
- Cancelei as vendas do {0}"
-UI_BUYER_MAIL_FORMAT,"<size=12><color=#a2b4d6>[Market Cat]</color></size>
-Purchased! {0} is yours now!",구매 완료! {0}는 이제 네거야!,"<size=12><color=#a2b4d6> [Market Cat]</color></size>
- Comprado! {0} agora é seu!"
-UI_SELLER_MAIL_FORMAT,"<size=12><color=#a2b4d6>[Market Cat]</color></size>
-You earned {0}G by selling {1}",{1}을 팔아서 {0}G 를 얻었어!,<size=12><color=#a2b4d6> [Market Cat][</color></size>newline] Você ganhou {0} G com a venda {1}
+UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+I've finished upgrade the {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+{0} 강화를 완료했소","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+Concluí o upgrade do {0}"
+UI_SELL_CANCEL_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+I canceled the sales of the {0}","<size=12><color=#FFA78B>[Market Cat]</color></size>
+{0} 판매를 취소했어!","<size=12><color=#FFA78B>[Market Cat]</color></size>
+Cancelei as vendas do {0}"
+UI_BUYER_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+Purchased! {0} is yours now!","<size=12><color=#FFA78B>[Market Cat]</color></size>
+구매 완료! {0}는 이제 네거야!","<size=12><color=#FFA78B>[Market Cat]</color></size>
+Comprado! {0} agora é seu!"
+UI_SELLER_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
+You earned {0}G by selling {1}","<size=12><color=#FFA78B>[Market Cat]</color></size>
+{1}을 팔아서 {0}G 를 얻었어!",<size=12><color=#FFA78B>[Market Cat]</color></size>
+Você ganhou {0} G com a venda {1}
 UI_SELECT,Select,선택,Selecione
 UI_PROCEED_DISCORD,Join user group,디스코드 채팅 이동,Junte-se ao grupo
 UI_PROCEED_DISCORD_CONTENT,Open the link to Nine Chronicles Discord channel?,나인 크로니클 디스코드 채널로 이동하시겠습니까?,Abrir o link para o canal Discord do Nine Chronicles?
