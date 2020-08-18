@@ -395,18 +395,19 @@ UI_RECEIVE,Receive,받기,Receber
 UI_RECEIVED,Received,받음,Recebido
 UI_GET_REWARDS,Receive Rewards,보상 받기,Receba as recompensas
 UI_ITEM_ENHANCEMENT_MAIL_FORMAT,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
-I've finished upgrade the {0}",{0} 강화를 완료했소,"<size=12><color=#FFA78B>[Workshop Cat]</color></size>
- Concluí o upgrade do {0}"
+I've finished upgrade the {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+{0} 강화를 완료했소","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+Concluí o upgrade do {0}"
 UI_SELL_CANCEL_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-I canceled the sales of the {0}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+I canceled the sales of the {0}","<size=12><color=#FFA78B>[Market Cat]</color></size>
 {0} 판매를 취소했어!","<size=12><color=#FFA78B>[Market Cat]</color></size>
 Cancelei as vendas do {0}"
 UI_BUYER_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-Purchased! {0} is yours now!","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+Purchased! {0} is yours now!","<size=12><color=#FFA78B>[Market Cat]</color></size>
 구매 완료! {0}는 이제 네거야!","<size=12><color=#FFA78B>[Market Cat]</color></size>
- Comprado! {0} agora é seu!"
+Comprado! {0} agora é seu!"
 UI_SELLER_MAIL_FORMAT,"<size=12><color=#FFA78B>[Market Cat]</color></size>
-You earned {0}G by selling {1}","<size=12><color=#FFA78B>[Workshop Cat]</color></size>
+You earned {0}G by selling {1}","<size=12><color=#FFA78B>[Market Cat]</color></size>
 {1}을 팔아서 {0}G 를 얻었어!",<size=12><color=#FFA78B>[Market Cat]</color></size>
 Você ganhou {0} G com a venda {1}
 UI_SELECT,Select,선택,Selecione
