@@ -387,7 +387,7 @@ namespace Nekoyume.UI.Scroller
 
             //재료 검사.
             var inventory = avatarState.inventory;
-            SetDimmed(!ConsumableRowData.MaterialItemIds.All(itemId => inventory.HasItem(itemId)));
+            SetDimmed(!ConsumableRowData.Materials.All(info => inventory.HasItem(info.Id, info.Count)));
         }
 
         private void StopLockEffect()
