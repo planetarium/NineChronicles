@@ -72,5 +72,12 @@ namespace Nekoyume
             return TryGetThisWeekState(blockIndex, out weeklyArenaState) &&
                    weeklyArenaState.TryGetValue(avatarAddress, out arenaInfo);
         }
+
+        public static Address GetNextWeekAddress(long blockIndex)
+        {
+            var index = (int) blockIndex / GameConfig.WeeklyArenaInterval;
+            index++;
+            return WeeklyArenaState.DeriveAddress(index);
+        }
     }
 }
