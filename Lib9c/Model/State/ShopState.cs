@@ -134,21 +134,17 @@ namespace Nekoyume.Model.State
         public bool TryGet(
             Address sellerAgentAddress,
             Guid productId,
-            out KeyValuePair<Address, ShopItem> outPair)
+            out ShopItem shopItem)
         {
             if (!_agentProducts.ContainsKey(sellerAgentAddress))
             {
+                shopItem = null;
                 return false;
             }
 
             var shopItems = _agentProducts[sellerAgentAddress];
-            foreach (var shopItem in shopItems.Where(shopItem => shopItem.ProductId == productId))
-            {
-                outPair = new KeyValuePair<Address, ShopItem>(sellerAgentAddress, shopItem);
-                return true;
-            }
-
-            return false;
+            shopItem = shopItems.FirstOrDefault(item => item.ProductId == productId);
+            return !(shopItem is null);
         }
     }
 
