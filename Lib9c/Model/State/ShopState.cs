@@ -17,12 +17,19 @@ namespace Nekoyume.Model.State
     {
         public static readonly Address Address = Addresses.Shop;
 
-        private readonly Dictionary<Address, List<ShopItem>> _agentProducts =
-            new Dictionary<Address, List<ShopItem>>();
+        private readonly Dictionary<Address, List<Guid>> _agentProducts =
+            new Dictionary<Address, List<Guid>>();
 
         private readonly Dictionary<Guid, ShopItem> _products = new Dictionary<Guid, ShopItem>();
 
-        public IReadOnlyDictionary<Address, List<ShopItem>> AgentProducts => _agentProducts;
+        private readonly Dictionary<ItemSubType, List<Guid>> _itemSubTypeProducts =
+            new Dictionary<ItemSubType, List<Guid>>(ItemSubTypeComparer.Instance);
+
+        public IReadOnlyDictionary<Address, List<Guid>> AgentProducts => _agentProducts;
+
+        public IReadOnlyDictionary<Guid, ShopItem> Products => _products;
+
+        public IReadOnlyDictionary<ItemSubType, List<Guid>> ItemSubTypeProducts => _itemSubTypeProducts;
 
         public ShopState() : base(Address)
         {
@@ -34,13 +41,18 @@ namespace Nekoyume.Model.State
             _agentProducts = ((Dictionary) serialized["agentProducts"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
                 kv => ((List) kv.Value)
-                    .Select(d => new ShopItem((Dictionary) d))
-                    .ToList()
-            );
+                    .Select(d => d.ToGuid())
+                    .ToList());
 
             _products = ((Dictionary) serialized["products"]).ToDictionary(
                 kv => kv.Key.ToGuid(),
                 kv => new ShopItem((Dictionary) kv.Value));
+
+            _itemSubTypeProducts = ((Dictionary) serialized["itemSubTypeProducts"]).ToDictionary(
+                kv => kv.Key.ToEnum<ItemSubType>(),
+                kv => ((List) kv.Value)
+                    .Select(value => value.ToGuid())
+                    .ToList());
         }
 
         public override IValue Serialize() =>
@@ -56,6 +68,11 @@ namespace Nekoyume.Model.State
                         new KeyValuePair<IKey, IValue>(
                             (Binary) kv.Key.Serialize(),
                             kv.Value.Serialize()))),
+                [(Text) "itemSubTypeProducts"] = new Dictionary(
+                    _itemSubTypeProducts.Select(kv =>
+                        new KeyValuePair<IKey, IValue>(
+                            (Binary) kv.Key.Serialize(),
+                            new List(kv.Value.Select(i => i.Serialize()))))),
             }.Union((Dictionary) base.Serialize()));
 
         #region Register
@@ -64,19 +81,26 @@ namespace Nekoyume.Model.State
         {
             if (!_agentProducts.ContainsKey(sellerAgentAddress))
             {
-                _agentProducts.Add(sellerAgentAddress, new List<ShopItem>());
+                _agentProducts.Add(sellerAgentAddress, new List<Guid>());
             }
 
             var shopItems = _agentProducts[sellerAgentAddress];
-            if (shopItems.Contains(shopItem))
+            if (shopItems.Contains(shopItem.ProductId))
             {
                 throw new ShopStateAlreadyContainsException(
                     $"{nameof(_agentProducts)}, {sellerAgentAddress}, {shopItem.ProductId}");
             }
 
-            shopItems.Add(shopItem);
+            shopItems.Add(shopItem.ProductId);
             _agentProducts[sellerAgentAddress] = shopItems;
             _products[shopItem.ProductId] = shopItem;
+
+            if (!_itemSubTypeProducts.ContainsKey(shopItem.ItemUsable.ItemSubType))
+            {
+                _itemSubTypeProducts.Add(shopItem.ItemUsable.ItemSubType, new List<Guid>());
+            }
+
+            _itemSubTypeProducts[shopItem.ItemUsable.ItemSubType].Add(shopItem.ProductId);
         }
 
         #endregion
@@ -109,13 +133,14 @@ namespace Nekoyume.Model.State
             }
 
             var shopItems = _agentProducts[sellerAgentAddress];
-            unregisteredItem = shopItems.FirstOrDefault(item => item.ProductId.Equals(productId));
-            if (unregisteredItem is null)
+
+            if (!shopItems.Any(item => item.Equals(productId)))
             {
+                unregisteredItem = null;
                 return false;
             }
 
-            shopItems.Remove(unregisteredItem);
+            shopItems.Remove(productId);
             if (shopItems.Count == 0)
             {
                 _agentProducts.Remove(sellerAgentAddress);
@@ -125,7 +150,20 @@ namespace Nekoyume.Model.State
                 _agentProducts[sellerAgentAddress] = shopItems;
             }
 
-            _products.Remove(unregisteredItem.ProductId);
+            if (!_products.ContainsKey(productId))
+            {
+                unregisteredItem = null;
+                return false;
+            }
+
+            unregisteredItem = _products[productId];
+            _products.Remove(productId);
+
+            if (_itemSubTypeProducts.ContainsKey(unregisteredItem.ItemUsable.ItemSubType))
+            {
+                _itemSubTypeProducts[unregisteredItem.ItemUsable.ItemSubType].Remove(productId);
+            }
+
             return true;
         }
 
@@ -143,8 +181,20 @@ namespace Nekoyume.Model.State
             }
 
             var shopItems = _agentProducts[sellerAgentAddress];
-            shopItem = shopItems.FirstOrDefault(item => item.ProductId == productId);
-            return !(shopItem is null);
+            if (shopItems.All(item => item != productId))
+            {
+                shopItem = null;
+                return false;
+            }
+
+            if (!_products.ContainsKey(productId))
+            {
+                shopItem = null;
+                return false;
+            }
+
+            shopItem = _products[productId];
+            return true;
         }
     }
 
