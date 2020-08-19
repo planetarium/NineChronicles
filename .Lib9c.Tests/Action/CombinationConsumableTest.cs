@@ -59,7 +59,7 @@ namespace Lib9c.Tests.Action
             }
 
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
-            for (var i = 1; i < requiredStage; i++)
+            for (var i = 1; i < requiredStage + 1; i++)
             {
                 avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
             }
