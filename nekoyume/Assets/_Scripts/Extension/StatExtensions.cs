@@ -3,7 +3,7 @@ using Nekoyume.Model.Stat;
 
 namespace Nekoyume
 {
-    public static class StatExtension
+    public static class StatExtensions
     {
         public static string DecimalStatToString(this DecimalStat stat)
         {
