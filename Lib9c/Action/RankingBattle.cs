@@ -164,47 +164,9 @@ namespace Nekoyume.Action
 
             Result = simulator.Log;
 
-            var maxCount = ctx.Random.Next(1, 6);
-            var rewards = new List<ItemBase>();
-            var rewardSheet = tableSheets.WeeklyArenaRewardSheet;
-            var itemSelector = new WeightedSelector<StageSheet.RewardData>(ctx.Random);
-            foreach (var row in rewardSheet.Values)
+            foreach (var itemBase in simulator.Reward)
             {
-                var reward = row.Reward;
-                itemSelector.Add(reward, reward.Ratio);
-            }
-
-            while (rewards.Count < maxCount)
-            {
-                try
-                {
-                    var data = itemSelector.Select(1).First();
-                    if (tableSheets.MaterialItemSheet.TryGetValue(data.ItemId, out var itemData))
-                    {
-                        var count = context.Random.Next(data.Min, data.Max + 1);
-                        for (var i = 0; i < count; i++)
-                        {
-                            var item = ItemFactory.CreateMaterial(itemData);
-                            if (rewards.Count < maxCount)
-                            {
-                                rewards.Add(item);
-                            }
-                            else
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-                catch (ListEmptyException)
-                {
-                    break;
-                }
-            }
-
-            foreach (var item in rewards)
-            {
-                avatarState.inventory.AddItem(item);
+                avatarState.inventory.AddItem(itemBase);
             }
 
             return states

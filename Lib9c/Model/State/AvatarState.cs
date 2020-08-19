@@ -209,7 +209,7 @@ namespace Nekoyume.Model.State
                 itemMap.Add(pair);
             }
 
-            UpdateStageQuest(stageSimulator.Rewards);
+            UpdateStageQuest(stageSimulator.Reward);
         }
 
         public object Clone()
