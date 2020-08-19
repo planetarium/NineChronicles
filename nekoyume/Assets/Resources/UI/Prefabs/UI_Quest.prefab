@@ -259,7 +259,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 22}
+  m_AnchoredPosition: {x: 0, y: 15}
   m_SizeDelta: {x: 257, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4734729874564959446
@@ -1737,6 +1737,7 @@ MonoBehaviour:
     type: 3}
   cellSize: 69
   forcedScrollSensitivity: 20
+  fillWithNullToEmptyViewport: 0
   animationCellContainer: {fileID: 9066206674448611921}
 --- !u!1 &5689516741694287758
 GameObject:
@@ -2204,7 +2205,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 10}
+  m_AnchoredPosition: {x: 0, y: 5}
   m_SizeDelta: {x: 91, y: 46}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3499747233247737321
@@ -4001,11 +4002,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4955138152344251173}
     m_Modifications:
-    - target: {fileID: 5931873267396129474, guid: d51c47110019c477f8b064ebd28712f1,
-        type: 3}
-      propertyPath: helpId
-      value: 100011
-      objectReference: {fileID: 0}
     - target: {fileID: 432179639104244028, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
       propertyPath: m_Name
@@ -4115,6 +4111,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5931873267396129474, guid: d51c47110019c477f8b064ebd28712f1,
+        type: 3}
+      propertyPath: helpId
+      value: 100011
       objectReference: {fileID: 0}
     - target: {fileID: 1422833357227865002, guid: d51c47110019c477f8b064ebd28712f1,
         type: 3}
