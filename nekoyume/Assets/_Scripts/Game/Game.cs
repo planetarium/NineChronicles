@@ -252,6 +252,15 @@ namespace Nekoyume.Game
         public static void Quit()
         {
             var confirm = Widget.Find<Confirm>();
+
+            if (confirm.gameObject.activeSelf &&
+                confirm.title.text == L10nManager.Localize("UI_CONFIRM_QUIT_TITLE"))
+            {
+                confirm.Close();
+                return;
+            }
+
+
             confirm.CloseCallback = result =>
             {
                 if (result == ConfirmResult.Yes)

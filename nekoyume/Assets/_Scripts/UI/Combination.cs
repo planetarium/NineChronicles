@@ -599,18 +599,17 @@ namespace Nekoyume.UI
         {
             var rowData = selectedRecipe.ConsumableRowData;
 
-            var materialInfoList = rowData.MaterialItemIds
-                .Select(id =>
+            var materialInfoList = rowData.Materials
+                .Select(info =>
                 {
                     var material = ItemFactory.CreateMaterial(
                         Game.Game.instance.TableSheets.MaterialItemSheet,
-                        id);
-                    // FIXME : 재료 소모 갯수 대응이 되어있지 않은 상태입니다.
-                    return (material, 1);
+                        info.Id);
+                    return (material, info.Count);
                 }).ToList();
 
             UpdateCurrentAvatarState(combinationPanel, materialInfoList);
-            CreateConsumableCombinationAction(rowData.Id, materialInfoList, selectedIndex);
+            CreateConsumableCombinationAction(rowData, selectedIndex);
         }
 
         private void ActionCombinationEquipment(CombinationPanel combinationPanel)
@@ -664,18 +663,15 @@ namespace Nekoyume.UI
         }
 
 
-        private void CreateConsumableCombinationAction(
-            int rowId,
-            List<(Material material, int count)> materialInfoList,
-            int slotIndex)
+        private void CreateConsumableCombinationAction(ConsumableItemRecipeSheet.Row row, int slotIndex)
         {
             LocalStateModifier.ModifyCombinationSlotConsumable(
                 Game.Game.instance.TableSheets,
                 combinationPanel,
-                materialInfoList,
+                row,
                 slotIndex
             );
-            Game.Game.instance.ActionManager.CombinationConsumable(rowId, slotIndex)
+            Game.Game.instance.ActionManager.CombinationConsumable(row.Id, slotIndex)
                 .Subscribe(
                     _ => { },
                     _ => Find<ActionFailPopup>().Show("Timeout occurred during Combination"));

@@ -65,11 +65,11 @@ namespace Nekoyume.UI.Module
             costNCG = 0m;
             costAP = 0;
             var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-            foreach (var materialId in row.MaterialItemIds)
+            foreach (var materialInfo in row.Materials)
             {
-                var materialRow = materialSheet.Values.First(i => i.Id == materialId);
+                var materialRow = materialSheet.Values.First(i => i.Id == materialInfo.Id);
                 var baseMaterial = ItemFactory.CreateMaterial(materialRow);
-                MaterialList.Add((baseMaterial, 1));
+                MaterialList.Add((baseMaterial, materialInfo.Count));
                 costNCG += row.RequiredGold;
                 costAP += row.RequiredActionPoint;
             }

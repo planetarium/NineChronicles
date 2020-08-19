@@ -755,15 +755,11 @@ namespace Nekoyume.State
         public static void ModifyCombinationSlotConsumable(
             TableSheets tableSheets,
             ICombinationPanel panel,
-            List<(Material material, int count)> materialInfoList,
+            ConsumableItemRecipeSheet.Row recipeRow,
             int slotIndex
         )
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            tableSheets.ConsumableItemRecipeSheet.TryGetValue(
-                materialInfoList.Select(i => i.material.Id),
-                out var recipeRow
-            );
             var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;
             var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
                 i.Id == recipeRow.ResultConsumableItemId);
@@ -771,12 +767,12 @@ namespace Nekoyume.State
                 consumableRow,
                 Guid.Empty,
                 blockIndex);
-            var row = tableSheets.ConsumableItemRecipeSheet.Values.First(i =>
-                i.ResultConsumableItemId == consumableRow.Id);
             var materials = new Dictionary<Material, int>();
-            foreach (var (material, count) in materialInfoList)
+            foreach (var materialInfo in recipeRow.Materials)
             {
-                materials[material] = count;
+                var materialRow = tableSheets.MaterialItemSheet.Values.First(r => r.Id == materialInfo.Id);
+                var material = ItemFactory.CreateMaterial(materialRow);
+                materials[material] = materialInfo.Count;
             }
 
             var result = new CombinationConsumable.ResultModel
@@ -785,7 +781,7 @@ namespace Nekoyume.State
                 gold = panel.CostNCG,
                 materials = materials,
                 itemUsable = consumable,
-                recipeId = row.Id,
+                recipeId = recipeRow.Id,
                 itemType = ItemType.Consumable,
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
