@@ -164,7 +164,7 @@ namespace Nekoyume.UI.Model
 
             var startIndex = UnityEngine.Random.Range(0, _shopItems.Count);
             var index = startIndex;
-            var total = 16;
+            var total = 20;
 
             for (var i = 0; i < total; i++)
             {
