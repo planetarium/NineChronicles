@@ -86,12 +86,12 @@ namespace Nekoyume.Model.State
             return shopItem;
         }
 
-        public bool Unregister(Address sellerAgentAddress, ShopItem shopItem)
+        public void Unregister(Address sellerAgentAddress, ShopItem shopItem)
         {
-            return Unregister(sellerAgentAddress, shopItem.ProductId);
+            Unregister(sellerAgentAddress, shopItem.ProductId);
         }
 
-        public bool Unregister(Address sellerAgentAddress, Guid productId)
+        public void Unregister(Address sellerAgentAddress, Guid productId)
         {
             if (!_agentProducts.ContainsKey(sellerAgentAddress))
             {
@@ -124,8 +124,6 @@ namespace Nekoyume.Model.State
             }
 
             _products.Remove(shopItem.ProductId);
-
-            return true;
         }
 
         public bool TryGet(

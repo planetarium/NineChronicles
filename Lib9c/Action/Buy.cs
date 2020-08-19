@@ -202,7 +202,11 @@ namespace Nekoyume.Action
             states = states.TransferAsset(context.Signer, sellerAgentAddress, states.GetGoldCurrency(), outPair.Value.Price);
 
             // 상점에서 구매할 아이템을 제거한다.
-            if (!shopState.Unregister(sellerAgentAddress, outPair.Value))
+            try
+            {
+                shopState.Unregister(sellerAgentAddress, outPair.Value);
+            }
+            catch (NotFoundInShopStateException e)
             {
                 return LogError(
                     context,
