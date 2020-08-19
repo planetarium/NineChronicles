@@ -159,9 +159,19 @@ namespace Nekoyume.Model.State
             unregisteredItem = _products[productId];
             _products.Remove(productId);
 
-            if (_itemSubTypeProducts.ContainsKey(unregisteredItem.ItemUsable.ItemSubType))
+            var itemSubType = unregisteredItem.ItemUsable.ItemSubType;
+            if (_itemSubTypeProducts.ContainsKey(itemSubType))
             {
-                _itemSubTypeProducts[unregisteredItem.ItemUsable.ItemSubType].Remove(productId);
+                var guids = _itemSubTypeProducts[itemSubType];
+                guids.Remove(productId);
+                if (guids.Count == 0)
+                {
+                    _itemSubTypeProducts.Remove(itemSubType);
+                }
+                else
+                {
+                    _itemSubTypeProducts[itemSubType] = guids;
+                }
             }
 
             return true;
