@@ -35,8 +35,7 @@ namespace Nekoyume.Model.State
         {
         }
 
-        public ShopState(Dictionary serialized)
-            : base(serialized)
+        public ShopState(Dictionary serialized) : base(serialized)
         {
             _agentProducts = ((Dictionary) serialized["agentProducts"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
@@ -71,7 +70,7 @@ namespace Nekoyume.Model.State
                 [(Text) "itemSubTypeProducts"] = new Dictionary(
                     _itemSubTypeProducts.Select(kv =>
                         new KeyValuePair<IKey, IValue>(
-                            (Binary) kv.Key.Serialize(),
+                            (Text) kv.Key.Serialize(),
                             new List(kv.Value.Select(i => i.Serialize()))))),
             }.Union((Dictionary) base.Serialize()));
 
