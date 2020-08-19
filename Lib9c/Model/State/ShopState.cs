@@ -109,6 +109,7 @@ namespace Nekoyume.Model.State
             outUnregisteredItem = outPair.Value;
             return true;
         }
+    }
 
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
@@ -122,5 +123,31 @@ namespace Nekoyume.Model.State
                     )
                 )
             }.Union((Dictionary) base.Serialize()));
+    [Serializable]
+    public class ShopStateAlreadyContainsException : Exception
+    {
+        public ShopStateAlreadyContainsException(string message) : base(message)
+        {
+        }
+
+        protected ShopStateAlreadyContainsException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
+    }
+
+    [Serializable]
+    public class NotFoundInShopStateException : Exception
+    {
+        public NotFoundInShopStateException(string message) : base(message)
+        {
+        }
+
+        protected NotFoundInShopStateException(
+            SerializationInfo info,
+            StreamingContext context) : base(info, context)
+        {
+        }
     }
 }
