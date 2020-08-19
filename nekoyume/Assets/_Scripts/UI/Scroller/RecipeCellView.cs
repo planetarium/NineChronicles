@@ -258,7 +258,7 @@ namespace Nekoyume.UI.Scroller
             Set(equipment);
 
             StatType = equipment.UniqueStatType;
-            var text = $"{equipment.Stat.Type} +{equipment.Stat.Value}";
+            var text = equipment.Stat.DecimalStatToString();
             optionText.text = text;
             SetLocked(false, EquipmentRowData.UnlockStage);
         }
@@ -314,11 +314,11 @@ namespace Nekoyume.UI.Scroller
                             subSheet.TryGetValue(subRecipeId, out var subRow) ? subRow : null)
                         .Where(item => !(item is null)))
                     {
+                        shouldDimmed = false;
                         foreach (var info in subRow.Materials)
                         {
                             if (materialSheet.TryGetValue(info.Id, out materialRow) &&
-                                inventory.TryGetMaterial(materialRow.ItemId,
-                                    out fungibleItem) &&
+                                inventory.TryGetMaterial(materialRow.ItemId, out fungibleItem) &&
                                 fungibleItem.count >= info.Count)
                             {
                                 continue;
@@ -387,7 +387,7 @@ namespace Nekoyume.UI.Scroller
 
             //재료 검사.
             var inventory = avatarState.inventory;
-            SetDimmed(!ConsumableRowData.MaterialItemIds.All(itemId => inventory.HasItem(itemId)));
+            SetDimmed(!ConsumableRowData.Materials.All(info => inventory.HasItem(info.Id, info.Count)));
         }
 
         private void StopLockEffect()
