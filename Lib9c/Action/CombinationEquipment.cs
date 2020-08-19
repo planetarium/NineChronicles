@@ -7,6 +7,7 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -193,8 +194,8 @@ namespace Nekoyume.Action
             }
 
             // 자원 검증
-            BigInteger agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
-            if (agentBalance < requiredGold || avatarState.actionPoint < requiredActionPoint)
+            FungibleAssetValue agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
+            if (agentBalance < (states.GetGoldCurrency() * requiredGold) || avatarState.actionPoint < requiredActionPoint)
             {
                 return LogError(
                     context,
@@ -216,7 +217,11 @@ namespace Nekoyume.Action
             // FIXME: BlacksmithAddress 계좌로 돈이 쌓이기만 하는데 이걸 어떻게 순환시킬지 기획이 필요.
             if (requiredGold > 0)
             {
-                states = states.TransferAsset(ctx.Signer, BlacksmithAddress, states.GetGoldCurrency(), requiredGold);
+                states = states.TransferAsset(
+                    ctx.Signer,
+                    BlacksmithAddress,
+                    states.GetGoldCurrency() * requiredGold
+                );
             }
 
             var result = new CombinationConsumable.ResultModel

@@ -2,6 +2,7 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,7 @@ namespace Nekoyume.Action
                );
             }
 
-            return state.TransferAsset(Sender, Recipient, Currency, Amount);
+            return state.TransferAsset(Sender, Recipient, Currency * Amount);
         }
 
         public override void LoadPlainValue(IValue plainValue)

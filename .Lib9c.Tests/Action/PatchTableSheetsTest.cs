@@ -6,6 +6,7 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Xunit;
@@ -24,7 +25,7 @@ namespace Lib9c.Tests.Action
                     ["TestTable"] = "Initial",
                 }).Serialize());
             var state =
-                new State(initStates, ImmutableDictionary<(Address, Currency), BigInteger>.Empty);
+                new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
             var action = new PatchTableSheet()
             {
                 TableName = "TestTable",

@@ -5,6 +5,7 @@ namespace Lib9c.Tests.Action
     using System.Linq;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
@@ -61,7 +62,7 @@ namespace Lib9c.Tests.Action
                 gameConfigState
             );
 
-            var goldState = new GoldCurrencyState(new Currency("NCG", minter: null));
+            var goldState = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
 
             var initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
@@ -69,7 +70,7 @@ namespace Lib9c.Tests.Action
                 .SetState(TableSheetsState.Address, _tableSheetsState.Serialize())
                 .SetState(RedeemCodeState.Address, prevRedeemCodesState.Serialize())
                 .SetState(GoldCurrencyState.Address, goldState.Serialize())
-                .MintAsset(GoldCurrencyState.Address, goldState.Currency, 100000000);
+                .MintAsset(GoldCurrencyState.Address, goldState.Currency * 100000000);
             var redeemCode = new RedeemCode(
                 ByteUtil.Hex(privateKey.ByteArray),
                 _avatarAddress
@@ -90,7 +91,7 @@ namespace Lib9c.Tests.Action
             ItemSheet itemSheet = _tableSheets.ItemSheet;
             HashSet<int> expectedItems = new[] { 100000, 40100000 }.ToHashSet();
             Assert.Subset(nextAvatarState.inventory.Items.Select(i => i.item.Id).ToHashSet(), expectedItems);
-            Assert.Equal(100, nextState.GetBalance(_agentAddress, goldState.Currency));
+            Assert.Equal(goldState.Currency * 100, nextState.GetBalance(_agentAddress, goldState.Currency));
 
             // Check the code redeemed properly
             RedeemCodeState nextRedeemCodeState = nextState.GetRedeemCodeState();

@@ -5,6 +5,7 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -97,8 +98,7 @@ namespace Nekoyume.Action
                         states = states.TransferAsset(
                             GoldCurrencyState.Address,
                             context.Signer,
-                            states.GetGoldCurrency(),
-                            info.Quantity
+                            states.GetGoldCurrency() * info.Quantity
                         );
                         break;
                     default:

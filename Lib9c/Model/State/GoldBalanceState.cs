@@ -1,32 +1,32 @@
 using System;
 using System.Collections.Immutable;
-using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Assets;
 
 namespace Nekoyume.Model.State
 {
     [Serializable]
     public class GoldBalanceState : State, ICloneable
     {
-        public readonly BigInteger gold;
+        public readonly FungibleAssetValue Gold;
 
-        public GoldBalanceState(Address address) : this(address, 0)
-        {
-        }
-
-        public GoldBalanceState(Address address, BigInteger gold) : base(address) =>
-            this.gold = gold;
+        public GoldBalanceState(Address address, FungibleAssetValue gold) : base(address) =>
+            this.Gold = gold;
 
         public GoldBalanceState(Bencodex.Types.Dictionary serialized) : base(serialized) =>
-            gold = (Bencodex.Types.Integer)serialized["gold"];
+            Gold = new FungibleAssetValue(
+                CurrencyExtensions.Deserialize((Dictionary) serialized[nameof(Gold.Currency)]),
+                serialized[nameof(Gold.MajorUnit)].ToBigInteger(),
+                serialized[nameof(Gold.MinorUnit)].ToBigInteger()
+            );
 
         public GoldBalanceState(IValue serialized) : this((Bencodex.Types.Dictionary)serialized)
         {
         }
 
-        public GoldBalanceState Add(BigInteger adder) =>
-            new GoldBalanceState(address, gold + adder);
+        public GoldBalanceState Add(FungibleAssetValue adder) =>
+            new GoldBalanceState(address, Gold + adder);
 
         public object Clone() =>
             MemberwiseClone();
@@ -41,8 +41,10 @@ namespace Nekoyume.Model.State
             // 그래서 아래처럼 온몸비틀기. 그냥 Bencodex.Types.Dictionary에 Add(string, BigInteger) 하나 넣는 게 좋을 듯...
             // -> https://github.com/planetarium/bencodex.net/issues/21
             var @base = (Bencodex.Types.Dictionary) base.Serialize();
-            var serialized = ((IImmutableDictionary<IKey, IValue>) @base)
-                .SetItem((Text) "gold", (Bencodex.Types.Integer) gold);
+            var serialized = ((IImmutableDictionary<IKey, IValue>)@base)
+                .SetItem((Text)nameof(Gold.Currency), Gold.Currency.Serialize())
+                .SetItem((Text)nameof(Gold.MajorUnit), Gold.MajorUnit.Serialize())
+                .SetItem((Text)nameof(Gold.MinorUnit), Gold.MinorUnit.Serialize());
             return (Bencodex.Types.Dictionary) serialized;
         }
     }

@@ -12,6 +12,7 @@ using Libplanet;
 using Libplanet.Action;
 using Serilog;
 using Nekoyume.Model.State;
+using Libplanet.Assets;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -36,7 +37,7 @@ namespace Nekoyume.Action
         private struct AccountStateDelta : IAccountStateDelta
         {
             private IImmutableDictionary<Address, IValue> _states;
-            private IImmutableDictionary<(Address, Currency), BigInteger> _balances;
+            private IImmutableDictionary<(Address, Currency), (BigInteger, BigInteger)> _balances;
 
             public IImmutableSet<Address> UpdatedAddresses => _states.Keys.ToImmutableHashSet();
 
@@ -50,7 +51,7 @@ namespace Nekoyume.Action
 
             public AccountStateDelta(
                 IImmutableDictionary<Address, IValue> states,
-                IImmutableDictionary<(Address, Currency), BigInteger> balances
+                IImmutableDictionary<(Address, Currency), (BigInteger, BigInteger)> balances
             )
             {
                 _states = states;
@@ -63,9 +64,16 @@ namespace Nekoyume.Action
                     kv => new Address(kv.Key.EncodeAsByteArray()),
                     kv => kv.Value
                 );
+
+                (BigInteger, BigInteger) Decode(List value) =>
+                    (
+                        value.ElementAt(0).ToBigInteger(),
+                        value.ElementAt(1).ToBigInteger()
+                    );
+
                 _balances = balances.Cast<Dictionary>().ToImmutableDictionary(
                     record => (record["address"].ToAddress(), CurrencyExtensions.Deserialize((Dictionary)record["currency"])),
-                    record => record["amount"].ToBigInteger()
+                    record => Decode((List)record["amount"])
                 );
             }
 
@@ -88,86 +96,94 @@ namespace Nekoyume.Action
             public IAccountStateDelta SetState(Address address, IValue state) =>
                 new AccountStateDelta(_states.SetItem(address, state), _balances);
 
-            public BigInteger GetBalance(Address address, Currency currency)
+            public FungibleAssetValue GetBalance(Address address, Currency currency)
             {
-                if (!_balances.TryGetValue((address, currency), out BigInteger balance))
+                if (!_balances.TryGetValue((address, currency), out (BigInteger, BigInteger) amount))
                 {
                     throw new BalanceDoesNotExistsException(address, currency);
                 }
 
-                return balance;
+                return new FungibleAssetValue(currency, amount.Item1, amount.Item2);
             }
 
-            public IAccountStateDelta MintAsset(Address recipient, Currency currency, BigInteger amount)
+            public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
             {
                 // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
                 // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
 
-                if (amount <= 0)
+                if (value <= new FungibleAssetValue(value.Currency))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(amount));
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
+
+                var nextAmount = GetBalance(recipient, value.Currency) + value;
 
                 return new AccountStateDelta(
                     _states,
-                    _balances.SetItem((recipient, currency),
-                        GetBalance(recipient, currency) + amount)
+                    _balances.SetItem(
+                        (recipient, value.Currency),
+                        (nextAmount.MajorUnit, nextAmount.MinorUnit)
+                    )
                 );
             }
 
             public IAccountStateDelta TransferAsset(
                 Address sender,
                 Address recipient,
-                Currency currency,
-                BigInteger amount,
+                FungibleAssetValue value,
                 bool allowNegativeBalance = false)
             {
-                if (amount <= 0)
+                if (value.Sign < 0)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(amount));
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
-                BigInteger senderBalance = GetBalance(sender, currency);
-                if (senderBalance < amount)
+                FungibleAssetValue senderBalance = GetBalance(sender, value.Currency);
+                if (senderBalance < value)
                 {
                     throw new InsufficientBalanceException(
                         sender,
-                        currency,
                         senderBalance,
-                        $"There is no sufficient balance for {sender}: {senderBalance} {currency} < {amount} {currency}"
+                        $"There is no sufficient balance for {sender}: {senderBalance} < {value}"
                     );
                 }
 
+                Currency currency = value.Currency;
+                FungibleAssetValue senderRemains = senderBalance - value;
+                FungibleAssetValue recipientRemains = GetBalance(recipient, currency) + value;
                 var balances = _balances
-                    .SetItem((sender, currency), senderBalance - amount)
-                    .SetItem((recipient, currency), GetBalance(recipient, currency) + amount);
+                    .SetItem((sender, currency), (senderRemains.MajorUnit, senderRemains.MinorUnit))
+                    .SetItem((recipient, currency), (recipientRemains.MajorUnit, recipientRemains.MinorUnit));
                 return new AccountStateDelta(_states, balances);
             }
 
-            public IAccountStateDelta BurnAsset(Address owner, Currency currency, BigInteger amount)
+            public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value)
             {
                 // FIXME: 트랜잭션 서명자를 알아내 currency.AllowsToMint() 확인해서 CurrencyPermissionException
                 // 던지는 처리를 해야하는데 여기서 트랜잭션 서명자를 무슨 수로 가져올지 잘 모르겠음.
 
-                if (amount <= 0)
+                if (value <= new FungibleAssetValue(value.Currency))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(amount));
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
-                BigInteger balance = GetBalance(owner, currency);
-                if (balance < amount)
+                FungibleAssetValue balance = GetBalance(owner, value.Currency);
+                if (balance < value)
                 {
                     throw new InsufficientBalanceException(
                         owner,
-                        currency,
-                        balance,
-                        $"There is no sufficient balance for {owner}: {balance} {currency} < {amount} {currency}"
+                        value,
+                        $"There is no sufficient balance for {owner}: {balance} < {value}"
                     );
                 }
 
+                FungibleAssetValue nextValue = balance - value;
                 return new AccountStateDelta(
                     _states,
-                    _balances.SetItem((owner, currency), balance - amount)
+                    _balances.SetItem(
+                        (owner, value.Currency),
+                        (nextValue.MajorUnit, nextValue.MinorUnit)
+                    )
                 );
             }
         }
@@ -229,12 +245,15 @@ namespace Nekoyume.Action
                 var balance = new Bencodex.Types.List(
                     delta.UpdatedFungibleAssets.SelectMany(ua =>
                         ua.Value.Select(c =>
-                            new Bencodex.Types.Dictionary(new []
                             {
-                                new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
-                                new KeyValuePair<IKey, IValue>((Text) "currency", c.Serialize()),
-                                new KeyValuePair<IKey, IValue>((Text) "amount", delta.GetBalance(ua.Key, c).Serialize()),
-                            })
+                                FungibleAssetValue b = delta.GetBalance(ua.Key, c);
+                                return new Bencodex.Types.Dictionary(new[]
+                                {
+                                    new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
+                                    new KeyValuePair<IKey, IValue>((Text) "currency", c.Serialize()),
+                                    new KeyValuePair<IKey, IValue>((Text) "amount", new Bencodex.Types.List(new IValue[]{ (Integer)b.MajorUnit, (Integer)b.MinorUnit})),
+                                });
+                            }
                         )
                     ).Cast<IValue>()
                 );
