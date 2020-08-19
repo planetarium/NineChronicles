@@ -258,7 +258,7 @@ namespace Nekoyume.UI.Scroller
             Set(equipment);
 
             StatType = equipment.UniqueStatType;
-            var text = equipment.Stat.ToString();
+            var text = equipment.Stat.DecimalStatToString();
             optionText.text = text;
             SetLocked(false, EquipmentRowData.UnlockStage);
         }
