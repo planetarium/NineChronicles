@@ -90,42 +90,6 @@ namespace Nekoyume.UI.Model
 
         #region Shop Item
 
-        public void AddProduct(Address sellerAgentAddress, Nekoyume.Model.Item.ShopItem shopItem)
-        {
-            if (!_shopItems.ContainsKey(sellerAgentAddress))
-            {
-                _shopItems.Add(sellerAgentAddress, new List<Nekoyume.Model.Item.ShopItem>());
-            }
-
-            _shopItems[sellerAgentAddress].Add(shopItem);
-        }
-
-        public void RemoveProduct(Address sellerAgentAddress, Guid productId)
-        {
-            if (!_shopItems.ContainsKey(sellerAgentAddress))
-            {
-                return;
-            }
-
-            foreach (var shopItem in _shopItems[sellerAgentAddress])
-            {
-                if (shopItem.ProductId != productId)
-                {
-                    continue;
-                }
-
-                _shopItems[sellerAgentAddress].Remove(shopItem);
-                break;
-            }
-        }
-
-        public ShopItem AddCurrentAgentsProduct(Address sellerAgentAddress, Nekoyume.Model.Item.ShopItem shopItem)
-        {
-            var result = CreateShopItem(sellerAgentAddress, shopItem);
-            CurrentAgentsProducts.Add(result);
-            return result;
-        }
-
         public void RemoveCurrentAgentsProduct(Guid productId)
         {
             RemoveProduct(CurrentAgentsProducts, productId);
