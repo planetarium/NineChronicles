@@ -58,7 +58,9 @@ namespace Nekoyume.Model.State
                             kv.Value.Serialize()))),
             }.Union((Dictionary) base.Serialize()));
 
-        public ShopItem Register(Address sellerAgentAddress, ShopItem shopItem)
+        #region Register
+
+        public void Register(Address sellerAgentAddress, ShopItem shopItem)
         {
             if (!_agentProducts.ContainsKey(sellerAgentAddress))
             {
@@ -74,17 +76,12 @@ namespace Nekoyume.Model.State
 
             shopItems.Add(shopItem);
             _agentProducts[sellerAgentAddress] = shopItems;
-
-            if (_products.ContainsKey(shopItem.ProductId))
-            {
-                throw new ShopStateAlreadyContainsException(
-                    $"{nameof(_products)}, {sellerAgentAddress}, {shopItem.ProductId}");
-            }
-
-            _products.Add(shopItem.ProductId, shopItem);
-
-            return shopItem;
+            _products[shopItem.ProductId] = shopItem;
         }
+
+        #endregion
+
+        #region Unregister
 
         public void Unregister(Address sellerAgentAddress, ShopItem shopItem)
         {
@@ -93,21 +90,32 @@ namespace Nekoyume.Model.State
 
         public void Unregister(Address sellerAgentAddress, Guid productId)
         {
+            if (!TryUnregister(sellerAgentAddress, productId, out _))
+            {
+                throw new FailedToUnregisterInShopStateException(
+                    $"{nameof(_agentProducts)}, {sellerAgentAddress}, {productId}");
+            }
+        }
+
+        public bool TryUnregister(
+            Address sellerAgentAddress,
+            Guid productId,
+            out ShopItem unregisteredItem)
+        {
             if (!_agentProducts.ContainsKey(sellerAgentAddress))
             {
-                throw new NotFoundInShopStateException(
-                    $"{nameof(_agentProducts)}, {sellerAgentAddress}, {productId}");
+                unregisteredItem = null;
+                return false;
             }
 
             var shopItems = _agentProducts[sellerAgentAddress];
-            var shopItem = shopItems.FirstOrDefault(item => item.ProductId.Equals(productId));
-            if (shopItem is null)
+            unregisteredItem = shopItems.FirstOrDefault(item => item.ProductId.Equals(productId));
+            if (unregisteredItem is null)
             {
-                throw new NotFoundInShopStateException(
-                    $"{nameof(_agentProducts)}, {sellerAgentAddress}, {productId}");
+                return false;
             }
 
-            shopItems.Remove(shopItem);
+            shopItems.Remove(unregisteredItem);
             if (shopItems.Count == 0)
             {
                 _agentProducts.Remove(sellerAgentAddress);
@@ -117,14 +125,11 @@ namespace Nekoyume.Model.State
                 _agentProducts[sellerAgentAddress] = shopItems;
             }
 
-            if (!_products.ContainsKey(shopItem.ProductId))
-            {
-                throw new NotFoundInShopStateException(
-                    $"{nameof(_products)}, {sellerAgentAddress}, {shopItem.ProductId}");
-            }
-
-            _products.Remove(shopItem.ProductId);
+            _products.Remove(unregisteredItem.ProductId);
+            return true;
         }
+
+        #endregion
 
         public bool TryGet(
             Address sellerAgentAddress,
@@ -136,34 +141,14 @@ namespace Nekoyume.Model.State
                 return false;
             }
 
-            var list = _agentProducts[sellerAgentAddress];
-
-            foreach (var shopItem in list.Where(shopItem => shopItem.ProductId == productId))
+            var shopItems = _agentProducts[sellerAgentAddress];
+            foreach (var shopItem in shopItems.Where(shopItem => shopItem.ProductId == productId))
             {
                 outPair = new KeyValuePair<Address, ShopItem>(sellerAgentAddress, shopItem);
                 return true;
             }
 
             return false;
-        }
-
-        [Obsolete("Use Unregister()")]
-        public bool TryUnregister(
-            Address sellerAgentAddress,
-            Guid productId,
-            out ShopItem outUnregisteredItem)
-        {
-            if (!TryGet(sellerAgentAddress, productId, out var outPair))
-            {
-                outUnregisteredItem = null;
-                return false;
-            }
-
-            _agentProducts[outPair.Key].Remove(outPair.Value);
-            _products.Remove(outPair.Value.ProductId);
-
-            outUnregisteredItem = outPair.Value;
-            return true;
         }
     }
 
@@ -182,13 +167,13 @@ namespace Nekoyume.Model.State
     }
 
     [Serializable]
-    public class NotFoundInShopStateException : Exception
+    public class FailedToUnregisterInShopStateException : Exception
     {
-        public NotFoundInShopStateException(string message) : base(message)
+        public FailedToUnregisterInShopStateException(string message) : base(message)
         {
         }
 
-        protected NotFoundInShopStateException(
+        protected FailedToUnregisterInShopStateException(
             SerializationInfo info,
             StreamingContext context) : base(info, context)
         {

@@ -206,7 +206,7 @@ namespace Nekoyume.Action
             {
                 shopState.Unregister(sellerAgentAddress, outPair.Value);
             }
-            catch (NotFoundInShopStateException e)
+            catch (FailedToUnregisterInShopStateException e)
             {
                 return LogError(
                     context,
