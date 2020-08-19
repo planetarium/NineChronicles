@@ -9,19 +9,7 @@ using Nekoyume.Model.State;
 namespace Nekoyume.Model.State
 {
     /// <summary>
-    /// Shop의 상태 모델이다.
-    ///
-    /// ---- 지금의 상점의 동기화 정책.
-    /// `Sell` 액션에 대해서는 매번 직접 `Register`.
-    /// `SellCancellation` 액션에 대해서도 매번 직접 `Unregister`.
-    /// `Buy` 액션에 대해서도 매번 직접 `Unregister`.
-    /// ShopAddress의 Shop 자체에 대한 동기화는 게임 실행 시 한 번.
-    ///
-    /// ---- 추후에 예정된 이슈.
-    /// 상점의 아이템 수는 계속 증가할 것인데, 나중에는 전부를 동기화 하는 것이 무리라고 생각됨.
-    /// 상점을 단일 상태로 관리하지 않고, 1000개나 10000개 정도를 갖고 있는 단위로 채널 처럼 관리하는 것이 좋겠음.
-    /// 무작위로 접근해서 조회하도록.
-    /// 단, 이때 각 아바타의 판매 목록을 불러오는 것에 문제가 생기니, 이 목록에 접근하는 방법을 아바타의 상태에 포함해야 함.
+    /// This is a model class of shop state.
     /// </summary>
     [Serializable]
     public class ShopState : State
