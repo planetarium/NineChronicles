@@ -10,7 +10,7 @@ namespace Nekoyume.Model.State
 {
     /// <summary>
     /// Shop의 상태 모델이다.
-    /// 
+    ///
     /// ---- 지금의 상점의 동기화 정책.
     /// `Sell` 액션에 대해서는 매번 직접 `Register`.
     /// `SellCancellation` 액션에 대해서도 매번 직접 `Unregister`.
@@ -26,8 +26,12 @@ namespace Nekoyume.Model.State
     [Serializable]
     public class ShopState : State
     {
-        public static readonly Address Address = Addresses.Shop; 
-        public readonly Dictionary<Address, List<ShopItem>> AgentProducts = new Dictionary<Address, List<ShopItem>>();
+        public static readonly Address Address = Addresses.Shop;
+
+        private readonly Dictionary<Address, List<ShopItem>> _agentProducts =
+            new Dictionary<Address, List<ShopItem>>();
+
+        public IReadOnlyDictionary<Address, List<ShopItem>> AgentProducts => _agentProducts;
 
         public ShopState() : base(Address)
         {
@@ -36,22 +40,22 @@ namespace Nekoyume.Model.State
         public ShopState(Dictionary serialized)
             : base(serialized)
         {
-            AgentProducts = ((Dictionary)serialized["agentProducts"]).ToDictionary(
+            _agentProducts = ((Dictionary) serialized["agentProducts"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
-                kv => ((List)kv.Value)
-                    .Select(d => new ShopItem((Dictionary)d))
+                kv => ((List) kv.Value)
+                    .Select(d => new ShopItem((Dictionary) d))
                     .ToList()
             );
         }
 
         public ShopItem Register(Address sellerAgentAddress, ShopItem shopItem)
         {
-            if (!AgentProducts.ContainsKey(sellerAgentAddress))
+            if (!_agentProducts.ContainsKey(sellerAgentAddress))
             {
-                AgentProducts.Add(sellerAgentAddress, new List<ShopItem>());
+                _agentProducts.Add(sellerAgentAddress, new List<ShopItem>());
             }
 
-            AgentProducts[sellerAgentAddress].Add(shopItem);
+            _agentProducts[sellerAgentAddress].Add(shopItem);
             return shopItem;
         }
 
@@ -62,10 +66,10 @@ namespace Nekoyume.Model.State
 
         public bool Unregister(Address sellerAgentAddress, Guid productId)
         {
-            if (!AgentProducts.ContainsKey(sellerAgentAddress))
+            if (!_agentProducts.ContainsKey(sellerAgentAddress))
                 return false;
 
-            var shopItems = AgentProducts[sellerAgentAddress];
+            var shopItems = _agentProducts[sellerAgentAddress];
             var shopItem = shopItems.FirstOrDefault(item => item.ProductId.Equals(productId));
             if (shopItem is null)
                 return false;
@@ -73,7 +77,7 @@ namespace Nekoyume.Model.State
             shopItems.Remove(shopItem);
             if (shopItems.Count == 0)
             {
-                AgentProducts.Remove(sellerAgentAddress);
+                _agentProducts.Remove(sellerAgentAddress);
             }
 
             return true;
@@ -82,12 +86,12 @@ namespace Nekoyume.Model.State
         public bool TryGet(Address sellerAgentAddress, Guid productId,
             out KeyValuePair<Address, ShopItem> outPair)
         {
-            if (!AgentProducts.ContainsKey(sellerAgentAddress))
+            if (!_agentProducts.ContainsKey(sellerAgentAddress))
             {
                 return false;
             }
 
-            var list = AgentProducts[sellerAgentAddress];
+            var list = _agentProducts[sellerAgentAddress];
 
             foreach (var shopItem in list)
             {
@@ -112,7 +116,7 @@ namespace Nekoyume.Model.State
                 return false;
             }
 
-            AgentProducts[outPair.Key].Remove(outPair.Value);
+            _agentProducts[outPair.Key].Remove(outPair.Value);
 
             outUnregisteredItem = outPair.Value;
             return true;
@@ -121,14 +125,14 @@ namespace Nekoyume.Model.State
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text)"agentProducts"] = new Dictionary(
-                    AgentProducts.Select(kv =>
+                [(Text) "agentProducts"] = new Dictionary(
+                    _agentProducts.Select(kv =>
                         new KeyValuePair<IKey, IValue>(
-                            (Binary)kv.Key.Serialize(),
+                            (Binary) kv.Key.Serialize(),
                             new List(kv.Value.Select(i => i.Serialize()))
                         )
                     )
                 )
-            }.Union((Dictionary)base.Serialize()));
+            }.Union((Dictionary) base.Serialize()));
     }
 }
