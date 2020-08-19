@@ -121,12 +121,21 @@ namespace Nekoyume.Action
             }
 
             // 상점에 아이템을 등록한다.
-            shopState.Register(ctx.Signer, new ShopItem(
-                sellerAvatarAddress,
-                productId,
-                nonFungibleItem,
-                price
-            ));
+            try
+            {
+                shopState.Register(ctx.Signer, new ShopItem(
+                    sellerAvatarAddress,
+                    productId,
+                    nonFungibleItem,
+                    price
+                ));
+            }
+            catch (ShopStateAlreadyContainsException e)
+            {
+                Log.Error(e.Message);
+                throw;
+            }
+
             sw.Stop();
             Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);
             sw.Restart();
