@@ -70,6 +70,7 @@ namespace Nekoyume.BlockChain
             RedeemCode();
             ChargeActionPoint();
             OpenChest();
+            WeeklyArena();
         }
 
         public void Stop()
@@ -335,6 +336,22 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseOpenChest).AddTo(_disposables);
+        }
+
+        private void WeeklyArena()
+        {
+            var blockIndex = Game.Game.instance.Agent.BlockIndex;
+            if (ArenaHelper.TryGetThisWeekAddress(blockIndex, out var thisWeekAddress))
+            {
+                _renderer.EveryRender(thisWeekAddress)
+                    .ObserveOnMainThread()
+                    .Subscribe(UpdateWeeklyArenaState).AddTo(_disposables);
+
+                var nextWeekAddress = ArenaHelper.GetNextWeekAddress(blockIndex);
+                _renderer.EveryRender(nextWeekAddress)
+                    .ObserveOnMainThread()
+                    .Subscribe(UpdateWeeklyArenaState).AddTo(_disposables);
+            }
         }
 
         private void ResponseRapidCombination(ActionBase.ActionEvaluation<RapidCombination> eval)
