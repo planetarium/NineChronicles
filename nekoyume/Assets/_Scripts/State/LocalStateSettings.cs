@@ -641,7 +641,7 @@ namespace Nekoyume.State
         {
             foreach (var modifier in modifierInfo.NonVolatileModifiers)
             {
-                modifier.Modify(state);
+                modifier.Modify(ref state);
                 if (!modifier.dirty)
                 {
                     continue;
@@ -653,7 +653,7 @@ namespace Nekoyume.State
 
             foreach (var modifier in modifierInfo.VolatileModifiers)
             {
-                modifier.Modify(state);
+                modifier.Modify(ref state);
             }
 
             return state;

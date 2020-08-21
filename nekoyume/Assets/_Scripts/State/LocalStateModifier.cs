@@ -4,7 +4,9 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
@@ -32,9 +34,9 @@ namespace Nekoyume.State
         /// <param name="gold">더할 NCG. 음수일 경우 감소시킨다.</param>
         // FIXME: 이름이 헷갈리니 IncrementAgentGold() 정도로 이름을 바꾸는 게 좋겠습니다.
         // (현재는 이름만 보면 더하는 게 아니라 그냥 덮어씌우는 것처럼 여겨짐.)
-        public static void ModifyAgentGold(Address agentAddress, BigInteger gold)
+        public static void ModifyAgentGold(Address agentAddress, FungibleAssetValue gold)
         {
-            if (gold == 0)
+            if (gold.Sign == 0)
             {
                 return;
             }
@@ -48,8 +50,21 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(state);
-            ReactiveAgentState.Gold.SetValueAndForceNotify(state.gold);
+            modifier.Modify(ref state);
+            ReactiveAgentState.Gold.SetValueAndForceNotify(state.Gold);
+        }
+
+        public static void ModifyAgentGold(Address agentAddress, BigInteger gold)
+        {
+            if (gold == 0)
+            {
+                return;
+            }
+
+            ModifyAgentGold(agentAddress, new FungibleAssetValue(
+                States.Instance.GoldBalanceState.Gold.Currency,
+                gold,
+                0));
         }
 
         /// <summary>
@@ -79,7 +94,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -223,7 +238,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -257,7 +272,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -286,7 +301,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -364,7 +379,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -450,7 +465,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!resetState ||
                 !isCurrentAvatarState)
@@ -488,7 +503,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!resetState ||
                 !isCurrentAvatarState)
@@ -520,7 +535,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -550,7 +565,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -593,7 +608,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            modifier.Modify(ref outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -656,7 +671,7 @@ namespace Nekoyume.State
 
             var modifier = new WeeklyArenaGoldModifier(gold);
             LocalStateSettings.Instance.Add(state.address, modifier, true);
-            modifier.Modify(state);
+            modifier.Modify(ref state);
             WeeklyArenaStateSubject.Gold.OnNext(state.Gold);
         }
 
@@ -682,7 +697,7 @@ namespace Nekoyume.State
 
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
             LocalStateSettings.Instance.Add(weeklyArenaAddress, modifier, true);
-            modifier.Modify(weeklyArenaState);
+            modifier.Modify(ref weeklyArenaState);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(weeklyArenaState);
         }
 
@@ -704,7 +719,7 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(state);
+            modifier.Modify(ref state);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(state);
         }
 
@@ -748,7 +763,7 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
+            modifier.Modify(ref slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
@@ -786,7 +801,7 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
+            modifier.Modify(ref slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
@@ -815,7 +830,7 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, blockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
+            modifier.Modify(ref slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
@@ -823,7 +838,7 @@ namespace Nekoyume.State
         {
             var prevState = States.Instance.CombinationSlotStates[slotIndex];
             var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
-            var slotState = modifier.Modify(prevState);
+            var slotState = modifier.Modify(ref prevState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
