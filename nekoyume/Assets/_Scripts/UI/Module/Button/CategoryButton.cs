@@ -106,8 +106,8 @@ namespace Nekoyume.UI.Module
         public void SetLockCondition(int condition)
         {
             _lockCondition = condition;
-            _messageForCat =
-                $"<sprite name=\"UI_icon_lock_01\"> Clear Stage {_lockCondition} First!";
+            _messageForCat = string.Format(L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE"),
+                _lockCondition);
             UpdateLock();
         }
 
