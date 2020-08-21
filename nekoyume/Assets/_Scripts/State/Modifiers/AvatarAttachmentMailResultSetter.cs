@@ -19,10 +19,12 @@ namespace Nekoyume.State.Modifiers
             _blockIndex = blockIndex;
         }
 
-        public override AvatarState Modify(AvatarState state)
+        public override AvatarState Modify(ref AvatarState state)
         {
             if (state is null)
+            {
                 return null;
+            }
 
             var ids = new HashSet<Guid>(guidList.Select(i => i.Value));
             var attachmentMails = state.mailBox

@@ -28,7 +28,9 @@ namespace Nekoyume.State.Modifiers
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarAttachmentMailNewSetter m))
+            {
                 return;
+            }
 
             foreach (var incoming in m.guidList.Where(incoming =>
                 !guidList.Contains(incoming)))
@@ -40,7 +42,9 @@ namespace Nekoyume.State.Modifiers
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarAttachmentMailNewSetter m))
+            {
                 return;
+            }
 
             foreach (var incoming in m.guidList.Where(incoming =>
                 guidList.Contains(incoming)))
@@ -49,10 +53,12 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override AvatarState Modify(AvatarState state)
+        public override AvatarState Modify(ref AvatarState state)
         {
             if (state is null)
+            {
                 return null;
+            }
 
             var ids = new HashSet<Guid>(guidList.Select(i => i.Value));
             var attachmentMails = state.mailBox

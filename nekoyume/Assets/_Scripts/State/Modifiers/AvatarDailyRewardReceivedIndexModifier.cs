@@ -18,7 +18,9 @@ namespace Nekoyume.State.Modifiers
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarDailyRewardReceivedIndexModifier m))
+            {
                 return;
+            }
 
             blockIndex += m.blockIndex;
         }
@@ -26,15 +28,19 @@ namespace Nekoyume.State.Modifiers
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarDailyRewardReceivedIndexModifier m))
+            {
                 return;
+            }
 
             blockIndex -= m.blockIndex;
         }
 
-        public override AvatarState Modify(AvatarState state)
+        public override AvatarState Modify(ref AvatarState state)
         {
             if (state is null)
+            {
                 return null;
+            }
 
             state.dailyRewardReceivedIndex += blockIndex;
             return state;

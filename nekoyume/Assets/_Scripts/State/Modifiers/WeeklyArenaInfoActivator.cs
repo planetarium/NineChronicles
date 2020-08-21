@@ -23,15 +23,19 @@ namespace Nekoyume.State.Modifiers
             avatarAddressHexList = new List<string>();
 
             if (addressHex.Equals(default(Address).ToHex()))
+            {
                 return;
-            
+            }
+
             avatarAddressHexList.Add(addressHex);
         }
-        
+
         public override void Add(IAccumulatableStateModifier<WeeklyArenaState> modifier)
         {
             if (!(modifier is WeeklyArenaInfoActivator m))
+            {
                 return;
+            }
 
             foreach (var incoming in m.avatarAddressHexList.Where(incoming => !avatarAddressHexList.Contains(incoming)))
             {
@@ -42,7 +46,9 @@ namespace Nekoyume.State.Modifiers
         public override void Remove(IAccumulatableStateModifier<WeeklyArenaState> modifier)
         {
             if (!(modifier is WeeklyArenaInfoActivator m))
+            {
                 return;
+            }
 
             foreach (var incoming in m.avatarAddressHexList.Where(incoming => avatarAddressHexList.Contains(incoming)))
             {
@@ -50,17 +56,19 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override WeeklyArenaState Modify(WeeklyArenaState state)
+        public override WeeklyArenaState Modify(ref WeeklyArenaState state)
         {
             if (state is null)
+            {
                 throw new ArgumentNullException(nameof(state));
+            }
 
             foreach (var addressHex in avatarAddressHexList)
             {
                 var address = new Address(addressHex);
                 if (state.TryGetValue(address, out var arenaInfo))
                 {
-                    arenaInfo.Activate();    
+                    arenaInfo.Activate();
                 }
                 else
                 {

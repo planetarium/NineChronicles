@@ -27,7 +27,9 @@ namespace Nekoyume.State.Modifiers
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarQuestIsReceivableSetter m))
+            {
                 return;
+            }
 
             foreach (var incoming in m.questIdList.Where(incoming =>
                 !questIdList.Contains(incoming)))
@@ -39,7 +41,9 @@ namespace Nekoyume.State.Modifiers
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarQuestIsReceivableSetter m))
+            {
                 return;
+            }
 
             foreach (var incoming in m.questIdList.Where(incoming =>
                 questIdList.Contains(incoming)))
@@ -48,10 +52,12 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override AvatarState Modify(AvatarState state)
+        public override AvatarState Modify(ref AvatarState state)
         {
             if (state is null)
+            {
                 return null;
+            }
 
             var quests = state.questList;
             foreach (var quest in quests)

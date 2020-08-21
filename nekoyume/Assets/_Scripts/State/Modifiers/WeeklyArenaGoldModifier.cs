@@ -13,7 +13,7 @@ namespace Nekoyume.State.Modifiers
         private JsonConvertibleBigInteger gold;
 
         public override bool IsEmpty => gold == 0;
-        
+
         public WeeklyArenaGoldModifier(BigInteger gold)
         {
             this.gold = new JsonConvertibleBigInteger(gold);
@@ -22,24 +22,30 @@ namespace Nekoyume.State.Modifiers
         public override void Add(IAccumulatableStateModifier<WeeklyArenaState> modifier)
         {
             if (!(modifier is WeeklyArenaGoldModifier m))
+            {
                 return;
-            
+            }
+
             gold += m.gold;
         }
 
         public override void Remove(IAccumulatableStateModifier<WeeklyArenaState> modifier)
         {
             if (!(modifier is WeeklyArenaGoldModifier m))
+            {
                 return;
+            }
 
             gold -= m.gold;
         }
 
-        public override WeeklyArenaState Modify(WeeklyArenaState state)
+        public override WeeklyArenaState Modify(ref WeeklyArenaState state)
         {
             if (state is null)
+            {
                 return null;
-            
+            }
+
             state.Gold += gold.Value;
             return state;
         }

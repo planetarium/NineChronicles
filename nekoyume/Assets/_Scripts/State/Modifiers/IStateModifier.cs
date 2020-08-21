@@ -21,7 +21,7 @@
         /// </summary>
         /// <param name="state">변경할 상태</param>
         /// <returns></returns>
-        T Modify(T state);
+        T Modify(ref T state);
     }
 
     /// <summary>
