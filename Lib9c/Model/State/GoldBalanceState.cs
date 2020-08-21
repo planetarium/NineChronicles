@@ -12,7 +12,7 @@ namespace Nekoyume.Model.State
         public readonly FungibleAssetValue Gold;
 
         public GoldBalanceState(Address address, FungibleAssetValue gold) : base(address) =>
-            this.Gold = gold;
+            Gold = gold;
 
         public GoldBalanceState(Bencodex.Types.Dictionary serialized) : base(serialized) =>
             Gold = new FungibleAssetValue(

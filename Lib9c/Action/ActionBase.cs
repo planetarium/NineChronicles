@@ -133,7 +133,7 @@ namespace Nekoyume.Action
                 FungibleAssetValue value,
                 bool allowNegativeBalance = false)
             {
-                if (value.Sign < 0)
+                if (value.Sign <= 0)
                 {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
