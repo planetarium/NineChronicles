@@ -39,8 +39,10 @@ namespace Nekoyume.UI
 
         protected override void OnDisable()
         {
+            _tweenScale?.Complete();
             _tweenScale?.Kill();
             _tweenScale = null;
+            _tweenMoveBy?.Complete();
             _tweenMoveBy?.Kill();
             _tweenMoveBy = null;
             base.OnDisable();

@@ -80,7 +80,8 @@ depois que você o usa
  mas funciona da mesma maneira."
 SPEECH_COMBINE_6,"You want more weapons?
  Make a weapon and synthesize it.","무기를 더 강화하고 싶다고?
-같은 무기를 만들어서 합성해보게",Você quer mais armas?nova linha] Faça uma arma e sintetize-a.
+같은 무기를 만들어서 합성해보게","Você quer mais armas?
+nova linha Faça uma arma e sintetize-a."
 SPEECH_COMBINE_7,"The higher the grade.
 the more options there are…
 What? You already know that? Whoo!","높은 등급의 무기일수록
@@ -120,7 +121,8 @@ Oh! Não é nada."
 SPEECH_RANK_5,"Don't be afraid of
 the enemy in front of you
 and trust your own inner self!","눈 앞의 적을 두려워 하지 말고
-자신의 내면을 믿어라!",Não tenha medo do novo inimigo à sua frente e confie em seu eu interior!
+자신의 내면을 믿어라!","Não tenha medo do novo inimigo
+à sua frente e confie em seu eu interior!"
 SPEECH_RANK_6,"Every life has
 an elemental property!",신계의 생명은 모두 속성을 갖고 있다!,"Toda vida tem
 uma propriedade elementar!"
@@ -209,11 +211,9 @@ UI_BATTLE_AGAIN_FORMAT,{0} battle starts again,{0} 다시 전투를 시작합니
 UI_BATTLE_EXIT_FORMAT,{0} you will return to the main,{0} 메인으로 이동합니다.,{0} você retornará ao principal
 UI_BATTLE_WIN,Stage Won!,전투 승리!,Fase vencida!
 UI_BATTLE_RETRY,Retry,다시 도전,Tente novamente
-UI_BATTLE_RETRY_FORMAT,"You can become stronger
-by leveling up
+UI_BATTLE_RETRY_FORMAT,"You can become stronger by leveling up
 or crafting stronger equipment.","지난 스테이지를 플레이하여 레벨을 올리거나
-장비를 제작하면 더 강해질 수 있습니다.","Você pode se tornar mais forte
- nivelando
+장비를 제작하면 더 강해질 수 있습니다.","Você pode se tornar mais forte nivelando
 ou criando equipamentos mais fortes."
 UI_BATTLE_LOSE,Lost...,전투 패배,Perdeu...
 UI_YES,Yes,네,Sim
@@ -321,6 +321,10 @@ NPC_09_NAME,Alex,알렉스,Alex
 NPC_10_NAME,Pig Trespasser,돼지부족 도살자,Porco Invasor
 NPC_11_NAME,Fenrir,펜리르,Fenrir
 NPC_12_NAME,Mushroom spore of Yggdrasil,이그드라실의 버섯포자,Esporos de Cogumelos de Yggdrasill
+NPC_13_NAME,Flower of Yggdrasill,이그드라실의 꽃,Flor de Yggdrasill
+NPC_14_NAME,Vines of Yggdrasil,이그드라실의 덩굴,Vinhas de Yggdrasill
+NPC_15_NAME,Leaf bundle of Yggdrasil,이그드라실의 덤불,Conjunto de Folhas de Yggdrasill
+NPC_16_NAME,Eggplant of Yggdrasill,이그드라실의 모종,Berinjela de Yggdrasill
 UI_COMBINE_EQUIPMENT,Equipment,장비 제작,Equipamento
 UI_COMBINE_CONSUMABLE,Consumables,소모품 제작,Consumíveis
 UI_UPGRADE_EQUIPMENT,Upgrade,장비 강화,Upgrade
@@ -344,8 +348,8 @@ UI_GO_MAIN,Main,메인,Principal
 UI_QUIT,Quit,종료,Quit
 UI_EXIT,Exit,나가기,Sair
 UI_ERROR,Error,에러,Erro
-UI_NICKNAME_CONDITION,Nickname must be between 2-20 characters and can only include alphanumeric characters.,"닉네임은 2~20자여야 하며
-영문자, 숫자만 사용할 수 있습니다.",O apelido deve ter entre 2 e 20 caracteres e pode incluir apenas caracteres alfanuméricos.
+UI_NICKNAME_CONDITION,"Nickname must be between 2-20 characters and can only include alphanumeric characters.","닉네임은 2~20자여야 하며
+영문자, 숫자만 사용할 수 있습니다.","O apelido deve ter entre 2 e 20 caracteres e pode incluir apenas caracteres alfanuméricos."
 UI_ERROR_FORMAT,"Error occurred.
 ({0})
 Please restart the game.","오류가 발생했습니다. ({0})
@@ -353,13 +357,10 @@ Please restart the game.","오류가 발생했습니다. ({0})
  ({0})
 Por favor reinicie o jogo."
 UI_ERROR_RPC_CONNECTION,"RPC server connection failed.
-
 Check if the game launcher is running
- and try again.","RPC 서버 연결 실패
-
+and try again.","RPC 서버 연결 실패
 게임 론처가 실행 중인지
- 확인 후 다시 실행해주세요.","Falha na conexão do servidor RPC.
-
+확인 후 다시 실행해주세요.","Falha na conexão do servidor RPC.
 Verifique se o iniciador de jogos está executando
 e tente novamente."
 UI_MAIL,Mail,우편,Correio
@@ -561,11 +562,8 @@ Revogação Privada não pode ser recuperada."
 UI_OPEN_LOG,Open Log,로그 열기,Abrir log
 UI_MAINTENANCE,System Maintenance,시스템 점검중,Manutenção de Sistema
 UI_MAINTENANCE_CONTENT,"We are undergoing system maintenance.
-
 During this time, please join our discord channel and check the maintenance schedule.","시스템 점검중입니다.
-
 디스코드 채널에 방문해서 점검 일정을 확인해 주세요.","Estamos em manutenção. 
-
 Durante esse período, entre no nosso canal Discord e verifique o cronograma de manutenção."
 UI_TEST_END,Test Ended,테스트 종료,Teste finalizado
 UI_TEST_END_CONTENT,Thank you for participating in the Nine Chronicle play test.,나인 크로니클 테스트에 참여해주셔서 감사합니다.,Obrigado por participar do teste de Nine Chronicles.
@@ -631,7 +629,7 @@ UI_OPEN_CHEST,Open Chest,상자 열기,Abrir baú
 UI_QUEST_COMPLETED,Quest Completed!,퀘스트 완료!,Missão concluída
 UI_PRESS_TO_CONTINUE_FORMAT,Press to continue .. {0},클릭하여 계속 .. {0},Pressione para continuar .. {0}
 UI_NEW_EQUIPMENT_RECIPE,New Equipment Recipe!,새로운 장비 레시피!,Receita de novos equipamentos!
-UI_BATTLE_RESULT_STAGE_1,"From the next stage, you can earn various items!","다음 스테이지부터 다양한 재료를 얻을 수 있어요!","A partir da próxima fase , você pode ganhar vários itens!"
+UI_BATTLE_RESULT_STAGE_1,"From the next stage, you can earn various items!",다음 스테이지부터 다양한 재료를 얻을 수 있어요!,"A partir da próxima fase , você pode ganhar vários itens!"
 PLAYER_PROLOGUE_SPEECH_0,!!!,!!!,!!!
 UI_HELP,Help,도움말,Ajuda
 UI_PRELOADING_MESSAGE,Waiting for Initialize.. Complete in few seconds.,초기화 중입니다.. 잠시만 기다려 주세요.,Waiting for Initialize.. Complete in few seconds.
@@ -665,3 +663,4 @@ UI_TIPS_27,Asgard’s knights completely lost their self due to endless fighting
 UI_NEW_MENU,New Menu!,새로운 메뉴!,New Menu!
 UI_CONFIRM,Confirm,확인,Confirme
 UI_AP_REFILL_CONFIRM_CONTENT,Your action point is remained. Are you sure to charge your action point now?,아직 남아있는 행동력이 있습니다. 행동력을 충전하시겠습니까?,Your action point is remained. Are you sure to charge your action point now?
+UI_REQUIRE_CLEAR_STAGE,"<sprite name=UI_icon_lock_01> Clear Stage {0} First!","<sprite name=UI_icon_lock_01> {0} 스테이지 클리어 시 오픈","<sprite name=UI_icon_lock_01> Fase Completada {0}"
