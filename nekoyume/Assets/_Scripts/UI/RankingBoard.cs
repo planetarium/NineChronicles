@@ -185,7 +185,7 @@ namespace Nekoyume.UI
 
             // 구독.
             ReactiveAgentState.Gold.Subscribe(gold =>
-                    arenaActivationButton.SetSubmittable(gold >= GameConfig.ArenaActivationCostNCG))
+                    arenaActivationButton.SetSubmittable(gold.MajorUnit >= GameConfig.ArenaActivationCostNCG))
                 .AddTo(_disposablesAtClose);
             WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(state => UpdateArena())
                 .AddTo(_disposablesAtClose);

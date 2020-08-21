@@ -491,7 +491,7 @@ namespace Nekoyume.UI.Module
         private void OnMaterialCountChanged()
         {
             CostNCG = GetCostNCG();
-            SubscribeNCG(ReactiveAgentState.Gold.Value);
+            SubscribeNCG(ReactiveAgentState.Gold.Value.MajorUnit);
             CostAP = GetCostAP();
             SubscribeActionPoint(ReactiveAvatarState.ActionPoint.Value);
             UpdateSubmittable();
