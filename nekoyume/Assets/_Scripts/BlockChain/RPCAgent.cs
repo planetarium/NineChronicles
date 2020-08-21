@@ -14,6 +14,7 @@ using Bencodex.Types;
 using Grpc.Core;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
@@ -97,14 +98,18 @@ namespace Nekoyume.BlockChain
             return _codec.Decode(raw);
         }
 
-        public BigInteger GetBalance(Address address, Currency currency)
+        public FungibleAssetValue GetBalance(Address address, Currency currency)
         {
             var result = _service.GetBalance(
                 address.ToByteArray(),
                 _codec.Encode(currency.Serialize())
             );
             byte[] raw = result.ResponseAsync.Result;
-            return (Bencodex.Types.Integer) _codec.Decode(raw);
+            var serialized = (Bencodex.Types.List) _codec.Decode(raw);
+            return new FungibleAssetValue(
+                CurrencyExtensions.Deserialize((Bencodex.Types.Dictionary) serialized.ElementAt(0)),
+                serialized.ElementAt(1).ToBigInteger(),
+                serialized.ElementAt(2).ToBigInteger());
         }
 
         public void EnqueueAction(GameAction action)
