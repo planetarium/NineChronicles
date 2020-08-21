@@ -33,6 +33,17 @@ namespace Nekoyume.Model.State
 
         public ShopState() : base(Address)
         {
+            _itemSubTypeProducts = new Dictionary<ItemSubType, List<Guid>>();
+            foreach (var product in _products)
+            {
+                var itemSubType = product.Value.ItemUsable.ItemSubType;
+                if (!_itemSubTypeProducts.ContainsKey(itemSubType))
+                {
+                    _itemSubTypeProducts.Add(itemSubType, new List<Guid>());
+                }
+
+                _itemSubTypeProducts[itemSubType].Add(product.Value.ProductId);
+            }
         }
 
         public ShopState(Dictionary serialized) : base(serialized)
@@ -46,12 +57,6 @@ namespace Nekoyume.Model.State
             _products = ((Dictionary) serialized["products"]).ToDictionary(
                 kv => kv.Key.ToGuid(),
                 kv => new ShopItem((Dictionary) kv.Value));
-
-            _itemSubTypeProducts = ((Dictionary) serialized["itemSubTypeProducts"]).ToDictionary(
-                kv => kv.Key.ToEnum<ItemSubType>(),
-                kv => ((List) kv.Value)
-                    .Select(value => value.ToGuid())
-                    .ToList());
         }
 
         public override IValue Serialize() =>
@@ -67,11 +72,6 @@ namespace Nekoyume.Model.State
                         new KeyValuePair<IKey, IValue>(
                             (Binary) kv.Key.Serialize(),
                             kv.Value.Serialize()))),
-                [(Text) "itemSubTypeProducts"] = new Dictionary(
-                    _itemSubTypeProducts.Select(kv =>
-                        new KeyValuePair<IKey, IValue>(
-                            (Text) kv.Key.Serialize(),
-                            new List(kv.Value.Select(i => i.Serialize()))))),
             }.Union((Dictionary) base.Serialize()));
 
         #region Register
