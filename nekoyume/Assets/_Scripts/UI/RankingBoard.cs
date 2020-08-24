@@ -183,7 +183,8 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
 
-            // 구독.
+            // Subscriptions.
+            // FIXME: gold.MajorUnit과 GameConfig.ArenaActivationCostNCG를 잘 비교해야 합니다.
             ReactiveAgentState.Gold.Subscribe(gold =>
                     arenaActivationButton.SetSubmittable(gold.MajorUnit >= GameConfig.ArenaActivationCostNCG))
                 .AddTo(_disposablesAtClose);
@@ -193,7 +194,7 @@ namespace Nekoyume.UI
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            // 구독 취소.
+            // Cancel Subscriptions.
             _disposablesAtClose.DisposeAllAndClear();
 
             Find<BottomMenu>()?.Close();
