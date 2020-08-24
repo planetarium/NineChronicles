@@ -123,7 +123,8 @@ namespace Nekoyume.Action
             // 상점에 아이템을 등록한다.
             try
             {
-                shopState.Register(ctx.Signer, new ShopItem(
+                shopState.Register(new ShopItem(
+                    ctx.Signer,
                     sellerAvatarAddress,
                     productId,
                     nonFungibleItem,

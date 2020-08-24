@@ -28,23 +28,24 @@ namespace Lib9c.Tests.Model.State
                 Guid.NewGuid(),
                 0);
             var shopItem = new ShopItem(
+                agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
                 0
             );
 
-            shopState.Register(agentAddress, shopItem);
+            shopState.Register(shopItem);
             var serialized = (Dictionary)shopState.Serialize();
             shopState = new ShopState(serialized);
 
+            Assert.Equal(1, shopState.Products.Count);
+            Assert.Contains(productId, shopState.Products);
+            Assert.Equal(shopItem, shopState.Products[productId]);
             Assert.Equal(1, shopState.AgentProducts.Count);
             Assert.True(shopState.AgentProducts.ContainsKey(agentAddress));
             Assert.Single(shopState.AgentProducts[agentAddress]);
             Assert.Contains(productId, shopState.AgentProducts[agentAddress]);
-            Assert.Equal(1, shopState.Products.Count);
-            Assert.Contains(productId, shopState.Products);
-            Assert.Equal(shopItem, shopState.Products[productId]);
             Assert.Equal(1, shopState.ItemSubTypeProducts.Count);
             Assert.Contains(ItemSubType.Weapon, shopState.ItemSubTypeProducts);
             Assert.Single(shopState.ItemSubTypeProducts[ItemSubType.Weapon]);
@@ -68,28 +69,29 @@ namespace Lib9c.Tests.Model.State
                 Guid.NewGuid(),
                 0);
             var shopItem = new ShopItem(
+                agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
                 0
             );
 
-            shopState.Register(agentAddress, shopItem);
+            shopState.Register(shopItem);
 
+            Assert.Equal(1, shopState.Products.Count);
+            Assert.Contains(productId, shopState.Products);
+            Assert.Equal(shopItem, shopState.Products[productId]);
             Assert.Equal(1, shopState.AgentProducts.Count);
             Assert.True(shopState.AgentProducts.ContainsKey(agentAddress));
             Assert.Single(shopState.AgentProducts[agentAddress]);
             Assert.Contains(productId, shopState.AgentProducts[agentAddress]);
-            Assert.Equal(1, shopState.Products.Count);
-            Assert.Contains(productId, shopState.Products);
-            Assert.Equal(shopItem, shopState.Products[productId]);
             Assert.Equal(1, shopState.ItemSubTypeProducts.Count);
             Assert.Contains(ItemSubType.Weapon, shopState.ItemSubTypeProducts);
             Assert.Single(shopState.ItemSubTypeProducts[ItemSubType.Weapon]);
             Assert.Contains(productId, shopState.ItemSubTypeProducts[ItemSubType.Weapon]);
 
             Assert.Throws<ShopStateAlreadyContainsException>(() =>
-                shopState.Register(agentAddress, shopItem));
+                shopState.Register(shopItem));
         }
 
         [Fact]
@@ -109,17 +111,18 @@ namespace Lib9c.Tests.Model.State
                 Guid.NewGuid(),
                 0);
             var shopItem = new ShopItem(
+                agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
                 0
             );
 
-            shopState.Register(agentAddress, shopItem);
+            shopState.Register(shopItem);
             shopState.Unregister(agentAddress, shopItem);
 
-            Assert.Equal(0, shopState.AgentProducts.Count);
             Assert.Equal(0, shopState.Products.Count);
+            Assert.Equal(0, shopState.AgentProducts.Count);
             Assert.Equal(0, shopState.ItemSubTypeProducts.Count);
 
             Assert.Throws<FailedToUnregisterInShopStateException>(() =>
@@ -143,13 +146,14 @@ namespace Lib9c.Tests.Model.State
                 Guid.NewGuid(),
                 0);
             var shopItem = new ShopItem(
+                agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
                 0
             );
 
-            shopState.Register(agentAddress, shopItem);
+            shopState.Register(shopItem);
 
             Assert.True(shopState.TryUnregister(
                 agentAddress,
@@ -157,8 +161,8 @@ namespace Lib9c.Tests.Model.State
                 out var unregisteredItem));
             Assert.Equal(shopItem, unregisteredItem);
 
-            Assert.Equal(0, shopState.AgentProducts.Count);
             Assert.Equal(0, shopState.Products.Count);
+            Assert.Equal(0, shopState.AgentProducts.Count);
             Assert.Equal(0, shopState.ItemSubTypeProducts.Count);
 
             Assert.Throws<FailedToUnregisterInShopStateException>(() =>
@@ -182,13 +186,14 @@ namespace Lib9c.Tests.Model.State
                 Guid.NewGuid(),
                 0);
             var shopItem = new ShopItem(
+                agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
                 0
             );
 
-            shopState.Register(agentAddress, shopItem);
+            shopState.Register(shopItem);
 
             Assert.True(shopState.TryGet(agentAddress, shopItem.ProductId, out var outShopItem));
             Assert.Equal(shopItem, outShopItem);

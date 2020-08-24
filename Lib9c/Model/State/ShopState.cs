@@ -17,56 +17,38 @@ namespace Nekoyume.Model.State
     {
         public static readonly Address Address = Addresses.Shop;
 
+        private readonly Dictionary<Guid, ShopItem> _products = new Dictionary<Guid, ShopItem>();
+
         private readonly Dictionary<Address, List<Guid>> _agentProducts =
             new Dictionary<Address, List<Guid>>();
-
-        private readonly Dictionary<Guid, ShopItem> _products = new Dictionary<Guid, ShopItem>();
 
         private readonly Dictionary<ItemSubType, List<Guid>> _itemSubTypeProducts =
             new Dictionary<ItemSubType, List<Guid>>(ItemSubTypeComparer.Instance);
 
-        public IReadOnlyDictionary<Address, List<Guid>> AgentProducts => _agentProducts;
-
         public IReadOnlyDictionary<Guid, ShopItem> Products => _products;
 
-        public IReadOnlyDictionary<ItemSubType, List<Guid>> ItemSubTypeProducts => _itemSubTypeProducts;
+        public IReadOnlyDictionary<Address, List<Guid>> AgentProducts => _agentProducts;
+
+        public IReadOnlyDictionary<ItemSubType, List<Guid>> ItemSubTypeProducts =>
+            _itemSubTypeProducts;
 
         public ShopState() : base(Address)
         {
-            _itemSubTypeProducts = new Dictionary<ItemSubType, List<Guid>>();
-            foreach (var product in _products)
-            {
-                var itemSubType = product.Value.ItemUsable.ItemSubType;
-                if (!_itemSubTypeProducts.ContainsKey(itemSubType))
-                {
-                    _itemSubTypeProducts.Add(itemSubType, new List<Guid>());
-                }
-
-                _itemSubTypeProducts[itemSubType].Add(product.Value.ProductId);
-            }
+            PostConstruct();
         }
 
         public ShopState(Dictionary serialized) : base(serialized)
         {
-            _agentProducts = ((Dictionary) serialized["agentProducts"]).ToDictionary(
-                kv => kv.Key.ToAddress(),
-                kv => ((List) kv.Value)
-                    .Select(d => d.ToGuid())
-                    .ToList());
-
             _products = ((Dictionary) serialized["products"]).ToDictionary(
                 kv => kv.Key.ToGuid(),
                 kv => new ShopItem((Dictionary) kv.Value));
+
+            PostConstruct();
         }
 
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text) "agentProducts"] = new Dictionary(
-                    _agentProducts.Select(kv =>
-                        new KeyValuePair<IKey, IValue>(
-                            (Binary) kv.Key.Serialize(),
-                            new List(kv.Value.Select(i => i.Serialize()))))),
                 [(Text) "products"] = new Dictionary(
                     _products.Select(kv =>
                         new KeyValuePair<IKey, IValue>(
@@ -74,32 +56,72 @@ namespace Nekoyume.Model.State
                             kv.Value.Serialize()))),
             }.Union((Dictionary) base.Serialize()));
 
+        private void PostConstruct()
+        {
+            foreach (var product in _products)
+            {
+                var productId = product.Value.ProductId;
+
+                var agentAddress = product.Value.SellerAgentAddress;
+                if (!_agentProducts.ContainsKey(agentAddress))
+                {
+                    _agentProducts.Add(agentAddress, new List<Guid>());
+                }
+
+                _agentProducts[agentAddress].Add(productId);
+
+                var itemSubType = product.Value.ItemUsable.ItemSubType;
+                if (!_itemSubTypeProducts.ContainsKey(itemSubType))
+                {
+                    _itemSubTypeProducts.Add(itemSubType, new List<Guid>());
+                }
+
+                _itemSubTypeProducts[itemSubType].Add(productId);
+            }
+        }
+
         #region Register
 
-        public void Register(Address sellerAgentAddress, ShopItem shopItem)
+        public void Register(ShopItem shopItem)
         {
-            if (!_agentProducts.ContainsKey(sellerAgentAddress))
+            var sellerAgentAddress = shopItem.SellerAgentAddress;
+            var productId = shopItem.ProductId;
+            _products[productId] = shopItem;
+
+            if (_agentProducts.ContainsKey(sellerAgentAddress))
             {
-                _agentProducts.Add(sellerAgentAddress, new List<Guid>());
+                var shopItems = _agentProducts[sellerAgentAddress];
+                if (shopItems.Contains(productId))
+                {
+                    throw new ShopStateAlreadyContainsException(
+                        $"{nameof(_agentProducts)}, {sellerAgentAddress}, {productId}");
+                }
+
+                shopItems.Add(productId);
+            }
+            else
+            {
+                var shopItems = new List<Guid> {productId};
+                _agentProducts.Add(sellerAgentAddress, shopItems);
             }
 
-            var shopItems = _agentProducts[sellerAgentAddress];
-            if (shopItems.Contains(shopItem.ProductId))
+            var itemSubType = shopItem.ItemUsable.ItemSubType;
+            if (_itemSubTypeProducts.ContainsKey(itemSubType))
             {
-                throw new ShopStateAlreadyContainsException(
-                    $"{nameof(_agentProducts)}, {sellerAgentAddress}, {shopItem.ProductId}");
+                var shopItems = _itemSubTypeProducts[itemSubType];
+                if (shopItems.Contains(productId))
+                {
+                    throw new ShopStateAlreadyContainsException(
+                        $"{nameof(_itemSubTypeProducts)}, {itemSubType}, {productId}");
+                }
+
+                shopItems.Add(productId);
             }
-
-            shopItems.Add(shopItem.ProductId);
-            _agentProducts[sellerAgentAddress] = shopItems;
-            _products[shopItem.ProductId] = shopItem;
-
-            if (!_itemSubTypeProducts.ContainsKey(shopItem.ItemUsable.ItemSubType))
+            else
             {
-                _itemSubTypeProducts.Add(shopItem.ItemUsable.ItemSubType, new List<Guid>());
+                var shopItems = new List<Guid> {productId};
+                _itemSubTypeProducts.Add(itemSubType, shopItems);
             }
-
-            _itemSubTypeProducts[shopItem.ItemUsable.ItemSubType].Add(shopItem.ProductId);
         }
 
         #endregion
@@ -125,54 +147,40 @@ namespace Nekoyume.Model.State
             Guid productId,
             out ShopItem unregisteredItem)
         {
-            if (!_agentProducts.ContainsKey(sellerAgentAddress))
-            {
-                unregisteredItem = null;
-                return false;
-            }
-
-            var shopItems = _agentProducts[sellerAgentAddress];
-
-            if (!shopItems.Any(item => item.Equals(productId)))
-            {
-                unregisteredItem = null;
-                return false;
-            }
-
-            shopItems.Remove(productId);
-            if (shopItems.Count == 0)
-            {
-                _agentProducts.Remove(sellerAgentAddress);
-            }
-            else
-            {
-                _agentProducts[sellerAgentAddress] = shopItems;
-            }
-
             if (!_products.ContainsKey(productId))
             {
                 unregisteredItem = null;
                 return false;
             }
 
-            unregisteredItem = _products[productId];
+            var targetShopItem = _products[productId];
             _products.Remove(productId);
 
-            var itemSubType = unregisteredItem.ItemUsable.ItemSubType;
-            if (_itemSubTypeProducts.ContainsKey(itemSubType))
+            if (_agentProducts.ContainsKey(sellerAgentAddress))
             {
-                var guids = _itemSubTypeProducts[itemSubType];
-                guids.Remove(productId);
-                if (guids.Count == 0)
+                var shopItems = _agentProducts[sellerAgentAddress];
+                if (shopItems.Any(item => item.Equals(productId)))
                 {
-                    _itemSubTypeProducts.Remove(itemSubType);
-                }
-                else
-                {
-                    _itemSubTypeProducts[itemSubType] = guids;
+                    shopItems.Remove(productId);
+                    if (shopItems.Count == 0)
+                    {
+                        _agentProducts.Remove(sellerAgentAddress);
+                    }
                 }
             }
 
+            var itemSubType = targetShopItem.ItemUsable.ItemSubType;
+            if (_itemSubTypeProducts.ContainsKey(itemSubType))
+            {
+                var shopItems = _itemSubTypeProducts[itemSubType];
+                shopItems.Remove(productId);
+                if (shopItems.Count == 0)
+                {
+                    _itemSubTypeProducts.Remove(itemSubType);
+                }
+            }
+
+            unregisteredItem = targetShopItem;
             return true;
         }
 

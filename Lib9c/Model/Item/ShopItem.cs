@@ -10,13 +10,20 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class ShopItem
     {
+        public readonly Address SellerAgentAddress;
         public readonly Address SellerAvatarAddress;
         public readonly Guid ProductId;
         public readonly ItemUsable ItemUsable;
         public readonly BigInteger Price;
 
-        public ShopItem(Address sellerAvatarAddress, Guid productId, ItemUsable itemUsable, BigInteger price)
+        public ShopItem(
+            Address sellerAgentAddress,
+            Address sellerAvatarAddress,
+            Guid productId,
+            ItemUsable itemUsable,
+            BigInteger price)
         {
+            SellerAgentAddress = sellerAgentAddress;
             SellerAvatarAddress = sellerAvatarAddress;
             ProductId = productId;
             ItemUsable = itemUsable;
@@ -25,6 +32,7 @@ namespace Nekoyume.Model.Item
 
         public ShopItem(Dictionary serialized)
         {
+            SellerAgentAddress = serialized["sellerAgentAddress"].ToAddress();
             SellerAvatarAddress = serialized["sellerAvatarAddress"].ToAddress();
             ProductId = serialized["productId"].ToGuid();
             ItemUsable = (ItemUsable)ItemFactory.Deserialize(
@@ -32,6 +40,16 @@ namespace Nekoyume.Model.Item
             );
             Price = serialized["price"].ToBigInteger();
         }
+
+        public IValue Serialize() =>
+            new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)"sellerAgentAddress"] = SellerAgentAddress.Serialize(),
+                [(Text)"sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
+                [(Text)"productId"] = ProductId.Serialize(),
+                [(Text)"itemUsable"] = ItemUsable.Serialize(),
+                [(Text)"price"] = Price.Serialize(),
+            });
 
         protected bool Equals(ShopItem other)
         {
@@ -50,14 +68,5 @@ namespace Nekoyume.Model.Item
         {
             return ProductId.GetHashCode();
         }
-
-        public IValue Serialize() =>
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
-                [(Text)"productId"] = ProductId.Serialize(),
-                [(Text)"itemUsable"] = ItemUsable.Serialize(),
-                [(Text)"price"] = Price.Serialize(),
-            });
     }
 }
