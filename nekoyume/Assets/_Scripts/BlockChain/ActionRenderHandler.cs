@@ -64,7 +64,6 @@ namespace Nekoyume.BlockChain
             ItemEnhancement();
             QuestReward();
             RankingBattle();
-            WeeklyArenaReward();
             CombinationEquipment();
             RapidCombination();
             GameConfig();
@@ -281,14 +280,6 @@ namespace Nekoyume.BlockChain
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
                 .Subscribe(ResponseRankingBattle).AddTo(_disposables);
-        }
-
-        private void WeeklyArenaReward()
-        {
-            _renderer.EveryRender<WeeklyArenaReward>()
-                .Where(ValidateEvaluationForCurrentAgent)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseWeeklyArenaReward).AddTo(_disposables);
         }
 
         private void CombinationEquipment()
@@ -776,34 +767,6 @@ namespace Nekoyume.BlockChain
             actionFailPopup.Close();
 
             Widget.Find<RankingBoard>().GoToStage(eval);
-        }
-
-        private void ResponseWeeklyArenaReward(ActionBase.ActionEvaluation<WeeklyArenaReward> eval)
-        {
-            //TODO 오류별 핸들링
-            if (eval.Exception is null)
-            {
-                //[TentuPlay] ArenaReward 기록
-                //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                Address agentAddress = States.Instance.AgentState.address;
-                if (eval.OutputStates.TryGetGoldBalance(agentAddress, out var balance))
-                {
-                    GoldBalanceState prevBalanceState = States.Instance.GoldBalanceState;
-                    var earned = balance - prevBalanceState.Gold;
-
-                    new TPStashEvent().CurrencyGet(
-                        player_uuid: agentAddress.ToHex(),
-                        currency_slug: "gold",
-                        currency_quantity: float.Parse(earned.GetQuantityString()),
-                        currency_total_quantity: float.Parse(balance.GetQuantityString()),
-                        reference_entity: "quests",
-                        reference_category_slug: "arena",
-                        reference_slug: "WeeklyArenaReward");
-                    UI.Notification.Push(MailType.System, $"Get Arena Reward: {earned}");
-                }
-
-                UpdateAgentState(eval);
-            }
         }
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)

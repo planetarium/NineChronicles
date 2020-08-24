@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
@@ -7,6 +8,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -122,7 +124,6 @@ namespace Nekoyume.UI
                     //     -GameConfig.ArenaActivationCostNCG);
                     // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 골드를 더하지 못함.
                     // LocalStateModifier.ModifyWeeklyArenaGold(GameConfig.ArenaActivationCostNCG);
-                    Game.Game.instance.ActionManager.WeeklyArenaReward();
                     LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets
                         .CharacterSheet);
                 }).AddTo(gameObject);
