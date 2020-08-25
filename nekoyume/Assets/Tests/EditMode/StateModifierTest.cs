@@ -48,7 +48,7 @@ namespace Tests.EditMode
         {
             var gold = _goldBalanceState.Gold;
             var modifier = JsonTest(new AgentGoldModifier(gold.Currency, 100));
-            modifier.Modify(ref _goldBalanceState);
+            _goldBalanceState = modifier.Modify(_goldBalanceState);
             Assert.AreEqual(gold + new FungibleAssetValue(gold.Currency, 100, 0),
                 _goldBalanceState.Gold);
         }
@@ -58,7 +58,7 @@ namespace Tests.EditMode
         {
             var actionPoint = _avatarState.actionPoint;
             var modifier = JsonTest(new AvatarActionPointModifier(100));
-            modifier.Modify(ref _avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.AreEqual(actionPoint + 100, _avatarState.actionPoint);
         }
 
@@ -73,7 +73,7 @@ namespace Tests.EditMode
             Assert.True(_avatarState.inventory.HasItem(material.ItemId));
             var modifier =
                 JsonTest(new AvatarInventoryFungibleItemRemover(material.ItemId, 1));
-            modifier.Modify(ref _avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.False(_avatarState.inventory.HasItem(material.ItemId));
         }
 
@@ -88,7 +88,7 @@ namespace Tests.EditMode
             Assert.True(_avatarState.inventory.HasItem(equipment.ItemId));
             var modifier =
                 JsonTest(new AvatarInventoryNonFungibleItemRemover(equipment.ItemId));
-            modifier.Modify(ref _avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.False(_avatarState.inventory.HasItem(equipment.ItemId));
         }
 
@@ -105,7 +105,7 @@ namespace Tests.EditMode
             _avatarState.mailBox.Add(attachmentMail);
             var modifier =
                 JsonTest(new AvatarAttachmentMailNewSetter(attachmentMail.id));
-            modifier.Modify(ref _avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.True(attachmentMail.New);
         }
 

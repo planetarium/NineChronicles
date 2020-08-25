@@ -38,7 +38,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override AvatarState Modify(ref AvatarState state)
+        public override AvatarState Modify(AvatarState state)
         {
             var item = state.inventory.Items
                 .Select(i => i.item)

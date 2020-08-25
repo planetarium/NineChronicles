@@ -8,7 +8,7 @@ namespace Nekoyume.State.Modifiers
     {
         public bool dirty { get; set; }
         public abstract bool IsEmpty { get; }
-        public abstract WeeklyArenaState Modify(ref WeeklyArenaState state);
+        public abstract WeeklyArenaState Modify(WeeklyArenaState state);
         public abstract void Add(IAccumulatableStateModifier<WeeklyArenaState> modifier);
         public abstract void Remove(IAccumulatableStateModifier<WeeklyArenaState> modifier);
     }

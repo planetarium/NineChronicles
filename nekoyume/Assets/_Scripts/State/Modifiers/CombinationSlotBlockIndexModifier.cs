@@ -12,7 +12,7 @@ namespace Nekoyume.State.Modifiers
         {
             _blockIndex = blockIndex;
         }
-        public CombinationSlotState Modify(ref CombinationSlotState state)
+        public CombinationSlotState Modify(CombinationSlotState state)
         {
             state.Update(_blockIndex);
             return state;

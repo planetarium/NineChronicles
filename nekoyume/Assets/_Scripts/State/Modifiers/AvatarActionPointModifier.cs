@@ -37,7 +37,7 @@ namespace Nekoyume.State.Modifiers
             actionPoint -= m.actionPoint;
         }
 
-        public override AvatarState Modify(ref AvatarState state)
+        public override AvatarState Modify(AvatarState state)
         {
             if (state is null)
             {

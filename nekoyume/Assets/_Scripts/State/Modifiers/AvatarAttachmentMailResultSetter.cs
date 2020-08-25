@@ -19,7 +19,7 @@ namespace Nekoyume.State.Modifiers
             _blockIndex = blockIndex;
         }
 
-        public override AvatarState Modify(ref AvatarState state)
+        public override AvatarState Modify(AvatarState state)
         {
             if (state is null)
             {

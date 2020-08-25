@@ -76,10 +76,8 @@ namespace Nekoyume.State.Modifiers
             Gold -= m.Gold;
         }
 
-        public GoldBalanceState Modify(ref GoldBalanceState state) =>
-            state is null
-                ? null
-                : state = state.Add(Gold);
+        public GoldBalanceState Modify(GoldBalanceState state) =>
+            state?.Add(Gold);
 
         public override string ToString()
         {

@@ -50,7 +50,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref state);
+            // NOTE: Reassignment is not required yet.
+            state = modifier.Modify(state);
             ReactiveAgentState.Gold.SetValueAndForceNotify(state.Gold);
         }
 
@@ -94,7 +95,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -238,7 +240,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -272,7 +275,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -301,7 +305,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -379,7 +384,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -465,7 +471,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!resetState ||
                 !isCurrentAvatarState)
@@ -503,7 +510,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!resetState ||
                 !isCurrentAvatarState)
@@ -535,7 +543,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -565,7 +574,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -608,7 +618,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -671,7 +682,8 @@ namespace Nekoyume.State
 
             var modifier = new WeeklyArenaGoldModifier(gold);
             LocalStateSettings.Instance.Add(state.address, modifier, true);
-            modifier.Modify(ref state);
+            // NOTE: Reassignment is not required yet.
+            state = modifier.Modify(state);
             WeeklyArenaStateSubject.Gold.OnNext(state.Gold);
         }
 
@@ -697,7 +709,8 @@ namespace Nekoyume.State
 
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
             LocalStateSettings.Instance.Add(weeklyArenaAddress, modifier, true);
-            modifier.Modify(ref weeklyArenaState);
+            // NOTE: Reassignment is not required yet.
+            weeklyArenaState = modifier.Modify(weeklyArenaState);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(weeklyArenaState);
         }
 
@@ -719,7 +732,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(ref state);
+            // NOTE: Reassignment is not required yet.
+            state = modifier.Modify(state);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(state);
         }
 
@@ -763,7 +777,8 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(ref slotState);
+            // NOTE: Reassignment is not required yet.
+            slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
@@ -801,7 +816,8 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(ref slotState);
+            // NOTE: Reassignment is not required yet.
+            slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
@@ -830,15 +846,17 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, blockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(ref slotState);
+            // NOTE: Reassignment is not required yet.
+            slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
         public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
         {
-            var prevState = States.Instance.CombinationSlotStates[slotIndex];
+            var slotState = States.Instance.CombinationSlotStates[slotIndex];
             var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
-            var slotState = modifier.Modify(ref prevState);
+            // NOTE: Reassignment is not required yet.
+            slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 

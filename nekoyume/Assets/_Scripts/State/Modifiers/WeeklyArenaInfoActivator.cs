@@ -56,7 +56,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override WeeklyArenaState Modify(ref WeeklyArenaState state)
+        public override WeeklyArenaState Modify(WeeklyArenaState state)
         {
             if (state is null)
             {

@@ -21,7 +21,7 @@ namespace Nekoyume.State.Modifiers
             _result = resultModel;
             _blockIndex = blockIndex;
         }
-        public CombinationSlotState Modify(ref CombinationSlotState state)
+        public CombinationSlotState Modify(CombinationSlotState state)
         {
             state.Update(_result, _blockIndex, _unlockBlockIndex);
             return state;

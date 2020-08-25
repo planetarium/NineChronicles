@@ -51,7 +51,7 @@ namespace Nekoyume.State.Modifiers
             }
         }
 
-        public override AvatarState Modify(ref AvatarState state)
+        public override AvatarState Modify(AvatarState state)
         {
             if (state is null)
             {

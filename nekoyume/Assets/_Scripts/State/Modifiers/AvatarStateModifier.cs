@@ -10,6 +10,6 @@ namespace Nekoyume.State.Modifiers
         public abstract bool IsEmpty { get; }
         public abstract void Add(IAccumulatableStateModifier<AvatarState> modifier);
         public abstract void Remove(IAccumulatableStateModifier<AvatarState> modifier);
-        public abstract AvatarState Modify(ref AvatarState state);
+        public abstract AvatarState Modify(AvatarState state);
     }
 }
