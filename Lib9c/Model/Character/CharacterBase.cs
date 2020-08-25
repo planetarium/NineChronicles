@@ -66,6 +66,8 @@ namespace Nekoyume.Model
         public int AttackCount { get; private set; }
         public int AttackCountMax { get; protected set; }
 
+        private bool _turnEnd;
+
         protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level,
             IEnumerable<StatModifier> optionalStatModifiers = null)
         {
@@ -151,8 +153,6 @@ namespace Nekoyume.Model
                         ),
                         BT.Call(EndTurn)
                     ),
-                    // 캐릭터가 살아 있지 않을 경우 `EndTurn()`을 호출하지 않아서 한 번 호출한다.
-                    BT.Call(EndTurn),
                     // terminate bt.
                     BT.Terminate()
                 )
@@ -185,6 +185,7 @@ namespace Nekoyume.Model
 
         private void UseSkill()
         {
+            _turnEnd = false;
             // 스킬 선택.
             var selectedSkill = Skills.Select(Simulator.Random);
 
@@ -202,6 +203,7 @@ namespace Nekoyume.Model
             // 쿨다운 적용.
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
+            _turnEnd = true;
 
             foreach (var info in usedSkill.SkillInfos)
             {
@@ -242,6 +244,13 @@ namespace Nekoyume.Model
 #if TEST_LOG
             UnityEngine.Debug.LogWarning($"{nameof(RowData.Id)} : {RowData.Id} / Turn Ended.");
 #endif
+            while (IsAlive())
+            {
+                if (_turnEnd)
+                {
+                    break;
+                }
+            }
         }
 
         #endregion
