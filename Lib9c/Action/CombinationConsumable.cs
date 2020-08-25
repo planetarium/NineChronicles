@@ -173,13 +173,16 @@ namespace Nekoyume.Action
                 return LogError(context, "Aborted as the recipe was failed to load.");
             }
             var materials = new Dictionary<Material, int>();
-            foreach (var materialId in recipeRow.MaterialItemIds)
+            foreach (var materialInfo in recipeRow.Materials)
             {
-                if (avatarState.inventory.TryGetFungibleItem(materialId, out var inventoryItem))
+                var materialId = materialInfo.Id;
+                var count = materialInfo.Count;
+                if (avatarState.inventory.HasItem(materialId, count))
                 {
+                    avatarState.inventory.TryGetFungibleItem(materialId, out var inventoryItem);
                     var material = (Material) inventoryItem.item;
-                    materials[material] = 1;
-                    avatarState.inventory.RemoveFungibleItem(material, 1);
+                    materials[material] = count;
+                    avatarState.inventory.RemoveFungibleItem(material, count);
                 }
                 else
                 {
@@ -187,7 +190,7 @@ namespace Nekoyume.Action
                         context,
                         "Aborted as the player has no enough material ({Material} * {Quantity})",
                         materialId,
-                        1
+                        count
                     );
                 }
             }

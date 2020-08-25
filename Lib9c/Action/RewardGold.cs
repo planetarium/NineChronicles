@@ -4,6 +4,7 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -42,8 +43,7 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(
                     fund,
                     distribution.Address,
-                    goldCurrency,
-                    amount
+                    goldCurrency * amount
                 );
             }
             return states;
@@ -90,8 +90,7 @@ namespace Nekoyume.Action
             return states.TransferAsset(
                 GoldCurrencyState.Address,
                 ctx.Miner,
-                states.GetGoldCurrency(),
-                miningReward
+                states.GetGoldCurrency() * miningReward
             );
         }
     }

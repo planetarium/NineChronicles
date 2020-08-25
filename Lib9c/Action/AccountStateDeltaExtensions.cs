@@ -6,6 +6,7 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 using Serilog;
 
@@ -21,7 +22,7 @@ namespace Nekoyume.Action
         {
             if (accounts.Length == 1)
             {
-                return states.MintAsset(accounts[0], currency, 1);
+                return states.MintAsset(accounts[0], currency * 1);
             }
             else if (accounts.Length < 1)
             {
@@ -30,7 +31,7 @@ namespace Nekoyume.Action
 
             for (int i = 1; i < accounts.Length; i++)
             {
-                states = states.TransferAsset(accounts[i - 1], accounts[i], currency, 1, true);
+                states = states.TransferAsset(accounts[i - 1], accounts[i], currency * 1, true);
             }
 
             return states;
@@ -86,7 +87,7 @@ namespace Nekoyume.Action
         public static bool TryGetGoldBalance(
             this IAccountStateDelta states,
             Address address,
-            out BigInteger balance)
+            out FungibleAssetValue balance)
         {
             try
             {

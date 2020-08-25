@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -112,8 +113,7 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(
                     GoldCurrencyState.Address,
                     ctx.Signer,
-                    states.GetGoldCurrency(),
-                    InitialGoldBalance
+                    states.GetGoldCurrency() * InitialGoldBalance
                 );
             }
 

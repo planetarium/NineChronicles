@@ -6,6 +6,7 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -113,15 +114,19 @@ namespace Nekoyume.Action
 
             if (!arenaInfo.Active)
             {
-                BigInteger agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
+                FungibleAssetValue agentBalance = states.GetBalance(ctx.Signer, states.GetGoldCurrency());
 
-                if (agentBalance >= EntranceFee)
+                if (agentBalance >= new FungibleAssetValue(agentBalance.Currency, EntranceFee, 0))
                 {
                     states = states.TransferAsset(
                         ctx.Signer,
                         WeeklyArenaAddress,
-                        states.GetGoldCurrency(),
-                        EntranceFee);
+                        new FungibleAssetValue(
+                            states.GetGoldCurrency(),
+                            EntranceFee,
+                            0
+                        )
+                    );
                     arenaInfo.Activate();
                 }
                 else

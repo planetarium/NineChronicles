@@ -7,6 +7,7 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -184,8 +185,8 @@ namespace Nekoyume.Action
             sw.Restart();
 
             // 돈은 있냐?
-            BigInteger buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
-            if (buyerBalance < shopItem.Price)
+            FungibleAssetValue buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
+            if (buyerBalance < (buyerBalance.Currency * shopItem.Price))
             {
                 return LogError(
                     context,
@@ -199,7 +200,11 @@ namespace Nekoyume.Action
             var taxedPrice = (BigInteger)decimal.Round((decimal)shopItem.Price * 0.92m);
 
             // 구매자의 돈을 판매자에게 송금한다.
-            states = states.TransferAsset(context.Signer, sellerAgentAddress, states.GetGoldCurrency(), shopItem.Price);
+            states = states.TransferAsset(
+                context.Signer,
+                sellerAgentAddress,
+                states.GetGoldCurrency() * shopItem.Price
+            );
 
             // 상점에서 구매할 아이템을 제거한다.
             try
