@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Numerics;
+using Libplanet.Assets;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;
@@ -28,9 +29,9 @@ namespace Nekoyume.UI.Module
             base.OnDisable();
         }
 
-        private void SetGold(BigInteger gold)
+        private void SetGold(FungibleAssetValue gold)
         {
-            text.text = gold.ToString("n0", CultureInfo.InvariantCulture);
+            text.text = gold.GetQuantityString();
         }
     }
 }

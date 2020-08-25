@@ -95,6 +95,7 @@ namespace Nekoyume.State
         /// 최초로 할당하거나 기존과 다른 주소의 에이전트를 할당하면, 모든 아바타 상태를 새롭게 할당된다.
         /// </summary>
         /// <param name="state"></param>
+        /// <param name="balanceState"></param>
         public void SetAgentState(AgentState state, GoldBalanceState balanceState)
         {
             if (state is null)

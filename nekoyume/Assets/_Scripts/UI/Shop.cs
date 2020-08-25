@@ -518,8 +518,9 @@ namespace Nekoyume.UI
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
         {
+            // FIXME: ReactiveAgentState.Gold.Value.MajorUnit과 shopItem.Price.Value를 잘 비교해야 합니다.
             return inventoryItem is ShopItem shopItem &&
-                   ReactiveAgentState.Gold.Value >= shopItem.Price.Value;
+                   ReactiveAgentState.Gold.Value.MajorUnit >= shopItem.Price.Value;
         }
 
         private static bool ButtonEnabledFuncForSell(CountableItem inventoryItem)

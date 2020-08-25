@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 using UniRx;
 
@@ -11,7 +12,8 @@ namespace Nekoyume.State
     /// </summary>
     public static class ReactiveAgentState
     {
-        public static readonly ReactiveProperty<BigInteger> Gold = new ReactiveProperty<BigInteger>(0);
+        public static readonly ReactiveProperty<FungibleAssetValue> Gold
+            = new ReactiveProperty<FungibleAssetValue>();
 
         private static Dictionary<int, Address> _avatarAddresses;
 
@@ -22,7 +24,7 @@ namespace Nekoyume.State
             if (state is null)
                 return;
 
-            Gold.Value = balanceState.gold;
+            Gold.Value = balanceState.Gold;
             _avatarAddresses = state.avatarAddresses;
         }
     }

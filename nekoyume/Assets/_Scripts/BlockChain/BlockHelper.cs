@@ -14,6 +14,7 @@ using Libplanet.Blockchain;
 using Nekoyume.Model.State;
 using System;
 using System.Net;
+using Libplanet.Assets;
 using Libplanet.Crypto;
 
 namespace Nekoyume.BlockChain
@@ -74,7 +75,7 @@ namespace Nekoyume.BlockChain
 
             // FIXME 메인넷때는 따로 지정해야합니다.
             var minterKey = new PrivateKey();
-            var ncg = new Currency("NCG", minterKey.ToAddress());
+            var ncg = new Currency("NCG", 2, minterKey.ToAddress());
             var initialStatesAction = new InitializeStates
             {
                 RankingState = new RankingState(),
@@ -110,10 +111,10 @@ namespace Nekoyume.BlockChain
             return blockA == null || blockB == null ||
                    !GetHashOfFirstAction(blockA).Equals(GetHashOfFirstAction(blockB));
         }
-        
+
         /// <summary>
         /// 제네시스 블록에 포함되어 있는 <see cref="InitializeStates"/> 액션의
-        /// <see cref="InitializeStates.PlainValue"/>로 부터 <see cref="HashDigest{T}"/> 값을 계산합니다. 
+        /// <see cref="InitializeStates.PlainValue"/>로 부터 <see cref="HashDigest{T}"/> 값을 계산합니다.
         /// </summary>
         /// <param name="block"><see cref="InitializeStates"/> 액션만을 포함하고 있는 제네시스 블록.</param>
         /// <returns><see cref="InitializeStates"/> 액션의 <see cref="InitializeStates.PlainValue"/>
@@ -135,7 +136,7 @@ namespace Nekoyume.BlockChain
             var path = StorePath.GetDefaultStoragePath(StorePath.Env.Development);
             DeleteAll(path);
         }
-        
+
         private static void DeleteAll(string path)
         {
             if (Directory.Exists(path))

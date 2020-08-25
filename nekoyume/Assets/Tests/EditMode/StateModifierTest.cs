@@ -1,5 +1,7 @@
 using System;
+using System.Numerics;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
@@ -25,8 +27,11 @@ namespace Tests.EditMode
         {
             _tableSheets = TableSheetsHelper.MakeTableSheets();
             _agentState = new AgentState(new Address());
-            _goldBalanceState = new GoldBalanceState(_agentState.address, 0);
-            _avatarState = new AvatarState(new Address(), _agentState.address, 0, _tableSheets, new GameConfigState());
+            var currency = new Currency("NCG", 2, minter: null);
+            var gold = new FungibleAssetValue(currency, 0, 0);
+            _goldBalanceState = new GoldBalanceState(_agentState.address, gold);
+            _avatarState = new AvatarState(new Address(), _agentState.address, 0, _tableSheets,
+                new GameConfigState());
         }
 
         [TearDown]
@@ -41,10 +46,11 @@ namespace Tests.EditMode
         [Test]
         public void AgentGoldModifier()
         {
-            var gold = _goldBalanceState.gold;
-            var modifier = JsonTest(new AgentGoldModifier(100));
-            modifier.Modify(_goldBalanceState);
-            Assert.AreEqual(gold + 100, _goldBalanceState.gold);
+            var gold = _goldBalanceState.Gold;
+            var modifier = JsonTest(new AgentGoldModifier(gold.Currency, 100));
+            _goldBalanceState = modifier.Modify(_goldBalanceState);
+            Assert.AreEqual(gold + new FungibleAssetValue(gold.Currency, 100, 0),
+                _goldBalanceState.Gold);
         }
 
         [Test]
@@ -52,7 +58,7 @@ namespace Tests.EditMode
         {
             var actionPoint = _avatarState.actionPoint;
             var modifier = JsonTest(new AvatarActionPointModifier(100));
-            modifier.Modify(_avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.AreEqual(actionPoint + 100, _avatarState.actionPoint);
         }
 
@@ -67,7 +73,7 @@ namespace Tests.EditMode
             Assert.True(_avatarState.inventory.HasItem(material.ItemId));
             var modifier =
                 JsonTest(new AvatarInventoryFungibleItemRemover(material.ItemId, 1));
-            modifier.Modify(_avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.False(_avatarState.inventory.HasItem(material.ItemId));
         }
 
@@ -82,7 +88,7 @@ namespace Tests.EditMode
             Assert.True(_avatarState.inventory.HasItem(equipment.ItemId));
             var modifier =
                 JsonTest(new AvatarInventoryNonFungibleItemRemover(equipment.ItemId));
-            modifier.Modify(_avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.False(_avatarState.inventory.HasItem(equipment.ItemId));
         }
 
@@ -99,7 +105,7 @@ namespace Tests.EditMode
             _avatarState.mailBox.Add(attachmentMail);
             var modifier =
                 JsonTest(new AvatarAttachmentMailNewSetter(attachmentMail.id));
-            modifier.Modify(_avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.True(attachmentMail.New);
         }
 
