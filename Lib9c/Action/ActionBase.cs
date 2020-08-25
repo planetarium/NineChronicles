@@ -271,36 +271,6 @@ namespace Nekoyume.Action
             }
         }
 
-        public static readonly Subject<ActionEvaluation<ActionBase>> RenderSubject =
-            new Subject<ActionEvaluation<ActionBase>>();
-
-        public static readonly Subject<ActionEvaluation<ActionBase>> UnrenderSubject =
-            new Subject<ActionEvaluation<ActionBase>>();
-
-        public void Render(IActionContext context, IAccountStateDelta nextStates)
-        {
-            RenderSubject.OnNext(new ActionEvaluation<ActionBase>()
-            {
-                Action = this,
-                Signer = context.Signer,
-                BlockIndex = context.BlockIndex,
-                OutputStates = nextStates,
-                PreviousStates = context.PreviousStates,
-            });
-        }
-
-        public void Unrender(IActionContext context, IAccountStateDelta nextStates)
-        {
-            UnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
-            {
-                Action = this,
-                Signer = context.Signer,
-                BlockIndex = context.BlockIndex,
-                OutputStates = nextStates,
-                PreviousStates = context.PreviousStates,
-            });
-        }
-
         protected IAccountStateDelta LogError(IActionContext context, string message, params object[] values)
         {
             string actionType = GetType().Name;
@@ -311,36 +281,6 @@ namespace Nekoyume.Action
             string msg = $"#{{BlockIndex}} {actionType} (by {{Signer}}): {message}";
             Log.Error(msg, prependedValues);
             return context.PreviousStates;
-        }
-
-        public void RenderError(IActionContext context, Exception exception)
-        {
-            RenderSubject.OnNext(
-                new ActionEvaluation<ActionBase>()
-                {
-                    Action = this,
-                    Signer = context.Signer,
-                    BlockIndex = context.BlockIndex,
-                    OutputStates = context.PreviousStates,
-                    Exception = exception,
-                    PreviousStates = context.PreviousStates,
-                }
-            );
-        }
-
-        public void UnrenderError(IActionContext context, Exception exception)
-        {
-            UnrenderSubject.OnNext(
-                new ActionEvaluation<ActionBase>()
-                {
-                    Action = this,
-                    Signer = context.Signer,
-                    BlockIndex = context.BlockIndex,
-                    OutputStates = context.PreviousStates,
-                    Exception = exception,
-                    PreviousStates = context.PreviousStates,
-                }
-            );
         }
 
         protected bool TryGetAdminState(IActionContext ctx, out AdminState state)
