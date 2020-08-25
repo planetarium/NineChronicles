@@ -45,6 +45,59 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; IconFilename: "{app}\{#GameIconName}"; Tasks: CreateDesktopIcon
 Name: "{userstartup}\{#MyAppName}"; Filename: "{app}\{#GameExeName}"; Tasks: RegisterStartup
 
+[Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+var
+  WinHttpReq: Variant;
+begin
+  if CurStep = ssInstall then
+  begin
+    Log('Install: Request Mixpanel.');
+    WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
+    WinHttpReq.Open('POST', 'https://api.mixpanel.com/track', false);
+    WinHttpReq.SetRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    WinHttpReq.Send('data={"event":"Installer/Start","properties":{"token":"80a1e14b57d050536185c7459d45195a","action":"start"}}');
+    if WinHttpReq.ResponseText = 1 then begin
+      Log('Mixpanel request success.');
+    end else begin
+      Log('Mixpanel request failed. ' + WinHttpReq.ResponseText);
+    end;
+  end;  
+
+  if CurStep = ssPostInstall then
+  begin                     
+    Log('PostInstall: Request Mixpanel.');
+    WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
+    WinHttpReq.Open('POST', 'https://api.mixpanel.com/track', false);
+    WinHttpReq.SetRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    WinHttpReq.Send('data={"event":"Installer/End","properties":{"token":"80a1e14b57d050536185c7459d45195a","action":"end"}}');
+    if WinHttpReq.ResponseText = 1 then begin
+      Log('Mixpanel request success.');
+    end else begin
+      Log('Mixpanel request failed. ' + WinHttpReq.ResponseText);
+    end;
+  end;
+end;
+
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  WinHttpReq: Variant;
+begin
+  if CurUninstallStep = usUninstall then
+  begin      
+    Log('UnInstall: Request Mixpanel.');
+    WinHttpReq := CreateOleObject('WinHttp.WinHttpRequest.5.1');
+    WinHttpReq.Open('POST', 'https://api.mixpanel.com/track', false);
+    WinHttpReq.SetRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    WinHttpReq.Send('data={"event":"Installer/Uninstall","properties":{"token":"80a1e14b57d050536185c7459d45195a","action":"uninstall"}}');
+    if WinHttpReq.ResponseText = 1 then begin
+      Log('Mixpanel request success.');
+    end else begin
+      Log('Mixpanel request failed. ' + WinHttpReq.ResponseText);
+    end;
+  end;
+end;
+
 [Run]
 Filename: "{cmd}"; Parameters: "/C ""taskkill /im ""{#MyAppName}.exe"""" /f /t"
 
