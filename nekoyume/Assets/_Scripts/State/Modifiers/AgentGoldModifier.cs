@@ -18,6 +18,9 @@ namespace Nekoyume.State.Modifiers
         [SerializeField]
         private string hex;
 
+        [NonSerialized]
+        private FungibleAssetValue? _goldCache;
+
         public bool dirty { get; set; }
 
         public bool IsEmpty => Gold.Sign == 0;
@@ -26,13 +29,20 @@ namespace Nekoyume.State.Modifiers
         {
             get
             {
+                if (_goldCache.HasValue)
+                {
+                    return _goldCache.Value;
+                }
+
                 var serialized = (Bencodex.Types.List) new Codec().Decode(ByteUtil.ParseHex(hex));
-                return new FungibleAssetValue(
+                _goldCache = new FungibleAssetValue(
                     CurrencyExtensions.Deserialize(
                         (Bencodex.Types.Dictionary) serialized.ElementAt(0)),
                     serialized.ElementAt(1).ToInteger(),
                     serialized.ElementAt(2).ToBigInteger(),
                     serialized.ElementAt(3).ToBigInteger());
+
+                return _goldCache.Value;
             }
             set
             {
@@ -45,6 +55,7 @@ namespace Nekoyume.State.Modifiers
                 });
 
                 hex = ByteUtil.Hex(new Codec().Encode(serialized));
+                _goldCache = null;
             }
         }
 
