@@ -5,6 +5,7 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Action
@@ -81,8 +82,7 @@ namespace Nekoyume.Action
                 states = states.TransferAsset(
                     GoldCurrencyState.Address,
                     address,
-                    states.GetGoldCurrency(),
-                    reward
+                    states.GetGoldCurrency() * reward
                 );
             }
 

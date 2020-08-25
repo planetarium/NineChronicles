@@ -7,18 +7,19 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
 
     public class State : IAccountStateDelta
     {
         private readonly IImmutableDictionary<Address, IValue> _state;
-        private readonly IImmutableDictionary<(Address, Currency), BigInteger> _balance;
+        private readonly IImmutableDictionary<(Address, Currency), FungibleAssetValue> _balance;
 
         public State(
             IImmutableDictionary<Address, IValue> state = null,
-            IImmutableDictionary<(Address, Currency), BigInteger> balance = null)
+            IImmutableDictionary<(Address, Currency), FungibleAssetValue> balance = null)
         {
             _state = state ?? ImmutableDictionary<Address, IValue>.Empty;
-            _balance = balance ?? ImmutableDictionary<(Address, Currency), BigInteger>.Empty;
+            _balance = balance ?? ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty;
         }
 
         public IImmutableSet<Address> UpdatedAddresses =>
@@ -39,45 +40,45 @@ namespace Lib9c.Tests.Action
         public IAccountStateDelta SetState(Address address, IValue state) =>
             new State(_state.SetItem(address, state), _balance);
 
-        public BigInteger GetBalance(Address address, Currency currency) =>
-            _balance.TryGetValue((address, currency), out BigInteger balance) ? balance : 0;
+        public FungibleAssetValue GetBalance(Address address, Currency currency) =>
+            _balance.TryGetValue((address, currency), out FungibleAssetValue balance) ? balance : currency * 0;
 
-        public IAccountStateDelta MintAsset(Address recipient, Currency currency, BigInteger amount) =>
-            new State(_state, _balance.SetItem((recipient, currency), GetBalance(recipient, currency) + amount));
+        public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value) =>
+            new State(_state, _balance.SetItem((recipient, value.Currency), GetBalance(recipient, value.Currency) + value));
 
-        public IAccountStateDelta BurnAsset(Address owner, Currency currency, BigInteger amount) =>
-            new State(_state, _balance.SetItem((owner, currency), GetBalance(owner, currency) - amount));
+        public IAccountStateDelta BurnAsset(Address owner, FungibleAssetValue value) =>
+            new State(_state, _balance.SetItem((owner, value.Currency), GetBalance(owner, value.Currency) - value));
 
         public IAccountStateDelta TransferAsset(
             Address sender,
             Address recipient,
-            Currency currency,
-            BigInteger amount,
+            FungibleAssetValue value,
             bool allowNegativeBalance = false
         )
         {
-            // Libplanet 코드에서 들고 옴... (AccountStateDeltaImpl.cs@d365e474d5abf9377f553376a38b93982a36d5f0)
-            if (amount <= 0)
+            // Copy from Libplanet (AccountStateDeltaImpl.cs@66104588af35afbd18a41bb7857eacd9da190019)
+            if (value.Sign <= 0)
             {
                 throw new ArgumentOutOfRangeException(
-                    nameof(amount),
-                    "The amount to transfer has to be greater than 0."
+                    nameof(value),
+                    "The value to transfer has to be greater than zero."
                 );
             }
 
-            BigInteger senderBalance = GetBalance(sender, currency),
-                       recipientBalance = GetBalance(recipient, currency);
+            Currency currency = value.Currency;
+            FungibleAssetValue senderBalance = GetBalance(sender, currency);
+            FungibleAssetValue recipientBalance = GetBalance(recipient, currency);
 
-            if (!allowNegativeBalance && senderBalance < amount)
+            if (!allowNegativeBalance && senderBalance < value)
             {
                 var msg = $"The account {sender}'s balance of {currency} is insufficient to " +
-                          $"transfer: {senderBalance} {currency} < {amount} {currency}.";
-                throw new InsufficientBalanceException(sender, currency, senderBalance, msg);
+                          $"transfer: {senderBalance} < {value}.";
+                throw new InsufficientBalanceException(sender, senderBalance, msg);
             }
 
-            IImmutableDictionary<(Address, Currency), BigInteger> newBalance = _balance
-                .SetItem((sender, currency), senderBalance - amount)
-                .SetItem((recipient, currency), recipientBalance + amount);
+            IImmutableDictionary<(Address, Currency), FungibleAssetValue> newBalance = _balance
+                .SetItem((sender, currency), senderBalance - value)
+                .SetItem((recipient, currency), recipientBalance + value);
             return new State(_state, newBalance);
         }
     }

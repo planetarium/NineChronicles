@@ -4,6 +4,7 @@ namespace Lib9c.Tests.Model.State
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
+    using Libplanet.Assets;
     using Nekoyume.Model.State;
     using Xunit;
 
@@ -12,7 +13,7 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void Serialize()
         {
-            var currency = new Currency("NCG", default(Address));
+            var currency = new Currency("NCG", 2, default(Address));
             var state = new GoldCurrencyState(currency);
             var serialized = (Dictionary)state.Serialize();
             GoldCurrencyState deserialized = new GoldCurrencyState(serialized);
@@ -23,7 +24,7 @@ namespace Lib9c.Tests.Model.State
         [Fact]
         public void SerializeWithDotnetAPI()
         {
-            var currency = new Currency("NCG", default(Address));
+            var currency = new Currency("NCG", 2, default(Address));
             var state = new GoldCurrencyState(currency);
             var formatter = new BinaryFormatter();
 

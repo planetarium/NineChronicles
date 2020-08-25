@@ -1,4 +1,5 @@
 using Libplanet;
+using Libplanet.Assets;
 using System;
 
 namespace Nekoyume.Action

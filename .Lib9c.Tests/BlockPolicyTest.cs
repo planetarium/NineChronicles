@@ -5,6 +5,7 @@ namespace Lib9c.Tests
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
     using Libplanet.Blocks;
@@ -29,6 +30,7 @@ namespace Lib9c.Tests
             using var store = new DefaultStore(null);
             _ = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
+                store,
                 store,
                 genesis
             );
@@ -57,6 +59,7 @@ namespace Lib9c.Tests
             using var store = new DefaultStore(null);
             var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
+                store,
                 store,
                 genesis
             );
@@ -115,7 +118,7 @@ namespace Lib9c.Tests
                             AdminAddressState = new AdminState(adminAddress, 1500000),
                             ActivatedAccountsState = new ActivatedAccountsState(activatedAddresses),
                             GoldCurrencyState = new GoldCurrencyState(
-                                new Currency("NCG", minter: null)
+                                new Currency("NCG", 2, minter: null)
                             ),
                             GoldDistributions = new GoldDistribution[0],
                         },

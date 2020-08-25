@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Model.State;
+using Libplanet.Assets;
 
 namespace Nekoyume.Action
 {
@@ -62,7 +63,7 @@ namespace Nekoyume.Action
                 .SetState(GoldCurrencyState.Address, GoldCurrencyState.Serialize())
                 .SetState(Addresses.GoldDistribution, GoldDistributions.Select(v => v.Serialize()).Serialize());
 
-            states = states.MintAsset(GoldCurrencyState.Address, GoldCurrencyState.Currency, 1000000000);
+            states = states.MintAsset(GoldCurrencyState.Address, GoldCurrencyState.Currency * 1000000000);
             return states;
         }
 

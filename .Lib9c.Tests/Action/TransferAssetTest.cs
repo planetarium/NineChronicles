@@ -9,6 +9,7 @@ namespace Lib9c.Tests.Action
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
+    using Libplanet.Assets;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
@@ -31,14 +32,14 @@ namespace Lib9c.Tests.Action
             }
         );
 
-        private static readonly Currency _currency = new Currency("NCG", default(Address?));
+        private static readonly Currency _currency = new Currency("NCG", 2, default(Address?));
 
         [Fact]
         public void Execute()
         {
-            var balance = ImmutableDictionary<(Address, Currency), BigInteger>.Empty
-                .Add((_sender, _currency), 1000)
-                .Add((_recipient, _currency), 10);
+            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+                .Add((_sender, _currency), _currency * 1000)
+                .Add((_recipient, _currency), _currency * 10);
             var prevState = new State(
                 balance: balance
             );
@@ -56,16 +57,16 @@ namespace Lib9c.Tests.Action
                 BlockIndex = 1,
             });
 
-            Assert.Equal(900, nextState.GetBalance(_sender, _currency));
-            Assert.Equal(110, nextState.GetBalance(_recipient, _currency));
+            Assert.Equal(_currency * 900, nextState.GetBalance(_sender, _currency));
+            Assert.Equal(_currency * 110, nextState.GetBalance(_recipient, _currency));
         }
 
         [Fact]
         public void ExecuteWithInvalidSigner()
         {
-            var balance = ImmutableDictionary<(Address, Currency), BigInteger>.Empty
-                .Add((_sender, _currency), 1000)
-                .Add((_recipient, _currency), 10);
+            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+                .Add((_sender, _currency), _currency * 1000)
+                .Add((_recipient, _currency), _currency * 10);
             var prevState = new State(
                 balance: balance
             );
@@ -96,9 +97,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithInsufficientBalance()
         {
-            var balance = ImmutableDictionary<(Address, Currency), BigInteger>.Empty
-                .Add((_sender, _currency), 1000)
-                .Add((_recipient, _currency), 10);
+            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+                .Add((_sender, _currency), _currency * 1000)
+                .Add((_recipient, _currency), _currency * 10);
             var prevState = new State(
                 balance: balance
             );
@@ -124,10 +125,10 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithMinterAsSender()
         {
-            var currencyBySender = new Currency("NCG", _sender);
-            var balance = ImmutableDictionary<(Address, Currency), BigInteger>.Empty
-                .Add((_sender, currencyBySender), 1000)
-                .Add((_recipient, currencyBySender), 10);
+            var currencyBySender = new Currency("NCG", 2, _sender);
+            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+                .Add((_sender, currencyBySender), _currency * 1000)
+                .Add((_recipient, currencyBySender), _currency * 10);
             var prevState = new State(
                 balance: balance
             );
@@ -156,10 +157,10 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void ExecuteWithMinterAsRecipient()
         {
-            var currencyByRecipient = new Currency("NCG", _sender);
-            var balance = ImmutableDictionary<(Address, Currency), BigInteger>.Empty
-                .Add((_sender, currencyByRecipient), 1000)
-                .Add((_recipient, currencyByRecipient), 10);
+            var currencyByRecipient = new Currency("NCG", 2, _sender);
+            var balance = ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty
+                .Add((_sender, currencyByRecipient), _currency * 1000)
+                .Add((_recipient, currencyByRecipient), _currency * 10);
             var prevState = new State(
                 balance: balance
             );
