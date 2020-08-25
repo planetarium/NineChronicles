@@ -756,7 +756,10 @@ namespace Nekoyume.BlockChain
             actionFailPopup.CloseCallback = null;
             actionFailPopup.Close();
 
-            Widget.Find<RankingBoard>().GoToStage(eval);
+            if (Widget.Find<ArenaBattleLoadingScreen>().IsActive())
+            {
+                Widget.Find<RankingBoard>().GoToStage(eval);
+            }
         }
 
         private void ResponseRedeemCode(ActionBase.ActionEvaluation<Action.RedeemCode> eval)
