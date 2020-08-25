@@ -37,7 +37,7 @@ namespace Nekoyume.Action
         private struct AccountStateDelta : IAccountStateDelta
         {
             private IImmutableDictionary<Address, IValue> _states;
-            private IImmutableDictionary<(Address, Currency), (BigInteger, BigInteger)> _balances;
+            private IImmutableDictionary<(Address, Currency), BigInteger> _balances;
 
             public IImmutableSet<Address> UpdatedAddresses => _states.Keys.ToImmutableHashSet();
 
@@ -51,7 +51,7 @@ namespace Nekoyume.Action
 
             public AccountStateDelta(
                 IImmutableDictionary<Address, IValue> states,
-                IImmutableDictionary<(Address, Currency), (BigInteger, BigInteger)> balances
+                IImmutableDictionary<(Address, Currency), BigInteger> balances
             )
             {
                 _states = states;
@@ -65,15 +65,9 @@ namespace Nekoyume.Action
                     kv => kv.Value
                 );
 
-                (BigInteger, BigInteger) Decode(List value) =>
-                    (
-                        value.ElementAt(0).ToBigInteger(),
-                        value.ElementAt(1).ToBigInteger()
-                    );
-
                 _balances = balances.Cast<Dictionary>().ToImmutableDictionary(
                     record => (record["address"].ToAddress(), CurrencyExtensions.Deserialize((Dictionary)record["currency"])),
-                    record => Decode((List)record["amount"])
+                    record => record["amount"].ToBigInteger()
                 );
             }
 
@@ -98,12 +92,12 @@ namespace Nekoyume.Action
 
             public FungibleAssetValue GetBalance(Address address, Currency currency)
             {
-                if (!_balances.TryGetValue((address, currency), out (BigInteger, BigInteger) amount))
+                if (!_balances.TryGetValue((address, currency), out BigInteger rawValue))
                 {
                     throw new BalanceDoesNotExistsException(address, currency);
                 }
 
-                return new FungibleAssetValue(currency, amount.Item1, amount.Item2);
+                return FungibleAssetValue.FromRawValue(currency, rawValue);
             }
 
             public IAccountStateDelta MintAsset(Address recipient, FungibleAssetValue value)
@@ -122,7 +116,7 @@ namespace Nekoyume.Action
                     _states,
                     _balances.SetItem(
                         (recipient, value.Currency),
-                        (nextAmount.MajorUnit, nextAmount.MinorUnit)
+                        nextAmount.RawValue
                     )
                 );
             }
@@ -152,8 +146,8 @@ namespace Nekoyume.Action
                 FungibleAssetValue senderRemains = senderBalance - value;
                 FungibleAssetValue recipientRemains = GetBalance(recipient, currency) + value;
                 var balances = _balances
-                    .SetItem((sender, currency), (senderRemains.MajorUnit, senderRemains.MinorUnit))
-                    .SetItem((recipient, currency), (recipientRemains.MajorUnit, recipientRemains.MinorUnit));
+                    .SetItem((sender, currency), senderRemains.RawValue)
+                    .SetItem((recipient, currency), recipientRemains.RawValue);
                 return new AccountStateDelta(_states, balances);
             }
 
@@ -182,7 +176,7 @@ namespace Nekoyume.Action
                     _states,
                     _balances.SetItem(
                         (owner, value.Currency),
-                        (nextValue.MajorUnit, nextValue.MinorUnit)
+                        nextValue.RawValue
                     )
                 );
             }
