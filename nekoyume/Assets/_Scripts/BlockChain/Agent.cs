@@ -758,7 +758,7 @@ namespace Nekoyume.BlockChain
 
         private void TipChangedHandler((
             Block<PolymorphicAction<ActionBase>> OldTip,
-            Block<PolymorphicAction<ActionBase>>NewTip) tuple)
+            Block<PolymorphicAction<ActionBase>> NewTip) tuple)
         {
             var (oldTip, newTip) = tuple;
 
