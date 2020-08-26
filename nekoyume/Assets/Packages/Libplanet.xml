@@ -1517,15 +1517,27 @@
         <member name="T:Libplanet.Assets.FungibleAssetValue">
             <summary>
             Holds a fungible asset value which holds its <see cref="F:Libplanet.Assets.FungibleAssetValue.Currency"/> together.
-            <para>It behaves like numbers except for division operator (<c>/</c>) to prevent to forget
-            to handle its remainder; use <see cref="M:Libplanet.Assets.FungibleAssetValue.DivRem(Libplanet.Assets.FungibleAssetValue)"/> and <see
-            cref="M:Libplanet.Assets.FungibleAssetValue.DivRem(System.Numerics.BigInteger)"/> methods instead.</para>
             </summary>
+            <remarks>
+            It behaves like numbers except for division operator (<c>/</c>) to prevent to forget
+            to handle its remainder; use <see cref="M:Libplanet.Assets.FungibleAssetValue.DivRem(Libplanet.Assets.FungibleAssetValue)"/> and <see
+            cref="M:Libplanet.Assets.FungibleAssetValue.DivRem(System.Numerics.BigInteger)"/> methods instead.
+            </remarks>
         </member>
         <member name="F:Libplanet.Assets.FungibleAssetValue.Currency">
             <summary>
             The currency of the fungible asset.
             </summary>
+        </member>
+        <member name="F:Libplanet.Assets.FungibleAssetValue.RawValue">
+            <summary>
+            The internal representation of the fungible asset.
+            </summary>
+            <remarks>
+            Since this is an internal representation, this does not guarantee forward compatibility.
+            Therefore, do not depend on this value for permanent uses but only for volatile data.
+            </remarks>
+            <seealso cref="M:Libplanet.Assets.FungibleAssetValue.FromRawValue(Libplanet.Assets.Currency,System.Numerics.BigInteger)"/>
         </member>
         <member name="M:Libplanet.Assets.FungibleAssetValue.#ctor(Libplanet.Assets.Currency)">
             <summary>
@@ -1754,6 +1766,15 @@
             <returns>The parsed asset value.</returns>
             <exception cref="T:System.FormatException">Thrown when the given <paramref name="value"/> is not
             a valid numeric string.</exception>
+        </member>
+        <member name="M:Libplanet.Assets.FungibleAssetValue.FromRawValue(Libplanet.Assets.Currency,System.Numerics.BigInteger)">
+            <summary>
+            Restores a value from a <paramref name="rawValue"/> of a <paramref name="currency"/>.
+            </summary>
+            <param name="currency">The currency to create a value.</param>
+            <param name="rawValue">The <see cref="F:Libplanet.Assets.FungibleAssetValue.RawValue"/> to restore.</param>
+            <returns>The value restored from the given <paramref name="rawValue"/>.</returns>
+            <seealso cref="F:Libplanet.Assets.FungibleAssetValue.RawValue"/>
         </member>
         <member name="M:Libplanet.Assets.FungibleAssetValue.DivRem(System.Numerics.BigInteger,Libplanet.Assets.FungibleAssetValue@)">
             <summary>
