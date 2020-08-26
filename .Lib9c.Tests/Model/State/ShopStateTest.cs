@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Model.State
     using System;
     using Bencodex.Types;
     using Libplanet;
+    using Libplanet.Assets;
     using Libplanet.Crypto;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
@@ -27,12 +28,13 @@ namespace Lib9c.Tests.Model.State
                 weaponRow,
                 Guid.NewGuid(),
                 0);
+            var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null));
             var shopItem = new ShopItem(
                 agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
-                0
+                price
             );
 
             shopState.Register(shopItem);
@@ -68,12 +70,13 @@ namespace Lib9c.Tests.Model.State
                 weaponRow,
                 Guid.NewGuid(),
                 0);
+            var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null));
             var shopItem = new ShopItem(
                 agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
-                0
+                price
             );
 
             shopState.Register(shopItem);
@@ -110,12 +113,13 @@ namespace Lib9c.Tests.Model.State
                 weaponRow,
                 Guid.NewGuid(),
                 0);
+            var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null));
             var shopItem = new ShopItem(
                 agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
-                0
+                price
             );
 
             shopState.Register(shopItem);
@@ -145,12 +149,13 @@ namespace Lib9c.Tests.Model.State
                 weaponRow,
                 Guid.NewGuid(),
                 0);
+            var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null));
             var shopItem = new ShopItem(
                 agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
-                0
+                price
             );
 
             shopState.Register(shopItem);
@@ -185,12 +190,13 @@ namespace Lib9c.Tests.Model.State
                 weaponRow,
                 Guid.NewGuid(),
                 0);
+            var price = new FungibleAssetValue(new Currency("NCG", 2, minter: null));
             var shopItem = new ShopItem(
                 agentAddress,
                 avatarAddress,
                 productId,
                 itemUsable,
-                0
+                price
             );
 
             shopState.Register(shopItem);

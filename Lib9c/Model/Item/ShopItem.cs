@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Item
@@ -14,14 +15,14 @@ namespace Nekoyume.Model.Item
         public readonly Address SellerAvatarAddress;
         public readonly Guid ProductId;
         public readonly ItemUsable ItemUsable;
-        public readonly BigInteger Price;
+        public readonly FungibleAssetValue Price;
 
         public ShopItem(
             Address sellerAgentAddress,
             Address sellerAvatarAddress,
             Guid productId,
             ItemUsable itemUsable,
-            BigInteger price)
+            FungibleAssetValue price)
         {
             SellerAgentAddress = sellerAgentAddress;
             SellerAvatarAddress = sellerAvatarAddress;
@@ -38,7 +39,7 @@ namespace Nekoyume.Model.Item
             ItemUsable = (ItemUsable)ItemFactory.Deserialize(
                 (Dictionary)serialized["itemUsable"]
             );
-            Price = serialized["price"].ToBigInteger();
+            Price = serialized["price"].ToFungibleAssetValue();
         }
 
         public IValue Serialize() =>

@@ -58,7 +58,7 @@ namespace Nekoyume.Action
         {
             public ShopItem shopItem;
             public Guid id;
-            public BigInteger gold;
+            public FungibleAssetValue gold;
 
             protected override string TypeId => "buy.sellerResult";
 
@@ -70,7 +70,7 @@ namespace Nekoyume.Action
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
                 id = serialized["id"].ToGuid();
-                gold = serialized["gold"].ToBigInteger();
+                gold = serialized["gold"].ToFungibleAssetValue();
             }
 
             public override IValue Serialize() =>
@@ -186,7 +186,7 @@ namespace Nekoyume.Action
 
             // 돈은 있냐?
             FungibleAssetValue buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
-            if (buyerBalance < (buyerBalance.Currency * shopItem.Price))
+            if (buyerBalance < shopItem.Price)
             {
                 return LogError(
                     context,
@@ -197,13 +197,20 @@ namespace Nekoyume.Action
                 );
             }
 
-            var taxedPrice = (BigInteger)decimal.Round((decimal)shopItem.Price * 0.92m);
+            var tax = shopItem.Price.DivRem(100, out _) * 8;
+            var taxedPrice = shopItem.Price - tax;
+
+            // 세금을 송금한다.
+            states = states.TransferAsset(
+                context.Signer,
+                GoldCurrencyState.Address,
+                tax);
 
             // 구매자의 돈을 판매자에게 송금한다.
             states = states.TransferAsset(
                 context.Signer,
                 sellerAgentAddress,
-                states.GetGoldCurrency() * shopItem.Price
+                taxedPrice
             );
 
             // 상점에서 구매할 아이템을 제거한다.

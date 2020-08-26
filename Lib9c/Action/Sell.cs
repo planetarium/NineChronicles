@@ -6,6 +6,7 @@ using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Serilog;
@@ -19,7 +20,7 @@ namespace Nekoyume.Action
         public Address sellerAvatarAddress;
         public Guid productId;
         public Guid itemId;
-        public BigInteger price;
+        public FungibleAssetValue price;
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal => new Dictionary<string, IValue>
         {
@@ -34,7 +35,7 @@ namespace Nekoyume.Action
             sellerAvatarAddress = plainValue["sellerAvatarAddress"].ToAddress();
             productId = plainValue["productId"].ToGuid();
             itemId = plainValue["itemId"].ToGuid();
-            price = plainValue["price"].ToBigInteger();
+            price = plainValue["price"].ToFungibleAssetValue();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
@@ -53,7 +54,7 @@ namespace Nekoyume.Action
             Log.Debug("Sell exec started.");
 
 
-            if (price < 0)
+            if (price.Sign < 0)
             {
                 return LogError(context, "Aborted as the price is less than zero: {Price}.", price);
             }
