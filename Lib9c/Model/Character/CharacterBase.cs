@@ -66,7 +66,7 @@ namespace Nekoyume.Model
         public int AttackCount { get; private set; }
         public int AttackCountMax { get; protected set; }
 
-        private bool _turnEnd;
+        public bool TurnEnd { get; private set; }
 
         protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level,
             IEnumerable<StatModifier> optionalStatModifiers = null)
@@ -138,24 +138,7 @@ namespace Nekoyume.Model
 
             _root = new Root();
             _root.OpenBranch(
-                BT.Selector().OpenBranch(
-                    // process turn.
-                    BT.Sequence().OpenBranch(
-                        // NOTE: 턴 시작 메소드는 이곳에서 구현하세요.
-                        // BT.Call(BeginningOfTurn),
-                        BT.If(IsAlive).OpenBranch(
-                            BT.Sequence().OpenBranch(
-                                BT.Call(ReduceDurationOfBuffs),
-                                BT.Call(ReduceSkillCooldown),
-                                BT.Call(UseSkill),
-                                BT.Call(RemoveBuffs)
-                            )
-                        ),
-                        BT.Call(EndTurn)
-                    ),
-                    // terminate bt.
-                    BT.Terminate()
-                )
+                BT.Call(Act)
             );
         }
 
@@ -185,7 +168,6 @@ namespace Nekoyume.Model
 
         private void UseSkill()
         {
-            _turnEnd = false;
             // 스킬 선택.
             var selectedSkill = Skills.Select(Simulator.Random);
 
@@ -203,15 +185,14 @@ namespace Nekoyume.Model
             // 쿨다운 적용.
             Skills.SetCooldown(selectedSkill.SkillRow.Id, selectedSkill.SkillRow.Cooldown);
             Simulator.Log.Add(usedSkill);
-            _turnEnd = true;
 
             foreach (var info in usedSkill.SkillInfos)
             {
                 if (!info.Target.IsDead)
                     continue;
 
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
+                var target = Targets.First(i => i.Id == info.Target.Id);
+                target.Die();
             }
         }
 
@@ -244,13 +225,7 @@ namespace Nekoyume.Model
 #if TEST_LOG
             UnityEngine.Debug.LogWarning($"{nameof(RowData.Id)} : {RowData.Id} / Turn Ended.");
 #endif
-            while (IsAlive())
-            {
-                if (_turnEnd)
-                {
-                    break;
-                }
-            }
+            TurnEnd = true;
         }
 
         #endregion
@@ -355,6 +330,19 @@ namespace Nekoyume.Model
         public bool GetChance(int chance)
         {
             return chance > Simulator.Random.Next(0, 100);
+        }
+
+        private void Act()
+        {
+            TurnEnd = false;
+            if (IsAlive())
+            {
+                ReduceDurationOfBuffs();
+                ReduceSkillCooldown();
+                UseSkill();
+                RemoveBuffs();
+            }
+            EndTurn();
         }
     }
 

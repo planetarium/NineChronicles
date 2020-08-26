@@ -33,15 +33,7 @@ namespace Lib9c.Tests.Model
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);
             player.InitAI();
-            for (int i = 0; i < 5; i++)
-            {
-                // 0 ReduceDurationOfBuffs
-                // 1 ReduceSkillCooldown
-                // 2 UseSkill
-                // 3 RemoveBuffs
-                // 4 EndTurn
-                player.Tick();
-            }
+            player.Tick();
 
             Assert.True(simulator.Log.Any());
             Assert.Equal(nameof(WaveTurnEnd), simulator.Log.Last().GetType().Name);
@@ -59,10 +51,8 @@ namespace Lib9c.Tests.Model
 
             Assert.True(player.IsDead);
 
-            // Check IsAlive
             player.Tick();
-            // Call EndTurn
-            player.Tick();
+
             Assert.True(simulator.Log.Any());
             Assert.Equal(nameof(WaveTurnEnd), simulator.Log.Last().GetType().Name);
         }

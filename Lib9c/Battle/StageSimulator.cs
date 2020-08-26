@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Libplanet.Action;
 using Nekoyume.Model;
 using Nekoyume.Model.BattleStatus;
@@ -146,6 +147,10 @@ namespace Nekoyume.Battle
                     var turnBefore = TurnNumber;
 #endif
                     character.Tick();
+                    while (!character.TurnEnd)
+                    {
+                        Thread.Sleep(100);
+                    }
 #if TEST_LOG
                     var turnAfter = TurnNumber;
                     if (turnBefore != turnAfter)
