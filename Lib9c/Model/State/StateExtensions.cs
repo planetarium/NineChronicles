@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Assets;
 using Libplanet.Crypto;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
@@ -376,6 +377,31 @@ namespace Nekoyume.Model.State
         {
             return new HashDigest<SHA256>(((Binary)serialized).Value);
         }
+
+        #endregion
+
+        #region FungibleAssetValue
+
+        public static IValue Serialize(this FungibleAssetValue value) =>
+            new Bencodex.Types.List(new IValue[]
+            {
+                value.Currency.Serialize(),
+                value.RawValue.Serialize(),
+            });
+
+        public static IValue Serialize(this FungibleAssetValue? value) =>
+            Serialize(Serialize, value);
+
+        public static FungibleAssetValue ToFungibleAssetValue(this IValue serialized) =>
+            serialized is Bencodex.Types.List serializedList
+                ? FungibleAssetValue.FromRawValue(
+                    CurrencyExtensions.Deserialize(
+                        (Bencodex.Types.Dictionary) serializedList.ElementAt(0)),
+                    serializedList.ElementAt(1).ToBigInteger())
+                : throw new InvalidCastException();
+
+        public static FungibleAssetValue? ToNullableFungibleAssetValue(this IValue serialized) =>
+            Deserialize(ToFungibleAssetValue, serialized);
 
         #endregion
     }
