@@ -15,11 +15,7 @@ namespace Nekoyume.Model.State
             Gold = gold;
 
         public GoldBalanceState(Bencodex.Types.Dictionary serialized) : base(serialized) =>
-            Gold = new FungibleAssetValue(
-                CurrencyExtensions.Deserialize((Dictionary) serialized[nameof(Gold.Currency)]),
-                serialized[nameof(Gold.MajorUnit)].ToBigInteger(),
-                serialized[nameof(Gold.MinorUnit)].ToBigInteger()
-            );
+            Gold = serialized[nameof(Gold)].ToFungibleAssetValue();
 
         public GoldBalanceState(IValue serialized) : this((Bencodex.Types.Dictionary)serialized)
         {
@@ -41,10 +37,8 @@ namespace Nekoyume.Model.State
             // 그래서 아래처럼 온몸비틀기. 그냥 Bencodex.Types.Dictionary에 Add(string, BigInteger) 하나 넣는 게 좋을 듯...
             // -> https://github.com/planetarium/bencodex.net/issues/21
             var @base = (Bencodex.Types.Dictionary) base.Serialize();
-            var serialized = ((IImmutableDictionary<IKey, IValue>)@base)
-                .SetItem((Text)nameof(Gold.Currency), Gold.Currency.Serialize())
-                .SetItem((Text)nameof(Gold.MajorUnit), Gold.MajorUnit.Serialize())
-                .SetItem((Text)nameof(Gold.MinorUnit), Gold.MinorUnit.Serialize());
+            var serialized = ((IImmutableDictionary<IKey, IValue>) @base)
+                .SetItem((Text) nameof(Gold), Gold.Serialize());
             return (Bencodex.Types.Dictionary) serialized;
         }
     }
