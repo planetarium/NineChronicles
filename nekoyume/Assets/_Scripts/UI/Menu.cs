@@ -182,9 +182,15 @@ namespace Nekoyume.UI
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
-            rankingExclamationMark.gameObject.SetActive(
-                btnRanking.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
+
+            var currentAddress = States.Instance.CurrentAvatarState?.address;
+            if (currentAddress != null)
+            {
+                var arenaInfo = States.Instance.WeeklyArenaState.GetArenaInfo(currentAddress.Value);
+                rankingExclamationMark.gameObject.SetActive(
+                    btnRanking.IsUnlocked &&
+                    (arenaInfo == null || arenaInfo.DailyChallengeCount != 0));
+            }
 
             var worldMap = Find<WorldMap>();
             worldMap.UpdateNotificationInfo();
@@ -302,12 +308,6 @@ namespace Nekoyume.UI
             {
                 btnRanking.JingleTheCat();
                 return;
-            }
-            if (rankingExclamationMark.gameObject.activeSelf)
-            {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenRankingKeyFormat, addressHax);
-                PlayerPrefs.SetInt(key, 1);
             }
 
             Close();
