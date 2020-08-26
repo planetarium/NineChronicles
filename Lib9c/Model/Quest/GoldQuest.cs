@@ -56,7 +56,7 @@ namespace Nekoyume.Model.Quest
 
             // FIXME: _current를 BigInteger로 바꾸는 게 좋지 않을까요…
             // 이대로라면 overflow로 돈을 2^32 NCG 이상 벌면 같은 퀘스트 두 번 이상 깰 수 있을 듯.
-            _current += (int)gold.MajorUnit;
+            _current += (int) (gold.Sign * gold.MajorUnit);
             Check();
         }
 
