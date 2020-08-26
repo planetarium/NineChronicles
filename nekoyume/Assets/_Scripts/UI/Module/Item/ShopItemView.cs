@@ -15,12 +15,12 @@ namespace Nekoyume.UI.Module
                 Clear();
                 return;
             }
-            
+
             base.SetData(model);
 
             SetBg(1f);
             priceGroup.SetActive(true);
-            priceText.text = model.Price.Value.ToString("N0");
+            priceText.text = model.Price.Value.GetQuantityString();
 
             Model.View = this;
         }

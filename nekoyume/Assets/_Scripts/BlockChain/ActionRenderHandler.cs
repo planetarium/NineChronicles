@@ -568,12 +568,11 @@ namespace Nekoyume.BlockChain
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                 if (eval.OutputStates.TryGetGoldBalance(buyerAgentAddress, out var buyerAgentBalance))
                 {
-                    var total = buyerAgentBalance -
-                                new FungibleAssetValue(buyerAgentBalance.Currency, price, 0);
+                    var total = buyerAgentBalance - price;
                     new TPStashEvent().CurrencyUse(
                         player_uuid: States.Instance.AgentState.address.ToHex(),
                         currency_slug: "gold",
-                        currency_quantity: (float) price,
+                        currency_quantity: float.Parse(price.GetQuantityString()),
                         currency_total_quantity: float.Parse(total.GetQuantityString()),
                         reference_entity: "trades",
                         reference_category_slug: "buy",
@@ -606,12 +605,11 @@ namespace Nekoyume.BlockChain
                 //[TentuPlay] 아이템 판매완료, 골드 증가
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                 var sellerAgentBalance = eval.OutputStates.GetBalance(sellerAgentAddress, GoldCurrency);
-                var total = sellerAgentBalance +
-                            new FungibleAssetValue(sellerAgentBalance.Currency, gold, 0);
+                var total = sellerAgentBalance + gold;
                 new TPStashEvent().CurrencyGet(
                     player_uuid: sellerAgentAddress.ToHex(), // seller == 본인인지 확인필요
                     currency_slug: "gold",
-                    currency_quantity: (float)gold,
+                    currency_quantity: float.Parse(gold.GetQuantityString()),
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
                     reference_entity: "trades",
                     reference_category_slug: "sell",

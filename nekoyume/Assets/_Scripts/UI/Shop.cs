@@ -446,7 +446,7 @@ namespace Nekoyume.UI
                     .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                 {
-                    if (data.Price.Value < Model.Shop.MinimumPrice)
+                    if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
                     {
                         throw new InvalidSellingPriceException(data);
                     }
@@ -520,10 +520,9 @@ namespace Nekoyume.UI
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
         {
-            // FIXME: ShopItem.Price 를 FAV로 고쳐야 합니다.
             FungibleAssetValue gold = ReactiveAgentState.Gold.Value;
             return inventoryItem is ShopItem shopItem &&
-                   gold >= gold.Currency * shopItem.Price.Value;
+                   gold >= shopItem.Price.Value;
         }
 
         private static bool ButtonEnabledFuncForSell(CountableItem inventoryItem)
