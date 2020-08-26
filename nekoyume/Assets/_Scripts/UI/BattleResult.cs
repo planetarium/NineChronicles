@@ -28,6 +28,8 @@ namespace Nekoyume.UI
             private readonly List<CountableItem> _rewards = new List<CountableItem>();
 
             public BattleLog.Result State;
+            public string WorldName;
+            public int StageID;
             public long Exp;
             public bool ActionPointNotEnough;
             public bool ShouldExit;
@@ -76,6 +78,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private GameObject defeatImageContainer = null;
+
+        [SerializeField]
+        private TextMeshProUGUI worldStageId = null;
 
         [SerializeField]
         private GameObject topArea = null;
@@ -160,6 +165,9 @@ namespace Nekoyume.UI
 
             canvasGroup.alpha = 1f;
             SharedModel = model;
+
+            worldStageId.text = $"{SharedModel.WorldName} {SharedModel.StageID}";
+
             foreach (var reward in rewardsArea.rewards)
             {
                 reward.gameObject.SetActive(false);
