@@ -10,7 +10,7 @@ namespace Nekoyume.UI.Module
     public class VanillaItemView : MonoBehaviour
     {
         protected static readonly Color OriginColor = Color.white;
-        protected static readonly Color DimmedColor = ColorHelper.HexToColorRGB("353535");
+        protected static readonly Color DimmedColor = ColorHelper.HexToColorRGB("848484");
 
         public enum ImageSizeType
         {
