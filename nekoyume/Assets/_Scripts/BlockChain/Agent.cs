@@ -88,12 +88,7 @@ namespace Nekoyume.BlockChain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
-        private ActionRenderer _actionRenderer = new ActionRenderer(
-            ActionBase.RenderSubject,
-            ActionBase.UnrenderSubject
-        );
-
-        public ActionRenderer ActionRenderer { get => _actionRenderer; }
+        public ActionRenderer ActionRenderer { get; } = new ActionRenderer();
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -401,8 +396,8 @@ namespace Nekoyume.BlockChain
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
-                ActionRenderHandler.Instance.Start(_actionRenderer);
-                ActionUnrenderHandler.Instance.Start(_actionRenderer);
+                ActionRenderHandler.Instance.Start(ActionRenderer);
+                ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
@@ -733,17 +728,19 @@ namespace Nekoyume.BlockChain
             Task.Run(async () =>
             {
                 await _swarm.WaitForRunningAsync();
-                blocks.TipChanged += TipChangedHandler;
-                blocks.Reorged += (_, ev) =>
-                {
-                    ReorgSubject.OnNext(
-                        new ReorgInfo(
-                            ev.Branchpoint.Hash,
-                            ev.OldTip.Hash,
-                            ev.NewTip.Hash
-                        )
-                    );
-                };
+
+                ActionRenderer.EveryBlock()
+                    .SubscribeOnMainThread()
+                    .Subscribe(TipChangedHandler);
+
+                ActionRenderer.EveryReorg()
+                    .Select(tuple => new ReorgInfo(
+                        tuple.Branchpoint.Hash,
+                        tuple.OldTip.Hash,
+                        tuple.NewTip.Hash
+                    ))
+                    .SubscribeOnMainThread()
+                    .Subscribe(ReorgSubject);
 
                 Debug.LogFormat(
                     "The address of this node: {0},{1},{2}",
@@ -759,21 +756,24 @@ namespace Nekoyume.BlockChain
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
-        private void TipChangedHandler(
-            object target,
-            BlockChain<PolymorphicAction<ActionBase>>.TipChangedEventArgs args)
+        private void TipChangedHandler((
+            Block<PolymorphicAction<ActionBase>> OldTip,
+            Block<PolymorphicAction<ActionBase>>NewTip) tuple)
         {
+            var (oldTip, newTip) = tuple;
+
             _tipInfo = "Tip Information\n";
             _tipInfo += $" -Miner           : {blocks.Tip.Miner?.ToString()}\n";
             _tipInfo += $" -TimeStamp  : {DateTimeOffset.Now}\n";
-            _tipInfo += $" -PrevBlock    : [{args.PreviousIndex}] {args.PreviousHash}\n";
-            _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash}";
+            _tipInfo += $" -PrevBlock    : [{oldTip.Index}] {oldTip.Hash}\n";
+            _tipInfo += $" -LatestBlock : [{newTip.Index}] {newTip.Hash}";
             while (lastTenBlocks.Count >= 10)
             {
                 lastTenBlocks.TryDequeue(out _);
             }
+
             lastTenBlocks.Enqueue((blocks.Tip, DateTimeOffset.UtcNow));
-            TipChanged?.Invoke(null, args.Index);
+            TipChanged?.Invoke(null, newTip.Index);
         }
 
         private IEnumerator CoTxProcessor()

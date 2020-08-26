@@ -122,7 +122,7 @@ namespace Nekoyume.BlockChain
         {
             _renderSubject = new Subject<ActionEvaluation<ActionBase>>();
             _unrenderSubject = new Subject<ActionEvaluation<ActionBase>>();
-            ActionRenderer = new ActionRenderer(_renderSubject, _unrenderSubject);
+            ActionRenderer = new ActionRenderer();
         }
 
         private async void OnDestroy()
