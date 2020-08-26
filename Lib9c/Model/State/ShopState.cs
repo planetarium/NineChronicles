@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.State
 {
@@ -212,34 +210,6 @@ namespace Nekoyume.Model.State
 
             shopItem = _products[productId];
             return true;
-        }
-    }
-
-    [Serializable]
-    public class ShopStateAlreadyContainsException : Exception
-    {
-        public ShopStateAlreadyContainsException(string message) : base(message)
-        {
-        }
-
-        protected ShopStateAlreadyContainsException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
-        }
-    }
-
-    [Serializable]
-    public class FailedToUnregisterInShopStateException : Exception
-    {
-        public FailedToUnregisterInShopStateException(string message) : base(message)
-        {
-        }
-
-        protected FailedToUnregisterInShopStateException(
-            SerializationInfo info,
-            StreamingContext context) : base(info, context)
-        {
         }
     }
 }
