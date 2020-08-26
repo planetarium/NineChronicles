@@ -185,9 +185,9 @@ namespace Nekoyume.UI
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
 
             // Subscriptions.
-            // FIXME: gold.MajorUnit과 GameConfig.ArenaActivationCostNCG를 잘 비교해야 합니다.
+            // FIXME: GameConfig.ArenaActivationCostNCG 를 FAV로 고쳐야 합니다.
             ReactiveAgentState.Gold.Subscribe(gold =>
-                    arenaActivationButton.SetSubmittable(gold.MajorUnit >= GameConfig.ArenaActivationCostNCG))
+                    arenaActivationButton.SetSubmittable(gold >= gold.Currency * GameConfig.ArenaActivationCostNCG))
                 .AddTo(_disposablesAtClose);
             WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(state => UpdateArena())
                 .AddTo(_disposablesAtClose);
