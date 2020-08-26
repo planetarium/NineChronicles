@@ -8,6 +8,7 @@ namespace Lib9c.Tests
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
+    using Libplanet.Blockchain.Renderers;
     using Libplanet.Blocks;
     using Libplanet.Crypto;
     using Libplanet.Store;
@@ -25,6 +26,7 @@ namespace Lib9c.Tests
             var adminPrivateKey = new PrivateKey();
             var adminAddress = new Address(adminPrivateKey.PublicKey);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = BlockPolicy.GetPolicy(10000);
+            IRenderer<PolymorphicAction<ActionBase>> renderer = BlockPolicy.GetRenderer();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
 
             using var store = new DefaultStore(null);
@@ -32,7 +34,8 @@ namespace Lib9c.Tests
                 policy,
                 store,
                 store,
-                genesis
+                genesis,
+                renderers: new[] { renderer }
             );
             Transaction<PolymorphicAction<ActionBase>> tx = Transaction<PolymorphicAction<ActionBase>>.Create(
                 0,
@@ -52,6 +55,7 @@ namespace Lib9c.Tests
             var activatedAddress = activatedPrivateKey.ToAddress();
 
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = BlockPolicy.GetPolicy(10000);
+            IRenderer<PolymorphicAction<ActionBase>> renderer = BlockPolicy.GetRenderer();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(activatedAddress).Add(adminAddress)
@@ -61,7 +65,8 @@ namespace Lib9c.Tests
                 policy,
                 store,
                 store,
-                genesis
+                genesis,
+                renderers: new[] { renderer }
             );
             Transaction<PolymorphicAction<ActionBase>> txByStranger =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
