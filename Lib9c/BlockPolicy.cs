@@ -10,6 +10,7 @@ using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Libplanet;
+using Libplanet.Blockchain.Renderers;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -23,10 +24,7 @@ namespace Nekoyume.BlockChain
     {
         private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
 
-        private static readonly ActionRenderer ActionRenderer = new ActionRenderer(
-            ActionBase.RenderSubject,
-            ActionBase.UnrenderSubject
-        );
+        private static readonly ActionRenderer ActionRenderer = new ActionRenderer();
 
         static BlockPolicy()
         {
@@ -62,6 +60,9 @@ namespace Nekoyume.BlockChain
             );
 #endif
         }
+
+        public static IRenderer<PolymorphicAction<ActionBase>> GetRenderer() =>
+            ActionRenderer;
 
         private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
