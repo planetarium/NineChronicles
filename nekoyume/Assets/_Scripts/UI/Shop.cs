@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using DG.Tweening;
+using Libplanet.Assets;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
@@ -518,9 +519,10 @@ namespace Nekoyume.UI
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
         {
-            // FIXME: ReactiveAgentState.Gold.Value.MajorUnit과 shopItem.Price.Value를 잘 비교해야 합니다.
+            // FIXME: ShopItem.Price 를 FAV로 고쳐야 합니다.
+            FungibleAssetValue gold = ReactiveAgentState.Gold.Value;
             return inventoryItem is ShopItem shopItem &&
-                   ReactiveAgentState.Gold.Value.MajorUnit >= shopItem.Price.Value;
+                   gold >= gold.Currency * shopItem.Price.Value;
         }
 
         private static bool ButtonEnabledFuncForSell(CountableItem inventoryItem)
