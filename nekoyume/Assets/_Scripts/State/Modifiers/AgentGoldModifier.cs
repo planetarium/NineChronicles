@@ -37,7 +37,7 @@ namespace Nekoyume.State.Modifiers
                 _goldCache = FungibleAssetValue.FromRawValue(
                     CurrencyExtensions.Deserialize(
                         (Bencodex.Types.Dictionary) serialized.ElementAt(0)),
-                    serialized.ElementAt(1).ToInteger());
+                    serialized.ElementAt(1).ToBigInteger());
 
                 return _goldCache.Value;
             }
