@@ -15,6 +15,7 @@ using AsyncIO;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
@@ -187,7 +188,7 @@ namespace Nekoyume.BlockChain
 
             try
             {
-                blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store, genesisBlock);
+                blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store, (IStateStore)store, genesisBlock);
             }
             catch (InvalidGenesisBlockException)
             {
@@ -275,7 +276,7 @@ namespace Nekoyume.BlockChain
             return blocks.GetState(address);
         }
 
-        public BigInteger GetBalance(Address address, Currency currency) =>
+        public FungibleAssetValue GetBalance(Address address, Currency currency) =>
             blocks.GetBalance(address, currency);
 
         #region Mono
@@ -450,7 +451,7 @@ namespace Nekoyume.BlockChain
             var host = tokens[1];
             var port = int.Parse(tokens[2]);
 
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
+            return new BoundPeer(pubKey, new DnsEndPoint(host, port));
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)

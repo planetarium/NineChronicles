@@ -641,7 +641,8 @@ namespace Nekoyume.State
         {
             foreach (var modifier in modifierInfo.NonVolatileModifiers)
             {
-                modifier.Modify(state);
+                // NOTE: Reassignment is not required yet.
+                state = modifier.Modify(state);
                 if (!modifier.dirty)
                 {
                     continue;
@@ -653,7 +654,8 @@ namespace Nekoyume.State
 
             foreach (var modifier in modifierInfo.VolatileModifiers)
             {
-                modifier.Modify(state);
+                // NOTE: Reassignment is not required yet.
+                state = modifier.Modify(state);
             }
 
             return state;
