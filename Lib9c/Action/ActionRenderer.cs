@@ -13,10 +13,11 @@ using System.Reactive.Linq;
 
 namespace Nekoyume.Action
 {
-    using Action = PolymorphicAction<ActionBase>;
+    using NCAction = PolymorphicAction<ActionBase>;
+    using NCBlock = Block<PolymorphicAction<ActionBase>>;
 
     // FIXME: As it renders more than actions now, we should rename this class.
-    public class ActionRenderer : IRenderer<Action>
+    public class ActionRenderer : IRenderer<NCAction>
     {
         private readonly Subject<ActionEvaluation<ActionBase>> _actionRenderSubject =
             new Subject<ActionEvaluation<ActionBase>>();
@@ -24,13 +25,13 @@ namespace Nekoyume.Action
         private readonly Subject<ActionEvaluation<ActionBase>> _actionUnrenderSubject =
             new Subject<ActionEvaluation<ActionBase>>();
 
-        private readonly Subject<(Block<Action> OldTip, Block<Action> NewTip)> _blockSubject =
-            new Subject<(Block<Action> OldTip, Block<Action> NewTip)>();
+        private readonly Subject<(NCBlock OldTip, NCBlock NewTip)> _blockSubject =
+            new Subject<(NCBlock OldTip, NCBlock NewTip)>();
 
         private readonly
-        Subject<(Block<Action> OldTip, Block<Action> NewTip, Block<Action> Branchpoint)>
+        Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
         _reorgSubject =
-            new Subject<(Block<Action> OldTip, Block<Action> NewTip, Block<Action> Branchpoint)>();
+            new Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>();
 
         public void RenderAction(
             IAction action,
@@ -38,7 +39,7 @@ namespace Nekoyume.Action
             IAccountStateDelta nextStates
         )
         {
-            if (action is Action polymorphicAction)
+            if (action is NCAction polymorphicAction)
             {
                 _actionRenderSubject.OnNext(new ActionBase.ActionEvaluation<ActionBase>()
                 {
@@ -57,7 +58,7 @@ namespace Nekoyume.Action
             IAccountStateDelta nextStates
         )
         {
-            if (action is Action polymorphicAction)
+            if (action is NCAction polymorphicAction)
             {
                 _actionUnrenderSubject.OnNext(new ActionBase.ActionEvaluation<ActionBase>()
                 {
@@ -76,7 +77,7 @@ namespace Nekoyume.Action
             Exception exception
         )
         {
-            if (action is Action polymorphicAction)
+            if (action is NCAction polymorphicAction)
             {
                 _actionRenderSubject.OnNext(new ActionBase.ActionEvaluation<ActionBase>()
                 {
@@ -96,7 +97,7 @@ namespace Nekoyume.Action
             Exception exception
         )
         {
-            if (action is Action polymorphicAction)
+            if (action is NCAction polymorphicAction)
             {
                 _actionUnrenderSubject.OnNext(new ActionBase.ActionEvaluation<ActionBase>()
                 {
@@ -111,17 +112,17 @@ namespace Nekoyume.Action
         }
 
         public void RenderBlock(
-            Block<Action> oldTip,
-            Block<Action> newTip
+            NCBlock oldTip,
+            NCBlock newTip
         )
         {
             _blockSubject.OnNext((oldTip, newTip));
         }
 
         public void RenderReorg(
-            Block<Action> oldTip,
-            Block<Action> newTip,
-            Block<Action> branchpoint
+            NCBlock oldTip,
+            NCBlock newTip,
+            NCBlock branchpoint
         )
         {
             _reorgSubject.OnNext((oldTip, newTip, branchpoint));
@@ -189,10 +190,10 @@ namespace Nekoyume.Action
             });
         }
 
-        public IObservable<(Block<Action> OldTip, Block<Action> NewTip)> EveryBlock() =>
+        public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlock() =>
             _blockSubject.AsObservable();
 
-        public IObservable<(Block<Action> OldTip, Block<Action> NewTip, Block<Action> Branchpoint)>
+        public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
         EveryReorg() =>
             _reorgSubject.AsObservable();
     }
