@@ -1,7 +1,4 @@
 using System;
-using System.Numerics;
-using Libplanet.Assets;
-using Nekoyume.State;
 using UniRx;
 
 namespace Nekoyume.UI.Model
