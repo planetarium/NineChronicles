@@ -446,7 +446,7 @@ namespace Nekoyume.UI
                 {
                     if (data.Price.Value < Model.Shop.MinimumPrice)
                     {
-                        throw new InvaildSellingPriceException(data);
+                        throw new InvalidSellingPriceException(data);
                     }
 
                     Game.Game.instance.ActionManager.Sell(
