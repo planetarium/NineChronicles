@@ -10,7 +10,6 @@ using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Libplanet;
-using Libplanet.Blockchain.Renderers;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -61,8 +60,7 @@ namespace Nekoyume.BlockChain
 #endif
         }
 
-        public static IRenderer<PolymorphicAction<ActionBase>> GetRenderer() =>
-            ActionRenderer;
+        public static ActionRenderer GetRenderer() => ActionRenderer;
 
         private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
