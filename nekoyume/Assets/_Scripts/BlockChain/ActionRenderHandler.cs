@@ -525,7 +525,7 @@ namespace Nekoyume.BlockChain
             var shopState = new ShopState((Dictionary) eval.OutputStates.GetState(ShopState.Address));
             if (shopState.TryGet(eval.Signer, eval.Action.productId, out var pair))
             {
-                UI.Notification.Push(MailType.Auction, string.Format(format, pair.Value.ItemUsable.GetLocalizedName()));
+                UI.Notification.Push(MailType.Auction, string.Format(format, pair.ItemUsable.GetLocalizedName()));
             }
             UpdateCurrentAvatarState(eval);
         }

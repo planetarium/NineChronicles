@@ -22,9 +22,9 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<ShopItemView> OnDoubleClickItemView = new Subject<ShopItemView>();
 
-        private IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> _shopItems;
+        private IReadOnlyDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> _shopItems;
 
-        public ShopItems(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems = null)
+        public ShopItems(IReadOnlyDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems = null)
         {
             CurrentAgentsProducts.ObserveRemove().Subscribe(SubscribeProductRemove);
             OtherProducts.ObserveRemove().Subscribe(SubscribeProductRemove);
@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Model
             OnDoubleClickItemView.Dispose();
         }
 
-        public void ResetProducts(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems)
+        public void ResetProducts(IReadOnlyDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems)
         {
             _shopItems = shopItems ?? new Dictionary<Address, List<Nekoyume.Model.Item.ShopItem>>();
 
