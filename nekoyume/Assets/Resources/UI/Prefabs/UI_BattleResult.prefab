@@ -1709,7 +1709,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
+    m_Top: 30
     m_Bottom: 0
   m_ChildAlignment: 7
   m_Spacing: 10
@@ -1735,7 +1735,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 66
+  m_PreferredHeight: 86
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -1879,7 +1879,7 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 0
+    m_Top: -20
     m_Bottom: 0
   m_ChildAlignment: 1
   m_Spacing: -8.3
@@ -2826,6 +2826,7 @@ GameObject:
   - component: {fileID: 7266510358945853725}
   - component: {fileID: 2780515781621274847}
   - component: {fileID: 367626379719812009}
+  - component: {fileID: 4066344512826394130}
   m_Layer: 5
   m_Name: RewardsArea
   m_TagString: Untagged
@@ -2900,6 +2901,18 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!225 &4066344512826394130
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7398862437477594001}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7576110837487215508
 GameObject:
   m_ObjectHideFlags: 0
