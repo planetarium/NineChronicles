@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
@@ -28,7 +29,7 @@ namespace Nekoyume.UI
 
         public override bool IsSubmittable =>
             !(States.Instance.AgentState is null) &&
-            States.Instance.GoldBalanceState.gold >= CostNCG &&
+            States.Instance.GoldBalanceState.Gold.MajorUnit >= CostNCG &&
             !(States.Instance.CurrentAvatarState is null) &&
             States.Instance.CurrentAvatarState.actionPoint >= CostAP &&
             !(baseMaterial is null) &&
@@ -134,7 +135,9 @@ namespace Nekoyume.UI
             if (baseMaterial.IsEmpty ||
                 !(baseMaterial.Model.ItemBase.Value is Equipment equipment) ||
                 equipment.level >= 10)
+            {
                 return 0;
+            }
 
             var row = Game.Game.instance.TableSheets
                 .EnhancementCostSheet.Values
@@ -277,7 +280,7 @@ namespace Nekoyume.UI
             var agentAddress = States.Instance.AgentState.address;
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
-            LocalStateModifier.ModifyAgentGold(agentAddress, -CostNCG);
+            LocalStateModifier.ModifyAgentGold(agentAddress, CostNCG * -1);
             LocalStateModifier.ModifyAvatarActionPoint(avatarAddress, -CostAP);
             LocalStateModifier.RemoveItem(avatarAddress, baseItemGuid);
             foreach (var itemGuid in otherItemGuidList)

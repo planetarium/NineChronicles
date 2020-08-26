@@ -124,7 +124,7 @@ namespace Nekoyume.UI.Module
                 submitButton.HideAP();
             }
 
-            var hasEnoughGold = States.Instance.GoldBalanceState.gold >= CostNCG;
+            var hasEnoughGold = States.Instance.GoldBalanceState.Gold.MajorUnit >= CostNCG;
             if (CostNCG > 0)
             {
                 submitButton.ShowNCG(CostNCG, hasEnoughGold);

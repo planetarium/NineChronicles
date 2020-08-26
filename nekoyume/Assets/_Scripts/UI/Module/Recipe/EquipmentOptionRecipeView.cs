@@ -1,6 +1,5 @@
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
-using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.TableData;
@@ -41,6 +40,7 @@ namespace Nekoyume.UI.Module
         private bool _tempLocked = false;
 
         private (int parentItemId, int index) _parentInfo;
+        private EquipmentItemSubRecipeSheet.MaterialInfo _baseMaterialInfo;
 
         public EquipmentItemSubRecipeSheet.Row rowData;
 
@@ -109,6 +109,7 @@ namespace Nekoyume.UI.Module
             if (Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet.TryGetValue(subRecipeId,
                 out rowData))
             {
+                _baseMaterialInfo = baseMaterialInfo;
                 requiredItemRecipeView.SetData(baseMaterialInfo, rowData.Materials,
                     checkInventory);
             }
@@ -153,20 +154,24 @@ namespace Nekoyume.UI.Module
                 return;
 
             // 재료 검사.
-            var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-            var inventory = avatarState.inventory;
             var shouldDimmed = false;
-            foreach (var info in rowData.Materials)
-            {
-                if (materialSheet.TryGetValue(info.Id, out var materialRow) &&
-                    inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
-                    fungibleItem.count >= info.Count)
-                {
-                    continue;
-                }
 
+            if (!CheckItem(avatarState, _baseMaterialInfo.Id, _baseMaterialInfo.Count))
+            {
                 shouldDimmed = true;
-                break;
+            }
+            else
+            {
+                foreach (var info in rowData.Materials)
+                {
+                    if (CheckItem(avatarState, info.Id, info.Count))
+                    {
+                        continue;
+                    }
+
+                    shouldDimmed = true;
+                    break;
+                }
             }
 
             SetDimmed(shouldDimmed);
@@ -176,6 +181,16 @@ namespace Nekoyume.UI.Module
         {
             SetLocked(true);
             Show();
+        }
+
+        private bool CheckItem(AvatarState avatarState, int itemId, int count = 1)
+        {
+            var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            var inventory = avatarState.inventory;
+
+            return materialSheet.TryGetValue(itemId, out var materialRow) &&
+                    inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
+                    fungibleItem.count >= count;
         }
 
         private void SetLocked(bool value)

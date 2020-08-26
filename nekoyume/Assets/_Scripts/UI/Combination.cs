@@ -425,6 +425,11 @@ namespace Nekoyume.UI
                     elementalCombinationPanel.Hide();
                     ShowSpeech("SPEECH_COMBINE_ENHANCE_EQUIPMENT_");
 
+                    if (!categoryTabArea.activeSelf)
+                    {
+                        Animator.Play("ShowLeftArea", -1, 0.0f);
+                        OnTweenRecipe();
+                    }
                     categoryTabArea.SetActive(true);
                     itemRecipe.gameObject.SetActive(false);
                     break;
