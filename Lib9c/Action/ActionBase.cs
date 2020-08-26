@@ -245,6 +245,7 @@ namespace Nekoyume.Action
                                 {
                                     new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
                                     new KeyValuePair<IKey, IValue>((Text) "currency", c.Serialize()),
+                                    // FIXME: It seems that b.Sign is missing. Now we can serialize FungibleAssetValue at once with b.Serialize().
                                     new KeyValuePair<IKey, IValue>((Text) "amount", new Bencodex.Types.List(new IValue[]{ (Integer)b.MajorUnit, (Integer)b.MinorUnit})),
                                 });
                             }
@@ -286,7 +287,7 @@ namespace Nekoyume.Action
         protected bool TryGetAdminState(IActionContext ctx, out AdminState state)
         {
             state = default;
-            
+
             IValue rawState = ctx.PreviousStates.GetState(AdminState.Address);
             if (rawState is Bencodex.Types.Dictionary asDict)
             {
