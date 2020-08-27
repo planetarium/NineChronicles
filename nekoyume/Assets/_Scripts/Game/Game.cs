@@ -71,18 +71,18 @@ namespace Nekoyume.Game
             _options = CommandLineOptions.Load(
                 CommandLineOptionsJsonPath
             );
-                        
+
 #if !UNITY_EDITOR
             // FIXME 이후 사용자가 원치 않으면 정보를 보내지 않게끔 해야 합니다.
             Mixpanel.SetToken("80a1e14b57d050536185c7459d45195a");
-            
+
             if (!(_options.PrivateKey is null))
             {
                 var privateKey = new PrivateKey(ByteUtil.ParseHex(_options.PrivateKey));
                 Address address = privateKey.ToAddress();
                 Mixpanel.Identify(address.ToString());
             }
-            
+
             Mixpanel.Init();
             Mixpanel.Track("Unity/Started");
 #endif
@@ -121,7 +121,6 @@ namespace Nekoyume.Game
             yield return StartCoroutine(CoInitializeTableSheets());
             AudioController.instance.Initialize();
             yield return null;
-            ActionManager = new ActionManager(Agent);
             // Agent 초기화.
             // Agent를 초기화하기 전에 반드시 Table과 TableSheets를 초기화 함.
             // Agent가 Table과 TableSheets에 약한 의존성을 갖고 있음.(Deserialize 단계 때문)
@@ -137,6 +136,8 @@ namespace Nekoyume.Game
                 )
             );
             yield return new WaitUntil(() => agentInitialized);
+            // NOTE: Create ActionManager after Agent initialized.
+            ActionManager = new ActionManager(Agent);
             // UI 초기화 2차.
             yield return StartCoroutine(MainCanvas.instance.InitializeSecond());
             Stage.Initialize();
