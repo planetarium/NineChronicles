@@ -58,7 +58,7 @@ namespace Nekoyume.Action
         {
             public ShopItem shopItem;
             public Guid id;
-            public BigInteger gold;
+            public FungibleAssetValue gold;
 
             protected override string TypeId => "buy.sellerResult";
 
@@ -70,7 +70,7 @@ namespace Nekoyume.Action
             {
                 shopItem = new ShopItem((Bencodex.Types.Dictionary) serialized["shopItem"]);
                 id = serialized["id"].ToGuid();
-                gold = serialized["gold"].ToBigInteger();
+                gold = serialized["gold"].ToFungibleAssetValue();
             }
 
             public override IValue Serialize() =>
@@ -158,7 +158,7 @@ namespace Nekoyume.Action
 
             Log.Debug("Execute Buy; buyer: {Buyer} seller: {Seller}", buyerAvatarAddress, sellerAvatarAddress);
             // 상점에서 구매할 아이템을 찾는다.
-            if (!shopState.TryGet(sellerAgentAddress, productId, out var outPair))
+            if (!shopState.TryGet(sellerAgentAddress, productId, out var shopItem))
             {
                 return LogError(
                     context,
@@ -186,33 +186,44 @@ namespace Nekoyume.Action
 
             // 돈은 있냐?
             FungibleAssetValue buyerBalance = states.GetBalance(context.Signer, states.GetGoldCurrency());
-            if (buyerBalance < (buyerBalance.Currency * outPair.Value.Price))
+            if (buyerBalance < shopItem.Price)
             {
                 return LogError(
                     context,
                     "Aborted as the buyer ({Buyer}) has no sufficient gold: {BuyerBalance} < {ItemPrice}",
                     ctx.Signer,
                     buyerBalance,
-                    outPair.Value.Price
+                    shopItem.Price
                 );
             }
 
-            var taxedPrice = (BigInteger)decimal.Round((decimal)outPair.Value.Price * 0.92m);
+            var tax = shopItem.Price.DivRem(100, out _) * 8;
+            var taxedPrice = shopItem.Price - tax;
+
+            // 세금을 송금한다.
+            states = states.TransferAsset(
+                context.Signer,
+                GoldCurrencyState.Address,
+                tax);
 
             // 구매자의 돈을 판매자에게 송금한다.
             states = states.TransferAsset(
                 context.Signer,
                 sellerAgentAddress,
-                states.GetGoldCurrency() * outPair.Value.Price
+                taxedPrice
             );
 
             // 상점에서 구매할 아이템을 제거한다.
-            if (!shopState.Unregister(sellerAgentAddress, outPair.Value))
+            try
+            {
+                shopState.Unregister(sellerAgentAddress, shopItem);
+            }
+            catch (FailedToUnregisterInShopStateException)
             {
                 return LogError(
                     context,
                     "Aborted as the item ({@ProductId}) was failed to unregister from seller ({Seller})'s inventory.",
-                    outPair.Value.ProductId,
+                    shopItem.ProductId,
                     sellerAgentAddress
                 );
             }
@@ -220,16 +231,16 @@ namespace Nekoyume.Action
             // 구매자, 판매자에게 결과 메일 전송
             buyerResult = new BuyerResult
             {
-                shopItem = outPair.Value,
-                itemUsable = outPair.Value.ItemUsable
+                shopItem = shopItem,
+                itemUsable = shopItem.ItemUsable
             };
             var buyerMail = new BuyerMail(buyerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
             buyerResult.id = buyerMail.id;
 
             sellerResult = new SellerResult
             {
-                shopItem = outPair.Value,
-                itemUsable = outPair.Value.ItemUsable,
+                shopItem = shopItem,
+                itemUsable = shopItem.ItemUsable,
                 gold = taxedPrice
             };
             var sellerMail = new SellerMail(sellerResult, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(),
@@ -241,8 +252,8 @@ namespace Nekoyume.Action
             sellerAvatarState.Update(sellerMail);
 
             // 퀘스트 업데이트
-            buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, outPair.Value.Price);
-            sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, outPair.Value.Price);
+            buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);
+            sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, shopItem.Price);
 
             var timestamp = DateTimeOffset.UtcNow;
             buyerAvatarState.updatedAt = timestamp;

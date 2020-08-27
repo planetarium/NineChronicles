@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using Bencodex.Types;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.Item
@@ -10,13 +11,20 @@ namespace Nekoyume.Model.Item
     [Serializable]
     public class ShopItem
     {
+        public readonly Address SellerAgentAddress;
         public readonly Address SellerAvatarAddress;
         public readonly Guid ProductId;
         public readonly ItemUsable ItemUsable;
-        public readonly BigInteger Price;
+        public readonly FungibleAssetValue Price;
 
-        public ShopItem(Address sellerAvatarAddress, Guid productId, ItemUsable itemUsable, BigInteger price)
+        public ShopItem(
+            Address sellerAgentAddress,
+            Address sellerAvatarAddress,
+            Guid productId,
+            ItemUsable itemUsable,
+            FungibleAssetValue price)
         {
+            SellerAgentAddress = sellerAgentAddress;
             SellerAvatarAddress = sellerAvatarAddress;
             ProductId = productId;
             ItemUsable = itemUsable;
@@ -25,13 +33,24 @@ namespace Nekoyume.Model.Item
 
         public ShopItem(Dictionary serialized)
         {
+            SellerAgentAddress = serialized["sellerAgentAddress"].ToAddress();
             SellerAvatarAddress = serialized["sellerAvatarAddress"].ToAddress();
             ProductId = serialized["productId"].ToGuid();
             ItemUsable = (ItemUsable)ItemFactory.Deserialize(
                 (Dictionary)serialized["itemUsable"]
             );
-            Price = serialized["price"].ToBigInteger();
+            Price = serialized["price"].ToFungibleAssetValue();
         }
+
+        public IValue Serialize() =>
+            new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)"sellerAgentAddress"] = SellerAgentAddress.Serialize(),
+                [(Text)"sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
+                [(Text)"productId"] = ProductId.Serialize(),
+                [(Text)"itemUsable"] = ItemUsable.Serialize(),
+                [(Text)"price"] = Price.Serialize(),
+            });
 
         protected bool Equals(ShopItem other)
         {
@@ -50,14 +69,5 @@ namespace Nekoyume.Model.Item
         {
             return ProductId.GetHashCode();
         }
-
-        public IValue Serialize() =>
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"sellerAvatarAddress"] = SellerAvatarAddress.Serialize(),
-                [(Text)"productId"] = ProductId.Serialize(),
-                [(Text)"itemUsable"] = ItemUsable.Serialize(),
-                [(Text)"price"] = Price.Serialize(),
-            });
     }
 }
