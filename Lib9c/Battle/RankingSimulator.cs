@@ -118,7 +118,10 @@ namespace Nekoyume.Battle
             foreach (var row in rewardSheet.Values)
             {
                 var reward = row.Reward;
-                itemSelector.Add(reward, reward.Ratio);
+                if (reward.RequiredLevel <= Player.Level)
+                {
+                    itemSelector.Add(reward, reward.Ratio);
+                }
             }
 
             _reward = SetReward(itemSelector, Random.Next(1, 6), Random, TableSheets);
