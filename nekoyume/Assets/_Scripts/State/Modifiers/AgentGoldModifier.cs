@@ -6,7 +6,6 @@ using Bencodex;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Assets;
-using Nekoyume.JsonConvertibles;
 using Nekoyume.Model.State;
 using UnityEngine;
 
@@ -35,12 +34,10 @@ namespace Nekoyume.State.Modifiers
                 }
 
                 var serialized = (Bencodex.Types.List) new Codec().Decode(ByteUtil.ParseHex(hex));
-                _goldCache = new FungibleAssetValue(
+                _goldCache = FungibleAssetValue.FromRawValue(
                     CurrencyExtensions.Deserialize(
                         (Bencodex.Types.Dictionary) serialized.ElementAt(0)),
-                    serialized.ElementAt(1).ToInteger(),
-                    serialized.ElementAt(2).ToBigInteger(),
-                    serialized.ElementAt(3).ToBigInteger());
+                    serialized.ElementAt(1).ToBigInteger());
 
                 return _goldCache.Value;
             }
@@ -49,9 +46,7 @@ namespace Nekoyume.State.Modifiers
                 var serialized = new Bencodex.Types.List(new IValue[]
                 {
                     value.Currency.Serialize(),
-                    (Text) value.Sign.Serialize(),
-                    (Integer) value.MajorUnit.Serialize(),
-                    (Integer) value.MinorUnit.Serialize(),
+                    (Integer) value.RawValue,
                 });
 
                 hex = ByteUtil.Hex(new Codec().Encode(serialized));

@@ -487,6 +487,9 @@ namespace Nekoyume.Game
             var avatarState = new AvatarState(
                 (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(avatarAddress));
             _battleResultModel.State = log.result;
+            Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
+            _battleResultModel.WorldName = world?.GetLocalizedName();
+            _battleResultModel.StageID = log.stageId;
 
             if (isExitReserved)
             {
