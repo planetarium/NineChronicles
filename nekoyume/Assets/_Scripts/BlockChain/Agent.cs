@@ -87,7 +87,7 @@ namespace Nekoyume.BlockChain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
-        public ActionRenderer ActionRenderer { get; private set; }
+        public ActionRenderer ActionRenderer { get; } = BlockPolicy.GetRenderer();
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -169,7 +169,6 @@ namespace Nekoyume.BlockChain
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
             var policy = BlockPolicy.GetPolicy(minimumDifficulty);
-            ActionRenderer = BlockPolicy.GetRenderer();
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
