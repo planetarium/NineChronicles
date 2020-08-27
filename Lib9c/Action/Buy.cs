@@ -108,7 +108,11 @@ namespace Nekoyume.Action
                     .SetState(buyerAvatarAddress, MarkChanged)
                     .SetState(ctx.Signer, MarkChanged)
                     .SetState(sellerAvatarAddress, MarkChanged)
-                    .MarkBalanceChanged(GoldCurrencyMock, ctx.Signer, sellerAgentAddress);
+                    .MarkBalanceChanged(
+                        GoldCurrencyMock,
+                        ctx.Signer,
+                        sellerAgentAddress,
+                        GoldCurrencyState.Address);
                 return states.SetState(ShopState.Address, MarkChanged);
             }
 
