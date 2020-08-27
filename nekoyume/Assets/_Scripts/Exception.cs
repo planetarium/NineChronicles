@@ -255,11 +255,11 @@ public class FailedToInstantiateStateException<T> : Exception where T : State
     }
 }
 
-public class InvaildSellingPriceException : Exception
+public class InvalidSellingPriceException : Exception
 {
     private const string MessageFormat = "Selling price of `{0}` is invaild. `{1}`.";
 
-    public InvaildSellingPriceException(Nekoyume.UI.Model.ItemCountAndPricePopup popup) :
+    public InvalidSellingPriceException(Nekoyume.UI.Model.ItemCountAndPricePopup popup) :
         base(string.Format(MessageFormat,
             popup.Item.Value.ItemBase.Value.GetLocalizedName(),
             popup.Price.Value))

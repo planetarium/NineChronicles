@@ -40,7 +40,7 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            ReactiveShopState.Items.Subscribe(ResetProducts)
+            ReactiveShopState.AgentProducts.Subscribe(ResetProducts)
                 .AddTo(_disposablesAtOnEnable);
         }
 
@@ -57,7 +57,7 @@ namespace Nekoyume.UI.Module
 
         #endregion
 
-        public void ResetProducts(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> products)
+        public void ResetProducts(IReadOnlyDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> products)
         {
             SharedModel?.ResetProducts(products);
         }

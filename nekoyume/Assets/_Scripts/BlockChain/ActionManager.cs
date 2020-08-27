@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Security.Cryptography;
 using Libplanet;
+using Libplanet.Assets;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Game.Character;
@@ -173,7 +174,7 @@ namespace Nekoyume.BlockChain
                 .Timeout(ActionTimeout);
         }
 
-        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, BigInteger price)
+        public IObservable<ActionBase.ActionEvaluation<Sell>> Sell(ItemUsable itemUsable, FungibleAssetValue price)
         {
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
@@ -384,7 +385,7 @@ namespace Nekoyume.BlockChain
         public IObservable<ActionBase.ActionEvaluation<RedeemCode>> RedeemCode(string code)
         {
             var action = new RedeemCode(
-                code, 
+                code,
                 States.Instance.CurrentAvatarState.address
             );
             ProcessAction(action);

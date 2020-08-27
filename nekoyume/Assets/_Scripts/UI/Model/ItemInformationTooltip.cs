@@ -1,5 +1,7 @@
 using System;
 using System.Numerics;
+using Libplanet.Assets;
+using Nekoyume.State;
 using UniRx;
 
 namespace Nekoyume.UI.Model
@@ -17,7 +19,7 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> SubmitButtonText = new ReactiveProperty<string>(null);
 
         public readonly ReactiveProperty<bool> PriceEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<BigInteger> Price = new ReactiveProperty<BigInteger>(0);
+        public readonly ReactiveProperty<FungibleAssetValue> Price;
 
         public readonly Subject<UI.ItemInformationTooltip> OnSubmitClick = new Subject<UI.ItemInformationTooltip>();
         public readonly Subject<UI.ItemInformationTooltip> OnCloseClick = new Subject<UI.ItemInformationTooltip>();
@@ -26,6 +28,9 @@ namespace Nekoyume.UI.Model
 
         public ItemInformationTooltip(CountableItem countableItem = null)
         {
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            Price = new ReactiveProperty<FungibleAssetValue>(new FungibleAssetValue(currency));
+
             ItemInformation = new ItemInformation(countableItem);
             ItemInformation.item.Subscribe(item =>
             {
