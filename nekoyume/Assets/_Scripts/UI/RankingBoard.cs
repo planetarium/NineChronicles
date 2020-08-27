@@ -166,9 +166,6 @@ namespace Nekoyume.UI
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
 
-            // Subscriptions.
-            // FIXME: GameConfig.ArenaActivationCostNCG 를 FAV로 고쳐야 합니다.
-
             WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(state => UpdateArena())
                 .AddTo(_disposablesAtClose);
         }
