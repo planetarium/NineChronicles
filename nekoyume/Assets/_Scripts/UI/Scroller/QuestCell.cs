@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private SubmitButton receiveButton = null;
 
-        public QuestModel _quest = null;
+        private QuestModel _quest = null;
 
         public event System.Action onClickSubmitButton = null;
 
