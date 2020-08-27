@@ -8,6 +8,7 @@ using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
@@ -445,9 +446,9 @@ namespace Nekoyume.UI
                     .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                 {
-                    if (data.Price.Value < Model.Shop.MinimumPrice)
+                    if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
                     {
-                        throw new InvaildSellingPriceException(data);
+                        throw new InvalidSellingPriceException(data);
                     }
 
                     Game.Game.instance.ActionManager.Sell(
@@ -519,10 +520,9 @@ namespace Nekoyume.UI
 
         private static bool ButtonEnabledFuncForBuy(CountableItem inventoryItem)
         {
-            // FIXME: ShopItem.Price 를 FAV로 고쳐야 합니다.
             FungibleAssetValue gold = ReactiveAgentState.Gold.Value;
             return inventoryItem is ShopItem shopItem &&
-                   gold >= gold.Currency * shopItem.Price.Value;
+                   gold >= shopItem.Price.Value;
         }
 
         private static bool ButtonEnabledFuncForSell(CountableItem inventoryItem)
@@ -547,11 +547,12 @@ namespace Nekoyume.UI
             var avatarAddress = States.Instance.CurrentAvatarState.address;
 
             var item = SharedModel.ItemCountAndPricePopup.Value.Item.Value;
-            var price = SharedModel.ItemCountAndPricePopup.Value.Price.Value;
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
             if (!(item.ItemBase.Value is ItemUsable itemUsable))
+            {
                 return;
+            }
 
             LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
 
@@ -568,7 +569,15 @@ namespace Nekoyume.UI
             var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 
-            States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
+            try
+            {
+                States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
+            }
+            catch (FailedToUnregisterInShopStateException e)
+            {
+                Debug.LogError(e.Message);
+            }
+
             shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
@@ -586,7 +595,14 @@ namespace Nekoyume.UI
             var productId = shopItem.ProductId.Value;
 
             LocalStateModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
-            States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
+            try
+            {
+                States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
+            }
+            catch (FailedToUnregisterInShopStateException e)
+            {
+                Debug.LogError(e.Message);
+            }
             shopItems.SharedModel.RemoveOtherProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
