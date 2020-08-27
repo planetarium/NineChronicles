@@ -189,7 +189,7 @@ namespace Nekoyume.UI
                 var arenaInfo = States.Instance.WeeklyArenaState.GetArenaInfo(currentAddress.Value);
                 rankingExclamationMark.gameObject.SetActive(
                     btnRanking.IsUnlocked &&
-                    (arenaInfo == null || arenaInfo.DailyChallengeCount != 0));
+                    (arenaInfo == null || arenaInfo.DailyChallengeCount > 0));
             }
 
             var worldMap = Find<WorldMap>();
