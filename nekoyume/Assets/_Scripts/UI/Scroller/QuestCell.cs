@@ -5,6 +5,7 @@ using Nekoyume.Game.VFX;
 using Nekoyume.Helper;
 using Nekoyume.L10n;
 using Nekoyume.Model.Item;
+using Nekoyume.Model.Quest;
 using Nekoyume.UI.Model;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -41,9 +42,9 @@ namespace Nekoyume.UI.Scroller
         [SerializeField]
         private SubmitButton receiveButton = null;
 
-        private QuestModel _quest;
+        public QuestModel _quest = null;
 
-        public event System.Action onClickSubmitButton;
+        public event System.Action onClickSubmitButton = null;
 
         #region Mono
 
@@ -69,6 +70,9 @@ namespace Nekoyume.UI.Scroller
 
         private void OnReceiveClick(SubmitButton submitButton)
         {
+            var questWidget = Widget.Find<Quest>();
+            questWidget.EnqueueCompletedQuest(_quest);
+
             AudioController.PlayClick();
 
             ItemMoveVFX lastVFX = null;
@@ -87,7 +91,7 @@ namespace Nekoyume.UI.Scroller
                 {
                     var rectTransform = (RectTransform) transform;
 
-                    Widget.Find<Quest>().DisappearAnimation(
+                    questWidget.DisappearAnimation(
                         Mathf.FloorToInt(-rectTransform.anchoredPosition.y /
                                          rectTransform.sizeDelta.y));
                     lastVFX.OnFinished = null;
@@ -179,7 +183,6 @@ namespace Nekoyume.UI.Scroller
 
         public void UpdateTab()
         {
-            Widget.Find<CelebratesPopup>().Show(_quest);
             UpdateView();
             Widget.Find<Quest>().UpdateTabs();
         }

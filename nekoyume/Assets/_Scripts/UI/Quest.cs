@@ -1,4 +1,4 @@
-﻿using Nekoyume.Helper;
+using Nekoyume.Helper;
 using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.UI.Scroller;
@@ -160,6 +160,11 @@ namespace Nekoyume.UI
             _questList = list;
 
             ChangeState((int) tabState);
+        }
+
+        public void EnqueueCompletedQuest(QuestModel quest)
+        {
+            scroll.EnqueueCompletedQuest(quest);
         }
 
         public void DisappearAnimation(int index)
