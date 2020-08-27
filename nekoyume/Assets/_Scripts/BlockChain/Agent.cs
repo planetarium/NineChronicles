@@ -6,7 +6,6 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Numerics;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -88,7 +87,7 @@ namespace Nekoyume.BlockChain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
-        public ActionRenderer ActionRenderer { get; } = new ActionRenderer();
+        public ActionRenderer ActionRenderer { get; private set; }
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -170,6 +169,7 @@ namespace Nekoyume.BlockChain
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
             var policy = BlockPolicy.GetPolicy(minimumDifficulty);
+            ActionRenderer = BlockPolicy.GetRenderer();
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
@@ -183,7 +183,12 @@ namespace Nekoyume.BlockChain
 
             try
             {
-                blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store, (IStateStore)store, genesisBlock);
+                blocks = new BlockChain<PolymorphicAction<ActionBase>>(
+                    policy,
+                    store,
+                    (IStateStore) store,
+                    genesisBlock,
+                    renderers: new[] {ActionRenderer});
             }
             catch (InvalidGenesisBlockException)
             {

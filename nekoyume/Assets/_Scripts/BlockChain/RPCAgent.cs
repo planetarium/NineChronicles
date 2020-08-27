@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -122,7 +121,7 @@ namespace Nekoyume.BlockChain
         {
             _renderSubject = new Subject<ActionEvaluation<ActionBase>>();
             _unrenderSubject = new Subject<ActionEvaluation<ActionBase>>();
-            ActionRenderer = new ActionRenderer();
+            ActionRenderer = BlockPolicy.GetRenderer();
         }
 
         private async void OnDestroy()
