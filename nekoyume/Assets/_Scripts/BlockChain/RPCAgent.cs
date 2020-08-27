@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -45,12 +44,16 @@ namespace Nekoyume.BlockChain
         private IBlockChainService _service;
 
         private Codec _codec = new Codec();
-        private Subject<ActionEvaluation<ActionBase>> _renderSubject;
-        private Subject<ActionEvaluation<ActionBase>> _unrenderSubject;
+
+        private readonly Subject<ActionEvaluation<ActionBase>> _renderSubject =
+            new Subject<ActionEvaluation<ActionBase>>();
+
+        private readonly Subject<ActionEvaluation<ActionBase>> _unrenderSubject =
+            new Subject<ActionEvaluation<ActionBase>>();
 
         private Block<PolymorphicAction<ActionBase>> _genseis;
 
-        public ActionRenderer ActionRenderer { get; private set; }
+        public ActionRenderer ActionRenderer { get; } = BlockPolicy.GetRenderer();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
@@ -117,13 +120,6 @@ namespace Nekoyume.BlockChain
         }
 
         #region Mono
-
-        private void Awake()
-        {
-            _renderSubject = new Subject<ActionEvaluation<ActionBase>>();
-            _unrenderSubject = new Subject<ActionEvaluation<ActionBase>>();
-            ActionRenderer = new ActionRenderer(_renderSubject, _unrenderSubject);
-        }
 
         private async void OnDestroy()
         {
