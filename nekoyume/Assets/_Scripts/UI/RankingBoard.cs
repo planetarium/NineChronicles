@@ -51,25 +51,19 @@ namespace Nekoyume.UI
         private ExpRankScroll expRankScroll = null;
 
         [SerializeField]
-        private ArenaPendingNCG arenaPendingNCG = null;
-
-        [SerializeField]
-        private GameObject arenaRecordContainer = null;
-
-        [SerializeField]
-        private TextMeshProUGUI arenaRecordText = null;
-
-        [SerializeField]
         private ArenaRankCell currentAvatarCellView = null;
 
         [SerializeField]
-        private SubmitButton arenaActivationButton = null;
-
-        [SerializeField]
-        private RankingRewards rankingRewards = null;
-
-        [SerializeField]
         private SpeechBubble speechBubble = null;
+
+        [SerializeField]
+        private TextMeshProUGUI rewardText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI winText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI loseText = null;
 
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
@@ -112,19 +106,6 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            arenaActivationButton.OnSubmitClick
-                .Subscribe(_ =>
-                {
-                    // todo: 아레나 참가하기.
-                    // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 골드를 깍지 못함.
-                    // LocalStateModifier.ModifyAgentGold(States.Instance.AgentState.address,
-                    //     -GameConfig.ArenaActivationCostNCG);
-                    // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 골드를 더하지 못함.
-                    // LocalStateModifier.ModifyWeeklyArenaGold(GameConfig.ArenaActivationCostNCG);
-                    LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets
-                        .CharacterSheet);
-                }).AddTo(gameObject);
-
             arenaRankScroll.OnClickAvatarInfo
                 .Subscribe(cell => OnClickAvatarInfo(
                     cell.RectTransform,
@@ -141,6 +122,10 @@ namespace Nekoyume.UI
                     cell.RectTransform,
                     cell.ArenaInfo.AvatarAddress))
                 .AddTo(gameObject);
+
+            rewardText.text = L10nManager.Localize("UI_REWARDS");
+            winText.text = L10nManager.Localize("UI_WIN");
+            loseText.text = L10nManager.Localize("UI_LOSE");
 
             CloseWidget = null;
             SubmitWidget = null;
@@ -183,9 +168,7 @@ namespace Nekoyume.UI
 
             // Subscriptions.
             // FIXME: GameConfig.ArenaActivationCostNCG 를 FAV로 고쳐야 합니다.
-            ReactiveAgentState.Gold.Subscribe(gold =>
-                    arenaActivationButton.SetSubmittable(gold >= gold.Currency * GameConfig.ArenaActivationCostNCG))
-                .AddTo(_disposablesAtClose);
+
             WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(state => UpdateArena())
                 .AddTo(_disposablesAtClose);
         }
@@ -213,8 +196,6 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOn();
                     filteredButton.SetToggledOff();
                     overallButton.SetToggledOff();
-                    rankingRewards.Show();
-                    arenaPendingNCG.Show(false);
                     UpdateArena();
                     arenaRankingHeader.SetActive(true);
                     expRankingHeader.SetActive(false);
@@ -223,11 +204,7 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOff();
                     filteredButton.SetToggledOn();
                     overallButton.SetToggledOff();
-                    arenaActivationButton.Hide();
-                    rankingRewards.Hide();
-                    arenaPendingNCG.Hide();
                     currentAvatarCellView.Hide();
-                    arenaRecordContainer.SetActive(false);
                     arenaRankingHeader.SetActive(false);
                     expRankingHeader.SetActive(true);
                     UpdateBoard(stateType);
@@ -236,11 +213,7 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOff();
                     filteredButton.SetToggledOff();
                     overallButton.SetToggledOn();
-                    arenaActivationButton.Hide();
-                    rankingRewards.Hide();
-                    arenaPendingNCG.Hide();
                     currentAvatarCellView.Hide();
-                    arenaRecordContainer.SetActive(false);
                     arenaRankingHeader.SetActive(false);
                     expRankingHeader.SetActive(true);
                     UpdateBoard(stateType);
@@ -258,8 +231,6 @@ namespace Nekoyume.UI
                 return;
             }
 
-            arenaPendingNCG.Show(weeklyArenaState);
-
             var avatarAddress = States.Instance.CurrentAvatarState?.address;
             if (!avatarAddress.HasValue)
             {
@@ -270,9 +241,7 @@ namespace Nekoyume.UI
                 .GetArenaInfos(avatarAddress.Value, 0, 0);
             if (arenaInfos.Count == 0)
             {
-                arenaRecordContainer.SetActive(false);
                 currentAvatarCellView.Hide();
-                arenaActivationButton.Show();
 
                 UpdateBoard(StateType.Arena);
                 return;
@@ -282,18 +251,18 @@ namespace Nekoyume.UI
             var record = arenaInfo.ArenaRecord;
             if (arenaInfo.Active)
             {
-                arenaRecordContainer.SetActive(true);
-                arenaRecordText.text = string.Format(
-                    L10nManager.Localize("UI_WIN_DRAW_LOSE_FORMAT"), record.Win,
-                    record.Draw, record.Lose);
                 currentAvatarCellView.Show((rank, arenaInfo, arenaInfo));
-                arenaActivationButton.Hide();
             }
             else
             {
-                arenaRecordContainer.SetActive(false);
                 currentAvatarCellView.Hide();
-                arenaActivationButton.Show();
+
+                var gold = Game.Game.instance.States.GoldBalanceState.Gold;
+                if (gold >= gold.Currency * GameConfig.ArenaActivationCostNCG)
+                {
+                    LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets
+                        .CharacterSheet);
+                }
             }
 
             UpdateBoard(StateType.Arena);
@@ -310,11 +279,8 @@ namespace Nekoyume.UI
                 {
                     arenaRankScroll.ClearData();
                     arenaRankScroll.Show();
-                    arenaPendingNCG.Hide();
                     return;
                 }
-
-                arenaPendingNCG.Show(weeklyArenaState);
 
                 var currentAvatarAddress = States.Instance.CurrentAvatarState?.address;
                 if (!currentAvatarAddress.HasValue ||
