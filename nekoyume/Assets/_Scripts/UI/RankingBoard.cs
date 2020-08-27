@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Libplanet;
@@ -8,8 +7,6 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
-using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
@@ -74,7 +71,7 @@ namespace Nekoyume.UI
         [SerializeField]
         private SpeechBubble speechBubble = null;
 
-        private RankingInfo[] _avatarRankingStates;
+        private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
         private Player _player;
 

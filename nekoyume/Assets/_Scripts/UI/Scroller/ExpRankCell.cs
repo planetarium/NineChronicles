@@ -1,6 +1,5 @@
 using System;
 using Nekoyume.Game.Controller;
-using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -17,7 +16,7 @@ namespace Nekoyume.UI.Scroller
         public class ViewModel
         {
             public int rank;
-            public RankingInfo rankingInfo;
+            public Nekoyume.Model.State.RankingInfo rankingInfo;
         }
 
         [SerializeField]
@@ -54,7 +53,7 @@ namespace Nekoyume.UI.Scroller
             ? _rectTransformCache
             : _rectTransformCache = GetComponent<RectTransform>();
 
-        public RankingInfo RankingInfo { get; private set; }
+        public Nekoyume.Model.State.RankingInfo RankingInfo { get; private set; }
 
         private void Awake()
         {
