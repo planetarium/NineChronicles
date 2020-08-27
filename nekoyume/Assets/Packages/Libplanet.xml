@@ -474,62 +474,6 @@
                     return context.PreviousStates.SetState(TargetAddress,
                         (Dictionary)nextState);
                 }
-                // Side effects, i.e., any effects on other than states, are
-                // done here.
-                void IAction.Render(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                    Character c;
-                    // You could compare this with a better example of
-                    // PolymorphicAction<T> class.
-                    switch (Type)
-                    {
-                        case ActType.CreateCharacter:
-                            c = new Character
-                            {
-                                Address = TargetAddress,
-                                Hp = 0,
-                            };
-                            break;
-                        case ActType.Attack:
-                        case ActType.Heal:
-                            c = Character.GetByAddress(TargetAddress);
-                            break;
-                        default:
-                            return;
-                    }
-                    c.Hp =
-                        ((Bencodex.Types.Dictionary)nextStates.GetState(TargetAddress))
-                            .GetValue<Integer>("hp");
-                    c.Draw();
-                }
-                // Sometimes a block to which an action belongs can be
-                // a "stale."  If that action already has been rendered,
-                // it should be undone.
-                void IAction.Unrender(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                    Character c = Character.GetByAddress(TargetAddress);
-                    // You could compare this with a better example of
-                    // PolymorphicAction<T> class.
-                    switch (Type)
-                    {
-                        case ActType.CreateCharacter:
-                            c.Hide();
-                            break;
-                        case ActType.Attack:
-                        case ActType.Heal:
-                            IAccountStateDelta prevStates = context.PreviousStates;
-                            c.Hp = ((Bencodex.Types.Dictionary)prevStates.GetState(TargetAddress))
-                                .GetValue<Integer>("hp");
-                            c.Draw();
-                            break;
-                        default:
-                            break;
-                    }
-                }
                 // Serializes its "bound arguments" so that they are transmitted
                 // over network or stored to the persistent storage.
                 IValue IAction.PlainValue =>
@@ -604,11 +548,8 @@
             <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method can be called more
             than once, the time it's called is difficult to predict.
             <para>For changing in-memory game states or drawing graphics,
-            write such code in the <see
-            cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method instead.
-            The <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method
-            is guaranteed to be called only once, and only after an action is
-            transmitted to other nodes in the network.</para>
+            implement the <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> interface separately and
+            attach it to a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> instance.</para>
             <para>For randomness, <em>never</em> use <see cref="T:System.Random"/>
             nor any other PRNGs provided by other than Libplanet.
             Use <see cref="P:Libplanet.Action.IActionContext.Random"/> instead.
@@ -638,83 +579,6 @@
             >Tendermint ABCI's docs on determinism</a>.</para>
             </remarks>
             <seealso cref="T:Libplanet.Action.IActionContext"/>
-        </member>
-        <member name="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
-            <summary>
-            Does things that should be done right after this action is
-            spread to the network or is &#x201c;confirmed&#x201d; (kind of)
-            by each peer node.
-            <para>Usually, this method updates the in-memory game states
-            (if exist), and then sends a signal to the UI thread (usually
-            the main thread) so that the graphics on the display is redrawn.
-            </para>
-            </summary>
-            <param name="context">The equivalent context object to
-            what <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method had received.
-            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are
-            the states right <em>before</em> this action executed.
-            For the states after this action executed,
-            use the <paramref name="nextStates"/> argument instead.
-            </param>
-            <param name="nextStates">The states right <em>after</em> this action
-            executed, which means it is equivalent to what <see
-            cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method returned.
-            </param>
-        </member>
-        <member name="M:Libplanet.Action.IAction.RenderError(Libplanet.Action.IActionContext,System.Exception)">
-            <summary>
-            Does the similar things to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>,
-            except that this method is invoked when <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method
-            has terminated with an exception.
-            </summary>
-            <param name="context">The equivalent context object to
-            what <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method had received.
-            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are
-            the states right <em>before</em> this action executed.
-            </param>
-            <param name="exception">The exception that had raised during excuting this action.
-            </param>
-        </member>
-        <member name="M:Libplanet.Action.IAction.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
-            <summary>
-            Does things that should be undone right after this action is
-            invalidated (mostly due to a block which this action has belonged
-            to becoming considered a stale).
-            <para>This method takes the equivalent arguments to
-            <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method.
-            </para>
-            </summary>
-            <param name="context">The equivalent context object to
-            what <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method had received.
-            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are
-            the states right <em>before</em> this action executed.
-            For the states after this action executed,
-            use the <paramref name="nextStates"/> argument instead.
-            </param>
-            <param name="nextStates">The states right <em>after</em> this action
-            executed, which means it is equivalent to what <see
-            cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method returned.
-            </param>
-            <remarks>As a rule of thumb, this should be the inverse of
-            <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method
-            with redrawing the graphics on the display at the finish.</remarks>
-        </member>
-        <member name="M:Libplanet.Action.IAction.UnrenderError(Libplanet.Action.IActionContext,System.Exception)">
-            <summary>
-            Does the similar things to <see cref="M:Libplanet.Action.IAction.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>,
-            except that this method is invoked when see cref="Execute(IActionContext)"/> method
-            has terminated with an exception.
-            <para>This method takes the equivalent arguments to
-            <see cref="M:Libplanet.Action.IAction.RenderError(Libplanet.Action.IActionContext,System.Exception)"/> method.
-            </para>
-            </summary>
-            <param name="context">The equivalent context object to
-            what <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method had received.
-            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are
-            the states right <em>before</em> this action executed.
-            </param>
-            <param name="exception">The exception that had raised during excuting this action.
-            </param>
         </member>
         <member name="T:Libplanet.Action.IActionContext">
             <summary>
@@ -924,19 +788,6 @@
                 // Leaves Execute() abstract so that concrete subclasses
                 // implement their own logic.
                 public abstract IAccountStateDelta Execute(IActionContext context);
-                // Makes Render() no-op by default, but overrideable by subclasses.
-                public virtual void Render(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                }
-                // Makes Unrender() no-op by default,
-                // but overrideable by subclasses.
-                public virtual void Unrender(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                }
                 IValue IAction.PlainValue =>
                     new Bencodex.Types.Dictionary(new Dictionary<IKey, IValue>
                     {
@@ -977,24 +828,6 @@
                         })
                     );
                 }
-                void IAction.Render(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                    var c = new Character
-                    {
-                        Address = TargetAddress,
-                        Hp = (Integer)nextStates.GetState(TargetAddress),
-                    };
-                    c.Draw();
-                }
-                void IAction.Unrender(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                    Character c = Character.GetByAddress(TargetAddress);
-                    c.Hide();
-                }
             }
             [ActionType("attack")]
             public sealed class Attack : ActionBase
@@ -1010,25 +843,6 @@
                                 (Text)"hp",
                                 (Integer)Math.Max(state.GetValue<Integer>("hp") - 5, 0))
                     );
-                }
-                void IAction.Render(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                    Character c = Character.GetByAddress(TargetAddress);
-                    c.Hp = ((Bencodex.Types.Dictionary)nextStates.GetState(TargetAddress))
-                        .GetValue<Integer>("hp");
-                    c.Draw();
-                }
-                void IAction.Unrender(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                    Character c = Character.GetByAddress(TargetAddress);
-                    var target =
-                        (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
-                    c.Hp = target.GetValue<Integer>("hp");
-                    c.Draw();
                 }
             }
             [ActionType("heal")]
@@ -1046,28 +860,29 @@
                                 (Integer)Math.Min(state.GetValue<Integer>("hp") + 5, 20))
                     );
                 }
-                void IAction.Render(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                    Character c = Character.GetByAddress(TargetAddress);
-                    var target =
-                        (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
-                    c.Hp = target.GetValue<Integer>("hp");
-                    c.Draw();
-                }
-                void IAction.Unrender(
-                    IActionContext context,
-                    IAccountStateDelta nextStates)
-                {
-                    Character c = Character.GetByAddress(TargetAddress);
-                    var target =
-                        (Bencodex.Types.Dictionary)context.PreviousStates.GetState(TargetAddress);
-                    c.Hp = target.GetValue<Integer>("hp");
-                    c.Draw();
-                }
             }
             ]]></code>
+            Note that when it's rendered through <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
+            an instance of <see cref="T:Libplanet.Action.PolymorphicAction`1"/> is passed instead of its
+            <see cref="P:Libplanet.Action.PolymorphicAction`1.InnerAction"/>:
+            <code>
+            public class Renderer : IRenderer&lt;PolymorphicAction&lt;ActionBase&gt;&gt;
+            {
+                public void RenderAction(IAction action,
+                                         IActionContext context,
+                                         IAccountStateDelta nextStates)
+                {
+                    if (action is PolymorphicAction&lt;ActionBase&gt; polymorphicAction)
+                    {
+                        switch (polymorphicAction.InnerAction)
+                        {
+                            // render things here
+                        }
+                    }
+                }
+                // ... other method implementations
+            }
+            </code>
             </example>
             <remarks>Every concrete action subclass of <typeparamref name="T"/>
             has to be marked with the <see cref="T:Libplanet.Action.ActionTypeAttribute"/>.
@@ -1116,21 +931,6 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Action.PolymorphicAction`1.Execute(Libplanet.Action.IActionContext)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Action.PolymorphicAction`1.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Action.PolymorphicAction`1.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Action.PolymorphicAction`1.ToString">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Action.PolymorphicAction`1.RenderError(Libplanet.Action.IActionContext,System.Exception)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Action.PolymorphicAction`1.UnrenderError(Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Action.RandomExtensions">
@@ -1867,14 +1667,15 @@
             <summary>
             A class have <see cref="T:Libplanet.Blocks.Block`1"/>s, <see cref="T:Libplanet.Tx.Transaction`1"/>s, and the chain
             information.
+            <para>In order to watch its state changes, implement <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>
+            interface and pass it to the <see
+            cref="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"
+            /> constructor.</para>
             </summary>
             <remarks>This object is guaranteed that it has at least one block, since it takes a genesis
             block when it's instantiated.</remarks>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match
             to <see cref="T:Libplanet.Blocks.Block`1"/>'s type parameter.</typeparam>
-            <seealso cref="T:Libplanet.Action.IAction"/>
-            <seealso cref="T:Libplanet.Blocks.Block`1"/>
-            <seealso cref="T:Libplanet.Tx.Transaction`1"/>
         </member>
         <member name="F:Libplanet.Blockchain.BlockChain`1._blocks">
             <summary>
@@ -1892,7 +1693,7 @@
             their corresponding <see cref="T:Libplanet.Tx.Transaction`1"/>s.
             </summary>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Boolean)">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})">
             <summary>
             Initializes a new instance of the <see cref="T:Libplanet.Blockchain.BlockChain`1"/> class.
             </summary>
@@ -1906,8 +1707,8 @@
             it checks if the existing genesis block and this argument is the same.
             If the <paramref name="store"/> has no genesis block yet this argument will
             be used for that.</param>
-            <param name="render">Defines whether to render actions on this
-            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.  Turned on by default.</param>
+            <param name="renderers">Listens state changes on the created chain.  Listens nothing
+            by default or if it is <c>null</c>.</param>
             <param name="stateStore"><see cref="T:Libplanet.Store.IStateStore"/> to store states.</param>
             <exception cref="T:Libplanet.Blocks.InvalidGenesisBlockException">Thrown when the <paramref name="store"/>
             has a genesis block and it does not match to what the network expects
@@ -1918,15 +1719,16 @@
             An event which is invoked when <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> is changed.
             </summary>
         </member>
-        <member name="E:Libplanet.Blockchain.BlockChain`1.Reorged">
+        <member name="P:Libplanet.Blockchain.BlockChain`1.Renderers">
             <summary>
-            An event which is invoked when the chain is reorged.
+            The list of registered renderers listening the state changes.
             </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.Render">
-            <summary>
-            Defines whether to render actions on this <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
-            </summary>
+            <remarks>
+            Since this value is immutable, renderers cannot be registered after once a <see
+            cref="T:Libplanet.Blockchain.BlockChain`1"/> object is instantiated; use <c>renderers</c> option of <see cref=
+            "M:Libplanet.Blockchain.BlockChain`1.#ctor(Libplanet.Blockchain.Policies.IBlockPolicy{`0},Libplanet.Store.IStore,Libplanet.Store.IStateStore,Libplanet.Blocks.Block{`0},System.Collections.Generic.IEnumerable{Libplanet.Blockchain.Renderers.IRenderer{`0}})"/>
+            constructor instead.
+            </remarks>
         </member>
         <member name="P:Libplanet.Blockchain.BlockChain`1.Tip">
             <summary>
@@ -2060,11 +1862,9 @@
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Adds a <paramref name="block"/> to the end of this chain.
-            <para>Note that <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> methods of
-            all <see cref="T:Libplanet.Action.IAction"/> objects that belong
-            to the <paramref name="block"/> are called right after
-            the <paramref name="block"/> is confirmed (and thus all states
-            reflect changes in the <paramref name="block"/>).</para>
+            <para>Note that <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> receive events right after the <paramref
+            name="block"/> is confirmed (and thus all states reflect changes in the <paramref
+            name="block"/>).</para>
             </summary>
             <param name="block">A next <see cref="T:Libplanet.Blocks.Block`1"/>, which is mined,
             to add.</param>
@@ -2083,11 +1883,9 @@
         <member name="M:Libplanet.Blockchain.BlockChain`1.Append(Libplanet.Blocks.Block{`0},System.DateTimeOffset,System.Nullable{Libplanet.Blockchain.StateCompleterSet{`0}})">
             <summary>
             Adds a <paramref name="block"/> to the end of this chain.
-            <para>Note that <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> methods of
-            all <see cref="T:Libplanet.Action.IAction"/> objects that belong
-            to the <paramref name="block"/> are called right after
-            the <paramref name="block"/> is confirmed (and thus all states
-            reflect changes in the <paramref name="block"/>).</para>
+            <para>Note that <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> receive events right after the <paramref
+            name="block"/> is confirmed (and thus all states reflect changes in the <paramref
+            name="block"/>).</para>
             </summary>
             <param name="block">A next <see cref="T:Libplanet.Blocks.Block`1"/>, which is mined,
             to add.</param>
@@ -2233,53 +2031,6 @@
             Calculates and complements a block's incomplete states on the fly.
             </summary>
             <param name="blockHash">The hash of a block which has incomplete states.</param>
-        </member>
-        <member name="T:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs">
-            <summary>
-            Provides data for the <see cref="E:Libplanet.Blockchain.BlockChain`1.TipChanged"/> event.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.PreviousIndex">
-            <summary>
-            The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>before</em> changed.
-            Can be <c>null</c> if the blockchain was empty before.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.PreviousHash">
-            <summary>
-            The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>before</em> changed.
-            Can be <c>null</c> if the blockchain was empty before.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.Index">
-            <summary>
-            The <see cref="P:Libplanet.Blocks.Block`1.Index"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>after</em> changed.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.TipChangedEventArgs.Hash">
-            <summary>
-            The <see cref="P:Libplanet.Blocks.Block`1.Hash"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> <em>after</em> changed.
-            </summary>
-        </member>
-        <member name="T:Libplanet.Blockchain.BlockChain`1.ReorgedEventArgs">
-            <summary>
-            Provides data for the <see cref="E:Libplanet.Blockchain.BlockChain`1.Reorged"/> event.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.ReorgedEventArgs.OldTip">
-            <summary>
-            The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> before the chain is reorged.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.ReorgedEventArgs.NewTip">
-            <summary>
-            The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> after the chain is reorged.
-            </summary>
-        </member>
-        <member name="P:Libplanet.Blockchain.BlockChain`1.ReorgedEventArgs.Branchpoint">
-            <summary>
-            The <see cref="T:Libplanet.Blocks.Block`1"/> point of the chain branches off.
-            </summary>
         </member>
         <member name="T:Libplanet.Blockchain.FungibleAssetStateCompleter`1">
             <summary>
@@ -2453,6 +2204,272 @@
             followed by a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</param>
             <returns>A right <see cref="P:Libplanet.Blocks.Block`1.Difficulty"/>
             for a new <see cref="T:Libplanet.Blocks.Block`1"/> to be mined.</returns>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.AnonymousRenderer`1">
+            <summary>
+            A renderer that invokes its callbacks.
+            <para>This class is useful when you want an one-use ad-hoc implementation (i.e., Java-style
+            anonymous class) of <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> interface.</para>
+            </summary>
+            <example>
+            With object initializers, you can easily make an one-use renderer:
+            <code>
+            var renderer = new AnonymousRenderer&lt;ExampleAction&gt;
+            {
+                ActionRenderer = (action, context, nextStates) =>
+                {
+                    // Implement RenderAction() here.
+                };
+            };
+            </code>
+            </example>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.ActionRenderer">
+            <summary>
+            A callback function to be invoked together with
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.ActionUnrenderer">
+            <summary>
+            A callback function to be invoked together with
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.ActionErrorRenderer">
+            <summary>
+            A callback function to be invoked together with
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.ActionErrorUnrenderer">
+            <summary>
+            A callback function to be invoked together with
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.BlockRenderer">
+            <summary>
+            A callback function to be invoked together with
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.ReorgRenderer">
+            <summary>
+            A callback function to be invoked together with
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.IRenderer`1">
+            <summary>
+            Listens state changes on a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            <para>Usually, implementations of this interface purpose to update the in-memory game states
+            (if exist), or send a signal to the UI thread (usually the main thread) so that the graphics
+            on the display is redrawn.</para>
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <summary>
+            Does things that should be done right after an <paramref name="action"/>
+            is executed and applied to the blockchain.
+            </summary>
+            <remarks>It is guaranteed to be called only once for an <paramref name="action"/>,
+            and only after applied to the blockchain, unless an exception is thrown during executing
+            the <paramref name="action"/> (in that case <see
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> is called instead) or
+            once the <paramref name="action"/> has been unrendered.</remarks>
+            <param name="action">An executed action.</param>
+            <param name="context">The equivalent context object to an object passed to
+            the <paramref name="action"/>'s <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method.
+            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are the states right
+            <em>before</em> this action executed.  For the states after this action executed,
+            use the <paramref name="nextStates"/> argument instead.</param>
+            <param name="nextStates">The states right <em>after</em> this action executed,
+            which means it is equivalent to the states <paramref name="action"/>'s
+            <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method returned.</param>
+            <remarks>The reason why the parameter <paramref name="action"/> takes
+            <see cref="T:Libplanet.Action.IAction"/> instead of <typeparamref name="T"/> is because it can take
+            block actions (<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>) besides transaction
+            actions (<see cref="P:Libplanet.Tx.Transaction`1.Actions"/>).</remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.IRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <summary>
+            Does things that should be undone right after the given <paramref name="action"/> is
+            invalidated (mostly due to reorg, i.e., a block which the action has belonged to becomes
+            considered stale).
+            <para>This method takes the equivalent arguments to <see
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method.</para>
+            </summary>
+            <param name="action">A stale action.</param>
+            <param name="context">The equivalent context object to an object passed to
+            the <paramref name="action"/>'s <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method.
+            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are the states right
+            <em>before</em> this action executed.  For the states after this action executed,
+            use the <paramref name="nextStates"/> argument instead.</param>
+            <param name="nextStates">The states right <em>after</em> this action executed,
+            which means it is equivalent to the states <paramref name="action"/>'s
+            <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method returned.</param>
+            <remarks>As a rule of thumb, this should be the inverse of
+            <see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method
+            with redrawing the graphics on the display at the finish.</remarks>
+            <remarks>The reason why the parameter <paramref name="action"/> takes
+            <see cref="T:Libplanet.Action.IAction"/> instead of <typeparamref name="T"/> is because it can take
+            block actions (<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>) besides transaction
+            actions (<see cref="P:Libplanet.Tx.Transaction`1.Actions"/>).</remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <summary>
+            Does the similar things to <see cref=
+            "M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>, except that this method
+            is invoked when <paramref name="action"/> has terminated with an exception.
+            </summary>
+            <param name="action">An action which threw an exception during execution.</param>
+            <param name="context">The equivalent context object to an object passed to
+            the <paramref name="action"/>'s <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method.
+            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are the states right
+            <em>before</em> this action executed.</param>
+            <param name="exception">The exception thrown during executing the <paramref
+            name="action"/>.</param>
+            <remarks>The reason why the parameter <paramref name="action"/> takes
+            <see cref="T:Libplanet.Action.IAction"/> instead of <typeparamref name="T"/> is because it can take
+            block actions (<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>) besides transaction
+            actions (<see cref="P:Libplanet.Tx.Transaction`1.Actions"/>).</remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.IRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <summary>
+            Does the similar things to <see
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>, except that
+            this method is invoked when <paramref name="action"/> has terminated with an exception.
+            <para>This method takes the equivalent arguments to <see
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> method.</para>
+            </summary>
+            <param name="action">An action which threw an exception during execution.</param>
+            <param name="context">The equivalent context object to an object passed to
+            the <paramref name="action"/>'s <see cref="M:Libplanet.Action.IAction.Execute(Libplanet.Action.IActionContext)"/> method.
+            That means <see cref="P:Libplanet.Action.IActionContext.PreviousStates"/> are the states right
+            <em>before</em> this action executed.</param>
+            <param name="exception">The exception thrown during executing the <paramref
+            name="action"/>.</param>
+            <remarks>The reason why the parameter <paramref name="action"/> takes
+            <see cref="T:Libplanet.Action.IAction"/> instead of <typeparamref name="T"/> is because it can take
+            block actions (<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>) besides transaction
+            actions (<see cref="P:Libplanet.Tx.Transaction`1.Actions"/>).</remarks>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <summary>
+            Does things that should be done right after a new <see cref="T:Libplanet.Blocks.Block`1"/> is appended to
+            a <see cref="T:Libplanet.Blockchain.BlockChain`1"/> (so that its <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> has changed).
+            </summary>
+            <remarks>It is guaranteed to be called only once for a block, and only after applied to
+            the blockchain, unless it has been stale due to reorg (for that case, <see
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> is called in advance).</remarks>
+            <param name="oldTip">The previous <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.</param>
+            <param name="newTip">The current <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <summary>
+            Does things that should be done right after reorg has happened to a <see
+            cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </summary>
+            <remarks>For every call to this method, a call to <see
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> method with the same <paramref name="newTip"/>
+            is made too.  Note that this method is guaranteed to be called before <see
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> method for the same <paramref name="newTip"/>.
+            </remarks>
+            <param name="oldTip">The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> right before reorg.</param>
+            <param name="newTip">The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> after reorg.</param>
+            <param name="branchpoint">The highest common <see cref="T:Libplanet.Blocks.Block`1"/> between
+            <paramref name="oldTip"/> and <paramref name="newTip"/>.</param>
+        </member>
+        <member name="T:Libplanet.Blockchain.Renderers.LoggedRenderer`1">
+            <summary>
+            Decorates an <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/> so that all event messages are logged.
+            <para>Every single event message causes two log messages: one is logged <em>before</em>
+            rendering, and other one is logged <em>after</em> rendering.  If any exception is thrown
+            it is also logged with the log level <see cref="F:Serilog.Events.LogEventLevel.Error"/> (regardless of
+            <see cref="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Level"/> configuration).</para>
+            </summary>
+            <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
+            <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
+            <example>
+            <code>
+            IRenderer&lt;ExampleAction&gt; renderer = new SomeRenderer();
+            // Wraps the renderer with LoggedRenderer:
+            renderer = new LoggedRenderer&lt;ExampleAction&gt;(
+                renderer,
+                Log.Logger,
+                LogEventLevel.Information,
+            );
+            </code>
+            </example>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IRenderer{`0},Serilog.ILogger,Serilog.Events.LogEventLevel)">
+            <summary>
+            Creates a new <see cref="T:Libplanet.Blockchain.Renderers.LoggedRenderer`1"/> instance which decorates the given
+            <paramref name="renderer"/>.
+            </summary>
+            <param name="renderer">The actual renderer to forward all event messages to and actually
+            render things.</param>
+            <param name="logger">The logger to write log messages to.  Note that all log messages
+            this decorator writes become in the context of the <paramref name="renderer"/>'s
+            type (with the context property <c>SourceContext</c>).</param>
+            <param name="level">The log event level.  All log messages become this level.</param>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Renderer">
+            <summary>
+            The inner renderer to forward all event messages to and actually render things.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blockchain.Renderers.LoggedRenderer`1.Level">
+            <summary>
+            The log event level.  All log messages become this level.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="T:Libplanet.Blockchain.StateCompleter`1">
             <summary>
@@ -4795,8 +4812,8 @@
             already <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
             <remarks>If the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/> has no blocks at all or there are long behind
             blocks to caught in the network this method could lead to unexpected behaviors, because
-            this tries to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> <em>all</em> actions in the behind blocks
-            so that there are a lot of calls to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method in a short
+            this tries to render <em>all</em> actions in the behind blocks so that there are
+            a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
             "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)"
@@ -4829,8 +4846,8 @@
             already <see cref="P:Libplanet.Net.Swarm`1.Running"/>.</exception>
             <remarks>If the <see cref="P:Libplanet.Net.Swarm`1.BlockChain"/> has no blocks at all or there are long behind
             blocks to caught in the network this method could lead to unexpected behaviors, because
-            this tries to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> <em>all</em> actions in the behind blocks
-            so that there are a lot of calls to <see cref="M:Libplanet.Action.IAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/> method in a short
+            this tries to render <em>all</em> actions in the behind blocks so that there are
+            a lot of calls to methods of <see cref="P:Libplanet.Blockchain.BlockChain`1.Renderers"/> in a short
             period of time.  This can lead a game startup slow.  If you want to omit rendering of
             these actions in the behind blocks use <see cref=
             "M:Libplanet.Net.Swarm`1.PreloadAsync(System.Nullable{System.TimeSpan},System.IProgress{Libplanet.Net.PreloadState},System.Collections.Immutable.IImmutableSet{Libplanet.Address},System.EventHandler{Libplanet.Net.PreloadBlockDownloadFailEventArgs},System.Threading.CancellationToken)"
@@ -5638,18 +5655,6 @@
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.StoreExtensions.NullAction.LoadPlainValue(Bencodex.Types.IValue)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.StoreExtensions.NullAction.Render(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.StoreExtensions.NullAction.RenderError(Libplanet.Action.IActionContext,System.Exception)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.StoreExtensions.NullAction.Unrender(Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Libplanet.Store.StoreExtensions.NullAction.UnrenderError(Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc/>
         </member>
         <member name="T:Libplanet.Tx.InvalidTxException">
