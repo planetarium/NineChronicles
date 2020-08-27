@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using Libplanet.Assets;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -34,7 +35,8 @@ namespace Nekoyume.UI
                     var isBelowMinimumPrice = price < Model.Shop.MinimumPrice;
                     submitButton.SetSubmittable(!isBelowMinimumPrice);
 
-                    _data.Price.Value = price;
+                    _data.Price.Value =
+                        new FungibleAssetValue(_data.Price.Value.Currency, price, 0);
                 }).AddTo(_disposablesForAwake);
         }
 
@@ -58,7 +60,7 @@ namespace Nekoyume.UI
 
             _disposablesForSetData.DisposeAllAndClear();
             base.SetData(data);
-            _data.Price.Subscribe(value => priceInputField.text = value.ToString("N0"))
+            _data.Price.Subscribe(value => priceInputField.text = value.GetQuantityString())
                 .AddTo(_disposablesForSetData);
             _data.PriceInteractable.Subscribe(value => priceInputField.interactable = value)
                 .AddTo(_disposablesForSetData);

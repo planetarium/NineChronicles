@@ -22,9 +22,9 @@ namespace Nekoyume.UI.Model
 
         public readonly Subject<ShopItemView> OnDoubleClickItemView = new Subject<ShopItemView>();
 
-        private IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> _shopItems;
+        private IReadOnlyDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> _shopItems;
 
-        public ShopItems(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems = null)
+        public ShopItems(IReadOnlyDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems = null)
         {
             CurrentAgentsProducts.ObserveRemove().Subscribe(SubscribeProductRemove);
             OtherProducts.ObserveRemove().Subscribe(SubscribeProductRemove);
@@ -42,7 +42,7 @@ namespace Nekoyume.UI.Model
             OnDoubleClickItemView.Dispose();
         }
 
-        public void ResetProducts(IDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems)
+        public void ResetProducts(IReadOnlyDictionary<Address, List<Nekoyume.Model.Item.ShopItem>> shopItems)
         {
             _shopItems = shopItems ?? new Dictionary<Address, List<Nekoyume.Model.Item.ShopItem>>();
 
@@ -89,42 +89,6 @@ namespace Nekoyume.UI.Model
         }
 
         #region Shop Item
-
-        public void AddProduct(Address sellerAgentAddress, Nekoyume.Model.Item.ShopItem shopItem)
-        {
-            if (!_shopItems.ContainsKey(sellerAgentAddress))
-            {
-                _shopItems.Add(sellerAgentAddress, new List<Nekoyume.Model.Item.ShopItem>());
-            }
-
-            _shopItems[sellerAgentAddress].Add(shopItem);
-        }
-
-        public void RemoveProduct(Address sellerAgentAddress, Guid productId)
-        {
-            if (!_shopItems.ContainsKey(sellerAgentAddress))
-            {
-                return;
-            }
-
-            foreach (var shopItem in _shopItems[sellerAgentAddress])
-            {
-                if (shopItem.ProductId != productId)
-                {
-                    continue;
-                }
-
-                _shopItems[sellerAgentAddress].Remove(shopItem);
-                break;
-            }
-        }
-
-        public ShopItem AddCurrentAgentsProduct(Address sellerAgentAddress, Nekoyume.Model.Item.ShopItem shopItem)
-        {
-            var result = CreateShopItem(sellerAgentAddress, shopItem);
-            CurrentAgentsProducts.Add(result);
-            return result;
-        }
 
         public void RemoveCurrentAgentsProduct(Guid productId)
         {

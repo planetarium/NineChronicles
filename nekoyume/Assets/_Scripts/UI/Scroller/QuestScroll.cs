@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections.Generic;
 using UnityEngine;
 using QuestModel = Nekoyume.Model.Quest.Quest;
 
@@ -15,8 +16,18 @@ namespace Nekoyume.UI.Scroller
 
         private QuestCell[] animationCells = null;
 
+        public readonly Queue<QuestModel> CompletedQuestQueue = new Queue<QuestModel>();
+
         public void DisappearAnimation(int index)
         {
+            var completedQuest = CompletedQuestQueue.Peek();
+
+            if (!ItemsSource[index].Equals(completedQuest))
+            {
+                OnCompleteQuest(false, index);
+                return;
+            }
+
             animationCellContainer.SetActive(true);
             if (animationCells == null)
             {
@@ -51,12 +62,38 @@ namespace Nekoyume.UI.Scroller
             animationCells[index].ShowAsComplete();
             var t = animationCells[index].transform.DOScale(new Vector3(1, 0, 1), 0.3f)
                 .From(new Vector3(1, 1, 1));
-            t.onComplete = animationCells[index].UpdateTab;
+            t.onComplete = () => OnCompleteQuest(true, index);
 
             for (var i = index + 1; i < animationCells.Length; i++)
             {
                 ((RectTransform) animationCells[i].transform).DoAnchoredMoveY(CellSize, 0.3f, true);
             }
+        }
+
+        public void EnqueueCompletedQuest(QuestModel questModel)
+        {
+            if (questModel is null)
+            {
+                Debug.LogError("Quest is null.");
+                return;
+            }
+
+            if (!CompletedQuestQueue.Contains(questModel))
+            {
+                CompletedQuestQueue.Enqueue(questModel);
+            }
+        }
+
+        public void OnCompleteQuest(bool update, int index)
+        {
+            if (CompletedQuestQueue.Count <= 0)
+                return;
+
+            var completedQuest = CompletedQuestQueue.Dequeue();
+            Widget.Find<CelebratesPopup>().Show(completedQuest);
+
+            if (update)
+                animationCells[index].UpdateTab();
         }
 
         public void DoneAnimation()
