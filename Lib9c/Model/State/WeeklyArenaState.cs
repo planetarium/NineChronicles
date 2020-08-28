@@ -114,6 +114,33 @@ namespace Nekoyume.Model.State
         /// <summary>
         /// Get arena rank information.
         /// </summary>
+        /// <param name="firstRank"></param>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public List<(int rank, ArenaInfo arenaInfo)> GetArenaInfos(
+            int firstRank = 1,
+            int? count = null)
+        {
+            if (firstRank < 1 ||
+                firstRank > OrderedArenaInfos.Count)
+            {
+                throw new ArgumentException(
+                    $"{nameof(firstRank)}({firstRank}) must between 1 to {OrderedArenaInfos.Count}");
+            }
+
+            count = count.HasValue
+                ? Math.Min(OrderedArenaInfos.Count - firstRank + 1, count.Value)
+                : OrderedArenaInfos.Count - firstRank + 1;
+
+            var offsetIndex = 0;
+            return OrderedArenaInfos.GetRange(firstRank - 1, count.Value)
+                .Select(arenaInfo => (firstRank + offsetIndex++, arenaInfo))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Get arena rank information.
+        /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="upperRange">상위 범위</param>
         /// <param name="lowerRange">하위 범위</param>
@@ -123,7 +150,7 @@ namespace Nekoyume.Model.State
             int upperRange = 10,
             int lowerRange = 10)
         {
-            var avatarIndex = -1;
+            var avatarRank = 0;
             for (var i = 0; i < OrderedArenaInfos.Count; i++)
             {
                 var pair = OrderedArenaInfos[i];
@@ -132,21 +159,18 @@ namespace Nekoyume.Model.State
                     continue;
                 }
 
-                avatarIndex = i;
+                avatarRank = i + 1;
                 break;
             }
 
-            if (avatarIndex == -1)
+            if (avatarRank == 0)
             {
                 return new List<(int rank, ArenaInfo arenaInfo)>();
             }
 
-            var firstIndex = Math.Max(0, avatarIndex - upperRange);
-            var lastIndex = Math.Min(avatarIndex + lowerRange, OrderedArenaInfos.Count - 1);
-            var offsetIndex = 1;
-            return OrderedArenaInfos.GetRange(firstIndex, lastIndex - firstIndex + 1)
-                .Select(arenaInfo => (firstIndex + offsetIndex++, arenaInfo))
-                .ToList();
+            var firstRank = Math.Max(1, avatarRank - upperRange);
+            var lastRank = Math.Min(avatarRank + lowerRange, OrderedArenaInfos.Count);
+            return GetArenaInfos(firstRank, lastRank - firstRank + 1);
         }
 
         public ArenaInfo GetArenaInfo(Address avatarAddress)
