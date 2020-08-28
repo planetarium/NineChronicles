@@ -24,6 +24,8 @@ namespace Nekoyume.UI
         [SerializeField]
         private Slider remainTimeSlider;
 
+        private long resetIndex;
+
         private void Awake()
         {
             remainTimeSlider.OnValueChangedAsObservable().Subscribe(OnSliderChange).AddTo(gameObject);
@@ -31,6 +33,7 @@ namespace Nekoyume.UI
             remainTimeSlider.value = 0;
 
             WeeklyArenaStateSubject.WeeklyArenaState.ObserveOnMainThread().Subscribe(SetData).AddTo(gameObject);
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SetData).AddTo(gameObject);
         }
 
         private void OnEnable()
@@ -43,6 +46,15 @@ namespace Nekoyume.UI
 
             var arenaInfos = weeklyArenaState
                 .GetArenaInfos(avatarAddress.Value, 0, 0);
+
+            if (arenaInfos.Count == 0)
+            {
+                winCount.text = "0";
+                loseCount.text = "0";
+
+                return;
+            }
+
             var (rank, arenaInfo) = arenaInfos[0];
 
             var record = arenaInfo.ArenaRecord;
@@ -53,9 +65,14 @@ namespace Nekoyume.UI
 
         private void SetData(WeeklyArenaState value)
         {
-            var resetIndex = value.ResetIndex;
+            resetIndex = value.ResetIndex;
 
             remainTimeSlider.value = Game.Game.instance.Agent.BlockIndex - resetIndex;
+        }
+
+        private void SetData(long blockIndex)
+        {
+            remainTimeSlider.value = blockIndex - resetIndex;
         }
 
         private void OnSliderChange(float value)
