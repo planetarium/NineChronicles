@@ -45,12 +45,6 @@ namespace Nekoyume.BlockChain
 
         private Codec _codec = new Codec();
 
-        private readonly Subject<ActionEvaluation<ActionBase>> _renderSubject =
-            new Subject<ActionEvaluation<ActionBase>>();
-
-        private readonly Subject<ActionEvaluation<ActionBase>> _unrenderSubject =
-            new Subject<ActionEvaluation<ActionBase>>();
-
         private Block<PolymorphicAction<ActionBase>> _genseis;
 
         public ActionRenderer ActionRenderer { get; } = BlockPolicy.GetRenderer();
@@ -265,7 +259,7 @@ namespace Nekoyume.BlockChain
                 df.CopyTo(decompressed);
                 decompressed.Seek(0, SeekOrigin.Begin);
                 var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
-                _renderSubject.OnNext(ev);
+                ActionRenderer.ActionRenderSubject.OnNext(ev);
             }
         }
 
