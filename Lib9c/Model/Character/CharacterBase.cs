@@ -66,8 +66,6 @@ namespace Nekoyume.Model
         public int AttackCount { get; private set; }
         public int AttackCountMax { get; protected set; }
 
-        public bool TurnEnd { get; private set; }
-
         protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level,
             IEnumerable<StatModifier> optionalStatModifiers = null)
         {
@@ -225,7 +223,6 @@ namespace Nekoyume.Model
 #if TEST_LOG
             UnityEngine.Debug.LogWarning($"{nameof(RowData.Id)} : {RowData.Id} / Turn Ended.");
 #endif
-            TurnEnd = true;
         }
 
         #endregion
@@ -334,7 +331,6 @@ namespace Nekoyume.Model
 
         private void Act()
         {
-            TurnEnd = false;
             if (IsAlive())
             {
                 ReduceDurationOfBuffs();

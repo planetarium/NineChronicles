@@ -147,10 +147,6 @@ namespace Nekoyume.Battle
                     var turnBefore = TurnNumber;
 #endif
                     character.Tick();
-                    while (!character.TurnEnd)
-                    {
-                        Thread.Sleep(100);
-                    }
 #if TEST_LOG
                     var turnAfter = TurnNumber;
                     if (turnBefore != turnAfter)
