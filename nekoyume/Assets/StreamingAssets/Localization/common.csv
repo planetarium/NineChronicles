@@ -549,7 +549,7 @@ UI_MUTE_AUDIO,Mute,음소거,Mudo
 UI_YOUR_ADDRESS,Your Address,당신의 주소,Seu endereço
 UI_YOUR_PRIVATE_KEY,Your Private Key,당신의 비밀 키,Sua Chave Privada
 BLOCK_CHAIN_MINING_TX,Mining Transactions..,트랜젝션을 전파 중..,Transações de mineração..
-STAGE_BLOCK_CHAIN_MINING_TX,Mining Transactions.. Going to {0} {1},트랜젝션을 전파 중.. Going to {0} {1},Transações de mineração.. Going to {0} {1}
+STAGE_BLOCK_CHAIN_MINING_TX,Mining Transactions.. Going to {0} {1},트랜젝션을 전파 중.. {0} {1} 이동 중..,Transações de mineração.. Going to {0} {1}
 BLOCK_DOWNLOAD_FAIL,Block Download Failed,블록 다운로드 실패,Falha no download do bloco
 BOOTSTRAP_FAIL,Network Initialization Failed,네트워크 초기 설정 실패,Falha na inicialização da rede
 UI_GAME_SIGN_UP,Create ID,가입하기,Criar ID
