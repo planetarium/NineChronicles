@@ -54,7 +54,7 @@ namespace Nekoyume.UI
             return spriteAtlas;
         }
 
-        public void Show(string background)
+        public void Show(string background, string worldName, int stageId)
         {
             _shouldClose = false;
             _rects = new List<RectTransform>();
@@ -73,7 +73,7 @@ namespace Nekoyume.UI
                 _rects.Add(rect);
             }
 
-            var message = L10nManager.Localize("BLOCK_CHAIN_MINING_TX") + "...";
+            var message = string.Format(L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"), worldName, stageId);
             indicator.Show(message);
             base.Show();
             StartCoroutine(CoRun());
