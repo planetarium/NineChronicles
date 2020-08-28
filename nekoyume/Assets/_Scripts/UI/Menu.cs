@@ -39,9 +39,6 @@ namespace Nekoyume.UI
         private MainMenu btnRanking = null;
 
         [SerializeField]
-        private ArenaPendingNCG arenaPendingNCG = null;
-
-        [SerializeField]
         private SpeechBubble[] speechBubbles = null;
 
         [SerializeField]
@@ -333,7 +330,6 @@ namespace Nekoyume.UI
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
-            arenaPendingNCG.Hide();
         }
 
         protected override void OnCompleteOfShowAnimationInternal()
