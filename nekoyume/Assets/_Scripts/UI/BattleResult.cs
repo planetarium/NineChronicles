@@ -384,7 +384,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
             var stageLoadingScreen = Find<StageLoadingScreen>();
-            stageLoadingScreen.Show(stage.zone);
+            stageLoadingScreen.Show(stage.zone, SharedModel.WorldName, SharedModel.StageID + 1);
             Find<Status>().Close();
 
             StopVFX();
