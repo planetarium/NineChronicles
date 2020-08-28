@@ -828,6 +828,22 @@ namespace Nekoyume.Game.Character
                         waitSeconds = 0f;
                     }
                 }
+
+                foreach (var info in action.skillInfos)
+                {
+                    var target = info.Target;
+                    if (target.IsDead)
+                    {
+                        var character = Game.instance.Stage.GetCharacter(target);
+                        if (character)
+                        {
+                            if (character.actions.Any())
+                            {
+                                yield return new WaitWhile(() => character.actions.Any());
+                            }
+                        }
+                    }
+                }
                 Debug.Log($"wait seconds: {waitSeconds}");
                 yield return new WaitForSeconds(waitSeconds);
                 var coroutine = StartCoroutine(stage.CoSkill(action));
