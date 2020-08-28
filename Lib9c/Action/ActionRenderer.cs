@@ -28,9 +28,7 @@ namespace Nekoyume.Action
         private readonly Subject<(NCBlock OldTip, NCBlock NewTip)> _blockSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip)>();
 
-        private readonly
-        Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
-        _reorgSubject =
+        private readonly Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)> _reorgSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>();
 
         public void RenderAction(
@@ -39,17 +37,14 @@ namespace Nekoyume.Action
             IAccountStateDelta nextStates
         )
         {
-            if (action is NCAction polymorphicAction)
+            _actionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
-                _actionRenderSubject.OnNext(new ActionBase.ActionEvaluation<ActionBase>()
-                {
-                    Action = polymorphicAction.InnerAction,
-                    Signer = context.Signer,
-                    BlockIndex = context.BlockIndex,
-                    OutputStates = nextStates,
-                    PreviousStates = context.PreviousStates,
-                });
-            }
+                Action = GetActionBase(action),
+                Signer = context.Signer,
+                BlockIndex = context.BlockIndex,
+                OutputStates = nextStates,
+                PreviousStates = context.PreviousStates,
+            });
         }
 
         public void UnrenderAction(
@@ -58,17 +53,14 @@ namespace Nekoyume.Action
             IAccountStateDelta nextStates
         )
         {
-            if (action is NCAction polymorphicAction)
+            _actionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
-                _actionUnrenderSubject.OnNext(new ActionBase.ActionEvaluation<ActionBase>()
-                {
-                    Action = polymorphicAction.InnerAction,
-                    Signer = context.Signer,
-                    BlockIndex = context.BlockIndex,
-                    OutputStates = nextStates,
-                    PreviousStates = context.PreviousStates,
-                });
-            }
+                Action = GetActionBase(action),
+                Signer = context.Signer,
+                BlockIndex = context.BlockIndex,
+                OutputStates = nextStates,
+                PreviousStates = context.PreviousStates,
+            });
         }
 
         public void RenderActionError(
@@ -77,18 +69,15 @@ namespace Nekoyume.Action
             Exception exception
         )
         {
-            if (action is NCAction polymorphicAction)
+            _actionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
-                _actionRenderSubject.OnNext(new ActionBase.ActionEvaluation<ActionBase>()
-                {
-                    Action = polymorphicAction.InnerAction,
-                    Signer = context.Signer,
-                    BlockIndex = context.BlockIndex,
-                    OutputStates = context.PreviousStates,
-                    Exception = exception,
-                    PreviousStates = context.PreviousStates,
-                });
-            }
+                Action = GetActionBase(action),
+                Signer = context.Signer,
+                BlockIndex = context.BlockIndex,
+                OutputStates = context.PreviousStates,
+                Exception = exception,
+                PreviousStates = context.PreviousStates,
+            });
         }
 
         public void UnrenderActionError(
@@ -97,18 +86,15 @@ namespace Nekoyume.Action
             Exception exception
         )
         {
-            if (action is NCAction polymorphicAction)
+            _actionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
-                _actionUnrenderSubject.OnNext(new ActionBase.ActionEvaluation<ActionBase>()
-                {
-                    Action = polymorphicAction.InnerAction,
-                    Signer = context.Signer,
-                    BlockIndex = context.BlockIndex,
-                    OutputStates = context.PreviousStates,
-                    Exception = exception,
-                    PreviousStates = context.PreviousStates,
-                });
-            }
+                Action = GetActionBase(action),
+                Signer = context.Signer,
+                BlockIndex = context.BlockIndex,
+                OutputStates = context.PreviousStates,
+                Exception = exception,
+                PreviousStates = context.PreviousStates,
+            });
         }
 
         public void RenderBlock(
@@ -194,7 +180,16 @@ namespace Nekoyume.Action
             _blockSubject.AsObservable();
 
         public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
-        EveryReorg() =>
+            EveryReorg() =>
             _reorgSubject.AsObservable();
+
+        private static ActionBase GetActionBase(IAction action)
+        {
+            if (action is NCAction polymorphicAction)
+            {
+                return polymorphicAction.InnerAction;
+            }
+            return (ActionBase) action;
+        }
     }
 }
