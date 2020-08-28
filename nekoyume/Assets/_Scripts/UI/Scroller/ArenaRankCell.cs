@@ -120,8 +120,7 @@ namespace Nekoyume.UI.Scroller
         public void Show((
             int rank,
             ArenaInfo arenaInfo,
-            ArenaInfo currentAvatarArenaInfo) itemData,
-            bool isShowingView = false)
+            ArenaInfo currentAvatarArenaInfo) itemData)
         {
             Show(new ViewModel
             {
