@@ -112,7 +112,7 @@ namespace Nekoyume.Model.State
         }
 
         /// <summary>
-        /// 인자로 넘겨 받은 `avatarAddress`를 기준으로 상위와 하위 범위에 해당하는 랭킹 정보를 얻습니다.
+        /// Get arena rank information.
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="upperRange">상위 범위</param>
