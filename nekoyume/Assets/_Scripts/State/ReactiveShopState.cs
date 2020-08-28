@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Libplanet;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -11,15 +12,31 @@ namespace Nekoyume.State
     /// </summary>
     public static class ReactiveShopState
     {
-        public static readonly ReactiveProperty<Dictionary<Address, List<ShopItem>>> Items =
-            new ReactiveProperty<Dictionary<Address, List<ShopItem>>>();
+        public static readonly ReactiveProperty<IReadOnlyDictionary<Address, List<ShopItem>>>
+            AgentProducts = new ReactiveProperty<IReadOnlyDictionary<Address, List<ShopItem>>>();
+
+        public static readonly ReactiveProperty<IReadOnlyDictionary<ItemSubType, List<ShopItem>>>
+            ItemSubTypeProducts =
+                new ReactiveProperty<IReadOnlyDictionary<ItemSubType, List<ShopItem>>>();
 
         public static void Initialize(ShopState state)
         {
             if (state is null)
+            {
                 return;
+            }
 
-            Items.Value = state.AgentProducts;
+            AgentProducts.Value = state.AgentProducts.ToDictionary(
+                kv => kv.Key,
+                kv => kv.Value
+                    .Select(item => state.Products[item])
+                    .ToList());
+
+            ItemSubTypeProducts.Value = state.ItemSubTypeProducts.ToDictionary(
+                kv => kv.Key,
+                kv => kv.Value
+                    .Select(item => state.Products[item])
+                    .ToList());
         }
     }
 }

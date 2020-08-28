@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -11,7 +12,7 @@ namespace Nekoyume.UI.Model
     {
         public readonly ReactiveProperty<Address> SellerAgentAddress = new ReactiveProperty<Address>();
         public readonly ReactiveProperty<Address> SellerAvatarAddress = new ReactiveProperty<Address>();
-        public readonly ReactiveProperty<BigInteger> Price = new ReactiveProperty<BigInteger>();
+        public readonly ReactiveProperty<FungibleAssetValue> Price = new ReactiveProperty<FungibleAssetValue>();
         public readonly ReactiveProperty<Guid> ProductId = new ReactiveProperty<Guid>();
 
         public ShopItemView View;
@@ -21,7 +22,7 @@ namespace Nekoyume.UI.Model
         {
         }
 
-        private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress, BigInteger price, Guid productId,
+        private ShopItem(Address sellerAgentAddress, Address sellerAvatarAddress, FungibleAssetValue price, Guid productId,
             ItemBase item) : base(item, 1)
         {
             GradeEnabled.Value = true;
