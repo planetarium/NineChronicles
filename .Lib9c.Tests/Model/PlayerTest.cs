@@ -35,7 +35,7 @@ namespace Lib9c.Tests.Model
             player.InitAI();
             player.Tick();
 
-            Assert.True(simulator.Log.Any());
+            Assert.NotEmpty(simulator.Log);
             Assert.Equal(nameof(WaveTurnEnd), simulator.Log.Last().GetType().Name);
         }
 
@@ -53,7 +53,7 @@ namespace Lib9c.Tests.Model
 
             player.Tick();
 
-            Assert.True(simulator.Log.Any());
+            Assert.NotEmpty(simulator.Log);
             Assert.Equal(nameof(WaveTurnEnd), simulator.Log.Last().GetType().Name);
         }
     }
