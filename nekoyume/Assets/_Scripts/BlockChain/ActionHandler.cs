@@ -63,8 +63,15 @@ namespace Nekoyume.BlockChain
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             var state = GetAgentState(evaluation);
-            var balanceState = GetGoldBalanceState(evaluation);
-            UpdateAgentState(state, balanceState);
+            try
+            {
+                var balanceState = GetGoldBalanceState(evaluation);
+                UpdateAgentState(state, balanceState);
+            }
+            catch (BalanceDoesNotExistsException)
+            {
+                UpdateAgentState(state, null);
+            }
         }
 
         protected void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
