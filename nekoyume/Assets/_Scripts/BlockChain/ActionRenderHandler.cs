@@ -39,8 +39,6 @@ namespace Nekoyume.BlockChain
 
         public static ActionRenderHandler Instance => Singleton.Value;
 
-        public Currency GoldCurrency { get; internal set; }
-
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
 
         private ActionRenderer _renderer;
@@ -104,7 +102,7 @@ namespace Nekoyume.BlockChain
                     //[TentuPlay] RewardGold 기록
                     //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                     Address agentAddress = States.Instance.AgentState.address;
-                    if (eval.OutputStates.TryGetGoldBalance(agentAddress, out var balance))
+                    if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
                     {
                         new TPStashEvent().CurrencyGet(
                             player_uuid: agentAddress.ToHex(),
@@ -217,7 +215,7 @@ namespace Nekoyume.BlockChain
                                 //[TentuPlay] RankingReward 기록
                                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
                                 Address agentAddress = States.Instance.AgentState.address;
-                                if (eval.OutputStates.TryGetGoldBalance(agentAddress, out var balance))
+                                if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
                                 {
                                     var total = balance +
                                                 new FungibleAssetValue(balance.Currency, gold, 0);
@@ -410,7 +408,7 @@ namespace Nekoyume.BlockChain
 
             //[TentuPlay] Equipment 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out var balance))
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
             {
                 var total = balance - new FungibleAssetValue(balance.Currency, result.gold, 0);
                 new TPStashEvent().CurrencyUse(
@@ -495,7 +493,7 @@ namespace Nekoyume.BlockChain
 
             //[TentuPlay] Consumable 합성에 사용한 골드 기록
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out var balance))
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
             {
                 var total = balance - new FungibleAssetValue(balance.Currency, result.gold, 0);
                 new TPStashEvent().CurrencyUse(
@@ -566,7 +564,7 @@ namespace Nekoyume.BlockChain
 
                 //[TentuPlay] 아이템 구입, 골드 사용
                 //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-                if (eval.OutputStates.TryGetGoldBalance(buyerAgentAddress, out var buyerAgentBalance))
+                if (eval.OutputStates.TryGetGoldBalance(buyerAgentAddress, GoldCurrency, out var buyerAgentBalance))
                 {
                     var total = buyerAgentBalance - price;
                     new TPStashEvent().CurrencyUse(
@@ -708,7 +706,7 @@ namespace Nekoyume.BlockChain
 
             //[TentuPlay] 장비강화, 골드사용
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
-            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out var outAgentBalance))
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var outAgentBalance))
             {
                 var total = outAgentBalance -
                             new FungibleAssetValue(outAgentBalance.Currency, result.gold, 0);
@@ -741,7 +739,7 @@ namespace Nekoyume.BlockChain
             //[TentuPlay] RankingBattle 참가비 사용 기록 // 위의 fixme 내용과 어떻게 연결되는지?
             //Local에서 변경하는 States.Instance 보다는 블락에서 꺼내온 eval.OutputStates를 사용
             Address agentAddress = States.Instance.AgentState.address;
-            if (eval.OutputStates.TryGetGoldBalance(agentAddress, out var balance))
+            if (eval.OutputStates.TryGetGoldBalance(agentAddress, GoldCurrency, out var balance))
             {
                 var total = balance - new FungibleAssetValue(balance.Currency,
                     Nekoyume.GameConfig.ArenaActivationCostNCG, 0);
