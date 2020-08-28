@@ -245,8 +245,7 @@ namespace Nekoyume.Action
                                 {
                                     new KeyValuePair<IKey, IValue>((Text) "address", (Binary) ua.Key.ToByteArray()),
                                     new KeyValuePair<IKey, IValue>((Text) "currency", c.Serialize()),
-                                    // FIXME: It seems that b.Sign is missing. Now we can serialize FungibleAssetValue at once with b.Serialize().
-                                    new KeyValuePair<IKey, IValue>((Text) "amount", new Bencodex.Types.List(new IValue[]{ (Integer)b.MajorUnit, (Integer)b.MinorUnit})),
+                                    new KeyValuePair<IKey, IValue>((Text) "amount", (Integer) b.RawValue),
                                 });
                             }
                         )
