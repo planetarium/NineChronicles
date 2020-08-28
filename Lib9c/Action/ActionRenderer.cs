@@ -19,11 +19,11 @@ namespace Nekoyume.Action
     // FIXME: As it renders more than actions now, we should rename this class.
     public class ActionRenderer : IRenderer<NCAction>
     {
-        private readonly Subject<ActionEvaluation<ActionBase>> _actionRenderSubject =
-            new Subject<ActionEvaluation<ActionBase>>();
+        public Subject<ActionEvaluation<ActionBase>> ActionRenderSubject { get; }
+            = new Subject<ActionEvaluation<ActionBase>>();
 
-        private readonly Subject<ActionEvaluation<ActionBase>> _actionUnrenderSubject =
-            new Subject<ActionEvaluation<ActionBase>>();
+        public Subject<ActionEvaluation<ActionBase>> ActionUnrenderSubject { get; }
+            = new Subject<ActionEvaluation<ActionBase>>();
 
         private readonly Subject<(NCBlock OldTip, NCBlock NewTip)> _blockSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip)>();
@@ -37,7 +37,7 @@ namespace Nekoyume.Action
             IAccountStateDelta nextStates
         )
         {
-            _actionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
+            ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = GetActionBase(action),
                 Signer = context.Signer,
@@ -53,7 +53,7 @@ namespace Nekoyume.Action
             IAccountStateDelta nextStates
         )
         {
-            _actionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
+            ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = GetActionBase(action),
                 Signer = context.Signer,
@@ -69,7 +69,7 @@ namespace Nekoyume.Action
             Exception exception
         )
         {
-            _actionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
+            ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = GetActionBase(action),
                 Signer = context.Signer,
@@ -86,7 +86,7 @@ namespace Nekoyume.Action
             Exception exception
         )
         {
-            _actionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
+            ActionUnrenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = GetActionBase(action),
                 Signer = context.Signer,
@@ -117,7 +117,7 @@ namespace Nekoyume.Action
         public IObservable<ActionEvaluation<T>> EveryRender<T>()
             where T : ActionBase
         {
-            return _actionRenderSubject.AsObservable().Where(
+            return ActionRenderSubject.AsObservable().Where(
                 eval => eval.Action is T
             ).Select(eval => new ActionEvaluation<T>
             {
@@ -133,7 +133,7 @@ namespace Nekoyume.Action
         public IObservable<ActionEvaluation<T>> EveryUnrender<T>()
             where T : ActionBase
         {
-            return _actionUnrenderSubject.AsObservable().Where(
+            return ActionUnrenderSubject.AsObservable().Where(
                 eval => eval.Action is T
             ).Select(eval => new ActionEvaluation<T>
             {
@@ -148,7 +148,7 @@ namespace Nekoyume.Action
 
         public IObservable<ActionEvaluation<ActionBase>> EveryRender(Address updatedAddress)
         {
-            return _actionRenderSubject.AsObservable().Where(
+            return ActionRenderSubject.AsObservable().Where(
                 eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress)
             ).Select(eval => new ActionEvaluation<ActionBase>
             {
@@ -163,7 +163,7 @@ namespace Nekoyume.Action
 
         public IObservable<ActionEvaluation<ActionBase>> EveryUnrender(Address updatedAddress)
         {
-            return _actionUnrenderSubject.AsObservable().Where(
+            return ActionUnrenderSubject.AsObservable().Where(
                 eval => eval.OutputStates.UpdatedAddresses.Contains(updatedAddress)
             ).Select(eval => new ActionEvaluation<ActionBase>
             {
