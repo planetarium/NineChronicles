@@ -76,7 +76,6 @@ namespace Nekoyume.UI.Scroller
 
         private RectTransform _rectTransformCache;
         private bool _isCurrentUser;
-        private bool _isShowingView;
         private readonly Subject<ArenaRankCell> _onClickAvatarInfo = new Subject<ArenaRankCell>();
         private readonly Subject<ArenaRankCell> _onClickChallenge = new Subject<ArenaRankCell>();
 
@@ -124,7 +123,6 @@ namespace Nekoyume.UI.Scroller
             ArenaInfo currentAvatarArenaInfo) itemData,
             bool isShowingView = false)
         {
-            _isShowingView = isShowingView;
             Show(new ViewModel
             {
                 rank = itemData.rank,
@@ -140,9 +138,7 @@ namespace Nekoyume.UI.Scroller
             var currentAvatarArenaInfo = itemData.currentAvatarArenaInfo;
 
             ArenaInfo = arenaInfo ?? throw new ArgumentNullException(nameof(arenaInfo));
-            _isCurrentUser =
-                States.Instance.CurrentAvatarState?.address == ArenaInfo.AvatarAddress &&
-                !_isShowingView;
+            _isCurrentUser = States.Instance.CurrentAvatarState?.address == ArenaInfo.AvatarAddress;
 
             if (controlBackgroundImage)
             {
@@ -159,26 +155,6 @@ namespace Nekoyume.UI.Scroller
 
             if (_isCurrentUser)
             {
-                var player = Game.Game.instance.Stage.selectedPlayer;
-                if (player is null)
-                {
-                    player = Game.Game.instance.Stage.GetPlayer();
-                    characterView.SetByPlayer(player);
-                    player.gameObject.SetActive(false);
-                }
-                else
-                {
-                    characterView.SetByPlayer(player);
-                }
-
-                rank = 1;
-                challengeCountText.text =
-                    $"{arenaInfo.DailyChallengeCount}/{GameConfig.ArenaChallengeCountMax}";
-            }
-            else if (_isShowingView)
-            {
-                avatarInfoButton.gameObject.SetActive(false);
-
                 var player = Game.Game.instance.Stage.selectedPlayer;
                 if (player is null)
                 {
