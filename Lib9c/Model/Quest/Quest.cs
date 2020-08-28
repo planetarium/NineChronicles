@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Bencodex.Types;
+using Libplanet.Assets;
 using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -253,7 +254,7 @@ namespace Nekoyume.Model.Quest
             }
         }
 
-        public void UpdateTradeQuest(TradeType type, BigInteger price)
+        public void UpdateTradeQuest(TradeType type, FungibleAssetValue price)
         {
             var tradeQuests = _quests
                 .OfType<TradeQuest>()

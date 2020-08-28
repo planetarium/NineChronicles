@@ -4,131 +4,212 @@ using System.Linq;
 using Bencodex.Types;
 using Libplanet;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.State;
 
 namespace Nekoyume.Model.State
 {
     /// <summary>
-    /// Shop의 상태 모델이다.
-    /// 
-    /// ---- 지금의 상점의 동기화 정책.
-    /// `Sell` 액션에 대해서는 매번 직접 `Register`.
-    /// `SellCancellation` 액션에 대해서도 매번 직접 `Unregister`.
-    /// `Buy` 액션에 대해서도 매번 직접 `Unregister`.
-    /// ShopAddress의 Shop 자체에 대한 동기화는 게임 실행 시 한 번.
-    ///
-    /// ---- 추후에 예정된 이슈.
-    /// 상점의 아이템 수는 계속 증가할 것인데, 나중에는 전부를 동기화 하는 것이 무리라고 생각됨.
-    /// 상점을 단일 상태로 관리하지 않고, 1000개나 10000개 정도를 갖고 있는 단위로 채널 처럼 관리하는 것이 좋겠음.
-    /// 무작위로 접근해서 조회하도록.
-    /// 단, 이때 각 아바타의 판매 목록을 불러오는 것에 문제가 생기니, 이 목록에 접근하는 방법을 아바타의 상태에 포함해야 함.
+    /// This is a model class of shop state.
     /// </summary>
     [Serializable]
     public class ShopState : State
     {
-        public static readonly Address Address = Addresses.Shop; 
-        public readonly Dictionary<Address, List<ShopItem>> AgentProducts = new Dictionary<Address, List<ShopItem>>();
+        public static readonly Address Address = Addresses.Shop;
+
+        private readonly Dictionary<Guid, ShopItem> _products = new Dictionary<Guid, ShopItem>();
+
+        private readonly Dictionary<Address, List<Guid>> _agentProducts =
+            new Dictionary<Address, List<Guid>>();
+
+        private readonly Dictionary<ItemSubType, List<Guid>> _itemSubTypeProducts =
+            new Dictionary<ItemSubType, List<Guid>>(ItemSubTypeComparer.Instance);
+
+        public IReadOnlyDictionary<Guid, ShopItem> Products => _products;
+
+        public IReadOnlyDictionary<Address, List<Guid>> AgentProducts => _agentProducts;
+
+        public IReadOnlyDictionary<ItemSubType, List<Guid>> ItemSubTypeProducts =>
+            _itemSubTypeProducts;
 
         public ShopState() : base(Address)
         {
+            PostConstruct();
         }
 
-        public ShopState(Dictionary serialized)
-            : base(serialized)
+        public ShopState(Dictionary serialized) : base(serialized)
         {
-            AgentProducts = ((Dictionary)serialized["agentProducts"]).ToDictionary(
-                kv => kv.Key.ToAddress(),
-                kv => ((List)kv.Value)
-                    .Select(d => new ShopItem((Dictionary)d))
-                    .ToList()
-            );
-        }
+            _products = ((Dictionary) serialized["products"]).ToDictionary(
+                kv => kv.Key.ToGuid(),
+                kv => new ShopItem((Dictionary) kv.Value));
 
-        public ShopItem Register(Address sellerAgentAddress, ShopItem shopItem)
-        {
-            if (!AgentProducts.ContainsKey(sellerAgentAddress))
-            {
-                AgentProducts.Add(sellerAgentAddress, new List<ShopItem>());
-            }
-
-            AgentProducts[sellerAgentAddress].Add(shopItem);
-            return shopItem;
-        }
-
-        public bool Unregister(Address sellerAgentAddress, ShopItem shopItem)
-        {
-            return Unregister(sellerAgentAddress, shopItem.ProductId);
-        }
-
-        public bool Unregister(Address sellerAgentAddress, Guid productId)
-        {
-            if (!AgentProducts.ContainsKey(sellerAgentAddress))
-                return false;
-
-            var shopItems = AgentProducts[sellerAgentAddress];
-            var shopItem = shopItems.FirstOrDefault(item => item.ProductId.Equals(productId));
-            if (shopItem is null)
-                return false;
-
-            shopItems.Remove(shopItem);
-            if (shopItems.Count == 0)
-            {
-                AgentProducts.Remove(sellerAgentAddress);
-            }
-
-            return true;
-        }
-
-        public bool TryGet(Address sellerAgentAddress, Guid productId,
-            out KeyValuePair<Address, ShopItem> outPair)
-        {
-            if (!AgentProducts.ContainsKey(sellerAgentAddress))
-            {
-                return false;
-            }
-
-            var list = AgentProducts[sellerAgentAddress];
-
-            foreach (var shopItem in list)
-            {
-                if (shopItem.ProductId != productId)
-                {
-                    continue;
-                }
-
-                outPair = new KeyValuePair<Address, ShopItem>(sellerAgentAddress, shopItem);
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool TryUnregister(Address sellerAgentAddress,
-            Guid productId, out ShopItem outUnregisteredItem)
-        {
-            if (!TryGet(sellerAgentAddress, productId, out var outPair))
-            {
-                outUnregisteredItem = null;
-                return false;
-            }
-
-            AgentProducts[outPair.Key].Remove(outPair.Value);
-
-            outUnregisteredItem = outPair.Value;
-            return true;
+            PostConstruct();
         }
 
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text)"agentProducts"] = new Dictionary(
-                    AgentProducts.Select(kv =>
+                [(Text) "products"] = new Dictionary(
+                    _products.Select(kv =>
                         new KeyValuePair<IKey, IValue>(
-                            (Binary)kv.Key.Serialize(),
-                            new List(kv.Value.Select(i => i.Serialize()))
-                        )
-                    )
-                )
-            }.Union((Dictionary)base.Serialize()));
+                            (Binary) kv.Key.Serialize(),
+                            kv.Value.Serialize()))),
+            }.Union((Dictionary) base.Serialize()));
+
+        private void PostConstruct()
+        {
+            foreach (var product in _products)
+            {
+                var productId = product.Value.ProductId;
+
+                var agentAddress = product.Value.SellerAgentAddress;
+                if (!_agentProducts.ContainsKey(agentAddress))
+                {
+                    _agentProducts.Add(agentAddress, new List<Guid>());
+                }
+
+                _agentProducts[agentAddress].Add(productId);
+
+                var itemSubType = product.Value.ItemUsable.ItemSubType;
+                if (!_itemSubTypeProducts.ContainsKey(itemSubType))
+                {
+                    _itemSubTypeProducts.Add(itemSubType, new List<Guid>());
+                }
+
+                _itemSubTypeProducts[itemSubType].Add(productId);
+            }
+        }
+
+        #region Register
+
+        public void Register(ShopItem shopItem)
+        {
+            var sellerAgentAddress = shopItem.SellerAgentAddress;
+            var productId = shopItem.ProductId;
+            _products[productId] = shopItem;
+
+            if (_agentProducts.ContainsKey(sellerAgentAddress))
+            {
+                var shopItems = _agentProducts[sellerAgentAddress];
+                if (shopItems.Contains(productId))
+                {
+                    throw new ShopStateAlreadyContainsException(
+                        $"{nameof(_agentProducts)}, {sellerAgentAddress}, {productId}");
+                }
+
+                shopItems.Add(productId);
+            }
+            else
+            {
+                var shopItems = new List<Guid> {productId};
+                _agentProducts.Add(sellerAgentAddress, shopItems);
+            }
+
+            var itemSubType = shopItem.ItemUsable.ItemSubType;
+            if (_itemSubTypeProducts.ContainsKey(itemSubType))
+            {
+                var shopItems = _itemSubTypeProducts[itemSubType];
+                if (shopItems.Contains(productId))
+                {
+                    throw new ShopStateAlreadyContainsException(
+                        $"{nameof(_itemSubTypeProducts)}, {itemSubType}, {productId}");
+                }
+
+                shopItems.Add(productId);
+            }
+            else
+            {
+                var shopItems = new List<Guid> {productId};
+                _itemSubTypeProducts.Add(itemSubType, shopItems);
+            }
+        }
+
+        #endregion
+
+        #region Unregister
+
+        public void Unregister(Address sellerAgentAddress, ShopItem shopItem)
+        {
+            Unregister(sellerAgentAddress, shopItem.ProductId);
+        }
+
+        public void Unregister(Address sellerAgentAddress, Guid productId)
+        {
+            if (!TryUnregister(sellerAgentAddress, productId, out _))
+            {
+                throw new FailedToUnregisterInShopStateException(
+                    $"{nameof(_agentProducts)}, {sellerAgentAddress}, {productId}");
+            }
+        }
+
+        public bool TryUnregister(
+            Address sellerAgentAddress,
+            Guid productId,
+            out ShopItem unregisteredItem)
+        {
+            if (!_products.ContainsKey(productId))
+            {
+                unregisteredItem = null;
+                return false;
+            }
+
+            var targetShopItem = _products[productId];
+            _products.Remove(productId);
+
+            if (_agentProducts.ContainsKey(sellerAgentAddress))
+            {
+                var shopItems = _agentProducts[sellerAgentAddress];
+                if (shopItems.Any(item => item.Equals(productId)))
+                {
+                    shopItems.Remove(productId);
+                    if (shopItems.Count == 0)
+                    {
+                        _agentProducts.Remove(sellerAgentAddress);
+                    }
+                }
+            }
+
+            var itemSubType = targetShopItem.ItemUsable.ItemSubType;
+            if (_itemSubTypeProducts.ContainsKey(itemSubType))
+            {
+                var shopItems = _itemSubTypeProducts[itemSubType];
+                shopItems.Remove(productId);
+                if (shopItems.Count == 0)
+                {
+                    _itemSubTypeProducts.Remove(itemSubType);
+                }
+            }
+
+            unregisteredItem = targetShopItem;
+            return true;
+        }
+
+        #endregion
+
+        public bool TryGet(
+            Address sellerAgentAddress,
+            Guid productId,
+            out ShopItem shopItem)
+        {
+            if (!_agentProducts.ContainsKey(sellerAgentAddress))
+            {
+                shopItem = null;
+                return false;
+            }
+
+            var shopItems = _agentProducts[sellerAgentAddress];
+            if (shopItems.All(item => item != productId))
+            {
+                shopItem = null;
+                return false;
+            }
+
+            if (!_products.ContainsKey(productId))
+            {
+                shopItem = null;
+                return false;
+            }
+
+            shopItem = _products[productId];
+            return true;
+        }
     }
 }
