@@ -136,26 +136,7 @@ namespace Nekoyume.Model
 
             _root = new Root();
             _root.OpenBranch(
-                BT.Selector().OpenBranch(
-                    // process turn.
-                    BT.Sequence().OpenBranch(
-                        // NOTE: 턴 시작 메소드는 이곳에서 구현하세요.
-                        // BT.Call(BeginningOfTurn),
-                        BT.If(IsAlive).OpenBranch(
-                            BT.Sequence().OpenBranch(
-                                BT.Call(ReduceDurationOfBuffs),
-                                BT.Call(ReduceSkillCooldown),
-                                BT.Call(UseSkill),
-                                BT.Call(RemoveBuffs)
-                            )
-                        ),
-                        BT.Call(EndTurn)
-                    ),
-                    // 캐릭터가 살아 있지 않을 경우 `EndTurn()`을 호출하지 않아서 한 번 호출한다.
-                    BT.Call(EndTurn),
-                    // terminate bt.
-                    BT.Terminate()
-                )
+                BT.Call(Act)
             );
         }
 
@@ -208,8 +189,8 @@ namespace Nekoyume.Model
                 if (!info.Target.IsDead)
                     continue;
 
-                var target = Targets.FirstOrDefault(i => i.Id == info.Target.Id);
-                target?.Die();
+                var target = Targets.First(i => i.Id == info.Target.Id);
+                target.Die();
             }
         }
 
@@ -346,6 +327,18 @@ namespace Nekoyume.Model
         public bool GetChance(int chance)
         {
             return chance > Simulator.Random.Next(0, 100);
+        }
+
+        private void Act()
+        {
+            if (IsAlive())
+            {
+                ReduceDurationOfBuffs();
+                ReduceSkillCooldown();
+                UseSkill();
+                RemoveBuffs();
+            }
+            EndTurn();
         }
     }
 
