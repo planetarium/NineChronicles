@@ -41,7 +41,16 @@ namespace Lib9c.Tests.Model
                 _tableSheets.WorldUnlockSheet
             );
 
-            var simulator = new RankingSimulator(_random, avatarState, avatarState, new List<Guid>(), _tableSheets, 1);
+            var simulator = new RankingSimulator(
+                _random,
+                avatarState,
+                avatarState,
+                new List<Guid>(),
+                _tableSheets,
+                1,
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
+                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
+            );
             simulator.Simulate();
 
             Assert.Equal(expected, simulator.Reward.Any());

@@ -160,12 +160,11 @@ namespace Nekoyume.Action
                 enemyAvatarState,
                 consumableIds,
                 tableSheets,
-                StageId);
+                StageId,
+                arenaInfo,
+                weeklyArenaState[EnemyAddress]);
 
             simulator.Simulate();
-
-            simulator.Log.diffScore = arenaInfo.Update(avatarState, weeklyArenaState[EnemyAddress], simulator.Result);
-            simulator.Log.score = arenaInfo.Score;
 
             Result = simulator.Log;
 

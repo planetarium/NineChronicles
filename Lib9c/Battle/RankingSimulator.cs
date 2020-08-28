@@ -19,19 +19,26 @@ namespace Nekoyume.Battle
         private readonly EnemyPlayer _enemyPlayer;
         private readonly int _stageId;
         private List<ItemBase> _reward;
+        private readonly ArenaInfo _arenaInfo;
+        private readonly ArenaInfo _enemyInfo;
+        private readonly AvatarState _avatarState;
         public override IEnumerable<ItemBase> Reward => _reward;
 
-        public RankingSimulator(
-            IRandom random,
+        public RankingSimulator(IRandom random,
             AvatarState avatarState,
             AvatarState enemyAvatarState,
             List<Guid> foods,
             TableSheets tableSheets,
-            int stageId) : base(random, avatarState, foods, tableSheets)
+            int stageId,
+            ArenaInfo arenaInfo,
+            ArenaInfo enemyInfo) : base(random, avatarState, foods, tableSheets)
         {
             _enemyPlayer = new EnemyPlayer(enemyAvatarState, this);
             _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
             _stageId = stageId;
+            _arenaInfo = arenaInfo;
+            _enemyInfo = enemyInfo;
+            _avatarState = avatarState;
         }
 
         public override Player Simulate()
@@ -113,6 +120,9 @@ namespace Nekoyume.Battle
                 Characters.Enqueue(character, TurnPriority / character.SPD);
             }
 
+            Log.diffScore = _arenaInfo.Update(_avatarState, _enemyInfo, Result);
+            Log.score = _arenaInfo.Score;
+
             var itemSelector = new WeightedSelector<StageSheet.RewardData>(Random);
             var rewardSheet = TableSheets.WeeklyArenaRewardSheet;
             foreach (var row in rewardSheet.Values)
@@ -124,7 +134,8 @@ namespace Nekoyume.Battle
                 }
             }
 
-            _reward = SetReward(itemSelector, Random.Next(1, 6), Random, TableSheets);
+            var max = _arenaInfo.GetRewardCount();
+            _reward = SetReward(itemSelector, Random.Next(1, max), Random, TableSheets);
             var getReward = new GetReward(null, _reward);
             Log.Add(getReward);
             Log.result = Result;

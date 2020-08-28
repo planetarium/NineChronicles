@@ -33,7 +33,10 @@ namespace Lib9c.Tests.Action
             var agent = new AgentState(agentAddress);
 
             var avatarAddress = agentAddress.Derive("avatar");
-            var avatarState = new AvatarState(avatarAddress, agentAddress, 0, tableSheets, new GameConfigState());
+            var avatarState = new AvatarState(avatarAddress, agentAddress, 0, tableSheets, new GameConfigState())
+            {
+                level = 10,
+            };
             avatarState.worldInformation.ClearStage(
                 1,
                 GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
@@ -91,9 +94,13 @@ namespace Lib9c.Tests.Action
 
             var newState = nextState.GetAvatarState(avatarAddress);
 
+            var newWeeklyState = nextState.GetWeeklyArenaState(0);
+
             Assert.True(newState.inventory.HasItem(itemId));
             Assert.NotNull(action.Result);
             Assert.Contains(typeof(GetReward), action.Result.Select(e => e.GetType()));
+            Assert.Equal(BattleLog.Result.Win, action.Result.result);
+            Assert.True(newWeeklyState[avatarAddress].Score > weekly[avatarAddress].Score);
         }
     }
 }

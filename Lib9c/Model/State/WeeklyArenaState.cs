@@ -425,5 +425,35 @@ namespace Nekoyume.Model.State
         {
             DailyChallengeCount = 5;
         }
+
+        public int GetRewardCount()
+        {
+            if (Score >= 1800)
+            {
+                return 6;
+            }
+
+            if (Score >= 1400)
+            {
+                return 5;
+            }
+
+            if (Score >= 1200)
+            {
+                return 4;
+            }
+
+            if (Score >= 1100)
+            {
+                return 3;
+            }
+
+            if (Score >= 1001)
+            {
+                return 2;
+            }
+
+            return 1;
+        }
     }
 }
