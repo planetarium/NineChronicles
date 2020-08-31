@@ -708,7 +708,7 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoBlowAttack);
                 character.actions.Add(actionParams);
                 yield return null;
             }
@@ -752,7 +752,7 @@ namespace Nekoyume.Game
             var character = GetCharacter(caster);
             if (character)
             {
-                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoHeal);
                 character.actions.Add(actionParams);
                 yield return null;
             }

@@ -1,4 +1,5 @@
 using System.Linq;
+using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
@@ -12,6 +13,7 @@ namespace Nekoyume.BlockChain
     public abstract class ActionHandler
     {
         public bool Pending;
+        public Currency GoldCurrency { get; internal set; }
 
         protected bool ValidateEvaluationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation)
             where T : ActionBase
@@ -53,7 +55,7 @@ namespace Nekoyume.BlockChain
         protected GoldBalanceState GetGoldBalanceState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var agentAddress = States.Instance.AgentState.address;
-            return evaluation.OutputStates.GetGoldBalanceState(agentAddress);
+            return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
         }
 
         protected void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
@@ -61,8 +63,15 @@ namespace Nekoyume.BlockChain
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             var state = GetAgentState(evaluation);
-            var balanceState = GetGoldBalanceState(evaluation);
-            UpdateAgentState(state, balanceState);
+            try
+            {
+                var balanceState = GetGoldBalanceState(evaluation);
+                UpdateAgentState(state, balanceState);
+            }
+            catch (BalanceDoesNotExistsException)
+            {
+                UpdateAgentState(state, null);
+            }
         }
 
         protected void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
