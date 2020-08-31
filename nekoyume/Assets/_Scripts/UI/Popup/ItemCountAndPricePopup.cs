@@ -26,7 +26,7 @@ namespace Nekoyume.UI
                 .Subscribe(_ =>
                 {
                     if (!int.TryParse(priceInputField.text, NumberStyles.Number,
-                        new NumberFormatInfo(),
+                        CultureInfo.CurrentCulture,
                         out var price))
                     {
                         price = 0;
