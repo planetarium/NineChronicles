@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Runtime.Serialization;
 using Bencodex;
 using Bencodex.Types;
@@ -11,7 +10,6 @@ using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
-using Nekoyume.Model.WeeklyArena;
 using Nekoyume.TableData;
 
 namespace Nekoyume.Model.State
@@ -30,14 +28,11 @@ namespace Nekoyume.Model.State
 
         #endregion
 
-        public BigInteger Gold;
-
         public long ResetIndex;
 
         public bool Ended;
 
         private readonly Dictionary<Address, ArenaInfo> _map;
-        private Dictionary<TierType, BigInteger> _rewardMap = new Dictionary<TierType, BigInteger>();
 
         public List<ArenaInfo> OrderedArenaInfos { get; private set; }
 
@@ -61,15 +56,6 @@ namespace Nekoyume.Model.State
             );
 
             ResetIndex = serialized.GetLong("resetIndex");
-
-            if (serialized.ContainsKey((IKey)(Text)"rewardMap"))
-            {
-                _rewardMap = ((Dictionary)serialized["rewardMap"]).ToDictionary(
-                    kv => (TierType)((Binary)kv.Key).First(),
-                    kv => kv.Value.ToBigInteger());
-            }
-
-            Gold = serialized["gold"].ToBigInteger();
             Ended = serialized["ended"].ToBoolean();
             ResetOrderedArenaInfos();
         }
@@ -93,13 +79,6 @@ namespace Nekoyume.Model.State
                    )
                 )),
                 [(Text)"resetIndex"] = ResetIndex.Serialize(),
-                [(Text)"rewardMap"] = new Dictionary(_rewardMap.Select(kv =>
-                   new KeyValuePair<IKey, IValue>(
-                       new Binary(new[] { (byte)kv.Key }),
-                       kv.Value.Serialize()
-                   )
-                )),
-                [(Text)"gold"] = Gold.Serialize(),
                 [(Text)"ended"] = Ended.Serialize(),
             }.Union((Dictionary)base.Serialize()));
 
@@ -181,7 +160,6 @@ namespace Nekoyume.Model.State
 
         public void End()
         {
-            SetRewardMap();
             Ended = true;
         }
 
@@ -199,49 +177,6 @@ namespace Nekoyume.Model.State
         public void SetReceive(Address avatarAddress)
         {
             _map[avatarAddress].Receive = true;
-        }
-
-        public TierType GetTier(ArenaInfo info)
-        {
-            var sorted = _map.Values.Where(i => i.Active).OrderBy(i => i.Score).ThenBy(i => i.CombatPoint).ToList();
-            if (info.ArenaRecord.Win >= 5)
-            {
-                return TierType.Platinum;
-            }
-
-            if (info.ArenaRecord.Win >= 4)
-            {
-                return TierType.Gold;
-            }
-
-            if (info.ArenaRecord.Win >= 3)
-            {
-                return TierType.Silver;
-            }
-
-            if (info.ArenaRecord.Win >= 2)
-            {
-                return TierType.Bronze;
-            }
-
-            return TierType.Rookie;
-        }
-
-        private void SetRewardMap()
-        {
-            var map = new Dictionary<TierType, BigInteger>
-            {
-                [TierType.Platinum] = 200,
-                [TierType.Gold] = 150,
-                [TierType.Silver] = 100,
-                [TierType.Bronze] = 80,
-                [TierType.Rookie] = 70,
-            };
-            _rewardMap = map;
-        }
-        public BigInteger GetReward(TierType tier)
-        {
-            return _rewardMap[tier];
         }
 
         public Address[] GetAgentAddresses(int count)
@@ -489,6 +424,36 @@ namespace Nekoyume.Model.State
         public void ResetCount()
         {
             DailyChallengeCount = 5;
+        }
+
+        public int GetRewardCount()
+        {
+            if (Score >= 1800)
+            {
+                return 6;
+            }
+
+            if (Score >= 1400)
+            {
+                return 5;
+            }
+
+            if (Score >= 1200)
+            {
+                return 4;
+            }
+
+            if (Score >= 1100)
+            {
+                return 3;
+            }
+
+            if (Score >= 1001)
+            {
+                return 2;
+            }
+
+            return 1;
         }
     }
 }

@@ -1,6 +1,7 @@
 namespace Lib9c.Tests.Model.State
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
@@ -89,6 +90,25 @@ namespace Lib9c.Tests.Model.State
 
             var deserialized = (WeeklyArenaState)formatter.Deserialize(ms);
             Assert.Equal(state.address, deserialized.address);
+        }
+
+        [Theory]
+        [InlineData(1000, 1001, 1)]
+        [InlineData(1001, 1100, 2)]
+        [InlineData(1100, 1200, 3)]
+        [InlineData(1200, 1400, 4)]
+        [InlineData(1400, 1800, 5)]
+        [InlineData(1800, 10000, 6)]
+        public void ArenaInfoGetRewardCount(int minScore, int maxScore, int expected)
+        {
+            var score = new Random().Next(minScore, maxScore);
+            var serialized = new Dictionary(new Dictionary<IKey, IValue>
+            {
+                [(Text)"score"] = score.Serialize(),
+                [(Text)"receive"] = false.Serialize(),
+            });
+            var info = new ArenaInfo(serialized);
+            Assert.Equal(expected, info.GetRewardCount());
         }
     }
 }
