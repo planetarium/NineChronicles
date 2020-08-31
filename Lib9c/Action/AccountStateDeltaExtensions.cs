@@ -87,11 +87,12 @@ namespace Nekoyume.Action
         public static bool TryGetGoldBalance(
             this IAccountStateDelta states,
             Address address,
+            Currency currency,
             out FungibleAssetValue balance)
         {
             try
             {
-                balance = states.GetBalance(address, GetGoldCurrency(states));
+                balance = states.GetBalance(address, currency);
                 return true;
             }
             catch (BalanceDoesNotExistsException)
@@ -101,19 +102,11 @@ namespace Nekoyume.Action
             }
         }
 
-        // FIXME NRE를 유발할 수 있는 위험한 방식. null 없이도 돌아가게 고쳐야 합니다.
-        public static GoldBalanceState GetGoldBalanceState(this IAccountStateDelta states, Address address)
-        {
-            try
-            {
-                var gold = GetGoldCurrency(states);
-                return new GoldBalanceState(address, states.GetBalance(address, gold));
-            }
-            catch (BalanceDoesNotExistsException)
-            {
-                return null;
-            }
-        }
+        public static GoldBalanceState GetGoldBalanceState(
+            this IAccountStateDelta states,
+            Address address,
+            Currency currency
+        ) => new GoldBalanceState(address, states.GetBalance(address, currency));
 
         public static Currency GetGoldCurrency(this IAccountStateDelta states)
         {

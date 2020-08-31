@@ -56,7 +56,7 @@ namespace Nekoyume.Battle
             var itemSelector = SetItemSelector(stageRow, Random);
             _waveRewards = SetReward(
                 itemSelector,
-                Random.Next(stageRow.DropItemMin, stageRow.DropItemMax),
+                Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1),
                 random,
                 tableSheets
             );
