@@ -24,7 +24,8 @@ namespace Nekoyume.Battle
         private readonly AvatarState _avatarState;
         public override IEnumerable<ItemBase> Reward => _reward;
 
-        public RankingSimulator(IRandom random,
+        public RankingSimulator(
+            IRandom random,
             AvatarState avatarState,
             AvatarState enemyAvatarState,
             List<Guid> foods,
