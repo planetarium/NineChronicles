@@ -28,13 +28,16 @@ namespace Tests.EditMode.Battle
         {
             var agentState = new AgentState(new Address());
             var avatarState = new AvatarState(new Address(), agentState.address, 0, _tableSheets, new GameConfigState());
+            var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
             var simulator = new RankingSimulator(
                 new Cheat.DebugRandom(),
                 avatarState,
                 avatarState,
                 new List<Guid>(),
                 _tableSheets,
-                999999
+                999999,
+                arenaInfo,
+                arenaInfo
             );
             simulator.Simulate();
 
