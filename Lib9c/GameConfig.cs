@@ -75,10 +75,10 @@ namespace Nekoyume
             #region character consumable slot
 
             public const int CharacterConsumableSlot1 = 1;
-            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 10;
-            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 20;
-            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 50;
-            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 100;
+            public const int CharacterConsumableSlot2 = IsEditor ? 1 : 35;
+            public const int CharacterConsumableSlot3 = IsEditor ? 1 : 100;
+            public const int CharacterConsumableSlot4 = IsEditor ? 1 : 200;
+            public const int CharacterConsumableSlot5 = IsEditor ? 1 : 350;
 
             #endregion
         }
