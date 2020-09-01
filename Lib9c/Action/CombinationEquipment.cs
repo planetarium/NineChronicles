@@ -66,9 +66,8 @@ namespace Nekoyume.Action
                 );
             }
 
-            var tableSheets = TableSheets.FromActionContext(ctx);
-            var recipeSheet = tableSheets.EquipmentItemRecipeSheet;
-            var materialSheet = tableSheets.MaterialItemSheet;
+            var recipeSheet = states.GetSheet<EquipmentItemRecipeSheet>();
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
             var materials = new Dictionary<Material, int>();
 
             // 레시피 검증
@@ -127,9 +126,10 @@ namespace Nekoyume.Action
 
             BigInteger requiredGold = recipe.RequiredGold;
             var requiredActionPoint = recipe.RequiredActionPoint;
+            var equipmentItemSheet = states.GetSheet<EquipmentItemSheet>();
 
             // 장비 제작
-            if (!tableSheets.EquipmentItemSheet.TryGetValue(recipe.ResultEquipmentId, out var equipRow))
+            if (!equipmentItemSheet.TryGetValue(recipe.ResultEquipmentId, out var equipRow))
             {
                 return LogError(
                     context,
@@ -149,7 +149,7 @@ namespace Nekoyume.Action
             HashSet<int> optionIds = null;
             if (SubRecipeId.HasValue)
             {
-                var subSheet = tableSheets.EquipmentItemSubRecipeSheet;
+                var subSheet = states.GetSheet<EquipmentItemSubRecipeSheet>();
                 if (!subSheet.TryGetValue((int) SubRecipeId, out var subRecipe))
                 {
                     return LogError(
@@ -189,7 +189,8 @@ namespace Nekoyume.Action
                     materials[subMaterial] = materialInfo.Count;
                 }
 
-                optionIds = SelectOption(tableSheets, subRecipe, ctx.Random, equipment);
+                optionIds = SelectOption(states.GetSheet<EquipmentItemOptionSheet>(), states.GetSheet<SkillSheet>(),
+                    subRecipe, ctx.Random, equipment);
                 equipment.Update(requiredBlockIndex);
             }
 
@@ -272,13 +273,12 @@ namespace Nekoyume.Action
             return new StatMap(row.StatType, value);
         }
 
-        private static Skill GetSkill(EquipmentItemOptionSheet.Row row, TableSheets tableSheets,
+        private static Skill GetSkill(EquipmentItemOptionSheet.Row row, SkillSheet skillSheet,
             IRandom random)
         {
             try
             {
-                var skillRow =
-                    tableSheets.SkillSheet.OrderedList.First(r => r.Id == row.SkillId);
+                var skillRow = skillSheet.OrderedList.First(r => r.Id == row.SkillId);
                 var dmg = random.Next(row.SkillDamageMin, row.SkillDamageMax + 1);
                 var chance = random.Next(row.SkillChanceMin, row.SkillChanceMax + 1);
                 var skill = SkillFactory.Get(skillRow, dmg, chance);
@@ -291,13 +291,13 @@ namespace Nekoyume.Action
         }
 
         public static HashSet<int> SelectOption(
-            TableSheets tableSheets,
+            EquipmentItemOptionSheet optionSheet,
+            SkillSheet skillSheet,
             EquipmentItemSubRecipeSheet.Row subRecipe,
             IRandom random,
             Equipment equipment
         )
         {
-            var optionSheet = tableSheets.EquipmentItemOptionSheet;
             var optionSelector = new WeightedSelector<EquipmentItemOptionSheet.Row>(random);
             var optionIds = new HashSet<int>();
 
@@ -335,7 +335,7 @@ namespace Nekoyume.Action
                     }
                     else
                     {
-                        var skill = GetSkill(optionRow, tableSheets, random);
+                        var skill = GetSkill(optionRow, skillSheet, random);
                         if (!(skill is null))
                         {
                             equipment.Skills.Add(skill);
