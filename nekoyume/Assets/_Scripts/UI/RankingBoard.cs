@@ -297,8 +297,8 @@ namespace Nekoyume.UI
                     return;
                 }
 
-                var arenaInfos = weeklyArenaState.GetArenaInfos(currentAvatarAddress.Value);
-                var (currentAvatarRank, currentAvatarArenaInfo) = arenaInfos
+                var (currentAvatarRank, currentAvatarArenaInfo) = weeklyArenaState
+                    .GetArenaInfos(currentAvatarAddress.Value, 0, 0)
                     .FirstOrDefault(info =>
                         info.arenaInfo.AvatarAddress.Equals(currentAvatarAddress));
 
@@ -307,7 +307,9 @@ namespace Nekoyume.UI
                     currentAvatarArenaInfo,
                     currentAvatarArenaInfo));
 
-                arenaRankScroll.Show(arenaInfos
+                var startTemp = 0;
+                arenaRankScroll.Show(weeklyArenaState
+                    .GetArenaInfos(1, 100)
                     .Select(tuple => new ArenaRankCell.ViewModel
                     {
                         rank = tuple.rank,
