@@ -1,0 +1,50 @@
+using System;
+using Libplanet.Action;
+using Libplanet.Blockchain.Renderers;
+using Libplanet.Blocks;
+using static Nekoyume.Action.ActionBase;
+#if UNITY_EDITOR || UNITY_STANDALONE
+using UniRx;
+#else
+using System.Reactive.Subjects;
+using System.Reactive.Linq;
+#endif
+
+namespace Nekoyume.Action
+{
+    using NCAction = PolymorphicAction<ActionBase>;
+    using NCBlock = Block<PolymorphicAction<ActionBase>>;
+
+    public class BlockRenderer : IRenderer<NCAction>
+    {
+        private readonly Subject<(NCBlock OldTip, NCBlock NewTip)> _blockSubject =
+            new Subject<(NCBlock OldTip, NCBlock NewTip)>();
+
+        private readonly Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)> _reorgSubject =
+            new Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>();
+
+        public void RenderBlock(
+            NCBlock oldTip,
+            NCBlock newTip
+        )
+        {
+            _blockSubject.OnNext((oldTip, newTip));
+        }
+
+        public void RenderReorg(
+            NCBlock oldTip,
+            NCBlock newTip,
+            NCBlock branchpoint
+        )
+        {
+            _reorgSubject.OnNext((oldTip, newTip, branchpoint));
+        }
+
+        public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlock() =>
+            _blockSubject.AsObservable();
+
+        public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
+            EveryReorg() =>
+            _reorgSubject.AsObservable();
+    }
+}

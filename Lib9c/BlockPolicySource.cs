@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
@@ -11,12 +12,14 @@ using Libplanet.Tx;
 using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Libplanet;
+using Libplanet.Blockchain.Renderers;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
 using System.Reactive.Subjects;
 using System.Reactive.Linq;
 #endif
+using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Nekoyume.BlockChain
 {
@@ -24,18 +27,22 @@ namespace Nekoyume.BlockChain
     {
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
-        private readonly ActionRenderer _actionRenderer = new ActionRenderer();
+        public readonly BlockRenderer BlockRenderer = new BlockRenderer();
+
+        public readonly ActionRenderer ActionRenderer = new ActionRenderer();
 
         public BlockPolicySource()
         {
-            _actionRenderer
-                .EveryRender(ActivatedAccountsState.Address)
-                .Subscribe(UpdateActivationSet);
+            BlockRenderer
+                .EveryBlock()
+                .Subscribe(_ => UpdateActivationSet());
 
-            _actionRenderer
-                .EveryUnrender(ActivatedAccountsState.Address)
-                .Subscribe(UpdateActivationSet);
+            BlockRenderer
+                .EveryReorg()
+                .Subscribe(_ => UpdateActivationSet());
         }
+
+        public Func<IValue> ActivatedAccountsStateGetter { get; set; }
 
         public IImmutableSet<Address> ActivatedAccounts { get; private set; }
 
@@ -61,7 +68,8 @@ namespace Nekoyume.BlockChain
 #endif
         }
 
-        public ActionRenderer GetRenderer() => _actionRenderer;
+        public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
+            new IRenderer<NCAction>[] { BlockRenderer, ActionRenderer };
 
         private bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
@@ -75,9 +83,13 @@ namespace Nekoyume.BlockChain
                    || ActivatedAccounts.Contains(transaction.Signer);
         }
 
-        private void UpdateActivationSet(ActionBase.ActionEvaluation<ActionBase> evaluation)
+        private void UpdateActivationSet()
         {
-            UpdateActivationSet(evaluation.OutputStates.GetState(ActivatedAccountsState.Address));
+            if (!(ActivatedAccountsStateGetter is null))
+            {
+                IValue state = ActivatedAccountsStateGetter();
+                UpdateActivationSet(state);
+            }
         }
     }
 }
