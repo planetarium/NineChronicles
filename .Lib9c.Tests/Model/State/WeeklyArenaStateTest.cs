@@ -112,15 +112,14 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Theory]
-        [InlineData(100, 1, 100)]
-        [InlineData(100, 51, 50)]
-        [InlineData(10, 1, 50)]
-        [InlineData(10, 1, 1)]
-        [InlineData(10, 6, 50)]
-        [InlineData(10, 6, 1)]
-        public void GetArenaInfos_By_FirstRank_And_Count(int infoCount, int firstRank, int count)
+        [InlineData(100, 1, 100, 100)]
+        [InlineData(100, 51, 50, 50)]
+        [InlineData(10, 1, 50, 10)]
+        [InlineData(10, 1, 1, 1)]
+        [InlineData(10, 6, 50, 5)]
+        [InlineData(10, 6, 1, 1)]
+        public void GetArenaInfos_By_FirstRank_And_Count(int infoCount, int firstRank, int count, int expected)
         {
-            var expected = Math.Min(infoCount - firstRank + 1, count);
             var tableState =
                 TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
             var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
@@ -171,10 +170,10 @@ namespace Lib9c.Tests.Model.State
         }
 
         [Theory]
-        [InlineData(100, 1, 10, 10)]
-        [InlineData(100, 50, 10, 10)]
-        [InlineData(100, 100, 10, 10)]
-        public void GetArenaInfos_By_Upper_And_Lower_Range(int infoCount, int targetRank, int upperRange, int lowerRange)
+        [InlineData(100, 1, 10, 10, 11)]
+        [InlineData(100, 50, 10, 10, 21)]
+        [InlineData(100, 100, 10, 10, 11)]
+        public void GetArenaInfos_By_Upper_And_Lower_Range(int infoCount, int targetRank, int upperRange, int lowerRange, int expected)
         {
             var tableState =
                 TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
@@ -202,18 +201,6 @@ namespace Lib9c.Tests.Model.State
             }
 
             var arenaInfos = weeklyArenaState.GetArenaInfos(targetAddress, upperRange, lowerRange);
-
-            if (targetRank <= upperRange)
-            {
-                upperRange = targetRank - 1;
-            }
-
-            if (targetRank + lowerRange >= infoCount)
-            {
-                lowerRange = infoCount - targetRank;
-            }
-
-            var expected = Math.Min(upperRange + lowerRange + 1, infoCount);
             Assert.Equal(expected, arenaInfos.Count);
         }
     }
