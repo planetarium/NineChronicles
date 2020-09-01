@@ -310,8 +310,11 @@ namespace Nekoyume.UI
 
                 _coCompleteCloseAnimation = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
-                StopCoroutine(_coCompleteCloseAnimation);
-                _coCompleteCloseAnimation = null;
+                if (!(_coCompleteCloseAnimation is null))
+                {
+                    StopCoroutine(_coCompleteCloseAnimation);
+                    _coCompleteCloseAnimation = null;
+                }
             }
 
             gameObject.SetActive(false);
