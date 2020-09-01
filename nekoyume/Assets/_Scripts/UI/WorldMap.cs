@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Nekoyume.Model;
 using Nekoyume.Model.Quest;
-using Nekoyume.TableData;
 using Nekoyume.UI.Module;
 using UniRx;
 using UnityEngine;
@@ -138,8 +137,8 @@ namespace Nekoyume.UI
         {
             var bottomMenu = Find<BottomMenu>();
             bottomMenu.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
+                UINavigator.NavigationType.None,
+                null,
                 true,
                 BottomMenu.ToggleableType.WorldMap);
             bottomMenu.worldMapButton.OnClick
@@ -223,30 +222,6 @@ namespace Nekoyume.UI
             bottomMenu.backButton.Show();
             status.Close(true);
             worldMapRoot.SetActive(true);
-        }
-
-        private void UpdateWorld(bool active)
-        {
-            var status = Find<Status>();
-
-            if (active)
-            {
-                var bottomMenu = Find<BottomMenu>();
-                bottomMenu.worldMapButton.Hide();
-                bottomMenu.backButton.Show();
-                status.Close(true);
-                worldMapRoot.SetActive(true);
-            }
-            else
-            {
-                var bottomMenu = Find<BottomMenu>();
-                bottomMenu.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick, true,
-                    BottomMenu.ToggleableType.WorldMap);
-                bottomMenu.worldMapButton.Show();
-                bottomMenu.backButton.Hide();
-                bottomMenu.ToggleGroup?.SetToggledOffAll();
-                status.Show();
-            }
         }
 
         public void SubscribeBackButtonClick(BottomMenu bottomMenu)
