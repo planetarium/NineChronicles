@@ -4,6 +4,7 @@ using Libplanet.Action;
 using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
 using static Nekoyume.Action.ActionBase;
+using Serilog;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -69,6 +70,7 @@ namespace Nekoyume.Action
             Exception exception
         )
         {
+            Log.Error(exception, "{action} exeuction failed.", action);
             ActionRenderSubject.OnNext(new ActionEvaluation<ActionBase>()
             {
                 Action = GetActionBase(action),
