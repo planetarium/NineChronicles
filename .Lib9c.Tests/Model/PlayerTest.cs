@@ -39,7 +39,23 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void TickAlive()
         {
-            var simulator = new StageSimulator(_random, _avatarState, new List<Guid>(), 1, 1, _tableSheets);
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                _tableSheets.StageSheet,
+                _tableSheets.StageWaveSheet,
+                _tableSheets.EnemySkillSheet
+            );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);
@@ -53,7 +69,23 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void TickDead()
         {
-            var simulator = new StageSimulator(_random, _avatarState, new List<Guid>(), 1, 1, _tableSheets);
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                _tableSheets.StageSheet,
+                _tableSheets.StageWaveSheet,
+                _tableSheets.EnemySkillSheet
+            );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);

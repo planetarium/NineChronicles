@@ -19,7 +19,13 @@ namespace Nekoyume.Battle
         public BattleLog.Result Result { get; protected set; }
         public SimplePriorityQueue<CharacterBase, decimal> Characters;
         public const decimal TurnPriority = 100m;
-        public readonly TableSheets TableSheets;
+        public readonly MaterialItemSheet MaterialItemSheet;
+        public readonly SkillSheet SkillSheet;
+        public readonly SkillBuffSheet SkillBuffSheet;
+        public readonly BuffSheet BuffSheet;
+        public readonly CharacterSheet CharacterSheet;
+        public readonly CharacterLevelSheet CharacterLevelSheet;
+        public readonly EquipmentItemSetEffectSheet EquipmentItemSetEffectSheet;
         protected const int MaxTurn = 200;
         public int TurnNumber;
         public int WaveNumber;
@@ -30,10 +36,22 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            TableSheets tableSheets)
+            MaterialItemSheet materialItemSheet,
+            SkillSheet skillSheet,
+            SkillBuffSheet skillBuffSheet,
+            BuffSheet buffSheet,
+            CharacterSheet characterSheet,
+            CharacterLevelSheet characterLevelSheet,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet)
         {
             Random = random;
-            TableSheets = tableSheets;
+            MaterialItemSheet = materialItemSheet;
+            SkillSheet = skillSheet;
+            SkillBuffSheet = skillBuffSheet;
+            BuffSheet = buffSheet;
+            CharacterSheet = characterSheet;
+            CharacterLevelSheet = characterLevelSheet;
+            EquipmentItemSetEffectSheet = equipmentItemSetEffectSheet;
             Log = new BattleLog();
             Player = new Player(avatarState, this);
             Player.Use(foods);
@@ -46,7 +64,7 @@ namespace Nekoyume.Battle
             WeightedSelector<StageSheet.RewardData> itemSelector,
             int maxCount,
             IRandom random,
-            TableSheets tableSheets
+            MaterialItemSheet materialItemSheet
         )
         {
             var reward = new List<ItemBase>();
@@ -56,7 +74,7 @@ namespace Nekoyume.Battle
                 try
                 {
                     var data = itemSelector.Select(1).First();
-                    if (tableSheets.MaterialItemSheet.TryGetValue(data.ItemId, out var itemData))
+                    if (materialItemSheet.TryGetValue(data.ItemId, out var itemData))
                     {
                         var count = random.Next(data.Min, data.Max + 1);
                         for (var i = 0; i < count; i++)

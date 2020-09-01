@@ -34,7 +34,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "2", "2",
             });
             var itemSelector = StageSimulator.SetItemSelector(row, _random);
-            var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _tableSheets);
+            var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _tableSheets.MaterialItemSheet);
             Assert.Equal(2, reward.Count);
             Assert.NotEmpty(reward);
             Assert.Equal(new[] { 306043, 303000 }, reward.Select(i => i.Id).ToArray());
@@ -54,7 +54,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "2", "2",
             });
             var itemSelector = StageSimulator.SetItemSelector(row, _random);
-            var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _tableSheets);
+            var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _tableSheets.MaterialItemSheet);
             Assert.Equal(2, reward.Count);
             Assert.NotEmpty(reward);
             Assert.Single(reward.Select(i => i.Id).ToImmutableHashSet());
@@ -74,7 +74,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "1", "1",
             });
             var itemSelector = StageSimulator.SetItemSelector(row, _random);
-            var reward = Simulator.SetReward(itemSelector, _random.Next(1, 1), _random, _tableSheets);
+            var reward = Simulator.SetReward(itemSelector, _random.Next(1, 1), _random, _tableSheets.MaterialItemSheet);
             Assert.Single(reward);
         }
 
@@ -92,7 +92,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "1", "4",
             });
             var itemSelector = StageSimulator.SetItemSelector(row, _random);
-            var reward = Simulator.SetReward(itemSelector, _random.Next(1, 4), _random, _tableSheets);
+            var reward = Simulator.SetReward(itemSelector, _random.Next(1, 4), _random, _tableSheets.MaterialItemSheet);
             Assert.True(reward.Count <= 2);
             Assert.NotEmpty(reward);
         }

@@ -38,7 +38,23 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void Simulate()
         {
-            var simulator = new StageSimulator(_random, _avatarState, new List<Guid>(), 1, 3, _tableSheets);
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                3,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                _tableSheets.StageSheet,
+                _tableSheets.StageWaveSheet,
+                _tableSheets.EnemySkillSheet
+            );
             simulator.Simulate();
             var filtered =
                 simulator.Log.Where(e => e.GetType() != typeof(GetReward) || e.GetType() != typeof(DropBox));

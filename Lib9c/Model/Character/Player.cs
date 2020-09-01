@@ -73,7 +73,7 @@ namespace Nekoyume.Model
         public Player(AvatarState avatarState, Simulator simulator)
             : base(
                 simulator,
-                simulator.TableSheets,
+                simulator.CharacterSheet,
                 avatarState.characterId,
                 avatarState.level)
         {
@@ -95,13 +95,13 @@ namespace Nekoyume.Model
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
             tailIndex = avatarState.tail;
-            PostConstruction(simulator.TableSheets);
+            PostConstruction(simulator.CharacterLevelSheet, simulator.EquipmentItemSetEffectSheet);
         }
 
-        public Player(AvatarState avatarState, TableSheets tableSheets)
+        public Player(AvatarState avatarState, CharacterSheet characterSheet, CharacterLevelSheet characterLevelSheet, EquipmentItemSetEffectSheet equipmentItemSetEffectSheet)
             : base(
                 null,
-                tableSheets,
+                characterSheet,
                 avatarState.characterId,
                 avatarState.level)
         {
@@ -120,13 +120,13 @@ namespace Nekoyume.Model
             lensIndex = avatarState.lens;
             earIndex = avatarState.ear;
             tailIndex = avatarState.tail;
-            PostConstruction(tableSheets);
+            PostConstruction(characterLevelSheet, equipmentItemSetEffectSheet);
         }
 
-        public Player(int level, TableSheets tableSheets) :
+        public Player(int level, CharacterSheet characterSheet, CharacterLevelSheet characterLevelSheet, EquipmentItemSetEffectSheet equipmentItemSetEffectSheet) :
             base(
                 null,
-                tableSheets,
+                characterSheet,
                 GameConfig.DefaultAvatarCharacterId,
                 level)
         {
@@ -144,7 +144,7 @@ namespace Nekoyume.Model
             lensIndex = 0;
             earIndex = 0;
             tailIndex = 0;
-            PostConstruction(tableSheets);
+            PostConstruction(characterLevelSheet, equipmentItemSetEffectSheet);
         }
 
         protected Player(Player value) : base(value)
@@ -174,12 +174,12 @@ namespace Nekoyume.Model
             return true;
         }
 
-        private void PostConstruction(TableSheets sheets)
+        private void PostConstruction(CharacterLevelSheet levelSheet, EquipmentItemSetEffectSheet equipmentItemSetEffectSheet)
         {
             AttackCountMax = AttackCountHelper.GetCountMax(Level);
-            characterLevelSheet = sheets.CharacterLevelSheet;
+            characterLevelSheet = levelSheet;
             UpdateExp();
-            Equip(Inventory.Items, sheets.EquipmentItemSetEffectSheet);
+            Equip(Inventory.Items, equipmentItemSetEffectSheet);
         }
 
         private void UpdateExp()

@@ -19,6 +19,7 @@ namespace Nekoyume.Battle
         private readonly List<Wave> _waves;
         private readonly List<ItemBase> _waveRewards;
         public CollectionMap ItemMap = new CollectionMap();
+        public readonly EnemySkillSheet EnemySkillSheet;
 
         private int WorldId { get; }
         public int StageId { get; }
@@ -33,19 +34,40 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            TableSheets tableSheets) : base(random, avatarState, foods, tableSheets)
+            MaterialItemSheet materialItemSheet,
+            SkillSheet skillSheet,
+            SkillBuffSheet skillBuffSheet,
+            BuffSheet buffSheet,
+            CharacterSheet characterSheet,
+            CharacterLevelSheet characterLevelSheet,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
+            StageSheet stageSheet,
+            StageWaveSheet stageWaveSheet,
+            EnemySkillSheet enemySkillSheet
+        )
+            : base(
+                random,
+                avatarState,
+                foods,
+                materialItemSheet,
+                skillSheet,
+                skillBuffSheet,
+                buffSheet,
+                characterSheet,
+                characterLevelSheet,
+                equipmentItemSetEffectSheet
+            )
         {
             _waves = new List<Wave>();
 
             WorldId = worldId;
             StageId = stageId;
             IsCleared = avatarState.worldInformation.IsStageCleared(StageId);
+            EnemySkillSheet = enemySkillSheet;
 
-            var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
 
-            var stageWaveSheet = TableSheets.StageWaveSheet;
             if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
                 throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId);
 
@@ -58,7 +80,7 @@ namespace Nekoyume.Battle
                 itemSelector,
                 Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1),
                 random,
-                tableSheets
+                materialItemSheet
             );
         }
 
@@ -68,11 +90,36 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            TableSheets tableSheets,
-            Model.Skill.Skill skill)
-            : this(random, avatarState, foods, worldId, stageId, tableSheets)
+            MaterialItemSheet materialItemSheet,
+            SkillSheet skillSheet,
+            SkillBuffSheet skillBuffSheet,
+            BuffSheet buffSheet,
+            CharacterSheet characterSheet,
+            CharacterLevelSheet characterLevelSheet,
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
+            StageSheet stageSheet,
+            StageWaveSheet stageWaveSheet,
+            EnemySkillSheet enemySkillSheet,
+            Model.Skill.Skill skill
+        )
+            : this(
+                random,
+                avatarState,
+                foods,
+                worldId, 
+                stageId,
+                materialItemSheet,
+                skillSheet,
+                skillBuffSheet,
+                buffSheet,
+                characterSheet,
+                characterLevelSheet,
+                equipmentItemSetEffectSheet,
+                stageSheet,
+                stageWaveSheet,
+                enemySkillSheet
+            )
         {
-            var stageSheet = TableSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
 
@@ -259,12 +306,11 @@ namespace Nekoyume.Battle
         private Wave SpawnWave(StageWaveSheet.WaveData waveData, IReadOnlyList<StatModifier> optionalStatModifiers)
         {
             var wave = new Wave();
-            var monsterTable = TableSheets.CharacterSheet;
             foreach (var monsterData in waveData.Monsters)
             {
                 for (var i = 0; i < monsterData.Count; i++)
                 {
-                    monsterTable.TryGetValue(monsterData.CharacterId, out var row, true);
+                    CharacterSheet.TryGetValue(monsterData.CharacterId, out var row, true);
                     var enemyModel = new Enemy(Player, row, monsterData.Level, optionalStatModifiers);
 
                     wave.Add(enemyModel);

@@ -38,7 +38,23 @@ namespace Lib9c.Tests.Model
                 _tableSheets.EquipmentItemSubRecipeSheet,
                 new GameConfigState()
             );
-            var simulator = new StageSimulator(_random, avatarState, new List<Guid>(), 1, 1, _tableSheets);
+            var simulator = new StageSimulator(
+                _random,
+                avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                _tableSheets.StageSheet,
+                _tableSheets.StageWaveSheet,
+                _tableSheets.EnemySkillSheet
+            );
             Assert.False(simulator.Log.IsClear);
         }
 

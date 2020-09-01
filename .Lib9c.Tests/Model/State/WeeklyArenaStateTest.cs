@@ -140,7 +140,7 @@ namespace Lib9c.Tests.Model.State
         [InlineData(10, 1, 1, 1)]
         [InlineData(10, 6, 50, 5)]
         [InlineData(10, 6, 1, 1)]
-        public void GetArenaInfos_By_FirstRank_And_Count(int infoCount, int firstRank, int count, int expected)
+        public void GetArenaInfosByFirstRankAndCount(int infoCount, int firstRank, int count, int expected)
         {
             var tableState =
                 TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
@@ -152,7 +152,12 @@ namespace Lib9c.Tests.Model.State
                     new PrivateKey().ToAddress(),
                     new PrivateKey().ToAddress(),
                     0L,
-                    tableState,
+                    _tableSheets.WorldSheet,
+                    _tableSheets.QuestSheet,
+                    _tableSheets.QuestRewardSheet,
+                    _tableSheets.QuestItemRewardSheet,
+                    _tableSheets.EquipmentItemRecipeSheet,
+                    _tableSheets.EquipmentItemSubRecipeSheet,
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(
@@ -167,7 +172,7 @@ namespace Lib9c.Tests.Model.State
         [Theory]
         [InlineData(1, 2)]
         [InlineData(10, 11)]
-        public void GetArenaInfos_By_FirstRank_And_Count_Throw(int infoCount, int firstRank)
+        public void GetArenaInfosByFirstRankAndCountThrow(int infoCount, int firstRank)
         {
             var tableState =
                 TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
@@ -179,7 +184,12 @@ namespace Lib9c.Tests.Model.State
                     new PrivateKey().ToAddress(),
                     new PrivateKey().ToAddress(),
                     0L,
-                    tableState,
+                    _tableSheets.WorldSheet,
+                    _tableSheets.QuestSheet,
+                    _tableSheets.QuestRewardSheet,
+                    _tableSheets.QuestItemRewardSheet,
+                    _tableSheets.EquipmentItemRecipeSheet,
+                    _tableSheets.EquipmentItemSubRecipeSheet,
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(
@@ -195,7 +205,7 @@ namespace Lib9c.Tests.Model.State
         [InlineData(100, 1, 10, 10, 11)]
         [InlineData(100, 50, 10, 10, 21)]
         [InlineData(100, 100, 10, 10, 11)]
-        public void GetArenaInfos_By_Upper_And_Lower_Range(int infoCount, int targetRank, int upperRange, int lowerRange, int expected)
+        public void GetArenaInfosByUpperAndLowerRange(int infoCount, int targetRank, int upperRange, int lowerRange, int expected)
         {
             var tableState =
                 TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
@@ -214,7 +224,12 @@ namespace Lib9c.Tests.Model.State
                     avatarAddress,
                     new PrivateKey().ToAddress(),
                     0L,
-                    tableState,
+                    _tableSheets.WorldSheet,
+                    _tableSheets.QuestSheet,
+                    _tableSheets.QuestRewardSheet,
+                    _tableSheets.QuestItemRewardSheet,
+                    _tableSheets.EquipmentItemRecipeSheet,
+                    _tableSheets.EquipmentItemSubRecipeSheet,
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(
