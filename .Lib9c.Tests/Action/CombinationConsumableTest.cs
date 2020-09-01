@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System.Globalization;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Nekoyume;
@@ -73,7 +74,14 @@ namespace Lib9c.Tests.Action
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
                 .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize())
-                .SetState(TableSheetsState.Address, _tableSheetsState.Serialize());
+                .SetState(TableSheetsState.Address, _tableSheetsState.Serialize())
+                .SetState(
+                    Addresses.TableSheet.Derive(nameof(MaterialItemSheet)),
+                    Dictionary.Empty.Add(
+                        "csv",
+                        _tableSheetsState.TableSheets[nameof(MaterialItemSheet)].Serialize()
+                    )
+                );
 
             var action = new CombinationConsumable()
             {

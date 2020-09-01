@@ -8,6 +8,7 @@ namespace Lib9c.Tests.Action
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
+    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
@@ -73,7 +74,21 @@ namespace Lib9c.Tests.Action
                 .Add(agentAddress, agentState.Serialize())
                 .Add(avatarAddress, avatarState.Serialize())
                 .Add(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
-                .Add(_tableSheetsState.address, _tableSheetsState.Serialize()));
+                .Add(
+                    Addresses.TableSheet.Derive(nameof(EnhancementCostSheet)),
+                    Dictionary.Empty.Add(
+                        "csv",
+                        _tableSheetsState.TableSheets[nameof(EnhancementCostSheet)].Serialize()
+                    )
+                )
+                .Add(
+                    Addresses.TableSheet.Derive(nameof(MaterialItemSheet)),
+                    Dictionary.Empty.Add(
+                        "csv",
+                        _tableSheetsState.TableSheets[nameof(MaterialItemSheet)].Serialize()
+                    )
+                )
+            );
 
             var action = new ItemEnhancement()
             {
