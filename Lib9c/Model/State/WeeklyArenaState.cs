@@ -93,18 +93,17 @@ namespace Nekoyume.Model.State
         /// <summary>
         /// Get arena rank information.
         /// </summary>
-        /// <param name="firstRank"></param>
-        /// <param name="count"></param>
-        /// <returns></returns>
+        /// <param name="firstRank">The first rank in the range that want to get.</param>
+        /// <param name="count">The count of the range that want to get.</param>
+        /// <returns>A list of tuples that contains <c>int</c> and <c>ArenaInfo</c>.</returns>
         public List<(int rank, ArenaInfo arenaInfo)> GetArenaInfos(
             int firstRank = 1,
             int? count = null)
         {
-            if (firstRank < 1 ||
-                firstRank > OrderedArenaInfos.Count)
+            if (!(0 < firstRank && firstRank <= OrderedArenaInfos.Count))
             {
-                throw new ArgumentException(
-                    $"{nameof(firstRank)}({firstRank}) must between 1 to {OrderedArenaInfos.Count}");
+                throw new ArgumentOutOfRangeException(
+                    $"{nameof(firstRank)}({firstRank}) out of range({OrderedArenaInfos.Count})");
             }
 
             count = count.HasValue
@@ -120,10 +119,10 @@ namespace Nekoyume.Model.State
         /// <summary>
         /// Get arena rank information.
         /// </summary>
-        /// <param name="avatarAddress"></param>
-        /// <param name="upperRange">상위 범위</param>
-        /// <param name="lowerRange">하위 범위</param>
-        /// <returns></returns>
+        /// <param name="avatarAddress">The base value of the range that want to get.</param>
+        /// <param name="upperRange">The upper range than base value in the ranges that want to get.</param>
+        /// <param name="lowerRange">The lower range than base value in the ranges that want to get.</param>
+        /// <returns>A list of tuples that contains <c>int</c> and <c>ArenaInfo</c>.</returns>
         public List<(int rank, ArenaInfo arenaInfo)> GetArenaInfos(
             Address avatarAddress,
             int upperRange = 10,
