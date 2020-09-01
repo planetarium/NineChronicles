@@ -103,7 +103,7 @@ namespace Nekoyume.Action
 
             // worldId와 stageId가 유효한지 확인합니다.
 
-            if (!tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+            if (!tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow, false))
             {
                 // FIXME we should create dedicated type for this exception.
                 throw new InvalidOperationException(
@@ -254,7 +254,8 @@ namespace Nekoyume.Action
             sw.Restart();
             avatarState.Update(simulator);
 
-            avatarState.UpdateQuestRewards(ctx);
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());

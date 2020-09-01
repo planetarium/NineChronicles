@@ -29,7 +29,18 @@ namespace Lib9c.Tests.Model
         public void Simulate(int level, int requiredLevel, bool expected)
         {
             _tableSheets.SetToSheet(nameof(WeeklyArenaRewardSheet), $"id,item_id,ratio,min,max,required_level\n1,302000,0.1,1,1,{requiredLevel}");
-            var avatarState = new AvatarState(default, default, 0, _tableSheets, new GameConfigState())
+            var avatarState = new AvatarState(
+                default,
+                default,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            )
             {
                 level = level,
             };

@@ -44,7 +44,12 @@ namespace Lib9c.Tests.Action
                 avatarAddress,
                 agentAddress,
                 0,
-                tableSheets,
+                tableSheets.WorldSheet,
+                tableSheets.QuestSheet,
+                tableSheets.QuestRewardSheet,
+                tableSheets.QuestItemRewardSheet,
+                tableSheets.EquipmentItemRecipeSheet,
+                tableSheets.EquipmentItemSubRecipeSheet,
                 new GameConfigState()
             );
 

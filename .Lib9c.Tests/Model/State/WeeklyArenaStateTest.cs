@@ -51,10 +51,32 @@ namespace Lib9c.Tests.Model.State
             var agentAddress = privateKey.PublicKey.ToAddress();
 
             var avatarAddress = agentAddress.Derive("avatar");
-            var avatarState = new AvatarState(avatarAddress, agentAddress, 0, _tableSheets, new GameConfigState());
+            var avatarState = new AvatarState(
+                avatarAddress,
+                default,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
 
             var avatarAddress2 = agentAddress.Derive("avatar2");
-            var avatarState2 = new AvatarState(avatarAddress2, agentAddress, 0, _tableSheets, new GameConfigState());
+            var avatarState2 = new AvatarState(
+                avatarAddress2,
+                default,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
 
             var state = new WeeklyArenaState(0);
             state.Set(avatarState, _tableSheets.CharacterSheet);

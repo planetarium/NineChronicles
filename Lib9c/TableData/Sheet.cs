@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Bencodex.Types;
 using JetBrains.Annotations;
+using Nekoyume.Model.State;
 using Serilog;
 
 namespace Nekoyume.TableData
@@ -44,6 +46,22 @@ namespace Nekoyume.TableData
             Name = name;
             _impl = new Dictionary<TKey, TValue>();
         }
+
+        private string _csv;
+
+        protected Sheet()
+        {
+        }
+
+        protected Sheet(IValue serialized) : this((Dictionary) serialized)
+        {
+        }
+
+        protected Sheet(Dictionary serialized)
+        {
+            Set(_csv);
+        }
+
 
         /// <summary>
         ///
@@ -102,6 +120,7 @@ namespace Nekoyume.TableData
             }
 
             PostSet();
+            _csv = csv;
         }
 
         public void Set<T>(Sheet<TKey, T> sheet, bool executePostSet = true) where T : TValue, new()
@@ -236,5 +255,10 @@ namespace Nekoyume.TableData
         {
             return _orderedList.GetEnumerator();
         }
+
+        public IValue Serialize() => new Dictionary(new Dictionary<IKey, IValue>()
+        {
+            [(Text) "csv"] = _csv.Serialize(),
+        });
     }
 }

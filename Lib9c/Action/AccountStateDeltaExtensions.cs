@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Action
@@ -294,6 +295,31 @@ namespace Nekoyume.Action
             catch (Exception e)
             {
                 Log.Error(e, $"Unexpected error occurred during {nameof(GetGoldDistribution)}()");
+                throw;
+            }
+        }
+
+        public static T GetSheet<T>(this IAccountStateDelta states) where T : ISheet, new()
+        {
+            var address = Addresses.GetSheetAddress<T>();
+            var value = states.GetState(address);
+            if (value is null)
+            {
+                Log.Warning($"{nameof(T)} is null ({0})", address.ToHex());
+                throw new NullReferenceException();
+            }
+
+            try
+            {
+                var serialized = (Dictionary) value;
+                var csv = serialized["csv"].ToDotnetString();
+                var sheet = new T();
+                sheet.Set(csv);
+                return sheet;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Unexpected error occurred during {nameof(EnhancementCostSheet)}()");
                 throw;
             }
         }

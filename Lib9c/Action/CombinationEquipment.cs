@@ -241,7 +241,7 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             avatarState.questList.UpdateCombinationEquipmentQuest(RecipeId);
             avatarState.UpdateFromCombination(equipment);
-            avatarState.UpdateQuestRewards(ctx);
+            avatarState.UpdateQuestRewards(materialSheet);
             return states
                 .SetState(AvatarAddress, avatarState.Serialize())
                 .SetState(slotAddress, slotState.Serialize())

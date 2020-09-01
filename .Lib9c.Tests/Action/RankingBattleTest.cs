@@ -33,7 +33,18 @@ namespace Lib9c.Tests.Action
             var agent = new AgentState(agentAddress);
 
             var avatarAddress = agentAddress.Derive("avatar");
-            var avatarState = new AvatarState(avatarAddress, agentAddress, 0, tableSheets, new GameConfigState())
+            var avatarState = new AvatarState(
+                avatarAddress,
+                agentAddress,
+                0,
+                tableSheets.WorldSheet,
+                tableSheets.QuestSheet,
+                tableSheets.QuestRewardSheet,
+                tableSheets.QuestItemRewardSheet,
+                tableSheets.EquipmentItemRecipeSheet,
+                tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            )
             {
                 level = 10,
             };
@@ -49,7 +60,18 @@ namespace Lib9c.Tests.Action
             Assert.False(avatarState.inventory.HasItem(itemId));
 
             var avatarAddress2 = agentAddress.Derive("avatar2");
-            var avatarState2 = new AvatarState(avatarAddress2, agentAddress, 0, tableSheets, new GameConfigState());
+            var avatarState2 = new AvatarState(
+                avatarAddress2,
+                agentAddress,
+                0,
+                tableSheets.WorldSheet,
+                tableSheets.QuestSheet,
+                tableSheets.QuestRewardSheet,
+                tableSheets.QuestItemRewardSheet,
+                tableSheets.EquipmentItemRecipeSheet,
+                tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
             avatarState2.worldInformation.ClearStage(
                 1,
                 GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,

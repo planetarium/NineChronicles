@@ -257,7 +257,8 @@ namespace Nekoyume.Action
             Log.Debug("Combination Update AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            avatarState.UpdateQuestRewards(ctx);
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;

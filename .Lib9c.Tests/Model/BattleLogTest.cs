@@ -26,7 +26,18 @@ namespace Lib9c.Tests.Model
         public void IsClearBeforeSimulate()
         {
             var agentState = new AgentState(default(Address));
-            var avatarState = new AvatarState(default, agentState.address, 0, _tableSheets, new GameConfigState());
+            var avatarState = new AvatarState(
+                default,
+                agentState.address,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
             var simulator = new StageSimulator(_random, avatarState, new List<Guid>(), 1, 1, _tableSheets);
             Assert.False(simulator.Log.IsClear);
         }

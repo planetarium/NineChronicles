@@ -158,8 +158,7 @@ namespace Nekoyume.Model.State
         public static IValue Serialize(this string text) =>
             (Text)text;
 
-        public static string ToString(this IValue serialized) =>
-            ((Text)serialized).Value;
+        public static string ToDotnetString(this IValue serialized) => ((Text) serialized).Value;
 
         #endregion
 
@@ -316,7 +315,7 @@ namespace Nekoyume.Model.State
         public static string GetString(this Dictionary serialized, string key, string defaultValue = "")
         {
             return serialized.ContainsKey((IKey)(Text)key)
-                ? ToString(serialized[key])
+                ? ToDotnetString(serialized[key])
                 : defaultValue;
         }
 

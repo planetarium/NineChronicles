@@ -38,7 +38,18 @@ namespace Lib9c.Tests.Action
             var agentAddress = privateKey.PublicKey.ToAddress();
 
             var avatarAddress = agentAddress.Derive("avatar");
-            _avatarState = new AvatarState(avatarAddress, agentAddress, 0, _tableSheets, new GameConfigState());
+            _avatarState = new AvatarState(
+                avatarAddress,
+                agentAddress,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
 
             var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
             _baseState = (State)new State()

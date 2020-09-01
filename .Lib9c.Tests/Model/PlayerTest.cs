@@ -22,7 +22,18 @@ namespace Lib9c.Tests.Model
         {
             _tableSheets = TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
             _random = new ItemEnhancementTest.TestRandom();
-            _avatarState = new AvatarState(default, default, 0, _tableSheets, new GameConfigState());
+            _avatarState = new AvatarState(
+                default,
+                default,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
         }
 
         [Fact]
