@@ -110,5 +110,111 @@ namespace Lib9c.Tests.Model.State
             var info = new ArenaInfo(serialized);
             Assert.Equal(expected, info.GetRewardCount());
         }
+
+        [Theory]
+        [InlineData(100, 1, 100)]
+        [InlineData(100, 51, 50)]
+        [InlineData(10, 1, 50)]
+        [InlineData(10, 1, 1)]
+        [InlineData(10, 6, 50)]
+        [InlineData(10, 6, 1)]
+        public void GetArenaInfos_By_FirstRank_And_Count(int infoCount, int firstRank, int count)
+        {
+            var expected = Math.Min(infoCount - firstRank + 1, count);
+            var tableState =
+                TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
+            var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
+
+            for (var i = 0; i < infoCount; i++)
+            {
+                var avatarState = new AvatarState(
+                    new PrivateKey().ToAddress(),
+                    new PrivateKey().ToAddress(),
+                    0L,
+                    tableState,
+                    new GameConfigState(),
+                    i.ToString());
+                weeklyArenaState.Add(
+                    new PrivateKey().ToAddress(),
+                    new ArenaInfo(avatarState, tableState.CharacterSheet, true));
+            }
+
+            var arenaInfos = weeklyArenaState.GetArenaInfos(firstRank, count);
+            Assert.Equal(expected, arenaInfos.Count);
+        }
+
+        [Theory]
+        [InlineData(1, 2)]
+        [InlineData(10, 11)]
+        public void GetArenaInfos_By_FirstRank_And_Count_Throw(int infoCount, int firstRank)
+        {
+            var tableState =
+                TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
+            var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
+
+            for (var i = 0; i < infoCount; i++)
+            {
+                var avatarState = new AvatarState(
+                    new PrivateKey().ToAddress(),
+                    new PrivateKey().ToAddress(),
+                    0L,
+                    tableState,
+                    new GameConfigState(),
+                    i.ToString());
+                weeklyArenaState.Add(
+                    new PrivateKey().ToAddress(),
+                    new ArenaInfo(avatarState, tableState.CharacterSheet, true));
+            }
+
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                weeklyArenaState.GetArenaInfos(firstRank, 100));
+        }
+
+        [Theory]
+        [InlineData(100, 1, 10, 10)]
+        [InlineData(100, 50, 10, 10)]
+        [InlineData(100, 100, 10, 10)]
+        public void GetArenaInfos_By_Upper_And_Lower_Range(int infoCount, int targetRank, int upperRange, int lowerRange)
+        {
+            var tableState =
+                TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
+            var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
+            Address targetAddress;
+
+            for (var i = 0; i < infoCount; i++)
+            {
+                var avatarAddress = new PrivateKey().ToAddress();
+                if (i + 1 == targetRank)
+                {
+                    targetAddress = avatarAddress;
+                }
+
+                var avatarState = new AvatarState(
+                    avatarAddress,
+                    new PrivateKey().ToAddress(),
+                    0L,
+                    tableState,
+                    new GameConfigState(),
+                    i.ToString());
+                weeklyArenaState.Add(
+                    new PrivateKey().ToAddress(),
+                    new ArenaInfo(avatarState, tableState.CharacterSheet, true));
+            }
+
+            var arenaInfos = weeklyArenaState.GetArenaInfos(targetAddress, upperRange, lowerRange);
+
+            if (targetRank <= upperRange)
+            {
+                upperRange = targetRank - 1;
+            }
+
+            if (targetRank + lowerRange >= infoCount)
+            {
+                lowerRange = infoCount - targetRank;
+            }
+
+            var expected = Math.Min(upperRange + lowerRange + 1, infoCount);
+            Assert.Equal(expected, arenaInfos.Count);
+        }
     }
 }
