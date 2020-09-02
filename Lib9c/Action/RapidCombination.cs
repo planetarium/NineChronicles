@@ -90,8 +90,8 @@ namespace Nekoyume.Action
             }
 
             var count = CalculateHourglassCount(gameConfigState, diff);
-            var tableSheets = TableSheets.FromActionContext(context);
-            var row = tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
+            var materialItemSheet = states.GetSheet<MaterialItemSheet>();
+            var row = materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass);
             var hourGlass = ItemFactory.CreateMaterial(row);
             if (!avatarState.inventory.RemoveFungibleItem(hourGlass, count))
             {
