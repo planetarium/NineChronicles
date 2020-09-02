@@ -1,9 +1,6 @@
 namespace Lib9c.Tests.Action
 {
-    using System;
     using System.Linq;
-    using System.Numerics;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -15,39 +12,47 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class RewardGoldTest : IDisposable
+    public class RewardGoldTest
     {
         private readonly AvatarState _avatarState;
-        private TableSheets _tableSheets;
-        private State _baseState;
+        private readonly CharacterSheet _characterSheet;
+        private readonly State _baseState;
 
         public RewardGoldTest()
         {
-            _tableSheets = new TableSheets();
-            _tableSheets.SetToSheet(nameof(WorldSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestRewardSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestItemRewardSheet), "test");
-            _tableSheets.SetToSheet(nameof(EquipmentItemRecipeSheet), "test");
-            _tableSheets.SetToSheet(nameof(EquipmentItemSubRecipeSheet), "test");
-            _tableSheets.SetToSheet(
-                nameof(CharacterSheet),
-                "id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed\n100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3");
+            var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(CharacterSheet)] =
+                "id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed\n100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3";
 
             var privateKey = new PrivateKey();
             var agentAddress = privateKey.PublicKey.ToAddress();
 
             var avatarAddress = agentAddress.Derive("avatar");
+            var worldSheet = new WorldSheet();
+            worldSheet.Set(sheets[nameof(WorldSheet)]);
+            var questRewardSheet = new QuestRewardSheet();
+            questRewardSheet.Set(sheets[nameof(QuestRewardSheet)]);
+            var questItemRewardSheet = new QuestItemRewardSheet();
+            questItemRewardSheet.Set(sheets[nameof(QuestItemRewardSheet)]);
+            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
+            equipmentItemRecipeSheet.Set(sheets[nameof(EquipmentItemRecipeSheet)]);
+            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
+            equipmentItemSubRecipeSheet.Set(sheets[nameof(EquipmentItemSubRecipeSheet)]);
+            var questSheet = new QuestSheet();
+            questSheet.Set(sheets[nameof(GeneralQuestSheet)]);
+            _characterSheet = new CharacterSheet();
+            _characterSheet.Set(sheets[nameof(CharacterSheet)]);
+
             _avatarState = new AvatarState(
                 avatarAddress,
                 agentAddress,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                worldSheet,
+                questSheet,
+                questRewardSheet,
+                questItemRewardSheet,
+                equipmentItemRecipeSheet,
+                equipmentItemSubRecipeSheet,
                 new GameConfigState()
             );
 
@@ -56,11 +61,6 @@ namespace Lib9c.Tests.Action
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(Addresses.GoldDistribution, GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize())
                 .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
-        }
-
-        public void Dispose()
-        {
-            _tableSheets = null;
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteResetCount()
         {
             var weekly = new WeeklyArenaState(0);
-            weekly.Set(_avatarState, _tableSheets.CharacterSheet);
+            weekly.Set(_avatarState, _characterSheet);
             weekly[_avatarState.address].Update(_avatarState, weekly[_avatarState.address], BattleLog.Result.Lose);
 
             Assert.Equal(4, weekly[_avatarState.address].DailyChallengeCount);
@@ -112,7 +112,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteUpdateNextWeeklyArenaState()
         {
             var prevWeekly = new WeeklyArenaState(0);
-            prevWeekly.Set(_avatarState, _tableSheets.CharacterSheet);
+            prevWeekly.Set(_avatarState, _characterSheet);
             prevWeekly[_avatarState.address].Activate();
 
             Assert.False(prevWeekly.Ended);

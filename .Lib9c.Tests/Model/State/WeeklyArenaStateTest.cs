@@ -12,22 +12,15 @@ namespace Lib9c.Tests.Model.State
     using Nekoyume.TableData;
     using Xunit;
 
-    public class WeeklyArenaStateTest : IDisposable
+    public class WeeklyArenaStateTest
     {
-        private TableSheets _tableSheets;
+        private readonly Dictionary<string, string> _sheets;
 
         public WeeklyArenaStateTest()
         {
-            _tableSheets = new TableSheets();
-            _tableSheets.SetToSheet(nameof(WorldSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestRewardSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestItemRewardSheet), "test");
-            _tableSheets.SetToSheet(nameof(EquipmentItemRecipeSheet), "test");
-            _tableSheets.SetToSheet(nameof(EquipmentItemSubRecipeSheet), "test");
-            _tableSheets.SetToSheet(
-                nameof(CharacterSheet),
-                "id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed\n100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3");
+            _sheets = TableSheetsImporter.ImportSheets();
+            _sheets[nameof(CharacterSheet)] =
+                "id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed\n100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3";
         }
 
         [Theory]
@@ -39,11 +32,6 @@ namespace Lib9c.Tests.Model.State
             Assert.Equal(new Address(expected), state.address);
         }
 
-        public void Dispose()
-        {
-            _tableSheets = null;
-        }
-
         [Fact]
         public void GetAgentAddresses()
         {
@@ -51,16 +39,31 @@ namespace Lib9c.Tests.Model.State
             var agentAddress = privateKey.PublicKey.ToAddress();
 
             var avatarAddress = agentAddress.Derive("avatar");
+            var worldSheet = new WorldSheet();
+            worldSheet.Set(_sheets[nameof(WorldSheet)]);
+            var questRewardSheet = new QuestRewardSheet();
+            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
+            var questItemRewardSheet = new QuestItemRewardSheet();
+            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
+            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
+            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
+            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
+            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
+            var questSheet = new QuestSheet();
+            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
+            var characterSheet = new CharacterSheet();
+            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
+
             var avatarState = new AvatarState(
                 avatarAddress,
                 default,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                worldSheet,
+                questSheet,
+                questRewardSheet,
+                questItemRewardSheet,
+                equipmentItemRecipeSheet,
+                equipmentItemSubRecipeSheet,
                 new GameConfigState()
             );
 
@@ -69,19 +72,19 @@ namespace Lib9c.Tests.Model.State
                 avatarAddress2,
                 default,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                worldSheet,
+                questSheet,
+                questRewardSheet,
+                questItemRewardSheet,
+                equipmentItemRecipeSheet,
+                equipmentItemSubRecipeSheet,
                 new GameConfigState()
             );
 
             var state = new WeeklyArenaState(0);
-            state.Set(avatarState, _tableSheets.CharacterSheet);
+            state.Set(avatarState, characterSheet);
             state[avatarAddress].Activate();
-            state.Set(avatarState2, _tableSheets.CharacterSheet);
+            state.Set(avatarState2, characterSheet);
             state[avatarAddress2].Activate();
 
             Assert.Single(state.GetAgentAddresses(2));
@@ -142,9 +145,21 @@ namespace Lib9c.Tests.Model.State
         [InlineData(10, 6, 1, 1)]
         public void GetArenaInfosByFirstRankAndCount(int infoCount, int firstRank, int count, int expected)
         {
-            var tableState =
-                TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
             var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
+            var worldSheet = new WorldSheet();
+            worldSheet.Set(_sheets[nameof(WorldSheet)]);
+            var questRewardSheet = new QuestRewardSheet();
+            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
+            var questItemRewardSheet = new QuestItemRewardSheet();
+            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
+            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
+            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
+            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
+            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
+            var questSheet = new QuestSheet();
+            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
+            var characterSheet = new CharacterSheet();
+            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
 
             for (var i = 0; i < infoCount; i++)
             {
@@ -152,17 +167,17 @@ namespace Lib9c.Tests.Model.State
                     new PrivateKey().ToAddress(),
                     new PrivateKey().ToAddress(),
                     0L,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.QuestSheet,
-                    _tableSheets.QuestRewardSheet,
-                    _tableSheets.QuestItemRewardSheet,
-                    _tableSheets.EquipmentItemRecipeSheet,
-                    _tableSheets.EquipmentItemSubRecipeSheet,
+                    worldSheet,
+                    questSheet,
+                    questRewardSheet,
+                    questItemRewardSheet,
+                    equipmentItemRecipeSheet,
+                    equipmentItemSubRecipeSheet,
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),
-                    new ArenaInfo(avatarState, tableState.CharacterSheet, true));
+                    new ArenaInfo(avatarState, characterSheet, true));
             }
 
             var arenaInfos = weeklyArenaState.GetArenaInfos(firstRank, count);
@@ -174,9 +189,21 @@ namespace Lib9c.Tests.Model.State
         [InlineData(10, 11)]
         public void GetArenaInfosByFirstRankAndCountThrow(int infoCount, int firstRank)
         {
-            var tableState =
-                TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
             var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
+            var worldSheet = new WorldSheet();
+            worldSheet.Set(_sheets[nameof(WorldSheet)]);
+            var questRewardSheet = new QuestRewardSheet();
+            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
+            var questItemRewardSheet = new QuestItemRewardSheet();
+            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
+            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
+            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
+            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
+            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
+            var questSheet = new QuestSheet();
+            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
+            var characterSheet = new CharacterSheet();
+            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
 
             for (var i = 0; i < infoCount; i++)
             {
@@ -184,17 +211,17 @@ namespace Lib9c.Tests.Model.State
                     new PrivateKey().ToAddress(),
                     new PrivateKey().ToAddress(),
                     0L,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.QuestSheet,
-                    _tableSheets.QuestRewardSheet,
-                    _tableSheets.QuestItemRewardSheet,
-                    _tableSheets.EquipmentItemRecipeSheet,
-                    _tableSheets.EquipmentItemSubRecipeSheet,
+                    worldSheet,
+                    questSheet,
+                    questRewardSheet,
+                    questItemRewardSheet,
+                    equipmentItemRecipeSheet,
+                    equipmentItemSubRecipeSheet,
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),
-                    new ArenaInfo(avatarState, tableState.CharacterSheet, true));
+                    new ArenaInfo(avatarState, characterSheet, true));
             }
 
             Assert.Throws<ArgumentOutOfRangeException>(() =>
@@ -207,11 +234,22 @@ namespace Lib9c.Tests.Model.State
         [InlineData(100, 100, 10, 10, 11)]
         public void GetArenaInfosByUpperAndLowerRange(int infoCount, int targetRank, int upperRange, int lowerRange, int expected)
         {
-            var tableState =
-                TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
             var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
             Address targetAddress;
-
+            var worldSheet = new WorldSheet();
+            worldSheet.Set(_sheets[nameof(WorldSheet)]);
+            var questRewardSheet = new QuestRewardSheet();
+            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
+            var questItemRewardSheet = new QuestItemRewardSheet();
+            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
+            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
+            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
+            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
+            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
+            var questSheet = new QuestSheet();
+            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
+            var characterSheet = new CharacterSheet();
+            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
             for (var i = 0; i < infoCount; i++)
             {
                 var avatarAddress = new PrivateKey().ToAddress();
@@ -224,17 +262,17 @@ namespace Lib9c.Tests.Model.State
                     avatarAddress,
                     new PrivateKey().ToAddress(),
                     0L,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.QuestSheet,
-                    _tableSheets.QuestRewardSheet,
-                    _tableSheets.QuestItemRewardSheet,
-                    _tableSheets.EquipmentItemRecipeSheet,
-                    _tableSheets.EquipmentItemSubRecipeSheet,
+                    worldSheet,
+                    questSheet,
+                    questRewardSheet,
+                    questItemRewardSheet,
+                    equipmentItemRecipeSheet,
+                    equipmentItemSubRecipeSheet,
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),
-                    new ArenaInfo(avatarState, tableState.CharacterSheet, true));
+                    new ArenaInfo(avatarState, characterSheet, true));
             }
 
             var arenaInfos = weeklyArenaState.GetArenaInfos(targetAddress, upperRange, lowerRange);

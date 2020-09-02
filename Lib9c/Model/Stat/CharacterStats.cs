@@ -103,11 +103,11 @@ namespace Nekoyume.Model.Stat
             int level,
             IEnumerable<Equipment> equipments,
             IEnumerable<Consumable> consumables,
-            TableSheets sheets
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
         )
         {
             SetLevel(level, false);
-            SetEquipments(equipments, sheets.EquipmentItemSetEffectSheet, false);
+            SetEquipments(equipments, equipmentItemSetEffectSheet, false);
             SetConsumables(consumables, false);
             UpdateLevelStats();
             EqualizeCurrentHPWithHP();

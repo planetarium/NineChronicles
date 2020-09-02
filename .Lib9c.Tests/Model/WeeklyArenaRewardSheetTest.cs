@@ -1,31 +1,17 @@
 namespace Lib9c.Tests.Model
 {
-    using System;
     using Nekoyume.TableData;
     using Xunit;
 
-    public class WeeklyArenaRewardSheetTest : IDisposable
+    public class WeeklyArenaRewardSheetTest
     {
-        private TableSheets _tableSheets;
-
-        public WeeklyArenaRewardSheetTest()
-        {
-            _tableSheets = new TableSheets();
-        }
-
-        public void Dispose()
-        {
-            _tableSheets = null;
-        }
-
         [Fact]
         public void SetToSheet()
         {
-            _tableSheets.SetToSheet(nameof(WeeklyArenaRewardSheet), "id,item_id,ratio,min,max\n1,2,0.1,0,1,1");
+            var weeklyArenaRewardSheet = new WeeklyArenaRewardSheet();
+            weeklyArenaRewardSheet.Set("id,item_id,ratio,min,max\n1,2,0.1,0,1,1");
 
-            Assert.NotNull(_tableSheets.WeeklyArenaRewardSheet);
-
-            var row = _tableSheets.WeeklyArenaRewardSheet[1];
+            var row = weeklyArenaRewardSheet[1];
             var reward = row.Reward;
 
             Assert.Equal(1, row.Id);

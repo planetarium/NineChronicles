@@ -13,12 +13,12 @@ namespace Lib9c.Tests.Model
 
     public class RankingSimulatorTest
     {
-        private readonly TableSheets _tableSheets;
+        private readonly Dictionary<string, string> _sheets;
         private readonly IRandom _random;
 
         public RankingSimulatorTest()
         {
-            _tableSheets = TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
+            _sheets = TableSheetsImporter.ImportSheets();
             _random = new ItemEnhancementTest.TestRandom();
         }
 
@@ -68,22 +68,37 @@ namespace Lib9c.Tests.Model
                 worldUnlockSheet
             );
 
+            var materialItemSheet = new MaterialItemSheet();
+            materialItemSheet.Set(_sheets[nameof(MaterialItemSheet)]);
+            var skillSheet = new SkillSheet();
+            skillSheet.Set(_sheets[nameof(SkillSheet)]);
+            var skillBuffSheet = new SkillBuffSheet();
+            skillBuffSheet.Set(_sheets[nameof(SkillBuffSheet)]);
+            var buffSheet = new BuffSheet();
+            buffSheet.Set(_sheets[nameof(BuffSheet)]);
+            var characterSheet = new CharacterSheet();
+            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
+            var levelSheet = new CharacterLevelSheet();
+            levelSheet.Set(_sheets[nameof(CharacterLevelSheet)]);
+            var setEffectSheet = new EquipmentItemSetEffectSheet();
+            setEffectSheet.Set(_sheets[nameof(EquipmentItemSetEffectSheet)]);
+
             var simulator = new RankingSimulator(
                 _random,
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.MaterialItemSheet,
-                _tableSheets.SkillSheet,
-                _tableSheets.SkillBuffSheet,
-                _tableSheets.BuffSheet,
-                _tableSheets.CharacterSheet,
-                _tableSheets.CharacterLevelSheet,
-                _tableSheets.EquipmentItemSetEffectSheet,
+                materialItemSheet,
+                skillSheet,
+                skillBuffSheet,
+                buffSheet,
+                characterSheet,
+                levelSheet,
+                setEffectSheet,
                 rewardSheet,
                 1,
-                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
-                new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
+                new ArenaInfo(avatarState, characterSheet, false),
+                new ArenaInfo(avatarState, characterSheet, false)
             );
             simulator.Simulate();
 
