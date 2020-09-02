@@ -16,6 +16,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Libplanet.Blockchain;
+using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
@@ -87,7 +88,11 @@ namespace Nekoyume.BlockChain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
-        public ActionRenderer ActionRenderer { get; } = BlockPolicy.GetRenderer();
+        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource();
+
+        public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
+
+        public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -168,7 +173,7 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
-            var policy = BlockPolicy.GetPolicy(minimumDifficulty);
+            var policy = BlockPolicySource.GetPolicy(minimumDifficulty);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
 
@@ -187,17 +192,21 @@ namespace Nekoyume.BlockChain
                     store,
                     (IStateStore) store,
                     genesisBlock,
-                    renderers: new[] {ActionRenderer});
+                    renderers: new IRenderer<PolymorphicAction<ActionBase>>[]
+                    {
+                        BlockRenderer,
+                        ActionRenderer
+                    });
             }
             catch (InvalidGenesisBlockException)
             {
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
 
-            if (BlockPolicy.ActivatedAccounts is null)
+            if (BlockPolicySource.ActivatedAccounts is null)
             {
                 var rawState = blocks?.GetState(ActivatedAccountsState.Address);
-                BlockPolicy.UpdateActivationSet(rawState);
+                BlockPolicySource.UpdateActivationSet(rawState);
             }
 
 #if BLOCK_LOG_USE
@@ -733,11 +742,11 @@ namespace Nekoyume.BlockChain
             {
                 await _swarm.WaitForRunningAsync();
 
-                ActionRenderer.EveryBlock()
+                BlockRenderer.EveryBlock()
                     .SubscribeOnMainThread()
                     .Subscribe(TipChangedHandler);
 
-                ActionRenderer.EveryReorg()
+                BlockRenderer.EveryReorg()
                     .Select(tuple => new ReorgInfo(
                         tuple.Branchpoint.Hash,
                         tuple.OldTip.Hash,
