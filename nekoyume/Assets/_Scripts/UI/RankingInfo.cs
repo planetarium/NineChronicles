@@ -13,16 +13,16 @@ namespace Nekoyume.UI
     public class RankingInfo : MonoBehaviour
     {
         [SerializeField]
-        private TextMeshProUGUI winCount;
+        private TextMeshProUGUI winCount = null;
 
         [SerializeField]
-        private TextMeshProUGUI loseCount;
+        private TextMeshProUGUI loseCount = null;
 
         [SerializeField]
-        private TextMeshProUGUI remainTime;
+        private TextMeshProUGUI remainTime = null;
 
         [SerializeField]
-        private Slider remainTimeSlider;
+        private Slider remainTimeSlider = null;
 
         private long resetIndex;
 
