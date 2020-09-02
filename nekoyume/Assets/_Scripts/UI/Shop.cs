@@ -41,28 +41,51 @@ namespace Nekoyume.UI
 
         private Sequence _sequenceOfShopItems;
 
-        public CanvasGroup canvasGroup;
-        public RectTransform bg1;
-
-        // 토글 그룹과 카테고리 버튼들.
         private ToggleGroup _toggleGroup;
-        public CategoryButton buyButton;
-        public CategoryButton sellButton;
 
-        public RectTransform right;
+        [SerializeField]
+        private CanvasGroup canvasGroup = null;
 
-        public Module.Inventory inventory;
+        [SerializeField]
+        private RectTransform bg1 = null;
 
-        public ShopItems shopItems;
-        public GameObject shopNotice;
-        public TextMeshProUGUI noticeText;
-        public SpeechBubble speechBubble;
-        public SpriteRenderer sellImage;
-        public SpriteRenderer buyImage;
-        public CanvasGroup rightCanvasGroup;
-        public RefreshButton refreshButton;
+        [SerializeField]
+        private CategoryButton buyButton = null;
 
-        public Model.Shop SharedModel { get; private set; }
+        [SerializeField]
+        private CategoryButton sellButton = null;
+
+        [SerializeField]
+        private RectTransform right = null;
+
+        [SerializeField]
+        private Module.Inventory inventory = null;
+
+        [SerializeField]
+        private ShopItems shopItems = null;
+
+        [SerializeField]
+        private GameObject shopNotice = null;
+
+        [SerializeField]
+        private TextMeshProUGUI noticeText = null;
+
+        [SerializeField]
+        private SpeechBubble speechBubble = null;
+
+        [SerializeField]
+        private SpriteRenderer sellImage = null;
+
+        [SerializeField]
+        private SpriteRenderer buyImage = null;
+
+        [SerializeField]
+        private CanvasGroup rightCanvasGroup = null;
+
+        [SerializeField]
+        private RefreshButton refreshButton = null;
+
+        private Model.Shop SharedModel { get; set; }
 
         #region Mono
 
