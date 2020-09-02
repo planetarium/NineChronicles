@@ -174,9 +174,6 @@ namespace Nekoyume.Action
                 );
             }
 
-            sw.Stop();
-            Log.Debug("ItemEnhancement Get TableSheets: {Elapsed}", sw.Elapsed);
-            sw.Restart();
             var materials = new List<Equipment>();
             foreach (var materialId in materialIds)
             {
