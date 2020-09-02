@@ -52,7 +52,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            states = TableSheetsState.TableSheets.Aggregate(states, (current, pair) => current.SetState(Addresses.TableSheet.Derive(pair.Key), Dictionary.Empty.Add("csv", pair.Value)));
+            states = TableSheetsState.TableSheets.Aggregate(states, (current, pair) => current.SetState(Addresses.TableSheet.Derive(pair.Key), pair.Value.Serialize()));
             states = states
                 .SetState(weeklyArenaState.address, weeklyArenaState.Serialize())
                 .SetState(RankingState.Address, RankingState.Serialize())

@@ -311,8 +311,7 @@ namespace Nekoyume.Action
 
             try
             {
-                var serialized = (Dictionary) value;
-                var csv = serialized["csv"].ToDotnetString();
+                var csv = value.ToDotnetString();
                 var sheet = new T();
                 sheet.Set(csv);
                 return sheet;

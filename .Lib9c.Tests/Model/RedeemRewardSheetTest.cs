@@ -49,12 +49,12 @@ namespace Lib9c.Tests.Model
             var sheet = new RedeemRewardSheet();
             sheet.Set(csv);
 
-            var serialized = (Dictionary)sheet.Serialize();
+            var serialized = sheet.Serialize();
 
-            Assert.True(serialized.ContainsKey("csv"));
+            Assert.IsType<Text>(serialized);
 
             var sheet2 = new RedeemRewardSheet();
-            sheet2.Set((Text)serialized["csv"]);
+            sheet2.Set((Text)serialized);
 
             Assert.Equal(sheet, sheet2);
         }

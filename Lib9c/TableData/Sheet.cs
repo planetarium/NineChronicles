@@ -53,16 +53,6 @@ namespace Nekoyume.TableData
         {
         }
 
-        protected Sheet(IValue serialized) : this((Dictionary) serialized)
-        {
-        }
-
-        protected Sheet(Dictionary serialized)
-        {
-            Set(_csv);
-        }
-
-
         /// <summary>
         ///
         /// </summary>
@@ -256,9 +246,6 @@ namespace Nekoyume.TableData
             return _orderedList.GetEnumerator();
         }
 
-        public IValue Serialize() => new Dictionary(new Dictionary<IKey, IValue>()
-        {
-            [(Text) "csv"] = _csv.Serialize(),
-        });
+        public IValue Serialize() => _csv.Serialize();
     }
 }

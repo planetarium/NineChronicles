@@ -79,7 +79,7 @@ namespace Lib9c.Tests.Action
             foreach (var (key, value) in _sheets)
             {
                 initialState =
-                    initialState.SetState(Addresses.TableSheet.Derive(key), Dictionary.Empty.Add("csv", value));
+                    initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
             var action = new CombinationConsumable()

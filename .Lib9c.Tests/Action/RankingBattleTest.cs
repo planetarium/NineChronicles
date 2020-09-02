@@ -95,7 +95,7 @@ namespace Lib9c.Tests.Action
 
             foreach (var (key, value) in _sheets)
             {
-                state = state.SetState(Addresses.TableSheet.Derive(key), Dictionary.Empty.Add("csv", value));
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
             }
 
             var action = new RankingBattle

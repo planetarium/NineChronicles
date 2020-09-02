@@ -81,7 +81,7 @@ namespace Lib9c.Tests.Action
             {
                 initialState = initialState.SetState(
                     Addresses.TableSheet.Derive(key),
-                    Dictionary.Empty.Add("csv", value)
+                    value.Serialize()
                 );
             }
 
