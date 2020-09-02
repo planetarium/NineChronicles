@@ -96,8 +96,8 @@ namespace Nekoyume.UI
             }
             var bottomMenu = Find<BottomMenu>();
             bottomMenu.Show(
-                UINavigator.NavigationType.Back,
-                SubscribeBackButtonClick,
+                UINavigator.NavigationType.None,
+                null,
                 true,
                 BottomMenu.ToggleableType.WorldMap);
             bottomMenu.worldMapButton.OnClick
