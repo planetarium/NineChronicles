@@ -20,6 +20,7 @@ namespace Lib9c.Tests.Action
         private readonly Address _slotAddress;
         private readonly Dictionary<string, string> _sheets;
         private readonly IRandom _random;
+        private readonly TableSheets _tableSheets;
 
         public CombinationConsumableTest()
         {
@@ -34,6 +35,7 @@ namespace Lib9c.Tests.Action
             );
             _sheets = TableSheetsImporter.ImportSheets();
             _random = new ItemEnhancementTest.TestRandom();
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
@@ -42,44 +44,23 @@ namespace Lib9c.Tests.Action
             var agentState = new AgentState(_agentAddress);
             agentState.avatarAddresses[0] = _avatarAddress;
 
-            var worldSheet = new WorldSheet();
-            worldSheet.Set(_sheets[nameof(WorldSheet)]);
-            var questRewardSheet = new QuestRewardSheet();
-            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
-            var questItemRewardSheet = new QuestItemRewardSheet();
-            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
-            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
-            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
-            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
-            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
-            var questSheet = new QuestSheet();
-            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
-            var characterSheet = new CharacterSheet();
-            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
-            var consumableItemRecipeSheet = new ConsumableItemRecipeSheet();
-            consumableItemRecipeSheet.Set(_sheets[nameof(ConsumableItemRecipeSheet)]);
-            var materialItemSheet = new MaterialItemSheet();
-            materialItemSheet.Set(_sheets[nameof(MaterialItemSheet)]);
-            var worldUnlockSheet = new WorldUnlockSheet();
-            worldUnlockSheet.Set(_sheets[nameof(WorldUnlockSheet)]);
-
             var gameConfigState = new GameConfigState();
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 1,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 gameConfigState
             );
-            var row = consumableItemRecipeSheet.Values.First();
+            var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
             foreach (var materialInfo in row.Materials)
             {
-                var materialRow = materialItemSheet[materialInfo.Id];
+                var materialRow = _tableSheets.MaterialItemSheet[materialInfo.Id];
                 var material = ItemFactory.CreateItem(materialRow);
                 avatarState.inventory.AddItem(material, materialInfo.Count);
             }
@@ -87,7 +68,7 @@ namespace Lib9c.Tests.Action
             const int requiredStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
             for (var i = 1; i < requiredStage + 1; i++)
             {
-                avatarState.worldInformation.ClearStage(1, i, 0, worldSheet, worldUnlockSheet);
+                avatarState.worldInformation.ClearStage(1, i, 0, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
             }
 
             var initialState = new State()

@@ -16,30 +16,17 @@ namespace Lib9c.Tests.Action
     public class HackAndSlashTest
     {
         private readonly Dictionary<string, string> _sheets;
+        private readonly TableSheets _tableSheets;
 
         public HackAndSlashTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
         public void Execute()
         {
-            var worldSheet = new WorldSheet();
-            worldSheet.Set(_sheets[nameof(WorldSheet)]);
-            var questRewardSheet = new QuestRewardSheet();
-            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
-            var questItemRewardSheet = new QuestItemRewardSheet();
-            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
-            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
-            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
-            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
-            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
-            var questSheet = new QuestSheet();
-            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
-            var characterSheet = new CharacterSheet();
-            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
-
             var privateKey = new PrivateKey();
             var agentAddress = privateKey.PublicKey.ToAddress();
             var agent = new AgentState(agentAddress);
@@ -49,12 +36,12 @@ namespace Lib9c.Tests.Action
                 avatarAddress,
                 agentAddress,
                 0,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 new GameConfigState(_sheets[nameof(GameConfigSheet)])
             )
             {

@@ -15,32 +15,17 @@ namespace Lib9c.Tests.Action
     public class ChargeActionPointTest
     {
         private readonly Dictionary<string, string> _sheets;
+        private readonly TableSheets _tableSheets;
 
         public ChargeActionPointTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
         public void Execute()
         {
-            var worldSheet = new WorldSheet();
-            worldSheet.Set(_sheets[nameof(WorldSheet)]);
-            var questRewardSheet = new QuestRewardSheet();
-            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
-            var questItemRewardSheet = new QuestItemRewardSheet();
-            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
-            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
-            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
-            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
-            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
-            var questSheet = new QuestSheet();
-            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
-            var characterSheet = new CharacterSheet();
-            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
-            var materialSheet = new MaterialItemSheet();
-            materialSheet.Set(_sheets[nameof(MaterialItemSheet)]);
-
             var privateKey = new PrivateKey();
             var agentAddress = privateKey.PublicKey.ToAddress();
             var agent = new AgentState(agentAddress);
@@ -51,12 +36,12 @@ namespace Lib9c.Tests.Action
                 avatarAddress,
                 agentAddress,
                 0,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 gameConfigState
             )
             {
@@ -64,7 +49,7 @@ namespace Lib9c.Tests.Action
             };
             agent.avatarAddresses.Add(0, avatarAddress);
 
-            var apStone = ItemFactory.CreateItem(materialSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone));
+            var apStone = ItemFactory.CreateItem(_tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.ApStone));
             avatarState.inventory.AddItem(apStone);
 
             Assert.Equal(0, avatarState.actionPoint);

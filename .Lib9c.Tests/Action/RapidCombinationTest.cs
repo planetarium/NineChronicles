@@ -16,10 +16,12 @@ namespace Lib9c.Tests.Action
     public class RapidCombinationTest
     {
         private readonly Dictionary<string, string> _sheets;
+        private readonly TableSheets _tableSheets;
 
         public RapidCombinationTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
@@ -28,53 +30,30 @@ namespace Lib9c.Tests.Action
             var agentAddress = default(Address);
             var agentState = new AgentState(agentAddress);
 
-            var worldSheet = new WorldSheet();
-            worldSheet.Set(_sheets[nameof(WorldSheet)]);
-            var questRewardSheet = new QuestRewardSheet();
-            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
-            var questItemRewardSheet = new QuestItemRewardSheet();
-            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
-            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
-            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
-            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
-            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
-            var questSheet = new QuestSheet();
-            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
-            var characterSheet = new CharacterSheet();
-            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
-            var consumableItemRecipeSheet = new ConsumableItemRecipeSheet();
-            consumableItemRecipeSheet.Set(_sheets[nameof(ConsumableItemRecipeSheet)]);
-            var materialItemSheet = new MaterialItemSheet();
-            materialItemSheet.Set(_sheets[nameof(MaterialItemSheet)]);
-            var worldUnlockSheet = new WorldUnlockSheet();
-            worldUnlockSheet.Set(_sheets[nameof(WorldUnlockSheet)]);
-            var equipmentItemSheet = new EquipmentItemSheet();
-            equipmentItemSheet.Set(_sheets[nameof(EquipmentItemSheet)]);
-
             var avatarAddress = agentAddress.Derive("avatar");
             var avatarState = new AvatarState(
                 avatarAddress,
                 agentAddress,
                 0,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 new GameConfigState()
             );
 
             agentState.avatarAddresses.Add(0, avatarAddress);
 
             var material =
-                ItemFactory.CreateMaterial(materialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass));
+                ItemFactory.CreateMaterial(_tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass));
             avatarState.inventory.AddItem(material);
 
-            avatarState.worldInformation.ClearStage(1, 1, 1, worldSheet, worldUnlockSheet);
+            avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
 
             var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
-            var row = equipmentItemSheet.Values.First();
+            var row = _tableSheets.EquipmentItemSheet.Values.First();
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, gameConfigState.HourglassPerBlock, 0);
             avatarState.inventory.AddItem(equipment);
 

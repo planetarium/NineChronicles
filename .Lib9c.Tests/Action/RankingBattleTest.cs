@@ -16,35 +16,18 @@ namespace Lib9c.Tests.Action
     public class RankingBattleTest
     {
         private readonly Dictionary<string, string> _sheets;
+        private readonly TableSheets _tableSheets;
 
         public RankingBattleTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
         public void Execute()
         {
-            var rewardSheet = new WeeklyArenaRewardSheet();
-            rewardSheet.Set(_sheets[nameof(WeeklyArenaRewardSheet)]);
-            var worldSheet = new WorldSheet();
-            worldSheet.Set(_sheets[nameof(WorldSheet)]);
-            var questRewardSheet = new QuestRewardSheet();
-            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
-            var questItemRewardSheet = new QuestItemRewardSheet();
-            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
-            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
-            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
-            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
-            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
-            var questSheet = new QuestSheet();
-            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
-            var worldUnlockSheet = new WorldUnlockSheet();
-            worldUnlockSheet.Set(_sheets[nameof(WorldUnlockSheet)]);
-            var characterSheet = new CharacterSheet();
-            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
-
-            var itemId = rewardSheet.Values.First().Reward.ItemId;
+            var itemId = _tableSheets.WeeklyArenaRewardSheet.Values.First().Reward.ItemId;
             var privateKey = new PrivateKey();
             var agentAddress = privateKey.PublicKey.ToAddress();
             var agent = new AgentState(agentAddress);
@@ -54,12 +37,12 @@ namespace Lib9c.Tests.Action
                 avatarAddress,
                 agentAddress,
                 0,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 new GameConfigState()
             )
             {
@@ -69,8 +52,8 @@ namespace Lib9c.Tests.Action
                 1,
                 GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                 1,
-                worldSheet,
-                worldUnlockSheet
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet
             );
             agent.avatarAddresses.Add(0, avatarAddress);
 
@@ -81,27 +64,27 @@ namespace Lib9c.Tests.Action
                 avatarAddress2,
                 agentAddress,
                 0,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 new GameConfigState()
             );
             avatarState2.worldInformation.ClearStage(
                 1,
                 GameConfig.RequireClearedStageLevel.ActionsInRankingBoard,
                 1,
-                worldSheet,
-                worldUnlockSheet
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet
             );
             agent.avatarAddresses.Add(1, avatarAddress);
 
             var weekly = new WeeklyArenaState(0);
-            weekly.Set(avatarState, characterSheet);
+            weekly.Set(avatarState, _tableSheets.CharacterSheet);
             weekly[avatarAddress].Activate();
-            weekly.Set(avatarState2, characterSheet);
+            weekly.Set(avatarState2, _tableSheets.CharacterSheet);
             weekly[avatarAddress2].Activate();
 
             var state = new State()

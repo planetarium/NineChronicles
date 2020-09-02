@@ -35,10 +35,12 @@ namespace Lib9c.Tests.Action
         });
 
         private readonly Dictionary<string, string> _sheets;
+        private readonly TableSheets _tableSheets;
 
         public RedeemCodeTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
@@ -53,39 +55,16 @@ namespace Lib9c.Tests.Action
             var gameConfigState = new GameConfigState();
             var agentState = new AgentState(_agentAddress);
             agentState.avatarAddresses[0] = _avatarAddress;
-            var worldSheet = new WorldSheet();
-            worldSheet.Set(_sheets[nameof(WorldSheet)]);
-            var questRewardSheet = new QuestRewardSheet();
-            questRewardSheet.Set(_sheets[nameof(QuestRewardSheet)]);
-            var questItemRewardSheet = new QuestItemRewardSheet();
-            questItemRewardSheet.Set(_sheets[nameof(QuestItemRewardSheet)]);
-            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
-            equipmentItemRecipeSheet.Set(_sheets[nameof(EquipmentItemRecipeSheet)]);
-            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
-            equipmentItemSubRecipeSheet.Set(_sheets[nameof(EquipmentItemSubRecipeSheet)]);
-            var questSheet = new QuestSheet();
-            questSheet.Set(_sheets[nameof(GeneralQuestSheet)]);
-            var characterSheet = new CharacterSheet();
-            characterSheet.Set(_sheets[nameof(CharacterSheet)]);
-            var consumableItemRecipeSheet = new ConsumableItemRecipeSheet();
-            consumableItemRecipeSheet.Set(_sheets[nameof(ConsumableItemRecipeSheet)]);
-            var materialItemSheet = new MaterialItemSheet();
-            materialItemSheet.Set(_sheets[nameof(MaterialItemSheet)]);
-            var worldUnlockSheet = new WorldUnlockSheet();
-            worldUnlockSheet.Set(_sheets[nameof(WorldUnlockSheet)]);
-            var equipmentItemSheet = new EquipmentItemSheet();
-            equipmentItemSheet.Set(_sheets[nameof(EquipmentItemSheet)]);
-
             var avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 1,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 gameConfigState
             );
 

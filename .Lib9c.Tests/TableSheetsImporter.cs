@@ -6,13 +6,6 @@ namespace Lib9c.Tests
 
     public static class TableSheetsImporter
     {
-        public static TableSheetsState ImportTableSheets()
-        {
-            var sheets = ImportSheets();
-
-            return new TableSheetsState(sheets);
-        }
-
         public static Dictionary<string, string> ImportSheets()
         {
             var sheets = new Dictionary<string, string>();
