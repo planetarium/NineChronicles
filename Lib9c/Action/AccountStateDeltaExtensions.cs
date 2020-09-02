@@ -323,5 +323,15 @@ namespace Nekoyume.Action
                 throw;
             }
         }
+
+        public static ItemSheet GetItemSheet(this IAccountStateDelta states)
+        {
+            var sheet = new ItemSheet();
+            sheet.Set(GetSheet<ConsumableItemSheet>(states), false);
+            sheet.Set(GetSheet<CostumeItemSheet>(states), false);
+            sheet.Set(GetSheet<EquipmentItemSheet>(states), false);
+            sheet.Set(GetSheet<MaterialItemSheet>(states));
+            return sheet;
+        }
     }
 }
