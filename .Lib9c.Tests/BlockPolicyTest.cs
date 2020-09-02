@@ -25,8 +25,9 @@ namespace Lib9c.Tests
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = new Address(adminPrivateKey.PublicKey);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = BlockPolicy.GetPolicy(10000);
-            IRenderer<PolymorphicAction<ActionBase>> renderer = BlockPolicy.GetRenderer();
+            var blockPolicySource = new BlockPolicySource();
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
+            IRenderer<PolymorphicAction<ActionBase>> renderer = blockPolicySource.GetRenderer();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
 
             using var store = new DefaultStore(null);
@@ -54,8 +55,9 @@ namespace Lib9c.Tests
             var activatedPrivateKey = new PrivateKey();
             var activatedAddress = activatedPrivateKey.ToAddress();
 
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = BlockPolicy.GetPolicy(10000);
-            IRenderer<PolymorphicAction<ActionBase>> renderer = BlockPolicy.GetRenderer();
+            var blockPolicySource = new BlockPolicySource();
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
+            IRenderer<PolymorphicAction<ActionBase>> renderer = blockPolicySource.GetRenderer();
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(activatedAddress).Add(adminAddress)

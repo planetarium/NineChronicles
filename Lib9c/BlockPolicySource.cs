@@ -2,6 +2,7 @@ using System;
 using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
+using Lib9c;
 using Libplanet.Action;
 using Libplanet.Blockchain;
 using Libplanet.Blockchain.Policies;
@@ -19,32 +20,32 @@ using System.Reactive.Linq;
 
 namespace Nekoyume.BlockChain
 {
-    public static class BlockPolicy
+    public class BlockPolicySource
     {
-        private static readonly TimeSpan BlockInterval = TimeSpan.FromSeconds(8);
+        private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
-        private static readonly ActionRenderer ActionRenderer = new ActionRenderer();
+        private readonly ActionRenderer _actionRenderer = new ActionRenderer();
 
-        static BlockPolicy()
+        public BlockPolicySource()
         {
-            ActionRenderer
+            _actionRenderer
                 .EveryRender(ActivatedAccountsState.Address)
                 .Subscribe(UpdateActivationSet);
 
-            ActionRenderer
+            _actionRenderer
                 .EveryUnrender(ActivatedAccountsState.Address)
                 .Subscribe(UpdateActivationSet);
         }
 
-        public static IImmutableSet<Address> ActivatedAccounts { get; private set; }
+        public IImmutableSet<Address> ActivatedAccounts { get; private set; }
 
-        public static void UpdateActivationSet(IValue state)
+        public void UpdateActivationSet(IValue state)
         {
             ActivatedAccounts = new ActivatedAccountsState((Dictionary)state).Accounts;
         }
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
-        public static IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy(int minimumDifficulty)
+        public IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy(int minimumDifficulty)
         {
             ActivatedAccounts = ActivatedAccounts?.Clear();
 #if UNITY_EDITOR
@@ -52,7 +53,7 @@ namespace Nekoyume.BlockChain
 #else
             return new BlockPolicy<PolymorphicAction<ActionBase>>(
                 new RewardGold(),
-                BlockInterval,
+                _blockInterval,
                 minimumDifficulty,
                 2048,
                 doesTransactionFollowPolicy: IsSignerAuthorized
@@ -60,9 +61,9 @@ namespace Nekoyume.BlockChain
 #endif
         }
 
-        public static ActionRenderer GetRenderer() => ActionRenderer;
+        public ActionRenderer GetRenderer() => _actionRenderer;
 
-        private static bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
+        private bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
             bool isActivateAccountAction =
                 transaction.Actions.Count == 1
@@ -74,32 +75,9 @@ namespace Nekoyume.BlockChain
                    || ActivatedAccounts.Contains(transaction.Signer);
         }
 
-        private static void UpdateActivationSet(ActionBase.ActionEvaluation<ActionBase> evaluation)
+        private void UpdateActivationSet(ActionBase.ActionEvaluation<ActionBase> evaluation)
         {
             UpdateActivationSet(evaluation.OutputStates.GetState(ActivatedAccountsState.Address));
-        }
-
-        private class DebugPolicy : IBlockPolicy<PolymorphicAction<ActionBase>>
-        {
-            public IAction BlockAction { get; } = new RewardGold();
-
-            public InvalidBlockException ValidateNextBlock(
-                BlockChain<PolymorphicAction<ActionBase>> blocks,
-                Block<PolymorphicAction<ActionBase>> nextBlock
-            )
-            {
-                return null;
-            }
-
-            public long GetNextBlockDifficulty(BlockChain<PolymorphicAction<ActionBase>> blocks)
-            {
-                return blocks.Tip is null ? 0 : 1;
-            }
-
-            public bool DoesTransactionFollowsPolicy(
-                Transaction<PolymorphicAction<ActionBase>> transaction
-            ) =>
-                true;
         }
     }
 }
