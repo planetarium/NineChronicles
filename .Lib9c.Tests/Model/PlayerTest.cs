@@ -14,21 +14,48 @@ namespace Lib9c.Tests.Model
 
     public class PlayerTest
     {
-        private readonly TableSheets _tableSheets;
         private readonly IRandom _random;
         private readonly AvatarState _avatarState;
+        private readonly TableSheets _tableSheets;
 
         public PlayerTest()
         {
-            _tableSheets = TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
             _random = new ItemEnhancementTest.TestRandom();
-            _avatarState = new AvatarState(default, default, 0, _tableSheets, new GameConfigState());
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
+            _avatarState = new AvatarState(
+                default,
+                default,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
         }
 
         [Fact]
         public void TickAlive()
         {
-            var simulator = new StageSimulator(_random, _avatarState, new List<Guid>(), 1, 1, _tableSheets);
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                _tableSheets.StageSheet,
+                _tableSheets.StageWaveSheet,
+                _tableSheets.EnemySkillSheet
+            );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);
@@ -42,7 +69,23 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void TickDead()
         {
-            var simulator = new StageSimulator(_random, _avatarState, new List<Guid>(), 1, 1, _tableSheets);
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                _tableSheets.StageSheet,
+                _tableSheets.StageWaveSheet,
+                _tableSheets.EnemySkillSheet
+            );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
             player.Targets.Add(enemy);

@@ -1,38 +1,33 @@
 namespace Lib9c.Tests.Action
 {
-    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
-    using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
+    using Nekoyume.Model.Mail;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
 
-    public class ItemEnhancementTest
+    public class RapidCombinationTest
     {
-        private readonly IRandom _random;
         private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
 
-        public ItemEnhancementTest()
+        public RapidCombinationTest()
         {
             _sheets = TableSheetsImporter.ImportSheets();
-            _random = new TestRandom();
             _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
         public void Execute()
         {
-            var privateKey = new PrivateKey();
-            var agentAddress = privateKey.PublicKey.ToAddress();
+            var agentAddress = default(Address);
             var agentState = new AgentState(agentAddress);
 
             var avatarAddress = agentAddress.Derive("avatar");
@@ -51,34 +46,54 @@ namespace Lib9c.Tests.Action
 
             agentState.avatarAddresses.Add(0, avatarAddress);
 
-            var row = _tableSheets.EquipmentItemSheet.Values.First();
-            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, 0);
-            var materialId = Guid.NewGuid();
-            var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, 0);
-            avatarState.inventory.AddItem(equipment, 1);
-            avatarState.inventory.AddItem(material, 1);
+            var material =
+                ItemFactory.CreateMaterial(_tableSheets.MaterialItemSheet.Values.First(r => r.ItemSubType == ItemSubType.Hourglass));
+            avatarState.inventory.AddItem(material);
 
             avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
 
+            var gameConfigState = new GameConfigState(_sheets[nameof(GameConfigSheet)]);
+            var row = _tableSheets.EquipmentItemSheet.Values.First();
+            var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, gameConfigState.HourglassPerBlock, 0);
+            avatarState.inventory.AddItem(equipment);
+
+            var result = new CombinationConsumable.ResultModel
+            {
+                actionPoint = 0,
+                gold = 0,
+                materials = new Dictionary<Material, int>(),
+                itemUsable = equipment,
+                recipeId = 0,
+                itemType = ItemType.Equipment,
+            };
+
+            var requiredBlockIndex = gameConfigState.HourglassPerBlock;
+            var mail = new CombinationMail(result, 0, default, requiredBlockIndex);
+            result.id = mail.id;
+            avatarState.Update(mail);
+
             var slotAddress =
                 avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
+            var slotState = new CombinationSlotState(slotAddress, 1);
 
-            Assert.Equal(0, equipment.level);
+            slotState.Update(result, 0, requiredBlockIndex);
 
             var state = new State()
                 .SetState(agentAddress, agentState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize())
-                .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize());
+                .SetState(slotAddress, slotState.Serialize())
+                .SetState(Addresses.GameConfig, gameConfigState.Serialize());
 
             foreach (var (key, value) in _sheets)
             {
-                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+                state = state.SetState(
+                    Addresses.TableSheet.Derive(key),
+                    value.Serialize()
+                );
             }
 
-            var action = new ItemEnhancement()
+            var action = new RapidCombination()
             {
-                itemId = default,
-                materialIds = new[] { materialId },
                 avatarAddress = avatarAddress,
                 slotIndex = 0,
             };
@@ -88,43 +103,14 @@ namespace Lib9c.Tests.Action
                 PreviousStates = state,
                 Signer = agentAddress,
                 BlockIndex = 1,
-                Random = _random,
             });
 
-            var slotState = nextState.GetCombinationSlotState(avatarAddress, 0);
-            var resultEquipment = (Equipment)slotState.Result.itemUsable;
-            Assert.Equal(1, resultEquipment.level);
-            Assert.Equal(default, resultEquipment.ItemId);
-        }
+            var nextAvatarState = nextState.GetAvatarState(avatarAddress);
+            var item = nextAvatarState.inventory.Equipments.First();
 
-        public class TestRandom : IRandom
-        {
-            private readonly System.Random _random = new System.Random();
-
-            public int Next()
-            {
-                return _random.Next();
-            }
-
-            public int Next(int maxValue)
-            {
-                return _random.Next(maxValue);
-            }
-
-            public int Next(int minValue, int maxValue)
-            {
-                return _random.Next(minValue, maxValue);
-            }
-
-            public void NextBytes(byte[] buffer)
-            {
-                _random.NextBytes(buffer);
-            }
-
-            public double NextDouble()
-            {
-                return _random.NextDouble();
-            }
+            Assert.Empty(nextAvatarState.inventory.Materials.Select(r => r.ItemSubType == ItemSubType.Hourglass));
+            Assert.Equal(equipment.ItemId, item.ItemId);
+            Assert.Equal(1, item.RequiredBlockIndex);
         }
     }
 }

@@ -8,7 +8,6 @@ namespace Lib9c.Tests.Model
     using Nekoyume.Battle;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
-    using Nekoyume.TableData;
     using Xunit;
 
     public class StageSimulatorTest
@@ -19,15 +18,43 @@ namespace Lib9c.Tests.Model
 
         public StageSimulatorTest()
         {
-            _tableSheets = TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _random = new ItemEnhancementTest.TestRandom();
-            _avatarState = new AvatarState(default, default, 0, _tableSheets, new GameConfigState());
+
+            _avatarState = new AvatarState(
+                default,
+                default,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
         }
 
         [Fact]
         public void Simulate()
         {
-            var simulator = new StageSimulator(_random, _avatarState, new List<Guid>(), 1, 3, _tableSheets);
+            var simulator = new StageSimulator(
+                _random,
+                _avatarState,
+                new List<Guid>(),
+                1,
+                3,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                _tableSheets.StageSheet,
+                _tableSheets.StageWaveSheet,
+                _tableSheets.EnemySkillSheet
+            );
             simulator.Simulate();
             var filtered =
                 simulator.Log.Where(e => e.GetType() != typeof(GetReward) || e.GetType() != typeof(DropBox));

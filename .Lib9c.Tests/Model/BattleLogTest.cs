@@ -8,7 +8,6 @@ namespace Lib9c.Tests.Model
     using Nekoyume.Battle;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
-    using Nekoyume.TableData;
     using Xunit;
 
     public class BattleLogTest
@@ -18,7 +17,7 @@ namespace Lib9c.Tests.Model
 
         public BattleLogTest()
         {
-            _tableSheets = TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _random = new ItemEnhancementTest.TestRandom();
         }
 
@@ -26,8 +25,35 @@ namespace Lib9c.Tests.Model
         public void IsClearBeforeSimulate()
         {
             var agentState = new AgentState(default(Address));
-            var avatarState = new AvatarState(default, agentState.address, 0, _tableSheets, new GameConfigState());
-            var simulator = new StageSimulator(_random, avatarState, new List<Guid>(), 1, 1, _tableSheets);
+            var avatarState = new AvatarState(
+                default,
+                agentState.address,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            );
+            var simulator = new StageSimulator(
+                _random,
+                avatarState,
+                new List<Guid>(),
+                1,
+                1,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                _tableSheets.StageSheet,
+                _tableSheets.StageWaveSheet,
+                _tableSheets.EnemySkillSheet
+            );
             Assert.False(simulator.Log.IsClear);
         }
 

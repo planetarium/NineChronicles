@@ -31,8 +31,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            var tableSheets = TableSheets.FromActionContext(context);
-            var row = tableSheets.MaterialItemSheet.Values.FirstOrDefault(r => r.ItemSubType == ItemSubType.ApStone);
+            var row = states.GetSheet<MaterialItemSheet>().Values.FirstOrDefault(r => r.ItemSubType == ItemSubType.ApStone);
             var apStone = ItemFactory.CreateMaterial(row);
             if (!avatarState.inventory.RemoveFungibleItem(apStone))
             {

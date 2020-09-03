@@ -72,11 +72,9 @@ namespace Nekoyume.Action
                 throw;
             }
 
-            var tableSheets = TableSheets.FromActionContext(context);
-            var row = tableSheets.RedeemRewardSheet.Values.First(r => r.Id == redeemId);
-            var rewards = row.Rewards;
+            var row = states.GetSheet<RedeemRewardSheet>().Values.First(r => r.Id == redeemId);
+            var itemSheets = states.GetItemSheet();
 
-            var itemSheets = tableSheets.ItemSheet;
             foreach (RedeemRewardSheet.RewardInfo info in row.Rewards)
             {
                 switch (info.Type)

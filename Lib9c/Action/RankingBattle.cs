@@ -9,7 +9,6 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -151,15 +150,28 @@ namespace Nekoyume.Action
 
             Log.Debug(weeklyArenaState.address.ToHex());
 
-            var tableSheetState = TableSheetsState.FromActionContext(ctx);
-            var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
+            var materialItemSheet = states.GetSheet<MaterialItemSheet>();
+            var skillSheet = states.GetSheet<SkillSheet>();
+            var skillBuffSheet = states.GetSheet<SkillBuffSheet>();
+            var buffSheet = states.GetSheet<BuffSheet>();
+            var characterSheet = states.GetSheet<CharacterSheet>();
+            var levelSheet = states.GetSheet<CharacterLevelSheet>();
+            var setEffectSheet = states.GetSheet<EquipmentItemSetEffectSheet>();
+            var rewardSheet = states.GetSheet<WeeklyArenaRewardSheet>();
 
             var simulator = new RankingSimulator(
                 ctx.Random,
                 avatarState,
                 enemyAvatarState,
                 consumableIds,
-                tableSheets,
+                materialItemSheet,
+                skillSheet,
+                skillBuffSheet,
+                buffSheet,
+                characterSheet,
+                levelSheet,
+                setEffectSheet,
+                rewardSheet,
                 StageId,
                 arenaInfo,
                 weeklyArenaState[EnemyAddress]);
