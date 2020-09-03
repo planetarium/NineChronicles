@@ -306,7 +306,7 @@ namespace Nekoyume.Action
             if (value is null)
             {
                 Log.Warning($"{nameof(T)} is null ({0})", address.ToHex());
-                throw new NullReferenceException();
+                throw new FailedLoadStateException(nameof(T));
             }
 
             try
@@ -318,7 +318,7 @@ namespace Nekoyume.Action
             }
             catch (Exception e)
             {
-                Log.Error(e, $"Unexpected error occurred during {nameof(EnhancementCostSheet)}()");
+                Log.Error(e, $"Unexpected error occurred during {nameof(T)}()");
                 throw;
             }
         }
