@@ -205,7 +205,7 @@ namespace Nekoyume.UI.Scroller
                 if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
                     out var stageId))
                 {
-                    var diff =  unlockStage- stageId;
+                    var diff = unlockStage - stageId;
                     if (diff > 50)
                     {
                         unlockConditionText.text = string.Format(
@@ -214,7 +214,7 @@ namespace Nekoyume.UI.Scroller
                     }
                     else
                     {
-                        if (diff == 0 && tempLocked)
+                        if (diff <= 0 && tempLocked)
                         {
                             lockVFX.Play();
                             shakeTweener.PlayLoop();
