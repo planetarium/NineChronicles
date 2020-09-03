@@ -4,6 +4,7 @@ using System.Linq;
 using Bencodex.Types;
 using Nekoyume;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -19,20 +20,7 @@ namespace Tests.EditMode
         [OneTimeSetUp]
         public void Init()
         {
-            _tableSheets = new TableSheets();
-            var request = Resources.Load<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-            if (!(request is AddressableAssetsContainer addressableAssetsContainer))
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(
-                    Game.AddressableAssetsContainerPath);
-
-            var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            foreach (var asset in csvAssets)
-            {
-                _tableSheets.SetToSheet(asset.name, asset.text);
-            }
-
-            _tableSheets.ItemSheetInitialize();
-            _tableSheets.QuestSheetInitialize();
+            _tableSheets = TableSheetsHelper.MakeTableSheets();
         }
 
         [Test]

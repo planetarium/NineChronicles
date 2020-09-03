@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nekoyume.Extension;
+using Nekoyume.Game;
 using Nekoyume.TableData;
 using UnityEngine;
 
@@ -31,15 +32,13 @@ namespace Nekoyume.Helper
         
         private static TableSheets InitializeInternal(List<TextAsset> tableCsvAssets)
         {
-            var tableSheets = new TableSheets();
+            var csv = new Dictionary<string, string>();
             foreach (var asset in tableCsvAssets)
             {
-                tableSheets.SetToSheet(asset.name, asset.text);
+                csv[asset.name] = asset.text;
             }
 
-            tableSheets.ItemSheetInitialize();
-            tableSheets.QuestSheetInitialize();
-
+            var tableSheets = new TableSheets(csv);
             return tableSheets;
         }
 

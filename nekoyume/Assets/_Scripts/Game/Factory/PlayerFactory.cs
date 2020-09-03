@@ -15,14 +15,16 @@ namespace Nekoyume.Game.Factory
                 throw new ArgumentNullException(nameof(avatarState));
             }
 
-            return Create(new Player(avatarState, Game.instance.TableSheets));
+            var tableSheets = Game.instance.TableSheets;
+            return Create(new Player(avatarState, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet));
         }
 
         public static GameObject Create(Player model = null)
         {
             if (model is null)
             {
-                model = new Player(1, Game.instance.TableSheets);
+                var tableSheets = Game.instance.TableSheets;
+                model = new Player(1, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet);
             }
 
             var objectPool = Game.instance.Stage.objectPool;

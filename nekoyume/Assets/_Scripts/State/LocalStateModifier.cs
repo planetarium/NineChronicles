@@ -7,6 +7,7 @@ using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;

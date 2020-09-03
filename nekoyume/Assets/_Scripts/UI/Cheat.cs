@@ -382,13 +382,24 @@ namespace Nekoyume
             if (!Game.Game.instance.TableSheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
                 throw new KeyNotFoundException($"WorldSheet.TryGetByStageId() {nameof(stageId)}({stageId})");
 
+            var tableSheets = Game.Game.instance.TableSheets;
             var simulator = new StageSimulator(
                 new DebugRandom(),
                 States.Instance.CurrentAvatarState,
                 new List<Guid>(),
                 worldRow.Id,
                 stageId,
-                Game.Game.instance.TableSheets,
+                tableSheets.MaterialItemSheet,
+                tableSheets.SkillSheet,
+                tableSheets.SkillBuffSheet,
+                tableSheets.BuffSheet,
+                tableSheets.CharacterSheet,
+                tableSheets.CharacterLevelSheet,
+                tableSheets.EquipmentItemSetEffectSheet,
+                tableSheets.StageSheet,
+                tableSheets.StageWaveSheet,
+
+                tableSheets.EnemySkillSheet,
                 _selectedSkill
             );
             simulator.Simulate();
