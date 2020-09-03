@@ -29,12 +29,7 @@ namespace Lib9c.Tests.Model
                 default,
                 agentState.address,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             );
             var simulator = new StageSimulator(
@@ -43,16 +38,7 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.MaterialItemSheet,
-                _tableSheets.SkillSheet,
-                _tableSheets.SkillBuffSheet,
-                _tableSheets.BuffSheet,
-                _tableSheets.CharacterSheet,
-                _tableSheets.CharacterLevelSheet,
-                _tableSheets.EquipmentItemSetEffectSheet,
-                _tableSheets.StageSheet,
-                _tableSheets.StageWaveSheet,
-                _tableSheets.EnemySkillSheet
+                _tableSheets.GetStageSimulatorSheets()
             );
             Assert.False(simulator.Log.IsClear);
         }

@@ -49,12 +49,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 _agentAddress,
                 1,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 gameConfigState
             );
             var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();

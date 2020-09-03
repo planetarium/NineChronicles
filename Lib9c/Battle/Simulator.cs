@@ -36,22 +36,17 @@ namespace Nekoyume.Battle
             IRandom random,
             AvatarState avatarState,
             List<Guid> foods,
-            MaterialItemSheet materialItemSheet,
-            SkillSheet skillSheet,
-            SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
-            CharacterSheet characterSheet,
-            CharacterLevelSheet characterLevelSheet,
-            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet)
+            SimulatorSheets simulatorSheets
+        )
         {
             Random = random;
-            MaterialItemSheet = materialItemSheet;
-            SkillSheet = skillSheet;
-            SkillBuffSheet = skillBuffSheet;
-            BuffSheet = buffSheet;
-            CharacterSheet = characterSheet;
-            CharacterLevelSheet = characterLevelSheet;
-            EquipmentItemSetEffectSheet = equipmentItemSetEffectSheet;
+            MaterialItemSheet = simulatorSheets.MaterialItemSheet;
+            SkillSheet = simulatorSheets.SkillSheet;
+            SkillBuffSheet = simulatorSheets.SkillBuffSheet;
+            BuffSheet = simulatorSheets.BuffSheet;
+            CharacterSheet = simulatorSheets.CharacterSheet;
+            CharacterLevelSheet = simulatorSheets.CharacterLevelSheet;
+            EquipmentItemSetEffectSheet = simulatorSheets.EquipmentItemSetEffectSheet;
             Log = new BattleLog();
             Player = new Player(avatarState, this);
             Player.Use(foods);

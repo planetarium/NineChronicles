@@ -289,8 +289,8 @@ namespace Nekoyume.Action
 
             try
             {
-                 var goldDistributions = (Bencodex.Types.List)value;
-                 return goldDistributions.Select(v => new GoldDistribution(v));
+                var goldDistributions = (Bencodex.Types.List)value;
+                return goldDistributions.Select(v => new GoldDistribution(v));
             }
             catch (Exception e)
             {
@@ -331,6 +331,64 @@ namespace Nekoyume.Action
             sheet.Set(GetSheet<EquipmentItemSheet>(states), false);
             sheet.Set(GetSheet<MaterialItemSheet>(states));
             return sheet;
+        }
+
+        public static StageSimulatorSheets GetStageSimulatorSheets(this IAccountStateDelta states)
+        {
+            return new StageSimulatorSheets(
+                GetSheet<MaterialItemSheet>(states),
+                GetSheet<SkillSheet>(states),
+                GetSheet<SkillBuffSheet>(states),
+                GetSheet<BuffSheet>(states),
+                GetSheet<CharacterSheet>(states),
+                GetSheet<CharacterLevelSheet>(states),
+                GetSheet<EquipmentItemSetEffectSheet>(states),
+                GetSheet<StageSheet>(states),
+                GetSheet<StageWaveSheet>(states),
+                GetSheet<EnemySkillSheet>(states)
+            );
+        }
+
+        public static RankingSimulatorSheets GetRankingSimulatorSheets(this IAccountStateDelta states)
+        {
+            return new RankingSimulatorSheets(
+                GetSheet<MaterialItemSheet>(states),
+                GetSheet<SkillSheet>(states),
+                GetSheet<SkillBuffSheet>(states),
+                GetSheet<BuffSheet>(states),
+                GetSheet<CharacterSheet>(states),
+                GetSheet<CharacterLevelSheet>(states),
+                GetSheet<EquipmentItemSetEffectSheet>(states),
+                GetSheet<WeeklyArenaRewardSheet>(states)
+            );
+        }
+
+        public static QuestSheet GetQuestSheet(this IAccountStateDelta states)
+        {
+            var questSheet = new QuestSheet();
+            questSheet.Set(GetSheet<WorldQuestSheet>(states), false);
+            questSheet.Set(GetSheet<CollectQuestSheet>(states), false);
+            questSheet.Set(GetSheet<CombinationQuestSheet>(states), false);
+            questSheet.Set(GetSheet<TradeQuestSheet>(states), false);
+            questSheet.Set(GetSheet<MonsterQuestSheet>(states), false);
+            questSheet.Set(GetSheet<ItemEnhancementQuestSheet>(states), false);
+            questSheet.Set(GetSheet<GeneralQuestSheet>(states), false);
+            questSheet.Set(GetSheet<ItemGradeQuestSheet>(states), false);
+            questSheet.Set(GetSheet<ItemTypeCollectQuestSheet>(states), false);
+            questSheet.Set(GetSheet<GoldQuestSheet>(states), false);
+            questSheet.Set(GetSheet<CombinationEquipmentQuestSheet>(states));
+            return questSheet;
+        }
+        public static AvatarSheets GetAvatarSheets(this IAccountStateDelta states)
+        {
+            return new AvatarSheets(
+                GetSheet<WorldSheet>(states),
+                GetQuestSheet(states),
+                GetSheet<QuestRewardSheet>(states),
+                GetSheet<QuestItemRewardSheet>(states),
+                GetSheet<EquipmentItemRecipeSheet>(states),
+                GetSheet<EquipmentItemSubRecipeSheet>(states)
+            );
         }
     }
 }

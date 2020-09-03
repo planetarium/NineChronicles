@@ -30,16 +30,12 @@ namespace Lib9c.Tests.Model
         {
             var rewardSheet = new WeeklyArenaRewardSheet();
             rewardSheet.Set($"id,item_id,ratio,min,max,required_level\n1,302000,0.1,1,1,{requiredLevel}");
+            _tableSheets.WeeklyArenaRewardSheet = rewardSheet;
             var avatarState = new AvatarState(
                 default,
                 default,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             )
             {
@@ -58,14 +54,7 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.MaterialItemSheet,
-                _tableSheets.SkillSheet,
-                _tableSheets.SkillBuffSheet,
-                _tableSheets.BuffSheet,
-                _tableSheets.CharacterSheet,
-                _tableSheets.CharacterLevelSheet,
-                _tableSheets.EquipmentItemSetEffectSheet,
-                rewardSheet,
+                _tableSheets.GetRankingSimulatorSheets(),
                 1,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)

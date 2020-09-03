@@ -150,28 +150,12 @@ namespace Nekoyume.Action
 
             Log.Debug(weeklyArenaState.address.ToHex());
 
-            var materialItemSheet = states.GetSheet<MaterialItemSheet>();
-            var skillSheet = states.GetSheet<SkillSheet>();
-            var skillBuffSheet = states.GetSheet<SkillBuffSheet>();
-            var buffSheet = states.GetSheet<BuffSheet>();
-            var characterSheet = states.GetSheet<CharacterSheet>();
-            var levelSheet = states.GetSheet<CharacterLevelSheet>();
-            var setEffectSheet = states.GetSheet<EquipmentItemSetEffectSheet>();
-            var rewardSheet = states.GetSheet<WeeklyArenaRewardSheet>();
-
             var simulator = new RankingSimulator(
                 ctx.Random,
                 avatarState,
                 enemyAvatarState,
                 consumableIds,
-                materialItemSheet,
-                skillSheet,
-                skillBuffSheet,
-                buffSheet,
-                characterSheet,
-                levelSheet,
-                setEffectSheet,
-                rewardSheet,
+                states.GetRankingSimulatorSheets(),
                 StageId,
                 arenaInfo,
                 weeklyArenaState[EnemyAddress]);

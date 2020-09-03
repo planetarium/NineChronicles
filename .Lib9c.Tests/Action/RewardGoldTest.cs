@@ -15,8 +15,8 @@ namespace Lib9c.Tests.Action
     public class RewardGoldTest
     {
         private readonly AvatarState _avatarState;
-        private readonly CharacterSheet _characterSheet;
         private readonly State _baseState;
+        private readonly TableSheets _tableSheets;
 
         public RewardGoldTest()
         {
@@ -28,31 +28,13 @@ namespace Lib9c.Tests.Action
             var agentAddress = privateKey.PublicKey.ToAddress();
 
             var avatarAddress = agentAddress.Derive("avatar");
-            var worldSheet = new WorldSheet();
-            worldSheet.Set(sheets[nameof(WorldSheet)]);
-            var questRewardSheet = new QuestRewardSheet();
-            questRewardSheet.Set(sheets[nameof(QuestRewardSheet)]);
-            var questItemRewardSheet = new QuestItemRewardSheet();
-            questItemRewardSheet.Set(sheets[nameof(QuestItemRewardSheet)]);
-            var equipmentItemRecipeSheet = new EquipmentItemRecipeSheet();
-            equipmentItemRecipeSheet.Set(sheets[nameof(EquipmentItemRecipeSheet)]);
-            var equipmentItemSubRecipeSheet = new EquipmentItemSubRecipeSheet();
-            equipmentItemSubRecipeSheet.Set(sheets[nameof(EquipmentItemSubRecipeSheet)]);
-            var questSheet = new QuestSheet();
-            questSheet.Set(sheets[nameof(GeneralQuestSheet)]);
-            _characterSheet = new CharacterSheet();
-            _characterSheet.Set(sheets[nameof(CharacterSheet)]);
+            _tableSheets = new TableSheets(sheets);
 
             _avatarState = new AvatarState(
                 avatarAddress,
                 agentAddress,
                 0,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             );
 
@@ -86,7 +68,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteResetCount()
         {
             var weekly = new WeeklyArenaState(0);
-            weekly.Set(_avatarState, _characterSheet);
+            weekly.Set(_avatarState, _tableSheets.CharacterSheet);
             weekly[_avatarState.address].Update(_avatarState, weekly[_avatarState.address], BattleLog.Result.Lose);
 
             Assert.Equal(4, weekly[_avatarState.address].DailyChallengeCount);
@@ -112,7 +94,7 @@ namespace Lib9c.Tests.Action
         public void ExecuteUpdateNextWeeklyArenaState()
         {
             var prevWeekly = new WeeklyArenaState(0);
-            prevWeekly.Set(_avatarState, _characterSheet);
+            prevWeekly.Set(_avatarState, _tableSheets.CharacterSheet);
             prevWeekly[_avatarState.address].Activate();
 
             Assert.False(prevWeekly.Ended);

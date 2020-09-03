@@ -34,28 +34,13 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            MaterialItemSheet materialItemSheet,
-            SkillSheet skillSheet,
-            SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
-            CharacterSheet characterSheet,
-            CharacterLevelSheet characterLevelSheet,
-            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
-            StageSheet stageSheet,
-            StageWaveSheet stageWaveSheet,
-            EnemySkillSheet enemySkillSheet
+            StageSimulatorSheets stageSimulatorSheets
         )
             : base(
                 random,
                 avatarState,
                 foods,
-                materialItemSheet,
-                skillSheet,
-                skillBuffSheet,
-                buffSheet,
-                characterSheet,
-                characterLevelSheet,
-                equipmentItemSetEffectSheet
+                stageSimulatorSheets
             )
         {
             _waves = new List<Wave>();
@@ -63,11 +48,13 @@ namespace Nekoyume.Battle
             WorldId = worldId;
             StageId = stageId;
             IsCleared = avatarState.worldInformation.IsStageCleared(StageId);
-            EnemySkillSheet = enemySkillSheet;
+            EnemySkillSheet = stageSimulatorSheets.EnemySkillSheet;
 
+            var stageSheet = stageSimulatorSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
 
+            var stageWaveSheet = stageSimulatorSheets.StageWaveSheet;
             if (!stageWaveSheet.TryGetValue(StageId, out var stageWaveRow))
                 throw new SheetRowNotFoundException(nameof(stageWaveSheet), StageId);
 
@@ -80,7 +67,7 @@ namespace Nekoyume.Battle
                 itemSelector,
                 Random.Next(stageRow.DropItemMin, stageRow.DropItemMax + 1),
                 random,
-                materialItemSheet
+                stageSimulatorSheets.MaterialItemSheet
             );
         }
 
@@ -90,16 +77,7 @@ namespace Nekoyume.Battle
             List<Guid> foods,
             int worldId,
             int stageId,
-            MaterialItemSheet materialItemSheet,
-            SkillSheet skillSheet,
-            SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
-            CharacterSheet characterSheet,
-            CharacterLevelSheet characterLevelSheet,
-            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
-            StageSheet stageSheet,
-            StageWaveSheet stageWaveSheet,
-            EnemySkillSheet enemySkillSheet,
+            StageSimulatorSheets stageSimulatorSheets,
             Model.Skill.Skill skill
         )
             : this(
@@ -108,18 +86,10 @@ namespace Nekoyume.Battle
                 foods,
                 worldId, 
                 stageId,
-                materialItemSheet,
-                skillSheet,
-                skillBuffSheet,
-                buffSheet,
-                characterSheet,
-                characterLevelSheet,
-                equipmentItemSetEffectSheet,
-                stageSheet,
-                stageWaveSheet,
-                enemySkillSheet
+                stageSimulatorSheets
             )
         {
+            var stageSheet = stageSimulatorSheets.StageSheet;
             if (!stageSheet.TryGetValue(StageId, out var stageRow))
                 throw new SheetRowNotFoundException(nameof(stageSheet), StageId);
 
