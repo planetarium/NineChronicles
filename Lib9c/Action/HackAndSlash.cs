@@ -31,9 +31,9 @@ namespace Nekoyume.Action
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
             new Dictionary<string, IValue>
             {
-                ["costumes"] = new Bencodex.Types.List(costumes.Select(e => e.Serialize())),
-                ["equipments"] = new Bencodex.Types.List(equipments.Select(e => e.Serialize())),
-                ["foods"] = new Bencodex.Types.List(foods.Select(e => e.Serialize())),
+                ["costumes"] = new List(costumes.Select(e => e.Serialize())),
+                ["equipments"] = new List(equipments.Select(e => e.Serialize())),
+                ["foods"] = new List(foods.Select(e => e.Serialize())),
                 ["worldId"] = worldId.Serialize(),
                 ["stageId"] = stageId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
@@ -44,13 +44,13 @@ namespace Nekoyume.Action
         protected override void LoadPlainValueInternal(
             IImmutableDictionary<string, IValue> plainValue)
         {
-            costumes = ((Bencodex.Types.List) plainValue["costumes"]).Select(
+            costumes = ((List) plainValue["costumes"]).Select(
                 e => e.ToInteger()
             ).ToList();
-            equipments = ((Bencodex.Types.List) plainValue["equipments"]).Select(
+            equipments = ((List) plainValue["equipments"]).Select(
                 e => e.ToGuid()
             ).ToList();
-            foods = ((Bencodex.Types.List) plainValue["foods"]).Select(
+            foods = ((List) plainValue["foods"]).Select(
                 e => e.ToGuid()
             ).ToList();
             worldId = plainValue["worldId"].ToInteger();
@@ -92,18 +92,11 @@ namespace Nekoyume.Action
             Log.Debug("HAS Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
 
             sw.Restart();
-            var tableSheetState = TableSheetsState.FromActionContext(ctx);
-            sw.Stop();
-            Log.Debug("HAS Get TableSheetsState: {Elapsed}", sw.Elapsed);
-
-            sw.Restart();
-            var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
-            sw.Stop();
-            Log.Debug("HAS Initialize TableSheets: {Elapsed}", sw.Elapsed);
 
             // worldId와 stageId가 유효한지 확인합니다.
+            var worldSheet = states.GetSheet<WorldSheet>();
 
-            if (!tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+            if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
                 // FIXME we should create dedicated type for this exception.
                 throw new InvalidOperationException(
@@ -121,7 +114,8 @@ namespace Nekoyume.Action
                 );
             }
 
-            if (!tableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
+            var stageSheet = states.GetSheet<StageSheet>();
+            if (!stageSheet.TryGetValue(stageId, out var stageRow))
             {
                 // FIXME we should create dedicated type for this exception.
                 throw new InvalidOperationException(
@@ -208,13 +202,32 @@ namespace Nekoyume.Action
             Log.Debug("HAS Unequip items: {Elapsed}", sw.Elapsed);
 
             sw.Restart();
+            var materialItemSheet = states.GetSheet<MaterialItemSheet>();
+            var skillSheet = states.GetSheet<SkillSheet>();
+            var skillBuffSheet = states.GetSheet<SkillBuffSheet>();
+            var buffSheet = states.GetSheet<BuffSheet>();
+            var characterSheet = states.GetSheet<CharacterSheet>();
+            var levelSheet = states.GetSheet<CharacterLevelSheet>();
+            var setEffectSheet = states.GetSheet<EquipmentItemSetEffectSheet>();
+            var stageWaveSheet = states.GetSheet<StageWaveSheet>();
+            var enemySkillSheet = states.GetSheet<EnemySkillSheet>();
+
             var simulator = new StageSimulator(
                 ctx.Random,
                 avatarState,
                 foods,
                 worldId,
                 stageId,
-                tableSheets
+                materialItemSheet,
+                skillSheet,
+                skillBuffSheet,
+                buffSheet,
+                characterSheet,
+                levelSheet,
+                setEffectSheet,
+                stageSheet,
+                stageWaveSheet,
+                enemySkillSheet
             );
 
             sw.Stop();
@@ -239,12 +252,13 @@ namespace Nekoyume.Action
             sw.Restart();
             if (simulator.Log.IsClear)
             {
+                var worldUnlockSheet = states.GetSheet<WorldUnlockSheet>();
                 simulator.Player.worldInformation.ClearStage(
                     worldId,
                     stageId,
                     ctx.BlockIndex,
-                    tableSheets.WorldSheet,
-                    tableSheets.WorldUnlockSheet
+                    worldSheet,
+                    worldUnlockSheet
                 );
             }
 
@@ -254,7 +268,8 @@ namespace Nekoyume.Action
             sw.Restart();
             avatarState.Update(simulator);
 
-            avatarState.UpdateQuestRewards(ctx);
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             states = states.SetState(avatarAddress, avatarState.Serialize());
@@ -292,12 +307,12 @@ namespace Nekoyume.Action
                     if (weekly.ContainsKey(avatarAddress))
                     {
                         var info = weekly[avatarAddress];
-                        info.Update(avatarState, tableSheets.CharacterSheet);
+                        info.Update(avatarState, characterSheet);
                         weekly.Update(info);
                     }
                     else
                     {
-                        weekly.Set(avatarState, tableSheets.CharacterSheet);
+                        weekly.Set(avatarState, characterSheet);
                     }
 
                     sw.Stop();

@@ -11,19 +11,20 @@ namespace Lib9c.Tests.Model
 
     public class SimulatorTest
     {
-        private readonly TableSheets _tableSheets;
+        private readonly MaterialItemSheet _materialItemSheet;
         private readonly IRandom _random;
 
         public SimulatorTest()
         {
-            _tableSheets = TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
+            _materialItemSheet = new MaterialItemSheet();
+            _materialItemSheet.Set(TableSheetsImporter.ImportSheets()[nameof(MaterialItemSheet)]);
             _random = new ItemEnhancementTest.TestRandom();
         }
 
         [Fact]
         public void SetRewardAll()
         {
-            var row = _tableSheets.StageSheet.Values.First();
+            var row = new StageSheet.Row();
             row.Set(new List<string>
             {
                 "1", "5", "100", "0", "0", "0", "0", "0", "0", "chapter_1_1", "bgm_stage_green", "306043", "1", "1",
@@ -34,7 +35,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "2", "2",
             });
             var itemSelector = StageSimulator.SetItemSelector(row, _random);
-            var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _tableSheets);
+            var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _materialItemSheet);
             Assert.Equal(2, reward.Count);
             Assert.NotEmpty(reward);
             Assert.Equal(new[] { 306043, 303000 }, reward.Select(i => i.Id).ToArray());
@@ -43,7 +44,7 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void SetRewardDuplicateItem()
         {
-            var row = _tableSheets.StageSheet.Values.First();
+            var row = new StageSheet.Row();
             row.Set(new List<string>
             {
                 "1", "5", "100", "0", "0", "0", "0", "0", "0", "chapter_1_1", "bgm_stage_green", "306043", "1", "2",
@@ -54,7 +55,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "2", "2",
             });
             var itemSelector = StageSimulator.SetItemSelector(row, _random);
-            var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _tableSheets);
+            var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _materialItemSheet);
             Assert.Equal(2, reward.Count);
             Assert.NotEmpty(reward);
             Assert.Single(reward.Select(i => i.Id).ToImmutableHashSet());
@@ -63,7 +64,7 @@ namespace Lib9c.Tests.Model
         [Fact]
         public void SetRewardLimitByStageDrop()
         {
-            var row = _tableSheets.StageSheet.Values.First();
+            var row = new StageSheet.Row();
             row.Set(new List<string>
             {
                 "1", "5", "100", "0", "0", "0", "0", "0", "0", "chapter_1_1", "bgm_stage_green", "306043", "1", "2",
@@ -74,14 +75,14 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "1", "1",
             });
             var itemSelector = StageSimulator.SetItemSelector(row, _random);
-            var reward = Simulator.SetReward(itemSelector, _random.Next(1, 1), _random, _tableSheets);
+            var reward = Simulator.SetReward(itemSelector, _random.Next(1, 1), _random, _materialItemSheet);
             Assert.Single(reward);
         }
 
         [Fact]
         public void SetRewardLimitByItemDrop()
         {
-            var row = _tableSheets.StageSheet.Values.First();
+            var row = new StageSheet.Row();
             row.Set(new List<string>
             {
                 "1", "5", "100", "0", "0", "0", "0", "0", "0", "chapter_1_1", "bgm_stage_green", "306043", "1", "1",
@@ -92,7 +93,7 @@ namespace Lib9c.Tests.Model
                 string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, "1", "4",
             });
             var itemSelector = StageSimulator.SetItemSelector(row, _random);
-            var reward = Simulator.SetReward(itemSelector, _random.Next(1, 4), _random, _tableSheets);
+            var reward = Simulator.SetReward(itemSelector, _random.Next(1, 4), _random, _materialItemSheet);
             Assert.True(reward.Count <= 2);
             Assert.NotEmpty(reward);
         }

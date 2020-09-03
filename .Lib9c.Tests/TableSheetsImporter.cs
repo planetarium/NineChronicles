@@ -6,11 +6,12 @@ namespace Lib9c.Tests
 
     public static class TableSheetsImporter
     {
-        public static TableSheetsState ImportTableSheets()
+        public static Dictionary<string, string> ImportSheets()
         {
             var sheets = new Dictionary<string, string>();
             var dir = Path.Combine("Data", "TableCSV");
             var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
+            var state = new Action.State();
             foreach (var filePath in files)
             {
                 var fileName = Path.GetFileName(filePath);
@@ -22,7 +23,7 @@ namespace Lib9c.Tests
                 sheets[fileName] = File.ReadAllText(filePath);
             }
 
-            return new TableSheetsState(sheets);
+            return sheets;
         }
     }
 }

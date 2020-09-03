@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Action;
 using Nekoyume.Model.Quest;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Action
@@ -48,7 +49,8 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            avatarState.UpdateFromQuestReward(quest, ctx);
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            avatarState.UpdateFromQuestReward(quest, materialSheet);
 
             sw.Stop();
             Log.Debug($"QuestReward Update AvatarState: {sw.Elapsed}");

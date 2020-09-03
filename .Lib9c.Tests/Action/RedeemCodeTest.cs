@@ -3,10 +3,12 @@ namespace Lib9c.Tests.Action
     using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
     using Libplanet.Crypto;
+    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
@@ -32,14 +34,13 @@ namespace Lib9c.Tests.Action
             0x00, 0x00, 0x00, 0x00, 0x01,
         });
 
-        private readonly TableSheetsState _tableSheetsState;
-
+        private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
 
         public RedeemCodeTest()
         {
-            _tableSheetsState = TableSheetsImporter.ImportTableSheets();
-            _tableSheets = TableSheets.FromTableSheetsState(_tableSheetsState);
+            _sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
@@ -58,7 +59,12 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 _agentAddress,
                 1,
-                _tableSheets,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 gameConfigState
             );
 
@@ -67,10 +73,18 @@ namespace Lib9c.Tests.Action
             var initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
-                .SetState(TableSheetsState.Address, _tableSheetsState.Serialize())
                 .SetState(RedeemCodeState.Address, prevRedeemCodesState.Serialize())
                 .SetState(GoldCurrencyState.Address, goldState.Serialize())
                 .MintAsset(GoldCurrencyState.Address, goldState.Currency * 100000000);
+
+            foreach (var (key, value) in _sheets)
+            {
+                initialState = initialState.SetState(
+                    Addresses.TableSheet.Derive(key),
+                    value.Serialize()
+                );
+            }
+
             var redeemCode = new RedeemCode(
                 ByteUtil.Hex(privateKey.ByteArray),
                 _avatarAddress
@@ -88,7 +102,7 @@ namespace Lib9c.Tests.Action
             // Check target avatar & agent
             AvatarState nextAvatarState = nextState.GetAvatarState(_avatarAddress);
             // See also Data/TableCSV/RedeemRewardSheet.csv
-            ItemSheet itemSheet = _tableSheets.ItemSheet;
+            ItemSheet itemSheet = initialState.GetItemSheet();
             HashSet<int> expectedItems = new[] { 100000, 40100000 }.ToHashSet();
             Assert.Subset(nextAvatarState.inventory.Items.Select(i => i.item.Id).ToHashSet(), expectedItems);
             Assert.Equal(goldState.Currency * 100, nextState.GetBalance(_agentAddress, goldState.Currency));

@@ -159,8 +159,8 @@ namespace Nekoyume.Action
                 );
             }
 
-            var tableSheets = TableSheets.FromActionContext(ctx);
-            var requiredNCG = GetRequiredNCG(tableSheets, enhancementEquipment.Grade, enhancementEquipment.level + 1);
+            var enhancementCostSheet = states.GetSheet<EnhancementCostSheet>();
+            var requiredNCG = GetRequiredNCG(enhancementCostSheet, enhancementEquipment.Grade, enhancementEquipment.level + 1);
 
             avatarState.actionPoint -= requiredAP;
             result.actionPoint = requiredAP;
@@ -174,9 +174,6 @@ namespace Nekoyume.Action
                 );
             }
 
-            sw.Stop();
-            Log.Debug("ItemEnhancement Get TableSheets: {Elapsed}", sw.Elapsed);
-            sw.Restart();
             var materials = new List<Equipment>();
             foreach (var materialId in materialIds)
             {
@@ -291,7 +288,8 @@ namespace Nekoyume.Action
             avatarState.Update(mail);
             avatarState.UpdateFromItemEnhancement(enhancementEquipment);
 
-            avatarState.UpdateQuestRewards(ctx);
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            avatarState.UpdateQuestRewards(materialSheet);
 
             slotState.Update(result, ctx.BlockIndex, ctx.BlockIndex);
 
@@ -338,10 +336,10 @@ namespace Nekoyume.Action
             }
         }
 
-        private BigInteger GetRequiredNCG(TableSheets tableSheets, int grade, int level)
+        private BigInteger GetRequiredNCG(EnhancementCostSheet costSheet, int grade, int level)
         {
-            var row = tableSheets
-                .EnhancementCostSheet.Values
+            var row = costSheet
+                .Values
                 .FirstOrDefault(x => x.Grade == grade && x.Level == level);
 
             return row is null ? 0 : row.Cost;

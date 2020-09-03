@@ -160,14 +160,9 @@ namespace Nekoyume.Action
                 );
             }
 
-            var tableSheets = TableSheets.FromActionContext(ctx);
-            sw.Stop();
-            Log.Debug("Combination Get TableSheetsState: {Elapsed}", sw.Elapsed);
-            sw.Restart();
-
             Log.Debug("Execute Combination; player: {Player}", AvatarAddress);
-            var consumableItemSheet = tableSheets.ConsumableItemSheet;
-            var recipeRow = tableSheets.ConsumableItemRecipeSheet.Values.FirstOrDefault(r => r.Id == recipeId);
+            var consumableItemSheet = states.GetSheet<ConsumableItemSheet>();
+            var recipeRow = states.GetSheet<ConsumableItemRecipeSheet>().Values.FirstOrDefault(r => r.Id == recipeId);
             if (recipeRow is null)
             {
                 return LogError(context, "Aborted as the recipe was failed to load.");
@@ -257,7 +252,8 @@ namespace Nekoyume.Action
             Log.Debug("Combination Update AvatarState: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            avatarState.UpdateQuestRewards(ctx);
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            avatarState.UpdateQuestRewards(materialSheet);
 
             avatarState.updatedAt = DateTimeOffset.UtcNow;
             avatarState.blockIndex = ctx.BlockIndex;

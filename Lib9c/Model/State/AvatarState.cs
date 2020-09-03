@@ -59,7 +59,12 @@ namespace Nekoyume.Model.State
         public AvatarState(Address address,
             Address agentAddress,
             long blockIndex,
-            TableSheets sheets,
+            WorldSheet worldSheet,
+            QuestSheet questSheet,
+            QuestRewardSheet questRewardSheet,
+            QuestItemRewardSheet questItemRewardSheet,
+            EquipmentItemRecipeSheet equipmentItemRecipeSheet,
+            EquipmentItemSubRecipeSheet equipmentItemSubRecipeSheet,
             GameConfigState gameConfigState,
             string name = null) : base(address)
         {
@@ -71,15 +76,15 @@ namespace Nekoyume.Model.State
             level = 1;
             exp = 0;
             inventory = new Inventory();
-            worldInformation = new WorldInformation(blockIndex, sheets.WorldSheet, GameConfig.IsEditor);
+            worldInformation = new WorldInformation(blockIndex, worldSheet, GameConfig.IsEditor);
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
             questList = new QuestList(
-                sheets.QuestSheet,
-                sheets.QuestRewardSheet,
-                sheets.QuestItemRewardSheet,
-                sheets.EquipmentItemRecipeSheet,
-                sheets.EquipmentItemSubRecipeSheet
+                questSheet,
+                questRewardSheet,
+                questItemRewardSheet,
+                equipmentItemRecipeSheet,
+                equipmentItemSubRecipeSheet
             );
             mailBox = new MailBox();
             this.blockIndex = blockIndex;
@@ -301,13 +306,12 @@ namespace Nekoyume.Model.State
             UpdateCompletedQuest();
         }
 
-        public void UpdateFromQuestReward(Quest.Quest quest, IActionContext context)
+        public void UpdateFromQuestReward(Quest.Quest quest, MaterialItemSheet materialItemSheet)
         {
             var items = new List<Material>();
             foreach (var pair in quest.Reward.ItemMap)
             {
-                var row = TableSheets.FromActionContext(context)
-                    .MaterialItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
+                var row = materialItemSheet.Values.First(itemRow => itemRow.Id == pair.Key);
                 var item = ItemFactory.CreateMaterial(row);
                 var map = inventory.AddItem(item, pair.Value);
                 itemMap.Add(map);
@@ -323,7 +327,7 @@ namespace Nekoyume.Model.State
         /// <summary>
         /// 완료된 퀘스트의 보상 처리를 한다.
         /// </summary>
-        public void UpdateQuestRewards(IActionContext context)
+        public void UpdateQuestRewards(MaterialItemSheet materialItemSheet)
         {
             var completedQuests = questList.Where(quest => quest.Complete && !quest.IsPaidInAction);
             // 완료되었지만 보상을 받지 않은 퀘스트를 return 문에서 Select 하지 않고 미리 저장하는 이유는
@@ -332,7 +336,7 @@ namespace Nekoyume.Model.State
             var completedQuestIds = completedQuests.Select(quest => quest.Id).ToList();
             foreach (var quest in completedQuests)
             {
-                UpdateFromQuestReward(quest, context);
+                UpdateFromQuestReward(quest, materialItemSheet);
             }
 
             questList.completedQuestIds = completedQuestIds;

@@ -35,6 +35,7 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
+                states = TableSheetsState.TableSheets.Aggregate(states, (current, pair) => current.SetState(Addresses.TableSheet.Derive(pair.Key), MarkChanged));
                 states = states.SetState(TableSheetsState.Address, MarkChanged);
                 states = states.SetState(weeklyArenaState.address, MarkChanged);
                 states = states.SetState(GameConfigState.Address, MarkChanged);
@@ -51,6 +52,7 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            states = TableSheetsState.TableSheets.Aggregate(states, (current, pair) => current.SetState(Addresses.TableSheet.Derive(pair.Key), pair.Value.Serialize()));
             states = states
                 .SetState(weeklyArenaState.address, weeklyArenaState.Serialize())
                 .SetState(RankingState.Address, RankingState.Serialize())

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Battle;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
 using Nekoyume.TableData;
@@ -11,17 +12,19 @@ namespace Nekoyume.Model
     public class Enemy : CharacterBase, ICloneable
     {
         public int spawnIndex = -1;
+        public StageSimulator StageSimulator;
 
         public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel,
             IEnumerable<StatModifier> optionalStatModifiers = null)
             : base(
                 player.Simulator,
-                player.Simulator.TableSheets,
+                player.Simulator.CharacterSheet,
                 rowData.Id,
                 monsterLevel,
                 optionalStatModifiers)
         {
             Targets.Add(player);
+            StageSimulator = (StageSimulator) Simulator;
             PostConstruction();
         }
 
@@ -53,9 +56,9 @@ namespace Nekoyume.Model
             base.SetSkill();
 
             var dmg = (int) (ATK * 0.3m);
-            var skillIds = Simulator.TableSheets.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
+            var skillIds = StageSimulator.EnemySkillSheet.Values.Where(r => r.characterId == RowData.Id)
                 .Select(r => r.skillId).ToList();
-            var enemySkills = Simulator.TableSheets.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
+            var enemySkills = Simulator.SkillSheet.Values.Where(r => skillIds.Contains(r.Id))
                 .ToList();
             foreach (var skillRow in enemySkills)
             {

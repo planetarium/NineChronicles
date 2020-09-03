@@ -66,12 +66,12 @@ namespace Nekoyume.Model
         public int AttackCount { get; private set; }
         public int AttackCountMax { get; protected set; }
 
-        protected CharacterBase(Simulator simulator, TableSheets sheets, int characterId, int level,
+        protected CharacterBase(Simulator simulator, CharacterSheet characterSheet, int characterId, int level,
             IEnumerable<StatModifier> optionalStatModifiers = null)
         {
             Simulator = simulator;
 
-            if (!sheets.CharacterSheet.TryGetValue(characterId, out var row))
+            if (!characterSheet.TryGetValue(characterId, out var row))
                 throw new SheetRowNotFoundException("CharacterSheet", characterId);
 
             RowData = row;
@@ -175,8 +175,8 @@ namespace Nekoyume.Model
                 Simulator.WaveTurn,
                 BuffFactory.GetBuffs(
                     selectedSkill,
-                    Simulator.TableSheets.SkillBuffSheet,
-                    Simulator.TableSheets.BuffSheet
+                    Simulator.SkillBuffSheet,
+                    Simulator.BuffSheet
                 )
             );
 
@@ -315,7 +315,7 @@ namespace Nekoyume.Model
 
         protected virtual void SetSkill()
         {
-            if (!Simulator.TableSheets.SkillSheet.TryGetValue(100000, out var skillRow))
+            if (!Simulator.SkillSheet.TryGetValue(100000, out var skillRow))
             {
                 throw new KeyNotFoundException("100000");
             }

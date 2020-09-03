@@ -18,7 +18,7 @@ namespace Lib9c.Tests.Model
 
         public RankingSimulatorTest()
         {
-            _tableSheets = TableSheets.FromTableSheetsState(TableSheetsImporter.ImportTableSheets());
+            _tableSheets = new TableSheets(TableSheetsImporter.ImportSheets());
             _random = new ItemEnhancementTest.TestRandom();
         }
 
@@ -28,8 +28,20 @@ namespace Lib9c.Tests.Model
         [InlineData(1, 2, false)]
         public void Simulate(int level, int requiredLevel, bool expected)
         {
-            _tableSheets.SetToSheet(nameof(WeeklyArenaRewardSheet), $"id,item_id,ratio,min,max,required_level\n1,302000,0.1,1,1,{requiredLevel}");
-            var avatarState = new AvatarState(default, default, 0, _tableSheets, new GameConfigState())
+            var rewardSheet = new WeeklyArenaRewardSheet();
+            rewardSheet.Set($"id,item_id,ratio,min,max,required_level\n1,302000,0.1,1,1,{requiredLevel}");
+            var avatarState = new AvatarState(
+                default,
+                default,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
+                new GameConfigState()
+            )
             {
                 level = level,
             };
@@ -46,7 +58,14 @@ namespace Lib9c.Tests.Model
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets,
+                _tableSheets.MaterialItemSheet,
+                _tableSheets.SkillSheet,
+                _tableSheets.SkillBuffSheet,
+                _tableSheets.BuffSheet,
+                _tableSheets.CharacterSheet,
+                _tableSheets.CharacterLevelSheet,
+                _tableSheets.EquipmentItemSetEffectSheet,
+                rewardSheet,
                 1,
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false),
                 new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false)
