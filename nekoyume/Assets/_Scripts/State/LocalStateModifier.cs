@@ -664,30 +664,6 @@ namespace Nekoyume.State
         #region WeeklyArena
 
         /// <summary>
-        /// 현재 바라보고 있는 주간 아레나 상태의 `Gold`를 변경한다.(휘발)
-        /// </summary>
-        /// <param name="gold"></param>
-        public static void ModifyWeeklyArenaGold(BigInteger gold)
-        {
-            if (gold == 0)
-            {
-                return;
-            }
-
-            var state = States.Instance.WeeklyArenaState;
-            if (state is null)
-            {
-                return;
-            }
-
-            var modifier = new WeeklyArenaGoldModifier(gold);
-            LocalStateSettings.Instance.Add(state.address, modifier, true);
-            // NOTE: Reassignment is not required yet.
-            state = modifier.Modify(state);
-            WeeklyArenaStateSubject.Gold.OnNext(state.Gold);
-        }
-
-        /// <summary>
         /// 현재 바라보고 있는 주간 아레나 상태가 포함하고 있는 `ArenaInfo` 중 현재 아바타 상태의 주소에 해당하는 것을 활성화 시킨다.(휘발)
         /// </summary>
         /// <param name="characterSheet"></param>

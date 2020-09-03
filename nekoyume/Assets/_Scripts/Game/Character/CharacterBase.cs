@@ -597,17 +597,6 @@ namespace Nekoyume.Game.Character
             var skillInfosCount = skillInfos.Count;
             var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
 
-            if ((this is Player && !(this is EnemyPlayer)) &&
-                skillInfos.Any(skillInfo => skillInfo.Effect > 0 && skillInfo.Critical))
-            {
-                if (battleWidget.ComboText._combo + 1 == battleWidget.ComboText.comboMax)
-                {
-                    CutSceneTest.Show(CutSceneTest.AnimationType.Type5);
-
-                    yield return new WaitForSeconds(CutSceneTest.DestroyDelay - 0.5f);
-                }
-            }
-
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
             for (var i = 0; i < skillInfosCount; i++)
@@ -817,17 +806,6 @@ namespace Nekoyume.Game.Character
 
                 var stage = Game.instance.Stage;
                 var waitSeconds = 0.5f;
-                if ((this is Player && !(this is EnemyPlayer)) &&
-                    action.func.GetMethodInfo().Name == nameof(CoNormalAttack) &&
-                    action.skillInfos.Any(skillInfo => skillInfo.Effect > 0 && skillInfo.Critical))
-                {
-                    var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
-                    Debug.Log($"Combo {battleWidget.ComboText._combo + 1}, {battleWidget.ComboText.comboMax}");
-                    if (battleWidget.ComboText._combo + 1 == battleWidget.ComboText.comboMax)
-                    {
-                        waitSeconds = 0f;
-                    }
-                }
 
                 foreach (var info in action.skillInfos)
                 {
@@ -844,7 +822,6 @@ namespace Nekoyume.Game.Character
                         }
                     }
                 }
-                Debug.Log($"wait seconds: {waitSeconds}");
                 yield return new WaitForSeconds(waitSeconds);
                 var coroutine = StartCoroutine(stage.CoSkill(action));
                 yield return coroutine;
