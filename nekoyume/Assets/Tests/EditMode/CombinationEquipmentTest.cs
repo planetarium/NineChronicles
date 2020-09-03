@@ -3,6 +3,7 @@ using System.Linq;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.TableData;
 using NUnit.Framework;
@@ -17,20 +18,7 @@ namespace Tests.EditMode
         [OneTimeSetUp]
         public void Init()
         {
-            _tableSheets = new TableSheets();
-            var request = Resources.Load<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-            if (!(request is AddressableAssetsContainer addressableAssetsContainer))
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-
-            var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            foreach (var asset in csvAssets)
-            {
-                _tableSheets.SetToSheet(asset.name, asset.text);
-            }
-
-            _tableSheets.ItemSheetInitialize();
-            _tableSheets.QuestSheetInitialize();
-
+            _tableSheets = TableSheetsHelper.MakeTableSheets();
         }
 
         [Test]
@@ -47,7 +35,13 @@ namespace Tests.EditMode
                 default,
                 default
             );
-            var optionIds = CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment);
+            var optionIds = CombinationEquipment.SelectOption(
+                _tableSheets.EquipmentItemOptionSheet,
+                _tableSheets.SkillSheet,
+                row,
+                new Cheat.DebugRandom(),
+                equipment
+            );
             Assert.IsEmpty(optionIds);
             Assert.IsEmpty(equipment.GetOptions());
         }
@@ -66,7 +60,13 @@ namespace Tests.EditMode
                 default,
                 default
             );
-            var optionIds = CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment);
+            var optionIds = CombinationEquipment.SelectOption(
+                _tableSheets.EquipmentItemOptionSheet,
+                _tableSheets.SkillSheet,
+                row,
+                new Cheat.DebugRandom(),
+                equipment
+            );
             Assert.IsEmpty(optionIds);
             Assert.IsEmpty(equipment.GetOptions());
         }
@@ -86,7 +86,13 @@ namespace Tests.EditMode
                 default,
                 default
             );
-            var optionIds = CombinationEquipment.SelectOption(_tableSheets, row, new Cheat.DebugRandom(), equipment);
+            var optionIds = CombinationEquipment.SelectOption(
+                _tableSheets.EquipmentItemOptionSheet,
+                _tableSheets.SkillSheet,
+                row,
+                new Cheat.DebugRandom(),
+                equipment
+            );
             Assert.IsNotEmpty(optionIds);
             Assert.AreEqual(expected, optionIds.Count);
             Assert.AreEqual(expected, equipment.GetOptionCount());

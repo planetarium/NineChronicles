@@ -178,7 +178,7 @@ namespace Nekoyume.UI
                 _tempStats.Level,
                 equipments,
                 null,
-                Game.Game.instance.TableSheets
+                Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet
             );
 
             avatarStats.SetData(stats);

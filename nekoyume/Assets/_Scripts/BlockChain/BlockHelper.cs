@@ -16,6 +16,7 @@ using System;
 using System.Net;
 using Libplanet.Assets;
 using Libplanet.Crypto;
+using Nekoyume.Game;
 
 namespace Nekoyume.BlockChain
 {
@@ -69,7 +70,8 @@ namespace Nekoyume.BlockChain
             }
             var gameConfigState = new GameConfigState(csv);
             var tableSheetsState = new TableSheetsState(tableSheets);
-            var redeemCodeListSheet = TableSheets.FromTableSheetsState(tableSheetsState).RedeemCodeListSheet;
+            var redeemCodeListSheet = new RedeemCodeListSheet();
+            redeemCodeListSheet.Set(tableSheets[nameof(RedeemCodeListSheet)]);
             string goldDistributionCsvPath = Path.Combine(Application.streamingAssetsPath, "GoldDistribution.csv");
             GoldDistribution[] goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
 

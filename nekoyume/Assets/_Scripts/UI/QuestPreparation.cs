@@ -603,7 +603,7 @@ namespace Nekoyume.UI
                 _tempStats.Level,
                 equipments,
                 consumables,
-                Game.Game.instance.TableSheets
+                Game.Game.instance.TableSheets.EquipmentItemSetEffectSheet
             );
             using (var enumerator = stats.GetBaseAndAdditionalStats().GetEnumerator())
             {
@@ -727,13 +727,23 @@ namespace Nekoyume.UI
                 ((Equipment) outNonFungibleItem).Equip();
             }
 
+            var tableSheets = Game.Game.instance.TableSheets;
             var simulator = new StageSimulator(
                 new Cheat.DebugRandom(),
                 avatarState,
                 consumables,
                 worldRow.Id,
                 stageId,
-                Game.Game.instance.TableSheets
+                tableSheets.MaterialItemSheet,
+                tableSheets.SkillSheet,
+                tableSheets.SkillBuffSheet,
+                tableSheets.BuffSheet,
+                tableSheets.CharacterSheet,
+                tableSheets.CharacterLevelSheet,
+                tableSheets.EquipmentItemSetEffectSheet,
+                tableSheets.StageSheet,
+                tableSheets.StageWaveSheet,
+                tableSheets.EnemySkillSheet
             );
             simulator.Simulate();
             GoToStage(simulator.Log);

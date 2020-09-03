@@ -169,7 +169,7 @@ namespace Nekoyume.Game
 
         private IEnumerator CoInitializeTableSheets()
         {
-            TableSheets = new TableSheets();
+            yield return null;
             var request =
                 Resources.LoadAsync<AddressableAssetsContainer>(AddressableAssetsContainerPath);
             yield return request;
@@ -180,13 +180,12 @@ namespace Nekoyume.Game
             }
 
             List<TextAsset> csvAssets = addressableAssetsContainer.tableCsvAssets;
+            var csv = new Dictionary<string, string>();
             foreach (var asset in csvAssets)
             {
-                TableSheets.SetToSheet(asset.name, asset.text);
+                csv[asset.name] = asset.text;
             }
-
-            TableSheets.ItemSheetInitialize();
-            TableSheets.QuestSheetInitialize();
+            TableSheets = new TableSheets(csv);
         }
 
         public static IDictionary<string, string> GetTableCsvAssets()

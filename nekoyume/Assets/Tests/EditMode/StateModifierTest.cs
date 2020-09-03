@@ -3,6 +3,7 @@ using System.Numerics;
 using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -30,7 +31,16 @@ namespace Tests.EditMode
             var currency = new Currency("NCG", 2, minter: null);
             var gold = new FungibleAssetValue(currency, 0, 0);
             _goldBalanceState = new GoldBalanceState(_agentState.address, gold);
-            _avatarState = new AvatarState(new Address(), _agentState.address, 0, _tableSheets,
+            _avatarState = new AvatarState(
+                new Address(),
+                _agentState.address,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.QuestSheet,
+                _tableSheets.QuestRewardSheet,
+                _tableSheets.QuestItemRewardSheet,
+                _tableSheets.EquipmentItemRecipeSheet,
+                _tableSheets.EquipmentItemSubRecipeSheet,
                 new GameConfigState());
         }
 
