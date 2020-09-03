@@ -25,18 +25,20 @@ namespace Lib9c.Tests
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = new Address(adminPrivateKey.PublicKey);
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = BlockPolicy.GetPolicy(10000);
-            IRenderer<PolymorphicAction<ActionBase>> renderer = BlockPolicy.GetRenderer();
+            var blockPolicySource = new BlockPolicySource();
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
 
             using var store = new DefaultStore(null);
-            _ = new BlockChain<PolymorphicAction<ActionBase>>(
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
                 policy,
                 store,
                 store,
                 genesis,
-                renderers: new[] { renderer }
+                renderers: new[] { blockPolicySource.BlockRenderer }
             );
+            blockPolicySource.ActivatedAccountsStateGetter = () => blockChain.GetState(ActivatedAccountsState.Address);
+            blockPolicySource.UpdateActivationSet(blockPolicySource.ActivatedAccountsStateGetter());
             Transaction<PolymorphicAction<ActionBase>> tx = Transaction<PolymorphicAction<ActionBase>>.Create(
                 0,
                 new PrivateKey(),
@@ -54,8 +56,8 @@ namespace Lib9c.Tests
             var activatedPrivateKey = new PrivateKey();
             var activatedAddress = activatedPrivateKey.ToAddress();
 
-            IBlockPolicy<PolymorphicAction<ActionBase>> policy = BlockPolicy.GetPolicy(10000);
-            IRenderer<PolymorphicAction<ActionBase>> renderer = BlockPolicy.GetRenderer();
+            var blockPolicySource = new BlockPolicySource();
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
                 ImmutableHashSet.Create(activatedAddress).Add(adminAddress)
@@ -66,8 +68,10 @@ namespace Lib9c.Tests
                 store,
                 store,
                 genesis,
-                renderers: new[] { renderer }
+                renderers: new[] { blockPolicySource.BlockRenderer }
             );
+            blockPolicySource.ActivatedAccountsStateGetter = () => blockChain.GetState(ActivatedAccountsState.Address);
+            blockPolicySource.UpdateActivationSet(blockPolicySource.ActivatedAccountsStateGetter());
             Transaction<PolymorphicAction<ActionBase>> txByStranger =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     0,
