@@ -98,8 +98,12 @@ namespace Nekoyume.Model
             PostConstruction(simulator.CharacterLevelSheet, simulator.EquipmentItemSetEffectSheet);
         }
 
-        public Player(AvatarState avatarState, CharacterSheet characterSheet, CharacterLevelSheet characterLevelSheet, EquipmentItemSetEffectSheet equipmentItemSetEffectSheet)
-            : base(
+        public Player(
+            AvatarState avatarState, 
+            CharacterSheet characterSheet, 
+            CharacterLevelSheet characterLevelSheet, 
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
+        ) : base(
                 null,
                 characterSheet,
                 avatarState.characterId,
@@ -123,8 +127,12 @@ namespace Nekoyume.Model
             PostConstruction(characterLevelSheet, equipmentItemSetEffectSheet);
         }
 
-        public Player(int level, CharacterSheet characterSheet, CharacterLevelSheet characterLevelSheet, EquipmentItemSetEffectSheet equipmentItemSetEffectSheet) :
-            base(
+        public Player(
+            int level, 
+            CharacterSheet characterSheet, 
+            CharacterLevelSheet characterLevelSheet, 
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
+        ) : base(
                 null,
                 characterSheet,
                 GameConfig.DefaultAvatarCharacterId,

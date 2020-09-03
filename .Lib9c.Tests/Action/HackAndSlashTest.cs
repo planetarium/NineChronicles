@@ -88,7 +88,7 @@ namespace Lib9c.Tests.Action
             var newWeeklyState = nextState.GetWeeklyArenaState(0);
 
             Assert.NotNull(action.Result);
-            Assert.Contains(typeof(GetReward), action.Result.Select(e => e.GetType()));
+            Assert.NotEmpty(action.Result.OfType<GetReward>());
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
             Assert.Contains(avatarAddress, newWeeklyState);
             Assert.True(nextAvatarState.worldInformation.IsStageCleared(1));

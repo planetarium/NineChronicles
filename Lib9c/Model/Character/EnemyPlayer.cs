@@ -15,11 +15,31 @@ namespace Nekoyume.Model
             NameWithHash = avatarState.NameWithHash;
         }
 
-        public EnemyPlayer(AvatarState avatarState, CharacterSheet characterSheet, CharacterLevelSheet characterLevelSheet, EquipmentItemSetEffectSheet equipmentItemSetEffectSheet): base(avatarState, characterSheet, characterLevelSheet, equipmentItemSetEffectSheet)
+        public EnemyPlayer(
+            AvatarState avatarState, 
+            CharacterSheet characterSheet, 
+            CharacterLevelSheet characterLevelSheet, 
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
+        ) : base(
+            avatarState, 
+            characterSheet, 
+            characterLevelSheet, 
+            equipmentItemSetEffectSheet
+        )
         {
         }
 
-        public EnemyPlayer(int level, CharacterSheet characterSheet, CharacterLevelSheet characterLevelSheet, EquipmentItemSetEffectSheet equipmentItemSetEffectSheet) : base(level, characterSheet, characterLevelSheet, equipmentItemSetEffectSheet)
+        public EnemyPlayer(
+            int level, 
+            CharacterSheet characterSheet, 
+            CharacterLevelSheet characterLevelSheet, 
+            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet
+        ) : base(
+            level, 
+            characterSheet, 
+            characterLevelSheet, 
+            equipmentItemSetEffectSheet
+        )
         {
         }
 

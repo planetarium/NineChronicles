@@ -336,9 +336,9 @@ namespace Nekoyume.Action
             }
         }
 
-        private BigInteger GetRequiredNCG(EnhancementCostSheet tableSheets, int grade, int level)
+        private BigInteger GetRequiredNCG(EnhancementCostSheet costSheet, int grade, int level)
         {
-            var row = tableSheets
+            var row = costSheet
                 .Values
                 .FirstOrDefault(x => x.Grade == grade && x.Level == level);
 
