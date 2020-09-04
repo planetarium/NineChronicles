@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -11,12 +12,15 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
 using Libplanet.RocksDBStore;
+using Libplanet.Store;
+using Libplanet.Store.Trie;
 
 namespace Snapshot
 {
     class Program
     {
         private RocksDBStore _store;
+        private TrieStateStore _stateStore;
 
         static void Main(string[] args)
         {
@@ -44,7 +48,14 @@ namespace Snapshot
                 throw new CommandExitedException("Invalid store path. Please check --store-path is valid.", -1);
             }
 
+            var statesPath = Path.Combine(storePath, "states");
+            var stateHashesPath = Path.Combine(storePath, "state_hashes");
+
             _store = new RocksDBStore(storePath);
+            IKeyValueStore stateKeyValueStore = new RocksDBKeyValueStore(statesPath);
+            IKeyValueStore stateHashKeyValueStore = new RocksDBKeyValueStore(stateHashesPath);
+            _stateStore = new TrieStateStore(stateKeyValueStore, stateHashKeyValueStore);
+
             var canonicalChainId = _store.GetCanonicalChainId();
             if (canonicalChainId is Guid chainId)
             {
@@ -71,7 +82,7 @@ namespace Snapshot
                             -1);
                     }
                     snapshotTipHash = hash;
-                } while (_store.GetBlockStates(snapshotTipHash) is null);
+                } while (!_stateStore.ContainsBlockStates(snapshotTipHash));
 
                 var forkedId = Guid.NewGuid();
 
@@ -84,7 +95,11 @@ namespace Snapshot
                 }
 
                 var snapshotTipDigest = _store.GetBlockDigest(snapshotTipHash);
+
+                _stateStore.PruneStates(new []{ snapshotTipHash }.ToImmutableHashSet());
+
                 _store.Dispose();
+                _stateStore.Dispose();
 
                 var genesisHashHex = ByteUtil.Hex(genesisHash.ToByteArray());
                 var snapshotTipHashHex = ByteUtil.Hex(snapshotTipHash.ToByteArray());
@@ -150,7 +165,7 @@ namespace Snapshot
                 }
             }
 
-            _store.ForkStateReferences(src, dest, branchPoint);
+            _stateStore.ForkStates(src, dest, branchPoint);
 
             foreach (KeyValuePair<Address, long> pair in _store.ListTxNonces(src))
             {
