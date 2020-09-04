@@ -101,7 +101,7 @@ namespace Nekoyume.Action
             sw.Restart();
 
             // 상점에서 아이템을 빼온다.
-            if (!shopState.TryUnregister(ctx.Signer, productId, out var outUnregisteredItem))
+            if (!shopState.TryUnregister(productId, out var outUnregisteredItem))
             {
                 return states;
             }
