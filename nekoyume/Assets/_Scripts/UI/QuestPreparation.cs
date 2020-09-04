@@ -734,16 +734,7 @@ namespace Nekoyume.UI
                 consumables,
                 worldRow.Id,
                 stageId,
-                tableSheets.MaterialItemSheet,
-                tableSheets.SkillSheet,
-                tableSheets.SkillBuffSheet,
-                tableSheets.BuffSheet,
-                tableSheets.CharacterSheet,
-                tableSheets.CharacterLevelSheet,
-                tableSheets.EquipmentItemSetEffectSheet,
-                tableSheets.StageSheet,
-                tableSheets.StageWaveSheet,
-                tableSheets.EnemySkillSheet
+                tableSheets.GetStageSimulatorSheets()
             );
             simulator.Simulate();
             GoToStage(simulator.Log);

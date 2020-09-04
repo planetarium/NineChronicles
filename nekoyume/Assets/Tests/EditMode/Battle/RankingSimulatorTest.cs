@@ -32,12 +32,7 @@ namespace Tests.EditMode.Battle
                 new Address(),
                 agentState.address,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             );
             var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
@@ -46,14 +41,7 @@ namespace Tests.EditMode.Battle
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets.MaterialItemSheet,
-                _tableSheets.SkillSheet,
-                _tableSheets.SkillBuffSheet,
-                _tableSheets.BuffSheet,
-                _tableSheets.CharacterSheet,
-                _tableSheets.CharacterLevelSheet,
-                _tableSheets.EquipmentItemSetEffectSheet,
-                _tableSheets.WeeklyArenaRewardSheet,
+                _tableSheets.GetRankingSimulatorSheets(),
                 999999,
                 arenaInfo,
                 arenaInfo

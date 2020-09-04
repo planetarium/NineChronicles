@@ -361,7 +361,6 @@ namespace Nekoyume.BlockChain
             {
                 Assert.IsNotNull(GetState(RankingState.Address));
                 Assert.IsNotNull(GetState(ShopState.Address));
-                Assert.IsNotNull(GetState(TableSheetsState.Address));
                 Assert.IsNotNull(GetState(GameConfigState.Address));
 
                 // 랭킹의 상태를 한 번 동기화 한다.

@@ -69,7 +69,6 @@ namespace Nekoyume.BlockChain
                 throw new KeyNotFoundException(nameof(GameConfigSheet));
             }
             var gameConfigState = new GameConfigState(csv);
-            var tableSheetsState = new TableSheetsState(tableSheets);
             var redeemCodeListSheet = new RedeemCodeListSheet();
             redeemCodeListSheet.Set(tableSheets[nameof(RedeemCodeListSheet)]);
             string goldDistributionCsvPath = Path.Combine(Application.streamingAssetsPath, "GoldDistribution.csv");
@@ -82,7 +81,7 @@ namespace Nekoyume.BlockChain
             {
                 RankingState = new RankingState(),
                 ShopState = new ShopState(),
-                TableSheetsState = tableSheetsState,
+                TableSheets = (Dictionary<string, string>) tableSheets,
                 GameConfigState = gameConfigState,
                 RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
                 AdminAddressState = new AdminState(

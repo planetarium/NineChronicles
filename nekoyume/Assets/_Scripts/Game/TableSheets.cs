@@ -144,5 +144,47 @@ namespace Nekoyume.Game
             QuestSheet.Set(GoldQuestSheet, false);
             QuestSheet.Set(CombinationEquipmentQuestSheet);
         }
+
+        public StageSimulatorSheets GetStageSimulatorSheets()
+        {
+            return new StageSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                StageSheet,
+                StageWaveSheet,
+                EnemySkillSheet
+            );
+        }
+
+        public RankingSimulatorSheets GetRankingSimulatorSheets()
+        {
+            return new RankingSimulatorSheets(
+                MaterialItemSheet,
+                SkillSheet,
+                SkillBuffSheet,
+                BuffSheet,
+                CharacterSheet,
+                CharacterLevelSheet,
+                EquipmentItemSetEffectSheet,
+                WeeklyArenaRewardSheet
+            );
+        }
+
+        public AvatarSheets GetAvatarSheets()
+        {
+            return new AvatarSheets(
+                WorldSheet,
+                QuestSheet,
+                QuestRewardSheet,
+                QuestItemRewardSheet,
+                EquipmentItemRecipeSheet,
+                EquipmentItemSubRecipeSheet
+            );
+        }
     }
 }
