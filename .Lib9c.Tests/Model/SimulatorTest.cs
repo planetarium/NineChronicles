@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Model
             var reward = Simulator.SetReward(itemSelector, _random.Next(2, 2), _random, _materialItemSheet);
             Assert.Equal(2, reward.Count);
             Assert.NotEmpty(reward);
-            Assert.Equal(new[] { 306043, 303000 }, reward.Select(i => i.Id).ToArray());
+            Assert.Equal(new[] { 303000, 306043 }, reward.Select(i => i.Id).OrderBy(i => i).ToArray());
         }
 
         [Fact]

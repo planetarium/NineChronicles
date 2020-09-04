@@ -59,12 +59,7 @@ namespace Nekoyume.Model.State
         public AvatarState(Address address,
             Address agentAddress,
             long blockIndex,
-            WorldSheet worldSheet,
-            QuestSheet questSheet,
-            QuestRewardSheet questRewardSheet,
-            QuestItemRewardSheet questItemRewardSheet,
-            EquipmentItemRecipeSheet equipmentItemRecipeSheet,
-            EquipmentItemSubRecipeSheet equipmentItemSubRecipeSheet,
+            AvatarSheets avatarSheets,
             GameConfigState gameConfigState,
             string name = null) : base(address)
         {
@@ -76,15 +71,15 @@ namespace Nekoyume.Model.State
             level = 1;
             exp = 0;
             inventory = new Inventory();
-            worldInformation = new WorldInformation(blockIndex, worldSheet, GameConfig.IsEditor);
+            worldInformation = new WorldInformation(blockIndex, avatarSheets.WorldSheet, GameConfig.IsEditor);
             updatedAt = DateTimeOffset.UtcNow;
             this.agentAddress = agentAddress;
             questList = new QuestList(
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet
+                avatarSheets.QuestSheet,
+                avatarSheets.QuestRewardSheet,
+                avatarSheets.QuestItemRewardSheet,
+                avatarSheets.EquipmentItemRecipeSheet,
+                avatarSheets.EquipmentItemSubRecipeSheet
             );
             mailBox = new MailBox();
             this.blockIndex = blockIndex;

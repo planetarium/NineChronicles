@@ -1,12 +1,10 @@
 namespace Lib9c.Tests.Action
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
-    using System.Numerics;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
+    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.State;
     using Xunit;
@@ -18,17 +16,14 @@ namespace Lib9c.Tests.Action
         {
             var adminAddress = new Address("399bddF9F7B6d902ea27037B907B2486C9910730");
             var adminState = new AdminState(adminAddress, 100);
+            const string tableName = "TestTable";
             var initStates = ImmutableDictionary<Address, IValue>.Empty
                 .Add(AdminState.Address, adminState.Serialize())
-                .Add(TableSheetsState.Address, new TableSheetsState(new Dictionary<string, string>()
-                {
-                    ["TestTable"] = "Initial",
-                }).Serialize());
-            var state =
-                new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
+                .Add(Addresses.TableSheet.Derive(tableName), Dictionary.Empty.Add(tableName, "Initial"));
+            var state = new State(initStates, ImmutableDictionary<(Address, Currency), FungibleAssetValue>.Empty);
             var action = new PatchTableSheet()
             {
-                TableName = "TestTable",
+                TableName = tableName,
                 TableCsv = "New Value",
             };
 

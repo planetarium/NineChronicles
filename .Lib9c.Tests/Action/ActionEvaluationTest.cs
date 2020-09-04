@@ -1,11 +1,9 @@
 namespace Lib9c.Tests.Action
 {
-    using System.Collections.Generic;
     using System.IO;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
-    using Libplanet.Action;
     using Libplanet.Assets;
     using Nekoyume.Action;
     using Xunit;
@@ -20,6 +18,7 @@ namespace Lib9c.Tests.Action
             var blockIndex = 1234;
             var states = new State()
                 .SetState(signer, (Text)"ANYTHING")
+                .SetState(default, Dictionary.Empty.Add("key", "value"))
                 .MintAsset(signer, currency * 10000);
             var action = new TransferAsset(
                 sender: default,
@@ -47,6 +46,8 @@ namespace Lib9c.Tests.Action
             // FIXME We should equality check more precisely.
             Assert.Equal(evaluation.Signer, deserialized.Signer);
             Assert.Equal(evaluation.BlockIndex, deserialized.BlockIndex);
+            var dict = (Dictionary)deserialized.OutputStates.GetState(default);
+            Assert.Equal("value", (Text)dict["key"]);
         }
     }
 }

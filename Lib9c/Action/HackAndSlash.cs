@@ -202,32 +202,14 @@ namespace Nekoyume.Action
             Log.Debug("HAS Unequip items: {Elapsed}", sw.Elapsed);
 
             sw.Restart();
-            var materialItemSheet = states.GetSheet<MaterialItemSheet>();
-            var skillSheet = states.GetSheet<SkillSheet>();
-            var skillBuffSheet = states.GetSheet<SkillBuffSheet>();
-            var buffSheet = states.GetSheet<BuffSheet>();
             var characterSheet = states.GetSheet<CharacterSheet>();
-            var levelSheet = states.GetSheet<CharacterLevelSheet>();
-            var setEffectSheet = states.GetSheet<EquipmentItemSetEffectSheet>();
-            var stageWaveSheet = states.GetSheet<StageWaveSheet>();
-            var enemySkillSheet = states.GetSheet<EnemySkillSheet>();
-
             var simulator = new StageSimulator(
                 ctx.Random,
                 avatarState,
                 foods,
                 worldId,
                 stageId,
-                materialItemSheet,
-                skillSheet,
-                skillBuffSheet,
-                buffSheet,
-                characterSheet,
-                levelSheet,
-                setEffectSheet,
-                stageSheet,
-                stageWaveSheet,
-                enemySkillSheet
+                states.GetStageSimulatorSheets()
             );
 
             sw.Stop();

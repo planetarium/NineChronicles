@@ -31,14 +31,7 @@ namespace Nekoyume.Battle
             AvatarState avatarState,
             AvatarState enemyAvatarState,
             List<Guid> foods,
-            MaterialItemSheet materialItemSheet,
-            SkillSheet skillSheet,
-            SkillBuffSheet skillBuffSheet,
-            BuffSheet buffSheet,
-            CharacterSheet characterSheet,
-            CharacterLevelSheet characterLevelSheet,
-            EquipmentItemSetEffectSheet equipmentItemSetEffectSheet,
-            WeeklyArenaRewardSheet weeklyArenaRewardSheet,
+            RankingSimulatorSheets rankingSimulatorSheets,
             int stageId,
             ArenaInfo arenaInfo,
             ArenaInfo enemyInfo
@@ -46,13 +39,7 @@ namespace Nekoyume.Battle
             random,
             avatarState,
             foods,
-            materialItemSheet,
-            skillSheet,
-            skillBuffSheet,
-            buffSheet,
-            characterSheet,
-            characterLevelSheet,
-            equipmentItemSetEffectSheet
+            rankingSimulatorSheets
         )
         {
             _enemyPlayer = new EnemyPlayer(enemyAvatarState, this);
@@ -61,7 +48,7 @@ namespace Nekoyume.Battle
             _arenaInfo = arenaInfo;
             _enemyInfo = enemyInfo;
             _avatarState = avatarState;
-            WeeklyArenaRewardSheet = weeklyArenaRewardSheet;
+            WeeklyArenaRewardSheet = rankingSimulatorSheets.WeeklyArenaRewardSheet;
         }
 
         public override Player Simulate()

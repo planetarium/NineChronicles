@@ -48,12 +48,7 @@ namespace Lib9c.Tests.Model.State
                 avatarAddress,
                 default,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             );
 
@@ -62,12 +57,7 @@ namespace Lib9c.Tests.Model.State
                 avatarAddress2,
                 default,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             );
 
@@ -145,12 +135,7 @@ namespace Lib9c.Tests.Model.State
                     new PrivateKey().ToAddress(),
                     new PrivateKey().ToAddress(),
                     0L,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.QuestSheet,
-                    _tableSheets.QuestRewardSheet,
-                    _tableSheets.QuestItemRewardSheet,
-                    _tableSheets.EquipmentItemRecipeSheet,
-                    _tableSheets.EquipmentItemSubRecipeSheet,
+                    _tableSheets.GetAvatarSheets(),
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(
@@ -177,12 +162,7 @@ namespace Lib9c.Tests.Model.State
                     new PrivateKey().ToAddress(),
                     new PrivateKey().ToAddress(),
                     0L,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.QuestSheet,
-                    _tableSheets.QuestRewardSheet,
-                    _tableSheets.QuestItemRewardSheet,
-                    _tableSheets.EquipmentItemRecipeSheet,
-                    _tableSheets.EquipmentItemSubRecipeSheet,
+                    _tableSheets.GetAvatarSheets(),
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(
@@ -216,12 +196,7 @@ namespace Lib9c.Tests.Model.State
                     avatarAddress,
                     new PrivateKey().ToAddress(),
                     0L,
-                    _tableSheets.WorldSheet,
-                    _tableSheets.QuestSheet,
-                    _tableSheets.QuestRewardSheet,
-                    _tableSheets.QuestItemRewardSheet,
-                    _tableSheets.EquipmentItemRecipeSheet,
-                    _tableSheets.EquipmentItemSubRecipeSheet,
+                    _tableSheets.GetAvatarSheets(),
                     new GameConfigState(),
                     i.ToString());
                 weeklyArenaState.Add(

@@ -158,34 +158,12 @@ namespace Nekoyume.Action
         )
         {
             var state = ctx.PreviousStates;
-            var worldSheet = state.GetSheet<WorldSheet>();
-            var questSheet = new QuestSheet();
-            questSheet.Set(state.GetSheet<WorldQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<CollectQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<CombinationQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<TradeQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<MonsterQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<ItemEnhancementQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<GeneralQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<ItemGradeQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<ItemTypeCollectQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<GoldQuestSheet>(), false);
-            questSheet.Set(state.GetSheet<CombinationEquipmentQuestSheet>());
-            var questRewardSheet = state.GetSheet<QuestRewardSheet>();
-            var questItemRewardSheet = state.GetSheet<QuestItemRewardSheet>();
-            var equipmentItemRecipeSheet = state.GetSheet<EquipmentItemRecipeSheet>();
-            var equipmentItemSubRecipeSheet = state.GetSheet<EquipmentItemSubRecipeSheet>();
             var gameConfigState = state.GetGameConfigState();
             var avatarState = new AvatarState(
                 avatarAddress,
                 ctx.Signer,
                 ctx.BlockIndex,
-                worldSheet,
-                questSheet,
-                questRewardSheet,
-                questItemRewardSheet,
-                equipmentItemRecipeSheet,
-                equipmentItemSubRecipeSheet,
+                state.GetAvatarSheets(),
                 gameConfigState,
                 name
             );

@@ -37,12 +37,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress,
                 agentAddress,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             )
             {
@@ -64,12 +59,7 @@ namespace Lib9c.Tests.Action
                 avatarAddress2,
                 agentAddress,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             );
             avatarState2.worldInformation.ClearStage(

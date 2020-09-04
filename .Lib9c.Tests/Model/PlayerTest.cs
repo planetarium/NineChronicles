@@ -26,12 +26,7 @@ namespace Lib9c.Tests.Model
                 default,
                 default,
                 0,
-                _tableSheets.WorldSheet,
-                _tableSheets.QuestSheet,
-                _tableSheets.QuestRewardSheet,
-                _tableSheets.QuestItemRewardSheet,
-                _tableSheets.EquipmentItemRecipeSheet,
-                _tableSheets.EquipmentItemSubRecipeSheet,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             );
         }
@@ -45,16 +40,7 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.MaterialItemSheet,
-                _tableSheets.SkillSheet,
-                _tableSheets.SkillBuffSheet,
-                _tableSheets.BuffSheet,
-                _tableSheets.CharacterSheet,
-                _tableSheets.CharacterLevelSheet,
-                _tableSheets.EquipmentItemSetEffectSheet,
-                _tableSheets.StageSheet,
-                _tableSheets.StageWaveSheet,
-                _tableSheets.EnemySkillSheet
+                _tableSheets.GetStageSimulatorSheets()
             );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
@@ -75,16 +61,7 @@ namespace Lib9c.Tests.Model
                 new List<Guid>(),
                 1,
                 1,
-                _tableSheets.MaterialItemSheet,
-                _tableSheets.SkillSheet,
-                _tableSheets.SkillBuffSheet,
-                _tableSheets.BuffSheet,
-                _tableSheets.CharacterSheet,
-                _tableSheets.CharacterLevelSheet,
-                _tableSheets.EquipmentItemSetEffectSheet,
-                _tableSheets.StageSheet,
-                _tableSheets.StageWaveSheet,
-                _tableSheets.EnemySkillSheet
+                _tableSheets.GetStageSimulatorSheets()
             );
             var player = simulator.Player;
             var enemy = new Enemy(player, _tableSheets.CharacterSheet.Values.First(), 1);
