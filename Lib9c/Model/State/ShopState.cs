@@ -44,7 +44,6 @@ namespace Nekoyume.Model.State
 
         public void Register(ShopItem shopItem)
         {
-            var sellerAgentAddress = shopItem.SellerAgentAddress;
             var productId = shopItem.ProductId;
             _products[productId] = shopItem;
         }
