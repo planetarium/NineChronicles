@@ -17,20 +17,13 @@ namespace Nekoyume.Action
     using NCAction = PolymorphicAction<ActionBase>;
     using NCBlock = Block<PolymorphicAction<ActionBase>>;
 
-    // FIXME: As it renders more than actions now, we should rename this class.
-    public class ActionRenderer : IRenderer<NCAction>
+    public class ActionRenderer : IActionRenderer<NCAction>
     {
         public Subject<ActionEvaluation<ActionBase>> ActionRenderSubject { get; }
             = new Subject<ActionEvaluation<ActionBase>>();
 
         public Subject<ActionEvaluation<ActionBase>> ActionUnrenderSubject { get; }
             = new Subject<ActionEvaluation<ActionBase>>();
-
-        private readonly Subject<(NCBlock OldTip, NCBlock NewTip)> _blockSubject =
-            new Subject<(NCBlock OldTip, NCBlock NewTip)>();
-
-        private readonly Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)> _reorgSubject =
-            new Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>();
 
         public void RenderAction(
             IAction action,
@@ -104,7 +97,7 @@ namespace Nekoyume.Action
             NCBlock newTip
         )
         {
-            _blockSubject.OnNext((oldTip, newTip));
+            // RenderBlock should be handled by BlockRenderer
         }
 
         public void RenderReorg(
@@ -113,7 +106,7 @@ namespace Nekoyume.Action
             NCBlock branchpoint
         )
         {
-            _reorgSubject.OnNext((oldTip, newTip, branchpoint));
+            // RenderReorg should be handled by BlockRenderer
         }
 
         public IObservable<ActionEvaluation<T>> EveryRender<T>()
@@ -177,13 +170,6 @@ namespace Nekoyume.Action
                 PreviousStates = eval.PreviousStates,
             });
         }
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlock() =>
-            _blockSubject.AsObservable();
-
-        public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
-            EveryReorg() =>
-            _reorgSubject.AsObservable();
 
         private static ActionBase GetActionBase(IAction action)
         {
