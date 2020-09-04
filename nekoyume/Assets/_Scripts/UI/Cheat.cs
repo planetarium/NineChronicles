@@ -6,9 +6,11 @@ using System.Linq;
 using System.Text;
 using Bencodex.Types;
 using Libplanet.Action;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.BlockChain;
 using Nekoyume.EnumType;
+using Nekoyume.Game;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
@@ -117,7 +119,8 @@ namespace Nekoyume
         public void RefreshTableSheets()
         {
             var tableName = TableSheetsDropdown.options.Count == 0 ? string.Empty : GetTableName();
-            IImmutableDictionary<string, string> tableSheets = GetCurrentTableSheetState().TableSheets;
+            var tableCsvAssets = Game.Game.GetTableCsvAssets();
+            IImmutableDictionary<string, string> tableSheets = GetCurrentTableCSV(tableCsvAssets.Keys.ToList()).ToImmutableDictionary();
             if (tableSheets.TryGetValue(tableName, out string onChainTableCsv))
             {
                 Display(nameof(OnChainTableSheet), onChainTableCsv);
@@ -285,18 +288,23 @@ namespace Nekoyume
         private static Dictionary<string, string> GetTableAssetsHavingDifference()
         {
             var tableCsvAssets = Game.Game.GetTableCsvAssets();
-            var tableSheetsState = GetCurrentTableSheetState();
-            return tableCsvAssets.Where(pair =>
-                !tableSheetsState.TableSheets.TryGetValue(pair.Key, out string onChainCsv) ||
-                onChainCsv != pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+            var tableCsvNames = tableCsvAssets.Keys.ToList();
+            var currentTables = GetCurrentTableCSV(tableCsvNames);
+            return tableCsvAssets
+                .Where(pair => pair.Value != currentTables[pair.Key])
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
 
-        private static TableSheetsState GetCurrentTableSheetState()
+        private static Dictionary<string, string> GetCurrentTableCSV(IEnumerable<string> tableNames)
         {
-            return new TableSheetsState(
-                (Dictionary) Game.Game.instance.Agent.GetState(TableSheetsState.Address)
-            );
+            var result = new Dictionary<string, string>();
+            foreach (var name in tableNames)
+            {
+                result[name] = Game.Game.instance.Agent.GetState(Addresses.TableSheet.Derive(name)).ToDotnetString();
+            }
+
+            return result;
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -389,17 +397,7 @@ namespace Nekoyume
                 new List<Guid>(),
                 worldRow.Id,
                 stageId,
-                tableSheets.MaterialItemSheet,
-                tableSheets.SkillSheet,
-                tableSheets.SkillBuffSheet,
-                tableSheets.BuffSheet,
-                tableSheets.CharacterSheet,
-                tableSheets.CharacterLevelSheet,
-                tableSheets.EquipmentItemSetEffectSheet,
-                tableSheets.StageSheet,
-                tableSheets.StageWaveSheet,
-
-                tableSheets.EnemySkillSheet,
+                tableSheets.GetStageSimulatorSheets(),
                 _selectedSkill
             );
             simulator.Simulate();
@@ -414,32 +412,6 @@ namespace Nekoyume
         private void DummySkill()
         {
             skillPanel.gameObject.SetActive(true);
-        }
-
-        private void ExportState()
-        {
-            var avatarStates = new Bencodex.Types.Dictionary(
-                States.Instance.AvatarStates.Select(kv =>
-                    new KeyValuePair<IKey, IValue>(
-                        new Binary(BitConverter.GetBytes(kv.Key)),
-                        kv.Value.Serialize()
-                    )
-                )
-            );
-            var states = Bencodex.Types.Dictionary.Empty
-                .Add("AgentState", States.Instance.AgentState.Serialize())
-                .Add("AvatarStates", avatarStates)
-                .Add("RankingState", States.Instance.RankingState.Serialize())
-                .Add("ShopState", States.Instance.ShopState.Serialize())
-                .Add("TableSheetsState", GetCurrentTableSheetState().Serialize());
-            var codec = new Bencodex.Codec();
-            var path = Path.Combine(
-                Application.persistentDataPath,
-                $"{DateTimeOffset.UtcNow:yyyyMMddHHmmss}.states");
-            using (FileStream stream = File.Create(path))
-            {
-                codec.Encode(states, stream);
-            }
         }
 
         private void SelectSkill(Model.Skill.Skill skill)
