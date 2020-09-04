@@ -192,11 +192,8 @@ namespace Nekoyume.BlockChain
                     store,
                     (IStateStore) store,
                     genesisBlock,
-                    renderers: new IRenderer<PolymorphicAction<ActionBase>>[]
-                    {
-                        BlockRenderer,
-                        ActionRenderer
-                    });
+                    renderers: BlockPolicySource.GetRenderers()
+                );
             }
             catch (InvalidGenesisBlockException)
             {
