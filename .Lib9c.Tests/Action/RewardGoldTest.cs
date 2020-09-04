@@ -1,9 +1,6 @@
 namespace Lib9c.Tests.Action
 {
-    using System;
     using System.Linq;
-    using System.Numerics;
-    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Assets;
@@ -15,41 +12,37 @@ namespace Lib9c.Tests.Action
     using Nekoyume.TableData;
     using Xunit;
 
-    public class RewardGoldTest : IDisposable
+    public class RewardGoldTest
     {
         private readonly AvatarState _avatarState;
-        private TableSheets _tableSheets;
-        private State _baseState;
+        private readonly State _baseState;
+        private readonly TableSheets _tableSheets;
 
         public RewardGoldTest()
         {
-            _tableSheets = new TableSheets();
-            _tableSheets.SetToSheet(nameof(WorldSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestRewardSheet), "test");
-            _tableSheets.SetToSheet(nameof(QuestItemRewardSheet), "test");
-            _tableSheets.SetToSheet(nameof(EquipmentItemRecipeSheet), "test");
-            _tableSheets.SetToSheet(nameof(EquipmentItemSubRecipeSheet), "test");
-            _tableSheets.SetToSheet(
-                nameof(CharacterSheet),
-                "id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed\n100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3");
+            var sheets = TableSheetsImporter.ImportSheets();
+            sheets[nameof(CharacterSheet)] =
+                "id,_name,size_type,elemental_type,hp,atk,def,cri,hit,spd,lv_hp,lv_atk,lv_def,lv_cri,lv_hit,lv_spd,attack_range,run_speed\n100010,전사,S,0,300,20,10,10,90,70,12,0.8,0.4,0,3.6,2.8,2,3";
 
             var privateKey = new PrivateKey();
             var agentAddress = privateKey.PublicKey.ToAddress();
 
             var avatarAddress = agentAddress.Derive("avatar");
-            _avatarState = new AvatarState(avatarAddress, agentAddress, 0, _tableSheets, new GameConfigState());
+            _tableSheets = new TableSheets(sheets);
+
+            _avatarState = new AvatarState(
+                avatarAddress,
+                agentAddress,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState()
+            );
 
             var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
             _baseState = (State)new State()
                 .SetState(GoldCurrencyState.Address, gold.Serialize())
                 .SetState(Addresses.GoldDistribution, GoldDistributionTest.Fixture.Select(v => v.Serialize()).Serialize())
                 .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
-        }
-
-        public void Dispose()
-        {
-            _tableSheets = null;
         }
 
         [Fact]

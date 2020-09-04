@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
-using Libplanet.Assets;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -122,7 +121,9 @@ namespace Nekoyume.Action
             agentState.avatarAddresses.Add(index, avatarAddress);
 
             // Avoid NullReferenceException in test
-            avatarState = CreateAvatarState(name, avatarAddress, ctx);
+            var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
+
+            avatarState = CreateAvatarState(name, avatarAddress, ctx, materialItemSheet);
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;
@@ -138,7 +139,7 @@ namespace Nekoyume.Action
                 states = states.SetState(address, slotState.Serialize());
             }
 
-            avatarState.UpdateQuestRewards(ctx);
+            avatarState.UpdateQuestRewards(materialItemSheet);
 
             sw.Stop();
             Log.Debug("CreateAvatar CreateAvatarState: {Elapsed}", sw.Elapsed);
@@ -149,40 +150,53 @@ namespace Nekoyume.Action
                 .SetState(avatarAddress, avatarState.Serialize());
         }
 
-        private static AvatarState CreateAvatarState(string name, Address avatarAddress, IActionContext ctx)
+        private static AvatarState CreateAvatarState(
+            string name,
+            Address avatarAddress,
+            IActionContext ctx,
+            MaterialItemSheet materialItemSheet
+        )
         {
-            var tableSheets = TableSheets.FromActionContext(ctx);
-            var gameConfigState = ctx.PreviousStates.GetGameConfigState();
+            var state = ctx.PreviousStates;
+            var gameConfigState = state.GetGameConfigState();
             var avatarState = new AvatarState(
                 avatarAddress,
                 ctx.Signer,
                 ctx.BlockIndex,
-                tableSheets,
+                state.GetAvatarSheets(),
                 gameConfigState,
                 name
             );
 
             if (GameConfig.IsEditor)
             {
-                AddItemsForTest(avatarState, ctx.Random, tableSheets);
+                var costumeItemSheet = ctx.PreviousStates.GetSheet<CostumeItemSheet>();
+                var equipmentItemSheet = ctx.PreviousStates.GetSheet<EquipmentItemSheet>();
+                AddItemsForTest(avatarState, ctx.Random, costumeItemSheet, materialItemSheet, equipmentItemSheet);
             }
 
             return avatarState;
         }
 
-        private static void AddItemsForTest(AvatarState avatarState, IRandom random, TableSheets tableSheets)
+        private static void AddItemsForTest(
+            AvatarState avatarState,
+            IRandom random,
+            CostumeItemSheet costumeItemSheet,
+            MaterialItemSheet materialItemSheet,
+            EquipmentItemSheet equipmentItemSheet
+        )
         {
-            foreach (var row in tableSheets.CostumeItemSheet)
+            foreach (var row in costumeItemSheet)
             {
                 avatarState.inventory.AddItem(ItemFactory.CreateCostume(row));
             }
 
-            foreach (var row in tableSheets.MaterialItemSheet)
+            foreach (var row in materialItemSheet)
             {
                 avatarState.inventory.AddItem(ItemFactory.CreateMaterial(row), 10);
             }
 
-            foreach (var pair in tableSheets.EquipmentItemSheet.Where(pair =>
+            foreach (var pair in equipmentItemSheet.Where(pair =>
                 pair.Value.Id > GameConfig.DefaultAvatarWeaponId))
             {
                 var itemId = random.GenerateRandomGuid();

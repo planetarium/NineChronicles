@@ -9,7 +9,6 @@ using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
-using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
 using Serilog;
@@ -151,15 +150,12 @@ namespace Nekoyume.Action
 
             Log.Debug(weeklyArenaState.address.ToHex());
 
-            var tableSheetState = TableSheetsState.FromActionContext(ctx);
-            var tableSheets = TableSheets.FromTableSheetsState(tableSheetState);
-
             var simulator = new RankingSimulator(
                 ctx.Random,
                 avatarState,
                 enemyAvatarState,
                 consumableIds,
-                tableSheets,
+                states.GetRankingSimulatorSheets(),
                 StageId,
                 arenaInfo,
                 weeklyArenaState[EnemyAddress]);

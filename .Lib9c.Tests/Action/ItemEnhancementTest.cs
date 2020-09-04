@@ -1,34 +1,31 @@
 namespace Lib9c.Tests.Action
 {
     using System;
-    using System.Collections.Immutable;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Libplanet.Crypto;
+    using Nekoyume;
     using Nekoyume.Action;
     using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
 
-    // FIXME: Should work without .csv files
-    public class ItemEnhancementTest : IDisposable
+    public class ItemEnhancementTest
     {
         private readonly IRandom _random;
-        private TableSheetsState _tableSheetsState;
+        private readonly Dictionary<string, string> _sheets;
+        private readonly TableSheets _tableSheets;
 
         public ItemEnhancementTest()
         {
-            _tableSheetsState = TableSheetsImporter.ImportTableSheets();
+            _sheets = TableSheetsImporter.ImportSheets();
             _random = new TestRandom();
-        }
-
-        public void Dispose()
-        {
-            _tableSheetsState = null;
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
@@ -38,37 +35,40 @@ namespace Lib9c.Tests.Action
             var agentAddress = privateKey.PublicKey.ToAddress();
             var agentState = new AgentState(agentAddress);
 
-            var tableSheets = TableSheets.FromTableSheetsState(_tableSheetsState);
             var avatarAddress = agentAddress.Derive("avatar");
             var avatarState = new AvatarState(
                 avatarAddress,
                 agentAddress,
                 0,
-                tableSheets,
+                _tableSheets.GetAvatarSheets(),
                 new GameConfigState()
             );
 
             agentState.avatarAddresses.Add(0, avatarAddress);
 
-            var row = tableSheets.EquipmentItemSheet.Values.First();
+            var row = _tableSheets.EquipmentItemSheet.Values.First();
             var equipment = (Equipment)ItemFactory.CreateItemUsable(row, default, 0, 0);
             var materialId = Guid.NewGuid();
             var material = (Equipment)ItemFactory.CreateItemUsable(row, materialId, 0, 0);
             avatarState.inventory.AddItem(equipment, 1);
             avatarState.inventory.AddItem(material, 1);
 
-            avatarState.worldInformation.ClearStage(1, 1, 1, tableSheets.WorldSheet, tableSheets.WorldUnlockSheet);
+            avatarState.worldInformation.ClearStage(1, 1, 1, _tableSheets.WorldSheet, _tableSheets.WorldUnlockSheet);
 
             var slotAddress =
                 avatarAddress.Derive(string.Format(CultureInfo.InvariantCulture, CombinationSlotState.DeriveFormat, 0));
 
             Assert.Equal(0, equipment.level);
 
-            var state = new State(ImmutableDictionary<Address, IValue>.Empty
-                .Add(agentAddress, agentState.Serialize())
-                .Add(avatarAddress, avatarState.Serialize())
-                .Add(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize())
-                .Add(_tableSheetsState.address, _tableSheetsState.Serialize()));
+            var state = new State()
+                .SetState(agentAddress, agentState.Serialize())
+                .SetState(avatarAddress, avatarState.Serialize())
+                .SetState(slotAddress, new CombinationSlotState(slotAddress, 0).Serialize());
+
+            foreach (var (key, value) in _sheets)
+            {
+                state = state.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
 
             var action = new ItemEnhancement()
             {

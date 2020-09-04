@@ -22,6 +22,8 @@ namespace Nekoyume.Battle
         private readonly ArenaInfo _arenaInfo;
         private readonly ArenaInfo _enemyInfo;
         private readonly AvatarState _avatarState;
+
+        public readonly WeeklyArenaRewardSheet WeeklyArenaRewardSheet;
         public override IEnumerable<ItemBase> Reward => _reward;
 
         public RankingSimulator(
@@ -29,10 +31,16 @@ namespace Nekoyume.Battle
             AvatarState avatarState,
             AvatarState enemyAvatarState,
             List<Guid> foods,
-            TableSheets tableSheets,
+            RankingSimulatorSheets rankingSimulatorSheets,
             int stageId,
             ArenaInfo arenaInfo,
-            ArenaInfo enemyInfo) : base(random, avatarState, foods, tableSheets)
+            ArenaInfo enemyInfo
+        ) : base(
+            random,
+            avatarState,
+            foods,
+            rankingSimulatorSheets
+        )
         {
             _enemyPlayer = new EnemyPlayer(enemyAvatarState, this);
             _enemyPlayer.Stats.EqualizeCurrentHPWithHP();
@@ -40,6 +48,7 @@ namespace Nekoyume.Battle
             _arenaInfo = arenaInfo;
             _enemyInfo = enemyInfo;
             _avatarState = avatarState;
+            WeeklyArenaRewardSheet = rankingSimulatorSheets.WeeklyArenaRewardSheet;
         }
 
         public override Player Simulate()
@@ -125,7 +134,7 @@ namespace Nekoyume.Battle
             Log.score = _arenaInfo.Score;
 
             var itemSelector = new WeightedSelector<StageSheet.RewardData>(Random);
-            var rewardSheet = TableSheets.WeeklyArenaRewardSheet;
+            var rewardSheet = WeeklyArenaRewardSheet;
             foreach (var row in rewardSheet.Values)
             {
                 var reward = row.Reward;
@@ -136,7 +145,7 @@ namespace Nekoyume.Battle
             }
 
             var max = _arenaInfo.GetRewardCount();
-            _reward = SetReward(itemSelector, Random.Next(1, max + 1), Random, TableSheets);
+            _reward = SetReward(itemSelector, Random.Next(1, max + 1), Random, MaterialItemSheet);
             var getReward = new GetReward(null, _reward);
             Log.Add(getReward);
             Log.result = Result;

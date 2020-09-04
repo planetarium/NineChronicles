@@ -1,7 +1,9 @@
 namespace Lib9c.Tests.Action
 {
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
+    using Bencodex.Types;
     using Libplanet;
     using Libplanet.Action;
     using Nekoyume;
@@ -16,9 +18,9 @@ namespace Lib9c.Tests.Action
         private readonly Address _agentAddress;
         private readonly Address _avatarAddress;
         private readonly Address _slotAddress;
-        private readonly TableSheetsState _tableSheetsState;
-        private readonly TableSheets _tableSheets;
+        private readonly Dictionary<string, string> _sheets;
         private readonly IRandom _random;
+        private readonly TableSheets _tableSheets;
 
         public CombinationConsumableTest()
         {
@@ -31,9 +33,9 @@ namespace Lib9c.Tests.Action
                     0
                 )
             );
-            _tableSheetsState = TableSheetsImporter.ImportTableSheets();
-            _tableSheets = TableSheets.FromTableSheetsState(_tableSheetsState);
+            _sheets = TableSheetsImporter.ImportSheets();
             _random = new ItemEnhancementTest.TestRandom();
+            _tableSheets = new TableSheets(_sheets);
         }
 
         [Fact]
@@ -47,7 +49,7 @@ namespace Lib9c.Tests.Action
                 _avatarAddress,
                 _agentAddress,
                 1,
-                _tableSheets,
+                _tableSheets.GetAvatarSheets(),
                 gameConfigState
             );
             var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
@@ -67,8 +69,13 @@ namespace Lib9c.Tests.Action
             var initialState = new State()
                 .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, avatarState.Serialize())
-                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize())
-                .SetState(TableSheetsState.Address, _tableSheetsState.Serialize());
+                .SetState(_slotAddress, new CombinationSlotState(_slotAddress, requiredStage).Serialize());
+
+            foreach (var (key, value) in _sheets)
+            {
+                initialState =
+                    initialState.SetState(Addresses.TableSheet.Derive(key), value.Serialize());
+            }
 
             var action = new CombinationConsumable()
             {

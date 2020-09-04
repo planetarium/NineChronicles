@@ -1,10 +1,10 @@
 using System.Linq;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Model.State;
-using Libplanet.Assets;
 
 namespace Nekoyume.Action
 {
@@ -14,7 +14,7 @@ namespace Nekoyume.Action
     {
         public RankingState RankingState { get; set; }
         public ShopState ShopState { get; set; }
-        public TableSheetsState TableSheetsState { get; set; }
+        public Dictionary<string, string> TableSheets { get; set; }
         public GameConfigState GameConfigState { get; set; }
         public RedeemCodeState RedeemCodeState { get; set; }
 
@@ -35,7 +35,7 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
-                states = states.SetState(TableSheetsState.Address, MarkChanged);
+                states = TableSheets.Aggregate(states, (current, pair) => current.SetState(Addresses.TableSheet.Derive(pair.Key), MarkChanged));
                 states = states.SetState(weeklyArenaState.address, MarkChanged);
                 states = states.SetState(GameConfigState.Address, MarkChanged);
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);
@@ -51,11 +51,11 @@ namespace Nekoyume.Action
                 return states;
             }
 
+            states = TableSheets.Aggregate(states, (current, pair) => current.SetState(Addresses.TableSheet.Derive(pair.Key), pair.Value.Serialize()));
             states = states
                 .SetState(weeklyArenaState.address, weeklyArenaState.Serialize())
                 .SetState(RankingState.Address, RankingState.Serialize())
                 .SetState(ShopState.Address, ShopState.Serialize())
-                .SetState(TableSheetsState.Address, TableSheetsState.Serialize())
                 .SetState(GameConfigState.Address, GameConfigState.Serialize())
                 .SetState(RedeemCodeState.Address, RedeemCodeState.Serialize())
                 .SetState(AdminState.Address, AdminAddressState.Serialize())
@@ -71,7 +71,9 @@ namespace Nekoyume.Action
             ImmutableDictionary<string, IValue>.Empty
                 .Add("ranking_state", RankingState.Serialize())
                 .Add("shop_state", ShopState.Serialize())
-                .Add("table_sheets_state", TableSheetsState.Serialize())
+                .Add("table_sheets",
+                    new Dictionary(TableSheets.Select(pair =>
+                            new KeyValuePair<IKey, IValue>((Text) pair.Key, (Text) pair.Value))))
                 .Add("game_config_state", GameConfigState.Serialize())
                 .Add("redeem_code_state", RedeemCodeState.Serialize())
                 .Add("admin_address_state", AdminAddressState.Serialize())
@@ -83,7 +85,8 @@ namespace Nekoyume.Action
         {
             RankingState = new RankingState((Bencodex.Types.Dictionary) plainValue["ranking_state"]);
             ShopState = new ShopState((Bencodex.Types.Dictionary) plainValue["shop_state"]);
-            TableSheetsState = new TableSheetsState((Bencodex.Types.Dictionary) plainValue["table_sheets_state"]);
+            TableSheets = ((Bencodex.Types.Dictionary) plainValue["table_sheets"])
+                .ToDictionary(pair => (string) (Text) pair.Key, pair => (string) (Text) pair.Value);
             GameConfigState = new GameConfigState((Bencodex.Types.Dictionary) plainValue["game_config_state"]);
             RedeemCodeState = new RedeemCodeState((Bencodex.Types.Dictionary) plainValue["redeem_code_state"]);
             AdminAddressState = new AdminState((Bencodex.Types.Dictionary)plainValue["admin_address_state"]);

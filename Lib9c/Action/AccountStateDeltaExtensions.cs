@@ -8,6 +8,7 @@ using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Action
@@ -288,14 +289,106 @@ namespace Nekoyume.Action
 
             try
             {
-                 var goldDistributions = (Bencodex.Types.List)value;
-                 return goldDistributions.Select(v => new GoldDistribution(v));
+                var goldDistributions = (Bencodex.Types.List)value;
+                return goldDistributions.Select(v => new GoldDistribution(v));
             }
             catch (Exception e)
             {
                 Log.Error(e, $"Unexpected error occurred during {nameof(GetGoldDistribution)}()");
                 throw;
             }
+        }
+
+        public static T GetSheet<T>(this IAccountStateDelta states) where T : ISheet, new()
+        {
+            var address = Addresses.GetSheetAddress<T>();
+            var value = states.GetState(address);
+            if (value is null)
+            {
+                Log.Warning($"{nameof(T)} is null ({0})", address.ToHex());
+                throw new FailedLoadStateException(nameof(T));
+            }
+
+            try
+            {
+                var csv = value.ToDotnetString();
+                var sheet = new T();
+                sheet.Set(csv);
+                return sheet;
+            }
+            catch (Exception e)
+            {
+                Log.Error(e, $"Unexpected error occurred during {nameof(T)}()");
+                throw;
+            }
+        }
+
+        public static ItemSheet GetItemSheet(this IAccountStateDelta states)
+        {
+            var sheet = new ItemSheet();
+            sheet.Set(GetSheet<ConsumableItemSheet>(states), false);
+            sheet.Set(GetSheet<CostumeItemSheet>(states), false);
+            sheet.Set(GetSheet<EquipmentItemSheet>(states), false);
+            sheet.Set(GetSheet<MaterialItemSheet>(states));
+            return sheet;
+        }
+
+        public static StageSimulatorSheets GetStageSimulatorSheets(this IAccountStateDelta states)
+        {
+            return new StageSimulatorSheets(
+                GetSheet<MaterialItemSheet>(states),
+                GetSheet<SkillSheet>(states),
+                GetSheet<SkillBuffSheet>(states),
+                GetSheet<BuffSheet>(states),
+                GetSheet<CharacterSheet>(states),
+                GetSheet<CharacterLevelSheet>(states),
+                GetSheet<EquipmentItemSetEffectSheet>(states),
+                GetSheet<StageSheet>(states),
+                GetSheet<StageWaveSheet>(states),
+                GetSheet<EnemySkillSheet>(states)
+            );
+        }
+
+        public static RankingSimulatorSheets GetRankingSimulatorSheets(this IAccountStateDelta states)
+        {
+            return new RankingSimulatorSheets(
+                GetSheet<MaterialItemSheet>(states),
+                GetSheet<SkillSheet>(states),
+                GetSheet<SkillBuffSheet>(states),
+                GetSheet<BuffSheet>(states),
+                GetSheet<CharacterSheet>(states),
+                GetSheet<CharacterLevelSheet>(states),
+                GetSheet<EquipmentItemSetEffectSheet>(states),
+                GetSheet<WeeklyArenaRewardSheet>(states)
+            );
+        }
+
+        public static QuestSheet GetQuestSheet(this IAccountStateDelta states)
+        {
+            var questSheet = new QuestSheet();
+            questSheet.Set(GetSheet<WorldQuestSheet>(states), false);
+            questSheet.Set(GetSheet<CollectQuestSheet>(states), false);
+            questSheet.Set(GetSheet<CombinationQuestSheet>(states), false);
+            questSheet.Set(GetSheet<TradeQuestSheet>(states), false);
+            questSheet.Set(GetSheet<MonsterQuestSheet>(states), false);
+            questSheet.Set(GetSheet<ItemEnhancementQuestSheet>(states), false);
+            questSheet.Set(GetSheet<GeneralQuestSheet>(states), false);
+            questSheet.Set(GetSheet<ItemGradeQuestSheet>(states), false);
+            questSheet.Set(GetSheet<ItemTypeCollectQuestSheet>(states), false);
+            questSheet.Set(GetSheet<GoldQuestSheet>(states), false);
+            questSheet.Set(GetSheet<CombinationEquipmentQuestSheet>(states));
+            return questSheet;
+        }
+        public static AvatarSheets GetAvatarSheets(this IAccountStateDelta states)
+        {
+            return new AvatarSheets(
+                GetSheet<WorldSheet>(states),
+                GetQuestSheet(states),
+                GetSheet<QuestRewardSheet>(states),
+                GetSheet<QuestItemRewardSheet>(states),
+                GetSheet<EquipmentItemRecipeSheet>(states),
+                GetSheet<EquipmentItemSubRecipeSheet>(states)
+            );
         }
     }
 }

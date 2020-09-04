@@ -22,26 +22,28 @@ namespace Nekoyume.Action
         {
             IActionContext ctx = context;
             var states = ctx.PreviousStates;
+            var sheetAddress = Addresses.TableSheet.Derive(TableName);
             if (ctx.Rehearsal)
             {
                 return states
-                    .SetState(TableSheetsState.Address, MarkChanged)
+                    .SetState(sheetAddress, MarkChanged)
                     .SetState(GameConfigState.Address, MarkChanged);
             }
 
             CheckPermission(context);
 
-            var tableSheetsState = TableSheetsState.FromActionContext(ctx);
+            var sheets = states.GetState(sheetAddress);
+            var value = sheets is null ? string.Empty : sheets.ToDotnetString();
+
             Log.Debug($"[{ctx.BlockIndex}] {TableName} was patched by {ctx.Signer.ToHex()}\n" +
                       "before:\n" +
-                      (tableSheetsState.TableSheets.TryGetValue(TableName, out string value) ? value : string.Empty) +
+                      value +
                       "\n" +
                       "after:\n" +
                       TableCsv
             );
 
-            TableSheetsState nextState = tableSheetsState.UpdateTableSheet(TableName, TableCsv);
-            states = states.SetState(TableSheetsState.Address, nextState.Serialize());
+            states = states.SetState(sheetAddress, TableCsv.Serialize());
 
             if (TableName == nameof(GameConfigSheet))
             {

@@ -12,6 +12,7 @@ using Nekoyume.Model.EnumType;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 using Serilog;
 
 namespace Nekoyume.Action
@@ -265,8 +266,9 @@ namespace Nekoyume.Action
             sellerAvatarState.updatedAt = timestamp;
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
-            buyerAvatarState.UpdateQuestRewards(ctx);
-            sellerAvatarState.UpdateQuestRewards(ctx);
+            var materialSheet = states.GetSheet<MaterialItemSheet>();
+            buyerAvatarState.UpdateQuestRewards(materialSheet);
+            sellerAvatarState.UpdateQuestRewards(materialSheet);
 
             states = states.SetState(sellerAvatarAddress, sellerAvatarState.Serialize());
             sw.Stop();
