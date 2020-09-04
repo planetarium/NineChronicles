@@ -47,7 +47,9 @@ namespace Nekoyume.BlockChain
 
         private Block<PolymorphicAction<ActionBase>> _genseis;
 
-        public ActionRenderer ActionRenderer { get; } = BlockPolicy.GetRenderer();
+        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource();
+
+        public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 

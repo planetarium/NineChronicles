@@ -19,6 +19,7 @@ using TentuPlay.Api;
 using QuestReward = Nekoyume.Action.QuestReward;
 using Nekoyume.Model.Quest;
 using Libplanet.Crypto;
+using Nekoyume.Game;
 using static Nekoyume.Model.State.RedeemCodeState;
 using Nekoyume.TableData;
 
@@ -67,7 +68,6 @@ namespace Nekoyume.BlockChain
             GameConfig();
             RedeemCode();
             ChargeActionPoint();
-            OpenChest();
             WeeklyArena();
         }
 
@@ -318,15 +318,6 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(ResponseChargeActionPoint).AddTo(_disposables);
         }
-
-        private void OpenChest()
-        {
-            _renderer.EveryRender<OpenChest>()
-                .Where(ValidateEvaluationForCurrentAvatarState)
-                .ObserveOnMainThread()
-                .Subscribe(ResponseOpenChest).AddTo(_disposables);
-        }
-
         private void WeeklyArena()
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
@@ -808,12 +799,6 @@ namespace Nekoyume.BlockChain
             var row = Game.Game.instance.TableSheets.MaterialItemSheet.Values.First(r =>
                 r.ItemSubType == ItemSubType.ApStone);
             LocalStateModifier.AddItem(avatarAddress, row.ItemId, 1);
-            UpdateCurrentAvatarState(eval);
-        }
-
-        private void ResponseOpenChest(ActionBase.ActionEvaluation<OpenChest> eval)
-        {
-            UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
         }
 

@@ -1,5 +1,6 @@
 using Libplanet;
 using Libplanet.Crypto;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -29,7 +30,13 @@ namespace Tests.EditMode
         [Test, Sequential]
         public void GetRandomSeed([Values(-599628938, -1717973115, 1534786375)] int expected, [Values(1, 2, 3)] int count)
         {
-             var avatarState = new AvatarState(_avatarAddress, new Address(), 0, _tableSheets, new GameConfigState());
+            var avatarState = new AvatarState(
+                _avatarAddress,
+                new Address(),
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState()
+            );
             Assert.AreEqual(0, avatarState.Nonce);
             var seed = 0;
             for (var i = 0; i < count; i++)

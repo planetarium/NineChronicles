@@ -5,6 +5,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Libplanet;
 using Nekoyume;
 using Nekoyume.Battle;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
@@ -27,14 +28,20 @@ namespace Tests.EditMode.Battle
         public void SerializeBattleLog()
         {
             var agentState = new AgentState(new Address());
-            var avatarState = new AvatarState(new Address(), agentState.address, 0, _tableSheets, new GameConfigState());
+            var avatarState = new AvatarState(
+                new Address(),
+                agentState.address,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState()
+            );
             var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
             var simulator = new RankingSimulator(
                 new Cheat.DebugRandom(),
                 avatarState,
                 avatarState,
                 new List<Guid>(),
-                _tableSheets,
+                _tableSheets.GetRankingSimulatorSheets(),
                 999999,
                 arenaInfo,
                 arenaInfo

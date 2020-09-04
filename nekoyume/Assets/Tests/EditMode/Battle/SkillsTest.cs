@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model;
 using Nekoyume.Model.Buff;

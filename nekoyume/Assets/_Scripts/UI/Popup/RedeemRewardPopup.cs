@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Nekoyume.Game;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;

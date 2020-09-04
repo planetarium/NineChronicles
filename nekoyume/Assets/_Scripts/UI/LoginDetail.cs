@@ -13,6 +13,7 @@ using Nekoyume.TableData;
 using Nekoyume.Model.State;
 using System.Collections;
 using mixpanel;
+using Nekoyume.Game;
 using Nekoyume.L10n;
 
 namespace Nekoyume.UI
@@ -150,14 +151,16 @@ namespace Nekoyume.UI
 
             if (_isCreateMode)
             {
-                player = new Player(1, tableSheets);
+                player = new Player(1, tableSheets.CharacterSheet, tableSheets.CharacterLevelSheet, tableSheets.EquipmentItemSetEffectSheet);
             }
             else
             {
                 States.Instance.SelectAvatar(_selectedIndex);
                 player = new Player(
                     States.Instance.CurrentAvatarState,
-                    tableSheets
+                    tableSheets.CharacterSheet,
+                    tableSheets.CharacterLevelSheet,
+                    tableSheets.EquipmentItemSetEffectSheet
                 );
             }
 
