@@ -165,7 +165,6 @@ namespace Snapshot
                 }
             }
 
-            _stateStore.ForkStates(src, dest, branchPoint);
 
             foreach (KeyValuePair<Address, long> pair in _store.ListTxNonces(src))
             {
