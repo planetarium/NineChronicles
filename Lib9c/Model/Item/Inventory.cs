@@ -453,7 +453,7 @@ namespace Nekoyume.Model.Item
                 return true;
             }
 
-            if (rings.Count() >= MaxRingEquippedCount &&
+            if (rings.Count >= MaxRingEquippedCount &&
                 currentRings.Count() < MaxRingEquippedCount)
             {
                 return true;
