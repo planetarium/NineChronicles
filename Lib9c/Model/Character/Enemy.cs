@@ -12,6 +12,8 @@ namespace Nekoyume.Model
     public class Enemy : CharacterBase, ICloneable
     {
         public int spawnIndex = -1;
+
+        [NonSerialized]
         public StageSimulator StageSimulator;
 
         public Enemy(CharacterBase player, CharacterSheet.Row rowData, int monsterLevel,
