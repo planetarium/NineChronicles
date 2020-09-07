@@ -88,6 +88,8 @@ namespace Nekoyume.Model.Item
             }
         }
 
+        private const int MaxRingEquippedCount = 2;
+
         private readonly List<Item> _items = new List<Item>();
 
         public IReadOnlyList<Item> Items => _items;
@@ -425,18 +427,43 @@ namespace Nekoyume.Model.Item
 
         public bool HasNotification()
         {
-            foreach (var subType in new [] {ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace, ItemSubType.Ring})
+            foreach (var subType in new [] {ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace})
             {
                 var equipments = Equipments.Where(e => e.ItemSubType == subType).ToList();
                 var current = equipments.FirstOrDefault(e => e.equipped);
-                //현재 장착안한 슬롯에 장착 가능한 장비가 있는 경우
+                // When an equipment slot is empty.
                 if (current is null && equipments.Any())
                 {
                     return true;
                 }
 
                 var hasNotification = equipments.Any(e => CPHelper.GetCP(e) > CPHelper.GetCP(current));
-                // 현재장착한 장비보다 강한 장비가 있는 경우
+                // When any other equipments are stronger than current one.
+                if (hasNotification)
+                {
+                    return true;
+                }
+            }
+
+            // Seperate case because rings can be equipped more than one.
+            var rings = Equipments.Where(e => e.ItemSubType == ItemSubType.Ring).ToList();
+            var currentRings = rings.Where(e => e.equipped);
+            if (!currentRings.Any() && rings.Any())
+            {
+                return true;
+            }
+
+            if (rings.Count() >= MaxRingEquippedCount &&
+                currentRings.Count() < MaxRingEquippedCount)
+            {
+                return true;
+            }
+
+            foreach (var ring in currentRings)
+            {
+                var hasNotification =
+                    rings.Any(e => !e.equipped && CPHelper.GetCP(e) > CPHelper.GetCP(ring));
+
                 if (hasNotification)
                 {
                     return true;
