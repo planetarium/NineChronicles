@@ -221,7 +221,7 @@ namespace Nekoyume.Action
             // 상점에서 구매할 아이템을 제거한다.
             try
             {
-                shopState.Unregister(sellerAgentAddress, shopItem);
+                shopState.Unregister(shopItem);
             }
             catch (FailedToUnregisterInShopStateException)
             {
