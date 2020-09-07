@@ -308,7 +308,17 @@ namespace Nekoyume.UI.Module
 
         private void OnNextPageButtonClick(Unit unit)
         {
-            var count = SharedModel.ItemSubTypeProducts.Value.Count;
+            var count = 0;
+            switch (SharedModel.State.Value)
+            {
+                case Shop.StateType.Buy:
+                    count = SharedModel.ItemSubTypeProducts.Value.Count;
+                    break;
+                case Shop.StateType.Sell:
+                    count = SharedModel.AgentProducts.Value.Count;
+                    break;
+            }
+
             if (_filteredPageIndex + 1 >= count)
             {
                 nextPageButtonInteractableSwitch.SetSwitchOff();
