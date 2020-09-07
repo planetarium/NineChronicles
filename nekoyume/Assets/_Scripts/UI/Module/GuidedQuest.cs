@@ -479,8 +479,9 @@ namespace Nekoyume.UI.Module
 
             var targetQuest = questList?
                 .OfType<WorldQuest>()
+                .Where(quest => !quest.Complete)
                 .OrderBy(quest => quest.Goal)
-                .FirstOrDefault(quest => !quest.Complete);
+                .FirstOrDefault();
             if (targetQuest is null)
             {
                 return null;
@@ -504,10 +505,10 @@ namespace Nekoyume.UI.Module
 
             return questList?
                 .OfType<CombinationEquipmentQuest>()
-                .Where(quest => !quest.Complete)
+                .Where(quest => !quest.Complete &&
+                                quest.StageId <= lastClearedStageId)
                 .OrderBy(quest => quest.StageId)
-                .FirstOrDefault(quest =>
-                    Game.Game.instance.TableSheets.EquipmentItemRecipeSheet.TryGetValue(quest.RecipeId, out _));
+                .FirstOrDefault();
         }
 
         #endregion
