@@ -363,6 +363,19 @@ namespace Nekoyume.BlockChain
                 Assert.IsNotNull(GetState(ShopState.Address));
                 Assert.IsNotNull(GetState(GameConfigState.Address));
 
+                // 에이전트의 상태를 한 번 동기화 한다.
+                Currency goldCurrency = new GoldCurrencyState(
+                    (Dictionary) GetState(GoldCurrencyState.Address)
+                ).Currency;
+                States.Instance.SetAgentState(
+                    GetState(Address) is Bencodex.Types.Dictionary agentDict
+                        ? new AgentState(agentDict)
+                        : new AgentState(Address),
+                    new GoldBalanceState(Address, GetBalance(Address, goldCurrency))
+                );
+
+                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
+
                 // 랭킹의 상태를 한 번 동기화 한다.
                 States.Instance.SetRankingState(
                     GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
@@ -390,19 +403,6 @@ namespace Nekoyume.BlockChain
                 {
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
-
-                // 에이전트의 상태를 한 번 동기화 한다.
-                Currency goldCurrency = new GoldCurrencyState(
-                    (Dictionary) GetState(GoldCurrencyState.Address)
-                ).Currency;
-                States.Instance.SetAgentState(
-                    GetState(Address) is Bencodex.Types.Dictionary agentDict
-                        ? new AgentState(agentDict)
-                        : new AgentState(Address),
-                    new GoldBalanceState(Address, GetBalance(Address, goldCurrency))
-                );
-
-                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
                 ActionRenderHandler.Instance.Start(ActionRenderer);

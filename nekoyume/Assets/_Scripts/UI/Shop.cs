@@ -41,28 +41,51 @@ namespace Nekoyume.UI
 
         private Sequence _sequenceOfShopItems;
 
-        public CanvasGroup canvasGroup;
-        public RectTransform bg1;
-
-        // 토글 그룹과 카테고리 버튼들.
         private ToggleGroup _toggleGroup;
-        public CategoryButton buyButton;
-        public CategoryButton sellButton;
 
-        public RectTransform right;
+        [SerializeField]
+        private CanvasGroup canvasGroup = null;
 
-        public Module.Inventory inventory;
+        [SerializeField]
+        private RectTransform bg1 = null;
 
-        public ShopItems shopItems;
-        public GameObject shopNotice;
-        public TextMeshProUGUI noticeText;
-        public SpeechBubble speechBubble;
-        public SpriteRenderer sellImage;
-        public SpriteRenderer buyImage;
-        public CanvasGroup rightCanvasGroup;
-        public RefreshButton refreshButton;
+        [SerializeField]
+        private CategoryButton buyButton = null;
 
-        public Model.Shop SharedModel { get; private set; }
+        [SerializeField]
+        private CategoryButton sellButton = null;
+
+        [SerializeField]
+        private RectTransform right = null;
+
+        [SerializeField]
+        private Module.Inventory inventory = null;
+
+        [SerializeField]
+        private ShopItems shopItems = null;
+
+        [SerializeField]
+        private GameObject shopNotice = null;
+
+        [SerializeField]
+        private TextMeshProUGUI noticeText = null;
+
+        [SerializeField]
+        private SpeechBubble speechBubble = null;
+
+        [SerializeField]
+        private SpriteRenderer sellImage = null;
+
+        [SerializeField]
+        private SpriteRenderer buyImage = null;
+
+        [SerializeField]
+        private CanvasGroup rightCanvasGroup = null;
+
+        [SerializeField]
+        private RefreshButton refreshButton = null;
+
+        private Model.Shop SharedModel { get; set; }
 
         #region Mono
 
@@ -91,20 +114,25 @@ namespace Nekoyume.UI
             _toggleGroup.RegisterToggleable(buyButton);
             _toggleGroup.RegisterToggleable(sellButton);
 
-            inventory.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
+            inventory.SharedModel.SelectedItemView
+                .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
             inventory.OnDoubleClickItemView
                 .Subscribe(view => ShowActionPopup(view.Model))
                 .AddTo(gameObject);
-            shopItems.SharedModel.SelectedItemView.Subscribe(ShowTooltip)
+            shopItems.SharedModel.SelectedItemView
+                .Subscribe(ShowTooltip)
                 .AddTo(gameObject);
             shopItems.SharedModel.OnDoubleClickItemView
                 .Subscribe(view => ShowActionPopup(view.Model))
                 .AddTo(gameObject);
 
             SharedModel.State.Value = StateType.Show;
-            SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
-            SharedModel.ItemCountAndPricePopup.Value.Item.Subscribe(SubscribeItemPopup)
+            SharedModel.State
+                .Subscribe(SubscribeState)
+                .AddTo(gameObject);
+            SharedModel.ItemCountAndPricePopup.Value.Item
+                .Subscribe(SubscribeItemPopup)
                 .AddTo(gameObject);
             SharedModel.ItemCountAndPricePopup.Value.OnClickSubmit
                 .Subscribe(SubscribeItemPopupSubmit)
@@ -431,19 +459,27 @@ namespace Nekoyume.UI
         {
             if (SharedModel.State.Value == StateType.Buy)
             {
-                var shopItem = shopItems.SharedModel.OtherProducts
-                    .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
+                var shopItem = shopItems.SharedModel.ItemSubTypeProducts.Value.Values
+                    .SelectMany(list => list)
+                    .FirstOrDefault(i =>
+                        i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
+                {
                     return;
-                Game.Game.instance.ActionManager
-                    .Buy(shopItem.SellerAgentAddress.Value, shopItem.SellerAvatarAddress.Value,
-                        shopItem.ProductId.Value);
+                }
+
+                Game.Game.instance.ActionManager.Buy(
+                    shopItem.SellerAgentAddress.Value,
+                    shopItem.SellerAvatarAddress.Value,
+                    shopItem.ProductId.Value);
                 ResponseBuy(shopItem);
             }
             else
             {
-                var shopItem = shopItems.SharedModel.CurrentAgentsProducts
-                    .FirstOrDefault(i => i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
+                var shopItem = shopItems.SharedModel.AgentProducts.Value.Values
+                    .SelectMany(list => list)
+                    .FirstOrDefault(i =>
+                        i.ItemBase.Value.Equals(data.Item.Value.ItemBase.Value));
                 if (shopItem is null)
                 {
                     if (data.Price.Value.Sign * data.Price.Value.MajorUnit < Model.Shop.MinimumPrice)
@@ -452,8 +488,10 @@ namespace Nekoyume.UI
                     }
 
                     Game.Game.instance.ActionManager.Sell(
-                        (ItemUsable) data.Item.Value.ItemBase.Value, data.Price.Value);
+                        (ItemUsable) data.Item.Value.ItemBase.Value,
+                        data.Price.Value);
                     ResponseSell();
+
                     return;
                 }
 
@@ -566,19 +604,18 @@ namespace Nekoyume.UI
         {
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
-            var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 
             try
             {
-                States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
+                States.Instance.ShopState.Unregister(productId);
             }
             catch (FailedToUnregisterInShopStateException e)
             {
                 Debug.LogError(e.Message);
             }
 
-            shopItems.SharedModel.RemoveCurrentAgentsProduct(productId);
+            shopItems.SharedModel.RemoveAgentProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.InputItem);
             var format = L10nManager.Localize("NOTIFICATION_SELL_CANCEL_START");
@@ -591,19 +628,18 @@ namespace Nekoyume.UI
             SharedModel.ItemCountAndPricePopup.Value.Item.Value = null;
 
             var buyerAgentAddress = States.Instance.AgentState.address;
-            var sellerAgentAddress = shopItem.SellerAgentAddress.Value;
             var productId = shopItem.ProductId.Value;
 
             LocalStateModifier.ModifyAgentGold(buyerAgentAddress, -shopItem.Price.Value);
             try
             {
-                States.Instance.ShopState.Unregister(sellerAgentAddress, productId);
+                States.Instance.ShopState.Unregister(productId);
             }
             catch (FailedToUnregisterInShopStateException e)
             {
                 Debug.LogError(e.Message);
             }
-            shopItems.SharedModel.RemoveOtherProduct(productId);
+            shopItems.SharedModel.RemoveItemSubTypeProduct(productId);
 
             AudioController.instance.PlaySfx(AudioController.SfxCode.BuyItem);
             var format = L10nManager.Localize("NOTIFICATION_BUY_START");

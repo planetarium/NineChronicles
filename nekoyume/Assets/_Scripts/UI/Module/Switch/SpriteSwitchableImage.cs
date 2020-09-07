@@ -3,36 +3,61 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    [RequireComponent(typeof(Image))]
     public class SpriteSwitchableImage : MonoBehaviour, ISwitchable
     {
-        public Image image;
-        public Sprite switchedOnSprite;
-        public Sprite switchedOffSprite;
+        [SerializeField]
+        private bool setNativeSize = default;
 
-        public bool IsSwitchedOn => image.sprite.Equals(switchedOnSprite);
+        [SerializeField]
+        private Sprite switchedOnSprite = null;
+
+        [SerializeField]
+        private Sprite switchedOffSprite = null;
+
+        private Image _imageCache;
+
+        public Image Image => _imageCache == null
+            ? _imageCache = GetComponent<Image>()
+            : _imageCache;
+
+        public bool IsSwitchedOn => Image.overrideSprite.Equals(switchedOnSprite);
 
         private void Reset()
         {
-            image = GetComponent<Image>();
-            switchedOnSprite = image.sprite;
-            switchedOffSprite = switchedOnSprite;
+            switchedOnSprite = switchedOffSprite = Image.sprite;
         }
 
         public void Switch()
         {
-            image.sprite = IsSwitchedOn
-                ? switchedOnSprite
-                : switchedOffSprite;
+            if (IsSwitchedOn)
+            {
+                SetSwitchOff();
+            }
+            else
+            {
+                SetSwitchOn();
+            }
         }
 
         public void SetSwitchOn()
         {
-            image.sprite = switchedOnSprite;
+            Image.overrideSprite = switchedOnSprite;
+
+            if (setNativeSize)
+            {
+                Image.SetNativeSize();
+            }
         }
 
         public void SetSwitchOff()
         {
-            image.sprite = switchedOffSprite;
+            Image.overrideSprite = switchedOffSprite;
+
+            if (setNativeSize)
+            {
+                Image.SetNativeSize();
+            }
         }
     }
 }
