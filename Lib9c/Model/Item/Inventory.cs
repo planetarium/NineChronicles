@@ -425,10 +425,16 @@ namespace Nekoyume.Model.Item
 
         #endregion
 
-        public bool HasNotification()
+        public bool HasNotification(int currentLevel)
         {
             foreach (var subType in new [] {ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace})
             {
+                var requiredLevel = GetRequiredLevelOfSlot(subType);
+                if (currentLevel < requiredLevel)
+                {
+                    continue;
+                }
+
                 var equipments = Equipments.Where(e => e.ItemSubType == subType).ToList();
                 var current = equipments.FirstOrDefault(e => e.equipped);
                 // When an equipment slot is empty.
@@ -459,8 +465,15 @@ namespace Nekoyume.Model.Item
                 return true;
             }
 
+            int index = 1;
             foreach (var ring in currentRings)
             {
+                var requiredLevel = GetRequiredLevelOfSlot(ItemSubType.Ring, index++);
+                if (currentLevel < requiredLevel)
+                {
+                    continue;
+                }
+
                 var hasNotification =
                     rings.Any(e => !e.equipped && CPHelper.GetCP(e) > CPHelper.GetCP(ring));
 
@@ -471,6 +484,60 @@ namespace Nekoyume.Model.Item
             }
 
             return false;
+        }
+
+        private int GetRequiredLevelOfSlot(ItemSubType itemSubType, int index = 1)
+        {
+            switch (itemSubType)
+            {
+                case ItemSubType.FullCostume:
+                    return GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                case ItemSubType.HairCostume:
+                    return GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot;
+                case ItemSubType.EarCostume:
+                    return GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot;
+                case ItemSubType.EyeCostume:
+                    return GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot;
+                case ItemSubType.TailCostume:
+                    return GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
+                case ItemSubType.Title:
+                    return GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                case ItemSubType.Weapon:
+                    return GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                case ItemSubType.Armor:
+                    return GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                case ItemSubType.Belt:
+                    return GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                case ItemSubType.Necklace:
+                    return GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                case ItemSubType.Ring:
+                    return index == 1
+                        ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
+                        : GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2;
+                case ItemSubType.Food:
+                    switch (index)
+                    {
+                        case 1:
+                            return GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot1;
+                        case 2:
+                            return GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot2;
+                        case 3:
+                            return GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot3;
+                        case 4:
+                            return GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot4;
+                        case 5:
+                            return GameConfig.RequireCharacterLevel
+                                .CharacterConsumableSlot5;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
