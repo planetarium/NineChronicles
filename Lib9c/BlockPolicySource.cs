@@ -13,6 +13,8 @@ using Nekoyume.Action;
 using Nekoyume.Model.State;
 using Libplanet;
 using Libplanet.Blockchain.Renderers;
+using Serilog;
+using Serilog.Events;
 #if UNITY_EDITOR || UNITY_STANDALONE
 using UniRx;
 #else
@@ -27,11 +29,15 @@ namespace Nekoyume.BlockChain
     {
         private readonly TimeSpan _blockInterval = TimeSpan.FromSeconds(8);
 
-        public readonly BlockRenderer BlockRenderer = new BlockRenderer();
-
         public readonly ActionRenderer ActionRenderer = new ActionRenderer();
 
-        public BlockPolicySource()
+        public readonly BlockRenderer BlockRenderer = new BlockRenderer();
+
+        public readonly LoggedActionRenderer<NCAction> LoggedActionRenderer;
+
+        public readonly LoggedRenderer<NCAction> LoggedBlockRenderer;
+
+        public BlockPolicySource(ILogger logger, LogEventLevel logEventLevel = LogEventLevel.Verbose)
         {
             BlockRenderer
                 .EveryBlock()
@@ -40,6 +46,12 @@ namespace Nekoyume.BlockChain
             BlockRenderer
                 .EveryReorg()
                 .Subscribe(_ => UpdateActivationSet());
+
+            LoggedActionRenderer =
+                new LoggedActionRenderer<NCAction>(ActionRenderer, logger, logEventLevel);
+
+            LoggedBlockRenderer =
+                new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
         public Func<IValue> ActivatedAccountsStateGetter { get; set; }
@@ -69,7 +81,7 @@ namespace Nekoyume.BlockChain
         }
 
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
-            new IRenderer<NCAction>[] { BlockRenderer, ActionRenderer };
+            new IRenderer<NCAction>[] { LoggedBlockRenderer, LoggedActionRenderer };
 
         private bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
