@@ -3,6 +3,7 @@ namespace Lib9c.Tests.Model.State
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
@@ -123,7 +124,11 @@ namespace Lib9c.Tests.Model.State
         [InlineData(10, 1, 1, 1)]
         [InlineData(10, 6, 50, 5)]
         [InlineData(10, 6, 1, 1)]
-        public void GetArenaInfosByFirstRankAndCount(int infoCount, int firstRank, int count, int expected)
+        public void GetArenaInfosByFirstRankAndCount(
+            int infoCount,
+            int firstRank,
+            int count,
+            int expectedCount)
         {
             var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
             var characterSheet = new CharacterSheet();
@@ -144,7 +149,18 @@ namespace Lib9c.Tests.Model.State
             }
 
             var arenaInfos = weeklyArenaState.GetArenaInfos(firstRank, count);
-            Assert.Equal(expected, arenaInfos.Count);
+            Assert.Equal(expectedCount, arenaInfos.Count);
+
+            if (!arenaInfos.Any())
+            {
+                return;
+            }
+
+            var expectedRank = firstRank;
+            foreach (var arenaInfo in arenaInfos)
+            {
+                Assert.Equal(expectedRank++, arenaInfo.rank);
+            }
         }
 
         [Theory]
@@ -178,7 +194,12 @@ namespace Lib9c.Tests.Model.State
         [InlineData(100, 1, 10, 10, 11)]
         [InlineData(100, 50, 10, 10, 21)]
         [InlineData(100, 100, 10, 10, 11)]
-        public void GetArenaInfosByUpperAndLowerRange(int infoCount, int targetRank, int upperRange, int lowerRange, int expected)
+        public void GetArenaInfosByUpperAndLowerRange(
+            int infoCount,
+            int targetRank,
+            int upperRange,
+            int lowerRange,
+            int expectedCount)
         {
             var weeklyArenaState = new WeeklyArenaState(new PrivateKey().ToAddress());
             Address targetAddress;
@@ -205,7 +226,18 @@ namespace Lib9c.Tests.Model.State
             }
 
             var arenaInfos = weeklyArenaState.GetArenaInfos(targetAddress, upperRange, lowerRange);
-            Assert.Equal(expected, arenaInfos.Count);
+            Assert.Equal(expectedCount, arenaInfos.Count);
+
+            if (!arenaInfos.Any())
+            {
+                return;
+            }
+
+            var expectedRank = Math.Max(1, targetRank - upperRange);
+            foreach (var arenaInfo in arenaInfos)
+            {
+                Assert.Equal(expectedRank++, arenaInfo.rank);
+            }
         }
     }
 }
