@@ -151,11 +151,6 @@ namespace Lib9c.Tests.Model.State
             var arenaInfos = weeklyArenaState.GetArenaInfos(firstRank, count);
             Assert.Equal(expectedCount, arenaInfos.Count);
 
-            if (!arenaInfos.Any())
-            {
-                return;
-            }
-
             var expectedRank = firstRank;
             foreach (var arenaInfo in arenaInfos)
             {
@@ -227,11 +222,6 @@ namespace Lib9c.Tests.Model.State
 
             var arenaInfos = weeklyArenaState.GetArenaInfos(targetAddress, upperRange, lowerRange);
             Assert.Equal(expectedCount, arenaInfos.Count);
-
-            if (!arenaInfos.Any())
-            {
-                return;
-            }
 
             var expectedRank = Math.Max(1, targetRank - upperRange);
             foreach (var arenaInfo in arenaInfos)
