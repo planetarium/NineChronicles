@@ -66,8 +66,9 @@ namespace Lib9c.Tests.Action
             }
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(1)]
+        public void Execute(int stageId)
         {
             var action = new HackAndSlash()
             {
@@ -75,7 +76,7 @@ namespace Lib9c.Tests.Action
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
                 worldId = 1,
-                stageId = 1,
+                stageId = stageId,
                 avatarAddress = _avatarAddress,
                 WeeklyArenaAddress = _weeklyArenaState.address,
             };
@@ -96,8 +97,17 @@ namespace Lib9c.Tests.Action
             Assert.NotNull(action.Result);
             Assert.NotEmpty(action.Result.OfType<GetReward>());
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
-            Assert.Contains(_avatarAddress, newWeeklyState);
-            Assert.True(nextAvatarState.worldInformation.IsStageCleared(1));
+            Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
+
+            if (stageId < GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
+                action.Result.IsClear)
+            {
+                Assert.DoesNotContain(_avatarAddress, newWeeklyState);
+            }
+            else
+            {
+                Assert.Contains(_avatarAddress, newWeeklyState);
+            }
         }
 
         [Fact]

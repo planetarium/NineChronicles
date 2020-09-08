@@ -260,7 +260,8 @@ namespace Nekoyume.Action
             Log.Debug("HAS Set AvatarState: {Elapsed}", sw.Elapsed);
 
             sw.Restart();
-            if (states.TryGetState(RankingState.Address, out Dictionary d) && simulator.Log.IsClear)
+            if (simulator.Log.IsClear &&
+                states.TryGetState(RankingState.Address, out Dictionary d))
             {
                 var ranking = new RankingState(d);
                 ranking.Update(avatarState);
@@ -281,7 +282,9 @@ namespace Nekoyume.Action
             Log.Debug("HAS Set RankingState: {Elapsed}", sw.Elapsed);
 
             sw.Restart();
-            if (states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
+            if (simulator.Log.stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
+                simulator.Log.IsClear &&
+                states.TryGetState(WeeklyArenaAddress, out Dictionary weeklyDict))
             {
                 var weekly = new WeeklyArenaState(weeklyDict);
                 if (!weekly.Ended)
