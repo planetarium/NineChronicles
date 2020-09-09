@@ -45,7 +45,7 @@ namespace Nekoyume.BlockChain
 
         private Codec _codec = new Codec();
 
-        private Block<PolymorphicAction<ActionBase>> _genseis;
+        private Block<PolymorphicAction<ActionBase>> _genesis;
 
         public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource();
 
@@ -88,7 +88,7 @@ namespace Nekoyume.BlockChain
 
             OnDisconnected = new UnityEvent();
 
-            _genseis = BlockHelper.ImportBlock(options.GenesisBlockPath ?? BlockHelper.GenesisBlockPath);
+            _genesis = BlockHelper.ImportBlock(options.GenesisBlockPath ?? BlockHelper.GenesisBlockPath);
         }
 
         public IValue GetState(Address address)
@@ -240,7 +240,7 @@ namespace Nekoyume.BlockChain
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     nonce,
                     PrivateKey,
-                    _genseis?.Hash,
+                    _genesis?.Hash,
                     actions
                 );
             await _service.PutTransaction(tx.Serialize(true));
