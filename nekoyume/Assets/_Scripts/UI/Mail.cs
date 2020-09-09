@@ -153,7 +153,9 @@ namespace Nekoyume.UI
             }
 
             var list = MailBox
-                .Where(i => i.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex).ToList();
+                .Where(mail => mail.requiredBlockIndex <= Game.Game.instance.Agent.BlockIndex)
+                .OrderByDescending(mail => mail.New)
+                .ToList();
             if (state > 0)
             {
                 list = list.FindAll(mail => mail.MailType == (MailType) state);
