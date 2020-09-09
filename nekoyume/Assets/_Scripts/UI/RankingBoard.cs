@@ -14,6 +14,7 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Nekoyume.UI
 {
@@ -64,6 +65,9 @@ namespace Nekoyume.UI
 
         [SerializeField]
         private TextMeshProUGUI loseText = null;
+
+        [SerializeField]
+        private Button rewardHelpButton = null;
 
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
