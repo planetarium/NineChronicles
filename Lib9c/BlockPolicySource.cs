@@ -81,7 +81,7 @@ namespace Nekoyume.BlockChain
         }
 
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
-            new IRenderer<NCAction>[] { LoggedBlockRenderer, LoggedActionRenderer };
+            new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
 
         private bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
         {
