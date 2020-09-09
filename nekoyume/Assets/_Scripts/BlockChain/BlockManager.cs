@@ -1,19 +1,14 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Security.Cryptography;
-using Bencodex.Types;
-using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
-using Nekoyume;
 using Nekoyume.Action;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
 {
-    public class BlockManager
+    public static class BlockManager
     {
           // Editor가 아닌 환경에서 사용할 제네시스 블록의 파일명입니다.
           // 만약 이 값을 수정할 경우 entrypoint.sh도 같이 수정할 필요가 있습니다.
