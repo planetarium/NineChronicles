@@ -44,6 +44,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private RectTransform avatarPosition = null;
 
+        [SerializeField]
+        private Canvas contentCanvas = null;
+
         private Vector3 _previousAvatarPosition;
         private Vector3 _previousAvatarLocalScale;
         private int _previousAvatarSortingLayerID;
@@ -102,6 +105,7 @@ namespace Nekoyume.UI
 
             playerTransform.position = avatarPosition.position;
             var orderInLayer = MainCanvas.instance.GetLayer(WidgetType).root.sortingOrder + 1;
+            contentCanvas.sortingOrder = orderInLayer;
             player.SetSortingLayer(SortingLayer.NameToID("UI"), orderInLayer);
 
             _tempStats = player.Model.Stats.Clone() as CharacterStats;
