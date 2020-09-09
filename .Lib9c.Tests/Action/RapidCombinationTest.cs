@@ -36,7 +36,8 @@ namespace Lib9c.Tests.Action
                 agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState()
+                new GameConfigState(),
+                default
             );
 
             agentState.avatarAddresses.Add(0, avatarAddress);

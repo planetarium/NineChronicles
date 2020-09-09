@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using Bencodex.Types;
 using Libplanet.Action;
 using Nekoyume.Model.State;
+using Nekoyume.TableData;
 
 namespace Nekoyume.Action
 {
@@ -35,7 +36,12 @@ namespace Nekoyume.Action
             {
                 states = states.SetState(RankingState.Address, MarkChanged);
                 states = states.SetState(ShopState.Address, MarkChanged);
-                states = TableSheets.Aggregate(states, (current, pair) => current.SetState(Addresses.TableSheet.Derive(pair.Key), MarkChanged));
+                states = TableSheets
+                    .Aggregate(states, (current, pair) =>
+                        current.SetState(Addresses.TableSheet.Derive(pair.Key), MarkChanged));
+                states = RankingState.rankingMap
+                    .Aggregate(states, (current, pair) =>
+                        current.SetState(pair.Key, MarkChanged));
                 states = states.SetState(weeklyArenaState.address, MarkChanged);
                 states = states.SetState(GameConfigState.Address, MarkChanged);
                 states = states.SetState(RedeemCodeState.Address, MarkChanged);
@@ -51,7 +57,12 @@ namespace Nekoyume.Action
                 return states;
             }
 
-            states = TableSheets.Aggregate(states, (current, pair) => current.SetState(Addresses.TableSheet.Derive(pair.Key), pair.Value.Serialize()));
+            states = TableSheets
+                .Aggregate(states, (current, pair) =>
+                    current.SetState(Addresses.TableSheet.Derive(pair.Key), pair.Value.Serialize()));
+            states = RankingState.rankingMap
+                .Aggregate(states, (current, pair) =>
+                    current.SetState(pair.Key, new RankingMapState(pair.Key).Serialize()));
             states = states
                 .SetState(weeklyArenaState.address, weeklyArenaState.Serialize())
                 .SetState(RankingState.Address, RankingState.Serialize())
@@ -73,7 +84,7 @@ namespace Nekoyume.Action
                 .Add("shop_state", ShopState.Serialize())
                 .Add("table_sheets",
                     new Dictionary(TableSheets.Select(pair =>
-                            new KeyValuePair<IKey, IValue>((Text) pair.Key, (Text) pair.Value))))
+                        new KeyValuePair<IKey, IValue>((Text) pair.Key, (Text) pair.Value))))
                 .Add("game_config_state", GameConfigState.Serialize())
                 .Add("redeem_code_state", RedeemCodeState.Serialize())
                 .Add("admin_address_state", AdminAddressState.Serialize())

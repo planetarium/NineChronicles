@@ -74,6 +74,7 @@ namespace Nekoyume.Action
 
                 return states
                     .SetState(avatarAddress, MarkChanged)
+                    .SetState(Addresses.Ranking, MarkChanged)
                     .MarkBalanceChanged(GoldCurrencyMock, GoldCurrencyState.Address, context.Signer);
             }
 
@@ -123,7 +124,11 @@ namespace Nekoyume.Action
             // Avoid NullReferenceException in test
             var materialItemSheet = ctx.PreviousStates.GetSheet<MaterialItemSheet>();
 
-            avatarState = CreateAvatarState(name, avatarAddress, ctx, materialItemSheet);
+            var rankingState = ctx.PreviousStates.GetRankingState();
+
+            var rankingMapAddress = rankingState.UpdateRankingMap(avatarAddress);
+
+            avatarState = CreateAvatarState(name, avatarAddress, ctx, materialItemSheet, rankingMapAddress);
 
             if (hair < 0) hair = 0;
             if (lens < 0) lens = 0;
@@ -147,15 +152,15 @@ namespace Nekoyume.Action
             Log.Debug("CreateAvatar Total Executed Time: {Elapsed}", ended - started);
             return states
                 .SetState(ctx.Signer, agentState.Serialize())
+                .SetState(Addresses.Ranking, rankingState.Serialize())
                 .SetState(avatarAddress, avatarState.Serialize());
         }
 
-        private static AvatarState CreateAvatarState(
-            string name,
+        private static AvatarState CreateAvatarState(string name,
             Address avatarAddress,
             IActionContext ctx,
-            MaterialItemSheet materialItemSheet
-        )
+            MaterialItemSheet materialItemSheet,
+            Address rankingMapAddress)
         {
             var state = ctx.PreviousStates;
             var gameConfigState = state.GetGameConfigState();
@@ -165,6 +170,7 @@ namespace Nekoyume.Action
                 ctx.BlockIndex,
                 state.GetAvatarSheets(),
                 gameConfigState,
+                rankingMapAddress,
                 name
             );
 

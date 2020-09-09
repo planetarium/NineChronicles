@@ -50,7 +50,8 @@ namespace Lib9c.Tests.Action
                 _agentAddress,
                 1,
                 _tableSheets.GetAvatarSheets(),
-                gameConfigState
+                gameConfigState,
+                default
             );
             var row = _tableSheets.ConsumableItemRecipeSheet.Values.First();
             foreach (var materialInfo in row.Materials)

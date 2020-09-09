@@ -37,7 +37,8 @@ namespace Lib9c.Tests.Action
                 agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                gameConfigState
+                gameConfigState,
+                default
             )
             {
                 actionPoint = 0,

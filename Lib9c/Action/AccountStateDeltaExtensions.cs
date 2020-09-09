@@ -390,5 +390,15 @@ namespace Nekoyume.Action
                 GetSheet<EquipmentItemSubRecipeSheet>(states)
             );
         }
+
+        public static RankingState GetRankingState(this IAccountStateDelta states)
+        {
+            var value = states.GetState(Addresses.Ranking);
+            if (value is null)
+            {
+                throw new FailedLoadStateException(nameof(RankingState));
+            }
+            return new RankingState((Dictionary) value);
+        }
     }
 }

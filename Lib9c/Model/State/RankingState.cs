@@ -1,152 +1,68 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
-using Nekoyume.Model.State;
+using Nekoyume.Action;
 
 namespace Nekoyume.Model.State
 {
-    /// <summary>
-    /// Ranking의 상태 모델이다.
-    ///
-    /// 모든 유저를 하나의 해시맵에 담고 있음.
-    /// 너무 많은 유저 정보가 쌓이면, 각 유저를 그룹화하고 그룹 별로 해시맵을 관리하는 것이 성능상 이점이 있겠음.
-    /// </summary>
     [Serializable]
     public class RankingState : State
     {
         public static readonly Address Address = Addresses.Ranking;
-        private readonly Dictionary<Address, RankingInfo> _map;
-
-        public List<RankingInfo> OrderedRankingInfos { get; private set; }
+        public const int RankingMapCapacity = 100;
+        public readonly Dictionary<Address, ImmutableHashSet<Address>> rankingMap;
 
         public RankingState() : base(Address)
         {
-            _map = new Dictionary<Address, RankingInfo>();
-            ResetOrderedRankingInfos();
+            rankingMap = new Dictionary<Address, ImmutableHashSet<Address>>();
+            for (var i = 0; i < RankingMapCapacity; i++)
+            {
+                rankingMap[Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
+            }
         }
 
         public RankingState(Dictionary serialized)
             : base(serialized)
         {
-            _map = ((Dictionary)serialized["map"]).ToDictionary(
+            rankingMap = ((Dictionary) serialized["ranking_map"]).ToDictionary(
                 kv => kv.Key.ToAddress(),
-                kv => new RankingInfo((Dictionary)kv.Value)
+                kv => kv.Value.ToList(StateExtensions.ToAddress).ToImmutableHashSet()
             );
-
-            ResetOrderedRankingInfos();
         }
 
-        private void ResetOrderedRankingInfos()
+        public static Address Derive(int index)
         {
-            OrderedRankingInfos = _map.Values
-                .OrderByDescending(c => c.Exp)
-                .ThenBy(c => c.StageClearedBlockIndex)
-                .ToList();
+            return Address.Derive($"ranking_{index}");
         }
 
-        public void Update(AvatarState state)
+        public Address UpdateRankingMap(Address avatarAddress)
         {
-            if (_map.TryGetValue(state.address, out var current))
+            for (var i = 0; i < RankingMapCapacity; i++)
             {
-                if (current.Exp < state.exp)
+                var key = Derive(i);
+                var value = rankingMap[Derive(i)];
+                if (value.Count + 1 <= RankingMapState.Capacity)
                 {
-                    _map[state.address] = new RankingInfo(state);
+                    rankingMap[key] = value.Add(avatarAddress);
+                    return key;
                 }
             }
-            else
-            {
-                _map[state.address] = new RankingInfo(state);
-            }
-
-            ResetOrderedRankingInfos();
-        }
-
-        public List<RankingInfo> GetRankingInfos(DateTimeOffset? dt)
-        {
-            var list = OrderedRankingInfos;
-            return dt != null
-                ? list
-                    .Where(context => ((TimeSpan)(dt - context.UpdatedAt)).Days <= 1)
-                    .ToList()
-                : list;
-        }
-
-        public Address[] GetAgentAddresses(int count, DateTimeOffset? dt)
-        {
-            var avatars = GetRankingInfos(dt);
-            var result = new HashSet<Address>();
-            foreach (var avatar in avatars)
-            {
-                result.Add(avatar.AgentAddress);
-                if (result.Count == count)
-                {
-                    break;
-                }
-            }
-
-            return result.ToArray();
+            throw new RankingExceededException();
         }
 
         public override IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>
             {
-                [(Text)"map"] = new Dictionary(_map.Select(kv =>
-                   new KeyValuePair<IKey, IValue>(
-                       (Binary)kv.Key.Serialize(),
-                       kv.Value.Serialize()
-                   )
-                ))
+                [(Text)"ranking_map"] = new Dictionary(rankingMap.Select(kv =>
+                    new KeyValuePair<IKey, IValue>(
+                        (Binary)kv.Key.Serialize(),
+
+                        new List(kv.Value.Select(a => a.Serialize()))
+                    )
+                )),
             }.Union((Dictionary)base.Serialize()));
-    }
-
-    public class RankingInfo : IState
-    {
-        public readonly Address AvatarAddress;
-        public readonly Address AgentAddress;
-        public readonly int ArmorId;
-        public readonly int Level;
-        public readonly string AvatarName;
-        public readonly long Exp;
-        public readonly long StageClearedBlockIndex;
-        public readonly DateTimeOffset UpdatedAt;
-
-        public RankingInfo(AvatarState avatarState)
-        {
-            AvatarAddress = avatarState.address;
-            AgentAddress = avatarState.agentAddress;
-            ArmorId = avatarState.GetArmorId();
-            Level = avatarState.level;
-            AvatarName = avatarState.NameWithHash;
-            Exp = avatarState.exp;
-            avatarState.worldInformation.TryGetUnlockedWorldByStageClearedBlockIndex(out var detail);
-            StageClearedBlockIndex = detail.StageClearedBlockIndex;
-            UpdatedAt = avatarState.updatedAt;
-        }
-
-        public RankingInfo(Dictionary serialized)
-        {
-            AvatarAddress = serialized.GetAddress("avatarAddress");
-            AgentAddress = serialized.GetAddress("agentAddress");
-            ArmorId = serialized.GetInteger("armorId");
-            Level = serialized.GetInteger("level");
-            AvatarName = serialized.GetString("avatarName");
-            Exp = serialized.GetLong("exp");
-            StageClearedBlockIndex = serialized.GetLong("stageClearedBlockIndex");
-            UpdatedAt = serialized.GetDateTimeOffset("updatedAt");
-        }
-        public IValue Serialize() =>
-            new Dictionary(new Dictionary<IKey, IValue>
-            {
-                [(Text)"avatarAddress"] = AvatarAddress.Serialize(),
-                [(Text)"agentAddress"] = AgentAddress.Serialize(),
-                [(Text)"armorId"] = ArmorId.Serialize(),
-                [(Text)"level"] = Level.Serialize(),
-                [(Text)"avatarName"] = AvatarName.Serialize(),
-                [(Text)"exp"] = Exp.Serialize(),
-                [(Text)"stageClearedBlockIndex"] = StageClearedBlockIndex.Serialize(),
-                [(Text)"updatedAt"] = UpdatedAt.Serialize(),
-            });
     }
 }

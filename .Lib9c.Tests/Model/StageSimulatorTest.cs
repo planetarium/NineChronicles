@@ -26,7 +26,8 @@ namespace Lib9c.Tests.Model
                 default,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState()
+                new GameConfigState(),
+                default
             );
         }
 

@@ -26,6 +26,7 @@ namespace Nekoyume.Action
         public int stageId;
         public Address avatarAddress;
         public Address WeeklyArenaAddress;
+        public Address RankingMapAddress;
         public BattleLog Result { get; private set; }
 
         protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
@@ -38,6 +39,7 @@ namespace Nekoyume.Action
                 ["stageId"] = stageId.Serialize(),
                 ["avatarAddress"] = avatarAddress.Serialize(),
                 ["weeklyArenaAddress"] = WeeklyArenaAddress.Serialize(),
+                ["rankingMapAddress"] = RankingMapAddress.Serialize(),
             }.ToImmutableDictionary();
 
 
@@ -65,7 +67,7 @@ namespace Nekoyume.Action
             var states = ctx.PreviousStates;
             if (ctx.Rehearsal)
             {
-                states = states.SetState(RankingState.Address, MarkChanged);
+                states = states.SetState(RankingMapAddress, MarkChanged);
                 states = states.SetState(avatarAddress, MarkChanged);
                 states = states.SetState(WeeklyArenaAddress, MarkChanged);
                 return states.SetState(ctx.Signer, MarkChanged);
@@ -92,6 +94,11 @@ namespace Nekoyume.Action
             Log.Debug("HAS Get AgentAvatarStates: {Elapsed}", sw.Elapsed);
 
             sw.Restart();
+
+            if (avatarState.rankingMapAddress != RankingMapAddress)
+            {
+                throw new InvalidAddressException();
+            }
 
             // worldId와 stageId가 유효한지 확인합니다.
             var worldSheet = states.GetSheet<WorldSheet>();
@@ -260,10 +267,9 @@ namespace Nekoyume.Action
             Log.Debug("HAS Set AvatarState: {Elapsed}", sw.Elapsed);
 
             sw.Restart();
-            if (simulator.Log.IsClear &&
-                states.TryGetState(RankingState.Address, out Dictionary d))
+            if (states.TryGetState(RankingMapAddress, out Dictionary d) && simulator.Log.IsClear)
             {
-                var ranking = new RankingState(d);
+                var ranking = new RankingMapState(d);
                 ranking.Update(avatarState);
 
                 sw.Stop();
@@ -275,7 +281,7 @@ namespace Nekoyume.Action
                 sw.Stop();
                 Log.Debug("HAS Serialize RankingState: {Elapsed}", sw.Elapsed);
                 sw.Restart();
-                states = states.SetState(RankingState.Address, serialized);
+                states = states.SetState(RankingMapAddress, serialized);
             }
 
             sw.Stop();
