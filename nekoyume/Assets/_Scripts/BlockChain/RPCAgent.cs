@@ -28,6 +28,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Events;
 using static Nekoyume.Action.ActionBase;
+using Logger = Serilog.Core.Logger;
 
 namespace Nekoyume.BlockChain
 {
@@ -47,7 +48,8 @@ namespace Nekoyume.BlockChain
 
         private Block<PolymorphicAction<ActionBase>> _genesis;
 
-        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource();
+        // Rendering logs will be recorded in NineChronicles.Standalone
+        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 

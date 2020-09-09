@@ -35,6 +35,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using NetMQ;
 using Serilog;
+using Serilog.Events;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -88,7 +89,7 @@ namespace Nekoyume.BlockChain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
-        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource();
+        public BlockPolicySource BlockPolicySource { get; private set; }
 
         public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
 
@@ -156,6 +157,7 @@ namespace Nekoyume.BlockChain
             string genesisBlockPath = null)
         {
             InitializeLogger(consoleSink, development);
+            BlockPolicySource = new BlockPolicySource(Log.Logger, LogEventLevel.Debug);
 
             var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath ?? BlockHelper.GenesisBlockPath);
             if (genesisBlock is null)
