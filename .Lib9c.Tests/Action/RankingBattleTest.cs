@@ -27,7 +27,9 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void Execute()
         {
-            var itemId = _tableSheets.WeeklyArenaRewardSheet.Values.First().Reward.ItemId;
+            var itemIds = _tableSheets.WeeklyArenaRewardSheet.Values
+                .Select(r => r.Reward.ItemId)
+                .ToList();
             var privateKey = new PrivateKey();
             var agentAddress = privateKey.PublicKey.ToAddress();
             var agent = new AgentState(agentAddress);
@@ -52,7 +54,7 @@ namespace Lib9c.Tests.Action
             );
             agent.avatarAddresses.Add(0, avatarAddress);
 
-            Assert.False(avatarState.inventory.HasItem(itemId));
+            Assert.All(itemIds, id => Assert.False(avatarState.inventory.HasItem(id)));
 
             var avatarAddress2 = agentAddress.Derive("avatar2");
             var avatarState2 = new AvatarState(
@@ -112,7 +114,7 @@ namespace Lib9c.Tests.Action
 
             var newWeeklyState = nextState.GetWeeklyArenaState(0);
 
-            Assert.True(newState.inventory.HasItem(itemId));
+            Assert.Contains(newState.inventory.Materials, i => itemIds.Contains(i.Id));
             Assert.NotNull(action.Result);
             Assert.Contains(typeof(GetReward), action.Result.Select(e => e.GetType()));
             Assert.Equal(BattleLog.Result.Win, action.Result.result);
