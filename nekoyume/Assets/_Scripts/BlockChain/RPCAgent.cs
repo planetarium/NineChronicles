@@ -28,6 +28,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Events;
 using static Nekoyume.Action.ActionBase;
+using Logger = Serilog.Core.Logger;
 
 namespace Nekoyume.BlockChain
 {
@@ -45,9 +46,10 @@ namespace Nekoyume.BlockChain
 
         private Codec _codec = new Codec();
 
-        private Block<PolymorphicAction<ActionBase>> _genseis;
+        private Block<PolymorphicAction<ActionBase>> _genesis;
 
-        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource();
+        // Rendering logs will be recorded in NineChronicles.Standalone
+        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
 
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 
@@ -88,7 +90,7 @@ namespace Nekoyume.BlockChain
 
             OnDisconnected = new UnityEvent();
 
-            _genseis = BlockHelper.ImportBlock(options.GenesisBlockPath ?? BlockHelper.GenesisBlockPath);
+            _genesis = BlockHelper.ImportBlock(options.GenesisBlockPath ?? BlockHelper.GenesisBlockPath);
         }
 
         public IValue GetState(Address address)
@@ -240,7 +242,7 @@ namespace Nekoyume.BlockChain
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     nonce,
                     PrivateKey,
-                    _genseis?.Hash,
+                    _genesis?.Hash,
                     actions
                 );
             await _service.PutTransaction(tx.Serialize(true));
