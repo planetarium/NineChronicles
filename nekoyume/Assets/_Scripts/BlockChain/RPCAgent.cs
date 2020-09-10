@@ -90,7 +90,7 @@ namespace Nekoyume.BlockChain
 
             OnDisconnected = new UnityEvent();
 
-            _genesis = BlockHelper.ImportBlock(options.GenesisBlockPath ?? BlockHelper.GenesisBlockPath);
+            _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
         }
 
         public IValue GetState(Address address)

@@ -1,5 +1,7 @@
 using System.IO;
+using Nekoyume;
 using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,14 +13,14 @@ namespace Planetarium.Nekoyume.Editor
         public static void DeleteAllEditorAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
-            MakeGenesisBlock(BlockHelper.GenesisBlockPath);
+            MakeGenesisBlock(BlockManager.GenesisBlockPath);
         }
 
         [MenuItem("Tools/Libplanet/Delete All(Player) - Make Genesis Block For Prod To StreamingAssets Folder")]
         public static void DeleteAllPlayerAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Production));
-            MakeGenesisBlock(BlockHelper.GenesisBlockPath);
+            MakeGenesisBlock(BlockManager.GenesisBlockPath);
         }
 
         [MenuItem("Tools/Libplanet/Make Genesis Block")]
@@ -27,7 +29,7 @@ namespace Planetarium.Nekoyume.Editor
             var path = EditorUtility.SaveFilePanel(
                 "Choose path to export the new genesis block",
                 Application.streamingAssetsPath,
-                BlockHelper.GenesisBlockName,
+                BlockManager.GenesisBlockName,
                 ""
             );
 
@@ -49,8 +51,8 @@ namespace Planetarium.Nekoyume.Editor
 
         private static void MakeGenesisBlock(string path)
         {
-            var block = BlockHelper.MineGenesisBlock();
-            BlockHelper.ExportBlock(block, path);
+            var block = BlockManager.MineGenesisBlock();
+            BlockManager.ExportBlock(block, path);
         }
     }
 }
