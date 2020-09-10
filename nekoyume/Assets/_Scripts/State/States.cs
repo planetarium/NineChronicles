@@ -16,7 +16,7 @@ namespace Nekoyume.State
     {
         public static States Instance => Game.Game.instance.States;
 
-        public RankingState RankingState { get; private set; }
+        public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
 
         public ShopState ShopState { get; private set; }
 
@@ -48,16 +48,16 @@ namespace Nekoyume.State
         /// 랭킹 상태를 할당한다.
         /// </summary>
         /// <param name="state"></param>
-        public void SetRankingState(RankingState state)
+        public void SetRankingMapStates(RankingMapState state)
         {
             if (state is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetRankingState)}] {nameof(state)} is null.");
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetRankingMapStates)}] {nameof(state)} is null.");
                 return;
             }
 
-            RankingState = state;
-            ReactiveRankingState.Initialize(RankingState);
+            RankingMapStates[state.address] = state;
+            RankingMapStatesSubject.OnNext(RankingMapStates);
         }
 
         /// <summary>
