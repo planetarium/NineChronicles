@@ -35,7 +35,8 @@ namespace Tests.EditMode
                 new Address(),
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState()
+                new GameConfigState(),
+                new Address()
             );
             Assert.AreEqual(0, avatarState.Nonce);
             var seed = 0;

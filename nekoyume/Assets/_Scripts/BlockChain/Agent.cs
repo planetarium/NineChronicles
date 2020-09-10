@@ -379,10 +379,14 @@ namespace Nekoyume.BlockChain
                 ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
                 // 랭킹의 상태를 한 번 동기화 한다.
-                States.Instance.SetRankingState(
-                    GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
-                        ? new RankingState(rankingDict)
-                        : new RankingState());
+                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                {
+                    var address = RankingState.Derive(i);
+                    var mapState = GetState(address) is Bencodex.Types.Dictionary serialized
+                        ? new RankingMapState(serialized)
+                        : new RankingMapState(address);
+                    States.Instance.SetRankingMapStates(mapState);
+                }
 
                 // 상점의 상태를 한 번 동기화 한다.
                 States.Instance.SetShopState(
