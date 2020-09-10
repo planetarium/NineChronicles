@@ -11,6 +11,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
@@ -66,16 +67,32 @@ namespace Lib9c.Tests.Action
             }
         }
 
-        [Fact]
-        public void Execute()
+        [Theory]
+        [InlineData(1, 1, 1)]
+        [InlineData(100, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)]
+        public void Execute(int avatarLevel, int worldId, int stageId)
         {
+            Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
+            Assert.True(stageId >= worldRow.StageBegin);
+            Assert.True(stageId <= worldRow.StageEnd);
+            Assert.True(_tableSheets.StageSheet.TryGetValue(stageId, out _));
+
+            var previousAvatarState = _initialState.GetAvatarState(_avatarAddress);
+            previousAvatarState.level = avatarLevel;
+            previousAvatarState.worldInformation = new WorldInformation(
+                0,
+                _tableSheets.WorldSheet,
+                Math.Max(_tableSheets.StageSheet.First?.Id ?? 1, stageId - 1));
+
+            var state = _initialState.SetState(_avatarAddress, previousAvatarState.Serialize());
+
             var action = new HackAndSlash()
             {
                 costumes = new List<int>(),
                 equipments = new List<Guid>(),
                 foods = new List<Guid>(),
-                worldId = 1,
-                stageId = 1,
+                worldId = worldId,
+                stageId = stageId,
                 avatarAddress = _avatarAddress,
                 WeeklyArenaAddress = _weeklyArenaState.address,
             };
@@ -84,7 +101,7 @@ namespace Lib9c.Tests.Action
 
             var nextState = action.Execute(new ActionContext()
             {
-                PreviousStates = _initialState,
+                PreviousStates = state,
                 Signer = _agentAddress,
                 Random = new ItemEnhancementTest.TestRandom(),
                 Rehearsal = false,
@@ -94,10 +111,27 @@ namespace Lib9c.Tests.Action
             var newWeeklyState = nextState.GetWeeklyArenaState(0);
 
             Assert.NotNull(action.Result);
-            Assert.NotEmpty(action.Result.OfType<GetReward>());
-            Assert.Equal(BattleLog.Result.Win, action.Result.result);
-            Assert.Contains(_avatarAddress, newWeeklyState);
-            Assert.True(nextAvatarState.worldInformation.IsStageCleared(1));
+
+            if (action.Result.result == BattleLog.Result.Win)
+            {
+                Assert.NotEmpty(action.Result.OfType<GetReward>());
+                Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
+            }
+            else
+            {
+                Assert.Empty(action.Result.OfType<GetReward>());
+                Assert.False(nextAvatarState.worldInformation.IsStageCleared(stageId));
+            }
+
+            if (stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
+                action.Result.IsClear)
+            {
+                Assert.Contains(_avatarAddress, newWeeklyState);
+            }
+            else
+            {
+                Assert.DoesNotContain(_avatarAddress, newWeeklyState);
+            }
         }
 
         [Fact]
