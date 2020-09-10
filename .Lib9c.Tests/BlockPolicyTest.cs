@@ -8,7 +8,6 @@ namespace Lib9c.Tests
     using Libplanet.Assets;
     using Libplanet.Blockchain;
     using Libplanet.Blockchain.Policies;
-    using Libplanet.Blockchain.Renderers;
     using Libplanet.Blocks;
     using Libplanet.Crypto;
     using Libplanet.Store;
@@ -16,6 +15,7 @@ namespace Lib9c.Tests
     using Nekoyume.Action;
     using Nekoyume.BlockChain;
     using Nekoyume.Model.State;
+    using Serilog.Core;
     using Xunit;
 
     public class BlockPolicyTest
@@ -25,7 +25,7 @@ namespace Lib9c.Tests
         {
             var adminPrivateKey = new PrivateKey();
             var adminAddress = new Address(adminPrivateKey.PublicKey);
-            var blockPolicySource = new BlockPolicySource();
+            var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(adminAddress, ImmutableHashSet<Address>.Empty);
 
@@ -56,7 +56,7 @@ namespace Lib9c.Tests
             var activatedPrivateKey = new PrivateKey();
             var activatedAddress = activatedPrivateKey.ToAddress();
 
-            var blockPolicySource = new BlockPolicySource();
+            var blockPolicySource = new BlockPolicySource(Logger.None);
             IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
             Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
                 adminAddress,
