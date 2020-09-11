@@ -14,7 +14,7 @@ namespace Nekoyume.L10n
 {
     public static class L10nManager
     {
-        private enum State
+        public enum State
         {
             None,
             InInitializing,
@@ -22,13 +22,17 @@ namespace Nekoyume.L10n
             InLanguageChanging,
         }
 
-        public static readonly string CsvFilesRootPath =
-            Path.Combine(Application.streamingAssetsPath, "Localization");
+        public static readonly string SettingsAssetPathInResources = "L10nSettings";
 
-        private static State _state = State.None;
+        public static readonly string CsvFilesRootDirectoryPath =
+            Path.Combine(Application.streamingAssetsPath, "Localization");
 
         private static IReadOnlyDictionary<string, string> _dictionary =
             new Dictionary<string, string>();
+
+        private static L10nSettings _settings;
+
+        public static State CurrentState { get; private set; } = State.None;
 
         #region Language
 
@@ -47,17 +51,27 @@ namespace Nekoyume.L10n
 
         #endregion
 
+        #region LanguageType Settings
+
+        public static LanguageTypeSettings CurrentLanguageTypeSettings => _settings.FontAssets
+            .First(asset => asset.languageType.Equals(CurrentLanguage));
+
+        #endregion
+
         #region Event
 
-        private static readonly ISubject<LanguageType> OnInitializedSubject =
+        private static readonly ISubject<LanguageType> OnInitializeSubject =
             new Subject<LanguageType>();
 
-        private static readonly ISubject<LanguageType> OnLanguageChangedSubject =
+        private static readonly ISubject<LanguageType> OnLanguageChangeSubject =
             new Subject<LanguageType>();
 
-        public static IObservable<LanguageType> OnInitialized => OnInitializedSubject;
+        public static IObservable<LanguageType> OnInitialize => OnInitializeSubject;
 
-        public static IObservable<LanguageType> OnLanguageChanged => OnLanguageChangedSubject;
+        public static IObservable<LanguageType> OnLanguageChange => OnLanguageChangeSubject;
+
+        public static IObservable<LanguageTypeSettings> OnLanguageTypeSettingsChange =>
+            OnLanguageChange.Select(_ => CurrentLanguageTypeSettings);
 
         #endregion
 
@@ -73,33 +87,36 @@ namespace Nekoyume.L10n
 #if TEST_LOG
             Debug.Log($"{nameof(L10nManager)}.{nameof(Initialize)}() called.");
 #endif
-            switch (_state)
+            switch (CurrentState)
             {
                 case State.InInitializing:
                     Debug.LogWarning($"[{nameof(L10nManager)}] Already in initializing now.");
-                    return OnInitialized;
+                    return OnInitialize;
                 case State.InLanguageChanging:
-                    Debug.LogWarning($"[{nameof(L10nManager)}] Already initialized and in changing language now.");
-                    return OnLanguageChanged;
+                    Debug.LogWarning(
+                        $"[{nameof(L10nManager)}] Already initialized and in changing language now.");
+                    return OnLanguageChange;
                 case State.Initialized:
-                    Debug.LogWarning($"[{nameof(L10nManager)}] Already initialized as {CurrentLanguage}.");
+                    Debug.LogWarning(
+                        $"[{nameof(L10nManager)}] Already initialized as {CurrentLanguage}.");
                     return Observable.Empty(CurrentLanguage);
             }
 
-            _state = State.InInitializing;
+            CurrentState = State.InInitializing;
             InitializeInternal(languageType);
 
-            return _state == State.Initialized
+            return CurrentState == State.Initialized
                 ? Observable.Empty(CurrentLanguage)
-                : OnInitialized;
+                : OnInitialize;
         }
 
         private static void InitializeInternal(LanguageType languageType)
         {
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
-            _state = State.Initialized;
-            OnInitializedSubject.OnNext(CurrentLanguage);
+            _settings = Resources.Load<L10nSettings>(SettingsAssetPathInResources);
+            CurrentState = State.Initialized;
+            OnInitializeSubject.OnNext(CurrentLanguage);
         }
 
         public static IObservable<LanguageType> SetLanguage(LanguageType languageType)
@@ -112,7 +129,7 @@ namespace Nekoyume.L10n
                 return Observable.Empty(CurrentLanguage);
             }
 
-            switch (_state)
+            switch (CurrentState)
             {
                 case State.None:
                 case State.InInitializing:
@@ -121,36 +138,36 @@ namespace Nekoyume.L10n
                     return subject;
                 case State.InLanguageChanging:
                     Debug.LogWarning($"[{nameof(L10nManager)}] Already in changing language now.");
-                    return OnLanguageChanged;
+                    return OnLanguageChange;
             }
 
-            _state = State.InLanguageChanging;
+            CurrentState = State.InLanguageChanging;
             SetLanguageInternal(languageType);
 
-            return _state == State.Initialized
+            return CurrentState == State.Initialized
                 ? Observable.Empty(CurrentLanguage)
-                : OnLanguageChanged;
+                : OnLanguageChange;
         }
 
         private static void SetLanguageInternal(LanguageType languageType)
         {
             _dictionary = GetDictionary(languageType);
             CurrentLanguage = languageType;
-            _state = State.Initialized;
-            OnLanguageChangedSubject.OnNext(CurrentLanguage);
+            CurrentState = State.Initialized;
+            OnLanguageChangeSubject.OnNext(CurrentLanguage);
         }
 
         #endregion
 
         private static IReadOnlyDictionary<string, string> GetDictionary(LanguageType languageType)
         {
-            if (!Directory.Exists(CsvFilesRootPath))
+            if (!Directory.Exists(CsvFilesRootDirectoryPath))
             {
-                throw new DirectoryNotFoundException(CsvFilesRootPath);
+                throw new DirectoryNotFoundException(CsvFilesRootDirectoryPath);
             }
 
             var dictionary = new Dictionary<string, string>();
-            var csvFileInfos = new DirectoryInfo(CsvFilesRootPath).GetFiles("*.csv");
+            var csvFileInfos = new DirectoryInfo(CsvFilesRootDirectoryPath).GetFiles("*.csv");
             foreach (var csvFileInfo in csvFileInfos)
             {
                 using (var streamReader = new StreamReader(csvFileInfo.FullName))
@@ -175,6 +192,11 @@ namespace Nekoyume.L10n
                             case LanguageType.Portuguese:
                                 value = record.Portuguese;
                                 break;
+                        }
+
+                        if (string.IsNullOrEmpty(value))
+                        {
+                            value = record.English;
                         }
 
                         if (dictionary.ContainsKey(key))
@@ -274,7 +296,7 @@ namespace Nekoyume.L10n
                 throw new ArgumentNullException(nameof(key));
             }
 
-            if (_state != State.Initialized)
+            if (CurrentState != State.Initialized)
             {
                 throw new L10nNotInitializedException();
             }
