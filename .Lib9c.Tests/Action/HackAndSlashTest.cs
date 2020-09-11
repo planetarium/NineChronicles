@@ -14,17 +14,16 @@ namespace Lib9c.Tests.Action
     using Nekoyume.Action;
     using Nekoyume.Model;
     using Nekoyume.Model.BattleStatus;
+    using Nekoyume.Model.Item;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
 
     public class HackAndSlashTest
     {
-        private readonly Dictionary<string, string> _sheets;
         private readonly TableSheets _tableSheets;
 
         private readonly Address _agentAddress;
-        private readonly AgentState _agentState;
 
         private readonly Address _avatarAddress;
         private readonly AvatarState _avatarState;
@@ -36,12 +35,12 @@ namespace Lib9c.Tests.Action
 
         public HackAndSlashTest()
         {
-            _sheets = TableSheetsImporter.ImportSheets();
-            _tableSheets = new TableSheets(_sheets);
+            var sheets = TableSheetsImporter.ImportSheets();
+            _tableSheets = new TableSheets(sheets);
 
             var privateKey = new PrivateKey();
             _agentAddress = privateKey.PublicKey.ToAddress();
-            _agentState = new AgentState(_agentAddress);
+            var agentState = new AgentState(_agentAddress);
 
             _avatarAddress = _agentAddress.Derive("avatar");
             _rankingMapAddress = _avatarAddress.Derive("ranking_map");
@@ -50,23 +49,23 @@ namespace Lib9c.Tests.Action
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(_sheets[nameof(GameConfigSheet)]),
+                new GameConfigState(sheets[nameof(GameConfigSheet)]),
                 _rankingMapAddress
             )
             {
                 level = 100,
             };
-            _agentState.avatarAddresses.Add(0, _avatarAddress);
+            agentState.avatarAddresses.Add(0, _avatarAddress);
 
             _weeklyArenaState = new WeeklyArenaState(0);
 
             _initialState = new State()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
-                .SetState(_agentAddress, _agentState.Serialize())
+                .SetState(_agentAddress, agentState.Serialize())
                 .SetState(_avatarAddress, _avatarState.Serialize())
                 .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize());
 
-            foreach (var (key, value) in _sheets)
+            foreach (var (key, value) in sheets)
             {
                 _initialState = _initialState
                     .SetState(Addresses.TableSheet.Derive(key), value.Serialize());
@@ -134,7 +133,7 @@ namespace Lib9c.Tests.Action
         }
 
         [Fact]
-        public void ExecuteInvalidRankingMapAddress()
+        public void ExecuteThrowInvalidRankingMapAddress()
         {
             var action = new HackAndSlash()
             {
@@ -160,13 +159,404 @@ namespace Lib9c.Tests.Action
                 })
             );
 
-            var formatter = new BinaryFormatter();
-            using var ms = new MemoryStream();
-            formatter.Serialize(ms, exec);
-            ms.Seek(0, SeekOrigin.Begin);
+            SerializeException<InvalidAddressException>(exec);
+        }
 
-            var deserialized = (InvalidAddressException)formatter.Deserialize(ms);
-            Assert.Equal(exec.Message, deserialized.Message);
+        [Fact]
+        public void ExecuteThrowFailedLoadStateException()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+            };
+
+            Assert.Null(action.Result);
+
+            var exec = Assert.Throws<FailedLoadStateException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = new State(),
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<FailedLoadStateException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowSheetRowNotFoundExceptionByWorld()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 100,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<SheetRowNotFoundException>(exec);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(51)]
+        public void ExecuteThrowSheetRowColumnException(int stageId)
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = stageId,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var exec = Assert.Throws<SheetRowColumnException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<SheetRowColumnException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowSheetRowNotFoundExceptionByStage()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var state = _initialState;
+            state = state.SetState(Addresses.TableSheet.Derive(nameof(StageSheet)), "test".Serialize());
+
+            var exec = Assert.Throws<SheetRowNotFoundException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<SheetRowNotFoundException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowFailedAddWorldException()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var state = _initialState;
+            var worldSheet = new WorldSheet();
+            worldSheet.Set("test");
+            var avatarState = new AvatarState(_avatarState)
+            {
+                worldInformation = new WorldInformation(0, worldSheet, false),
+            };
+            state = state.SetState(_avatarAddress, avatarState.Serialize());
+
+            Assert.False(avatarState.worldInformation.IsStageCleared(0));
+
+            var exec = Assert.Throws<FailedAddWorldException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<FailedAddWorldException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidWorldException()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 2,
+                stageId = 51,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            Assert.False(_avatarState.worldInformation.IsStageCleared(51));
+
+            var exec = Assert.Throws<InvalidWorldException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<InvalidWorldException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidStageException()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 3,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var avatarState = new AvatarState(_avatarState);
+            avatarState.worldInformation.ClearStage(
+                1,
+                1,
+                0,
+                _tableSheets.WorldSheet,
+                _tableSheets.WorldUnlockSheet
+            );
+
+            avatarState.worldInformation.TryGetWorld(1, out var world);
+
+            Assert.True(world.IsStageCleared);
+            Assert.True(avatarState.worldInformation.IsWorldUnlocked(1));
+
+            var state = _initialState;
+            state = state.SetState(_avatarAddress, avatarState.Serialize());
+
+            var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<InvalidStageException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowInvalidStageExceptionUnlockedWorld()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 2,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            _avatarState.worldInformation.TryGetWorld(1, out var world);
+            Assert.False(world.IsStageCleared);
+
+            var exec = Assert.Throws<InvalidStageException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = _initialState,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<InvalidStageException>(exec);
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon)]
+        [InlineData(ItemSubType.Armor)]
+        [InlineData(ItemSubType.Belt)]
+        [InlineData(ItemSubType.Necklace)]
+        [InlineData(ItemSubType.Ring)]
+        public void ExecuteThrowInvalidEquipmentException(ItemSubType itemSubType)
+        {
+            var avatarState = new AvatarState(_avatarState);
+            var equipRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == itemSubType);
+            var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 100);
+            avatarState.inventory.AddItem(equipment);
+
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>()
+                {
+                    equipment.ItemId,
+                },
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var state = _initialState;
+            state = state.SetState(_avatarAddress, avatarState.Serialize());
+
+            var exec = Assert.Throws<RequiredBlockIndexException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<RequiredBlockIndexException>(exec);
+        }
+
+        [Theory]
+        [InlineData(ItemSubType.Weapon)]
+        [InlineData(ItemSubType.Armor)]
+        [InlineData(ItemSubType.Belt)]
+        [InlineData(ItemSubType.Necklace)]
+        [InlineData(ItemSubType.Ring)]
+        public void ExecuteThrowEquipmentSlotUnlockException(ItemSubType itemSubType)
+        {
+            var avatarState = new AvatarState(_avatarState);
+            var equipRow = _tableSheets.EquipmentItemSheet.Values.First(r => r.ItemSubType == itemSubType);
+            var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.NewGuid(), 0);
+            avatarState.inventory.AddItem(equipment);
+            avatarState.level = 0;
+
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>()
+                {
+                    equipment.ItemId,
+                },
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var state = _initialState;
+            state = state.SetState(_avatarAddress, avatarState.Serialize());
+
+            var exec = Assert.Throws<EquipmentSlotUnlockException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<EquipmentSlotUnlockException>(exec);
+        }
+
+        [Fact]
+        public void ExecuteThrowNotEnoughActionPointException()
+        {
+            var avatarState = new AvatarState(_avatarState)
+            {
+                actionPoint = 0,
+            };
+
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            Assert.Null(action.Result);
+
+            var state = _initialState;
+            state = state.SetState(_avatarAddress, avatarState.Serialize());
+
+            var exec = Assert.Throws<NotEnoughActionPointException>(() => action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                Random = new ItemEnhancementTest.TestRandom(),
+            }));
+
+            Assert.Null(action.Result);
+
+            SerializeException<NotEnoughActionPointException>(exec);
         }
 
         [Fact]
@@ -181,14 +571,15 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 avatarAddress = _avatarAddress,
                 WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
             };
 
             var updatedAddresses = new List<Address>()
             {
                 _agentAddress,
                 _avatarAddress,
-                Addresses.Ranking,
                 _weeklyArenaState.address,
+                _rankingMapAddress,
             };
 
             var state = new State();
@@ -255,6 +646,19 @@ namespace Lib9c.Tests.Action
             deserialized.LoadPlainValue(action.PlainValue);
 
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
+        }
+
+        private static void SerializeException<T>(Exception exec)
+            where T : Exception
+        {
+            var formatter = new BinaryFormatter();
+            using var ms = new MemoryStream();
+            formatter.Serialize(ms, exec);
+
+            ms.Seek(0, SeekOrigin.Begin);
+            var deserialized = (T)formatter.Deserialize(ms);
+
+            Assert.Equal(exec.Message, deserialized.Message);
         }
     }
 }

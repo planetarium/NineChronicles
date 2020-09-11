@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.Action;
 using Nekoyume.Battle;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -246,7 +247,7 @@ namespace Nekoyume.Model
                         ring = equipment as Ring;
                         break;
                     default:
-                        throw new InvalidEquipmentException();
+                        throw new RequiredBlockIndexException();
                 }
             }
 
@@ -351,9 +352,5 @@ namespace Nekoyume.Model
             Simulator.WaveTurn++;
             Simulator.Log.Add(new WaveTurnEnd(this, Simulator.TurnNumber, Simulator.WaveTurn));
         }
-    }
-
-    public class InvalidEquipmentException : Exception
-    {
     }
 }

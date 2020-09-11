@@ -5,11 +5,9 @@ using System.Globalization;
 using System.Linq;
 using Bencodex.Types;
 using Libplanet;
-using Libplanet.Action;
 using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Battle;
-using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.Quest;
@@ -352,10 +350,9 @@ namespace Nekoyume.Model.State
             return armor?.Id ?? GameConfig.DefaultAvatarArmorId;
         }
 
-        public bool ValidateEquipments(List<Guid> equipmentIds, long blockIndex)
+        public void ValidateEquipments(List<Guid> equipmentIds, long blockIndex)
         {
             var ringCount = 0;
-            var failed = false;
             foreach (var itemId in equipmentIds)
             {
                 if (!inventory.TryGetNonFungibleItem(itemId, out ItemUsable outNonFungibleItem))
@@ -366,40 +363,41 @@ namespace Nekoyume.Model.State
                 var equipment = (Equipment) outNonFungibleItem;
                 if (equipment.RequiredBlockIndex > blockIndex)
                 {
-                    failed = true;
-                    break;
+                    throw new RequiredBlockIndexException($"{equipment.ItemSubType} / unlock on {equipment.RequiredBlockIndex}");
                 }
 
+                var requiredLevel = 0;
                 switch (equipment.ItemSubType)
                 {
                     case ItemSubType.Weapon:
-                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
                         break;
                     case ItemSubType.Armor:
-                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
                         break;
                     case ItemSubType.Belt:
-                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
                         break;
                     case ItemSubType.Necklace:
-                        failed = level < GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
+                        requiredLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
                         break;
                     case ItemSubType.Ring:
                         ringCount++;
-                        var requireLevel = ringCount == 1
+                        requiredLevel = ringCount == 1
                             ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
                             : ringCount == 2
                                 ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2
                                 : int.MaxValue;
-                        failed = level < requireLevel;
                         break;
                     default:
-                        failed = true;
-                        break;
+                        throw new ArgumentOutOfRangeException($"{equipment.ItemSubType} / invalid equipment type");
+                }
+
+                if (level < requiredLevel)
+                {
+                    throw new EquipmentSlotUnlockException($"{equipment.ItemSubType} / not enough level. required: {requiredLevel}");
                 }
             }
-
-            return !failed;
         }
 
         public void EquipCostumes(List<int> costumeIds)
