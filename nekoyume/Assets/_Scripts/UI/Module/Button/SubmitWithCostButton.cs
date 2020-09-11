@@ -98,6 +98,13 @@ namespace Nekoyume.UI.Module
             UpdateSpace();
         }
 
+        public void ShowHourglass(int required, int reserve)
+        {
+            costHourglass.SetActive(true);
+            SetText(costHourglassText, costHourglassTextForSubmittable, required <= reserve, reserve, required);
+            UpdateSpace();
+        }
+
         public void HideHourglass()
         {
             costHourglass.SetActive(false);
@@ -144,6 +151,20 @@ namespace Nekoyume.UI.Module
             textField.text = cost.ToString(CultureInfo.InvariantCulture);
             submitField.text = textField.text;
             SetTextColor(textField, submitField, isEnough);
+        }
+
+        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, int cost, int reserve) =>
+            SetText(textField, submitField, isEnough, (BigInteger)cost, (BigInteger)reserve);
+
+        private static void SetText(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough, BigInteger cost, BigInteger reserve)
+        {
+            var reserveText = reserve.ToString(CultureInfo.InvariantCulture);
+            var costText = cost.ToString(CultureInfo.InvariantCulture);
+
+            textField.text = isEnough ?
+                $"{costText}/{reserveText}" :
+                $"<color=#ff00005a>{costText}</color>/{reserveText}";
+            submitField.text = textField.text;
         }
 
         private static void SetTextColor(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough)
