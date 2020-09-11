@@ -144,6 +144,7 @@ namespace Nekoyume.Model.State
             ear = avatarState.ear;
             tail = avatarState.tail;
             combinationSlotAddresses = avatarState.combinationSlotAddresses;
+            RankingMapAddress = avatarState.RankingMapAddress;
 
             PostConstructor();
         }
