@@ -162,10 +162,9 @@ namespace Nekoyume.UI.Module
             var costText = cost.ToString(CultureInfo.InvariantCulture);
 
             textField.text = isEnough ?
-                    $"{costText}/{reserveText}" :
-                    $"<color=red>{costText}</color>/{reserveText}";
+                $"{costText}/{reserveText}" :
+                $"<color=#ff00005a>{costText}</color>/{reserveText}";
             submitField.text = textField.text;
-            SetTextColor(textField, submitField, isEnough);
         }
 
         private static void SetTextColor(TextMeshProUGUI textField, TextMeshProUGUI submitField, bool isEnough)
