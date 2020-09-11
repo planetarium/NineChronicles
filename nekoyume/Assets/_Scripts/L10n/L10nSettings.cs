@@ -1,29 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Nekoyume.L10n
 {
-    [CreateAssetMenu(fileName = "L10nSettings", menuName = "ScriptableObjects/SpawnL10nSettings", order = 1)]
+    [CreateAssetMenu(
+        fileName = "L10nSettings",
+        menuName = "ScriptableObjects/L10n/Spawn L10nSettings",
+        order = 1)]
     public class L10nSettings : ScriptableObject
     {
         [SerializeField]
-        private List<LanguageTypeSettings> fontAssets;
+        private List<LanguageTypeSettings> fontAssets = null;
 
-        public IReadOnlyList<LanguageTypeSettings> FontAssets => fontAssets;
+        public IEnumerable<LanguageTypeSettings> FontAssets => fontAssets;
 
-        private void Reset()
+        private L10nSettings()
         {
             fontAssets = new List<LanguageTypeSettings>();
             var languageType = typeof(LanguageType);
-            var languageTypeNames = Enum.GetNames(languageType);
-            for (var i = 0; i < languageTypeNames.Length; i++)
+            var languageTypes = Enum
+                .GetNames(languageType)
+                .Select(languageTypeName =>
+                    (LanguageType) Enum.Parse(languageType, languageTypeName))
+                .ToList();
+            for (var i = 0; i < languageTypes.Count; i++)
             {
-                var languageTypeName = languageTypeNames[i];
-                var type = (LanguageType) Enum.Parse(languageType, languageTypeName);
                 fontAssets.Add(new LanguageTypeSettings
                 {
-                    languageType = type,
+                    languageType = languageTypes[i]
                 });
             }
         }

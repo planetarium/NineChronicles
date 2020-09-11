@@ -1,5 +1,4 @@
 using System;
-using TMPro;
 
 namespace Nekoyume.L10n
 {
@@ -7,7 +6,7 @@ namespace Nekoyume.L10n
     public struct LanguageTypeSettings
     {
         public LanguageType languageType;
-        public TMP_FontAsset fontAsset;
-        public float fontSizeOffset;
+
+        public FontAssetData fontAssetData;
     }
 }
