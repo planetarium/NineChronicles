@@ -17,10 +17,10 @@ namespace Nekoyume.Action
 
     public class BlockRenderer : IRenderer<NCAction>
     {
-        private readonly Subject<(NCBlock OldTip, NCBlock NewTip)> _blockSubject =
+        public readonly Subject<(NCBlock OldTip, NCBlock NewTip)> BlockSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip)>();
 
-        private readonly Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)> _reorgSubject =
+        public readonly Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)> ReorgSubject =
             new Subject<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>();
 
         public void RenderBlock(
@@ -28,7 +28,7 @@ namespace Nekoyume.Action
             NCBlock newTip
         )
         {
-            _blockSubject.OnNext((oldTip, newTip));
+            BlockSubject.OnNext((oldTip, newTip));
         }
 
         public void RenderReorg(
@@ -37,14 +37,14 @@ namespace Nekoyume.Action
             NCBlock branchpoint
         )
         {
-            _reorgSubject.OnNext((oldTip, newTip, branchpoint));
+            ReorgSubject.OnNext((oldTip, newTip, branchpoint));
         }
 
         public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlock() =>
-            _blockSubject.AsObservable();
+            BlockSubject.AsObservable();
 
         public IObservable<(NCBlock OldTip, NCBlock NewTip, NCBlock Branchpoint)>
             EveryReorg() =>
-            _reorgSubject.AsObservable();
+            ReorgSubject.AsObservable();
     }
 }
