@@ -208,6 +208,11 @@ namespace Nekoyume.BlockChain
                 BlockPolicySource.UpdateActivationSet(rawState);
             }
 
+            if (blocks?.GetState(AuthorizedMinersState.Address) is Dictionary asm)
+            {
+                BlockPolicySource.AuthorizedMinersState = new AuthorizedMinersState(asm);
+            }
+
 #if BLOCK_LOG_USE
             FileHelper.WriteAllText("Block.log", "");
 #endif
