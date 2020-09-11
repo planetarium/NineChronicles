@@ -16,7 +16,9 @@ namespace Nekoyume
         public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock(
             IDictionary<string, string> tableSheets,
             GoldDistribution[] goldDistributions,
-            PendingActivationState[] pendingActivationStates)
+            PendingActivationState[] pendingActivationStates,
+            AuthorizedMinersState authorizedMinersState = null
+        )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
             {
@@ -43,7 +45,8 @@ namespace Nekoyume
                 ActivatedAccountsState = new ActivatedAccountsState(),
                 GoldCurrencyState = new GoldCurrencyState(ncg),
                 GoldDistributions = goldDistributions,
-                PendingActivationStates = pendingActivationStates
+                PendingActivationStates = pendingActivationStates,
+                AuthorizedMinersState = authorizedMinersState,
             };
             var actions = new PolymorphicAction<ActionBase>[]
             {

@@ -29,6 +29,8 @@ namespace Nekoyume.Action
 
         public PendingActivationState[] PendingActivationStates { get; set; }
 
+        public AuthorizedMinersState AuthorizedMinersState { get; set; }
+
         public override IAccountStateDelta Execute(IActionContext context)
         {
             IActionContext ctx = context;
@@ -55,6 +57,7 @@ namespace Nekoyume.Action
                 {
                     states = states.SetState(pendingActivationState.address, MarkChanged);
                 }
+                states = states.SetState(AuthorizedMinersState.Address, MarkChanged);
                 return states;
             }
 
@@ -81,6 +84,14 @@ namespace Nekoyume.Action
                 .SetState(Addresses.GoldDistribution,
                     GoldDistributions.Select(v => v.Serialize()).Serialize());
 
+            if (!(AuthorizedMinersState is null))
+            {
+                states = states.SetState(
+                    AuthorizedMinersState.Address, 
+                    AuthorizedMinersState.Serialize()
+                );
+            }
+
             foreach (var pendingActivationState in PendingActivationStates)
             {
                 states = states.SetState(pendingActivationState.address,
@@ -91,13 +102,16 @@ namespace Nekoyume.Action
             return states;
         }
 
-        protected override IImmutableDictionary<string, IValue> PlainValueInternal =>
-            ImmutableDictionary<string, IValue>.Empty
+        protected override IImmutableDictionary<string, IValue> PlainValueInternal
+        {
+            get
+            {
+                var rv = ImmutableDictionary<string, IValue>.Empty
                 .Add("ranking_state", RankingState.Serialize())
                 .Add("shop_state", ShopState.Serialize())
                 .Add("table_sheets",
                     new Dictionary(TableSheets.Select(pair =>
-                        new KeyValuePair<IKey, IValue>((Text) pair.Key, (Text) pair.Value))))
+                        new KeyValuePair<IKey, IValue>((Text)pair.Key, (Text)pair.Value))))
                 .Add("game_config_state", GameConfigState.Serialize())
                 .Add("redeem_code_state", RedeemCodeState.Serialize())
                 .Add("admin_address_state", AdminAddressState.Serialize())
@@ -106,6 +120,16 @@ namespace Nekoyume.Action
                 .Add("gold_distributions", GoldDistributions.Select(v => v.Serialize()).Serialize())
                 .Add("pending_activation_states",
                     PendingActivationStates.Select(v => v.Serialize()).Serialize());
+                
+                if (!(AuthorizedMinersState is null))
+                {
+                    rv = rv.Add("authorized_miners_state", AuthorizedMinersState.Serialize());
+                }
+                
+                return rv;
+            }
+        }
+            
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
         {
@@ -128,6 +152,11 @@ namespace Nekoyume.Action
             PendingActivationStates = ((Bencodex.Types.List) plainValue["pending_activation_states"])
                 .Select(e => new PendingActivationState((Bencodex.Types.Dictionary)e))
                 .ToArray();
+
+            if (plainValue.TryGetValue("authorized_miners_state", out IValue rawState))
+            {
+                AuthorizedMinersState = new AuthorizedMinersState((Bencodex.Types.Dictionary)rawState);
+            }
         }
     }
 }
