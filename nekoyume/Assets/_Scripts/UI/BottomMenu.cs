@@ -788,7 +788,7 @@ namespace Nekoyume.UI.Module
 
         private void UpdateInventoryNotification(Nekoyume.Model.Item.Inventory inventory)
         {
-            var hasNotification = inventory?.HasNotification() ?? false;
+            var hasNotification = inventory?.HasNotification(States.Instance.CurrentAvatarState.level) ?? false;
             HasNotificationInCharacter.OnNext(hasNotification);
         }
     }
