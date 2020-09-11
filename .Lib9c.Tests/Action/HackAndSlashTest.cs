@@ -2,6 +2,7 @@ namespace Lib9c.Tests.Action
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization.Formatters.Binary;
@@ -166,6 +167,41 @@ namespace Lib9c.Tests.Action
 
             var deserialized = (InvalidAddressException)formatter.Deserialize(ms);
             Assert.Equal(exec.Message, deserialized.Message);
+        }
+
+        [Fact]
+        public void Rehearsal()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+            };
+
+            var updatedAddresses = new List<Address>()
+            {
+                _agentAddress,
+                _avatarAddress,
+                Addresses.Ranking,
+                _weeklyArenaState.address,
+            };
+
+            var state = new State();
+
+            var nextState = action.Execute(new ActionContext()
+            {
+                PreviousStates = state,
+                Signer = _agentAddress,
+                BlockIndex = 0,
+                Rehearsal = true,
+            });
+
+            Assert.Equal(updatedAddresses.ToImmutableHashSet(), nextState.UpdatedAddresses);
         }
 
         [Fact]
