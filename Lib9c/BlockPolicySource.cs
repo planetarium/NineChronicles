@@ -116,10 +116,14 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
+            if (!(block.Miner is Address miner))
+            {
+                return null;
+            }
+
             bool targetBlock =
                 0 < block.Index && block.Index <= AuthorizedMinersState.ValidUntil &&
-                block.Index % AuthorizedMinersState.Interval == 0 && 
-                block.Miner is Address miner;
+                block.Index % AuthorizedMinersState.Interval == 0;
             bool minedByAuthorities = AuthorizedMinersState.Miners.Contains(miner);
             
             if (targetBlock && !minedByAuthorities)
