@@ -168,7 +168,7 @@ namespace Nekoyume.UI.Scroller
 
                 rank = 1;
                 challengeCountText.text =
-                    $"{arenaInfo.DailyChallengeCount}/{GameConfig.ArenaChallengeCountMax}";
+                    $"<color=orange>{arenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {

@@ -10,6 +10,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nekoyume;
 using AsyncIO;
 using Bencodex.Types;
 using Libplanet;
@@ -159,7 +160,7 @@ namespace Nekoyume.BlockChain
             InitializeLogger(consoleSink, development);
             BlockPolicySource = new BlockPolicySource(Log.Logger, LogEventLevel.Debug);
 
-            var genesisBlock = BlockHelper.ImportBlock(genesisBlockPath ?? BlockHelper.GenesisBlockPath);
+            var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath);
             if (genesisBlock is null)
             {
                 Debug.LogError("There is no genesis block.");
