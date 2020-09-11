@@ -7,6 +7,7 @@ namespace Lib9c.Tests.Action
     using Libplanet.Crypto;
     using Nekoyume;
     using Nekoyume.Action;
+    using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Nekoyume.TableData;
     using Xunit;
@@ -30,6 +31,10 @@ namespace Lib9c.Tests.Action
             var goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
             var minterKey = new PrivateKey();
             var ncg = new Currency("NCG", 2, minterKey.ToAddress());
+            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
+            var privateKey = new PrivateKey();
+            (ActivationKey activationKey, PendingActivationState pendingActivation) =
+                ActivationKey.Create(privateKey, nonce);
 
             var action = new InitializeStates
             {
@@ -45,6 +50,7 @@ namespace Lib9c.Tests.Action
                 ActivatedAccountsState = new ActivatedAccountsState(),
                 GoldCurrencyState = new GoldCurrencyState(ncg),
                 GoldDistributions = goldDistributions,
+                PendingActivationStates = new[] { pendingActivation },
             };
 
             var genesisState = action.Execute(new ActionContext()
@@ -64,6 +70,7 @@ namespace Lib9c.Tests.Action
                 Addresses.ActivatedAccount,
                 Addresses.GoldCurrency,
                 Addresses.GoldDistribution,
+                activationKey.PendingAddress,
             };
             addresses.AddRange(_sheets.Select(kv => Addresses.TableSheet.Derive(kv.Key)));
 

@@ -14,6 +14,7 @@ namespace Lib9c.Tests
     using Libplanet.Tx;
     using Nekoyume.Action;
     using Nekoyume.BlockChain;
+    using Nekoyume.Model;
     using Nekoyume.Model.State;
     using Serilog.Core;
     using Xunit;
@@ -111,6 +112,11 @@ namespace Lib9c.Tests
             IImmutableSet<Address> activatedAddresses
         )
         {
+            var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
+            var privateKey = new PrivateKey();
+            (ActivationKey activationKey, PendingActivationState pendingActivation) =
+                ActivationKey.Create(privateKey, nonce);
+
             return BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
                     new PolymorphicAction<ActionBase>[]
                     {
@@ -130,6 +136,7 @@ namespace Lib9c.Tests
                                 new Currency("NCG", 2, minter: null)
                             ),
                             GoldDistributions = new GoldDistribution[0],
+                            PendingActivationStates = new[] { pendingActivation },
                         },
                     }
                 );

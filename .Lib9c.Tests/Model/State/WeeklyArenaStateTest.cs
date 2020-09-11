@@ -50,7 +50,8 @@ namespace Lib9c.Tests.Model.State
                 default,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState()
+                new GameConfigState(),
+                default
             );
 
             var avatarAddress2 = agentAddress.Derive("avatar2");
@@ -59,7 +60,8 @@ namespace Lib9c.Tests.Model.State
                 default,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState()
+                new GameConfigState(),
+                default
             );
 
             var state = new WeeklyArenaState(0);
@@ -142,6 +144,7 @@ namespace Lib9c.Tests.Model.State
                     0L,
                     _tableSheets.GetAvatarSheets(),
                     new GameConfigState(),
+                    default,
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),
@@ -175,6 +178,7 @@ namespace Lib9c.Tests.Model.State
                     0L,
                     _tableSheets.GetAvatarSheets(),
                     new GameConfigState(),
+                    default,
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),
@@ -214,6 +218,7 @@ namespace Lib9c.Tests.Model.State
                     0L,
                     _tableSheets.GetAvatarSheets(),
                     new GameConfigState(),
+                    default,
                     i.ToString());
                 weeklyArenaState.Add(
                     new PrivateKey().ToAddress(),

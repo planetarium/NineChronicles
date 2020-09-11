@@ -35,6 +35,11 @@ namespace Lib9c.Tests.Action
             };
 
             var gold = new GoldCurrencyState(new Currency("NCG", 2, minter: null));
+            var ranking = new RankingState();
+            for (var i = 0; i < RankingState.RankingMapCapacity; i++)
+            {
+                ranking.RankingMap[RankingState.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
+            }
 
             var sheets = TableSheetsImporter.ImportSheets();
             var state = new State()
@@ -47,6 +52,7 @@ namespace Lib9c.Tests.Action
                     Addresses.GameConfig,
                     new GameConfigState(sheets[nameof(GameConfigSheet)]).Serialize()
                 )
+                .SetState(Addresses.Ranking, ranking.Serialize())
                 .MintAsset(GoldCurrencyState.Address, gold.Currency * 100000000000);
 
             foreach (var (key, value) in sheets)
@@ -73,6 +79,7 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
+            Assert.Equal(avatarAddress, nextState.GetRankingState().RankingMap[nextAvatarState.RankingMapAddress].First());
         }
 
         [Fact]
@@ -98,6 +105,7 @@ namespace Lib9c.Tests.Action
                 agentAddress,
                 avatarAddress,
                 Addresses.GoldCurrency,
+                Addresses.Ranking,
             };
             for (var i = 0; i < AvatarState.CombinationSlotCapacity; i++)
             {
@@ -112,6 +120,7 @@ namespace Lib9c.Tests.Action
             }
 
             var state = new State()
+                .SetState(Addresses.Ranking, new RankingState().Serialize())
                 .SetState(GoldCurrencyState.Address, gold.Serialize());
 
             var nextState = action.Execute(new ActionContext()
