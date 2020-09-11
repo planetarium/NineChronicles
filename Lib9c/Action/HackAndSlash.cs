@@ -95,7 +95,7 @@ namespace Nekoyume.Action
 
             sw.Restart();
 
-            if (avatarState.rankingMapAddress != RankingMapAddress)
+            if (avatarState.RankingMapAddress != RankingMapAddress)
             {
                 throw new InvalidAddressException();
             }

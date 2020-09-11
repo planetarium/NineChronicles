@@ -38,7 +38,7 @@ namespace Lib9c.Tests.Action
             var ranking = new RankingState();
             for (var i = 0; i < RankingState.RankingMapCapacity; i++)
             {
-                ranking.rankingMap[RankingState.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
+                ranking.RankingMap[RankingState.Derive(i)] = new HashSet<Address>().ToImmutableHashSet();
             }
 
             var sheets = TableSheetsImporter.ImportSheets();
@@ -79,7 +79,7 @@ namespace Lib9c.Tests.Action
             );
             Assert.True(agentState.avatarAddresses.Any());
             Assert.Equal("test", nextAvatarState.name);
-            Assert.Equal(avatarAddress, nextState.GetRankingState().rankingMap[nextAvatarState.rankingMapAddress].First());
+            Assert.Equal(avatarAddress, nextState.GetRankingState().RankingMap[nextAvatarState.RankingMapAddress].First());
         }
 
         [Fact]

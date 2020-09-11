@@ -27,7 +27,7 @@ namespace Lib9c.Tests.Model.State
             var des = new RankingState((Dictionary)serialized);
 
             Assert.Equal(Addresses.Ranking, des.address);
-            Assert.Contains(des.rankingMap, m => m.Value.Contains(default));
+            Assert.Contains(des.RankingMap, m => m.Value.Contains(default));
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Lib9c.Tests.Model.State
             var state = new RankingState();
             state.UpdateRankingMap(default);
             state.UpdateRankingMap(default(Address).Derive("test"));
-            Assert.Equal(2, state.rankingMap[RankingState.Derive(0)].Count);
+            Assert.Equal(2, state.RankingMap[RankingState.Derive(0)].Count);
         }
 
         [Fact]

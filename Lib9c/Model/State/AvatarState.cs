@@ -50,7 +50,7 @@ namespace Nekoyume.Model.State
         public string NameWithHash { get; private set; }
         public int Nonce { get; private set; }
 
-        public readonly Address rankingMapAddress;
+        public readonly Address RankingMapAddress;
 
         public static Address CreateAvatarAddress()
         {
@@ -110,7 +110,7 @@ namespace Nekoyume.Model.State
                 combinationSlotAddresses.Add(slotAddress);
             }
 
-            this.rankingMapAddress = rankingMapAddress;
+            RankingMapAddress = rankingMapAddress;
             UpdateGeneralQuest(new[] { createEvent, levelEvent });
             UpdateCompletedQuest();
 
@@ -174,7 +174,7 @@ namespace Nekoyume.Model.State
             ear = (int)((Integer)serialized["ear"]).Value;
             tail = (int)((Integer)serialized["tail"]).Value;
             combinationSlotAddresses = serialized["combinationSlotAddresses"].ToList(StateExtensions.ToAddress);
-            rankingMapAddress = serialized["ranking_map_address"].ToAddress();
+            RankingMapAddress = serialized["ranking_map_address"].ToAddress();
             if (serialized.TryGetValue((Text) "nonce", out var nonceValue))
             {
                 Nonce = nonceValue.ToInteger();
@@ -485,7 +485,7 @@ namespace Nekoyume.Model.State
                 [(Text)"tail"] = (Integer)tail,
                 [(Text)"combinationSlotAddresses"] = combinationSlotAddresses.Select(i => i.Serialize()).Serialize(),
                 [(Text) "nonce"] = Nonce.Serialize(),
-                [(Text)"ranking_map_address"] = rankingMapAddress.Serialize(),
+                [(Text)"ranking_map_address"] = RankingMapAddress.Serialize(),
             }.Union((Dictionary)base.Serialize()));
     }
 }

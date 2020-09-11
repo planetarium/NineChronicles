@@ -39,7 +39,7 @@ namespace Nekoyume.Action
                 states = TableSheets
                     .Aggregate(states, (current, pair) =>
                         current.SetState(Addresses.TableSheet.Derive(pair.Key), MarkChanged));
-                states = RankingState.rankingMap
+                states = RankingState.RankingMap
                     .Aggregate(states, (current, pair) =>
                         current.SetState(pair.Key, MarkChanged));
                 states = states.SetState(weeklyArenaState.address, MarkChanged);
@@ -60,7 +60,7 @@ namespace Nekoyume.Action
             states = TableSheets
                 .Aggregate(states, (current, pair) =>
                     current.SetState(Addresses.TableSheet.Derive(pair.Key), pair.Value.Serialize()));
-            states = RankingState.rankingMap
+            states = RankingState.RankingMap
                 .Aggregate(states, (current, pair) =>
                     current.SetState(pair.Key, new RankingMapState(pair.Key).Serialize()));
             states = states
