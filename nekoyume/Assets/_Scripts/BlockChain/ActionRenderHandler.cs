@@ -85,9 +85,13 @@ namespace Nekoyume.BlockChain
 
         private void Ranking()
         {
-            _renderer.EveryRender(RankingState.Address)
-                .ObserveOnMainThread()
-                .Subscribe(UpdateRankingState).AddTo(_disposables);
+            var state = new RankingState((Dictionary)Game.Game.instance.Agent.GetState(Addresses.Ranking));
+            foreach (var address in state.RankingMap.Keys)
+            {
+                _renderer.EveryRender(address)
+                    .ObserveOnMainThread()
+                    .Subscribe(eval => UpdateRankingMapState(eval, address)).AddTo(_disposables);
+            }
         }
 
         private void RewardGold()
@@ -734,7 +738,7 @@ namespace Nekoyume.BlockChain
             {
                 var total = balance - new FungibleAssetValue(balance.Currency,
                     Nekoyume.GameConfig.ArenaActivationCostNCG, 0);
-                    new TPStashEvent().CurrencyUse(
+                new TPStashEvent().CurrencyUse(
                     player_uuid: agentAddress.ToHex(),
                     currency_slug: "gold",
                     currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,

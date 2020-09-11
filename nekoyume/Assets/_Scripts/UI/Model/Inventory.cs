@@ -46,7 +46,6 @@ namespace Nekoyume.UI.Model
             ItemSubType.Armor,
             ItemSubType.Belt,
             ItemSubType.Necklace,
-            ItemSubType.Ring,
             ItemSubType.Ring
         };
 
@@ -565,24 +564,38 @@ namespace Nekoyume.UI.Model
 
             foreach (var type in _itemSubTypesForNotification)
             {
-                var orderedEquipments =
-                    equipments.Where(x => x.ItemBase.Value.ItemSubType == type)
-                    .Select(x => (item: x, cp: CPHelper.GetCP((ItemUsable)x.ItemBase.Value)))
-                    .OrderByDescending(tuple => tuple.cp);
+                var itemCount = type != ItemSubType.Ring ? 1 : 2;
+                var matchedEquipments = Equipments
+                    .Where(e => e.ItemBase.Value.ItemSubType == type);
+                var equippedEquipments =
+                    matchedEquipments.Where(e => e.EquippedEnabled.Value);
+                var unequippedEquipments =
+                    matchedEquipments.Where(e => !e.EquippedEnabled.Value)
+                    .OrderByDescending(i => CPHelper.GetCP(i.ItemBase.Value as Equipment));
 
-                if (orderedEquipments.Count() <= 0)
-                    continue;
+                var equippedCount = equippedEquipments.Count();
 
-                var highestCP = orderedEquipments.First().cp;
-                var strongestEquipments = orderedEquipments
-                    .TakeWhile(x => x.cp == highestCP);
-                var equippedCount = strongestEquipments.Count(x => x.item.EquippedEnabled.Value);
-                var isEquipped = equippedCount == (type != ItemSubType.Ring ? 1 : 2);
-
-                foreach (var (item, cp) in strongestEquipments)
+                if (equippedCount < itemCount)
                 {
-                    if (!item.EquippedEnabled.Value)
-                        item.HasNotification.Value = !isEquipped;
+                    var itemsToNotify = unequippedEquipments.Take(itemCount - equippedCount);
+
+                    foreach (var item in itemsToNotify)
+                    {
+                        item.HasNotification.Value = true;
+                    }
+                }
+                else
+                {
+                    var itemsToNotify =
+                        unequippedEquipments.Where(e =>
+                        {
+                            var cp = CPHelper.GetCP(e.ItemBase.Value as Equipment);
+                            return equippedEquipments.Any(i => CPHelper.GetCP(i.ItemBase.Value as Equipment) < cp);
+                        }).Take(itemCount);
+                    foreach (var item in itemsToNotify)
+                    {
+                        item.HasNotification.Value = true;
+                    }
                 }
             }
         }

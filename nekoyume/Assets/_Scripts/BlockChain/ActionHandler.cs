@@ -1,4 +1,6 @@
 using System.Linq;
+using Bencodex.Types;
+using Libplanet;
 using Libplanet.Assets;
 using Nekoyume.Action;
 using Nekoyume.L10n;
@@ -108,13 +110,6 @@ namespace Nekoyume.BlockChain
             ));
         }
 
-        protected void UpdateRankingState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            States.Instance.SetRankingState(new RankingState(
-                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(RankingState.Address)
-            ));
-        }
-
         protected void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var index = (int) evaluation.BlockIndex / GameConfig.WeeklyArenaInterval;
@@ -126,6 +121,16 @@ namespace Nekoyume.BlockChain
         {
             var state = evaluation.OutputStates.GetGameConfigState();
             States.Instance.SetGameConfigState(state);
+        }
+
+        protected void UpdateRankingMapState<T>(ActionBase.ActionEvaluation<T> evaluation, Address address) where T : ActionBase
+        {
+            var value = evaluation.OutputStates.GetState(address);
+            if (!(value is null))
+            {
+                var state = new RankingMapState((Dictionary) value);
+                States.Instance.SetRankingMapStates(state);
+            }
         }
 
         private static void UpdateAgentState(AgentState state, GoldBalanceState balanceState)
