@@ -12,13 +12,13 @@ namespace Nekoyume.BlockChain
     {
         Subject<long> BlockIndexSubject { get; }
 
-        Subject<ReorgInfo> ReorgSubject { get; }
-        
         long BlockIndex { get; }
-        
+
         PrivateKey PrivateKey { get; }
 
         Address Address { get; }
+
+        BlockRenderer BlockRenderer { get; }
 
         ActionRenderer ActionRenderer { get; }
 
