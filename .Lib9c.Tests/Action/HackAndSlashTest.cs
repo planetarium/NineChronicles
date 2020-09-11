@@ -28,6 +28,8 @@ namespace Lib9c.Tests.Action
         private readonly Address _avatarAddress;
         private readonly AvatarState _avatarState;
 
+        private readonly Address _rankingMapAddress;
+
         private readonly WeeklyArenaState _weeklyArenaState;
         private readonly IAccountStateDelta _initialState;
 
@@ -41,15 +43,17 @@ namespace Lib9c.Tests.Action
             _agentState = new AgentState(_agentAddress);
 
             _avatarAddress = _agentAddress.Derive("avatar");
+            _rankingMapAddress = _avatarAddress.Derive("ranking_map");
             _avatarState = new AvatarState(
                 _avatarAddress,
                 _agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState(_sheets[nameof(GameConfigSheet)])
+                new GameConfigState(_sheets[nameof(GameConfigSheet)]),
+                _rankingMapAddress
             )
             {
-                level = 10,
+                level = 100,
             };
             _agentState.avatarAddresses.Add(0, _avatarAddress);
 
@@ -58,7 +62,8 @@ namespace Lib9c.Tests.Action
             _initialState = new State()
                 .SetState(_weeklyArenaState.address, _weeklyArenaState.Serialize())
                 .SetState(_agentAddress, _agentState.Serialize())
-                .SetState(_avatarAddress, _avatarState.Serialize());
+                .SetState(_avatarAddress, _avatarState.Serialize())
+                .SetState(_rankingMapAddress, new RankingMapState(_rankingMapAddress).Serialize());
 
             foreach (var (key, value) in _sheets)
             {
@@ -68,9 +73,9 @@ namespace Lib9c.Tests.Action
         }
 
         [Theory]
-        [InlineData(1, 1, 1)]
-        [InlineData(100, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)]
-        public void Execute(int avatarLevel, int worldId, int stageId)
+        [InlineData(1, 1, 1, false)]
+        [InlineData(100, 1, GameConfig.RequireClearedStageLevel.ActionsInRankingBoard, true)]
+        public void Execute(int avatarLevel, int worldId, int stageId, bool contains)
         {
             Assert.True(_tableSheets.WorldSheet.TryGetValue(worldId, out var worldRow));
             Assert.True(stageId >= worldRow.StageBegin);
@@ -95,6 +100,7 @@ namespace Lib9c.Tests.Action
                 stageId = stageId,
                 avatarAddress = _avatarAddress,
                 WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
             };
 
             Assert.Null(action.Result);
@@ -112,26 +118,54 @@ namespace Lib9c.Tests.Action
 
             Assert.NotNull(action.Result);
 
-            if (action.Result.result == BattleLog.Result.Win)
-            {
-                Assert.NotEmpty(action.Result.OfType<GetReward>());
-                Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
-            }
-            else
-            {
-                Assert.Empty(action.Result.OfType<GetReward>());
-                Assert.False(nextAvatarState.worldInformation.IsStageCleared(stageId));
-            }
+            Assert.NotEmpty(action.Result.OfType<GetReward>());
+            Assert.Equal(BattleLog.Result.Win, action.Result.result);
+            Assert.Equal(contains, newWeeklyState.ContainsKey(_avatarAddress));
+            Assert.True(nextAvatarState.worldInformation.IsStageCleared(stageId));
 
-            if (stageId >= GameConfig.RequireClearedStageLevel.ActionsInRankingBoard &&
-                action.Result.IsClear)
+            var value = nextState.GetState(_rankingMapAddress);
+
+            var rankingMapState = new RankingMapState((Dictionary)value);
+            var info = rankingMapState.GetRankingInfos(null).First();
+
+            Assert.Equal(info.AgentAddress, _agentAddress);
+            Assert.Equal(info.AvatarAddress, _avatarAddress);
+        }
+
+        [Fact]
+        public void ExecuteInvalidRankingMapAddress()
+        {
+            var action = new HackAndSlash()
             {
-                Assert.Contains(_avatarAddress, newWeeklyState);
-            }
-            else
-            {
-                Assert.DoesNotContain(_avatarAddress, newWeeklyState);
-            }
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = default,
+            };
+
+            Assert.Null(action.Result);
+
+            var exec = Assert.Throws<InvalidAddressException>(() =>
+                action.Execute(new ActionContext()
+                {
+                    PreviousStates = _initialState,
+                    Signer = _agentAddress,
+                    Random = new ItemEnhancementTest.TestRandom(),
+                    Rehearsal = false,
+                })
+            );
+
+            var formatter = new BinaryFormatter();
+            using var ms = new MemoryStream();
+            formatter.Serialize(ms, exec);
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var deserialized = (InvalidAddressException)formatter.Deserialize(ms);
+            Assert.Equal(exec.Message, deserialized.Message);
         }
 
         [Fact]
@@ -146,6 +180,7 @@ namespace Lib9c.Tests.Action
                 stageId = 1,
                 avatarAddress = _avatarAddress,
                 WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
             };
 
             action.Execute(new ActionContext()

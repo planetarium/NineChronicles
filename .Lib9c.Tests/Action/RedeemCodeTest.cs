@@ -60,7 +60,8 @@ namespace Lib9c.Tests.Action
                 _agentAddress,
                 1,
                 _tableSheets.GetAvatarSheets(),
-                gameConfigState
+                gameConfigState,
+                default
             );
 
             var goldState = new GoldCurrencyState(new Currency("NCG", 2, minter: null));

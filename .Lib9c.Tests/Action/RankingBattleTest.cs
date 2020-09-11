@@ -40,7 +40,8 @@ namespace Lib9c.Tests.Action
                 agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState()
+                new GameConfigState(),
+                default
             )
             {
                 level = 10,
@@ -62,7 +63,8 @@ namespace Lib9c.Tests.Action
                 agentAddress,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState()
+                new GameConfigState(),
+                default
             );
             avatarState2.worldInformation.ClearStage(
                 1,

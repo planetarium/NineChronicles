@@ -51,7 +51,8 @@ namespace Lib9c.Tests.Action
                 _agentAddress,
                 1,
                 _tableSheets.GetAvatarSheets(),
-                gameConfigState
+                gameConfigState,
+                default
             );
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First();
             var materialRow = _tableSheets.MaterialItemSheet[row.MaterialId];
@@ -112,7 +113,8 @@ namespace Lib9c.Tests.Action
                 _agentAddress,
                 1,
                 _tableSheets.GetAvatarSheets(),
-                gameConfigState
+                gameConfigState,
+                default
             );
             var row = _tableSheets.EquipmentItemRecipeSheet.Values.First(r => r.SubRecipeIds.Any());
             var subRecipeId = row.SubRecipeIds.First();
