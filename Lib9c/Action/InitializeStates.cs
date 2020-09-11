@@ -104,7 +104,7 @@ namespace Nekoyume.Action
                 .Add("activated_accounts_state", ActivatedAccountsState.Serialize())
                 .Add("gold_currency_state", GoldCurrencyState.Serialize())
                 .Add("gold_distributions", GoldDistributions.Select(v => v.Serialize()).Serialize())
-                .Add("pending_activation_state",
+                .Add("pending_activation_states",
                     PendingActivationStates.Select(v => v.Serialize()).Serialize());
 
         protected override void LoadPlainValueInternal(IImmutableDictionary<string, IValue> plainValue)
@@ -125,7 +125,7 @@ namespace Nekoyume.Action
             GoldDistributions = ((Bencodex.Types.List) plainValue["gold_distributions"])
                 .Select(e => new GoldDistribution(e))
                 .ToArray();
-            PendingActivationStates = ((Bencodex.Types.List) plainValue["pending_activation_state"])
+            PendingActivationStates = ((Bencodex.Types.List) plainValue["pending_activation_states"])
                 .Select(e => new PendingActivationState((Bencodex.Types.Dictionary)e))
                 .ToArray();
         }
