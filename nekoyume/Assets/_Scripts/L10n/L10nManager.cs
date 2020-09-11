@@ -22,15 +22,13 @@ namespace Nekoyume.L10n
             InLanguageChanging,
         }
 
-        public static readonly string SettingsAssetPathInResources = "L10nSettings";
+        public const string SettingsAssetPathInResources = "L10nSettings/L10nSettings";
 
         public static readonly string CsvFilesRootDirectoryPath =
             Path.Combine(Application.streamingAssetsPath, "Localization");
 
         private static IReadOnlyDictionary<string, string> _dictionary =
             new Dictionary<string, string>();
-
-        private static L10nSettings _settings;
 
         public static State CurrentState { get; private set; } = State.None;
 
@@ -51,10 +49,18 @@ namespace Nekoyume.L10n
 
         #endregion
 
-        #region LanguageType Settings
+        #region Settings
 
-        public static LanguageTypeSettings CurrentLanguageTypeSettings => _settings.FontAssets
-            .First(asset => asset.languageType.Equals(CurrentLanguage));
+        private static L10nSettings _settings;
+
+        private static LanguageTypeSettings? _currentLanguageTypeSettingsCache;
+
+        public static LanguageTypeSettings CurrentLanguageTypeSettings =>
+            _currentLanguageTypeSettingsCache.HasValue &&
+            _currentLanguageTypeSettingsCache.Value.languageType == CurrentLanguage
+                ? _currentLanguageTypeSettingsCache.Value
+                : (_currentLanguageTypeSettingsCache = _settings.FontAssets
+                    .First(asset => asset.languageType.Equals(CurrentLanguage))).Value;
 
         #endregion
 
@@ -300,6 +306,29 @@ namespace Nekoyume.L10n
             {
                 throw new L10nNotInitializedException();
             }
+        }
+
+        public static bool TryGetFontMaterial(FontMaterialType fontMaterialType, out Material material)
+        {
+            if (fontMaterialType == FontMaterialType.Default)
+            {
+                material = CurrentLanguageTypeSettings.fontAssetData.FontAsset.material;
+                return true;
+            }
+
+            foreach (var data in CurrentLanguageTypeSettings.fontAssetData.FontMaterialDataList)
+            {
+                if (fontMaterialType != data.type)
+                {
+                    continue;
+                }
+
+                material = data.material;
+                return true;
+            }
+
+            material = default;
+            return false;
         }
     }
 }
