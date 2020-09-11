@@ -4,6 +4,7 @@ using System.Net;
 using Libplanet.Action;
 using Libplanet.Blocks;
 using Nekoyume.Action;
+using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.BlockChain
@@ -49,12 +50,13 @@ namespace Nekoyume.BlockChain
               }
           }
 
-          public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock()
+          public static Block<PolymorphicAction<ActionBase>> MineGenesisBlock(
+              PendingActivationState[] pendingActivationStates)
           {
               var tableSheets = Game.Game.GetTableCsvAssets();
               string goldDistributionCsvPath = Path.Combine(Application.streamingAssetsPath, "GoldDistribution.csv");
               GoldDistribution[] goldDistributions = GoldDistribution.LoadInDescendingEndBlockOrder(goldDistributionCsvPath);
-              return Nekoyume.BlockHelper.MineGenesisBlock(tableSheets, goldDistributions);
+             return Nekoyume.BlockHelper.MineGenesisBlock(tableSheets, goldDistributions, pendingActivationStates);
           }
 
           public static string BlockPath(string filename) => Path.Combine(Application.streamingAssetsPath, filename);
