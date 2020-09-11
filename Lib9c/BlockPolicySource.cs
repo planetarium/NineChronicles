@@ -58,24 +58,29 @@ namespace Nekoyume.BlockChain
 
         public IImmutableSet<Address> ActivatedAccounts { get; private set; }
 
+        public AuthorizedMinersState AuthorizedMinersState { get; set; }
+
         public void UpdateActivationSet(IValue state)
         {
             ActivatedAccounts = new ActivatedAccountsState((Dictionary)state).Accounts;
         }
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
-        public IBlockPolicy<PolymorphicAction<ActionBase>> GetPolicy(int minimumDifficulty)
+        public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty)
         {
             ActivatedAccounts = ActivatedAccounts?.Clear();
 #if UNITY_EDITOR
             return new DebugPolicy();
 #else
-            return new BlockPolicy<PolymorphicAction<ActionBase>>(
-                new RewardGold(),
-                _blockInterval,
-                minimumDifficulty,
-                2048,
-                doesTransactionFollowPolicy: IsSignerAuthorized
+            return new BlockPolicy(
+                new BlockPolicy<NCAction>(
+                    new RewardGold(),
+                    _blockInterval,
+                    minimumDifficulty,
+                    2048,
+                    doesTransactionFollowPolicy: IsSignerAuthorized
+                ),
+                ValidateBlock
             );
 #endif
         }
@@ -102,6 +107,30 @@ namespace Nekoyume.BlockChain
                 IValue state = ActivatedAccountsStateGetter();
                 UpdateActivationSet(state);
             }
+        }
+
+        private InvalidBlockException ValidateBlock(Block<NCAction> block)
+        {
+            if (AuthorizedMinersState is null)
+            {
+                return null;
+            }
+
+            bool targetBlock =
+                0 < block.Index && block.Index <= AuthorizedMinersState.ValidUntil &&
+                block.Index % AuthorizedMinersState.Interval == 0 && 
+                block.Miner is Address miner;
+            bool minedByAuthorities = AuthorizedMinersState.Miners.Contains(miner);
+            
+            if (targetBlock && !minedByAuthorities)
+            {
+                return new InvalidMinerException(
+                    $"The given block[{block}] isn't mined by authorities.",
+                    miner
+                );
+            }
+
+            return null;
         }
     }
 }

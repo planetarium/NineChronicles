@@ -107,9 +107,90 @@ namespace Lib9c.Tests
             Assert.True(policy.DoesTransactionFollowsPolicy(txByNewActivated));
         }
 
+        [Fact]
+        public async Task ValidateNextBlockWithAuthorizedMinersState()
+        {
+            var adminPrivateKey = new PrivateKey();
+            var adminAddress = adminPrivateKey.ToAddress();
+            var miners = new[]
+            {
+                new Address(
+                    new byte[]
+                    {
+                        0x01, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00,
+                    }
+                ),
+                new Address(
+                    new byte[]
+                    {
+                        0x02, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00,
+                        0x00, 0x00, 0x00, 0x00, 0x00,
+                    }
+                ),
+            };
+            var stranger = new Address(
+                new byte[]
+                {
+                    0x03, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00,
+                    0x00, 0x00, 0x00, 0x00, 0x00,
+                }
+            );
+
+            var blockPolicySource = new BlockPolicySource(Logger.None);
+            IBlockPolicy<PolymorphicAction<ActionBase>> policy = blockPolicySource.GetPolicy(10000);
+            Block<PolymorphicAction<ActionBase>> genesis = MakeGenesisBlock(
+                adminAddress,
+                ImmutableHashSet<Address>.Empty,
+                new AuthorizedMinersState(miners, 2, 4)
+            );
+            using var store = new DefaultStore(null);
+            var blockChain = new BlockChain<PolymorphicAction<ActionBase>>(
+                policy,
+                store,
+                store,
+                genesis,
+                renderers: new[] { blockPolicySource.BlockRenderer }
+            );
+
+            blockPolicySource.AuthorizedMinersState = new AuthorizedMinersState(
+                (Dictionary)blockChain.GetState(AuthorizedMinersState.Address)
+            );
+
+            await blockChain.MineBlock(stranger);
+
+            await Assert.ThrowsAsync<InvalidMinerException>(async () =>
+            {
+                await blockChain.MineBlock(stranger);
+            });
+
+            await blockChain.MineBlock(miners[0]);
+
+            // it's okay because next block index is 3
+            await blockChain.MineBlock(stranger);
+
+            // it isn't :(
+            await Assert.ThrowsAsync<InvalidMinerException>(async () =>
+            {
+                await blockChain.MineBlock(stranger);
+            });
+
+            await blockChain.MineBlock(miners[1]);
+
+            // it's okay because block index exceeds limitations.
+            await blockChain.MineBlock(stranger);
+        }
+
         private Block<PolymorphicAction<ActionBase>> MakeGenesisBlock(
             Address adminAddress,
-            IImmutableSet<Address> activatedAddresses
+            IImmutableSet<Address> activatedAddresses,
+            AuthorizedMinersState authorizedMinersState = null
         )
         {
             var nonce = new byte[] { 0x00, 0x01, 0x02, 0x03 };
@@ -137,6 +218,7 @@ namespace Lib9c.Tests
                             ),
                             GoldDistributions = new GoldDistribution[0],
                             PendingActivationStates = new[] { pendingActivation },
+                            AuthorizedMinersState = authorizedMinersState,
                         },
                     }
                 );
