@@ -145,6 +145,9 @@ namespace Nekoyume.UI
                 var isEnough =
                     States.Instance.CurrentAvatarState.inventory.HasItem(_row.ItemId, _cost);
 
+                var count = States.Instance.CurrentAvatarState.inventory
+                    .TryGetMaterial(_row.ItemId, out var glass) ? glass.count : 0;
+
                 if (result.id != default)
                 {
                     submitButton.SetSubmitText(
@@ -158,7 +161,7 @@ namespace Nekoyume.UI
                     submitButton.SetSubmittable(false);
                 }
 
-                submitButton.ShowHourglass(_cost, isEnough);
+                submitButton.ShowHourglass(_cost, count);
             }
 
             base.Show();
