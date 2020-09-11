@@ -382,7 +382,7 @@ namespace Nekoyume.Model.State
             ArmorId = prevInfo.ArmorId;
             Level = prevInfo.Level;
             AvatarName = prevInfo.AvatarName;
-            CombatPoint = 100;
+            CombatPoint = prevInfo.CombatPoint;
             Score = 1000;
             DailyChallengeCount = 5;
             Active = false;
