@@ -7,6 +7,7 @@ using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
 using Nekoyume.L10n;
+using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
 using Nekoyume.UI.Module;
@@ -73,6 +74,7 @@ namespace Nekoyume.UI
             new ReactiveProperty<StateType>(StateType.Arena);
 
         private readonly List<IDisposable> _disposablesAtClose = new List<IDisposable>();
+        private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfos = new HashSet<Nekoyume.Model.State.RankingInfo>();
 
         protected override void Awake()
         {
@@ -168,6 +170,7 @@ namespace Nekoyume.UI
 
             WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(state => UpdateArena())
                 .AddTo(_disposablesAtClose);
+            RankingMapStatesSubject.RankingMapStates.Subscribe(SetRankingInfos).AddTo(_disposablesAtClose);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
@@ -323,18 +326,29 @@ namespace Nekoyume.UI
             {
                 arenaRankScroll.Hide();
 
-                var rankingState = States.Instance.RankingState;
+                var rankingState = States.Instance.RankingMapStates;
                 if (rankingState is null)
                 {
                     expRankScroll.ClearData();
                     expRankScroll.Show();
                     return;
                 }
+                SetRankingInfos(rankingState);
 
                 var rank = 1;
-                var rankingInfos = rankingState.GetRankingInfos(stateType == StateType.Filtered
+                var dt = stateType == StateType.Filtered
                     ? DateTimeOffset.UtcNow
-                    : (DateTimeOffset?) null);
+                    : (DateTimeOffset?) null;
+                var rankingInfos = _rankingInfos
+                    .OrderByDescending(c => c.Exp)
+                    .ThenBy(c => c.StageClearedBlockIndex)
+                    .ToList();
+                if (!(dt is null))
+                {
+                    rankingInfos = rankingInfos
+                        .Where(context => ((TimeSpan) (dt - context.UpdatedAt)).Days <= 1)
+                        .ToList();
+                }
 
                 expRankScroll.Show(rankingInfos
                     .Select(rankingInfo => new ExpRankCell.ViewModel
@@ -406,6 +420,17 @@ namespace Nekoyume.UI
         {
             Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
             Close();
+        }
+
+        private void SetRankingInfos(Dictionary<Address, RankingMapState> states)
+        {
+            var rankingInfos = new HashSet<Nekoyume.Model.State.RankingInfo>();
+            foreach (var pair in states)
+            {
+                rankingInfos.UnionWith(pair.Value.GetRankingInfos(null));
+            }
+
+            _rankingInfos = rankingInfos;
         }
     }
 }
