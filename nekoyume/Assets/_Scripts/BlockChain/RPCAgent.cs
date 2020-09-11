@@ -51,11 +51,11 @@ namespace Nekoyume.BlockChain
         // Rendering logs will be recorded in NineChronicles.Standalone
         public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
 
+        public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
+
         public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
-
-        public Subject<ReorgInfo> ReorgSubject { get; } = new Subject<ReorgInfo>();
 
         public long BlockIndex { get; private set; }
 
@@ -271,6 +271,20 @@ namespace Nekoyume.BlockChain
             }
         }
 
+        public void OnUnrender(byte[] evaluation)
+        {
+            var formatter = new BinaryFormatter();
+            using (var compressed = new MemoryStream(evaluation))
+            using (var decompressed = new MemoryStream())
+            using (var df = new DeflateStream(compressed, CompressionMode.Decompress))
+            {
+                df.CopyTo(decompressed);
+                decompressed.Seek(0, SeekOrigin.Begin);
+                var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
+                ActionRenderer.ActionUnrenderSubject.OnNext(ev);
+            }
+        }
+
         public void OnTipChanged(long index)
         {
             BlockIndex = index;
@@ -289,12 +303,12 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        public void OnReorged(byte[] branchpointHash, byte[] oldTipHash, byte[] newTipHash)
+        public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            ReorgSubject.OnNext(new ReorgInfo(
-                new HashDigest<SHA256>(branchpointHash),
-                new HashDigest<SHA256>(oldTipHash),
-                new HashDigest<SHA256>(newTipHash)
+            BlockRenderer.ReorgSubject.OnNext((
+                Block<PolymorphicAction<ActionBase>>.Deserialize(oldTip),
+                Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
+                Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
             ));
         }
     }
