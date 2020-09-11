@@ -33,7 +33,8 @@ namespace Tests.EditMode.Battle
                 agentState.address,
                 0,
                 _tableSheets.GetAvatarSheets(),
-                new GameConfigState()
+                new GameConfigState(),
+                default
             );
             var arenaInfo = new ArenaInfo(avatarState, _tableSheets.CharacterSheet, false);
             var simulator = new RankingSimulator(
