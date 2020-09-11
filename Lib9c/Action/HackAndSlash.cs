@@ -97,7 +97,7 @@ namespace Nekoyume.Action
 
             if (avatarState.RankingMapAddress != RankingMapAddress)
             {
-                throw new InvalidAddressException();
+                throw new InvalidAddressException("Invalid ranking map address");
             }
 
             // worldId와 stageId가 유효한지 확인합니다.

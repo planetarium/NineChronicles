@@ -1,5 +1,7 @@
 namespace Lib9c.Tests.Model.State
 {
+    using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
     using Bencodex.Types;
     using Libplanet;
     using Nekoyume;
@@ -50,8 +52,16 @@ namespace Lib9c.Tests.Model.State
                 state.UpdateRankingMap(address.Derive(i.ToString()));
             }
 
-            Assert.Throws<RankingExceededException>(() =>
+            var exec = Assert.Throws<RankingExceededException>(() =>
                 state.UpdateRankingMap(address.Derive((max + 1).ToString())));
+
+            var formatter = new BinaryFormatter();
+            using var ms = new MemoryStream();
+            formatter.Serialize(ms, exec);
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var deserialized = (RankingExceededException)formatter.Deserialize(ms);
+            Assert.Equal(exec.Message, deserialized.Message);
         }
     }
 }

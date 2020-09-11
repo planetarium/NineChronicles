@@ -3,9 +3,14 @@ using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     public class InvalidAddressException : InvalidOperationException
     {
         public InvalidAddressException()
+        {
+        }
+
+        public InvalidAddressException(string msg) : base(msg)
         {
         }
 

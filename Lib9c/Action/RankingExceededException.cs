@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
 {
+    [Serializable]
     public class RankingExceededException: InvalidOperationException
     {
         public RankingExceededException()

@@ -149,7 +149,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Null(action.Result);
 
-            Assert.Throws<InvalidAddressException>(() =>
+            var exec = Assert.Throws<InvalidAddressException>(() =>
                 action.Execute(new ActionContext()
                 {
                     PreviousStates = _initialState,
@@ -158,6 +158,14 @@ namespace Lib9c.Tests.Action
                     Rehearsal = false,
                 })
             );
+
+            var formatter = new BinaryFormatter();
+            using var ms = new MemoryStream();
+            formatter.Serialize(ms, exec);
+            ms.Seek(0, SeekOrigin.Begin);
+
+            var deserialized = (InvalidAddressException)formatter.Deserialize(ms);
+            Assert.Equal(exec.Message, deserialized.Message);
         }
 
         [Fact]
