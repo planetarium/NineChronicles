@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Nekoyume.L10n
 {
@@ -28,7 +27,7 @@ namespace Nekoyume.L10n
         ///     https://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)
         /// font asset file: Assets/Resources/Font/SDF/PoorStory-Latin SDF.asset
         /// </summary>
-        Portuguese,
+        PortugueseBrazil,
 
         /// <summary>
         /// This is same with Portuguese.
