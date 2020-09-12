@@ -1,4 +1,4 @@
-Key,English,Korean,PortugueseBrazil,Portuguese,Japanese,German,Spanish,Thai,Polish,Lithuanian,Dutch,Indonesian,French,Russian,Cambodian,Urdu,Chinese,Hungarian
+Key,English,Korean,PortugueseBrazil,Portuguese,Japanese,German,Spanish,Thai,Polish,Lithuanian,Dutch,Indonesian,French,Russian,Cambodian,Urdu,ChineseSimplified,Hungarian
 TITLE,Nine Chronicles,나인 크로니클,Nine Chronicles,,ナインクロニクル,Nine Chronicles,Nine Chronicles,Nine Chronicles,Nine Chronicles,,,Nine Chronicles,,,Nine Chronicles,,Nine Chronicles,
 ALL,All,전체,Todos,,全て,Alle,Todos,ทั้งหมด,Wszystko,,,Semua,,,ទាំងអស់,,全部,
 ADVENTURE,Adventure,모험,Aventura,,冒険,Abenteuer,Aventura,ผจญภัย,Przygoda,,,Petualangan,,,កំពុងគ្រប់គ្រងសកម្មភាព,,冒险,
@@ -52,7 +52,7 @@ SPEECH_SHOP_3,"You can always retrieve items
 that are unsold.","아직 팔리지 않은 물건은
 언제든지 다시 회수할 수 있어","Você pode sempre recuperar itens
 que não foram vendidos",,"出品中の商品は
-いつでもキャンセルできるわ。","Du kannst Gegenstände, die nicht 
+いつでもキャンセルできるわ。","Du kannst Gegenstände, die nicht
 verkauft wurden, immer zurückholen.",Siempre puedes recuperar los objetos que no se han vendido.,"คุุณสามารถเอาของคืนได้ตลอดเวลา
 ถ้ายังขายไม่ออก","Zawsze można odzyskać przedmioty
 które nie zostały sprzedane.",,,Kamu dapat mengambil kembali barang yang belum terjual.,,,អ្នកតែងតែអាចយកមកវិញនូវរបស់ដែលមិនទាន់លក់។,,您始终可以检索未售出的物品。,
@@ -226,7 +226,7 @@ Hmm .. Estou em apuros.",,"まだランキングに載ったことがないの�
 うーむ…困ったな…","Du warst noch nicht
 in der Rangliste?
 Hmm.. es ist relativ schwierig.",¿No te has clasificado todavia? Hmm.. Estoy en problemas.,"คุณยังไม่เคยติดอันดับ?
-อืม.. เราแย่แน่ๆ","Nie zajmujesz 
+อืม.. เราแย่แน่ๆ","Nie zajmujesz
 żadnego miejsca w rankingu?
 Hmm.. nie będzie łatwo.",,,"Kamu masih belum terdaftar di ranking?
 Hmmm... ini akan sedikit susah.",,,"អ្នកមិនបាន
@@ -280,7 +280,7 @@ through the magicians below.","아래 마법진을 누르면
 탐험을 시작할 수 있다옹","Você pode começar a expedição
 através dos mágicos abaixo.",,この下の魔法陣から　冒険に出かけることができるよ。,"Du kannst die Expedition bei
 dem Magier dort unter beginnen.",Puedes comenzar la expedición a traves de los magos de abajo.,"คุณสามารถเริ่มการสำรวจ
-ผ่านเวทมนตร์ด้านล่าง","Niech w wyprawie pomoże 
+ผ่านเวทมนตร์ด้านล่าง","Niech w wyprawie pomoże
 Ci mądrość magów.",,,"Kamu bisa memulai ekspedisi
 melalui para penyihir dibawah ini.",,,,,您可以通过下面的魔术师开始探险。,
 SPEECH_DUNGEON_1,"You want to collect
@@ -323,7 +323,7 @@ I'll make you a good one.","조합을 시작했다.
 좋은 물건을 만들어 주겠네.","Comecei a fabricar.
 Vou um bom item para você.",,"製作開始だ。
 いいものを作ってやるよ。","Die Herstellung hat begonnen.
-Das Endprodukt wird ausgezeichnet sein.","Empezando a fabricar. 
+Das Endprodukt wird ausgezeichnet sein.","Empezando a fabricar.
 Te haré uno bueno.","เริ่มสร้าง
 ฉันจะทำให้คุณอย่างดี","Rozpoczęto wytwarzanie przedmiotu.
 Jestem przekonany że będzie Ci odpowiadał.",,,"Mulai membuat.
@@ -348,18 +348,18 @@ PLAYER_SKILL_3_2_0,!Wipe them all out!,!다 쓸어버려라!,Acabe com todos ele
 PLAYER_SKILL_4_2_0,"!I'm going to
 blow it all up!",!모두 날려버리겠다!,Eu vou explodir tudo!,,吹き飛べ！,"!Ich werde alles
 in die Luft jagen!",¡Voy a volarlo todo!,!ฉันจะระเบิดพวกมันให้หมด!,"!Wysadzę to
-wszystko w powietrze!",,,"!Aku akan 
+wszystko w powietrze!",,,"!Aku akan
 meledakkan semuanya!",,,,,！我要把它们全部炸掉！,
 PLAYER_SKILL_2_2_0,"!I'm going to
 blow it all up!",!다 부셔버리겠다!,Eu vou explodir tudo!,,吹き飛べ！,"!Ich werde alles
 in die Luft jagen!",¡Voy a volarlo todo!,!ฉันจะระเบิดพวกมันให้หมด!,"!Wysadzę to
-wszystko w powietrze!",,,"!Aku akan 
+wszystko w powietrze!",,,"!Aku akan
 meledakkan semuanya!",,,,,！我要把它们全部炸掉！,
 PLAYER_SKILL_0_2_0,"!You can't
 avoid this!",!이건 못 피할 걸?,"Você não pode
 evitar isso!",,決める！,"!Du kannst dies
 nicht vermeiden!",¡Esto no lo puedes evadir!,!คุณไม่สามารถหลีกเลี่ยงสิ่งนี้ได้!,"!Nie unikniesz
-tego!",,,"!Kamu tidak akan bisa 
+tego!",,,"!Kamu tidak akan bisa
 menghindari ini!",,,,,！你无法避免！,
 PLAYER_BOSS_STAGE_0,Hey... what's that?,왠지 불길한데..?,Ei ... o que é isso?,,何だ…あれは？,Hey... was ist das?,Ey...¿Que es eso?,เฮ้ย ... นั่นอะไร?,Hej... co to?,,,Hey.. Apaan tuh?,,,,,嘿...那是什么？,
 PLAYER_BOSS_STAGE_1,,,,,,,,,,,,,,,,,,
@@ -375,18 +375,18 @@ ENEMY_SKILL_3_2_0,!Wipe them out!,!다 쓸어버려라!,Acabe com todos eles!,,�
 ENEMY_SKILL_4_2_0,"!I'm going to
 blow it all up!",!모두 날려버리겠다!,Eu vou explodir tudo!,,吹き飛ばしてやる！,"!Ich werde alles
 in die Luft jagen!",¡Voy a volarlo todo!,!ฉันจะระเบิดพวกมันให้หมด!,"!Wysadzę to
-wszystko w powietrze!",,,"!Aku akan 
+wszystko w powietrze!",,,"!Aku akan
 meledakkan semuanya!",,,,,！我要把它们全部炸掉！,
 ENEMY_SKILL_2_2_0,"!I'm going to
 destroy it all!",!다 부셔버리겠다!,Eu vou destruir tudo!,,破壊してやる！,"!Ich werde
 alles zerstören!",¡Voy a destruirlo todo!,ฉันจะทำรายพวกมันให้หมด!,"!Wysadzę to
-wszystko w powietrze!",,,"!Aku akan 
+wszystko w powietrze!",,,"!Aku akan
 menghancurkan semuanya!",,,,,！我要摧毁所有的东西！,
 ENEMY_SKILL_0_2_0,"!You can't
 avoid this!",!이건 못 피할 걸?,"Você não pode
 evitar isso!",,これは避けられないぞ！,"!Du kannst dies
 nicht vermeiden!",¡Esto no lo puedes evadir!,!คุณไม่สามารถหลีกเลี่ยงสิ่งนี้ได้!,"!Nie unikniesz
-tego!",,,"!Kamu tidak akan bisa 
+tego!",,,"!Kamu tidak akan bisa
 menghindari ini!",,,,,！你无法避免！ ...,
 ENEMY_DAMAGE_0,Ugh!,으악!,Ugh!,,うっ！,Ugh!,¡Ugh!,เอิ๊ก!,Ugh!,,,Aw!,,,,,啊！,
 ENEMY_DAMAGE_1,,,,,,,,,,,,,,,,,,
@@ -492,8 +492,8 @@ Adalah harta karun yang hilang dari dunia yang lalu ini, dimana hanya cangkang m
 UI_SYNOPSIS_1,"Odin, the Guardian of the Nine Worlds...
 To prevent the Great Battle foretold
 he scattered the three children of his adopted son Loki
-without his consent and hid them.","아홉 세계의 수호자이자 신들의 왕인 오딘. 
-그는 라그나로크, 예견되어 있던 세계의 멸망을 막기 위해 
+without his consent and hid them.","아홉 세계의 수호자이자 신들의 왕인 오딘.
+그는 라그나로크, 예견되어 있던 세계의 멸망을 막기 위해
 양자 로키의 세 자녀들을 위험의 싹을 자른다는 명분으로 뿔뿔이 흩어놓았다.","Odin, o Guardião dos Nove Mundos ...
 Para impedir a Grande Batalha prevista
  ele espalhou os três filhos de seu filho adotivo Loki
@@ -511,11 +511,11 @@ aby zapobiec przepowiedzianej Wielkiej Wojnie
 rozproszył trójkę dzieci swojego adoptowanego brata Lokiego
 bez jego zgody i je ukrył.",,,"Odin , penjaga sembilan dunia...
 untuk mencegah pertempuran hebat yang diramalkan
-dia memisahkan ketiga anak dari anak angkatnya loki 
+dia memisahkan ketiga anak dari anak angkatnya loki
 tanpa persetujuannya dan menyembunyikannya",,,,,奥丁，Nine worlds 的守护者...为了防止大战，他不带他的养子分散了他领养的兄弟洛基（Loki）的三个孩子进入并隐藏他们。,
 UI_SYNOPSIS_2,"The prophecy takes the family and the Nine Worlds apart...
 And as the conflicts between the Gods escalate,
-a strange tremor is felt in Asgard.","가족이지만 가족일 수 없었기에, 시작될 수밖에 없었던 신들의 갈등.. 
+a strange tremor is felt in Asgard.","가족이지만 가족일 수 없었기에, 시작될 수밖에 없었던 신들의 갈등..
 이 즈음, 아스가르드에는 점차 어수선한 기운이 감지되기 시작한다.","A profecia separa a família e os Nove Mundos ...
 E à medida que os conflitos entre os deuses aumentam,
  um estranho tremor é sentido em Asgard.",,"予言は彼らとナインワールドを引き裂きます...
@@ -722,7 +722,7 @@ SPEECH_SHOP_BUY_1,"You need different equipments
 to prepare for the ordeal.",다양한 장비가 있어야 시련을 대비할 수 있어,"Você precisa de equipamentos diferentes
 para se preparar para o calvário.",,厳しい戦いに備えて色々な装備が必要よ！,"Du brauchst verschiedene Ausrüstung,
 um dich auf deine Probe vorzubereiten.",,"คุณจะต้องมีอุปกรณ์ที่หลากหลาย
-เพื่อเตรียมพร้อมสำหรับการทดสอบ","„Musisz przygotować zróżnicowany 
+เพื่อเตรียมพร้อมสำหรับการทดสอบ","„Musisz przygotować zróżnicowany
 ekwipunek na tę próbę ”.",,,"Anda membutuhkan perlengkapan yang berbeda
 untuk persiapan cobaan itu.",,,,,您需要不同的设备来准备磨难。,
 SPEECH_SHOP_SELL_0,"If you are unsure about your item's price,
@@ -745,7 +745,7 @@ menjualnya.",,,,,如果您不确定物品的价格，请查看其他人以多少
 SPEECH_SHOP_SELL_1,You can always retrieve items that are unsold.,"아직 팔리지 않은 물건은
 언제든지 다시 회수할 수 있어","Você sempre pode recuperar itens
 que não foram vendidos.",,"出品中の商品は
-いつでもキャンセルできるわ。","Du kannst Gegenstände, die nicht 
+いつでもキャンセルできるわ。","Du kannst Gegenstände, die nicht
 verkauft wurden, immer zurückholen.",,"ของชิ้นไหนที่ขายไม่ออก
 คุณสามารถเรียกคืนได้ตลอดเวลา",Zawsze możesz anulować wystawione ogłoszenia.,,,"Anda selalu dapat mengambil item
 yang belum terjual.",,,,,您始终可以检索未售出的物品。,
@@ -770,7 +770,7 @@ SPEECH_SHOP_GREETING_0,"You need different equipments
 to prepare for the ordeal.",다양한 장비가 있어야 시련을 대비할 수 있어,"Você precisa de equipamentos diferentes
 para se preparar para o calvário.",,厳しい戦いに備えて色々な装備が必要よ！,"Du brauchst verschiedene Ausrüstung,
 um dich auf deine Probe vorzubereiten.",,"คุณจะต้องมีอุปกรณ์ที่หลากหลาย
-เพื่อเตรียมพร้อมสำหรับการทดสอบ","„Musisz przygotować zróżnicowany 
+เพื่อเตรียมพร้อมสำหรับการทดสอบ","„Musisz przygotować zróżnicowany
 ekwipunek na tę próbę ”.",,,"Anda membutuhkan perlengkapan yang berbeda
 untuk persiapan cobaan itu.",,,,,您需要不同的设备来准备这项磨难。,
 SPEECH_COMBINE_GREETING_0,"The higher the grade
@@ -990,7 +990,7 @@ UI_OPEN_LOG,Open Log,로그 열기,Abrir log,,ログを開く,Protokoll öffnen,
 UI_MAINTENANCE,System Maintenance,시스템 점검중,Manutenção de Sistema,,システムメンテナンス,Systemwartung,,ระบบอยู่ระหว่างการปรับปรุง,Konserwacja systemu,,,Sistem dalam maintenance,,,,,系统维护,
 UI_MAINTENANCE_CONTENT,"We are undergoing system maintenance.
 During this time, please join our discord server and check the maintenance schedule.","시스템 점검중입니다.
-디스코드 채널에 방문해서 점검 일정을 확인해 주세요.","Estamos em manutenção. 
+디스코드 채널에 방문해서 점검 일정을 확인해 주세요.","Estamos em manutenção.
 Durante esse período, entre no nosso canal Discord e verifique o cronograma de manutenção.",,"システムメンテナンス中です。
 Discord でメンテナンススケジュールを確認できます。","Wir führen eine Systemwartung durch.
 Den Wartungszeitplan kannst du auf unserem Discord Server finden.",,"ระบบกำลังปิดปรับปรุง
