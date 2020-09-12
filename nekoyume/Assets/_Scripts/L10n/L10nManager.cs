@@ -1,4 +1,4 @@
-#define TEST_LOG
+// #define TEST_LOG
 
 using System;
 using System.Collections.Generic;
@@ -182,23 +182,22 @@ namespace Nekoyume.L10n
                     csvReader.Configuration.PrepareHeaderForMatch =
                         (header, index) => header.ToLower();
                     var records = csvReader.GetRecords<L10nCsvModel>();
+                    var recordsIndex = 0;
                     foreach (var record in records)
                     {
+#if TEST_LOG
+                        Debug.Log($"{csvFileInfo.Name}: {recordsIndex}");
+#endif
                         var key = record.Key;
-                        string value;
-                        switch (languageType)
+                        if (string.IsNullOrEmpty(key))
                         {
-                            default:
-                            case LanguageType.English:
-                                value = record.English;
-                                break;
-                            case LanguageType.Korean:
-                                value = record.Korean;
-                                break;
-                            case LanguageType.Portuguese:
-                                value = record.Portuguese;
-                                break;
+                            recordsIndex++;
+                            continue;
                         }
+
+                        var value = (string) typeof(L10nCsvModel)
+                            .GetProperty(languageType.ToString())?
+                            .GetValue(record);
 
                         if (string.IsNullOrEmpty(value))
                         {
@@ -207,10 +206,11 @@ namespace Nekoyume.L10n
 
                         if (dictionary.ContainsKey(key))
                         {
-                            throw new L10nAlreadyContainsKeyException(key);
+                            throw new L10nAlreadyContainsKeyException($"key: {key}, recordsIndex: {recordsIndex}, csvFileInfo: {csvFileInfo.FullName}");
                         }
 
                         dictionary.Add(key, value);
+                        recordsIndex++;
                     }
                 }
             }
