@@ -1798,7 +1798,7 @@
             <exception cref="T:System.Collections.Generic.KeyNotFoundException">Thrown when there is no <see cref="T:Libplanet.Blocks.Block`1"/>
             with a given <paramref name="blockHash"/>.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeGenesisBlock(System.Collections.Generic.IEnumerable{`0},Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset})">
+        <member name="M:Libplanet.Blockchain.BlockChain`1.MakeGenesisBlock(System.Collections.Generic.IEnumerable{`0},Libplanet.Crypto.PrivateKey,System.Nullable{System.DateTimeOffset},Libplanet.Action.IAction)">
             <summary>
             Mine the genesis block of the blockchain.
             </summary>
@@ -1809,6 +1809,9 @@
             If it's null, it will use new private key as default.</param>
             <param name="timestamp">The timestamp of the genesis block. If it's null, it will
             use <see cref="P:System.DateTimeOffset.UtcNow"/> as default.</param>
+            <param name="blockAction">A block action to execute and be rendered for every block.
+            It must match to <see cref="P:Libplanet.Blockchain.Policies.BlockPolicy`1.BlockAction"/> of <see cref="P:Libplanet.Blockchain.BlockChain`1.Policy"/>.
+            </param>
             <returns>The genesis block mined with parameters.</returns>
         </member>
         <member name="M:Libplanet.Blockchain.BlockChain`1.ContainsBlock(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
@@ -2169,6 +2172,8 @@
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.ValidateNextBlock(Libplanet.Blockchain.BlockChain{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc/>
+            <exception cref="T:Libplanet.Blocks.InvalidBlockStateRootHashException">It will be thrown when the
+            given block has incorrect <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>.</exception>
         </member>
         <member name="M:Libplanet.Blockchain.Policies.BlockPolicy`1.GetNextBlockDifficulty(Libplanet.Blockchain.BlockChain{`0})">
             <inheritdoc />
@@ -2500,6 +2505,19 @@
             on a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             If you need more fine-grained events than <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
             implement this interface instead.
+            <para>The invocation order of methods are:</para>
+            <list type="number">
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+            </description></item>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+            &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/></description>
+            </item>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+            </description></item>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+            &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/></description>
+            </item>
+            </list>
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
@@ -2847,11 +2865,10 @@
             the <see cref="P:Libplanet.Blocks.Block`1.Transactions"/> property.
             </param>
             <param name="preEvaluationHash">The hash derived from the block <em>except of</em>
-            <paramref name="evaluationDigest"/> (i.e., without action evaluation).
+            <paramref name="stateRootHash"/> (i.e., without action evaluation).
             Automatically determined if <c>null</c> is passed (which is default).</param>
-            <param name="evaluationDigest">The hash derived from the result states of every
-            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of the block's entire
-            <paramref name="transactions"/>.</param>
+            <param name="stateRootHash">The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of the states on the block.
+            </param>
             <seealso cref="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)"/>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.#ctor(Bencodex.Types.Dictionary)">
@@ -2868,24 +2885,22 @@
             after <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> are evaluated.
             </summary>
             <seealso cref="P:Libplanet.Blocks.Block`1.PreEvaluationHash"/>
-            <seealso cref="P:Libplanet.Blocks.Block`1.EvaluationDigest"/>
+            <seealso cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>
         </member>
         <member name="P:Libplanet.Blocks.Block`1.PreEvaluationHash">
             <summary>
             The hash derived from the block <em>except of</em>
-            <see cref="P:Libplanet.Blocks.Block`1.EvaluationDigest"/> (i.e., without action evaluation).
+            <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/> (i.e., without action evaluation).
             Used for <see cref="M:Libplanet.Blocks.BlockHeader.Validate(System.DateTimeOffset)"/> checking <see cref="P:Libplanet.Blocks.Block`1.Nonce"/>.
             </summary>
             <seealso cref="P:Libplanet.Blocks.Block`1.Nonce"/>
             <seealso cref="M:Libplanet.Blocks.BlockHeader.Validate(System.DateTimeOffset)"/>
         </member>
-        <member name="P:Libplanet.Blocks.Block`1.EvaluationDigest">
+        <member name="P:Libplanet.Blocks.Block`1.StateRootHash">
             <summary>
-            <see cref="P:Libplanet.Blocks.Block`1.EvaluationDigest"/> derived from the result states of every
-            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of the block's entire
-            <see cref="P:Libplanet.Blocks.Block`1.Transactions"/>.
+            The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of the states on the block.
             </summary>
-            <seealso cref="M:Libplanet.Blockchain.BlockChain`1.MineBlock(Libplanet.Address,System.Boolean,System.Threading.CancellationToken)"/>
+            <seealso cref="P:Libplanet.Store.Trie.ITrie.Hash"/>
         </member>
         <member name="M:Libplanet.Blocks.Block`1.Mine(System.Int64,System.Int64,System.Numerics.BigInteger,Libplanet.Address,System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},System.DateTimeOffset,System.Collections.Generic.IEnumerable{Libplanet.Tx.Transaction{`0}},System.Threading.CancellationToken)">
             <summary>
@@ -3079,11 +3094,11 @@
             <param name="hash">The hash of the <see cref="T:Libplanet.Blocks.Block`1"/>.
             Goes to the <see cref="P:Libplanet.Blocks.BlockHeader.Hash"/>.</param>
             <param name="preEvaluationHash">The hash derived from the block <em>except of</em>
-            <paramref name="evaluationDigest"/> (i.e., without action evaluation).
+            <paramref name="stateRootHash"/> (i.e., without action evaluation).
             Used for <see cref="M:Libplanet.Blocks.BlockHeader.Validate(System.DateTimeOffset)"/> checking <paramref name="nonce"/>.
             </param>
-            <param name="evaluationDigest">The hash derived from the result states of every
-            <see cref="P:Libplanet.Tx.Transaction`1.Actions"/> of the block's entire transactions.</param>
+            <param name="stateRootHash">The <see cref="P:Libplanet.Store.Trie.ITrie.Hash"/> of the states on the block.
+            </param>
         </member>
         <member name="M:Libplanet.Blocks.BlockHeader.Deserialize(System.Byte[])">
             <summary>
@@ -3107,6 +3122,32 @@
             </summary>
             <returns><see cref="T:Bencodex.Types.Dictionary"/> representation of
             <see cref="T:Libplanet.Blocks.BlockHeader"/>.</returns>
+        </member>
+        <member name="T:Libplanet.Blocks.InvalidBlockStateRootHashException">
+            <summary>
+            The exception that is thrown when the state root hash in the block has
+            mismatches to the state root hash of the trie on the block executed in local.
+            </summary>
+        </member>
+        <member name="M:Libplanet.Blocks.InvalidBlockStateRootHashException.#ctor(System.Nullable{Libplanet.HashDigest{System.Security.Cryptography.SHA256}},Libplanet.HashDigest{System.Security.Cryptography.SHA256},System.String)">
+            <summary>
+            Initializes a new instance of the
+            <see cref="T:Libplanet.Blocks.InvalidBlockStateRootHashException"/> class.
+            </summary>
+            <param name="expectedStateRootHash">The hash recorded as
+            <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>>.</param>
+            <param name="actualStateRootHash">The hash of state trie on the block executed.</param>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockStateRootHashException.ActualStateRootHash">
+            <summary>
+            The hash of state trie on the block executed.
+            </summary>
+        </member>
+        <member name="P:Libplanet.Blocks.InvalidBlockStateRootHashException.ExpectedStateRootHash">
+            <summary>
+            The hash recorded as <see cref="P:Libplanet.Blocks.Block`1.StateRootHash"/>>.
+            </summary>
         </member>
         <member name="T:Libplanet.Blocks.InvalidGenesisBlockException">
             <summary>
@@ -6054,9 +6095,9 @@
             <returns>All keys in an arbitrary order.  The order might be vary for each call.
             </returns>
         </member>
-        <member name="P:Libplanet.Store.Trie.ITrie.Root">
+        <member name="P:Libplanet.Store.Trie.ITrie.Hash">
             <summary>
-            The root node of the trie.
+            The state root hash of the trie.
             </summary>
         </member>
         <member name="M:Libplanet.Store.Trie.ITrie.Set(System.Byte[],Bencodex.Types.IValue)">
@@ -6077,10 +6118,11 @@
             set <paramref name="value"/> to it and return true. If not, set <paramref name="value"/>
             to null and return false.</returns>
         </member>
-        <member name="M:Libplanet.Store.Trie.ITrie.Commit">
+        <member name="M:Libplanet.Store.Trie.ITrie.Commit(System.Boolean)">
             <summary>
             Cleans up and stores the <see cref="T:Libplanet.Store.Trie.ITrie"/> in storage.
             </summary>
+            <param name="rehearsal">Whether to store nodes.</param>
             <returns>Returns new committed <see cref="T:Libplanet.Store.Trie.ITrie"/>.</returns>
         </member>
         <member name="M:Libplanet.Store.Trie.MerkleTrie.#ctor(Libplanet.Store.Trie.IKeyValueStore,Libplanet.Store.Trie.Nodes.INode,System.Boolean)">
@@ -6096,16 +6138,13 @@
             result from the given key as the key. It will hash with
             <see cref="M:Libplanet.Hashcash.Hash(System.Byte[])"/>.</param>
         </member>
-        <member name="P:Libplanet.Store.Trie.MerkleTrie.Root">
-            <inheritdoc/>
-        </member>
         <member name="M:Libplanet.Store.Trie.MerkleTrie.Set(System.Byte[],Bencodex.Types.IValue)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.Trie.MerkleTrie.TryGet(System.Byte[],Bencodex.Types.IValue@)">
             <inheritdoc/>
         </member>
-        <member name="M:Libplanet.Store.Trie.MerkleTrie.Commit">
+        <member name="M:Libplanet.Store.Trie.MerkleTrie.Commit(System.Boolean)">
             <inheritdoc/>
         </member>
         <member name="M:Libplanet.Store.Trie.MerkleTrie.GetNode(Libplanet.HashDigest{System.Security.Cryptography.SHA256})">
