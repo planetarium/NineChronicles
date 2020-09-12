@@ -18,6 +18,10 @@ namespace Nekoyume.L10n
          Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 사이즈 오프셋을 반영할지를 설정합니다.")]
         private bool fixedFontSizeOffset = default;
 
+        [SerializeField,
+         Tooltip("`L10nManager.OnLanguageTypeSettingsChange`를 구독해서 폰트 스페이싱 옵션을 반영할지를 설정합니다.")]
+        private bool fixedSpacingOption = default;
+
         [SerializeField]
         private FontMaterialType fontMaterialType = default;
 
@@ -29,6 +33,12 @@ namespace Nekoyume.L10n
         private int? _fontMaterialIndexCache;
 
         private float? _defaultFontSizeCache;
+
+        private float? _defaultCharacterSpacingCache;
+
+        private float? _defaultWordSpacingCache;
+
+        private float? _defaultLineSpacingCache;
 
         private IDisposable _l10nManagerOnLanguageTypeSettingsChangeDisposable;
 
@@ -45,11 +55,24 @@ namespace Nekoyume.L10n
         private float DefaultFontSize =>
             _defaultFontSizeCache ?? (_defaultFontSizeCache = Text.fontSize).Value;
 
+        private float DefaultCharacterSpacing =>
+            _defaultCharacterSpacingCache ??
+            (_defaultCharacterSpacingCache = Text.characterSpacing).Value;
+
+        private float DefaultWordSpacing =>
+            _defaultWordSpacingCache ?? (_defaultWordSpacingCache = Text.wordSpacing).Value;
+
+        private float DefaultLineSpacing =>
+            _defaultLineSpacingCache ?? (_defaultLineSpacingCache = Text.lineSpacing).Value;
+
         private void Awake()
         {
             Assert.NotNull(Text);
-            Assert.Greater(FontMaterialIndex, -1);
-            Assert.Greater(DefaultFontSize, -1);
+            Assert.AreEqual(FontMaterialIndex, _fontMaterialIndexCache);
+            Assert.AreEqual(DefaultFontSize, _defaultFontSizeCache);
+            Assert.AreEqual(DefaultCharacterSpacing, _defaultCharacterSpacingCache);
+            Assert.AreEqual(DefaultWordSpacing, _defaultWordSpacingCache);
+            Assert.AreEqual(DefaultLineSpacing, _defaultLineSpacingCache);
 
             if (L10nManager.CurrentState == L10nManager.State.Initialized)
             {
@@ -88,9 +111,10 @@ namespace Nekoyume.L10n
 
         private void SetLanguageTypeSettings(LanguageTypeSettings settings)
         {
+            var data = settings.fontAssetData;
             if (!fixedFontAsset)
             {
-                Text.font = settings.fontAssetData.FontAsset;
+                Text.font = data.FontAsset;
                 if (L10nManager.TryGetFontMaterial(fontMaterialType, out var fontMaterial))
                 {
                     Text.fontSharedMaterial = fontMaterial;
@@ -99,7 +123,14 @@ namespace Nekoyume.L10n
 
             if (!fixedFontSizeOffset)
             {
-                Text.fontSize = DefaultFontSize + settings.fontAssetData.FontSizeOffset;
+                Text.fontSize = DefaultFontSize + data.FontSizeOffset;
+            }
+
+            if (!fixedSpacingOption)
+            {
+                Text.characterSpacing = DefaultCharacterSpacing + data.CharacterSpacing;
+                Text.wordSpacing = DefaultWordSpacing + data.WordSpacing;
+                Text.lineSpacing = DefaultLineSpacing + data.LineSpacing;
             }
         }
     }

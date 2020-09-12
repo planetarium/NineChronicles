@@ -21,11 +21,26 @@ namespace Nekoyume.L10n
         [SerializeField]
         private float fontSizeOffset = default;
 
+        [SerializeField]
+        private float characterSpacing = default;
+
+        [SerializeField]
+        private float wordSpacing = default;
+
+        [SerializeField]
+        private float lineSpacing = default;
+
         public TMP_FontAsset FontAsset => fontAsset;
 
         public IReadOnlyList<FontMaterialData> FontMaterialDataList => fontMaterialDataList;
 
         public float FontSizeOffset => fontSizeOffset;
+
+        public float CharacterSpacing => characterSpacing;
+
+        public float WordSpacing => wordSpacing;
+
+        public float LineSpacing => lineSpacing;
 
         public FontAssetData()
         {
