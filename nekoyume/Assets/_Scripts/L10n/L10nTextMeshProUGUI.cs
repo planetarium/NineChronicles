@@ -128,9 +128,9 @@ namespace Nekoyume.L10n
 
             if (!fixedSpacingOption)
             {
-                Text.characterSpacing = DefaultCharacterSpacing + data.CharacterSpacing;
-                Text.wordSpacing = DefaultWordSpacing + data.WordSpacing;
-                Text.lineSpacing = DefaultLineSpacing + data.LineSpacing;
+                Text.characterSpacing = DefaultCharacterSpacing + data.CharacterSpacingOffset;
+                Text.wordSpacing = DefaultWordSpacing + data.WordSpacingOffset;
+                Text.lineSpacing = DefaultLineSpacing + data.LineSpacingOffset;
             }
         }
     }
