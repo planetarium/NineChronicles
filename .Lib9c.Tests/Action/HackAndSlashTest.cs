@@ -199,5 +199,26 @@ namespace Lib9c.Tests.Action
             var deserialized = (HackAndSlash)formatter.Deserialize(ms);
             Assert.Equal(action.PlainValue, deserialized.PlainValue);
         }
+
+        [Fact]
+        public void PlainValue()
+        {
+            var action = new HackAndSlash()
+            {
+                costumes = new List<int>(),
+                equipments = new List<Guid>(),
+                foods = new List<Guid>(),
+                worldId = 1,
+                stageId = 1,
+                avatarAddress = _avatarAddress,
+                WeeklyArenaAddress = _weeklyArenaState.address,
+                RankingMapAddress = _rankingMapAddress,
+            };
+
+            var deserialized = new HackAndSlash();
+            deserialized.LoadPlainValue(action.PlainValue);
+
+            Assert.Equal(action.PlainValue, deserialized.PlainValue);
+        }
     }
 }

@@ -59,6 +59,7 @@ namespace Nekoyume.Action
             stageId = plainValue["stageId"].ToInteger();
             avatarAddress = plainValue["avatarAddress"].ToAddress();
             WeeklyArenaAddress = plainValue["weeklyArenaAddress"].ToAddress();
+            RankingMapAddress = plainValue["rankingMapAddress"].ToAddress();
         }
 
         public override IAccountStateDelta Execute(IActionContext context)
