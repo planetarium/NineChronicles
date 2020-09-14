@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Libplanet;
 using Libplanet.Action;
 using Libplanet.Blocks;
+using Libplanet.Crypto;
 using Nekoyume.Action;
 using Nekoyume.Model;
+using Nekoyume.Model.State;
 
 namespace Lib9c.Tools
 {
@@ -37,6 +40,25 @@ namespace Lib9c.Tools
             }
 
             return sheets;
+        }
+
+        public static void CreateActivationKey(
+            out List<PendingActivationState> pendingActivationStates,
+            out List<ActivationKey> activationKeys,
+            int countOfKeys)
+        {
+            pendingActivationStates = new List<PendingActivationState>();
+            activationKeys = new List<ActivationKey>();
+
+            for (int i = 0; i < countOfKeys; i++)
+            {
+                var pendingKey = new PrivateKey();
+                var nonce = pendingKey.PublicKey.ToAddress().ToByteArray();
+                (ActivationKey ak, PendingActivationState s) =
+                    ActivationKey.Create(pendingKey, nonce);
+                pendingActivationStates.Add(s);
+                activationKeys.Add(ak);
+            }
         }
     }
 }

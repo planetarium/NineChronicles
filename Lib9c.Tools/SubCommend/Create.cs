@@ -19,7 +19,7 @@ namespace Lib9c.Tools.SubCommend
             [Option('a')] int activationKeyCount)
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
-            CreateActivationKey(
+            Utils.CreateActivationKey(
                 out List<PendingActivationState> pendingActivationStates,
                 out List<ActivationKey> activationKeys,
                 activationKeyCount);
@@ -32,25 +32,6 @@ namespace Lib9c.Tools.SubCommend
             
             Utils.ExportBlock(block, "genesis-block");
             Utils.ExportKeys(activationKeys, "keys.txt");
-        }
-
-        private void CreateActivationKey(
-            out List<PendingActivationState> pendingActivationStates,
-            out List<ActivationKey> activationKeys,
-            int countOfKeys)
-        {
-            pendingActivationStates = new List<PendingActivationState>();
-            activationKeys = new List<ActivationKey>();
-
-            for (int i = 0; i < countOfKeys; i++)
-            {
-                var pendingKey = new PrivateKey();
-                var nonce = pendingKey.PublicKey.ToAddress().ToByteArray();
-                (ActivationKey ak, PendingActivationState s) =
-                    ActivationKey.Create(pendingKey, nonce);
-                pendingActivationStates.Add(s);
-                activationKeys.Add(ak);
-            }
         }
     }
 }
