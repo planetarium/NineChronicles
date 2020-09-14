@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Lib9c.Tools\Lib9c.Tools.csproj" />
+      <ProjectReference Include="..\.Lib9c.Tools\Lib9c.Tools.csproj" />
     </ItemGroup>
 
     <ItemGroup>

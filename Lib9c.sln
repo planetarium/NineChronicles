@@ -4,9 +4,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c", "Lib9c\Lib9c.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tests", ".Lib9c.Tests\Lib9c.Tests.csproj", "{737F362E-9F25-46B3-80F2-4E10D0BFAE39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools", "Lib9c.Tools\Lib9c.Tools.csproj", "{3E08B733-4D8E-4289-BD9D-797253DE982C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools", ".Lib9c.Tools\Lib9c.Tools.csproj", "{3E08B733-4D8E-4289-BD9D-797253DE982C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools.Tests", "Lib9c.Tools.Tests\Lib9c.Tools.Tests.csproj", "{451E155A-BD5F-4035-9DB0-7C561B1B7197}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools.Tests", ".Lib9c.Tools.Tests\Lib9c.Tools.Tests.csproj", "{451E155A-BD5F-4035-9DB0-7C561B1B7197}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
