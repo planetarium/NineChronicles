@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c", "Lib9c\Lib9c.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tests", ".Lib9c.Tests\Lib9c.Tests.csproj", "{737F362E-9F25-46B3-80F2-4E10D0BFAE39}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools", ".Lib9c.Tools\Lib9c.Tools.csproj", "{3E08B733-4D8E-4289-BD9D-797253DE982C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib9c.Tools.Tests", ".Lib9c.Tools.Tests\Lib9c.Tools.Tests.csproj", "{451E155A-BD5F-4035-9DB0-7C561B1B7197}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,17 @@ Global
 		{737F362E-9F25-46B3-80F2-4E10D0BFAE39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{737F362E-9F25-46B3-80F2-4E10D0BFAE39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{737F362E-9F25-46B3-80F2-4E10D0BFAE39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E08B733-4D8E-4289-BD9D-797253DE982C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E08B733-4D8E-4289-BD9D-797253DE982C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E08B733-4D8E-4289-BD9D-797253DE982C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E08B733-4D8E-4289-BD9D-797253DE982C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BDF0F2D-7654-4A60-8FCD-8A71B0FB203B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BDF0F2D-7654-4A60-8FCD-8A71B0FB203B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BDF0F2D-7654-4A60-8FCD-8A71B0FB203B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BDF0F2D-7654-4A60-8FCD-8A71B0FB203B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{451E155A-BD5F-4035-9DB0-7C561B1B7197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{451E155A-BD5F-4035-9DB0-7C561B1B7197}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{451E155A-BD5F-4035-9DB0-7C561B1B7197}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{451E155A-BD5F-4035-9DB0-7C561B1B7197}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
