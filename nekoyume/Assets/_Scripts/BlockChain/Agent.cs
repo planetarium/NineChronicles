@@ -55,7 +55,6 @@ namespace Nekoyume.BlockChain
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
-        public Subject<ReorgInfo> ReorgSubject { get; } = new Subject<ReorgInfo>();
 
         private static IEnumerator _miner;
         private static IEnumerator _txProcessor;
@@ -207,6 +206,11 @@ namespace Nekoyume.BlockChain
             {
                 var rawState = blocks?.GetState(ActivatedAccountsState.Address);
                 BlockPolicySource.UpdateActivationSet(rawState);
+            }
+
+            if (blocks?.GetState(AuthorizedMinersState.Address) is Dictionary asm)
+            {
+                BlockPolicySource.AuthorizedMinersState = new AuthorizedMinersState(asm);
             }
 
 #if BLOCK_LOG_USE
@@ -748,15 +752,6 @@ namespace Nekoyume.BlockChain
                 BlockRenderer.EveryBlock()
                     .SubscribeOnMainThread()
                     .Subscribe(TipChangedHandler);
-
-                BlockRenderer.EveryReorg()
-                    .Select(tuple => new ReorgInfo(
-                        tuple.Branchpoint.Hash,
-                        tuple.OldTip.Hash,
-                        tuple.NewTip.Hash
-                    ))
-                    .SubscribeOnMainThread()
-                    .Subscribe(ReorgSubject);
 
                 Debug.LogFormat(
                     "The address of this node: {0},{1},{2}",
