@@ -24,8 +24,6 @@ namespace Nekoyume.UI
         public GameObject btnCreate;
         public TextMeshProUGUI btnCreateText;
         public TextMeshProUGUI levelAndNameInfo;
-        public RectTransform content;
-        public GameObject profileImage;
         public GameObject palette;
         public TextMeshProUGUI paletteHairText;
         public TextMeshProUGUI paletteLensText;
