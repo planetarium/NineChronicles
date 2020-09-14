@@ -22,8 +22,12 @@ namespace Nekoyume.Game.Character
             Hit,
             Die,
             Win,
+            Win_02,
+            Win_03,
             Greeting,
             Emotion,
+            Skill_01,
+            Skill_02,
         }
 
         public static readonly List<Type> List = new List<Type>();

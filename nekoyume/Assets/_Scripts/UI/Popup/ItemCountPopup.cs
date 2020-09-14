@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -21,9 +21,9 @@ namespace Nekoyume.UI
         [SerializeField]
         private TextMeshProUGUI cancelButtonText = null;
         [SerializeField]
-        private SubmitButton submitButton = null;
-        [SerializeField]
         private SimpleCountableItemView itemView = null;
+        [SerializeField]
+        protected SubmitButton submitButton = null;
 
         protected T _data;
         private readonly List<IDisposable> _disposablesForAwake = new List<IDisposable>();
@@ -35,9 +35,9 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            cancelButtonText.text = LocalizationManager.Localize("UI_CANCEL");
-            submitButton.SetSubmitText(LocalizationManager.Localize("UI_OK"));
-            informationText.text = LocalizationManager.Localize("UI_RETRIEVE_INFO");
+            cancelButtonText.text = L10nManager.Localize("UI_CANCEL");
+            submitButton.SetSubmitText(L10nManager.Localize("UI_OK"));
+            informationText.text = L10nManager.Localize("UI_RETRIEVE_INFO");
 
             cancelButton.OnClickAsObservable()
                 .Subscribe(_ =>
@@ -56,7 +56,7 @@ namespace Nekoyume.UI
                 .AddTo(_disposablesForAwake);
 
             CloseWidget = cancelButton.onClick.Invoke;
-            SubmitWidget = submitButton.button.onClick.Invoke;
+            SubmitWidget = () => submitButton.OnSubmitClick.OnNext(submitButton);
         }
 
         protected override void OnDestroy()

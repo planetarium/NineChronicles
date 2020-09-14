@@ -6,15 +6,18 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Assets.SimpleLocalization;
+using Nekoyume;
 using AsyncIO;
 using Bencodex.Types;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
 using Libplanet.Blockchain;
+using Libplanet.Blockchain.Renderers;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Net;
@@ -25,6 +28,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Nekoyume.Action;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.Serilog;
@@ -32,6 +36,7 @@ using Nekoyume.State;
 using Nekoyume.UI;
 using NetMQ;
 using Serilog;
+using Serilog.Events;
 using UniRx;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -48,8 +53,6 @@ namespace Nekoyume.BlockChain
         private const int MaxSeed = 3;
 
         public static readonly string DefaultStoragePath = StorePath.GetDefaultStoragePath();
-
-        public static readonly string PrevStorageDirectoryPath = Path.Combine(StorePath.GetPrefixPath(), "prev_storage");
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
@@ -86,12 +89,11 @@ namespace Nekoyume.BlockChain
         public PrivateKey PrivateKey { get; private set; }
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
-        private ActionRenderer _actionRenderer = new ActionRenderer(
-            ActionBase.RenderSubject,
-            ActionBase.UnrenderSubject
-        );
+        public BlockPolicySource BlockPolicySource { get; private set; }
 
-        public ActionRenderer ActionRenderer { get => _actionRenderer; }
+        public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
+
+        public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 
         public event EventHandler BootstrapStarted;
         public event EventHandler<PreloadState> PreloadProcessed;
@@ -114,7 +116,7 @@ namespace Nekoyume.BlockChain
         {
             try
             {
-                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend();
+                Libplanet.Crypto.CryptoConfig.CryptoBackend = new Secp256K1CryptoBackend<SHA256>();
             }
             catch(Exception e)
             {
@@ -151,11 +153,13 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion appProtocolVersion,
             IEnumerable<PublicKey> trustedAppProtocolVersionSigners,
             int minimumDifficulty,
-            string storageType = null)
+            string storageType = null,
+            string genesisBlockPath = null)
         {
             InitializeLogger(consoleSink, development);
+            BlockPolicySource = new BlockPolicySource(Log.Logger, LogEventLevel.Debug);
 
-            var genesisBlock = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPath);
+            var genesisBlock = BlockManager.ImportBlock(genesisBlockPath ?? BlockManager.GenesisBlockPath);
             if (genesisBlock is null)
             {
                 Debug.LogError("There is no genesis block.");
@@ -171,26 +175,42 @@ namespace Nekoyume.BlockChain
 
             Debug.Log($"minimumDifficulty: {minimumDifficulty}");
 
-            var policy = BlockPolicy.GetPolicy(minimumDifficulty);
+            var policy = BlockPolicySource.GetPolicy(minimumDifficulty);
             PrivateKey = privateKey;
             store = LoadStore(path, storageType);
-            store.UnstageTransactionIds(
-                new HashSet<TxId>(store.IterateStagedTransactionIds())
-            );
+
+            // 같은 논스를 다시 찍지 않기 위해서 직접 만든 Tx는 유지합니다.
+            ImmutableHashSet<TxId> pendingTxsFromOhters = store.IterateStagedTransactionIds()
+                .Select(tid => store.GetTransaction<PolymorphicAction<ActionBase>>(tid))
+                .Where(tx => tx.Signer != Address)
+                .Select(tx => tx.Id)
+                .ToImmutableHashSet();
+            store.UnstageTransactionIds(pendingTxsFromOhters);
 
             try
             {
-                blocks = new BlockChain<PolymorphicAction<ActionBase>>(policy, store, genesisBlock);
+                blocks = new BlockChain<PolymorphicAction<ActionBase>>(
+                    policy,
+                    store,
+                    (IStateStore) store,
+                    genesisBlock,
+                    renderers: BlockPolicySource.GetRenderers()
+                );
             }
             catch (InvalidGenesisBlockException)
             {
                 Widget.Find<SystemPopup>().Show("UI_RESET_STORE", "UI_RESET_STORE_CONTENT");
             }
 
-            if (BlockPolicy.ActivationSet is null)
+            if (BlockPolicySource.ActivatedAccounts is null)
             {
-                var tableSheetState = blocks?.GetState(TableSheetsState.Address);
-                BlockPolicy.UpdateActivationSet(tableSheetState);
+                var rawState = blocks?.GetState(ActivatedAccountsState.Address);
+                BlockPolicySource.UpdateActivationSet(rawState);
+            }
+
+            if (blocks?.GetState(AuthorizedMinersState.Address) is Dictionary asm)
+            {
+                BlockPolicySource.AuthorizedMinersState = new AuthorizedMinersState(asm);
             }
 
 #if BLOCK_LOG_USE
@@ -268,14 +288,18 @@ namespace Nekoyume.BlockChain
             return blocks.GetState(address);
         }
 
+        public FungibleAssetValue GetBalance(Address address, Currency currency) =>
+            blocks.GetBalance(address, currency);
+
         #region Mono
 
         private void Awake()
         {
             ForceDotNet.Force();
-            if (!Directory.Exists(PrevStorageDirectoryPath))
+            string parentDir = Path.GetDirectoryName(DefaultStoragePath);
+            if (!Directory.Exists(parentDir))
             {
-                Directory.CreateDirectory(PrevStorageDirectoryPath);
+                Directory.CreateDirectory(parentDir);
             }
             DeletePreviousStore();
         }
@@ -306,6 +330,7 @@ namespace Nekoyume.BlockChain
             var storagePath = options.StoragePath ?? DefaultStoragePath;
             var storageType = options.StorageType;
             var development = options.Development;
+            var genesisBlockPath = options.GenesisBlockPath;
             var appProtocolVersion = options.AppProtocolVersion is null
                 ? default
                 : AppProtocolVersion.FromToken(options.AppProtocolVersion);
@@ -324,13 +349,14 @@ namespace Nekoyume.BlockChain
                 appProtocolVersion,
                 trustedAppProtocolVersionSigners,
                 minimumDifficulty,
-                storageType
+                storageType,
+                genesisBlockPath
             );
 
             // 별도 쓰레드에서는 GameObject.GetComponent<T> 를 사용할 수 없기때문에 미리 선언.
             var loadingScreen = Widget.Find<PreloadingScreen>();
             BootstrapStarted += (_, state) =>
-                loadingScreen.Message = LocalizationManager.Localize("UI_LOADING_BOOTSTRAP_START");
+                loadingScreen.Message = L10nManager.Localize("UI_LOADING_BOOTSTRAP_START");
             PreloadProcessed += (_, state) =>
             {
                 if (loadingScreen)
@@ -342,14 +368,30 @@ namespace Nekoyume.BlockChain
             {
                 Assert.IsNotNull(GetState(RankingState.Address));
                 Assert.IsNotNull(GetState(ShopState.Address));
-                Assert.IsNotNull(GetState(TableSheetsState.Address));
                 Assert.IsNotNull(GetState(GameConfigState.Address));
 
+                // 에이전트의 상태를 한 번 동기화 한다.
+                Currency goldCurrency = new GoldCurrencyState(
+                    (Dictionary) GetState(GoldCurrencyState.Address)
+                ).Currency;
+                States.Instance.SetAgentState(
+                    GetState(Address) is Bencodex.Types.Dictionary agentDict
+                        ? new AgentState(agentDict)
+                        : new AgentState(Address),
+                    new GoldBalanceState(Address, GetBalance(Address, goldCurrency))
+                );
+
+                ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
+
                 // 랭킹의 상태를 한 번 동기화 한다.
-                States.Instance.SetRankingState(
-                    GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
-                        ? new RankingState(rankingDict)
-                        : new RankingState());
+                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                {
+                    var address = RankingState.Derive(i);
+                    var mapState = GetState(address) is Bencodex.Types.Dictionary serialized
+                        ? new RankingMapState(serialized)
+                        : new RankingMapState(address);
+                    States.Instance.SetRankingMapStates(mapState);
+                }
 
                 // 상점의 상태를 한 번 동기화 한다.
                 States.Instance.SetShopState(
@@ -373,15 +415,9 @@ namespace Nekoyume.BlockChain
                     throw new FailedToInstantiateStateException<GameConfigState>();
                 }
 
-                // 에이전트의 상태를 한 번 동기화 한다.
-                States.Instance.SetAgentState(
-                    GetState(Address) is Bencodex.Types.Dictionary agentDict
-                        ? new AgentState(agentDict)
-                        : new AgentState(Address));
-
                 // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
-                ActionRenderHandler.Instance.Start(_actionRenderer);
-                ActionUnrenderHandler.Instance.Start(_actionRenderer);
+                ActionRenderHandler.Instance.Start(ActionRenderer);
+                ActionUnrenderHandler.Instance.Start(ActionRenderer);
 
                 // 그리고 마이닝을 시작한다.
                 StartNullableCoroutine(_miner);
@@ -430,7 +466,7 @@ namespace Nekoyume.BlockChain
             var host = tokens[1];
             var port = int.Parse(tokens[2]);
 
-            return new BoundPeer(pubKey, new DnsEndPoint(host, port), default(AppProtocolVersion));
+            return new BoundPeer(pubKey, new DnsEndPoint(host, port));
         }
 
         private static IceServer LoadIceServer(string iceServerInfo)
@@ -540,6 +576,9 @@ namespace Nekoyume.BlockChain
             AppProtocolVersion localVersion
         )
         {
+            // TODO: 론처 쪽 코드의 LibplanetController.NewAppProtocolVersionEncountered() 메서드와 기본적인
+            // 로직은 같지만 구체적으로 취해야 할 액션이 크게 달라서 코드 공유를 하지 못하고 있음. 판단 로직과 판단에 따른
+            // 행동 로직을 분리해서 판단 부분은 코드를 공유할 필요가 있음.
             Debug.LogWarningFormat(
                 "Different Version Encountered; expected (local): {0}; actual ({1}): {2}",
                 localVersion, peer, peerVersion
@@ -631,13 +670,13 @@ namespace Nekoyume.BlockChain
 #if !UNITY_EDITOR
                 if (!Application.isBatchMode && (bootstrapTask.IsFaulted || bootstrapTask.IsCanceled))
                 {
-                    var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
-                        LocalizationManager.Localize("BOOTSTRAP_FAIL"));
+                    var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
+                        L10nManager.Localize("BOOTSTRAP_FAIL"));
 
                     Widget.Find<SystemPopup>().Show(
-                        LocalizationManager.Localize("UI_ERROR"),
+                        L10nManager.Localize("UI_ERROR"),
                         errorMsg,
-                        LocalizationManager.Localize("UI_QUIT"),
+                        L10nManager.Localize("UI_QUIT"),
                         false
                     );
                     yield break;
@@ -709,7 +748,10 @@ namespace Nekoyume.BlockChain
             Task.Run(async () =>
             {
                 await _swarm.WaitForRunningAsync();
-                blocks.TipChanged += TipChangedHandler;
+
+                BlockRenderer.EveryBlock()
+                    .SubscribeOnMainThread()
+                    .Subscribe(TipChangedHandler);
 
                 Debug.LogFormat(
                     "The address of this node: {0},{1},{2}",
@@ -725,21 +767,24 @@ namespace Nekoyume.BlockChain
             yield return new WaitUntil(() => swarmStartTask.IsCompleted);
         }
 
-        private void TipChangedHandler(
-            object target,
-            BlockChain<PolymorphicAction<ActionBase>>.TipChangedEventArgs args)
+        private void TipChangedHandler((
+            Block<PolymorphicAction<ActionBase>> OldTip,
+            Block<PolymorphicAction<ActionBase>> NewTip) tuple)
         {
+            var (oldTip, newTip) = tuple;
+
             _tipInfo = "Tip Information\n";
             _tipInfo += $" -Miner           : {blocks.Tip.Miner?.ToString()}\n";
             _tipInfo += $" -TimeStamp  : {DateTimeOffset.Now}\n";
-            _tipInfo += $" -PrevBlock    : [{args.PreviousIndex}] {args.PreviousHash}\n";
-            _tipInfo += $" -LatestBlock : [{args.Index}] {args.Hash}";
+            _tipInfo += $" -PrevBlock    : [{oldTip.Index}] {oldTip.Hash}\n";
+            _tipInfo += $" -LatestBlock : [{newTip.Index}] {newTip.Hash}";
             while (lastTenBlocks.Count >= 10)
             {
                 lastTenBlocks.TryDequeue(out _);
             }
+
             lastTenBlocks.Enqueue((blocks.Tip, DateTimeOffset.UtcNow));
-            TipChanged?.Invoke(null, args.Index);
+            TipChanged?.Invoke(null, newTip.Index);
         }
 
         private IEnumerator CoTxProcessor()
@@ -786,7 +831,11 @@ namespace Nekoyume.BlockChain
                 yield return waitForSeconds;
 
                 yield return Game.Game.instance.ActionManager.HackAndSlash(
-                    new List<Equipment>(), new List<Consumable>(), 1, 1).ToYieldInstruction();
+                    new List<int>(),
+                    new List<Equipment>(),
+                    new List<Consumable>(),
+                    1,
+                    1).ToYieldInstruction();
                 Debug.LogFormat("Autoplay[{0}, {1}]: HackAndSlash", avatarAddress.ToHex(), dummyName);
             }
         }
@@ -869,11 +918,11 @@ namespace Nekoyume.BlockChain
 
         private static void DeletePreviousStore()
         {
-            var dirs = Directory.GetDirectories(PrevStorageDirectoryPath).ToList();
-            foreach (var dir in dirs)
+            // 백업 저장소 지우는 데에 시간이 꽤 걸리기 때문에 백그라운드 잡으로 스폰
+            Task.Run(() =>
             {
-                Task.Run(() => { Directory.Delete(dir, true); });
-            }
+                StoreUtils.ClearBackupStores(DefaultStoragePath);
+            });
         }
 
         private IEnumerator CoCheckStagedTxs()
@@ -955,7 +1004,7 @@ namespace Nekoyume.BlockChain
                     throw new Exception("Unknown state was reported during preload.");
             }
 
-            string format = LocalizationManager.Localize(localizationKey);
+            string format = L10nManager.Localize(localizationKey);
             string text = string.Format(format, count, totalCount);
             return $"{text}  ({state.CurrentPhase} / {PreloadState.TotalPhase})";
         }

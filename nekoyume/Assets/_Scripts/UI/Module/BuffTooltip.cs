@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using TMPro;
-using Assets.SimpleLocalization;
-using Nekoyume.TableData;
+using Nekoyume.L10n;
 using Nekoyume.Model.Buff;
 
 namespace Nekoyume.UI.Module
@@ -18,7 +17,7 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             RectTransform = GetComponent<RectTransform>();
-            durationFormat = LocalizationManager.Localize("UI_REMAININGTURN");
+            durationFormat = L10nManager.Localize("UI_REMAININGTURN");
         }
 
         public void UpdateText(Buff data)

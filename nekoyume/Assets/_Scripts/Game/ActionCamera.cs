@@ -54,10 +54,18 @@ namespace Nekoyume.Game
 
         [Header("Direction")]
         [SerializeField]
-        private ChaseData chaseData;
+        private ChaseData chaseData = default;
 
         [SerializeField]
-        private ShakeData shakeData;
+        private ShakeData shakeData = default;
+
+        [Header("Direction For Prologue")]
+        [SerializeField]
+        private ChaseData prologueChaseData = default;
+
+        [Header("Shake For Prologue")]
+        [SerializeField]
+        private ShakeData prologueShakeData = default;
 
         private Transform _transform;
         private Camera _cam;
@@ -73,7 +81,8 @@ namespace Nekoyume.Game
         private Transform _targetTemp;
         private float _shakeDuration;
 
-        public readonly Subject<Resolution> OnScreenResolutionChange = new Subject<Resolution>();
+        public event Action<Resolution> OnScreenResolutionChange;
+        public event Action<Transform> OnTranslate;
 
         private Transform Transform => _transform
             ? _transform
@@ -83,13 +92,15 @@ namespace Nekoyume.Game
             ? _cam
             : _cam = GetComponent<Camera>();
 
+        public bool InPrologue = false;
+
         #region Mono
 
         protected override void Awake()
         {
             // NOTE: 화면과 카메라가 밀접한 관계에 있고, 카메라 스크립트는 게임 초기화 스크립트인 `Game.Game`과 같은 프레임에 활성화 되니 이곳에서 설정해 본다.
-            Screen.SetResolution(referenceResolution.x, referenceResolution.y,
-                FullScreenMode.FullScreenWindow);
+            // Screen.SetResolution(referenceResolution.x, referenceResolution.y,
+            //     FullScreenMode.FullScreenWindow);
 
             base.Awake();
 
@@ -110,8 +121,6 @@ namespace Nekoyume.Game
         protected override void OnDestroy()
         {
             _fsm.Kill();
-
-            OnScreenResolutionChange.Dispose();
         }
 
         #endregion
@@ -165,17 +174,19 @@ namespace Nekoyume.Game
 
         private IEnumerator CoChaseX()
         {
+            var data = InPrologue ? prologueChaseData : chaseData;
             while (_target &&
                    _target.gameObject.activeSelf)
             {
                 var pos = Transform.position;
-                var desiredPosX = _target.position.x + chaseData.offsetX;
+                var desiredPosX = _target.position.x + data.offsetX;
                 var smoothedPosX = Mathf.Lerp(
                     pos.x,
                     desiredPosX,
-                    chaseData.smoothSpeed * Time.deltaTime);
+                    data.smoothSpeed * Time.deltaTime);
                 pos.x = smoothedPosX;
                 Transform.position = pos;
+                OnTranslate?.Invoke(Transform);
 
                 yield return null;
             }
@@ -188,13 +199,15 @@ namespace Nekoyume.Game
         private IEnumerator CoShake()
         {
             var pos = Transform.position;
+            var data = InPrologue ? prologueShakeData : shakeData;
 
             while (_shakeDuration > 0f)
             {
-                var x = Random.Range(-1f, 1f) * shakeData.magnitudeX;
-                var y = Random.Range(-1f, 1f) * shakeData.magnitudeY;
+                var x = Random.Range(-1f, 1f) * data.magnitudeX;
+                var y = Random.Range(-1f, 1f) * data.magnitudeY;
 
                 Transform.position = new Vector3(pos.x + x, pos.y + y, pos.z);
+                OnTranslate?.Invoke(Transform);
 
                 _shakeDuration -= Time.deltaTime;
 
@@ -202,6 +215,7 @@ namespace Nekoyume.Game
             }
 
             Transform.position = pos;
+            OnTranslate?.Invoke(Transform);
 
             if (_target)
             {
@@ -229,6 +243,7 @@ namespace Nekoyume.Game
             pos.x = x;
             pos.y = y;
             Transform.position = pos;
+            OnTranslate?.Invoke(Transform);
         }
 
         /// <summary>
@@ -405,7 +420,8 @@ namespace Nekoyume.Game
                     position.z);
             }
 
-            OnScreenResolutionChange.OnNext(_resolution);
+            OnScreenResolutionChange?.Invoke(_resolution);
+            OnTranslate?.Invoke(Transform);
         }
 
         #endregion

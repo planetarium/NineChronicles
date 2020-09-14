@@ -1,4 +1,4 @@
-﻿using Assets.SimpleLocalization;
+﻿using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,8 +18,8 @@ namespace Nekoyume.UI
 
         private void Awake()
         {
-            CreateViewText.text = LocalizationManager.Localize("UI_CREATE_CHARACTER");
-            DeleteViewButtonText.text = LocalizationManager.Localize("UI_DELETE");
+            CreateViewText.text = L10nManager.Localize("UI_CREATE_CHARACTER");
+            DeleteViewButtonText.text = L10nManager.Localize("UI_DELETE");
         }
     }
 }

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Stat;
-using Nekoyume.TableData;
 using Nekoyume.UI.Model;
 using TMPro;
 using UnityEngine;
@@ -107,7 +105,7 @@ namespace Nekoyume.UI.Module
                 return;
             }
 
-            var itemRow = Model.item.Value.ItemBase.Value.Data;
+            var item = Model.item.Value.ItemBase.Value;
 
             // 아이콘.
             iconArea.itemView.SetData(new CountableItem(
@@ -115,8 +113,8 @@ namespace Nekoyume.UI.Module
                 Model.item.Value.Count.Value));
 
             // 속성.
-            var sprite = itemRow.ElementalType.GetSprite();
-            var elementalCount = itemRow.Grade;
+            var sprite = item.ElementalType.GetSprite();
+            var elementalCount = item.Grade;
             for (var i = 0; i < iconArea.elementalTypeImages.Count; i++)
             {
                 var image = iconArea.elementalTypeImages[i];
@@ -174,16 +172,16 @@ namespace Nekoyume.UI.Module
                 {
                     if (!statMapEx.StatType.Equals(uniqueStatType))
                         continue;
-                    
+
                     AddStat(statMapEx, true);
                     statCount++;
                 }
-                
+
                 foreach (var statMapEx in equipment.StatsMap.GetStats())
                 {
                     if (statMapEx.StatType.Equals(uniqueStatType))
                         continue;
-                    
+
                     AddStat(statMapEx);
                     statCount++;
                 }

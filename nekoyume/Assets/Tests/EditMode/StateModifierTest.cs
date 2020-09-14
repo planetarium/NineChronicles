@@ -1,6 +1,9 @@
 using System;
+using System.Numerics;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.Game;
 using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Mail;
@@ -17,6 +20,7 @@ namespace Tests.EditMode
     {
         private TableSheets _tableSheets;
         private AgentState _agentState;
+        private GoldBalanceState _goldBalanceState;
         private AvatarState _avatarState;
 
         [SetUp]
@@ -24,13 +28,23 @@ namespace Tests.EditMode
         {
             _tableSheets = TableSheetsHelper.MakeTableSheets();
             _agentState = new AgentState(new Address());
-            _avatarState = new AvatarState(new Address(), _agentState.address, 0, _tableSheets, new GameConfigState());
+            var currency = new Currency("NCG", 2, minter: null);
+            var gold = new FungibleAssetValue(currency, 0, 0);
+            _goldBalanceState = new GoldBalanceState(_agentState.address, gold);
+            _avatarState = new AvatarState(
+                new Address(),
+                _agentState.address,
+                0,
+                _tableSheets.GetAvatarSheets(),
+                new GameConfigState(),
+                new Address());
         }
 
         [TearDown]
         public void TearDown()
         {
             _avatarState = null;
+            _goldBalanceState = null;
             _agentState = null;
             _tableSheets = null;
         }
@@ -38,10 +52,11 @@ namespace Tests.EditMode
         [Test]
         public void AgentGoldModifier()
         {
-            var gold = _agentState.gold;
-            var modifier = JsonTest(new AgentGoldModifier(100));
-            modifier.Modify(_agentState);
-            Assert.AreEqual(gold + 100, _agentState.gold);
+            var gold = _goldBalanceState.Gold;
+            var modifier = JsonTest(new AgentGoldModifier(gold.Currency, 100));
+            _goldBalanceState = modifier.Modify(_goldBalanceState);
+            Assert.AreEqual(gold + new FungibleAssetValue(gold.Currency, 100, 0),
+                _goldBalanceState.Gold);
         }
 
         [Test]
@@ -49,7 +64,7 @@ namespace Tests.EditMode
         {
             var actionPoint = _avatarState.actionPoint;
             var modifier = JsonTest(new AvatarActionPointModifier(100));
-            modifier.Modify(_avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.AreEqual(actionPoint + 100, _avatarState.actionPoint);
         }
 
@@ -61,11 +76,11 @@ namespace Tests.EditMode
 
             var material = GetFirstMaterial();
             _avatarState.inventory.AddItem(material);
-            Assert.True(_avatarState.inventory.HasItem(material.Data.ItemId));
+            Assert.True(_avatarState.inventory.HasItem(material.ItemId));
             var modifier =
-                JsonTest(new AvatarInventoryFungibleItemRemover(material.Data.ItemId, 1));
-            modifier.Modify(_avatarState);
-            Assert.False(_avatarState.inventory.HasItem(material.Data.ItemId));
+                JsonTest(new AvatarInventoryFungibleItemRemover(material.ItemId, 1));
+            _avatarState = modifier.Modify(_avatarState);
+            Assert.False(_avatarState.inventory.HasItem(material.ItemId));
         }
 
         [Test]
@@ -79,7 +94,7 @@ namespace Tests.EditMode
             Assert.True(_avatarState.inventory.HasItem(equipment.ItemId));
             var modifier =
                 JsonTest(new AvatarInventoryNonFungibleItemRemover(equipment.ItemId));
-            modifier.Modify(_avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.False(_avatarState.inventory.HasItem(equipment.ItemId));
         }
 
@@ -96,7 +111,7 @@ namespace Tests.EditMode
             _avatarState.mailBox.Add(attachmentMail);
             var modifier =
                 JsonTest(new AvatarAttachmentMailNewSetter(attachmentMail.id));
-            modifier.Modify(_avatarState);
+            _avatarState = modifier.Modify(_avatarState);
             Assert.True(attachmentMail.New);
         }
 

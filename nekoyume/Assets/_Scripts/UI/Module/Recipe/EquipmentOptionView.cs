@@ -1,8 +1,8 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Helper;
 using Nekoyume.Model.Stat;
 using System;
 using System.Globalization;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -69,7 +69,7 @@ namespace Nekoyume.UI.Module
             SubRecipeId = subRecipeId;
             nameText.text = recipeName;
 
-            var format = LocalizationManager.Localize(
+            var format = L10nManager.Localize(
                 subRecipeRow.MaxOptionLimit == 1
                     ? "UI_RANDOM_OPTION_COUNT_FORMAT_SINGULAR"
                     : "UI_RANDOM_OPTION_COUNT_FORMAT_PLURAL");
@@ -137,7 +137,7 @@ namespace Nekoyume.UI.Module
 
             string fromColorTag = value ? ColorTagForDescriptionText1 : ColorTagForDescriptionText2;
             string toColorTag =  value ? ColorTagForDescriptionText2 : ColorTagForDescriptionText1;
-            
+
             if (descriptionText.text.Contains($"<color={fromColorTag}>"))
             {
                 descriptionText.text = descriptionText.text
@@ -155,6 +155,11 @@ namespace Nekoyume.UI.Module
             }
 
             SetPanelDimmed(value);
+        }
+
+        public void OnAnimationCompleted()
+        {
+            Widget.Find<Combination>().OnTweenRecipeCompleted();
         }
 
         protected void SetPanelDimmed(bool isDimmed)

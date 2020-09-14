@@ -36,6 +36,7 @@ Nine Chronicles
  - `--minimum-difficulty`: 네트워크에서 합의된 최소 블록 채굴 난이도를 설정합니다.
  - `--peer`              : Peer 를 추가합니다. 추가하려는 Peer가 여럿일 경우 --peer peerA peerB ... 와 같이 추가할 수 있습니다.
  - `--ice-servers`       : NAT 우회에 사용할 TURN 서버 정보를 지정합니다. 지정하는 서버가 여럿일 경우 `--ice-servers serverA serverB` 와 같이 추가할 수 있습니다.
+ - `--genesis-block-path`: 제네시스 블록 위치를 지정합니다. http(s)로 된 경로도 지원하며, 지정하지 않은 경우엔 `Assets/StreamingAssets/genesis-block`을 사용합니다.
  - `--storage-path`      : 데이터를 저장할 경로를 지정합니다.
  - `--storage-type`      : 데이터를 저장할 저장소 타입을 지정합니다. 현재는 `--storage-type rocksdb` 로 `RocksDBStore` 를 지정할 수 있습니다.
  - `--rpc-client`        : 체인 데이터를 저장하지 않는 클라이언트 모드로 실행합니다.
@@ -74,6 +75,10 @@ $ /UnityPath/Unity -quit -batchmode -projectPath=/path/to/nekoyume/ -executeMeth
 ```
 $ /Applications/Unity/Hub/Editor/2019.1.0f2/Unity.app/Contents/MacOS/Unity -quit -batchmode -projectPath=~/planetarium/nekoyume-unity/nekoyume/ -executeMethod Editor.Builder.BuildAll
 ```
+
+### 에디터 빌드
+
+유니티 에디터 상단의 Build 메뉴를 사용해서 빌드합니다.
 
 ### 피어 설정
 

@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
 using System.Linq;
-using Nekoyume.Game.Character;
+using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.Manager;
-using Nekoyume.Model.Item;
+using Nekoyume.Model.BattleStatus;
+using UniRx;
 using UnityEngine;
-using Player = Nekoyume.Game.Character.Player;
 using Random = UnityEngine.Random;
+using mixpanel;
+using Nekoyume.Model.State;
 
 namespace Nekoyume.UI
 {
@@ -23,21 +26,35 @@ namespace Nekoyume.UI
         private const string FirstOpenRankingKeyFormat = "Nekoyume.UI.Menu.FirstOpenRankingKey_{0}";
         private const string FirstOpenQuestKeyFormat = "Nekoyume.UI.Menu.FirstOpenQuestKey_{0}";
 
-        public MainMenu btnQuest;
-        public MainMenu btnCombination;
-        public MainMenu btnShop;
-        public MainMenu btnRanking;
-        public ArenaPendingNCG arenaPendingNCG;
-        public SpeechBubble[] SpeechBubbles;
-        public NPC npc;
-        public SpeechBubble speechBubble;
-        public GameObject shopExclamationMark;
-        public GameObject combinationExclamationMark;
-        public GameObject rankingExclamationMark;
-        public GameObject questExclamationMark;
+        [SerializeField]
+        private MainMenu btnQuest = null;
 
-        private Coroutine _coroutine;
-        private Player _player;
+        [SerializeField]
+        private MainMenu btnCombination = null;
+
+        [SerializeField]
+        private MainMenu btnShop = null;
+
+        [SerializeField]
+        private MainMenu btnRanking = null;
+
+        [SerializeField]
+        private SpeechBubble[] speechBubbles = null;
+
+        [SerializeField]
+        private GameObject shopExclamationMark = null;
+
+        [SerializeField]
+        private GameObject combinationExclamationMark = null;
+
+        [SerializeField]
+        private GameObject rankingExclamationMark = null;
+
+        [SerializeField]
+        private GameObject questExclamationMark = null;
+
+        [SerializeField]
+        private GuidedQuest guidedQuest = null;
 
         private Coroutine _coLazyClose;
 
@@ -45,58 +62,99 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            SpeechBubbles = GetComponentsInChildren<SpeechBubble>();
+            speechBubbles = GetComponentsInChildren<SpeechBubble>();
             Game.Event.OnRoomEnter.AddListener(b => Show());
 
             CloseWidget = null;
+
+            guidedQuest.OnClickWorldQuestCell
+                .Subscribe(_ => HackAndSlash())
+                .AddTo(gameObject);
+            guidedQuest.OnClickCombinationEquipmentQuestCell
+                .Subscribe(_ => GoToCombinationEquipmentRecipe())
+                .AddTo(gameObject);
         }
 
-        // 코스튬 테스트를 위한 임시 코드 블럭.
-#if UNITY_EDITOR
-
-        private Costume _targetCostume = null;
-
-        protected override void OnEnable()
+        // TODO: QuestPreparation.Quest(bool repeat) 와 로직이 흡사하기 때문에 정리할 여지가 있습니다.
+        private void HackAndSlash()
         {
-            base.OnEnable();
-            if (States.Instance.CurrentAvatarState is null)
+            var worldQuest = GuidedQuest.WorldQuest;
+            if (worldQuest is null)
             {
                 return;
             }
 
-            _targetCostume = States.Instance.CurrentAvatarState.inventory.Items
-                .Select(item => item.item)
-                .OfType<Costume>()
-                .FirstOrDefault(costume => costume.Data.ItemSubType == ItemSubType.FullCostume);
-            if (_targetCostume is null)
+            var stageId = worldQuest.Goal;
+            var sheets = Game.Game.instance.TableSheets;
+            var stageRow = sheets.StageSheet.OrderedList.FirstOrDefault(row => row.Id == stageId);
+            if (stageRow is null)
             {
-                Debug.LogError("Not Found Costume in Inventory");
+                return;
             }
+
+            var requiredCost = stageRow.CostAP;
+            if (States.Instance.CurrentAvatarState.actionPoint < requiredCost)
+            {
+                // NOTE: AP가 부족합니다.
+                return;
+            }
+
+            if (!sheets.WorldSheet.TryGetByStageId(stageId, out var worldRow))
+            {
+                return;
+            }
+
+            var worldId = worldRow.Id;
+
+            Find<BottomMenu>().Close(true);
+            Find<LoadingScreen>().Show();
+
+            var stage = Game.Game.instance.Stage;
+            stage.isExitReserved = false;
+            stage.repeatStage = false;
+            var player = stage.GetPlayer();
+            player.StartRun();
+            ActionCamera.instance.ChaseX(player.transform);
+            ActionRenderHandler.Instance.Pending = true;
+            Game.Game.instance.ActionManager
+                .HackAndSlash(player, worldId, stageId)
+                .Subscribe(_ =>
+                {
+                    LocalStateModifier.ModifyAvatarActionPoint(
+                        States.Instance.CurrentAvatarState.address,
+                        requiredCost);
+                }, e => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."))
+                .AddTo(this);
+            LocalStateModifier.ModifyAvatarActionPoint(States.Instance.CurrentAvatarState.address,
+                - requiredCost);
+            var props = new Value
+            {
+                ["StageID"] = stageId,
+            };
+            Mixpanel.Track("Unity/Click Guided Quest Enter Dungeon", props);
         }
 
-        private void OnGUI()
+        public void GoToStage(BattleLog battleLog)
         {
-            if (_targetCostume.equipped)
-            {
-                if (GUILayout.Button("코스튬 벗기"))
-                {
-                    var player = Game.Game.instance.Stage.GetPlayer();
-                    player.UnequipCostume(_targetCostume);
-                    Debug.LogWarning("코스튬 벗기 완료");
-                }
-            }
-            else
-            {
-                if (GUILayout.Button("코스튬 입기"))
-                {
-                    var player = Game.Game.instance.Stage.GetPlayer();
-                    player.EquipCostume(_targetCostume);
-                    Debug.LogWarning("코스튬 입기 완료");
-                }
-            }
+            Game.Event.OnStageStart.Invoke(battleLog);
+            Find<LoadingScreen>().Close();
+            Close(true);
         }
 
-#endif
+        private void GoToCombinationEquipmentRecipe()
+        {
+            mixpanel.Mixpanel.Track("Unity/Click Guided Quest Combination Equipment");
+            var combinationEquipmentQuest = GuidedQuest.CombinationEquipmentQuest;
+            if (combinationEquipmentQuest is null)
+            {
+                return;
+            }
+
+            var recipeId = combinationEquipmentQuest.RecipeId;
+
+            CombinationClickInternal(() =>
+                Find<Combination>().ShowByEquipmentRecipe(recipeId));
+        }
 
         private void UpdateButtons()
         {
@@ -110,18 +168,35 @@ namespace Nekoyume.UI
             var firstOpenShopKey = string.Format(FirstOpenShopKeyFormat, addressHax);
             var firstOpenRankingKey = string.Format(FirstOpenRankingKeyFormat, addressHax);
             var firstOpenQuestKey = string.Format(FirstOpenQuestKeyFormat, addressHax);
+
+            var combination = Find<Combination>();
+            var hasNotificationOnCombination = combination.HasNotification;
+
             combinationExclamationMark.gameObject.SetActive(
                 btnCombination.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0);
+                (PlayerPrefs.GetInt(firstOpenCombinationKey, 0) == 0 ||
+                 hasNotificationOnCombination));
             shopExclamationMark.gameObject.SetActive(
                 btnShop.IsUnlocked &&
                 PlayerPrefs.GetInt(firstOpenShopKey, 0) == 0);
-            rankingExclamationMark.gameObject.SetActive(
-                btnRanking.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenRankingKey, 0) == 0);
+
+            var currentAddress = States.Instance.CurrentAvatarState?.address;
+            if (currentAddress != null)
+            {
+                var arenaInfo = States.Instance.WeeklyArenaState.GetArenaInfo(currentAddress.Value);
+                rankingExclamationMark.gameObject.SetActive(
+                    btnRanking.IsUnlocked &&
+                    (arenaInfo == null || arenaInfo.DailyChallengeCount > 0));
+            }
+
+            var worldMap = Find<WorldMap>();
+            worldMap.UpdateNotificationInfo();
+            var hasNotificationInWorldmap = worldMap.HasNotification;
+
             questExclamationMark.gameObject.SetActive(
-                btnQuest.IsUnlocked &&
-                PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0);
+                (btnQuest.IsUnlocked &&
+                 PlayerPrefs.GetInt(firstOpenQuestKey, 0) == 0) ||
+                hasNotificationInWorldmap);
         }
 
         private void HideButtons()
@@ -153,6 +228,7 @@ namespace Nekoyume.UI
                 PlayerPrefs.SetInt(key, 1);
             }
 
+            Mixpanel.Track("Unity/Enter Dungeon");
             _coLazyClose = StartCoroutine(CoLazyClose());
             var avatarState = States.Instance.CurrentAvatarState;
             Find<WorldMap>().Show(avatarState.worldInformation);
@@ -183,6 +259,26 @@ namespace Nekoyume.UI
 
         public void CombinationClick(int slotIndex = -1)
         {
+            CombinationClickInternal(() =>
+            {
+                if (slotIndex >= 0)
+                {
+                    Find<Combination>().Show(slotIndex);
+                }
+                else
+                {
+                    Find<Combination>().Show();
+                }
+            });
+        }
+
+        private void CombinationClickInternal(System.Action showAction)
+        {
+            if (showAction is null)
+            {
+                return;
+            }
+
             if (!btnCombination.IsUnlocked)
             {
                 btnCombination.JingleTheCat();
@@ -197,14 +293,7 @@ namespace Nekoyume.UI
             }
 
             Close();
-            if (slotIndex >= 0)
-            {
-                Find<Combination>().Show(slotIndex);
-            }
-            else
-            {
-                Find<Combination>().Show();
-            }
+            showAction();
 
             AudioController.PlayClick();
             AnalyticsManager.Instance.OnEvent(AnalyticsManager.EventName.ClickMainCombination);
@@ -218,16 +307,14 @@ namespace Nekoyume.UI
                 return;
             }
 
-            if (rankingExclamationMark.gameObject.activeSelf)
-            {
-                var addressHax = ReactiveAvatarState.Address.Value.ToHex();
-                var key = string.Format(FirstOpenRankingKeyFormat, addressHax);
-                PlayerPrefs.SetInt(key, 1);
-            }
-
             Close();
             Find<RankingBoard>().Show();
             AudioController.PlayClick();
+        }
+
+        public void UpdateGuideQuest(AvatarState avatarState)
+        {
+            guidedQuest.UpdateList(avatarState);
         }
 
         public override void Show(bool ignoreShowAnimation = false)
@@ -238,21 +325,36 @@ namespace Nekoyume.UI
                 _coLazyClose = null;
             }
 
+            guidedQuest.Hide(true);
             base.Show(ignoreShowAnimation);
 
             StartCoroutine(CoStartSpeeches());
             UpdateButtons();
-            arenaPendingNCG.Show();
+        }
+
+        protected override void OnCompleteOfShowAnimationInternal()
+        {
+            base.OnCompleteOfShowAnimationInternal();
+            Find<Dialog>().Show(1);
+            StartCoroutine(CoHelpPopup());
+        }
+
+        private IEnumerator CoHelpPopup()
+        {
+            var dialog = Find<Dialog>();
+            while (dialog.IsActive())
+            {
+                yield return null;
+            }
+
+            guidedQuest.Show(States.Instance.CurrentAvatarState);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             StopSpeeches();
 
-            Find<Inventory>().Close(ignoreCloseAnimation);
-            Find<StatusDetail>().Close(ignoreCloseAnimation);
-            Find<Quest>().Close(ignoreCloseAnimation);
-
+            guidedQuest.Hide(true);
             Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
             base.Close(ignoreCloseAnimation);
@@ -261,10 +363,6 @@ namespace Nekoyume.UI
         private IEnumerator CoLazyClose(float duration = 1f, bool ignoreCloseAnimation = false)
         {
             StopSpeeches();
-
-            Find<Inventory>().Close(ignoreCloseAnimation);
-            Find<StatusDetail>().Close(ignoreCloseAnimation);
-            Find<Quest>().Close(ignoreCloseAnimation);
 
             Find<BottomMenu>().Close(true);
             Find<Status>().Close(true);
@@ -276,19 +374,19 @@ namespace Nekoyume.UI
         {
             yield return new WaitForSeconds(2.0f);
 
-            while (true)
+            while (AnimationState == AnimationStateType.Shown)
             {
-                var n = SpeechBubbles.Length;
+                var n = speechBubbles.Length;
                 while (n > 1)
                 {
                     n--;
                     var k = Mathf.FloorToInt(Random.value * (n + 1));
-                    var value = SpeechBubbles[k];
-                    SpeechBubbles[k] = SpeechBubbles[n];
-                    SpeechBubbles[n] = value;
+                    var value = speechBubbles[k];
+                    speechBubbles[k] = speechBubbles[n];
+                    speechBubbles[n] = value;
                 }
 
-                foreach (var bubble in SpeechBubbles)
+                foreach (var bubble in speechBubbles)
                 {
                     yield return StartCoroutine(bubble.CoShowText());
                     yield return new WaitForSeconds(Random.Range(2.0f, 4.0f));
@@ -299,7 +397,7 @@ namespace Nekoyume.UI
         private void StopSpeeches()
         {
             StopCoroutine(CoStartSpeeches());
-            foreach (var bubble in SpeechBubbles)
+            foreach (var bubble in speechBubbles)
             {
                 bubble.Hide();
             }

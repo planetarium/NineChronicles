@@ -27,6 +27,8 @@ namespace Nekoyume.UI.Module
         private readonly List<IDisposable> _disposables = new List<IDisposable>();
         private int _currentActionPoint;
 
+        public bool IsRemained => _currentActionPoint > 0;
+
         public Image Image => image;
 
         #region Mono
@@ -82,6 +84,8 @@ namespace Nekoyume.UI.Module
         {
             Widget.Find<VanilaTooltip>()
                 .Show("UI_BLESS_OF_GODDESS", "UI_BLESS_OF_GODDESS_DESCRIPTION", tooltipArea.position);
+
+            HelpPopup.HelpMe(100009, true);
         }
 
         public void HideTooltip()

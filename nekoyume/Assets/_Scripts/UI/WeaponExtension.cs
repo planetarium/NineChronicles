@@ -10,7 +10,7 @@ namespace Nekoyume.UI
         {
             return weapon is null
                 ? SpriteHelper.GetPlayerSpineTextureWeapon(GameConfig.DefaultAvatarWeaponId)
-                : SpriteHelper.GetPlayerSpineTextureWeapon(weapon.Data.Id);
+                : SpriteHelper.GetPlayerSpineTextureWeapon(weapon.Id);
         }
     }
 }

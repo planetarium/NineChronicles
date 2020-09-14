@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Security.Cryptography;
 using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
+using Nekoyume.Game;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.State.Modifiers;
 using Nekoyume.State.Subjects;
 using Nekoyume.TableData;
+using Nekoyume.UI;
 using Nekoyume.UI.Module;
 
 namespace Nekoyume.State
@@ -24,36 +29,59 @@ namespace Nekoyume.State
         #region Agent, Avatar / Currency
 
         /// <summary>
-        /// 에이전트의 골드를 변경한다.(휘발성)
+        /// 에이전트의 골드를 증가시킨다.(휘발성)
         /// </summary>
         /// <param name="agentAddress"></param>
-        /// <param name="gold"></param>
-        public static void ModifyAgentGold(Address agentAddress, decimal gold)
+        /// <param name="gold">더할 NCG. 음수일 경우 감소시킨다.</param>
+        // FIXME: 이름이 헷갈리니 IncrementAgentGold() 정도로 이름을 바꾸는 게 좋겠습니다.
+        // (현재는 이름만 보면 더하는 게 아니라 그냥 덮어씌우는 것처럼 여겨짐.)
+        public static void ModifyAgentGold(Address agentAddress, FungibleAssetValue gold)
         {
-            if (gold is 0m)
+            if (gold.Sign == 0)
+            {
                 return;
+            }
 
             var modifier = new AgentGoldModifier(gold);
             LocalStateSettings.Instance.Add(agentAddress, modifier, true);
 
-            var state = States.Instance.AgentState;
-            if (state is null ||
-                !state.address.Equals(agentAddress))
+            var state = States.Instance.GoldBalanceState;
+            if (state is null || !state.address.Equals(agentAddress))
+            {
                 return;
+            }
 
-            modifier.Modify(state);
-            ReactiveAgentState.Gold.SetValueAndForceNotify(state.gold);
+            // NOTE: Reassignment is not required yet.
+            state = modifier.Modify(state);
+            ReactiveAgentState.Gold.SetValueAndForceNotify(state.Gold);
+        }
+
+        public static void ModifyAgentGold(Address agentAddress, BigInteger gold)
+        {
+            if (gold == 0)
+            {
+                return;
+            }
+
+            ModifyAgentGold(agentAddress, new FungibleAssetValue(
+                States.Instance.GoldBalanceState.Gold.Currency,
+                gold,
+                0));
         }
 
         /// <summary>
-        /// 아바타의 행동력을 변경한다.(휘발성)
+        /// 아바타의 행동력을 증가시킨다.(휘발성)
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="actionPoint"></param>
+        /// <param name="actionPoint">더할 행동력. 음수일 경우 감소시킨다.</param>
+        // FIXME: 이름이 헷갈리니 IncrementAvatarActionPoint() 정도로 이름을 바꾸는 게 좋겠습니다.
+        // (현재는 이름만 보면 더하는 게 아니라 그냥 덮어씌우는 것처럼 여겨짐.)
         public static void ModifyAvatarActionPoint(Address avatarAddress, int actionPoint)
         {
             if (actionPoint is 0)
+            {
                 return;
+            }
 
             var modifier = new AvatarActionPointModifier(actionPoint);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
@@ -68,7 +96,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -87,11 +116,18 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="guid"></param>
-        public static void AddItem(Address avatarAddress, Guid guid)
+        /// <param name="resetState"></param>
+        public static void AddItem(Address avatarAddress, Guid guid, bool resetState = true)
         {
             var modifier = new AvatarInventoryNonFungibleItemRemover(guid);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
-            AddItemInternal(avatarAddress);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         /// <summary>
@@ -100,14 +136,27 @@ namespace Nekoyume.State
         /// <param name="avatarAddress"></param>
         /// <param name="id"></param>
         /// <param name="count"></param>
-        public static void AddItem(Address avatarAddress, HashDigest<SHA256> id, int count)
+        /// <param name="resetState"></param>
+        public static void AddItem(
+            Address avatarAddress,
+            HashDigest<SHA256> id,
+            int count,
+            bool resetState = true)
         {
             if (count is 0)
+            {
                 return;
+            }
 
             var modifier = new AvatarInventoryFungibleItemRemover(id, count);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
-            AddItemInternal(avatarAddress);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
         /// <summary>
@@ -115,15 +164,20 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="idAndCountDictionary"></param>
-        public static void AddItem(Address avatarAddress, Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
+        /// <param name="resetState"></param>
+        public static void AddItem(
+            Address avatarAddress,
+            Dictionary<HashDigest<SHA256>, int> idAndCountDictionary,
+            bool resetState = true)
         {
             var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
-            AddItemInternal(avatarAddress);
-        }
 
-        private static void AddItemInternal(Address avatarAddress)
-        {
+            if (!resetState)
+            {
+                return;
+            }
+
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
@@ -152,7 +206,9 @@ namespace Nekoyume.State
         public static void RemoveItem(Address avatarAddress, HashDigest<SHA256> id, int count)
         {
             if (count is 0)
+            {
                 return;
+            }
 
             var modifier = new AvatarInventoryFungibleItemRemover(id, count);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
@@ -164,7 +220,9 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="idAndCountDictionary"></param>
-        public static void RemoveItem(Address avatarAddress, Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
+        public static void RemoveItem(
+            Address avatarAddress,
+            Dictionary<HashDigest<SHA256>, int> idAndCountDictionary)
         {
             var modifier = new AvatarInventoryFungibleItemRemover(idAndCountDictionary);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
@@ -183,7 +241,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -217,7 +276,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -246,7 +306,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -261,18 +322,43 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="mailId"></param>
-        public static void RemoveNewAttachmentMail(Address avatarAddress, Guid mailId)
+        /// <param name="resetState"></param>
+        public static void RemoveNewAttachmentMail(
+            Address avatarAddress,
+            Guid mailId,
+            bool resetState = true)
         {
             var modifier = new AvatarAttachmentMailNewSetter(mailId);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
-            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out var isCurrentAvatarState);
         }
 
-        public static void RemoveAttachmentResult(Address avatarAddress, Guid mailId)
+        public static void RemoveAttachmentResult(
+            Address avatarAddress,
+            Guid mailId,
+            bool resetState = true)
         {
             var resultModifier = new AvatarAttachmentMailResultSetter(mailId);
             LocalStateSettings.Instance.Remove(avatarAddress, resultModifier);
-            TryResetLoadedAvatarState(avatarAddress, out var outAvatarState, out var isCurrentAvatarState);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out var isCurrentAvatarState);
         }
 
         #endregion
@@ -299,7 +385,8 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
@@ -314,10 +401,20 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="avatarAddress"></param>
         /// <param name="id"></param>
-        public static void RemoveReceivableQuest(Address avatarAddress, int id)
+        /// <param name="resetState"></param>
+        public static void RemoveReceivableQuest(
+            Address avatarAddress,
+            int id,
+            bool resetState = true)
         {
             var modifier = new AvatarQuestIsReceivableSetter(id);
             LocalStateSettings.Instance.Remove(avatarAddress, modifier);
+
+            if (!resetState)
+            {
+                return;
+            }
+
             TryResetLoadedAvatarState(avatarAddress, out _, out _);
         }
 
@@ -326,14 +423,114 @@ namespace Nekoyume.State
         #region Avatar
 
         /// <summary>
+        /// `AvatarInventoryCostumeEquippedModifier`, `AvatarInventoryEquipmentEquippedModifier` 형의 상태 변경자를 모두 삭제합니다.
+        /// `AvatarState.Inventory`의 아이템이 빠지는 모든 액션에서 호출합니다.
+        /// </summary>
+        /// <param name="avatarAddress"></param>
+        /// <param name="resetState"></param>
+        public static void ClearEquipOrUnequipOfCostumeAndEquipment(
+            Address avatarAddress,
+            bool resetState = true)
+        {
+            LocalStateSettings.Instance
+                .ClearAvatarModifiers<AvatarInventoryCostumeEquippedModifier>(avatarAddress);
+            LocalStateSettings.Instance
+                .ClearAvatarModifiers<AvatarInventoryEquipmentEquippedModifier>(avatarAddress);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+        }
+
+        /// <summary>
+        /// `avatarAddress`에 해당하는 아바타 상태의 `Inventory` 안의 `Costume` 중,
+        /// 매개변수의 `id`를 가진 `Costume`의 `equipped`를 매개변수 `equip`으로 설정한다.(비휘발성)
+        /// </summary>
+        /// <param name="avatarAddress"></param>
+        /// <param name="id"></param>
+        /// <param name="equip"></param>
+        /// <param name="resetState"></param>
+        public static void SetCostumeEquip(
+            Address avatarAddress,
+            int id,
+            bool equip,
+            bool resetState = true)
+        {
+            var modifier = new AvatarInventoryCostumeEquippedModifier(id, equip);
+            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
+                return;
+            }
+
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
+
+            if (!resetState ||
+                !isCurrentAvatarState)
+            {
+                return;
+            }
+
+            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
+        }
+
+        /// <summary>
+        /// `avatarAddress`에 해당하는 아바타 상태의 `Inventory` 안의 `Equipment` 중,
+        /// 매개변수의 `itemId`를 가진 `Equipment`의 `equipped`를 매개변수 `equip`으로 설정한다.(비휘발성)
+        /// </summary>
+        /// <param name="avatarAddress"></param>
+        /// <param name="itemId"></param>
+        /// <param name="equip"></param>
+        /// <param name="resetState"></param>
+        public static void SetEquipmentEquip(
+            Address avatarAddress,
+            Guid itemId,
+            bool equip,
+            bool resetState = true)
+        {
+            var modifier = new AvatarInventoryEquipmentEquippedModifier(itemId, equip);
+            LocalStateSettings.Instance.Add(avatarAddress, modifier);
+
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
+                return;
+            }
+
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
+
+            if (!resetState ||
+                !isCurrentAvatarState)
+            {
+                return;
+            }
+
+            ReactiveAvatarState.Inventory.SetValueAndForceNotify(outAvatarState.inventory);
+        }
+
+        /// <summary>
         /// 아바타의 데일리 리워드 획득 블록 인덱스를 변경한다.(휘발성)
         /// </summary>
         /// <param name="avatarAddress"></param>
-        /// <param name="blockIndex"></param>
+        /// <param name="isAdd"></param>
         public static void ModifyAvatarDailyRewardReceivedIndex(Address avatarAddress, bool isAdd)
         {
             var blockIndex = isAdd ? 1000 : -1000;
-
             var modifier = new AvatarDailyRewardReceivedIndexModifier(blockIndex);
             LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
 
@@ -347,14 +544,16 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
                 return;
             }
 
-            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
+            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+                outAvatarState.dailyRewardReceivedIndex);
         }
 
         public static void ModifyAvatarItemRequiredIndex(
@@ -376,15 +575,16 @@ namespace Nekoyume.State
                 return;
             }
 
-            modifier.Modify(outAvatarState);
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
 
             if (!isCurrentAvatarState)
             {
                 return;
             }
 
-            ReactiveAvatarState.DailyRewardReceivedIndex
-                .SetValueAndForceNotify(outAvatarState.dailyRewardReceivedIndex);
+            ReactiveAvatarState.DailyRewardReceivedIndex.SetValueAndForceNotify(
+                outAvatarState.dailyRewardReceivedIndex);
         }
 
         public static void RemoveAvatarItemRequiredIndex(Address avatarAddress, Guid itemId)
@@ -393,34 +593,85 @@ namespace Nekoyume.State
             LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
         }
 
+        public static void AddMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
+        {
+            if (count is 0)
+            {
+                return;
+            }
+
+            var modifier = new AvatarInventoryMaterialModifier(
+                new Dictionary<HashDigest<SHA256>, int>
+                {
+                    [itemId] = count,
+                }
+            );
+
+            LocalStateSettings.Instance.Add(avatarAddress, modifier, true);
+
+            if (!TryGetLoadedAvatarState(
+                avatarAddress,
+                out var outAvatarState,
+                out _,
+                out var isCurrentAvatarState)
+            )
+            {
+                return;
+            }
+
+            // NOTE: Reassignment is not required yet.
+            outAvatarState = modifier.Modify(outAvatarState);
+
+            if (!isCurrentAvatarState)
+            {
+                return;
+            }
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+
+        }
+
+        public static void RemoveMaterial(Address avatarAddress, HashDigest<SHA256> itemId, int count, bool resetState)
+        {
+            if (count is 0)
+            {
+                return;
+            }
+
+            var modifier = new AvatarInventoryMaterialModifier(
+                new Dictionary<HashDigest<SHA256>, int>
+                {
+                    [itemId] = count,
+                }
+            );
+
+            LocalStateSettings.Instance.Remove(avatarAddress, modifier, true);
+
+            if (!resetState)
+            {
+                return;
+            }
+
+            TryResetLoadedAvatarState(avatarAddress, out _, out _);
+        }
+
         #endregion
 
         #region WeeklyArena
 
         /// <summary>
-        /// 현재 바라보고 있는 주간 아레나 상태의 `Gold`를 변경한다.(휘발)
-        /// </summary>
-        /// <param name="gold"></param>
-        public static void ModifyWeeklyArenaGold(decimal gold)
-        {
-            if (gold is 0m)
-                return;
-
-            var state = States.Instance.WeeklyArenaState;
-            if (state is null)
-                return;
-
-            var modifier = new WeeklyArenaGoldModifier(gold);
-            LocalStateSettings.Instance.Add(state.address, modifier, true);
-            modifier.Modify(state);
-            WeeklyArenaStateSubject.Gold.OnNext(state.Gold);
-        }
-
-        /// <summary>
         /// 현재 바라보고 있는 주간 아레나 상태가 포함하고 있는 `ArenaInfo` 중 현재 아바타 상태의 주소에 해당하는 것을 활성화 시킨다.(휘발)
         /// </summary>
+        /// <param name="characterSheet"></param>
         /// <param name="addArenaInfoIfNotContained">주간 아레나 상태에 현재 아바타 정보가 없으면 넣어준다.</param>
-        public static void AddWeeklyArenaInfoActivator(CharacterSheet characterSheet, bool addArenaInfoIfNotContained = true)
+        public static void AddWeeklyArenaInfoActivator(
+            CharacterSheet characterSheet,
+            bool addArenaInfoIfNotContained = true)
         {
             var avatarState = States.Instance.CurrentAvatarState;
             var avatarAddress = avatarState.address;
@@ -435,7 +686,8 @@ namespace Nekoyume.State
 
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
             LocalStateSettings.Instance.Add(weeklyArenaAddress, modifier, true);
-            modifier.Modify(weeklyArenaState);
+            // NOTE: Reassignment is not required yet.
+            weeklyArenaState = modifier.Modify(weeklyArenaState);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(weeklyArenaState);
         }
 
@@ -444,16 +696,21 @@ namespace Nekoyume.State
         /// </summary>
         /// <param name="weeklyArenaAddress"></param>
         /// <param name="avatarAddress"></param>
-        public static void RemoveWeeklyArenaInfoActivator(Address weeklyArenaAddress, Address avatarAddress)
+        public static void RemoveWeeklyArenaInfoActivator(
+            Address weeklyArenaAddress,
+            Address avatarAddress)
         {
             var modifier = new WeeklyArenaInfoActivator(avatarAddress);
             LocalStateSettings.Instance.Remove(weeklyArenaAddress, modifier, true);
 
             var state = States.Instance.WeeklyArenaState;
             if (!state.address.Equals(weeklyArenaAddress))
+            {
                 return;
+            }
 
-            modifier.Modify(state);
+            // NOTE: Reassignment is not required yet.
+            state = modifier.Modify(state);
             WeeklyArenaStateSubject.WeeklyArenaState.OnNext(state);
         }
 
@@ -462,7 +719,7 @@ namespace Nekoyume.State
         public static void ModifyCombinationSlot(
             TableSheets tableSheets,
             EquipmentItemRecipeSheet.Row row,
-            EquipmentCombinationPanel panel,
+            CombinationPanel panel,
             int slotIndex,
             int? subRecipeId
         )
@@ -475,6 +732,7 @@ namespace Nekoyume.State
                     tableSheets.EquipmentItemSubRecipeSheet.Values.First(r => r.Id == subRecipeId);
                 requiredBlockIndex += subRow.RequiredBlockIndex;
             }
+
             var equipRow =
                 tableSheets.EquipmentItemSheet.Values.First(i => i.Id == row.ResultEquipmentId);
             var equipment = ItemFactory.CreateItemUsable(equipRow, Guid.Empty, requiredBlockIndex);
@@ -496,33 +754,32 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
+            // NOTE: Reassignment is not required yet.
+            slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
         public static void ModifyCombinationSlotConsumable(
             TableSheets tableSheets,
-            CombineConsumable panel,
-            List<(Material material, int count)> materialInfoList,
+            ICombinationPanel panel,
+            ConsumableItemRecipeSheet.Row recipeRow,
             int slotIndex
         )
         {
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
-            tableSheets.ConsumableItemRecipeSheet.TryGetValue(
-                materialInfoList.Select(i => i.material.Data.Id),
-                out var recipeRow
-            );
             var requiredBlockIndex = blockIndex + recipeRow.RequiredBlockIndex;
             var consumableRow = tableSheets.ConsumableItemSheet.Values.First(i =>
                 i.Id == recipeRow.ResultConsumableItemId);
-            var consumable = ItemFactory.CreateItemUsable(consumableRow, Guid.Empty,
+            var consumable = ItemFactory.CreateItemUsable(
+                consumableRow,
+                Guid.Empty,
                 blockIndex);
-            var row = tableSheets.ConsumableItemRecipeSheet.Values.First(i =>
-                i.ResultConsumableItemId == consumableRow.Id);
-            var materials = new Dictionary<Model.Item.Material, int>();
-            foreach (var (material, count) in materialInfoList)
+            var materials = new Dictionary<Material, int>();
+            foreach (var materialInfo in recipeRow.Materials)
             {
-                materials[material] = count;
+                var materialRow = tableSheets.MaterialItemSheet.Values.First(r => r.Id == materialInfo.Id);
+                var material = ItemFactory.CreateMaterial(materialRow);
+                materials[material] = materialInfo.Count;
             }
 
             var result = new CombinationConsumable.ResultModel
@@ -531,12 +788,13 @@ namespace Nekoyume.State
                 gold = panel.CostNCG,
                 materials = materials,
                 itemUsable = consumable,
-                recipeId = row.Id,
+                recipeId = recipeRow.Id,
                 itemType = ItemType.Consumable,
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, requiredBlockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
+            // NOTE: Reassignment is not required yet.
+            slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
@@ -546,6 +804,13 @@ namespace Nekoyume.State
             int slotIndex
         )
         {
+            if (panel.baseMaterial is null ||
+                panel.baseMaterial.Model is null)
+            {
+                throw new ArgumentNullException(
+                    $"{nameof(panel.baseMaterial)} or {nameof(panel.baseMaterial.Model)}");
+            }
+
             var blockIndex = Game.Game.instance.Agent.BlockIndex;
             var equipment = (Equipment) panel.baseMaterial.Model.ItemBase.Value;
             equipment.Update(blockIndex);
@@ -558,15 +823,17 @@ namespace Nekoyume.State
             };
             var modifier = new CombinationSlotStateModifier(result, blockIndex, blockIndex);
             var slotState = States.Instance.CombinationSlotStates[slotIndex];
-            modifier.Modify(slotState);
+            // NOTE: Reassignment is not required yet.
+            slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
         public static void UnlockCombinationSlot(int slotIndex, long blockIndex)
         {
-            var prevState = States.Instance.CombinationSlotStates[slotIndex];
+            var slotState = States.Instance.CombinationSlotStates[slotIndex];
             var modifier = new CombinationSlotBlockIndexModifier(blockIndex);
-            var slotState = modifier.Modify(prevState);
+            // NOTE: Reassignment is not required yet.
+            slotState = modifier.Modify(slotState);
             States.Instance.SetCombinationSlotState(slotState, slotIndex);
         }
 
@@ -578,8 +845,11 @@ namespace Nekoyume.State
         /// <param name="outKey"></param>
         /// <param name="isCurrentAvatarState"></param>
         /// <returns></returns>
-        private static bool TryGetLoadedAvatarState(Address avatarAddress, out AvatarState outAvatarState,
-            out int outKey, out bool isCurrentAvatarState)
+        private static bool TryGetLoadedAvatarState(
+            Address avatarAddress,
+            out AvatarState outAvatarState,
+            out int outKey,
+            out bool isCurrentAvatarState)
         {
             var agentState = States.Instance.AgentState;
             if (agentState is null ||
@@ -594,7 +864,9 @@ namespace Nekoyume.State
             foreach (var pair in States.Instance.AvatarStates)
             {
                 if (!pair.Value.address.Equals(avatarAddress))
+                {
                     continue;
+                }
 
                 outAvatarState = pair.Value;
                 outKey = pair.Key;
@@ -616,13 +888,21 @@ namespace Nekoyume.State
         /// <param name="avatarAddress"></param>
         /// <param name="outAvatarState"></param>
         /// <param name="isCurrentAvatarState"></param>
-        private static bool TryResetLoadedAvatarState(Address avatarAddress, out AvatarState outAvatarState,
+        private static bool TryResetLoadedAvatarState(
+            Address avatarAddress,
+            out AvatarState outAvatarState,
             out bool isCurrentAvatarState)
         {
-            if (!TryGetLoadedAvatarState(avatarAddress, out outAvatarState, out var outKey, out isCurrentAvatarState))
+            if (!TryGetLoadedAvatarState(avatarAddress, out outAvatarState, out var outKey,
+                out isCurrentAvatarState))
+            {
                 return false;
+            }
 
-            outAvatarState = States.Instance.AddOrReplaceAvatarState(avatarAddress, outKey, isCurrentAvatarState);
+            outAvatarState = States.Instance.AddOrReplaceAvatarState(
+                avatarAddress,
+                outKey,
+                isCurrentAvatarState);
             return true;
         }
     }

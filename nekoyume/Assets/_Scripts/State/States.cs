@@ -16,13 +16,15 @@ namespace Nekoyume.State
     {
         public static States Instance => Game.Game.instance.States;
 
-        public RankingState RankingState { get; private set; }
+        public readonly Dictionary<Address, RankingMapState> RankingMapStates = new Dictionary<Address, RankingMapState>();
 
         public ShopState ShopState { get; private set; }
 
         public WeeklyArenaState WeeklyArenaState { get; private set; }
 
         public AgentState AgentState { get; private set; }
+
+        public GoldBalanceState GoldBalanceState { get; private set; }
 
         private readonly Dictionary<int, AvatarState> _avatarStates = new Dictionary<int, AvatarState>();
         public IReadOnlyDictionary<int, AvatarState> AvatarStates => _avatarStates;
@@ -46,16 +48,16 @@ namespace Nekoyume.State
         /// 랭킹 상태를 할당한다.
         /// </summary>
         /// <param name="state"></param>
-        public void SetRankingState(RankingState state)
+        public void SetRankingMapStates(RankingMapState state)
         {
             if (state is null)
             {
-                Debug.LogWarning($"[{nameof(States)}.{nameof(SetRankingState)}] {nameof(state)} is null.");
+                Debug.LogWarning($"[{nameof(States)}.{nameof(SetRankingMapStates)}] {nameof(state)} is null.");
                 return;
             }
 
-            RankingState = state;
-            ReactiveRankingState.Initialize(RankingState);
+            RankingMapStates[state.address] = state;
+            RankingMapStatesSubject.OnNext(RankingMapStates);
         }
 
         /// <summary>
@@ -93,7 +95,8 @@ namespace Nekoyume.State
         /// 최초로 할당하거나 기존과 다른 주소의 에이전트를 할당하면, 모든 아바타 상태를 새롭게 할당된다.
         /// </summary>
         /// <param name="state"></param>
-        public void SetAgentState(AgentState state)
+        /// <param name="balanceState"></param>
+        public void SetAgentState(AgentState state, GoldBalanceState balanceState)
         {
             if (state is null)
             {
@@ -107,7 +110,11 @@ namespace Nekoyume.State
 
             LocalStateSettings.Instance.InitializeAgentAndAvatars(state);
             AgentState = LocalStateSettings.Instance.Modify(state);
-            ReactiveAgentState.Initialize(AgentState);
+            if (!(balanceState is null))
+            {
+                GoldBalanceState = LocalStateSettings.Instance.Modify(balanceState);
+            }
+            ReactiveAgentState.Initialize(AgentState, GoldBalanceState);
 
             if (!getAllOfAvatarStates)
                 return;

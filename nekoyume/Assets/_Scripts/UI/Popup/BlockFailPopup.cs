@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using System.Collections;
+using Nekoyume.L10n;
 using UnityEngine;
 
 namespace Nekoyume.UI
@@ -17,11 +17,11 @@ namespace Nekoyume.UI
 
         public void Show(long idx)
         {
-            var errorMsg = string.Format(LocalizationManager.Localize("UI_ERROR_FORMAT"),
-                LocalizationManager.Localize("BLOCK_DOWNLOAD"));
+            var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_FORMAT"),
+                L10nManager.Localize("BLOCK_DOWNLOAD"));
 
-            base.Show(LocalizationManager.Localize("UI_ERROR"), errorMsg,
-                LocalizationManager.Localize("UI_OK"), false);
+            base.Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                L10nManager.Localize("UI_OK"), false);
             _index = idx;
             StartCoroutine(CoCheckBlockIndex());
         }

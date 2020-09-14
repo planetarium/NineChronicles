@@ -16,31 +16,124 @@ namespace Nekoyume.UI.Module
     /// </summary>
     public class EquipmentSlots : MonoBehaviour, IEnumerable<EquipmentSlot>
     {
+        private Action<EquipmentSlot> _onSlotClicked;
+        private Action<EquipmentSlot> _onSlotDoubleClicked;
+
         [SerializeField]
         private EquipmentSlot[] slots = null;
 
         private void Awake()
         {
             if (slots is null)
-                throw new SerializeFieldNullException();
-        }
-
-        public void SetPlayer(Player player, Action<EquipmentSlot> onClick, Action<EquipmentSlot> onDoubleClick)
-        {
-            UpdateSlots(player.Level);
-            foreach (var equipment in player.Equipments)
             {
-                TryToEquip(equipment, onClick, onDoubleClick);
+                throw new SerializeFieldNullException();
             }
         }
 
-        public bool TryToEquip(Equipment equipment, Action<EquipmentSlot> onClick, Action<EquipmentSlot> onDoubleClick)
+        public bool TryGetSlot(ItemSubType itemSubType, out EquipmentSlot outSlot)
+        {
+            foreach (var slot in slots)
+            {
+                if (slot.ItemSubType != itemSubType)
+                {
+                    continue;
+                }
+
+                outSlot = slot;
+                return true;
+            }
+
+            outSlot = default;
+            return false;
+        }
+
+        public void SetPlayerCostumes(
+            Player player,
+            Action<EquipmentSlot> onClick,
+            Action<EquipmentSlot> onDoubleClick)
+        {
+            Clear();
+
+            if (player is null)
+            {
+                return;
+            }
+
+            _onSlotClicked = onClick;
+            _onSlotDoubleClicked = onDoubleClick;
+
+            UpdateSlots(player.Level);
+            foreach (var costume in player.Costumes)
+            {
+                TryToEquip(costume);
+            }
+        }
+
+        public void SetPlayerEquipments(
+            Player player,
+            Action<EquipmentSlot> onClick,
+            Action<EquipmentSlot> onDoubleClick)
+        {
+            Clear();
+
+            if (player is null)
+            {
+                return;
+            }
+
+            _onSlotClicked = onClick;
+            _onSlotDoubleClicked = onDoubleClick;
+
+            UpdateSlots(player.Level);
+
+            foreach (var equipment in player.Equipments)
+            {
+                TryToEquip(equipment);
+            }
+        }
+
+        public bool TryToEquip(Costume costume)
+        {
+            if (!TryGetToEquip(costume, out var slot))
+            {
+                return false;
+            }
+
+            slot.Set(costume, RaiseSlotClicked, RaiseSlotDoubleClicked);
+            return true;
+        }
+
+        public bool TryToEquip(Equipment equipment)
         {
             if (!TryGetToEquip(equipment, out var slot))
+            {
                 return false;
+            }
 
-            slot.Set(equipment, onClick, onDoubleClick);
+            slot.Set(equipment, RaiseSlotClicked, RaiseSlotDoubleClicked);
             return true;
+        }
+
+        /// <summary>
+        /// `costume`을 장착하기 위한 슬롯을 반환한다.
+        /// </summary>
+        /// <param name="costume"></param>
+        /// <param name="slot"></param>
+        /// <returns></returns>
+        public bool TryGetToEquip(Costume costume, out EquipmentSlot slot)
+        {
+            if (costume is null)
+            {
+                slot = null;
+                return false;
+            }
+
+            var itemSubType = costume.ItemSubType;
+            var typeSlots = slots
+                .Where(e => !e.IsLock && e.ItemSubType == itemSubType)
+                .ToList();
+            slot = typeSlots.FirstOrDefault();
+            return slot;
         }
 
         /// <summary>
@@ -52,8 +145,16 @@ namespace Nekoyume.UI.Module
         /// <returns></returns>
         public bool TryGetToEquip(Equipment equipment, out EquipmentSlot slot)
         {
-            var itemSubType = equipment.Data.ItemSubType;
-            var typeSlots = slots.Where(e => !e.IsLock && e.ItemSubType == itemSubType).ToList();
+            if (equipment is null)
+            {
+                slot = null;
+                return false;
+            }
+
+            var itemSubType = equipment.ItemSubType;
+            var typeSlots = slots
+                .Where(e => !e.IsLock && e.ItemSubType == itemSubType)
+                .ToList();
             if (!typeSlots.Any())
             {
                 slot = null;
@@ -63,7 +164,10 @@ namespace Nekoyume.UI.Module
             if (itemSubType == ItemSubType.Ring)
             {
                 var itemId = equipment.ItemId;
-                slot = typeSlots.FirstOrDefault(e => !e.IsEmpty && e.Item.ItemId.Equals(itemId))
+                slot = typeSlots.FirstOrDefault(e =>
+                           !e.IsEmpty &&
+                           e.Item is ItemUsable itemUsable &&
+                           itemUsable.ItemId.Equals(itemId))
                        ?? typeSlots.FirstOrDefault(e => e.IsEmpty)
                        ?? typeSlots.First();
             }
@@ -78,12 +182,21 @@ namespace Nekoyume.UI.Module
         /// <summary>
         /// `equipment`가 이미 장착되어 있는 슬롯을 반환한다.
         /// </summary>
-        /// <param name="equipment"></param>
+        /// <param name="itemBase"></param>
         /// <param name="slot"></param>
         /// <returns></returns>
-        public bool TryGetAlreadyEquip(Equipment equipment, out EquipmentSlot slot)
+        public bool TryGetAlreadyEquip(ItemBase itemBase, out EquipmentSlot slot)
         {
-            slot = slots.FirstOrDefault(e => !e.IsLock && !e.IsEmpty && e.Item.Equals(equipment));
+            if (itemBase is null)
+            {
+                slot = null;
+                return false;
+            }
+
+            slot = slots.FirstOrDefault(e =>
+                !e.IsLock &&
+                !e.IsEmpty &&
+                e.Item.Equals(itemBase));
             return slot;
         }
 
@@ -118,6 +231,16 @@ namespace Nekoyume.UI.Module
             {
                 equipmentSlot.Set(avatarLevel);
             }
+        }
+
+        private void RaiseSlotClicked(EquipmentSlot slot)
+        {
+            _onSlotClicked?.Invoke(slot);
+        }
+
+        private void RaiseSlotDoubleClicked(EquipmentSlot slot)
+        {
+            _onSlotDoubleClicked?.Invoke(slot);
         }
     }
 }

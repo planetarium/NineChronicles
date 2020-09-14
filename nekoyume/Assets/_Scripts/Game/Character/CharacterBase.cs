@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using BTAI;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
@@ -12,6 +13,7 @@ using UniRx;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Character;
+using UnityEngine.Rendering;
 
 namespace Nekoyume.Game.Character
 {
@@ -20,6 +22,7 @@ namespace Nekoyume.Game.Character
         protected const float AnimatorTimeScale = 1.2f;
 
         public GameObject attackPoint;
+        public SortingGroup sortingGroup;
 
         private bool _applicationQuitting = false;
         private Root _root;
@@ -84,9 +87,9 @@ namespace Nekoyume.Game.Character
         protected BoxCollider HitPointBoxCollider { get; private set; }
         protected Vector3 HitPointLocalOffset { get; set; }
 
-        public List<IEnumerator> actions = new List<IEnumerator>();
+        public List<ActionParams> actions = new List<ActionParams>();
 
-        public IEnumerator action;
+        public ActionParams action;
 
         #region Mono
 
@@ -109,6 +112,7 @@ namespace Nekoyume.Game.Character
             RunSpeed = 0.0f;
             _root = null;
             actions.Clear();
+            action = null;
             if (!_applicationQuitting)
                 DisableHUD();
         }
@@ -152,6 +156,12 @@ namespace Nekoyume.Game.Character
             }
         }
 
+        protected virtual void InitializeHpBar()
+        {
+            HPBar = Widget.FindOrCreate<HpBar>();
+            HPBar.SetTitle(null);
+        }
+
         public virtual void UpdateHpBar()
         {
             if (!Game.instance.Stage.IsInStage)
@@ -159,7 +169,7 @@ namespace Nekoyume.Game.Character
 
             if (!HPBar)
             {
-                HPBar = Widget.Create<HpBar>(true);
+                InitializeHpBar();
             }
 
             HPBar.UpdatePosition(gameObject, HUDOffset);
@@ -336,7 +346,7 @@ namespace Nekoyume.Game.Character
             transform.position = position;
         }
 
-        protected void StopRun()
+        public void StopRun()
         {
             RunSpeed = 0.0f;
             Animator.StopRun();
@@ -387,7 +397,7 @@ namespace Nekoyume.Game.Character
         {
             if (HPBar)
             {
-                Destroy(HPBar.gameObject);
+                HPBar.gameObject.SetActive(false);
                 HPBar = null;
             }
 
@@ -445,7 +455,7 @@ namespace Nekoyume.Game.Character
         private void PopUpHeal(Vector3 position, Vector3 force, string dmg, bool critical)
         {
             DamageText.Show(position, force, dmg, DamageText.TextGroupState.Heal);
-            VFXController.instance.Create<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
+            VFXController.instance.CreateAndChase<BattleHeal01VFX>(transform, HUDOffset - new Vector3(0f, 0.4f));
         }
 
         #region Animation
@@ -585,6 +595,7 @@ namespace Nekoyume.Game.Character
                 yield break;
 
             var skillInfosCount = skillInfos.Count;
+            var battleWidget = Widget.Find<Nekoyume.UI.Battle>();
 
             yield return StartCoroutine(CoAnimationAttack(skillInfos.Any(skillInfo => skillInfo.Critical)));
 
@@ -594,7 +605,7 @@ namespace Nekoyume.Game.Character
                 var target = Game.instance.Stage.GetCharacter(info.Target);
                 ProcessAttack(target, info, info.Target.IsDead, false);
                 if (this is Player && !(this is EnemyPlayer))
-                    Widget.Find<Nekoyume.UI.Battle>().ShowComboText(info.Effect > 0);
+                    battleWidget.ShowComboText(info.Effect > 0);
             }
         }
 
@@ -792,10 +803,29 @@ namespace Nekoyume.Game.Character
             if (action is null)
             {
                 action = actions.First();
-                var coroutine = StartCoroutine(action);
+
+                var stage = Game.instance.Stage;
+                var waitSeconds = 0.5f;
+
+                foreach (var info in action.skillInfos)
+                {
+                    var target = info.Target;
+                    if (target.IsDead)
+                    {
+                        var character = Game.instance.Stage.GetCharacter(target);
+                        if (character)
+                        {
+                            if (character.actions.Any())
+                            {
+                                yield return new WaitWhile(() => character.actions.Any());
+                            }
+                        }
+                    }
+                }
+                yield return new WaitForSeconds(waitSeconds);
+                var coroutine = StartCoroutine(stage.CoSkill(action));
                 yield return coroutine;
                 actions.Remove(action);
-                yield return new WaitForSeconds(0.5f);
                 action = null;
             }
         }
@@ -819,6 +849,33 @@ namespace Nekoyume.Game.Character
         public void Dead()
         {
             StartCoroutine(Dying());
+        }
+
+        public void SetSortingLayer(int layerId, int orderInLayer = 0)
+        {
+            sortingGroup.sortingLayerID = layerId;
+            sortingGroup.sortingOrder = orderInLayer;
+        }
+
+        public void Ready()
+        {
+            AttackEndCalled = false;
+        }
+    }
+
+    public class ActionParams
+    {
+        public CharacterBase character;
+        public IEnumerable<Model.BattleStatus.Skill.SkillInfo> skillInfos;
+        public IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos;
+        public Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> func;
+
+        public ActionParams(CharacterBase characterBase, IEnumerable<Model.BattleStatus.Skill.SkillInfo> enumerable, IEnumerable<Model.BattleStatus.Skill.SkillInfo> buffInfos1, Func<IReadOnlyList<Model.BattleStatus.Skill.SkillInfo>, IEnumerator> coNormalAttack)
+        {
+            character = characterBase;
+            skillInfos = enumerable;
+            buffInfos = buffInfos1;
+            func = coNormalAttack;
         }
     }
 }

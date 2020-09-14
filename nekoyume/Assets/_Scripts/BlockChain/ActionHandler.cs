@@ -1,7 +1,9 @@
 using System.Linq;
-using Assets.SimpleLocalization;
 using Bencodex.Types;
+using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Action;
+using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
 using Nekoyume.Model.State;
 using Nekoyume.State;
@@ -13,6 +15,7 @@ namespace Nekoyume.BlockChain
     public abstract class ActionHandler
     {
         public bool Pending;
+        public Currency GoldCurrency { get; internal set; }
 
         protected bool ValidateEvaluationForAgentState<T>(ActionBase.ActionEvaluation<T> evaluation)
             where T : ActionBase
@@ -23,10 +26,27 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.AgentState.address);
         }
 
+        protected bool HasUpdatedAssetsForCurrentAgent<T>(ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase
+        {
+            if (States.Instance.AgentState is null)
+            {
+                return false;
+            }
+
+            return evaluation.OutputStates.UpdatedFungibleAssets.ContainsKey(States.Instance.AgentState.address);
+        }
+
         protected bool ValidateEvaluationForCurrentAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation)
             where T : ActionBase =>
             !(States.Instance.CurrentAvatarState is null)
             && evaluation.OutputStates.UpdatedAddresses.Contains(States.Instance.CurrentAvatarState.address);
+
+        protected bool ValidateEvaluationForCurrentAgent<T>(ActionBase.ActionEvaluation<T> evaluation)
+            where T : ActionBase
+        {
+            return !(States.Instance.AgentState is null) && evaluation.Signer.Equals(States.Instance.AgentState.address);
+        }
 
         protected AgentState GetAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
@@ -34,12 +54,26 @@ namespace Nekoyume.BlockChain
             return evaluation.OutputStates.GetAgentState(agentAddress);
         }
 
+        protected GoldBalanceState GetGoldBalanceState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
+        {
+            var agentAddress = States.Instance.AgentState.address;
+            return evaluation.OutputStates.GetGoldBalanceState(agentAddress, GoldCurrency);
+        }
+
         protected void UpdateAgentState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             Debug.LogFormat("Called UpdateAgentState<{0}>. Updated Addresses : `{1}`", evaluation.Action,
                 string.Join(",", evaluation.OutputStates.UpdatedAddresses));
             var state = GetAgentState(evaluation);
-            UpdateAgentState(state);
+            try
+            {
+                var balanceState = GetGoldBalanceState(evaluation);
+                UpdateAgentState(state, balanceState);
+            }
+            catch (BalanceDoesNotExistsException)
+            {
+                UpdateAgentState(state, null);
+            }
         }
 
         protected void UpdateAvatarState<T>(ActionBase.ActionEvaluation<T> evaluation, int index) where T : ActionBase
@@ -76,17 +110,10 @@ namespace Nekoyume.BlockChain
             ));
         }
 
-        protected void UpdateRankingState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
-        {
-            States.Instance.SetRankingState(new RankingState(
-                (Bencodex.Types.Dictionary) evaluation.OutputStates.GetState(RankingState.Address)
-            ));
-        }
-
         protected void UpdateWeeklyArenaState<T>(ActionBase.ActionEvaluation<T> evaluation) where T : ActionBase
         {
             var index = (int) evaluation.BlockIndex / GameConfig.WeeklyArenaInterval;
-            var weeklyArenaState = evaluation.OutputStates.GetWeeklyArenaState(WeeklyArenaState.Addresses[index]);
+            var weeklyArenaState = evaluation.OutputStates.GetWeeklyArenaState(WeeklyArenaState.DeriveAddress(index));
             States.Instance.SetWeeklyArenaState(weeklyArenaState);
         }
 
@@ -96,9 +123,19 @@ namespace Nekoyume.BlockChain
             States.Instance.SetGameConfigState(state);
         }
 
-        private static void UpdateAgentState(AgentState state)
+        protected void UpdateRankingMapState<T>(ActionBase.ActionEvaluation<T> evaluation, Address address) where T : ActionBase
         {
-            States.Instance.SetAgentState(state);
+            var value = evaluation.OutputStates.GetState(address);
+            if (!(value is null))
+            {
+                var state = new RankingMapState((Dictionary) value);
+                States.Instance.SetRankingMapStates(state);
+            }
+        }
+
+        private static void UpdateAgentState(AgentState state, GoldBalanceState balanceState)
+        {
+            States.Instance.SetAgentState(state, balanceState);
         }
 
         private void UpdateAvatarState(AvatarState avatarState, int index)
@@ -126,13 +163,13 @@ namespace Nekoyume.BlockChain
                 if (questList.Count == 1)
                 {
                     var quest = questList.First();
-                    var format = LocalizationManager.Localize("NOTIFICATION_QUEST_COMPLETE");
+                    var format = L10nManager.Localize("NOTIFICATION_QUEST_COMPLETE");
                     var msg = string.Format(format, quest.GetContent());
                     UI.Notification.Push(MailType.System, msg);
                 }
                 else
                 {
-                    var format = LocalizationManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
+                    var format = L10nManager.Localize("NOTIFICATION_MULTIPLE_QUEST_COMPLETE");
                     var msg = string.Format(format, questList.Count);
                     UI.Notification.Push(MailType.System, msg);
                 }

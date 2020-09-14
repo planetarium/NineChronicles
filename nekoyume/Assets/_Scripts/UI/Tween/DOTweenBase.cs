@@ -30,21 +30,23 @@ namespace Nekoyume.UI.Tween
         [HideInInspector]
         public float CompleteDelay = 0.0f;
         public DG.Tweening.Tween currentTween;
-        public readonly Subject<DG.Tweening.Tween> onStop = new Subject<DG.Tweening.Tween>();
+        public readonly Subject<DG.Tweening.Tween> onStopSubject = new Subject<DG.Tweening.Tween>();
+        public System.Action onCompleted = null;
 
         protected virtual void Awake()
         {
-            onStop.Subscribe(_ => OnStopTweening()).AddTo(gameObject);
+            onStopSubject.Subscribe(_ => OnStopTweening()).AddTo(gameObject);
         }
 
         protected IEnumerator Start()
         {
-            yield return null;
-            if (StartWithPlay)
+            if (!StartWithPlay)
             {
-                yield return new WaitForSeconds(StartDelay);
-                Play();
+                yield break;
             }
+
+            yield return new WaitForSeconds(StartDelay);
+            Play();
         }
 
         public virtual void Play()
@@ -55,22 +57,27 @@ namespace Nekoyume.UI.Tween
         public virtual void PlayDelayed(float delay)
         {
             if (gameObject.activeInHierarchy)
+            {
                 StartCoroutine(CPlayDelayed(delay));
+            }
         }
 
         public virtual void Stop()
         {
             if (currentTween is null)
+            {
                 return;
+            }
 
             currentTween.Kill();
-            onStop.OnNext(currentTween);
+            currentTween = null;
+            onStopSubject.OnNext(currentTween);
         }
 
         public virtual void PlayForward()
         {
         }
-        
+
         public virtual void PlayReverse()
         {
         }
@@ -98,7 +105,11 @@ namespace Nekoyume.UI.Tween
         public void OnComplete()
         {
             if (!gameObject.activeInHierarchy)
+            {
                 return;
+            }
+
+            onCompleted?.Invoke();
 
             if (!string.IsNullOrEmpty(CompleteMethod) && Target)
             {
@@ -106,7 +117,7 @@ namespace Nekoyume.UI.Tween
             }
         }
 
-        public IEnumerator CoOnComplete()
+        private IEnumerator CoOnComplete()
         {
             yield return new WaitForSeconds(CompleteDelay);
             var components = Target.GetComponents<Component>();

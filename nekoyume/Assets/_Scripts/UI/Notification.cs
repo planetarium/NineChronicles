@@ -1,9 +1,13 @@
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using EasingCore;
 using Nekoyume.Model.Mail;
 using Nekoyume.UI.Scroller;
 using UniRx;
+using UnityEngine;
 
 namespace Nekoyume.UI
 {
@@ -12,158 +16,200 @@ namespace Nekoyume.UI
     /// </summary>
     public class Notification : SystemInfoWidget
     {
-        private const float LifeTimeOfEachNotification = 10f;
+        private enum State
+        {
+            None,
+            Idle,
+            Add,
+            Remove
+        }
 
-        private static readonly ReactiveCollection<NotificationCellView.Model> Models =
-            new ReactiveCollection<NotificationCellView.Model>();
+        private class ReservationModel
+        {
+            public MailType mailType;
+            public string message;
+            public long requiredBlockIndex;
+            public Guid itemId;
+        }
 
-        private static readonly List<Type> WidgetTypesForUX = new List<Type>();
+        private const float InternalTimeToAddOrRemoveCell = 1f;
+        private const float LifeTimeOfEachNotification = 3f;
 
-        private static int _widgetEnableCount;
+        private static State _state = State.None;
 
-        private static readonly List<(MailType mailType, string message, long requiredBlockIndex, Guid itemId)> ReservationList =
-            new List<(MailType mailType, string message, long requiredBlockIndex, Guid itemId)>();
+        private static readonly int CellMaxCount =
+            Mathf.CeilToInt(LifeTimeOfEachNotification);
 
-        public static IReadOnlyCollection<NotificationCellView.Model> SharedModels => Models;
+        private static readonly List<NotificationCell.ViewModel> SharedModel =
+            new List<NotificationCell.ViewModel>();
 
-        public NotificationScrollerController scroller;
+        private static readonly ConcurrentQueue<NotificationCell.ViewModel> AddQueue =
+            new ConcurrentQueue<NotificationCell.ViewModel>();
+
+        private static readonly List<ReservationModel> ReservationList =
+            new List<ReservationModel>();
+
+        [SerializeField]
+        private NotificationScroll scroll = null;
+
+        private float _lastTimeToAddOrRemoveCell;
+
+        #region Control
 
         public static void Push(MailType mailType, string message)
         {
-            Push(mailType, message, string.Empty, null);
-        }
-
-        public static void Push(MailType mailType, string message, string submitText, System.Action submitAction)
-        {
-            if (_widgetEnableCount > 0)
-            {
-                return;
-            }
-
-            Models.Add(new NotificationCellView.Model
+            AddQueue.Enqueue(new NotificationCell.ViewModel
             {
                 mailType = mailType,
-                message = message,
-                submitText = submitText,
-                submitAction = submitAction,
-                addedAt = DateTime.Now
+                message = message
             });
         }
 
-        /// <summary>
-        /// This class consider if there is any widget raise `OnEnableSubject` subject in the `WidgetTypesForUX` property.
-        /// Widget type can registered once and cannot unregistered.
-        /// </summary>
-        public static void RegisterWidgetTypeForUX<T>() where T : Widget
+        public static void Reserve(
+            MailType mailType,
+            string message,
+            long requiredBlockIndex,
+            Guid itemId)
         {
-            var type = typeof(T);
-            if (WidgetTypesForUX.Contains(type))
+            ReservationList.Add(new ReservationModel
+            {
+                mailType = mailType,
+                message = message,
+                requiredBlockIndex = requiredBlockIndex,
+                itemId = itemId
+            });
+        }
+
+        public static void CancelReserve(Guid itemUsableItemId)
+        {
+            if (!ReservationList.Any())
             {
                 return;
             }
 
-            WidgetTypesForUX.Add(type);
+            var message = ReservationList
+                .FirstOrDefault(m => m.itemId == itemUsableItemId);
+            if (message is null)
+            {
+                return;
+            }
+
+            ReservationList.Remove(message);
         }
 
-        public static void Reserve(MailType mailType, string message, long requiredBlockIndex, Guid itemId)
-        {
-            ReservationList.Add((mailType, message, requiredBlockIndex, itemId));
-        }
+        #endregion
 
         #region Mono
 
         protected override void Awake()
         {
             base.Awake();
-            OnEnableStaticObservable.Subscribe(SubscribeOnEnable).AddTo(gameObject);
-            OnDisableStaticObservable.Subscribe(SubscribeOnDisable).AddTo(gameObject);
-            scroller.onRequestToRemoveModelByIndex.Subscribe(SubscribeToRemoveModel).AddTo(gameObject);
-            scroller.SetModel(Models);
+
+            scroll.UpdateData(SharedModel, true);
+            scroll.OnCompleteOfAddAnimation
+                .Merge(scroll.OnCompleteOfRemoveAnimation)
+                .Where(_ => SharedModel.All(item =>
+                    item.animationState == NotificationCell.AnimationState.Idle))
+                .Subscribe(_ => _state = State.Idle)
+                .AddTo(gameObject);
 
             CloseWidget = null;
-            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+            Game.Game.instance.Agent.BlockIndexSubject
+                .ObserveOnMainThread()
+                .Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
+
+            _state = State.Idle;
+            StartCoroutine(CoUpdate());
         }
 
-        protected override void Update()
+        private IEnumerator CoUpdate()
         {
-            var now = DateTime.Now;
-            for (var i = 0; i < Models.Count; i++)
+            while (true)
             {
-                var model = Models[i];
-                var timeSpan = now - model.addedAt;
-                if (timeSpan.TotalSeconds < LifeTimeOfEachNotification)
-                    continue;
+                var deltaTime = Time.time - _lastTimeToAddOrRemoveCell;
+                if (deltaTime < InternalTimeToAddOrRemoveCell)
+                {
+                    yield return new WaitForSeconds(InternalTimeToAddOrRemoveCell - deltaTime);
+                }
 
-                SubscribeToRemoveModel(i);
-                break;
+                while (_state != State.Idle)
+                {
+                    yield return null;
+                }
+
+                if (TryAddCell())
+                {
+                    _state = State.Add;
+                    _lastTimeToAddOrRemoveCell = Time.time;
+                }
+                else if (TryRemoveCell())
+                {
+                    _state = State.Remove;
+                    _lastTimeToAddOrRemoveCell = Time.time;
+                }
+
+                yield return null;
             }
         }
 
         #endregion
 
-        private static void SubscribeOnEnable(Widget widget)
+        private bool TryAddCell()
         {
-            var type = widget.GetType();
-            if (!WidgetTypesForUX.Contains(type))
+            if (AddQueue.Count == 0 ||
+                SharedModel.Count >= CellMaxCount ||
+                !AddQueue.TryDequeue(out var viewModel))
             {
-                return;
+                return false;
             }
 
-            _widgetEnableCount++;
-
-            if (_widgetEnableCount == 1)
-            {
-                Models.Clear();
-            }
+            viewModel.addedTime = Time.time;
+            SharedModel.Add(viewModel);
+            scroll.UpdateData(SharedModel, true);
+            return true;
         }
 
-        private static void SubscribeOnDisable(Widget widget)
+        private bool TryRemoveCell()
         {
-            var type = widget.GetType();
-            if (!WidgetTypesForUX.Contains(type))
+            if (SharedModel.Count == 0)
             {
-                return;
+                return false;
             }
 
-            if (_widgetEnableCount == 0)
+            var target = SharedModel[0];
+            var deltaTime = Time.time - target.addedTime;
+            if (deltaTime < LifeTimeOfEachNotification)
             {
-                return;
+                return false;
             }
 
-            _widgetEnableCount--;
+            scroll
+                .PlayCellRemoveAnimation(0)
+                .First()
+                .Subscribe(_ =>
+                {
+                    SharedModel.RemoveAt(0);
+                    scroll.UpdateData(SharedModel, true);
+                });
+
+            scroll.ScrollTo(1, .5f, Ease.InCirc);
+            return true;
         }
 
-        private void SubscribeToRemoveModel(int index)
-        {
-            if (index >= Models.Count)
-                throw new ArgumentOutOfRangeException(nameof(index));
-
-            Models.RemoveAt(index);
-        }
+        #region Subscribe
 
         private static void SubscribeBlockIndex(long blockIndex)
         {
-            var list = ReservationList
-                .Where(i => i.requiredBlockIndex <= blockIndex).ToList();
-            foreach (var valueTuple in list)
+            foreach (var reservationModel in ReservationList
+                .Where(i => i.requiredBlockIndex <= blockIndex)
+                .ToList())
             {
-                Push(valueTuple.mailType, valueTuple.message);
-                ReservationList.Remove(valueTuple);
+                Push(reservationModel.mailType, reservationModel.message);
+                ReservationList.Remove(reservationModel);
             }
         }
 
-        public static void Remove(Guid itemUsableItemId)
-        {
-            if (ReservationList.Any())
-            {
-                var message =
-                    ReservationList.FirstOrDefault(m => m.itemId == itemUsableItemId);
-                if (message != default)
-                {
-                    ReservationList.Remove(message);
-                }
-            }
-        }
+        #endregion
     }
 }

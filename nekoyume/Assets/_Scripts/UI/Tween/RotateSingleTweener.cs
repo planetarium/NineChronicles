@@ -16,21 +16,38 @@ namespace Nekoyume.UI.Tween
             Z
         }
 
-        [SerializeField] private bool isLocal = true;
-        [SerializeField] private Single single = Single.Z;
-        // todo: `from` -> `begin`
-        [SerializeField] private float from = 0f;
-        // todo: `to` -> `end`
-        [SerializeField] private float to = 0f;
-        [SerializeField] private float duration = 1f;
-        [SerializeField] private RotateMode rotateMode = RotateMode.Fast;
+        [SerializeField]
+        private bool isLocal = true;
 
-        [SerializeField] private Ease ease = Ease.Linear;
-        [SerializeField] private bool isLoop = true;
-        [SerializeField] private LoopType loopType = LoopType.Incremental;
+        [SerializeField]
+        private Single single = Single.Z;
+
+        // todo: `from` -> `begin`
+        [SerializeField]
+        private float from = 0f;
+
+        // todo: `to` -> `end`
+        [SerializeField]
+        private float to = 0f;
+
+        [SerializeField]
+        private float duration = 1f;
+
+        [SerializeField]
+        private RotateMode rotateMode = RotateMode.Fast;
+
+        [SerializeField]
+        private Ease ease = Ease.Linear;
+
+        [SerializeField]
+        private bool isLoop = true;
+
+        [SerializeField]
+        private LoopType loopType = LoopType.Incremental;
 
         private RectTransform _rectTransform;
-        private TweenerCore<Quaternion, Vector3, QuaternionOptions> _tween;
+
+        protected Tweener Tweener { get; set; }
 
         private void Awake()
         {
@@ -72,21 +89,30 @@ namespace Nekoyume.UI.Tween
 
             if (isLoop)
             {
-                _tween = _rectTransform.DOLocalRotate(toValue, duration, rotateMode)
+                Tweener = _rectTransform.DOLocalRotate(toValue, duration, rotateMode)
                     .SetEase(ease)
                     .SetLoops(-1, loopType);
             }
             else
             {
-                _tween = _rectTransform.DOLocalRotate(toValue, duration, rotateMode)
+                Tweener = _rectTransform.DOLocalRotate(toValue, duration, rotateMode)
                     .SetEase(ease);
             }
         }
 
         private void OnDisable()
         {
-            _tween?.Kill();
-            _tween = null;
+            KillTween();
+        }
+
+        public void KillTween()
+        {
+            if (Tweener?.IsPlaying() ?? false)
+            {
+                Tweener?.Kill();
+            }
+
+            Tweener = null;
         }
     }
 }

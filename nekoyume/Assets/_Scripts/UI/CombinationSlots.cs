@@ -1,20 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
-using Nekoyume.Game;
 using Nekoyume.Model.State;
 using Nekoyume.State.Subjects;
-using Nekoyume.UI;
 using Nekoyume.UI.Module;
-using TMPro;
 using UniRx;
 
-namespace _Scripts.UI
+namespace Nekoyume.UI
 {
     public class CombinationSlots : XTweenWidget
     {
         public CombinationSlot[] slots;
-        public TextMeshProUGUI headerText;
         private long _blockIndex;
         private Dictionary<int, CombinationSlotState> _states;
 
@@ -23,10 +18,9 @@ namespace _Scripts.UI
             base.Awake();
             CombinationSlotStatesSubject.CombinationSlotStates.Subscribe(SetSlots)
                 .AddTo(gameObject);
-            Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
+            Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread().Subscribe(SubscribeBlockIndex)
                 .AddTo(gameObject);
-            headerText.text = LocalizationManager.Localize("UI_COMBINATION");
-            _blockIndex = Game.instance.Agent.BlockIndex;
+            _blockIndex = Game.Game.instance.Agent.BlockIndex;
         }
 
         private void SetSlots(Dictionary<int, CombinationSlotState> states)

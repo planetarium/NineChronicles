@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using UnityEngine;
@@ -58,6 +56,8 @@ namespace Nekoyume.Helper
         private int minimumDifficulty = 100000;
 
         public bool Empty { get; private set; } = true;
+
+        public string genesisBlockPath;
 
         [Option("private-key", Required = false, HelpText = "The private key to use.")]
         public string PrivateKey
@@ -288,6 +288,17 @@ namespace Nekoyume.Helper
             set
             {
                 minimumDifficulty = value;
+                Empty = false;
+            }
+        }
+
+        [Option("genesis-block-path", Required = false)]
+        public string GenesisBlockPath
+        {
+            get => genesisBlockPath;
+            set
+            {
+                genesisBlockPath = value;
                 Empty = false;
             }
         }

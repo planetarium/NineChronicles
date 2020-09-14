@@ -1,6 +1,9 @@
+using Nekoyume.Model.Quest;
 using Nekoyume.State;
 using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
+using System;
+using System.Linq;
 using UniRx;
 using UnityEngine;
 
@@ -9,13 +12,17 @@ namespace Nekoyume.UI.Module
     public class EquipmentOptionRecipe : MonoBehaviour
     {
         [SerializeField]
-        private EquipmentRecipeCellView equipmentRecipeCellView = null;
+        private RecipeCellView recipeCellView = null;
 
         [SerializeField]
         private EquipmentOptionRecipeView[] equipmentOptionRecipeViews = null;
 
-        public readonly Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)> OnOptionClick =
-            new Subject<(EquipmentRecipeCellView, EquipmentOptionRecipeView)>();
+        public readonly Subject<Unit> OnOptionClick = new Subject<Unit>();
+
+        public readonly Subject<(RecipeCellView recipeCellView, EquipmentOptionRecipeView item)> OnOptionClickVFXCompleted =
+            new Subject<(RecipeCellView, EquipmentOptionRecipeView)>();
+
+        protected int _recipeId;
 
         private void Awake()
         {
@@ -26,15 +33,16 @@ namespace Nekoyume.UI.Module
                     throw new SerializeFieldNullException();
                 }
 
-                view.OnClick
-                    .Subscribe(item => OnOptionClick.OnNext((equipmentRecipeCellView, item)))
+                view.OnClick.Subscribe(_ => OnOptionClick.OnNext(_));
+                view.OnClickVFXCompleted
+                    .Subscribe(item => OnOptionClickVFXCompleted.OnNext((recipeCellView, item)))
                     .AddTo(gameObject);
             }
         }
 
         private void OnDestroy()
         {
-            OnOptionClick.Dispose();
+            OnOptionClickVFXCompleted.Dispose();
         }
 
         public void Show()
@@ -44,7 +52,8 @@ namespace Nekoyume.UI.Module
 
         public void Show(EquipmentItemRecipeSheet.Row recipeRow)
         {
-            equipmentRecipeCellView.Set(recipeRow);
+            _recipeId = recipeRow.Id;
+            recipeCellView.Set(recipeRow);
             InitializeOptionRecipes(recipeRow);
             Show();
         }
@@ -72,21 +81,38 @@ namespace Nekoyume.UI.Module
                 optionRecipeView.Show(
                     row.GetLocalizedName(),
                     subRecipeId,
-                    new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount));
+                    new EquipmentItemSubRecipeSheet.MaterialInfo(recipeRow.MaterialId, recipeRow.MaterialCount),
+                    true,
+                    (_recipeId, i));
             }
 
             UpdateOptionRecipes();
+        }
+
+        public void KillCellViewTween()
+        {
+            foreach (var view in equipmentOptionRecipeViews)
+            {
+                view.shakeTweener.KillTween();
+            }
         }
 
         private void UpdateOptionRecipes()
         {
             var avatarState = States.Instance.CurrentAvatarState;
             if (avatarState is null)
+            {
                 return;
+            }
 
             foreach (var recipeView in equipmentOptionRecipeViews)
             {
-                recipeView.Set(avatarState);
+                var isFirstOpen =
+                    !Widget.Find<Combination>()
+                    .RecipeVFXSkipMap[_recipeId]
+                    .Contains(recipeView.SubRecipeId);
+
+                recipeView.Set(avatarState, isFirstOpen);
             }
         }
 

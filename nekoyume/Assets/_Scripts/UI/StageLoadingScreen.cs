@@ -1,6 +1,8 @@
+using Nekoyume.UI.Module;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Nekoyume.L10n;
 using UnityEngine;
 using UnityEngine.U2D;
 using UnityEngine.UI;
@@ -16,6 +18,7 @@ namespace Nekoyume.UI
 
         public List<Image> images;
         public bool closeEnd;
+        public LoadingIndicator indicator;
 
         private bool _shouldClose;
         private List<RectTransform> _rects;
@@ -51,7 +54,7 @@ namespace Nekoyume.UI
             return spriteAtlas;
         }
 
-        public void Show(string background)
+        public void Show(string background, string worldName, int stageId)
         {
             _shouldClose = false;
             _rects = new List<RectTransform>();
@@ -70,6 +73,8 @@ namespace Nekoyume.UI
                 _rects.Add(rect);
             }
 
+            var message = string.Format(L10nManager.Localize("STAGE_BLOCK_CHAIN_MINING_TX"), worldName, stageId);
+            indicator.Show(message);
             base.Show();
             StartCoroutine(CoRun());
         }

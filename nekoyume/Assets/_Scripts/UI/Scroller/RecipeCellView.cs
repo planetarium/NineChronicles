@@ -1,149 +1,399 @@
-﻿using EnhancedUI.EnhancedScroller;
-using Nekoyume.Helper;
-using Nekoyume.UI.Model;
-using Nekoyume.UI.Module;
 using System;
 using System.Linq;
-using Assets.SimpleLocalization;
-using JetBrains.Annotations;
-using Nekoyume.Game.Controller;
-using TMPro;
-using UniRx;
-using UnityEngine;
-using UnityEngine.UI;
+using Nekoyume.Model.Elemental;
 using Nekoyume.Model.Item;
+using Nekoyume.UI.Model;
+using Nekoyume.UI.Module;
+using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+using UniRx;
+using Nekoyume.Model.Stat;
+using Nekoyume.State;
+using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
+using Nekoyume.Model.State;
+using Nekoyume.TableData;
+using Nekoyume.UI.Tween;
 
 namespace Nekoyume.UI.Scroller
 {
-    [RequireComponent(typeof(RectTransform))]
-    public class RecipeCellView : EnhancedScrollerCellView
+    public class RecipeCellView : MonoBehaviour
     {
-        public interface IEventListener
-        {
-            void OnRecipeCellViewStarClick(RecipeCellView recipeCellView);
-            void OnRecipeCellViewSubmitClick(RecipeCellView recipeCellView);
-        }
-        
-        public Button starButton;
-        public SimpleItemView resultItemView;
-        public TextMeshProUGUI resultItemNameText;
-        public SimpleItemView[] materialItemViews;
-        public SubmitButton submitButton;
-        public TextMeshProUGUI submitText;
-        
-        public RecipeInfo Model { get; private set; }
+        protected static readonly Color DisabledColor = new Color(0.5f, 0.5f, 0.5f);
 
-        [CanBeNull] private IEventListener _eventListener;
-        
+        [SerializeField]
+        protected Button button;
+
+        [SerializeField]
+        protected Image panelImageLeft;
+
+        [SerializeField]
+        protected Image panelImageRight;
+
+        [SerializeField]
+        protected Image backgroundImage;
+
+        [SerializeField]
+        protected Image[] elementalTypeImages;
+
+        [SerializeField]
+        protected TextMeshProUGUI titleText;
+
+        [SerializeField]
+        protected TextMeshProUGUI optionText;
+
+        [SerializeField]
+        protected SimpleCountableItemView itemView;
+
+        [SerializeField]
+        protected GameObject lockParent;
+
+        [SerializeField]
+        protected TextMeshProUGUI unlockConditionText;
+
+        [SerializeField]
+        protected CanvasGroup canvasGroup;
+
+        [SerializeField]
+        protected Image hasNotificationImage;
+
+        [SerializeField]
+        protected LockChainJitterVFX lockVFX = null;
+
+        public RectTransformShakeTweener shakeTweener = null;
+        public TransformLocalScaleTweener scaleTweener = null;
+
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
+
+        public readonly Subject<RecipeCellView> OnClick =
+            new Subject<RecipeCellView>();
+
+        public bool IsLocked => lockParent.activeSelf;
+        public ItemSubType ItemSubType { get; protected set; }
+        public ElementalType ElementalType { get; protected set; }
+        public StatType StatType { get; protected set; }
+        public EquipmentItemRecipeSheet.Row EquipmentRowData { get; private set; }
+        public ConsumableItemRecipeSheet.Row ConsumableRowData { get; private set; }
+        public int UnlockStage { get; private set; }
+
+        public SimpleCountableItemView ItemView => itemView;
+
+        public bool tempLocked = false;
+
+        public bool Visible
+        {
+            get => Mathf.Approximately(canvasGroup.alpha, 1f);
+            set => canvasGroup.alpha = value ? 1f : 0f;
+        }
+
         private void Awake()
         {
-            starButton.OnClickAsObservable().Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                _eventListener?.OnRecipeCellViewStarClick(this);
-            }).AddTo(gameObject);
-            submitButton.OnSubmitClick.Subscribe(_ =>
-            {
-                AudioController.PlayClick();
-                _eventListener?.OnRecipeCellViewSubmitClick(this);
-            }).AddTo(gameObject);
-            submitText.text = LocalizationManager.Localize("UI_SELECT");
+            button.OnClickAsObservable()
+                .Subscribe(_ =>
+                {
+                    if (IsLocked && !tempLocked)
+                    {
+                        return;
+                    }
+
+                    OnClick.OnNext(this);
+                })
+                .AddTo(gameObject);
+
+            if (hasNotificationImage)
+                HasNotification.SubscribeTo(hasNotificationImage)
+                    .AddTo(gameObject);
         }
 
-        public void RegisterListener(IEventListener eventListener)
+        private void OnDestroy()
         {
-            _eventListener = eventListener;
+            OnClick.Dispose();
         }
-        
-        public void SetData(RecipeInfo recipeInfo)
+
+        public void Show()
         {
-            if (recipeInfo is null)
+            Visible = true;
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+            shakeTweener?.KillTween();
+        }
+
+        protected void Set(ItemUsable itemUsable)
+        {
+            ItemSubType = itemUsable.ItemSubType;
+            ElementalType = itemUsable.ElementalType;
+
+            titleText.text = itemUsable.GetLocalizedNonColoredName();
+
+            var item = new CountableItem(itemUsable, 1);
+            itemView.SetData(item);
+
+            var sprite = ElementalType.GetSprite();
+            var grade = itemUsable.Grade;
+
+            for (var i = 0; i < elementalTypeImages.Length; ++i)
             {
-                Clear();
-                return;
-            }
-            
-            Model = recipeInfo;
-            if (Model.IsLocked)
-            {
-                resultItemNameText.text = "?";
-                resultItemView.SetToUnknown();
-                
-                var materialInfosCount = Model.MaterialInfos.Count;
-                for (var i = 0; i < materialItemViews.Length; i++)
+                if (sprite is null || i >= grade)
                 {
-                    var view = materialItemViews[i];
-                    if (i < materialInfosCount)
+                    elementalTypeImages[i].gameObject.SetActive(false);
+                    continue;
+                }
+
+                elementalTypeImages[i].sprite = sprite;
+                elementalTypeImages[i].gameObject.SetActive(true);
+            }
+
+            SetCellViewLocked(false);
+            SetDimmed(false);
+        }
+
+        public void SetInteractable(bool value)
+        {
+            button.interactable = value;
+        }
+
+        protected void SetCellViewLocked(bool value)
+        {
+            lockParent.SetActive(value);
+            itemView.gameObject.SetActive(!value);
+            titleText.enabled = !value;
+            optionText.enabled = !value;
+
+            foreach (var icon in elementalTypeImages)
+            {
+                icon.enabled = !value;
+            }
+
+            SetPanelDimmed(value);
+        }
+
+        protected void SetDimmed(bool value)
+        {
+            var color = value ? DisabledColor : Color.white;
+            titleText.color = itemView.Model.ItemBase.Value.GetItemGradeColor() * color;
+            optionText.color = color;
+            itemView.Model.Dimmed.Value = value;
+
+            foreach (var icon in elementalTypeImages)
+            {
+                icon.color = value ? DisabledColor : Color.white;
+            }
+
+            SetPanelDimmed(value);
+        }
+
+        protected void SetPanelDimmed(bool value)
+        {
+            var color = value ? DisabledColor : Color.white;
+            panelImageLeft.color = color;
+            panelImageRight.color = color;
+            backgroundImage.color = color;
+        }
+
+        protected void SetLocked(bool value, int unlockStage)
+        {
+            // TODO: 나중에 해금 시스템이 분리되면 아래의 해금 조건 텍스트를 얻는 로직을 옮겨서 반복을 없애야 좋겠다.
+            if (value)
+            {
+                unlockConditionText.enabled = true;
+
+                if (States.Instance.CurrentAvatarState.worldInformation.TryGetLastClearedStageId(
+                    out var stageId))
+                {
+                    var diff = unlockStage - stageId;
+                    if (diff > 50)
                     {
-                        view.Show();
-                        view.SetToUnknown();
+                        unlockConditionText.text = string.Format(
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            "???");
                     }
                     else
                     {
-                        view.Hide();
+                        if (diff <= 0 && tempLocked)
+                        {
+                            lockVFX.Play();
+                            shakeTweener.PlayLoop();
+                        }
+                        unlockConditionText.text = string.Format(
+                            L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                            unlockStage.ToString());
                     }
-                }
-                
-                submitButton.SetSubmittable(false);
-                submitText.color = ColorHelper.HexToColorRGB("92A3B5");
-            }
-            else
-            {
-                resultItemNameText.text = Model.ResultItemName;
-                var row = Game.Game.instance.TableSheets.ConsumableItemSheet.Values.First(r =>
-                    r.Id == Model.Row.ResultConsumableItemId);
-                var result = new Item(ItemFactory.CreateItemUsable(row, Guid.Empty, default));
-                SetItemView(result, resultItemView);
-                
-                var materialInfosCount = Model.MaterialInfos.Count;
-                var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
-                for (var i = 0; i < materialItemViews.Length; i++)
-                {
-                    var view = materialItemViews[i];
-                    if (i < materialInfosCount)
-                    {
-                        var info = Model.MaterialInfos[i];
-                        view.Show();
-                        var item = new Item(
-                            ItemFactory.CreateMaterial(materialSheet.Values.First(r => r.Id == info.Id)));
-                        SetItemView(item, view, !info.IsEnough);
-                    }
-                    else
-                    {
-                        view.Hide();
-                    }
-                }
-                
-                if (Model.MaterialInfos.Any(info => info.Id != 0 && !info.IsEnough))
-                {
-                    submitButton.SetSubmittable(false);
-                    submitText.color = ColorHelper.HexToColorRGB("92A3B5");
                 }
                 else
                 {
-                    submitButton.SetSubmittable(true);
-                    submitText.color = Color.white;
+                    unlockConditionText.text = string.Format(
+                        L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+                        "???");
                 }
             }
-        }
-
-        private void SetItemView(Item item, SimpleItemView itemView, bool isDimmed = false)
-        {
-            itemView.SetData(item);
-            itemView.Model.Dimmed.Value = isDimmed;
-            itemView.gameObject.SetActive(true);
-        }
-
-        private void Clear()
-        {
-            resultItemView.Clear();
-            for (var i = 0; i < materialItemViews.Length; ++i)
+            else
             {
-                materialItemViews[i].Clear();
-                materialItemViews[i].gameObject.SetActive(false);
-                submitButton.SetSubmittable(false);
-                submitText.color = ColorHelper.HexToColorRGB("92A3B5");
+                unlockConditionText.enabled = false;
             }
+
+            SetCellViewLocked(value);
+        }
+
+        public void Set(EquipmentItemRecipeSheet.Row recipeRow)
+        {
+            if (recipeRow is null)
+            {
+                return;
+            }
+
+            var equipmentSheet = Game.Game.instance.TableSheets.EquipmentItemSheet;
+            if (!equipmentSheet.TryGetValue(recipeRow.ResultEquipmentId, out var row))
+            {
+                return;
+            }
+
+            EquipmentRowData = recipeRow;
+
+            var equipment = (Equipment) ItemFactory.CreateItemUsable(row, Guid.Empty, default);
+            Set(equipment);
+
+            StatType = equipment.UniqueStatType;
+            var text = equipment.Stat.DecimalStatToString();
+            optionText.text = text;
+            SetLocked(false, EquipmentRowData.UnlockStage);
+        }
+
+        public void Set(AvatarState avatarState, bool? hasNotification = false, bool isFirstOpen = false)
+        {
+            if (!isFirstOpen)
+            {
+                StopLockEffect();
+            }
+
+            if (EquipmentRowData is null)
+            {
+                return;
+            }
+
+            // 해금 검사.
+            if (!avatarState.worldInformation.IsStageCleared(EquipmentRowData.UnlockStage))
+            {
+                HasNotification.Value = false;
+                SetLocked(true, EquipmentRowData.UnlockStage);
+                return;
+            }
+
+            if (hasNotification.HasValue)
+            {
+                HasNotification.Value = hasNotification.Value;
+            }
+
+            tempLocked = isFirstOpen;
+
+            SetLocked(isFirstOpen, EquipmentRowData.UnlockStage);
+
+            if (tempLocked)
+            {
+                return;
+            }
+
+            // 메인 재료 검사.
+            var inventory = avatarState.inventory;
+            var materialSheet = Game.Game.instance.TableSheets.MaterialItemSheet;
+            if (materialSheet.TryGetValue(EquipmentRowData.MaterialId, out var materialRow) &&
+                inventory.TryGetMaterial(materialRow.ItemId, out var fungibleItem) &&
+                fungibleItem.count >= EquipmentRowData.MaterialCount)
+            {
+                // 서브 재료 검사.
+                if (EquipmentRowData.SubRecipeIds.Any())
+                {
+                    var subSheet = Game.Game.instance.TableSheets.EquipmentItemSubRecipeSheet;
+                    var shouldDimmed = false;
+                    foreach (var subRow in EquipmentRowData.SubRecipeIds
+                        .Select(subRecipeId =>
+                            subSheet.TryGetValue(subRecipeId, out var subRow) ? subRow : null)
+                        .Where(item => !(item is null)))
+                    {
+                        shouldDimmed = false;
+                        foreach (var info in subRow.Materials)
+                        {
+                            if (materialSheet.TryGetValue(info.Id, out materialRow) &&
+                                inventory.TryGetMaterial(materialRow.ItemId, out fungibleItem) &&
+                                fungibleItem.count >= info.Count)
+                            {
+                                continue;
+                            }
+
+                            shouldDimmed = true;
+                            break;
+                        }
+
+                        if (!shouldDimmed)
+                        {
+                            break;
+                        }
+                    }
+
+                    SetDimmed(shouldDimmed);
+                }
+                else
+                {
+                    SetDimmed(false);
+                }
+            }
+            else
+            {
+                SetDimmed(true);
+            }
+        }
+
+        public void Set(ConsumableItemRecipeSheet.Row recipeRow)
+        {
+            StopLockEffect();
+            HasNotification.Value = false;
+            if (recipeRow is null)
+                return;
+
+            UnlockStage = GameConfig.RequireClearedStageLevel.CombinationConsumableAction;
+            var sheet = Game.Game.instance.TableSheets.ConsumableItemSheet;
+            if (!sheet.TryGetValue(recipeRow.ResultConsumableItemId, out var row))
+                return;
+
+            ConsumableRowData = recipeRow;
+
+            var consumable = (Consumable)ItemFactory.CreateItemUsable(row, Guid.Empty, default);
+            Set(consumable);
+
+            StatType = consumable.MainStat;
+
+            var optionString = $"{consumable.MainStat} +{consumable.Stats.First(stat => stat.StatType == consumable.MainStat).ValueAsInt}";
+            optionText.text = optionString;
+            SetLocked(false, UnlockStage);
+        }
+
+        public void Set(AvatarState avatarState)
+        {
+            if (ConsumableRowData is null)
+                return;
+
+            // 해금 검사.
+            if (!avatarState.worldInformation.IsStageCleared(UnlockStage))
+            {
+                SetLocked(true, UnlockStage);
+                return;
+            }
+
+            SetLocked(false, UnlockStage);
+
+            //재료 검사.
+            var inventory = avatarState.inventory;
+            SetDimmed(!ConsumableRowData.Materials.All(info => inventory.HasItem(info.Id, info.Count)));
+        }
+
+        private void StopLockEffect()
+        {
+            shakeTweener?.KillTween();
+            lockVFX?.Stop();
         }
     }
 }

@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
+using Nekoyume.Battle;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using TMPro;
@@ -22,9 +23,11 @@ namespace Nekoyume.UI
         public SimpleCountableItemView[] materialItems;
         public Button submitButton;
         public TextMeshProUGUI submitButtonText;
-        public Image materialPlusImage;
         public GameObject materialView;
         public TouchHandler touchHandler;
+        public Image consumableHeader;
+        public Image equipmentHeader;
+        public TextMeshProUGUI cpText;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
 
@@ -36,27 +39,29 @@ namespace Nekoyume.UI
         {
             base.Awake();
 
-            materialText.text = LocalizationManager.Localize("UI_COMBINATION_MATERIALS");
-            submitButtonText.text = LocalizationManager.Localize("UI_OK");
+            materialText.text = L10nManager.Localize("UI_COMBINATION_MATERIALS");
+            submitButtonText.text = L10nManager.Localize("UI_OK");
 
             submitButton.OnClickAsObservable().Subscribe(_ =>
             {
                 Model.OnClickSubmit.OnNext(Model);
                 AudioController.PlayClick();
                 ItemMoveAnimation.Show(itemInformation.Model.item.Value.ItemBase.Value.GetIconSprite(),
-                    itemInformation.transform.position, 
-                    Find<BottomMenu>().inventoryButton.transform.position,
+                    itemInformation.transform.position,
+                    Find<BottomMenu>().characterButton.transform.position,
+                    Vector2.one,
                     false,
-                    1f, 
+                    true,
+                    1f,
                     0.82f,
-                    true);
+                    ItemMoveAnimation.EndPoint.Inventory);
                 Close();
             }).AddTo(gameObject);
             touchHandler.OnClick.Subscribe(pointerEventData =>
             {
                 if (!pointerEventData.pointerCurrentRaycast.gameObject.Equals(gameObject))
                     return;
-                
+
                 AudioController.PlayClick();
                 Close();
             }).AddTo(gameObject);
@@ -112,7 +117,7 @@ namespace Nekoyume.UI
         {
             if (Model is null)
             {
-                itemNameText.text = LocalizationManager.Localize("UI_COMBINATION_ERROR");
+                itemNameText.text = L10nManager.Localize("UI_COMBINATION_ERROR");
                 itemInformation.gameObject.SetActive(false);
                 return;
             }
@@ -128,7 +133,7 @@ namespace Nekoyume.UI
             }
             else
             {
-                itemNameText.text = LocalizationManager.Localize("UI_COMBINATION_FAIL");
+                itemNameText.text = L10nManager.Localize("UI_COMBINATION_FAIL");
                 itemInformation.gameObject.SetActive(false);
                 AudioController.instance.PlaySfx(AudioController.SfxCode.Failed);
             }
@@ -139,9 +144,6 @@ namespace Nekoyume.UI
                 materialView.SetActive(true);
                 using (var e = Model.materialItems.GetEnumerator())
                 {
-                    var hasMultipleMaterials = Model.materialItems.Count() > 1;
-                    materialPlusImage.gameObject.SetActive(isEquipment && hasMultipleMaterials);
-
                     foreach (var material in materialItems)
                     {
                         e.MoveNext();
@@ -164,6 +166,14 @@ namespace Nekoyume.UI
                 materialText.gameObject.SetActive(false);
                 materialView.SetActive(false);
             }
+
+            consumableHeader.gameObject.SetActive(!isEquipment);
+            equipmentHeader.gameObject.SetActive(isEquipment);
+            if (isEquipment)
+            {
+                cpText.text = CPHelper.GetCP((Equipment) item).ToString();
+            }
+            cpText.transform.parent.gameObject.SetActive(isEquipment);
         }
     }
 }

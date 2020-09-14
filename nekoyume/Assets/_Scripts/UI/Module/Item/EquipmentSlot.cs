@@ -1,5 +1,5 @@
 using System;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.AnimatedGraphics;
 using TMPro;
@@ -11,6 +11,9 @@ using UnityEngine.UI;
 
 namespace Nekoyume.UI.Module
 {
+    // TODO: 지금의 `EquipmentSlot`은 장비 뿐만 아니라 소모품과 코스튬이 모두 사용하고 있습니다.
+    // 이것을 각각의 아이템 타입에 맞게 일반화할 필요가 있습니다.
+    // 이에 따라 `EquipmentSlots`도 함께 수정될 필요가 있습니다.
     [RequireComponent(typeof(RectTransform))]
     public class EquipmentSlot : MonoBehaviour
     {
@@ -46,7 +49,7 @@ namespace Nekoyume.UI.Module
         public RectTransform RectTransform { get; private set; }
         public ItemSubType ItemSubType => itemSubType;
         public int ItemSubTypeIndex => itemSubTypeIndex;
-        public ItemUsable Item { get; private set; }
+        public ItemBase Item { get; private set; }
         public bool IsLock => lockImage.gameObject.activeSelf;
         public bool IsEmpty => Item is null;
 
@@ -67,6 +70,24 @@ namespace Nekoyume.UI.Module
 
             switch (ItemSubType)
             {
+                case ItemSubType.FullCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
+                    break;
+                case ItemSubType.HairCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot;
+                    break;
+                case ItemSubType.EarCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot;
+                    break;
+                case ItemSubType.EyeCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot;
+                    break;
+                case ItemSubType.TailCostume:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
+                    break;
+                case ItemSubType.Title:
+                    _requireLevel = GameConfig.RequireCharacterLevel.CharacterTitleSlot;
+                    break;
                 case ItemSubType.Weapon:
                     _requireLevel = GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
                     break;
@@ -116,7 +137,7 @@ namespace Nekoyume.UI.Module
             }
 
             _messageForCat =
-                $"{LocalizationManager.Localize($"ITEM_SUB_TYPE_{ItemSubType.ToString()}")}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requireLevel}";
+                $"{L10nManager.Localize($"ITEM_SUB_TYPE_{ItemSubType.ToString()}")}\n<sprite name=\"UI_icon_lock_01\"> LV.{_requireLevel}";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()
@@ -151,15 +172,12 @@ namespace Nekoyume.UI.Module
                 .AddTo(gameObject);
         }
 
-        public void Set(ItemUsable equipment)
-        {
-            Set(equipment, _onClick, _onDoubleClick);
-        }
-
-        public void Set(ItemUsable equipment, Action<EquipmentSlot> onClick,
+        public void Set(
+            ItemBase itemBase,
+            Action<EquipmentSlot> onClick,
             Action<EquipmentSlot> onDoubleClick)
         {
-            var sprite = equipment.GetIconSprite();
+            var sprite = itemBase.GetIconSprite();
             if (defaultImage)
             {
                 defaultImage.enabled = false;
@@ -168,18 +186,18 @@ namespace Nekoyume.UI.Module
             itemImage.enabled = true;
             itemImage.overrideSprite = sprite;
             itemImage.SetNativeSize();
-            Item = equipment;
+            Item = itemBase;
 
-            var gradeSprite = equipment.GetBackgroundSprite();
+            var gradeSprite = itemBase.GetBackgroundSprite();
             if (gradeSprite is null)
             {
-                throw new FailedToLoadResourceException<Sprite>(equipment.Data.Grade.ToString());
+                throw new FailedToLoadResourceException<Sprite>(itemBase.Grade.ToString());
             }
 
             gradeImage.enabled = true;
             gradeImage.overrideSprite = gradeSprite;
 
-            if (equipment is Equipment equip && equip.level > 0)
+            if (itemBase is Equipment equip && equip.level > 0)
             {
                 enhancementText.enabled = true;
                 enhancementText.text = $"+{equip.level}";
@@ -234,7 +252,9 @@ namespace Nekoyume.UI.Module
         {
             if (!(eventData is PointerEventData data) ||
                 data.button != PointerEventData.InputButton.Left)
+            {
                 return;
+            }
 
             switch (data.clickCount)
             {

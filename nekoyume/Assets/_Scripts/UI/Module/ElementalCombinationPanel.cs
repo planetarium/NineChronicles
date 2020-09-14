@@ -1,4 +1,4 @@
-﻿using Nekoyume.TableData;
+using Nekoyume.TableData;
 using Nekoyume.UI.Scroller;
 using Nekoyume.UI.Tween;
 using UniRx;
@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Nekoyume.UI.Module
 {
-    public class ElementalCombinationPanel : EquipmentCombinationPanel
+    public class ElementalCombinationPanel : CombinationPanel
     {
         public int SelectedSubRecipeId { get; protected set; }
 
@@ -30,6 +30,9 @@ namespace Nekoyume.UI.Module
             base.Awake();
 
             equipmentOptionRecipe.OnOptionClick
+                .Subscribe(_ => Widget.Find<Combination>()?.OnTweenRecipe());
+
+            equipmentOptionRecipe.OnOptionClickVFXCompleted
                 .Subscribe(tuple => OnSelectOption(tuple.Item1, tuple.Item2))
                 .AddTo(gameObject);
         }
@@ -41,29 +44,37 @@ namespace Nekoyume.UI.Module
             equipmentOptionRecipe.Show(recipeRow);
 
             optionAlphaTweener.PlayDelayed(0.2f);
-            optionYTweener.StartTween();
+            optionYTweener.PlayTween();
         }
 
-        private void OnSelectOption(EquipmentRecipeCellView recipeView, EquipmentOptionRecipeView optionRecipeView)
+        private void OnSelectOption(RecipeCellView recipeView, EquipmentOptionRecipeView optionRecipeView)
         {
             SelectedSubRecipeId = optionRecipeView.SubRecipeId;
             equipmentOptionRecipe.gameObject.SetActive(false);
-            SetData(recipeView.RowData, SelectedSubRecipeId);
+            SetData(recipeView.EquipmentRowData, SelectedSubRecipeId);
             confirmArea.SetActive(true);
-            TweenCellView(recipeView);
+            TweenCellView(recipeView, equipmentOptionRecipe.KillCellViewTween);
 
             if (materialPanel is ElementalCombinationMaterialPanel panel)
             {
+                Widget.Find<Combination>().OnTweenRecipe();
                 panel.TweenPanel(optionRecipeView);
             }
         }
 
-        public void TweenCellViewInOption(EquipmentRecipeCellView view)
+        public void TweenCellViewInOption(RecipeCellView view, System.Action onCompleted)
         {
             var rect = view.transform as RectTransform;
 
             optionCellViewTweener.SetBeginRect(rect);
+            optionCellViewTweener.onCompleted = onCompleted;
             optionCellViewTweener.Play();
+        }
+
+        public override void Hide()
+        {
+            equipmentOptionRecipe.KillCellViewTween();
+            base.Hide();
         }
     }
 }

@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using JetBrains.Annotations;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.Module.Common;
 using TMPro;
@@ -30,6 +30,9 @@ namespace Nekoyume.UI.Module
 
         [SerializeField]
         private Image[] additiveImages = null;
+
+        [SerializeField]
+        private Image hasNotificationImage = null;
 
         [SerializeField]
         private Animator animator = null;
@@ -140,6 +143,8 @@ namespace Nekoyume.UI.Module
                 additiveImage.enabled = _isFull;
             }
 
+            hasNotificationImage.enabled = _isFull && States.Instance.CurrentAvatarState?.actionPoint == 0;
+
             animator.SetBool(IsFull, _isFull);
         }
 
@@ -147,6 +152,8 @@ namespace Nekoyume.UI.Module
         {
             Widget.Find<VanilaTooltip>()
                 .Show("UI_PROSPERITY_DEGREE", "UI_PROSPERITY_DEGREE_DESCRIPTION", tooltipArea.position);
+
+            HelpPopup.HelpMe(100009, true);
         }
 
         public void HideTooltip()
@@ -154,20 +161,40 @@ namespace Nekoyume.UI.Module
             Widget.Find<VanilaTooltip>().Close();
         }
 
-        public void GetDailyReward()
+        public void RequestDailyReward()
         {
             if (!_isFull)
             {
                 return;
             }
 
+            if (actionPoint.IsRemained)
+            {
+                var confirm = Widget.Find<Confirm>();
+                confirm.Show("UI_CONFIRM", "UI_AP_REFILL_CONFIRM_CONTENT");
+                confirm.CloseCallback = result =>
+                {
+                    if (result == ConfirmResult.No)
+                        return;
+
+                    GetDailyReward();
+                };
+            }
+            else
+            {
+                GetDailyReward();
+            }
+        }
+
+        private void GetDailyReward()
+        {
             Notification.Push(Nekoyume.Model.Mail.MailType.System,
-                LocalizationManager.Localize("UI_RECEIVING_DAILY_REWARD"));
+                L10nManager.Localize("UI_RECEIVING_DAILY_REWARD"));
 
             Game.Game.instance.ActionManager.DailyReward().Subscribe(_ =>
             {
                 Notification.Push(Nekoyume.Model.Mail.MailType.System,
-                    LocalizationManager.Localize("UI_RECEIVED_DAILY_REWARD"));
+                    L10nManager.Localize("UI_RECEIVED_DAILY_REWARD"));
             });
 
             StartCoroutine(CoGetDailyRewardAnimation());
@@ -188,6 +215,8 @@ namespace Nekoyume.UI.Module
             ItemMoveAnimation.Show(actionPoint.Image.sprite,
                 boxImageTransform.position,
                 actionPoint.Image.transform.position,
+                Vector2.one,
+                true,
                 true,
                 1f,
                 0.8f);

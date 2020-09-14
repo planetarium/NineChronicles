@@ -8,14 +8,19 @@ using Nekoyume.State;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using mixpanel;
+using Nekoyume.UI.Module;
 
 namespace Nekoyume.UI
 {
     public class Login : Widget
     {
-        public bool ready = false;
-        public GameObject[] slots;
+        [SerializeField]
+        private GameObject[] slots = null;
+
+        public bool ready;
         public List<Player> players;
+
         private ObjectPool _objectPool;
 
         protected override void Awake()
@@ -27,6 +32,7 @@ namespace Nekoyume.UI
                 throw new Exception("Login widget's slots.Length is not equals GameConfig.SlotCount.");
             }
             _objectPool = Game.Game.instance.Stage.objectPool;
+
             Game.Event.OnNestEnter.AddListener(ClearPlayers);
             Game.Event.OnRoomEnter.AddListener(b => ClearPlayers());
 
@@ -80,6 +86,7 @@ namespace Nekoyume.UI
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
+            Mixpanel.Track("Unity/LoginImpression");
 
             for (var i = 0; i < slots.Length; i++)
             {

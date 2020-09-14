@@ -7,6 +7,7 @@ using Libplanet.Crypto;
 using Nekoyume;
 using Nekoyume.Action;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
@@ -22,20 +23,7 @@ namespace Tests.EditMode
         [OneTimeSetUp]
         public void Init()
         {
-            _tableSheets = new TableSheets();
-            var request = Resources.Load<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-            if (!(request is AddressableAssetsContainer addressableAssetsContainer))
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-
-            var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            foreach (var asset in csvAssets)
-            {
-                _tableSheets.SetToSheet(asset.name, asset.text);
-            }
-
-            _tableSheets.ItemSheetInitialize();
-            _tableSheets.QuestSheetInitialize();
-
+            _tableSheets = TableSheetsHelper.MakeTableSheets();
         }
 
         [Test]
@@ -54,10 +42,10 @@ namespace Tests.EditMode
             var address = new PrivateKey().PublicKey.ToAddress();
             var state = new CombinationSlotState(address, 1);
             var serialized = (Dictionary) state.Serialize();
-            Assert.IsTrue(serialized.ContainsKey((Text) "address"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "unlockBlockIndex"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "unlockStage"));
-            Assert.IsFalse(serialized.ContainsKey((Text) "result"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "address"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "unlockBlockIndex"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "unlockStage"));
+            Assert.IsFalse(serialized.ContainsKey((IKey)(Text) "result"));
             var deserialize = new CombinationSlotState(serialized);
             Assert.AreEqual(state.UnlockStage, deserialize.UnlockStage);
             Assert.AreEqual(state.UnlockBlockIndex, deserialize.UnlockBlockIndex);
@@ -92,11 +80,11 @@ namespace Tests.EditMode
             };
             state.Update(result, 1,10);
             var serialized = (Dictionary) state.Serialize();
-            Assert.IsTrue(serialized.ContainsKey((Text) "address"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "unlockBlockIndex"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "unlockStage"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "result"));
-            Assert.IsTrue(serialized.ContainsKey((Text) "startBlockIndex"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "address"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "unlockBlockIndex"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "unlockStage"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "result"));
+            Assert.IsTrue(serialized.ContainsKey((IKey)(Text) "startBlockIndex"));
             var deserialize = new CombinationSlotState(serialized);
             Assert.AreEqual(state.UnlockStage, deserialize.UnlockStage);
             Assert.AreEqual(state.UnlockBlockIndex, deserialize.UnlockBlockIndex);

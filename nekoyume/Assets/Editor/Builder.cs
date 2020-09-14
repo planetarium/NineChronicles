@@ -1,16 +1,7 @@
-using System;
 using System.IO;
-using Libplanet.Action;
-using Libplanet.Blocks;
-using Nekoyume.Action;
-using Nekoyume.BlockChain;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
-using System.Net;
-using ICSharpCode.SharpZipLib.Zip;
-using ICSharpCode.SharpZipLib.GZip;
-using ICSharpCode.SharpZipLib.Tar;
 using UnityEditor.Callbacks;
 
 namespace Editor
@@ -23,7 +14,7 @@ namespace Editor
 
         public static readonly string ProjectBasePath = Path.Combine(Application.dataPath, "..", "..");
 
-        [MenuItem("Build/Standalone/Windows + Mac OSX + Linux")]
+        [MenuItem("Build/Standalone/Windows + macOS + Linux")]
         public static void BuildAll()
         {
             BuildMacOS();
@@ -31,11 +22,11 @@ namespace Editor
             BuildLinux();
         }
 
-        [MenuItem("Build/Standalone/MacOS")]
+        [MenuItem("Build/Standalone/macOS")]
         public static void BuildMacOS()
         {
-            Debug.Log("Build MacOS");
-            Build(BuildTarget.StandaloneOSX, targetDirName: "MacOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
+            Debug.Log("Build macOS");
+            Build(BuildTarget.StandaloneOSX, targetDirName: "macOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
         }
 
         [MenuItem("Build/Standalone/Windows")]
@@ -52,11 +43,11 @@ namespace Editor
             Build(BuildTarget.StandaloneLinux64, targetDirName: "Linux");
         }
 
-        [MenuItem("Build/Standalone/MacOS Headless")]
+        [MenuItem("Build/Standalone/macOS Headless")]
         public static void BuildMacOSHeadless()
         {
-            Debug.Log("Build MacOS Headless");
-            Build(BuildTarget.StandaloneOSX, BuildOptions.EnableHeadlessMode, "MacOSHeadless");
+            Debug.Log("Build macOS Headless");
+            Build(BuildTarget.StandaloneOSX, BuildOptions.EnableHeadlessMode, "macOSHeadless");
         }
 
         [MenuItem("Build/Standalone/Linux Headless")]
@@ -73,7 +64,7 @@ namespace Editor
             Build(BuildTarget.StandaloneWindows64, BuildOptions.EnableHeadlessMode, "WindowsHeadless");
         }
 
-        [MenuItem("Build/Development/Windows + Mac OSX + Linux")]
+        [MenuItem("Build/Development/Windows + macOS + Linux")]
         public static void BuildAllDevelopment()
         {
             BuildMacOSDevelopment();
@@ -81,11 +72,11 @@ namespace Editor
             BuildLinuxDevelopment();
         }
 
-        [MenuItem("Build/Development/MacOS")]
+        [MenuItem("Build/Development/macOS")]
         public static void BuildMacOSDevelopment()
         {
             Debug.Log("Build MacOS Development");
-            Build(BuildTarget.StandaloneOSX, BuildOptions.Development, targetDirName: "MacOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
+            Build(BuildTarget.StandaloneOSX, BuildOptions.Development, targetDirName: "macOS", scriptName: "run", snapshotName: "NineChroniclesSnapshot");
         }
 
         [MenuItem("Build/Development/Windows")]
@@ -102,11 +93,11 @@ namespace Editor
             Build(BuildTarget.StandaloneLinux64, BuildOptions.Development, targetDirName: "Linux");
         }
 
-        [MenuItem("Build/Development/MacOS Headless")]
+        [MenuItem("Build/Development/macOS Headless")]
         public static void BuildMacOSHeadlessDevelopment()
         {
-            Debug.Log("Build MacOS Headless Development");
-            Build(BuildTarget.StandaloneOSX, BuildOptions.EnableHeadlessMode, "MacOSHeadless");
+            Debug.Log("Build macOS Headless Development");
+            Build(BuildTarget.StandaloneOSX, BuildOptions.EnableHeadlessMode, "macOSHeadless");
         }
 
         [MenuItem("Build/Development/Linux Headless")]
@@ -133,8 +124,6 @@ namespace Editor
             string scriptName = null,
             string snapshotName = null)
         {
-            Prebuild();
-
             string[] scenes = { "Assets/_Scenes/Game.unity" };
 
             targetDirName = targetDirName ?? buildTarget.ToString();
@@ -219,18 +208,6 @@ namespace Editor
             var source = Path.Combine(basePath, filename);
             var destination = Path.Combine(BuildBasePath, targetDirName, filename);
             File.Copy(source, destination, true);
-        }
-
-        private static void Prebuild()
-        {
-            Debug.Log(nameof(Prebuild));
-            var genesisBlock = BlockHelper.ImportBlock(BlockHelper.GenesisBlockPath);
-            var calculatedGenesis = BlockHelper.MineGenesisBlock();
-            if (BlockHelper.CompareGenesisBlocks(genesisBlock, calculatedGenesis))
-            {
-                Debug.Log("Export new genesis-block.");
-                BlockHelper.ExportBlock(calculatedGenesis, BlockHelper.GenesisBlockPath);
-            }
         }
     }
 }

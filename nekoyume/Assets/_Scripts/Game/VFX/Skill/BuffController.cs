@@ -35,7 +35,7 @@ namespace Nekoyume.Game.VFX.Skill
             var go = _pool.Get(resourceName, false, position) ??
                      _pool.Get(resourceName, true, position);
 
-            return GetEffect<T>(go, target);
+            return GetEffect<T>(go);
         }
 
         public BuffCastingVFX Get(Vector3 position, Buff buff)
@@ -59,7 +59,7 @@ namespace Nekoyume.Game.VFX.Skill
             return GetEffect<BuffCastingVFX>(go);
         }
 
-        private static T GetEffect<T>(GameObject go, CharacterBase target = null)
+        private static T GetEffect<T>(GameObject go)
             where T : BuffVFX
         {
             var effect = go.GetComponent<T>();
@@ -68,13 +68,20 @@ namespace Nekoyume.Game.VFX.Skill
                 throw new NotFoundComponentException<T>(go.name);
             }
 
-            if (!(target is null))
-            {
-                effect.target = target;
-            }
-
             effect.Stop();
             return effect;
+        }
+
+        public T Get<T>(GameObject target, Buff buff) where T : BuffVFX
+        {
+            var position = target.transform.position;
+            position.y += 0.55f;
+            var resource = buff.RowData.IconResource;
+            var resourceName = resource.Replace("icon_", "");
+            var go = _pool.Get(resourceName, false, position) ??
+                     _pool.Get(resourceName, true, position);
+
+            return GetEffect<T>(go);
         }
     }
 }

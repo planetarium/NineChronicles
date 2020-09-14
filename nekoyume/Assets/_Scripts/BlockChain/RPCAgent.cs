@@ -6,12 +6,15 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Bencodex;
 using Bencodex.Types;
 using Grpc.Core;
 using Libplanet;
 using Libplanet.Action;
+using Libplanet.Assets;
+using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Libplanet.Tx;
 using MagicOnion.Client;
@@ -25,6 +28,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.Events;
 using static Nekoyume.Action.ActionBase;
+using Logger = Serilog.Core.Logger;
 
 namespace Nekoyume.BlockChain
 {
@@ -41,17 +45,22 @@ namespace Nekoyume.BlockChain
         private IBlockChainService _service;
 
         private Codec _codec = new Codec();
-        private Subject<ActionEvaluation<ActionBase>> _renderSubject;
-        private Subject<ActionEvaluation<ActionBase>> _unrenderSubject;
 
-        public ActionRenderer ActionRenderer { get; private set; }
+        private Block<PolymorphicAction<ActionBase>> _genesis;
+
+        // Rendering logs will be recorded in NineChronicles.Standalone
+        public BlockPolicySource BlockPolicySource { get; } = new BlockPolicySource(Logger.None);
+
+        public BlockRenderer BlockRenderer => BlockPolicySource.BlockRenderer;
+
+        public ActionRenderer ActionRenderer => BlockPolicySource.ActionRenderer;
 
         public Subject<long> BlockIndexSubject { get; } = new Subject<long>();
 
         public long BlockIndex { get; private set; }
-        
+
         public PrivateKey PrivateKey { get; private set; }
-        
+
         public Address Address => PrivateKey.PublicKey.ToAddress();
 
         public bool Connected { get; private set; }
@@ -80,6 +89,8 @@ namespace Nekoyume.BlockChain
             StartCoroutine(CoJoin(callback));
 
             OnDisconnected = new UnityEvent();
+
+            _genesis = BlockManager.ImportBlock(options.GenesisBlockPath ?? BlockManager.GenesisBlockPath);
         }
 
         public IValue GetState(Address address)
@@ -88,19 +99,25 @@ namespace Nekoyume.BlockChain
             return _codec.Decode(raw);
         }
 
+        public FungibleAssetValue GetBalance(Address address, Currency currency)
+        {
+            var result = _service.GetBalance(
+                address.ToByteArray(),
+                _codec.Encode(currency.Serialize())
+            );
+            byte[] raw = result.ResponseAsync.Result;
+            var serialized = (Bencodex.Types.List) _codec.Decode(raw);
+            return FungibleAssetValue.FromRawValue(
+                CurrencyExtensions.Deserialize((Bencodex.Types.Dictionary) serialized.ElementAt(0)),
+                serialized.ElementAt(1).ToBigInteger());
+        }
+
         public void EnqueueAction(GameAction action)
         {
             _queuedActions.Enqueue(action);
         }
 
         #region Mono
-
-        private void Awake()
-        {
-            _renderSubject = new Subject<ActionEvaluation<ActionBase>>();
-            _unrenderSubject = new Subject<ActionEvaluation<ActionBase>>();
-            ActionRenderer = new ActionRenderer(_renderSubject, _unrenderSubject);
-        }
 
         private async void OnDestroy()
         {
@@ -134,11 +151,26 @@ namespace Nekoyume.BlockChain
 
             Connected = true;
 
+            // 에이전트의 상태를 한 번 동기화 한다.
+            Currency goldCurrency = new GoldCurrencyState(
+                (Dictionary)GetState(GoldCurrencyState.Address)
+            ).Currency;
+            States.Instance.SetAgentState(
+                GetState(Address) is Bencodex.Types.Dictionary agentDict
+                    ? new AgentState(agentDict)
+                    : new AgentState(Address),
+                new GoldBalanceState(Address, GetBalance(Address, goldCurrency))
+            );
+
             // 랭킹의 상태를 한 번 동기화 한다.
-            States.Instance.SetRankingState(
-                GetState(RankingState.Address) is Bencodex.Types.Dictionary rankingDict
-                    ? new RankingState(rankingDict)
-                    : new RankingState());
+                for (var i = 0; i < RankingState.RankingMapCapacity; ++i)
+                {
+                    var address = RankingState.Derive(i);
+                    var mapState = GetState(address) is Bencodex.Types.Dictionary serialized
+                        ? new RankingMapState(serialized)
+                        : new RankingMapState(address);
+                    States.Instance.SetRankingMapStates(mapState);
+                }
 
             // 상점의 상태를 한 번 동기화 한다.
             States.Instance.SetShopState(
@@ -162,11 +194,7 @@ namespace Nekoyume.BlockChain
                 throw new FailedToInstantiateStateException<GameConfigState>();
             }
 
-            // 에이전트의 상태를 한 번 동기화 한다.
-            States.Instance.SetAgentState(
-                GetState(Address) is Bencodex.Types.Dictionary agentDict
-                    ? new AgentState(agentDict)
-                    : new AgentState(Address));
+            ActionRenderHandler.Instance.GoldCurrency = goldCurrency;
 
             // 그리고 모든 액션에 대한 랜더와 언랜더를 핸들링하기 시작한다.
             ActionRenderHandler.Instance.Start(ActionRenderer);
@@ -218,6 +246,7 @@ namespace Nekoyume.BlockChain
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     nonce,
                     PrivateKey,
+                    _genesis?.Hash,
                     actions
                 );
             await _service.PutTransaction(tx.Serialize(true));
@@ -238,7 +267,21 @@ namespace Nekoyume.BlockChain
                 df.CopyTo(decompressed);
                 decompressed.Seek(0, SeekOrigin.Begin);
                 var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
-                _renderSubject.OnNext(ev);
+                ActionRenderer.ActionRenderSubject.OnNext(ev);
+            }
+        }
+
+        public void OnUnrender(byte[] evaluation)
+        {
+            var formatter = new BinaryFormatter();
+            using (var compressed = new MemoryStream(evaluation))
+            using (var decompressed = new MemoryStream())
+            using (var df = new DeflateStream(compressed, CompressionMode.Decompress))
+            {
+                df.CopyTo(decompressed);
+                decompressed.Seek(0, SeekOrigin.Begin);
+                var ev = (ActionEvaluation<ActionBase>)formatter.Deserialize(decompressed);
+                ActionRenderer.ActionUnrenderSubject.OnNext(ev);
             }
         }
 
@@ -247,7 +290,7 @@ namespace Nekoyume.BlockChain
             BlockIndex = index;
             BlockIndexSubject.OnNext(index);
         }
-        
+
         private async void RegisterDisconnectEvent(IActionEvaluationHub hub)
         {
             try
@@ -258,6 +301,15 @@ namespace Nekoyume.BlockChain
             {
                 OnDisconnected?.Invoke();
             }
+        }
+
+        public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
+        {
+            BlockRenderer.ReorgSubject.OnNext((
+                Block<PolymorphicAction<ActionBase>>.Deserialize(oldTip),
+                Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
+                Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
+            ));
         }
     }
 }

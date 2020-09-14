@@ -2,12 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
+using mixpanel;
 using Nekoyume.Action;
 using Nekoyume.BlockChain;
 using Nekoyume.Game;
 using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
+using Nekoyume.L10n;
 using Nekoyume.Manager;
 using Nekoyume.Model.BattleStatus;
 using Nekoyume.Model.Item;
@@ -27,6 +28,8 @@ namespace Nekoyume.UI
             private readonly List<CountableItem> _rewards = new List<CountableItem>();
 
             public BattleLog.Result State;
+            public string WorldName;
+            public int StageID;
             public long Exp;
             public bool ActionPointNotEnough;
             public bool ShouldExit;
@@ -67,31 +70,63 @@ namespace Nekoyume.UI
         private const int Timer = 10;
         private static readonly Vector3 VfxBattleWinOffset = new Vector3(-0.05f, 1.2f, 10f);
 
-        public CanvasGroup canvasGroup;
-        public GameObject victoryImageContainer;
-        public GameObject defeatImageContainer;
-        public GameObject topArea;
-        public DefeatTextArea defeatTextArea;
-        public RewardsArea rewardsArea;
-        public TextMeshProUGUI bottomText;
-        public Button closeButton;
-        public TextMeshProUGUI closeButtonText;
-        public Button submitButton;
-        public TextMeshProUGUI submitButtonText;
-        public StageProgressBar stageProgressBar;
+        [SerializeField]
+        private CanvasGroup canvasGroup = null;
+
+        [SerializeField]
+        private GameObject victoryImageContainer = null;
+
+        [SerializeField]
+        private GameObject defeatImageContainer = null;
+
+        [SerializeField]
+        private TextMeshProUGUI worldStageId = null;
+
+        [SerializeField]
+        private GameObject topArea = null;
+
+        [SerializeField]
+        private DefeatTextArea defeatTextArea = default;
+
+        [SerializeField]
+        private RewardsArea rewardsArea = default;
+
+        [SerializeField]
+        private TextMeshProUGUI bottomText = null;
+
+        [SerializeField]
+        private Button closeButton = null;
+
+        [SerializeField]
+        private TextMeshProUGUI closeButtonText = null;
+
+        [SerializeField]
+        private Button submitButton = null;
+
+        [SerializeField]
+        private TextMeshProUGUI submitButtonText = null;
+
+        [SerializeField]
+        private StageProgressBar stageProgressBar = null;
+
+        [SerializeField]
+        private GameObject[] victoryResultTexts = null;
 
         private BattleWin01VFX _battleWin01VFX;
+
         private BattleWin02VFX _battleWin02VFX;
+
         private BattleWin03VFX _battleWin03VFX;
+
         private Coroutine _coUpdateBottomText;
+
         private readonly WaitForSeconds _battleWinVFXYield = new WaitForSeconds(0.2f);
+
+        private Animator _victoryImageAnimator;
+
         public Model SharedModel { get; private set; }
 
-        public Subject<bool> BattleEndedSubject = new Subject<bool>();
-        public IDisposable battleEndedStream;
-
-        public GameObject[] victoryResultTexts;
-        private Animator _victoryImageAnimator;
+        public StageProgressBar StageProgressBar => stageProgressBar;
 
         protected override void Awake()
         {
@@ -119,7 +154,7 @@ namespace Nekoyume.UI
             SubmitWidget = submitButton.onClick.Invoke;
             defeatTextArea.root.SetActive(false);
             defeatTextArea.defeatText.text =
-                LocalizationManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
+                L10nManager.Localize("UI_BATTLE_RESULT_DEFEAT_MESSAGE");
 
             _victoryImageAnimator = victoryImageContainer.GetComponent<Animator>();
         }
@@ -128,9 +163,11 @@ namespace Nekoyume.UI
         {
             base.Show();
 
-            BattleEndedSubject.OnNext(IsActive());
             canvasGroup.alpha = 1f;
             SharedModel = model;
+
+            worldStageId.text = $"{SharedModel.WorldName} {SharedModel.StageID}";
+
             foreach (var reward in rewardsArea.rewards)
             {
                 reward.gameObject.SetActive(false);
@@ -175,7 +212,7 @@ namespace Nekoyume.UI
             topArea.SetActive(true);
             defeatTextArea.root.SetActive(false);
             closeButton.interactable = true;
-            closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
+            closeButtonText.text = L10nManager.Localize("UI_MAIN");
             stageProgressBar.Show();
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
@@ -192,19 +229,19 @@ namespace Nekoyume.UI
                     break;
                 case 1:
                     _battleWin01VFX =
-                        VFXController.instance.Create<BattleWin01VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin01VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
                 case 2:
                     _battleWin02VFX =
-                        VFXController.instance.Create<BattleWin02VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin02VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
                 default:
                     _battleWin03VFX =
-                        VFXController.instance.Create<BattleWin03VFX>(
+                        VFXController.instance.CreateAndChase<BattleWin03VFX>(
                             ActionCamera.instance.transform,
                             VfxBattleWinOffset);
                     break;
@@ -226,12 +263,12 @@ namespace Nekoyume.UI
                 key = "UI_BATTLE_RESULT_TIMEOUT_MESSAGE";
             }
 
-            defeatTextArea.defeatText.text = LocalizationManager.Localize(key);
+            defeatTextArea.defeatText.text = L10nManager.Localize(key);
             defeatTextArea.expText.text = $"EXP + {SharedModel.Exp}";
             bottomText.enabled = false;
             closeButton.interactable = true;
-            closeButtonText.text = LocalizationManager.Localize("UI_MAIN");
-            submitButtonText.text = LocalizationManager.Localize("UI_BATTLE_AGAIN");
+            closeButtonText.text = L10nManager.Localize("UI_MAIN");
+            submitButtonText.text = L10nManager.Localize("UI_BATTLE_AGAIN");
 
             _coUpdateBottomText = StartCoroutine(CoUpdateBottomText(Timer));
             StartCoroutine(CoUpdateRewards());
@@ -251,7 +288,7 @@ namespace Nekoyume.UI
                         view.Set(SharedModel.Exp, cleared);
                         break;
                     case 1:
-                        view.Set(SharedModel.Rewards, cleared);
+                        view.Set(SharedModel.Rewards, Game.Game.instance.Stage.stageId, cleared);
                         break;
                     case 2:
                         view.Set(SharedModel.State == BattleLog.Result.Win && cleared);
@@ -277,35 +314,35 @@ namespace Nekoyume.UI
 
         private IEnumerator CoUpdateBottomText(int limitSeconds)
         {
-            var secondsFormat = LocalizationManager.Localize("UI_AFTER_N_SECONDS");
+            var secondsFormat = L10nManager.Localize("UI_AFTER_N_SECONDS");
             string fullFormat;
             submitButton.gameObject.SetActive(false);
             SubmitWidget = closeButton.onClick.Invoke;
             if (SharedModel.ActionPointNotEnough)
             {
                 fullFormat =
-                    LocalizationManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
+                    L10nManager.Localize("UI_BATTLE_RESULT_NOT_ENOUGH_ACTION_POINT_FORMAT");
             }
             else if (SharedModel.ShouldExit)
             {
-                fullFormat = LocalizationManager.Localize("UI_BATTLE_EXIT_FORMAT");
+                fullFormat = L10nManager.Localize("UI_BATTLE_EXIT_FORMAT");
             }
             else
             {
                 fullFormat = SharedModel.ShouldRepeat
-                    ? LocalizationManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
-                    : LocalizationManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
+                    ? L10nManager.Localize("UI_BATTLE_RESULT_REPEAT_STAGE_FORMAT")
+                    : L10nManager.Localize("UI_BATTLE_RESULT_NEXT_STAGE_FORMAT");
                 submitButton.interactable = true;
                 SubmitWidget = submitButton.onClick.Invoke;
                 submitButtonText.text = SharedModel.ShouldRepeat
-                    ? LocalizationManager.Localize("UI_BATTLE_AGAIN")
-                    : LocalizationManager.Localize("UI_NEXT_STAGE");
+                    ? L10nManager.Localize("UI_BATTLE_AGAIN")
+                    : L10nManager.Localize("UI_NEXT_STAGE");
                 submitButton.gameObject.SetActive(true);
             }
 
             bottomText.text = string.Format(fullFormat, string.Format(secondsFormat, limitSeconds));
 
-            yield return new WaitUntil(() => IsCloseAnimationCompleted);
+            yield return new WaitUntil(() => CanClose);
 
             var floatTime = (float) limitSeconds;
             var floatTimeMinusOne = limitSeconds - 1f;
@@ -347,7 +384,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
             var stageLoadingScreen = Find<StageLoadingScreen>();
-            stageLoadingScreen.Show(stage.zone);
+            stageLoadingScreen.Show(stage.zone, SharedModel.WorldName, SharedModel.StageID + 1);
             Find<Status>().Close();
 
             StopVFX();
@@ -360,8 +397,25 @@ namespace Nekoyume.UI
                 ? stage.stageId
                 : stage.stageId + 1;
             ActionRenderHandler.Instance.Pending = true;
+            var props = new Value
+            {
+                ["StageId"] = stageId,
+            };
+            var eventKey = "Next Stage";
+            if (SharedModel.ShouldRepeat)
+            {
+                eventKey = SharedModel.ClearedWaveNumber == 3 ? "Repeat" : "Retry";
+            }
+
+            var eventName = $"Unity/Stage Exit {eventKey}";
+            Mixpanel.Track(eventName, props);
             yield return Game.Game.instance.ActionManager
-                .HackAndSlash(player.Equipments, new List<Consumable>(), worldId, stageId)
+                .HackAndSlash(
+                    player.Costumes.Select(i => i.Id).ToList(),
+                    player.Equipments,
+                    new List<Consumable>(),
+                    worldId,
+                    stageId)
                 .Subscribe(_ => { },
                     (_) => Find<ActionFailPopup>().Show("Action timeout during HackAndSlash."));
         }
@@ -382,6 +436,13 @@ namespace Nekoyume.UI
 
         public void GoToMain()
         {
+            var props = new Value
+            {
+                ["StageId"] = Game.Game.instance.Stage.stageId,
+            };
+            var eventKey = Game.Game.instance.Stage.isExitReserved ? "Quit" : "Main";
+            var eventName = $"Unity/Stage Exit {eventKey}";
+            Mixpanel.Track(eventName, props);
             StopVFX();
 
             Find<Battle>().Close();

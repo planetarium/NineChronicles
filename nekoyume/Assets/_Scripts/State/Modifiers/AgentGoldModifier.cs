@@ -1,51 +1,95 @@
 ﻿using System;
-using Nekoyume.JsonConvertibles;
+using System.Globalization;
+using System.Linq;
+using System.Numerics;
+using Bencodex;
+using Bencodex.Types;
+using Libplanet;
+using Libplanet.Assets;
 using Nekoyume.Model.State;
 using UnityEngine;
 
 namespace Nekoyume.State.Modifiers
 {
     [Serializable]
-    public class AgentGoldModifier : AgentStateModifier
+    public class AgentGoldModifier : IAccumulatableStateModifier<GoldBalanceState>
     {
         [SerializeField]
-        private JsonConvertibleDecimal gold;
+        private string hex;
 
-        public override bool IsEmpty => gold == 0m;
-        
-        public AgentGoldModifier(decimal gold)
+        [NonSerialized]
+        private FungibleAssetValue? _goldCache;
+
+        public bool dirty { get; set; }
+
+        public bool IsEmpty => Gold.Sign == 0;
+
+        private FungibleAssetValue Gold
         {
-            this.gold = new JsonConvertibleDecimal(gold);
+            get
+            {
+                if (_goldCache.HasValue)
+                {
+                    return _goldCache.Value;
+                }
+
+                var serialized = (Bencodex.Types.List) new Codec().Decode(ByteUtil.ParseHex(hex));
+                _goldCache = FungibleAssetValue.FromRawValue(
+                    CurrencyExtensions.Deserialize(
+                        (Bencodex.Types.Dictionary) serialized.ElementAt(0)),
+                    serialized.ElementAt(1).ToBigInteger());
+
+                return _goldCache.Value;
+            }
+            set
+            {
+                var serialized = new Bencodex.Types.List(new IValue[]
+                {
+                    value.Currency.Serialize(),
+                    (Integer) value.RawValue,
+                });
+
+                hex = ByteUtil.Hex(new Codec().Encode(serialized));
+                _goldCache = null;
+            }
         }
 
-        public override void Add(IAccumulatableStateModifier<AgentState> modifier)
+        public AgentGoldModifier(FungibleAssetValue gold)
+        {
+            Gold = gold;
+        }
+
+        public AgentGoldModifier(Currency currency, int gold) : this(
+            new FungibleAssetValue(currency, gold, 0))
+        {
+        }
+
+        public void Add(IAccumulatableStateModifier<GoldBalanceState> modifier)
         {
             if (!(modifier is AgentGoldModifier m))
+            {
                 return;
-            
-            gold += m.gold;
+            }
+
+            Gold += m.Gold;
         }
 
-        public override void Remove(IAccumulatableStateModifier<AgentState> modifier)
+        public void Remove(IAccumulatableStateModifier<GoldBalanceState> modifier)
         {
             if (!(modifier is AgentGoldModifier m))
+            {
                 return;
+            }
 
-            gold -= m.gold;
+            Gold -= m.Gold;
         }
 
-        public override AgentState Modify(AgentState state)
-        {
-            if (state is null)
-                return null;
-            
-            state.gold += gold.Value;
-            return state;
-        }
+        public GoldBalanceState Modify(GoldBalanceState state) =>
+            state?.Add(Gold);
 
         public override string ToString()
         {
-            return $"{nameof(gold)}: {gold.Value}";
+            return $"{nameof(Gold)}: {Gold}";
         }
     }
 }

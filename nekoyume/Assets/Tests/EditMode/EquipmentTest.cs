@@ -1,6 +1,8 @@
 using System.Linq;
+using Bencodex.Types;
 using Nekoyume;
 using Nekoyume.Game;
+using Nekoyume.Helper;
 using Nekoyume.Model.Item;
 using Nekoyume.Model.Skill;
 using Nekoyume.Model.Stat;
@@ -17,20 +19,7 @@ namespace Tests.EditMode
         [OneTimeSetUp]
         public void Init()
         {
-            _tableSheets = new TableSheets();
-            var request = Resources.Load<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-            if (!(request is AddressableAssetsContainer addressableAssetsContainer))
-                throw new FailedToLoadResourceException<AddressableAssetsContainer>(Game.AddressableAssetsContainerPath);
-
-            var csvAssets = addressableAssetsContainer.tableCsvAssets;
-            foreach (var asset in csvAssets)
-            {
-                _tableSheets.SetToSheet(asset.name, asset.text);
-            }
-
-            _tableSheets.ItemSheetInitialize();
-            _tableSheets.QuestSheetInitialize();
-
+            _tableSheets = TableSheetsHelper.MakeTableSheets();
         }
 
         [Test]
@@ -83,6 +72,9 @@ namespace Tests.EditMode
             Assert.AreEqual(decimal.ToInt32(stat + stat * 0.1m * level),
                 equipment.StatsMap.GetStat(equipment.UniqueStatType));
             Assert.AreEqual(expectedHp, equipment.StatsMap.AdditionalHP);
+            var serialized = (Dictionary) equipment.Serialize();
+            var actual = (Weapon) ItemFactory.Deserialize(serialized);
+            Assert.AreEqual(equipment, actual);
         }
 
         [Test, Sequential]
@@ -116,6 +108,9 @@ namespace Tests.EditMode
             Assert.AreEqual(level, equipment.level);
             Assert.AreEqual(expectedSkillChance, skill.Chance);
             Assert.AreEqual(expectedPower, skill.Power);
+            var serialized = (Dictionary) equipment.Serialize();
+            var actual = (Weapon) ItemFactory.Deserialize(serialized);
+            Assert.AreEqual(equipment, actual);
         }
     }
 }

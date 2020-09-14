@@ -1,5 +1,7 @@
 using System.Collections;
+using System.Linq;
 using Nekoyume.BlockChain;
+using Nekoyume.State;
 using Nekoyume.UI;
 using Nekoyume.UI.Module;
 using UnityEngine;
@@ -20,10 +22,8 @@ namespace Nekoyume.Game.Entrance
             {
                 Widget.Find<LoadingScreen>().Show();
             }
-            Widget.Find<BottomMenu>().Close();
-            Widget.Find<UI.Inventory>().Close();
-            Widget.Find<StatusDetail>().Close();
-            Widget.Find<Quest>().Close();
+
+            Widget.Find<BottomMenu>().Close(true);
 
             stage.stageId = 0;
             stage.LoadBackground("room");
@@ -35,9 +35,14 @@ namespace Nekoyume.Game.Entrance
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(stage.AvatarState);
             }
+            var roomPosition = stage.roomPosition;
 
-            var player = stage.GetPlayer(stage.roomPosition - new Vector2(3.0f, 0.0f));
+            var player = stage.GetPlayer(roomPosition - new Vector2(3.0f, 0.0f));
             player.StartRun();
+            if (player.Costumes.Any(value => value.Id == 40100002))
+            {
+                roomPosition += new Vector2(-0.17f, -0.05f);
+            }
 
             var status = Widget.Find<Status>();
             status.UpdatePlayer(player);
@@ -50,15 +55,13 @@ namespace Nekoyume.Game.Entrance
             Widget.Find<LoadingScreen>().Close();
 
             if (player)
-                while (player.transform.position.x < stage.roomPosition.x)
-                {
-                    yield return null;
-                }
+            {
+                yield return new WaitWhile(() => player.transform.position.x < roomPosition.x);
+            }
 
             player.RunSpeed = 0.0f;
             player.Animator.Idle();
 
-            Widget.Find<Dialog>().Show(1);
             Widget.Find<Status>().Show();
             Widget.Find<BottomMenu>().Show(
                 UINavigator.NavigationType.Quit,
@@ -69,7 +72,6 @@ namespace Nekoyume.Game.Entrance
                 BottomMenu.ToggleableType.Chat,
                 BottomMenu.ToggleableType.IllustratedBook,
                 BottomMenu.ToggleableType.Character,
-                BottomMenu.ToggleableType.Inventory,
                 BottomMenu.ToggleableType.Settings,
                 BottomMenu.ToggleableType.Combination
             );

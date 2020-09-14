@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Nekoyume.Game.Character;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.VFX;
 using UniRx;
 using UnityEngine;
@@ -69,7 +70,13 @@ namespace Nekoyume.UI
         {
             _vfxEnabled = vfxEnabled;
 
-            _currentStar.Subscribe(PlayVFX).AddTo(gameObject);
+            _currentStar.Subscribe(star =>
+            {
+                if(star > 0)
+                    AudioController.instance.PlaySfx(AudioController.SfxCode.RewardItem);
+
+                PlayVFX(star);
+            }).AddTo(gameObject);
         }
 
         private void CompleteWave()

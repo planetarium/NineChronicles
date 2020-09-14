@@ -8,33 +8,41 @@ namespace Nekoyume.UI
     public abstract class XTweenWidget : Widget
     {
         [SerializeField]
-        private AnchoredPositionXTweener xTweener;
-        protected AnchoredPositionXTweener XTweener => xTweener;
-
-        protected override void Awake()
-        {
-            base.Awake();
-            xTweener = GetComponentInChildren<AnchoredPositionXTweener>();
-        }
+        private AnchoredPositionXTweener xTweener = null;
 
         public override void Show(bool ignoreShowAnimation = false)
         {
             base.Show(ignoreShowAnimation);
-            xTweener.StartTween();
+            xTweener
+                .PlayTween()
+                .OnComplete(OnTweenComplete);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
             if (!gameObject.activeSelf)
+            {
                 return;
+            }
 
             StartCoroutine(CoClose(ignoreCloseAnimation));
         }
 
         private IEnumerator CoClose(bool ignoreCloseAnimation)
         {
-            yield return new WaitWhile(xTweener.StopTween().IsPlaying);
+            yield return new WaitWhile(xTweener
+                .PlayReverse()
+                .OnComplete(OnTweenReverseComplete)
+                .IsPlaying);
             base.Close(ignoreCloseAnimation);
+        }
+
+        protected virtual void OnTweenComplete()
+        {
+        }
+
+        protected virtual void OnTweenReverseComplete()
+        {
         }
     }
 }

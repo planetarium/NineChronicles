@@ -28,7 +28,9 @@ namespace Nekoyume.State.Modifiers
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarInventoryNonFungibleItemRemover m))
+            {
                 return;
+            }
 
             foreach (var incoming in m.guidList.Where(incoming => !guidList.Contains(incoming)))
             {
@@ -39,7 +41,9 @@ namespace Nekoyume.State.Modifiers
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarInventoryNonFungibleItemRemover m))
+            {
                 return;
+            }
 
             foreach (var incoming in m.guidList.Where(incoming => guidList.Contains(incoming)))
             {
@@ -50,7 +54,9 @@ namespace Nekoyume.State.Modifiers
         public override AvatarState Modify(AvatarState state)
         {
             if (state is null)
+            {
                 return null;
+            }
 
             foreach (var guid in guidList)
             {

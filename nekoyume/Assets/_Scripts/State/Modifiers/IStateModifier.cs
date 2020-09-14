@@ -7,6 +7,12 @@
     public interface IStateModifier<T> where T : Model.State.State
     {
         /// <summary>
+        /// 상태 변경자의 상태가 바뀌었는지 확인합니다.
+        /// true: `LocalStateSettings`에서 감지해서 새롭게 저장한 후에 `false`를 할당합니다.
+        /// false: Do nothing.
+        /// </summary>
+        bool dirty { get; set; }
+        /// <summary>
         /// 상태 변경자가 비어 있는지 확인합니다.
         /// </summary>
         bool IsEmpty { get; }

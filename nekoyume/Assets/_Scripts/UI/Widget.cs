@@ -9,7 +9,7 @@ namespace Nekoyume.UI
 {
     public class Widget : MonoBehaviour
     {
-        protected enum AnimationState
+        protected enum AnimationStateType
         {
             Showing,
             Shown,
@@ -26,26 +26,35 @@ namespace Nekoyume.UI
         private static readonly Subject<Widget> OnEnableStaticSubject = new Subject<Widget>();
         private static readonly Subject<Widget> OnDisableStaticSubject = new Subject<Widget>();
 
-        private static readonly Dictionary<Type, PoolElementModel> Pool = new Dictionary<Type, PoolElementModel>();
+        private static readonly Dictionary<Type, PoolElementModel> Pool =
+            new Dictionary<Type, PoolElementModel>();
+
         private static readonly Stack<GameObject> WidgetStack = new Stack<GameObject>();
 
         public static IObservable<Widget> OnEnableStaticObservable => OnEnableStaticSubject;
 
         public static IObservable<Widget> OnDisableStaticObservable => OnDisableStaticSubject;
 
-        protected AnimationState _animationState = AnimationState.Closed;
+        /// <summary>
+        /// AnimationState 캡슐화가 깨지는 setter를 사용하지 않도록 한다.
+        /// BottomMenu에서만 예외적으로 사용하고 있는데, 이를 Widget 안으로 옮긴 후에 setter를 private으로 변경한다.
+        /// </summary>
+        protected AnimationStateType AnimationState { get; set; } = AnimationStateType.Closed;
 
         private readonly Subject<Widget> _onEnableSubject = new Subject<Widget>();
         private readonly Subject<Widget> _onDisableSubject = new Subject<Widget>();
 
+        private Coroutine _coClose;
+        private Coroutine _coCompleteCloseAnimation;
+
         protected System.Action CloseWidget;
         protected System.Action SubmitWidget;
 
-        protected virtual WidgetType WidgetType => WidgetType.Widget;
+        public virtual WidgetType WidgetType => WidgetType.Widget;
 
         protected RectTransform RectTransform { get; private set; }
 
-        private Animator Animator { get; set; }
+        protected Animator Animator { get; private set; }
 
         public bool IsCloseAnimationCompleted { get; private set; }
 
@@ -53,7 +62,7 @@ namespace Nekoyume.UI
 
         public IObservable<Widget> OnDisableObservable => _onDisableSubject;
 
-        protected virtual bool CanHandleInputEvent => _animationState == AnimationState.Shown;
+        public virtual bool CanHandleInputEvent => AnimationState == AnimationStateType.Shown;
 
         protected bool CanClose => CanHandleInputEvent;
 
@@ -114,7 +123,8 @@ namespace Nekoyume.UI
                 return (T) Pool[type].widget;
             }
 
-            var go = Instantiate(res, MainCanvas.instance.transform);
+            var widgetType = res.GetComponent<T>().WidgetType;
+            var go = Instantiate(res, MainCanvas.instance.GetLayerRootTransform(widgetType));
             var widget = go.GetComponent<T>();
             switch (widget.WidgetType)
             {
@@ -137,7 +147,6 @@ namespace Nekoyume.UI
                     throw new ArgumentOutOfRangeException();
             }
 
-            go.transform.SetParent(MainCanvas.instance.GetTransform(widget.WidgetType));
             go.SetActive(activate);
             return widget;
         }
@@ -151,6 +160,28 @@ namespace Nekoyume.UI
             }
 
             return (T) model.widget;
+        }
+
+        public static T FindOrCreate<T>() where T : HudWidget
+        {
+            var type = typeof(T);
+            var names = type.ToString().Split('.');
+            var widgetName = $"UI_{names[names.Length - 1]}";
+            var resName = $"UI/Prefabs/{widgetName}";
+            var pool = Game.Game.instance.Stage.objectPool;
+            var go = pool.Get(widgetName, false);
+            if (go is null)
+            {
+                Debug.Log("create new");
+                var res = Resources.Load<GameObject>(resName);
+                var go2 = Instantiate(res, MainCanvas.instance.transform);
+                go2.name = widgetName;
+                pool.Add(go2, 1);
+                return go2.GetComponent<T>();
+            }
+
+            go.transform.SetParent(MainCanvas.instance.GetLayerRootTransform(WidgetType.Hud));
+            return go.GetComponent<T>();
         }
 
         public virtual bool IsActive()
@@ -181,24 +212,29 @@ namespace Nekoyume.UI
 
             if (WidgetType == WidgetType.Screen)
             {
-                MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Popup);
+                MainCanvas.instance.SetLayerSortingOrderToTarget(
+                    WidgetType.Screen,
+                    WidgetType.Popup);
             }
             else if (WidgetType == WidgetType.Popup)
             {
-                MainCanvas.instance.SetSiblingOrderNext(WidgetType, WidgetType.Screen);
+                MainCanvas.instance.SetLayerSortingOrderToTarget(
+                    WidgetType.Popup,
+                    WidgetType.Screen);
             }
 
+            AnimationState = AnimationStateType.Showing;
             gameObject.SetActive(true);
 
             if (!Animator ||
                 ignoreShowAnimation)
             {
-                _animationState = AnimationState.Shown;
+                AnimationState = AnimationStateType.Shown;
                 return;
             }
 
-            _animationState = AnimationState.Showing;
-            Animator.Play("Show");
+            Animator.enabled = true;
+            Animator.Play("Show", 0, 0);
         }
 
         public virtual void Close(bool ignoreCloseAnimation = false)
@@ -214,20 +250,30 @@ namespace Nekoyume.UI
                 return;
             }
 
-            StopAllCoroutines();
-
             if (!Animator ||
                 ignoreCloseAnimation)
             {
                 OnCompleteOfCloseAnimation();
                 gameObject.SetActive(false);
-                _animationState = AnimationState.Closed;
+                AnimationState = AnimationStateType.Closed;
                 return;
             }
 
-            _animationState = AnimationState.Closing;
+            AnimationState = AnimationStateType.Closing;
             // TODO : wait close animation
-            StartCoroutine(CoClose());
+            if (!(_coClose is null))
+            {
+                StopCoroutine(_coClose);
+                _coClose = null;
+            }
+
+            if (!(_coCompleteCloseAnimation is null))
+            {
+                StopCoroutine(_coCompleteCloseAnimation);
+                _coCompleteCloseAnimation = null;
+            }
+
+            _coClose = StartCoroutine(CoClose());
         }
 
         protected void Push()
@@ -254,22 +300,34 @@ namespace Nekoyume.UI
             if (Animator)
             {
                 IsCloseAnimationCompleted = false;
-                Animator.Play("Close");
-                var coroutine = StartCoroutine(CoCompleteCloseAnimation());
+                Animator.enabled = true;
+                Animator.Play("Close", 0, 0);
+
+                if (!(_coCompleteCloseAnimation is null))
+                {
+                    StopCoroutine(_coCompleteCloseAnimation);
+                }
+
+                _coCompleteCloseAnimation = StartCoroutine(CoCompleteCloseAnimation());
                 yield return new WaitUntil(() => IsCloseAnimationCompleted);
-                StopCoroutine(coroutine);
+                if (!(_coCompleteCloseAnimation is null))
+                {
+                    StopCoroutine(_coCompleteCloseAnimation);
+                    _coCompleteCloseAnimation = null;
+                }
             }
 
             gameObject.SetActive(false);
+            AnimationState = AnimationStateType.Closed;
         }
 
         private IEnumerator CoCompleteCloseAnimation()
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
             if (!IsCloseAnimationCompleted)
             {
                 IsCloseAnimationCompleted = true;
-                _animationState = AnimationState.Closed;
+                AnimationState = AnimationStateType.Closed;
             }
         }
 
@@ -278,7 +336,7 @@ namespace Nekoyume.UI
         private void OnCompleteOfShowAnimation()
         {
             OnCompleteOfShowAnimationInternal();
-            _animationState = AnimationState.Shown;
+            AnimationState = AnimationStateType.Shown;
         }
 
         protected virtual void OnCompleteOfShowAnimationInternal()
@@ -290,7 +348,6 @@ namespace Nekoyume.UI
             OnCompleteOfCloseAnimationInternal();
 
             IsCloseAnimationCompleted = true;
-            _animationState = AnimationState.Closed;
         }
 
         protected virtual void OnCompleteOfCloseAnimationInternal()

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 301787237308319091}
   - component: {fileID: 7361512267959849885}
   - component: {fileID: 2945095307097995939}
+  - component: {fileID: 6086333436936606119}
   m_Layer: 5
   m_Name: TimeText
   m_TagString: Untagged
@@ -158,6 +159,22 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6086333436936606119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1337060853934366212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontSizeOffset: 0
+  fontMaterialType: 0
+  l10nKey: 
 --- !u!1 &7348184971142024869
 GameObject:
   m_ObjectHideFlags: 0

@@ -9,17 +9,28 @@ namespace Nekoyume.UI.Tween
     [RequireComponent(typeof(Graphic))]
     public class GraphicAlphaTweener : MonoBehaviour
     {
-        [SerializeField] private float beginValue = 0f;
-        [SerializeField] private float endValue = 1f;
-        [SerializeField] private float duration = 1f;
-        [SerializeField] private bool infiniteLoop = false;
+        [SerializeField]
+        private float beginValue = 0f;
 
-        [SerializeField] private Ease ease = Ease.Linear;
-        [SerializeField] private LoopType loopType = LoopType.Yoyo;
+        [SerializeField]
+        private float endValue = 1f;
+
+        [SerializeField]
+        private float duration = 1f;
+
+        [SerializeField]
+        private bool infiniteLoop = false;
+
+        [SerializeField]
+        private Ease ease = Ease.Linear;
+
+        [SerializeField]
+        private LoopType loopType = LoopType.Yoyo;
 
         private Graphic _graphic;
-        private TweenerCore<Color, Color, ColorOptions> _tween;
         private Color _originColor;
+
+        protected Tweener Tweener { get; set; }
 
         private void Awake()
         {
@@ -33,17 +44,29 @@ namespace Nekoyume.UI.Tween
             _graphic.color = color;
 
             color.a = endValue;
-            _tween = _graphic.DOColor(color, duration)
+            Tweener = _graphic.DOColor(color, duration)
                 .SetEase(ease);
 
             if (infiniteLoop)
-                _tween = _tween.SetLoops(-1, loopType);
+            {
+                Tweener = Tweener.SetLoops(-1, loopType);
+            }
         }
 
         private void OnDisable()
         {
-            _tween?.Kill();
+            KillTween();
             _graphic.color = _originColor;
+        }
+
+        public void KillTween()
+        {
+            if (Tweener?.IsPlaying() ?? false)
+            {
+                Tweener?.Kill();
+            }
+
+            Tweener = null;
         }
     }
 }

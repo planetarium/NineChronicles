@@ -15,8 +15,8 @@ namespace Nekoyume.Game.Character
             base.UpdateHpBar();
 
             var battle = Widget.Find<UI.Battle>();
-            battle.enemyPlayerStatus.SetHp(CurrentHP, HP);
-            battle.enemyPlayerStatus.SetBuff(CharacterModel.Buffs);
+            battle.EnemyPlayerStatus.SetHp(CurrentHP, HP);
+            battle.EnemyPlayerStatus.SetBuff(CharacterModel.Buffs);
         }
 
         public void Set(Model.CharacterBase model, Player player, bool updateCurrentHP = false)
@@ -38,7 +38,11 @@ namespace Nekoyume.Game.Character
 
         protected override void ExecuteRun()
         {
-            Animator.Idle();
+            Animator.Run();
+
+            Vector2 position = transform.position;
+            position.x += Time.deltaTime * -RunSpeed;
+            transform.position = position;
         }
     }
 }

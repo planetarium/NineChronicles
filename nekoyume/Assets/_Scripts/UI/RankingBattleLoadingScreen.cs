@@ -13,7 +13,7 @@ namespace Nekoyume.UI
         public void Show(ArenaInfo enemyInfo)
         {
             var player = Game.Game.instance.Stage.GetPlayer();
-            var sprite = SpriteHelper.GetItemIcon(player.Model.armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId);
+            var sprite = SpriteHelper.GetItemIcon(player.Model.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
             profile.Set(player.Level, States.Instance.CurrentAvatarState.NameWithHash, sprite);
             var enemySprite = SpriteHelper.GetItemIcon(enemyInfo.ArmorId);
             enemyProfile.Set(enemyInfo.Level, enemyInfo.AvatarName, enemySprite);

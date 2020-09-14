@@ -2,12 +2,13 @@ using NUnit.Framework;
 using UnityEngine;
 using System.IO;
 using Nekoyume.Helper;
+using UnityEngine.TestTools;
 
 namespace Tests.EditMode
 {
     public class CommandLineOptionsTest
     {
-        private static string jsonFixturePath = $"{Application.dataPath}/EditorTests/Fixtures";
+        private static string jsonFixturePath = $"{Application.dataPath}/Tests/EditMode/Fixtures";
         [Test]
         public void EmptyJson()
         {

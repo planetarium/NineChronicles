@@ -31,15 +31,33 @@ namespace Nekoyume.UI.Module
             }
         }
 
-        public WorldButton worldButton;
-        public string worldName;
-        public TextMeshProUGUI stagePageText;
-        public HorizontalScrollSnap horizontalScrollSnap;
-        public List<WorldMapPage> pages;
-        public Button previousButton;
-        public Button nextButton;
+        [SerializeField]
+        private TextMeshProUGUI stagePageText = null;
+
+        [SerializeField]
+        private HorizontalScrollSnap horizontalScrollSnap = null;
+
+        [SerializeField]
+        private List<WorldMapPage> pages = null;
+
+        [SerializeField]
+        private Button previousButton = null;
+
+        [SerializeField]
+        private Button nextButton = null;
+
+        [SerializeField]
+        private Image backgroundImage = null;
+
+        [SerializeField]
+        private Image backgroundImage2 = null;
+
+        [SerializeField]
+        private Image titleImage = null;
 
         private readonly List<IDisposable> _disposablesForModel = new List<IDisposable>();
+
+        public IReadOnlyList<WorldMapPage> Pages => pages;
 
         public ViewModel SharedViewModel { get; private set; }
 
@@ -55,7 +73,7 @@ namespace Nekoyume.UI.Module
             horizontalScrollSnap.OnSelectionPageChangedEvent.AddListener(value =>
                 SharedViewModel.CurrentPageNumber.Value = value + 1);
 
-            foreach (var stage in pages.SelectMany(page => page.stages))
+            foreach (var stage in pages.SelectMany(page => page.Stages))
             {
                 stage.onClick.Subscribe(SubscribeOnClick)
                     .AddTo(gameObject);
@@ -65,7 +83,9 @@ namespace Nekoyume.UI.Module
         public void Set(WorldSheet.Row worldRow)
         {
             if (worldRow is null)
+            {
                 throw new ArgumentNullException(nameof(worldRow));
+            }
 
             _disposablesForModel.DisposeAllAndClear();
             SharedViewModel = new ViewModel(worldRow);
@@ -76,22 +96,28 @@ namespace Nekoyume.UI.Module
                 .ToList();
             var stageRowsCount = stageRows.Count;
             if (worldRow.StagesCount != stageRowsCount)
+            {
                 throw new SheetRowValidateException(
                     $"{worldRow.Id}: worldRow.StagesCount({worldRow.StagesCount}) != stageRowsCount({stageRowsCount})");
+            }
 
+            var imageKey = worldRow.Id == 101 ? "99" : $"0{worldRow.Id}";
+            backgroundImage.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}");
+            backgroundImage2.sprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/battle_UI_BG_{imageKey}");
+            titleImage.overrideSprite = Resources.Load<Sprite>($"UI/Textures/WorldMap/UI_bg_worldmap_{imageKey}");
+            titleImage.SetNativeSize();
             var stageOffset = 0;
             var nextPageShouldHide = false;
-            var shouldDestroyPages = new List<WorldMapPage>();
             foreach (var page in pages)
             {
+                page.gameObject.SetActive(false);
                 if (nextPageShouldHide)
                 {
-                    shouldDestroyPages.Add(page);
-
                     continue;
                 }
+                page.gameObject.SetActive(true);
 
-                var stageCount = page.stages.Count;
+                var stageCount = page.Stages.Count;
                 var stageModels = new List<WorldMapStage.ViewModel>();
                 for (var i = 0; i < stageCount; i++)
                 {
@@ -105,9 +131,10 @@ namespace Nekoyume.UI.Module
                     var stageRowsIndex = stageOffset + i;
                     if (stageRowsIndex < stageRowsCount)
                     {
+                        var stageRow = stageRows[stageRowsIndex];
                         var stageModel = new WorldMapStage.ViewModel(
-                            stageRows[stageRowsIndex],
-                            $"{stageRowsIndex + 1}",
+                            stageRow,
+                            stageRow.StageId.ToString(),
                             WorldMapStage.State.Normal);
 
                         stageModels.Add(stageModel);
@@ -119,7 +146,7 @@ namespace Nekoyume.UI.Module
                     }
                 }
 
-                page.Show(stageModels);
+                page.Show(stageModels, imageKey);
                 stageOffset += stageModels.Count;
                 if (stageOffset >= stageRowsCount)
                 {
@@ -127,14 +154,8 @@ namespace Nekoyume.UI.Module
                 }
             }
 
-            foreach (var shouldDestroyPage in shouldDestroyPages)
-            {
-                pages.Remove(shouldDestroyPage);
-                Destroy(shouldDestroyPage.gameObject);
-            }
-
             SharedViewModel.StageIdToShow.Value = worldRow.StageBegin + stageRowsCount - 1;
-            SharedViewModel.PageCount.Value = pages.Count;
+            SharedViewModel.PageCount.Value = pages.Count(p => p.gameObject.activeSelf);
             SharedViewModel.CurrentPageNumber.Value = 1;
 
             SharedViewModel.PageCount
@@ -156,7 +177,9 @@ namespace Nekoyume.UI.Module
 
         public void Set(int openedStageId = -1, int selectedStageId = -1)
         {
-            foreach (var stage in pages.SelectMany(page => page.stages))
+            foreach (var stage in pages
+                .SelectMany(page => page.Stages)
+                .Where(stage => !(stage.SharedViewModel is null)))
             {
                 var stageId = stage.SharedViewModel.stageId;
                 var stageState = WorldMapStage.State.Normal;
@@ -170,15 +193,15 @@ namespace Nekoyume.UI.Module
                     stageState = WorldMapStage.State.Disabled;
                 }
 
-                stage.SharedViewModel.state.Value = stageState;
-                stage.SharedViewModel.selected.Value = stageId == selectedStageId;
+                stage.SharedViewModel.State.Value = stageState;
+                stage.SharedViewModel.Selected.Value = stageId == selectedStageId;
             }
         }
 
-        public void ShowByStageId(int value)
+        public void ShowByStageId(int value, int stageIdToNotify)
         {
             ShowByPageNumber(GetPageNumber(value));
-            SetSelectedStageId(value);
+            SetSelectedStageId(value, stageIdToNotify);
 
             gameObject.SetActive(true);
         }
@@ -202,7 +225,7 @@ namespace Nekoyume.UI.Module
             var stageOffset = SharedViewModel.RowData.StageBegin - 1;
             foreach (var page in pages)
             {
-                stageOffset += page.stages.Count;
+                stageOffset += page.Stages.Count;
                 if (stageId > stageOffset &&
                     pageNumber < pages.Count)
                 {
@@ -217,17 +240,20 @@ namespace Nekoyume.UI.Module
             return pageNumber;
         }
 
-        private void SetSelectedStageId(int value)
+        private void SetSelectedStageId(int value, int stageIdToNotify)
         {
-            foreach (var stage in pages.SelectMany(page => page.stages))
+            foreach (var stage in pages.Where(p => p.gameObject.activeSelf).SelectMany(page => page.Stages))
             {
-                stage.SharedViewModel.selected.Value = stage.SharedViewModel.stageId == value;
+                var stageId = stage.SharedViewModel.stageId;
+                stage.SharedViewModel.Selected.Value = stageId == value;
+                stage.SharedViewModel.HasNotification.Value =
+                    stageId == stageIdToNotify && !stage.SharedViewModel.Selected.Value;
             }
         }
 
         private void SubscribeOnClick(WorldMapStage stage)
         {
-            SetSelectedStageId(stage.SharedViewModel.stageId);
+            SetSelectedStageId(stage.SharedViewModel.stageId, Widget.Find<WorldMap>().StageIdToNotify);
         }
     }
 }

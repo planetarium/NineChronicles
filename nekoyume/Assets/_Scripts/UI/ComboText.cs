@@ -20,17 +20,32 @@ namespace Nekoyume.UI
         public TextMeshProUGUI labelText;
         public CanvasGroup group;
 
-        private int _combo = 0;
+        public int _combo { get; private set; }
         private Subject<int> comboSubject = new Subject<int>();
         [System.NonSerialized] public int comboMax;
 
         private RectTransform _rectTransform;
+        private Sequence _sequence;
+        private Coroutine _coroutine;
 
         private void Awake()
         {
             comboSubject.SubscribeTo(shadowText).AddTo(gameObject);
             comboSubject.SubscribeTo(labelText).AddTo(gameObject);
             _rectTransform = GetComponent<RectTransform>();
+
+            _sequence = DOTween.Sequence();
+            _sequence
+                .SetAutoKill(false)
+                .OnPlay(() =>
+                {
+                    _rectTransform.localScale = LocalScaleBefore;
+                    group.alpha = 1f;
+                })
+                .Insert(0, _rectTransform.DOScale(LocalScaleAfter, TweenDuration)
+                    .SetEase(Ease.OutCubic))
+                .Join(group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration)
+                    .SetEase(Ease.InCirc));
         }
 
         public void Show(bool attacked)
@@ -40,16 +55,33 @@ namespace Nekoyume.UI
                 if (++_combo > comboMax)
                     _combo = 1;
 
-                group.alpha = 1f;
                 comboSubject.OnNext(_combo);
                 gameObject.SetActive(true);
 
-                _rectTransform.localScale = LocalScaleBefore;
+                _sequence?.Complete();
 
-                _rectTransform.DOScale(LocalScaleAfter, TweenDuration).SetEase(Ease.OutCubic);
-                group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration).SetEase(Ease.InCirc);
+                _sequence = DOTween.Sequence();
+                _sequence
+                    .SetAutoKill(false)
+                    .OnPlay(() =>
+                    {
+                        _rectTransform.localScale = LocalScaleBefore;
+                        group.alpha = 1f;
+                    })
+                    .OnComplete(() =>
+                    {
+                        _sequence = null;
+                    })
+                    .Insert(0, _rectTransform.DOScale(LocalScaleAfter, TweenDuration)
+                        .SetEase(Ease.OutCubic))
+                    .Join(group.DOFade(0.0f, TweenDuration * 2.0f).SetDelay(TweenDuration)
+                        .SetEase(Ease.InCirc));
 
-                StartCoroutine(CoClose());
+                _sequence.Play();
+
+                if(_coroutine != null)
+                    StopCoroutine(_coroutine);
+                _coroutine = StartCoroutine(CoClose());
             }
             else
             {

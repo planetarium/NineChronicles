@@ -121,18 +121,16 @@ namespace Editor
             }
             stateProxy.RegisterAlias("agent", states.AgentState.address);
             stateProxy.RegisterAlias("shop", states.ShopState.address);
-            stateProxy.RegisterAlias("ranking", states.RankingState.address);
+            for (int i = 0; i < RankingState.RankingMapCapacity; ++i)
+            {
+                stateProxy.RegisterAlias("ranking", RankingState.Derive(i));
+            }
+
             stateProxy.RegisterAlias("gameConfig", GameConfigState.Address);
             stateProxy.RegisterAlias("redeemCode", RedeemCodeState.Address);
             if (!(states.CurrentAvatarState is null))
             {
                 stateProxy.RegisterAlias("me", states.CurrentAvatarState.address);
-            }
-
-            for (var index = 0; index < WeeklyArenaState.Addresses.Count; index++)
-            {
-                var address = WeeklyArenaState.Addresses[index];
-                stateProxy.RegisterAlias($"weekly{index}", address);
             }
         }
     }

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using Libplanet;
-using Nekoyume.EnumType;
+using Nekoyume.Battle;
 using Nekoyume.Model.Item;
 using Nekoyume.UI.Module;
 using UniRx;
@@ -39,8 +40,14 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<Func<InventoryItem, bool>> EquippedEnabledFunc =
             new ReactiveProperty<Func<InventoryItem, bool>>();
 
-        public readonly Subject<InventoryItemView> OnDoubleClickItemView =
-            new Subject<InventoryItemView>();
+        private ItemSubType[] _itemSubTypesForNotification =
+        {
+            ItemSubType.Weapon,
+            ItemSubType.Armor,
+            ItemSubType.Belt,
+            ItemSubType.Necklace,
+            ItemSubType.Ring
+        };
 
         public Inventory(ItemType stateType = ItemType.Equipment)
         {
@@ -63,7 +70,6 @@ namespace Nekoyume.UI.Model
             SelectedItemView.Dispose();
             DimmedFunc.Dispose();
             EquippedEnabledFunc.Dispose();
-            OnDoubleClickItemView.Dispose();
         }
 
         public void ResetItems(Nekoyume.Model.Item.Inventory inventory)
@@ -90,25 +96,6 @@ namespace Nekoyume.UI.Model
         {
             var item = new InventoryItem(itemBase, count);
             item.Dimmed.Value = DimmedFunc.Value(item);
-            item.OnClick.Subscribe(model =>
-            {
-                if (!(model is InventoryItem inventoryItem))
-                {
-                    return;
-                }
-
-                SubscribeItemOnClick(inventoryItem.View);
-            });
-            item.OnDoubleClick.Subscribe(model =>
-            {
-                if (!(model is InventoryItem inventoryItem))
-                {
-                    return;
-                }
-
-                DeselectItemView();
-                OnDoubleClickItemView.OnNext(inventoryItem.View);
-            });
 
             return item;
         }
@@ -121,7 +108,7 @@ namespace Nekoyume.UI.Model
         {
             var blockIndex = Game.Game.instance.Agent?.BlockIndex ?? -1;
             InventoryItem inventoryItem;
-            switch (itemBase.Data.ItemType)
+            switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
                     var consumable = (Consumable) itemBase;
@@ -142,6 +129,7 @@ namespace Nekoyume.UI.Model
                     }
 
                     inventoryItem = CreateInventoryItem(itemBase, count);
+                    inventoryItem.EquippedEnabled.Value = costume.equipped;
                     Costumes.Add(inventoryItem);
                     break;
                 case ItemType.Equipment:
@@ -179,7 +167,7 @@ namespace Nekoyume.UI.Model
         public void RemoveItem(ItemBase itemBase, int count = 1)
         {
             InventoryItem inventoryItem;
-            switch (itemBase.Data.ItemType)
+            switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
                     if (!TryGetConsumable((ItemUsable) itemBase, out inventoryItem))
@@ -258,7 +246,7 @@ namespace Nekoyume.UI.Model
 
         public bool TryGetItem(ItemBase itemBase, out InventoryItem inventoryItem)
         {
-            switch (itemBase.Data.ItemType)
+            switch (itemBase.ItemType)
             {
                 case ItemType.Consumable:
                     return TryGetConsumable((ItemUsable) itemBase, out inventoryItem);
@@ -309,7 +297,7 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            return TryGetCostume(itemUsable.Data.Id, out inventoryItem);
+            return TryGetCostume(itemUsable.Id, out inventoryItem);
         }
 
         public bool TryGetCostume(Costume costume, out InventoryItem inventoryItem)
@@ -320,14 +308,14 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            return TryGetCostume(costume.Data.Id, out inventoryItem);
+            return TryGetCostume(costume.Id, out inventoryItem);
         }
 
         public bool TryGetCostume(int id, out InventoryItem inventoryItem)
         {
             foreach (var item in Costumes)
             {
-                if (item.ItemBase.Value.Data.Id != id)
+                if (item.ItemBase.Value.Id != id)
                 {
                     continue;
                 }
@@ -376,7 +364,7 @@ namespace Nekoyume.UI.Model
                 return false;
             }
 
-            return TryGetMaterial(material.Data.ItemId, out inventoryItem);
+            return TryGetMaterial(material.ItemId, out inventoryItem);
         }
 
         public bool TryGetMaterial(HashDigest<SHA256> itemId, out InventoryItem inventoryItem)
@@ -384,7 +372,7 @@ namespace Nekoyume.UI.Model
             foreach (var item in Materials)
             {
                 if (!(item.ItemBase.Value is Material material) ||
-                    !material.Data.ItemId.Equals(itemId))
+                    !material.ItemId.Equals(itemId))
                 {
                     continue;
                 }
@@ -401,7 +389,7 @@ namespace Nekoyume.UI.Model
         {
             foreach (var item in Materials)
             {
-                if (item.ItemBase.Value.Data.Id != id)
+                if (item.ItemBase.Value.Id != id)
                 {
                     continue;
                 }
@@ -416,7 +404,7 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
-        private void SubscribeItemOnClick(InventoryItemView view)
+        public void SubscribeItemOnClick(InventoryItemView view)
         {
             if (view != null &&
                 view == SelectedItemView.Value)
@@ -473,6 +461,7 @@ namespace Nekoyume.UI.Model
         private void SubscribeState(ItemType state)
         {
             DeselectItemView();
+            UpdateEquipmentNotification();
         }
 
         private void SubscribeDimmedFunc(Func<InventoryItem, bool> func)
@@ -561,6 +550,56 @@ namespace Nekoyume.UI.Model
 
         #endregion
 
+        public void UpdateEquipmentNotification()
+        {
+            if (State.Value != ItemType.Equipment)
+                return;
+
+            var equipments = Equipments;
+
+            foreach (var item in equipments)
+            {
+                item.HasNotification.Value = false;
+            }
+
+            foreach (var type in _itemSubTypesForNotification)
+            {
+                var itemCount = type != ItemSubType.Ring ? 1 : 2;
+                var matchedEquipments = Equipments
+                    .Where(e => e.ItemBase.Value.ItemSubType == type);
+                var equippedEquipments =
+                    matchedEquipments.Where(e => e.EquippedEnabled.Value);
+                var unequippedEquipments =
+                    matchedEquipments.Where(e => !e.EquippedEnabled.Value)
+                    .OrderByDescending(i => CPHelper.GetCP(i.ItemBase.Value as Equipment));
+
+                var equippedCount = equippedEquipments.Count();
+
+                if (equippedCount < itemCount)
+                {
+                    var itemsToNotify = unequippedEquipments.Take(itemCount - equippedCount);
+
+                    foreach (var item in itemsToNotify)
+                    {
+                        item.HasNotification.Value = true;
+                    }
+                }
+                else
+                {
+                    var itemsToNotify =
+                        unequippedEquipments.Where(e =>
+                        {
+                            var cp = CPHelper.GetCP(e.ItemBase.Value as Equipment);
+                            return equippedEquipments.Any(i => CPHelper.GetCP(i.ItemBase.Value as Equipment) < cp);
+                        }).Take(itemCount);
+                    foreach (var item in itemsToNotify)
+                    {
+                        item.HasNotification.Value = true;
+                    }
+                }
+            }
+        }
+
         private static bool DefaultDimmedFunc(InventoryItem inventoryItem)
         {
             return false;
@@ -573,12 +612,15 @@ namespace Nekoyume.UI.Model
 
         private static bool DefaultEquippedFunc(InventoryItem inventoryItem)
         {
-            if (!(inventoryItem.ItemBase.Value is Equipment equipment))
+            switch (inventoryItem.ItemBase.Value)
             {
-                return false;
+                case Costume costume:
+                    return costume.equipped;
+                case Equipment equipment:
+                    return equipment.equipped;
+                default:
+                    return false;
             }
-
-            return equipment.equipped;
         }
 
         private void SetGlowedAll(bool value)

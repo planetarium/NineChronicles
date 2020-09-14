@@ -8,12 +8,12 @@ namespace Nekoyume.UI
     {
         public static Sprite GetIconSprite(this ItemBase item)
         {
-            return SpriteHelper.GetItemIcon(item.Data.Id);
+            return SpriteHelper.GetItemIcon(item.Id);
         }
 
         public static Sprite GetBackgroundSprite(this ItemBase item)
         {
-            return SpriteHelper.GetItemBackground(item.Data.Grade);
+            return SpriteHelper.GetItemBackground(item.Grade);
         }
     }
 }

@@ -894,6 +894,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6453854297990876864, guid: 94d768d47acad2547a3a4da428de7beb,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9067033040784269320, guid: 94d768d47acad2547a3a4da428de7beb,
         type: 3}
       propertyPath: m_Enabled
@@ -1004,6 +1009,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6582201392553809964, guid: 21e5ce29feccd424a896a27828b773aa,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7769050613840838365, guid: 21e5ce29feccd424a896a27828b773aa,
         type: 3}
       propertyPath: m_SortingOrder
@@ -1083,6 +1093,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1300123710854422382, guid: 22c9c44b0a8bcb540902ea4979467a2e,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1300123710855103194, guid: 22c9c44b0a8bcb540902ea4979467a2e,
         type: 3}

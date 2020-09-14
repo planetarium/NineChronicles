@@ -1,5 +1,5 @@
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.UI.AnimatedGraphics;
 using TMPro;
 using UniRx;
@@ -30,11 +30,15 @@ namespace Nekoyume.UI.Module
         private TextMeshProUGUI disabledText = null;
 
         [SerializeField]
+        private Image hasNotificationImage = null;
+
+        [SerializeField]
         private string localizationKey = null;
 
         private IToggleListener _toggleListener;
 
         public readonly Subject<CategoryButton> OnClick = new Subject<CategoryButton>();
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         private void Awake()
         {
@@ -42,12 +46,13 @@ namespace Nekoyume.UI.Module
 
             if (!string.IsNullOrEmpty(localizationKey))
             {
-                var localization = LocalizationManager.Localize(localizationKey);
+                var localization = L10nManager.Localize(localizationKey);
                 normalText.text = localization;
                 selectedText.text = localization;
             }
 
             button.OnClickAsObservable().Subscribe(SubscribeOnClick).AddTo(gameObject);
+            HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
 
             InitializeMessageCat();
         }
@@ -101,8 +106,8 @@ namespace Nekoyume.UI.Module
         public void SetLockCondition(int condition)
         {
             _lockCondition = condition;
-            _messageForCat =
-                $"<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_lockCondition} First!";
+            _messageForCat = string.Format(L10nManager.Localize("UI_REQUIRE_CLEAR_STAGE"),
+                _lockCondition);
             UpdateLock();
         }
 

@@ -23,6 +23,7 @@ namespace Nekoyume.UI
         {
             var targetPosition = target.transform.position + offset;
             RectTransform.anchoredPosition = targetPosition.ToCanvasPosition(ActionCamera.instance.Cam, MainCanvas.instance.Canvas);
+            RectTransform.localScale = new Vector3(1, 1);
         }
 
         public void Set(int current, int max)

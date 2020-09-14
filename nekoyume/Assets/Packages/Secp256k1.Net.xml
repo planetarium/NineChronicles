@@ -100,6 +100,18 @@
             <param name="inputlen">length of the array pointed to by input</param>
             <returns>1: correct signature, 0: incorrect or unparseable signature</returns>
         </member>
+        <member name="T:Secp256k1Net.secp256k1_ecdsa_signature_serialize_der">
+            <summary>
+            Serialize an ECDSA signature in DER format (72 bytes maximum)
+            This function will accept any valid ECDSA encoded signature
+            After the call, output will always be initialized.
+            </summary>
+            <param name="ctx">a secp256k1 context object (cannot be NULL)</param>
+            <param name="output">(Output) pointer to an array where the serialized signature will be placed (cannot be NULL)</param>    
+            <param name="outputlen">which is initially set to the size of output, and is overwritten with the written size (cannot be NULL)</param>
+            <param name="sig">(Input) pointer to an array where a signature to parse resides (cannot be NULL)</param>
+            <returns>1: correct signature, 0: incorrect or unserializeble signature</returns>
+        </member>
         <member name="T:Secp256k1Net.secp256k1_ecdsa_recoverable_signature_serialize_compact">
             <summary>
             Serialize an ECDSA signature in compact format (64 bytes + recovery id).
@@ -291,7 +303,17 @@
             </summary>
             <param name="signatureOutput">(Output) a signature object</param>
             <param name="signatureInput">(Input) a signature to be parsed</param>
-            <returns>True when the signature could be parsed, false otherwise.</returns>
+            <returns>True when the signature could be parsed, false otherwise.</returns>       
+        </member>
+        <member name="M:Secp256k1Net.Secp256k1.SignatureSerializeDer(System.Span{System.Byte},System.Span{System.Byte},System.Int32@)">
+            <summary>
+            Serialize an ECDSA signature in DER format (72 bytes maximum)
+            This function will accept any valid ECDSA encoded signature
+            </summary>
+            <param name="signatureOutput">(Output) a signature object</param>
+            <param name="signatureInput">(Input) a signature to be parsed</param>
+            <param name="singatureOutputLength">(Output) lenght of serialized DER signature</param>
+            <returns>True when the signature could be serialized, false otherwise.</returns>
         </member>
         <member name="M:Secp256k1Net.Secp256k1.Verify(System.Span{System.Byte},System.Span{System.Byte},System.Span{System.Byte})">
             <summary>

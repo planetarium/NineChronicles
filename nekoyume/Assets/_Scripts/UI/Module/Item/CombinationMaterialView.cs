@@ -20,10 +20,11 @@ namespace Nekoyume.UI.Module
         private Tweener _twinkleTweener;
         private Tweener _setTweener;
 
-        private void OnDisable()
+        protected override void OnDisable()
         {
             _twinkleTweener?.Kill();
             _setTweener?.Kill();
+            base.OnDisable();
         }
 
         public virtual void Set(InventoryItem inventoryItemViewModel, int count = 1)

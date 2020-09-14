@@ -18,10 +18,7 @@ namespace Nekoyume.UI.Tween
 
         public void SetBeginRect(RectTransform rect)
         {
-            var corners = new Vector3[4];
-            rect.GetWorldCorners(corners);
-
-            var beginPos = (corners[0] + corners[2]) / 2;
+            var beginPos = rect.GetWorldPositionOfCenter();
             BeginValue = beginPos;
             EndValue = transform.position;
             transform.position = beginPos;

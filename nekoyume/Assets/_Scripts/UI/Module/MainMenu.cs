@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using DG.Tweening;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-using System.Collections.Generic;
-using Assets.SimpleLocalization;
 using Nekoyume.Game.Character;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using Nekoyume.UI.AnimatedGraphics;
 using UnityEngine.UI;
@@ -31,6 +30,7 @@ namespace Nekoyume.UI.Module
         public Transform bgTransform;
         private Vector3 _originLocalScale;
         public MenuType type;
+        public Image hasNotificationImage;
         public GameObject[] lockObjects;
         public GameObject[] unLockObjects;
 
@@ -67,8 +67,11 @@ namespace Nekoyume.UI.Module
                     throw new ArgumentOutOfRangeException();
             }
 
+            var unlockConditionString = string.Format(
+                L10nManager.Localize("UI_STAGE_LOCK_FORMAT"),
+                _requireStage);
             _messageForCat =
-                $"{LocalizationManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> Clear Stage #{_requireStage} First!";
+                $"{L10nManager.Localize(localizationKey)}\n<sprite name=\"UI_icon_lock_01\"> {unlockConditionString}";
 
             gameObject.AddComponent<ObservablePointerEnterTrigger>()
                 .OnPointerEnterAsObservable()
@@ -156,21 +159,21 @@ namespace Nekoyume.UI.Module
 
             if (npc)
             {
-                npc.gameObject.SetActive(IsUnlocked);
+                npc.gameObject.SetActive(true);
             }
 
             foreach (var go in lockObjects)
             {
-                go.SetActive(!IsUnlocked);
+                go.SetActive(false);
             }
 
             foreach (var go in unLockObjects)
             {
-                go.SetActive(IsUnlocked);
+                go.SetActive(true);
             }
 
             gameObject.SetActive(true);
-            speechBubble.Init(IsUnlocked);
+            speechBubble.Init(true);
         }
     }
 }

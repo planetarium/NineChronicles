@@ -1,4 +1,4 @@
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 
@@ -17,7 +17,7 @@ namespace Nekoyume.UI.Module
 
         private void Awake()
         {
-            descriptionText.text = LocalizationManager.Localize("UI_RANKING_REWARDS_DESCRIPTION");
+            descriptionText.text = L10nManager.Localize("UI_RANKING_REWARDS_DESCRIPTION");
             firstRewardText.text = GameConfig.RankingRewardFirst.ToString();
             secondRewardText.text = GameConfig.RankingRewardSecond.ToString();
             thirdRewardText.text = GameConfig.RankingRewardThird.ToString();

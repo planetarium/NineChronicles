@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using DG.Tweening;
 using Nekoyume.BlockChain;
 using Nekoyume.Game.Controller;
@@ -25,6 +24,10 @@ using Nekoyume.UI.Model;
 using Spine.Unity;
 using UnityEngine;
 using TentuPlay.Api;
+using UniRx;
+using mixpanel;
+using Nekoyume.Game.Character;
+using Nekoyume.L10n;
 
 namespace Nekoyume.Game
 {
@@ -63,16 +66,31 @@ namespace Nekoyume.Game
         private BattleLog _battleLog;
         private BattleResult.Model _battleResultModel;
         private bool _rankingBattle;
+        private Coroutine _battleCoroutine;
 
+        public List<GameObject> ReleaseWhiteList { get; private set; } = new List<GameObject>();
         public SkillController SkillController { get; private set; }
         public BuffController BuffController { get; private set; }
         public bool IsInStage { get; private set; }
-        public Enemy Boss { get; private set; }
+        public Model.Enemy Boss { get; private set; }
         public AvatarState AvatarState { get; set; }
-        public Vector3 SelectPositionBegin(int index) => new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
-        public Vector3 SelectPositionEnd(int index) => new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
+
+        public Vector3 SelectPositionBegin(int index) =>
+            new Vector3(-2.15f + index * 2.22f, -1.79f, 0.0f);
+
+        public Vector3 SelectPositionEnd(int index) =>
+            new Vector3(-2.15f + index * 2.22f, -0.25f, 0.0f);
 
         public bool showLoadingScreen;
+
+        private Character.Player _stageRunningPlayer = null;
+
+        #region Events
+
+        private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
+        public IObservable<Stage> onEnterToStageEnd => _onEnterToStageEnd;
+
+        #endregion
 
         protected void Awake()
         {
@@ -121,6 +139,11 @@ namespace Nekoyume.Game
             _rankingBattle = true;
             if (_battleLog?.id != log.id)
             {
+                if (!(_battleCoroutine is null))
+                {
+                    StopCoroutine(_battleCoroutine);
+                    objectPool.ReleaseAll();
+                }
                 _battleLog = log;
                 PlayRankingBattle(_battleLog);
             }
@@ -149,15 +172,23 @@ namespace Nekoyume.Game
                     var moveTo = new Vector3(-0.05f, -0.5f);
                     playerObject.transform.DOScale(1.1f, 2.0f).SetDelay(0.2f);
                     playerObject.transform.DOMove(moveTo, 1.3f).SetDelay(0.2f);
-                    var seqPos = new Vector3(moveTo.x, moveTo.y - UnityEngine.Random.Range(0.05f, 0.1f), 0.0f);
+                    var seqPos = new Vector3(
+                        moveTo.x,
+                        moveTo.y - UnityEngine.Random.Range(0.05f, 0.1f),
+                        0.0f);
                     var seq = DOTween.Sequence();
-                    seq.Append(playerObject.transform.DOMove(seqPos, UnityEngine.Random.Range(4.0f, 5.0f)));
-                    seq.Append(playerObject.transform.DOMove(moveTo, UnityEngine.Random.Range(4.0f, 5.0f)));
+                    seq.Append(playerObject.transform.DOMove(
+                        seqPos,
+                        UnityEngine.Random.Range(4.0f, 5.0f)));
+                    seq.Append(playerObject.transform.DOMove(
+                        moveTo,
+                        UnityEngine.Random.Range(4.0f, 5.0f)));
                     seq.Play().SetDelay(2.6f).SetLoops(-1);
                     if (!ReferenceEquals(anim, null) && !anim.Target.activeSelf)
                     {
                         anim.Target.SetActive(true);
-                        var skeleton = anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
+                        var skeleton =
+                            anim.Target.GetComponentInChildren<SkeletonAnimation>().skeleton;
                         skeleton.A = 0.0f;
                         DOTween.To(() => skeleton.A, x => skeleton.A = x, 1.0f, 1.0f);
                         player.SpineController.Appear();
@@ -254,7 +285,7 @@ namespace Nekoyume.Game
         {
             if (log?.Count > 0)
             {
-                StartCoroutine(CoPlayRankingBattle(log));
+                _battleCoroutine = StartCoroutine(CoPlayRankingBattle(log));
             }
         }
 
@@ -264,11 +295,11 @@ namespace Nekoyume.Game
             new TPStashEvent().PlayerStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "HackAndSlash",
-                stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId,
                 stage_status: stageStatus.Start,
-                stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_level: log.worldId + "_" + log.stageId,
                 is_autocombat_committed: isAutocombat.AutocombatOn
-                );
+            );
 
             IsInStage = true;
             yield return StartCoroutine(CoStageEnter(log));
@@ -291,10 +322,11 @@ namespace Nekoyume.Game
                 stage_status: stageStatus.Start,
                 stage_level: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
-                );
+            );
 
             IsInStage = true;
             yield return StartCoroutine(CoRankingBattleEnter(log));
+            Widget.Find<ArenaBattleLoadingScreen>().Close();
             foreach (var e in log)
             {
                 yield return StartCoroutine(e.CoExecute(this));
@@ -302,6 +334,7 @@ namespace Nekoyume.Game
 
             yield return StartCoroutine(CoRankingBattleEnd(log));
             IsInStage = false;
+            _battleCoroutine = null;
         }
 
         private static IEnumerator CoDialog(int worldStage)
@@ -310,18 +343,40 @@ namespace Nekoyume.Game
                 .Where(i => i.StageId == worldStage)
                 .OrderBy(i => i.DialogId)
                 .ToArray();
-            if (stageDialogs.Any())
+            if (!stageDialogs.Any())
             {
-                var dialog = Widget.Find<Dialog>();
-
-                foreach (var stageDialog in stageDialogs)
-                {
-                    dialog.Show(stageDialog.DialogId);
-                    yield return new WaitWhile(() => dialog.gameObject.activeSelf);
-                }
+                yield break;
             }
 
-            yield return null;
+            var dialog = Widget.Find<Dialog>();
+
+            foreach (var stageDialog in stageDialogs)
+            {
+                dialog.Show(stageDialog.DialogId);
+                yield return new WaitWhile(() => dialog.gameObject.activeSelf);
+            }
+        }
+
+        private static IEnumerator CoGuidedQuest(int stageIdToClear)
+        {
+            var done = false;
+            var battle = Widget.Find<UI.Battle>();
+            battle.ClearStage(stageIdToClear, cleared => done = true);
+            yield return new WaitUntil(() => done);
+        }
+
+        private static IEnumerator CoUnlockRecipe(int stageIdToFirstClear)
+        {
+            var questResult = Widget.Find<CelebratesPopup>();
+            var rows = Game.instance.TableSheets.EquipmentItemRecipeSheet.OrderedList
+                .Where(row => row.UnlockStage == stageIdToFirstClear)
+                .Distinct()
+                .ToList();
+            foreach (var row in rows)
+            {
+                questResult.Show(row);
+                yield return new WaitWhile(() => questResult.IsActive());
+            }
         }
 
         private IEnumerator CoStageEnter(BattleLog log)
@@ -339,11 +394,13 @@ namespace Nekoyume.Game
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
             RunPlayer();
+            ReleaseWhiteList.Clear();
+            ReleaseWhiteList.Add(_stageRunningPlayer.gameObject);
 
             var battle = Widget.Find<UI.Battle>();
             Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageData);
-            battle.stageProgressBar.Initialize(true);
-            Widget.Find<BattleResult>().stageProgressBar.Initialize(false);
+            battle.StageProgressBar.Initialize(true);
+            Widget.Find<BattleResult>().StageProgressBar.Initialize(false);
             var title = Widget.Find<StageTitle>();
             title.Show(stageId);
 
@@ -358,10 +415,11 @@ namespace Nekoyume.Game
         {
             waveCount = log.waveCount;
             waveTurn = 1;
+            stageId = log.stageId;
 #if TEST_LOG
             Debug.LogWarning($"{nameof(waveTurn)}: {waveTurn} / {nameof(CoRankingBattleEnter)}");
 #endif
-            if (!Game.instance.TableSheets.StageSheet.TryGetValue(1, out var data))
+            if (!Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var data))
                 yield break;
 
             _battleResultModel = new BattleResult.Model();
@@ -369,7 +427,7 @@ namespace Nekoyume.Game
             zone = data.Background;
             LoadBackground(zone, 3.0f);
             PlayBGVFX(false);
-            RunPlayer();
+            RunPlayer(new Vector2(-15f, -1.2f), false);
 
             yield return new WaitForSeconds(2.0f);
 
@@ -378,45 +436,103 @@ namespace Nekoyume.Game
 
         private IEnumerator CoStageEnd(BattleLog log)
         {
+            _onEnterToStageEnd.OnNext(this);
+            _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(1f);
             Boss = null;
-            Widget.Find<UI.Battle>().bossStatus.Close();
-            Widget.Find<UI.Battle>().Close();
-            yield return StartCoroutine(CoUnlockAlert());
-            _battleResultModel.ClearedWaveNumber = log.clearedWaveNumber;
-            var failed = _battleResultModel.ClearedWaveNumber < log.waveCount;
-            yield return new WaitForSeconds(0.75f);
-            if (log.result == BattleLog.Result.Win && !failed)
+            Widget.Find<UI.Battle>().BossStatus.Close();
+            var isClear = log.IsClear;
+            if (isClear)
             {
-                yield return StartCoroutine(CoDialog(log.stageId));
-                var playerCharacter = GetPlayer();
-                playerCharacter.Animator.Win();
-                playerCharacter.ShowSpeech("PLAYER_WIN");
+                yield return StartCoroutine(CoGuidedQuest(log.stageId));
+                yield return new WaitForSeconds(1f);
+            }
+
+            Widget.Find<UI.Battle>().Close();
+
+            if (newlyClearedStage)
+            {
+                yield return StartCoroutine(CoUnlockMenu());
+                yield return new WaitForSeconds(0.75f);
+                yield return StartCoroutine(CoUnlockRecipe(stageId));
+                yield return new WaitForSeconds(1f);
+            }
+
+            if (log.result == BattleLog.Result.Win)
+            {
+                _stageRunningPlayer.DisableHUD();
+                if (isClear)
+                {
+                    yield return StartCoroutine(CoDialog(log.stageId));
+                }
+
+                _stageRunningPlayer.Animator.Win(log.clearedWaveNumber);
+                _stageRunningPlayer.ShowSpeech("PLAYER_WIN");
                 yield return new WaitForSeconds(2.2f);
-                StartCoroutine(CoSlideBg());
+                objectPool.ReleaseExcept(ReleaseWhiteList);
+                if (isClear)
+                {
+                    StartCoroutine(CoSlideBg());
+                }
             }
             else
             {
-                objectPool.ReleaseAll();
+                ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
+                objectPool.ReleaseExcept(ReleaseWhiteList);
             }
 
-            var avatarState =
-                new AvatarState(
-                    (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(States.Instance.CurrentAvatarState
-                        .address));
+            var avatarAddress = States.Instance.CurrentAvatarState.address;
+            var avatarState = new AvatarState(
+                (Bencodex.Types.Dictionary) Game.instance.Agent.GetState(avatarAddress));
             _battleResultModel.State = log.result;
-            var stage = Game.instance.TableSheets.StageSheet.Values.First(i => i.Id == stageId);
-            var apNotEnough = avatarState.actionPoint < stage.CostAP;
-            _battleResultModel.ActionPointNotEnough = apNotEnough;
-            _battleResultModel.ShouldExit = apNotEnough || isExitReserved;
-            _battleResultModel.ShouldRepeat = !apNotEnough && (repeatStage || failed);
+            Game.instance.TableSheets.WorldSheet.TryGetValue(log.worldId, out var world);
+            _battleResultModel.WorldName = world?.GetLocalizedName();
+            _battleResultModel.StageID = log.stageId;
 
-            if (!_battleResultModel.ShouldRepeat)
+            if (isExitReserved)
             {
-                Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow, true);
-                if (stageId == worldRow.StageEnd)
+                _battleResultModel.ActionPointNotEnough = false;
+                _battleResultModel.ShouldExit = true;
+                _battleResultModel.ShouldRepeat = false;
+            }
+            else if (repeatStage || !isClear)
+            {
+                var apNotEnough = true;
+                if (Game.instance.TableSheets.StageSheet.TryGetValue(stageId, out var stageRow))
+                {
+                    apNotEnough = avatarState.actionPoint < stageRow.CostAP;
+                }
+
+                _battleResultModel.ActionPointNotEnough = apNotEnough;
+                _battleResultModel.ShouldExit = apNotEnough;
+                _battleResultModel.ShouldRepeat = !apNotEnough;
+            }
+            else
+            {
+                var apNotEnough = true;
+                if (Game.instance.TableSheets.StageSheet.TryGetValue(stageId + 1, out var stageRow))
+                {
+                    apNotEnough = avatarState.actionPoint < stageRow.CostAP;
+                }
+
+                _battleResultModel.ActionPointNotEnough = apNotEnough;
+                _battleResultModel.ShouldExit = apNotEnough;
+                _battleResultModel.ShouldRepeat = false;
+            }
+
+            if (!_battleResultModel.ShouldExit &&
+                !_battleResultModel.ShouldRepeat)
+            {
+                if (Game.instance.TableSheets.WorldSheet.TryGetValue(worldId, out var worldRow))
+                {
+                    if (stageId == worldRow.StageEnd)
+                    {
+                        _battleResultModel.ShouldExit = true;
+                    }
+                }
+                else
                 {
                     _battleResultModel.ShouldExit = true;
                 }
@@ -440,16 +556,22 @@ namespace Nekoyume.Game
                     stage_status = stageStatus.Timeout;
                     break;
             }
+
             new TPStashEvent().PlayerStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "HackAndSlash",
-                stage_slug: "HackAndSlash" + "_" + log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId,
                 stage_status: stage_status,
-                stage_level: log.worldId.ToString() + "_" + log.stageId.ToString(),
+                stage_level: log.worldId + "_" + log.stageId,
                 stage_score: log.clearedWaveNumber,
                 stage_playtime: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
-                );
+            );
+            var props = new Value
+            {
+                ["StageId"] = log.stageId
+            };
+            Mixpanel.Track("Unity/Stage End", props);
         }
 
         private IEnumerator CoSlideBg()
@@ -478,7 +600,7 @@ namespace Nekoyume.Game
             Widget.Find<Status>().Close();
 
             ActionRenderHandler.Instance.Pending = false;
-            Widget.Find<RankingBattleResult>().Show(log.result, log.score, log.diffScore);
+            Widget.Find<RankingBattleResult>().Show(log, _battleResultModel.Rewards);
             yield return null;
 
             //[TentuPlay] RankingBattle 끝 기록
@@ -495,6 +617,7 @@ namespace Nekoyume.Game
                     stage_status = stageStatus.Timeout;
                     break;
             }
+
             new TPStashEvent().PlayerStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
                 stage_category_slug: "RankingBattle",
@@ -504,12 +627,12 @@ namespace Nekoyume.Game
                 stage_score: log.diffScore,
                 stage_playtime: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
-                );
+            );
         }
 
-        public IEnumerator CoSpawnPlayer(Player character)
+        public IEnumerator CoSpawnPlayer(Model.Player character)
         {
-            var playerCharacter = RunPlayer();
+            var playerCharacter = RunPlayer(false);
             playerCharacter.Set(character, true);
             playerCharacter.ShowSpeech("PLAYER_INIT");
             var player = playerCharacter.gameObject;
@@ -524,110 +647,139 @@ namespace Nekoyume.Game
             if (_rankingBattle)
             {
                 battle.Show();
-                battle.comboText.Close();
-                battle.stageProgressBar.Close();
+                battle.ComboText.Close();
+                battle.StageProgressBar.Close();
             }
             else
             {
                 battle.Show(stageId, repeatStage, isExitReserved);
-
                 var stageSheet = Game.instance.TableSheets.StageSheet;
-                stageSheet.TryGetValue(stageId, out var row);
-                status.battleTimerView.Show(row.TurnLimit);
+                if (stageSheet.TryGetValue(stageId, out var row))
+                {
+                    status.ShowBattleTimer(row.TurnLimit);
+                }
             }
 
-            battle.repeatButton.gameObject.SetActive(!_rankingBattle);
+            battle.RepeatButton.gameObject.SetActive(!_rankingBattle);
+            battle.HelpButton.gameObject.SetActive(!_rankingBattle);
 
             if (!(AvatarState is null) && !ActionRenderHandler.Instance.Pending)
             {
                 ActionRenderHandler.Instance.UpdateCurrentAvatarState(AvatarState);
             }
 
-            ActionCamera.instance.ChaseX(player.transform);
             yield return null;
         }
 
-        public IEnumerator CoSpawnEnemyPlayer(EnemyPlayer character)
+        public IEnumerator CoSpawnEnemyPlayer(Model.EnemyPlayer character)
         {
             var battle = Widget.Find<UI.Battle>();
-            battle.bossStatus.Close();
-            battle.enemyPlayerStatus.Show();
-            battle.enemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
+            battle.BossStatus.Close();
+            battle.EnemyPlayerStatus.Show();
+            battle.EnemyPlayerStatus.SetHp(character.CurrentHP, character.HP);
 
-            var sprite = SpriteHelper.GetItemIcon(character.armor?.Data.Id ?? GameConfig.DefaultAvatarArmorId);
-            battle.enemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
-            yield return StartCoroutine(spawner.CoSetData(character));
+            var sprite =
+                SpriteHelper.GetItemIcon(character.armor?.Id ?? GameConfig.DefaultAvatarArmorId);
+            battle.EnemyPlayerStatus.SetProfile(character.Level, character.NameWithHash, sprite);
+            yield return StartCoroutine(spawner.CoSetData(character, new Vector3(8f, -1.2f)));
         }
 
         #region Skill
 
-        public IEnumerator CoNormalAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoNormalAttack(
+            Model.CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoNormalAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoNormalAttack);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
-        public IEnumerator CoBlowAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoBlowAttack(
+            Model.CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoBlowAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoBlowAttack);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
-        public IEnumerator CoDoubleAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoDoubleAttack(
+            Model.CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoDoubleAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoDoubleAttack);
+                character.actions.Add(actionParams);
+
                 yield return null;
             }
         }
 
-        public IEnumerator CoAreaAttack(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoAreaAttack(
+            Model.CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoAreaAttack));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoAreaAttack);
+                character.actions.Add(actionParams);
+
                 yield return null;
             }
         }
 
-        public IEnumerator CoHeal(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoHeal(
+            Model.CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoHeal));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoHeal);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
-        public IEnumerator CoBuff(CharacterBase caster, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoBuff(
+            Model.CharacterBase caster,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             var character = GetCharacter(caster);
             if (character)
             {
-                character.actions.Add(CoSkill(character, skillInfos, buffInfos, character.CoBuff));
+                var actionParams = new ActionParams(character, skillInfos, buffInfos, character.CoBuff);
+                character.actions.Add(actionParams);
                 yield return null;
             }
         }
 
-        private IEnumerator CoSkill(Character.CharacterBase character, IEnumerable<Skill.SkillInfo> skillInfos,
+        public IEnumerator CoSkill(ActionParams param)
+        {
+            yield return StartCoroutine(CoSkill(param.character, param.skillInfos, param.buffInfos, param.func));
+        }
+
+        private IEnumerator CoSkill(
+            Character.CharacterBase character,
+            IEnumerable<Skill.SkillInfo> skillInfos,
             IEnumerable<Skill.SkillInfo> buffInfos,
             Func<IReadOnlyList<Skill.SkillInfo>, IEnumerator> func)
         {
@@ -678,10 +830,12 @@ namespace Nekoyume.Game
 
             character.StartRun();
             var time = Time.time;
-            yield return new WaitUntil(() => Time.time - time > 2f || character.TargetInAttackRange(enemy));
+            yield return new WaitUntil(() =>
+                Time.time - time > 2f || character.TargetInAttackRange(enemy));
         }
 
-        private IEnumerator CoAfterSkill(Character.CharacterBase character,
+        private IEnumerator CoAfterSkill(
+            Character.CharacterBase character,
             IEnumerable<Skill.SkillInfo> buffInfos)
         {
             if (!character)
@@ -708,7 +862,7 @@ namespace Nekoyume.Game
                 character.StartRun();
         }
 
-        public IEnumerator CoRemoveBuffs(CharacterBase caster)
+        public IEnumerator CoRemoveBuffs(Model.CharacterBase caster)
         {
             var character = GetCharacter(caster);
             if (character)
@@ -738,7 +892,11 @@ namespace Nekoyume.Game
 
         #region wave
 
-        public IEnumerator CoSpawnWave(int waveNumber, int waveTurn, List<Enemy> enemies, bool hasBoss)
+        public IEnumerator CoSpawnWave(
+            int waveNumber,
+            int waveTurn,
+            List<Model.Enemy> enemies,
+            bool hasBoss)
         {
             this.waveNumber = waveNumber;
             this.waveTurn = waveTurn;
@@ -757,10 +915,10 @@ namespace Nekoyume.Game
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             yield return new WaitForSeconds(.3f);
-            Widget.Find<UI.Battle>().bossStatus.Close();
-            Widget.Find<UI.Battle>().enemyPlayerStatus.Close();
+            Widget.Find<UI.Battle>().BossStatus.Close();
+            Widget.Find<UI.Battle>().EnemyPlayerStatus.Close();
             var playerCharacter = GetPlayer();
-            playerCharacter.StartRun();
+            RunAndChasePlayer(playerCharacter);
 
             if (hasBoss)
             {
@@ -778,9 +936,11 @@ namespace Nekoyume.Game
                 Boss = boss;
                 var sprite = SpriteHelper.GetCharacterIcon(boss.RowData.Id);
                 var battle = Widget.Find<UI.Battle>();
-                battle.bossStatus.Show();
-                battle.bossStatus.SetHp(boss.HP, boss.HP);
-                battle.bossStatus.SetProfile(boss.Level, LocalizationManager.LocalizeCharacterName(boss.RowData.Id),
+                battle.BossStatus.Show();
+                battle.BossStatus.SetHp(boss.HP, boss.HP);
+                battle.BossStatus.SetProfile(
+                    boss.Level,
+                    L10nManager.LocalizeCharacterName(boss.RowData.Id),
                     sprite);
                 playerCharacter.ShowSpeech("PLAYER_BOSS_ENCOUNTER");
             }
@@ -815,52 +975,68 @@ namespace Nekoyume.Game
             yield return StartCoroutine(player.CoGetExp(exp));
         }
 
-        public IEnumerator CoDead(CharacterBase model)
+        public IEnumerator CoDead(Model.CharacterBase model)
         {
             var characters = GetComponentsInChildren<Character.CharacterBase>();
             yield return new WaitWhile(() => characters.Any(i => i.actions.Any()));
             var character = GetCharacter(model);
+
             character.Dead();
         }
 
-        public Character.Player GetPlayer()
+        public Character.Player GetPlayer(bool forceCreate = false)
         {
-            if (!(selectedPlayer is null) && selectedPlayer.gameObject.activeSelf)
+            if (!forceCreate &&
+                selectedPlayer &&
+                selectedPlayer.gameObject.activeSelf)
             {
                 return selectedPlayer;
+            }
+
+            if (selectedPlayer)
+            {
+                objectPool.Remove<Model.Player>(selectedPlayer.gameObject);
             }
 
             var go = PlayerFactory.Create(States.Instance.CurrentAvatarState);
             selectedPlayer = go.GetComponent<Character.Player>();
 
             if (selectedPlayer is null)
+            {
                 throw new NotFoundComponentException<Character.Player>();
+            }
 
             return selectedPlayer;
         }
 
-        public Character.Player GetPlayer(Vector2 position)
+        public Character.Player GetPlayer(Vector2 position, bool forceCreate = false)
         {
-            var player = GetPlayer();
+            var player = GetPlayer(forceCreate);
             player.transform.position = position;
             return player;
         }
 
-        private Character.Player RunPlayer()
+        private Character.Player RunPlayer(bool chasePlayer = true)
         {
-            var player = GetPlayer();
-            var playerTransform = player.transform;
+            _stageRunningPlayer = GetPlayer();
+            var playerTransform = _stageRunningPlayer.transform;
             Vector2 position = playerTransform.position;
             position.y = StageStartPosition;
             playerTransform.position = position;
-            player.StartRun();
-            return player;
+            if (chasePlayer)
+                RunAndChasePlayer(_stageRunningPlayer);
+            else
+                _stageRunningPlayer.StartRun();
+            return _stageRunningPlayer;
         }
 
-        public Character.Player RunPlayer(Vector2 position)
+        public Character.Player RunPlayer(Vector2 position, bool chasePlayer = true)
         {
             var player = GetPlayer(position);
-            player.StartRun();
+            if (chasePlayer)
+                RunAndChasePlayer(player);
+            else
+                player.StartRun();
             return player;
         }
 
@@ -872,12 +1048,13 @@ namespace Nekoyume.Game
         /// <param name="caster"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public Character.CharacterBase GetCharacter(CharacterBase caster)
+        public Character.CharacterBase GetCharacter(Model.CharacterBase caster)
         {
             if (caster is null)
                 throw new ArgumentNullException(nameof(caster));
 
-            var character = GetComponentsInChildren<Character.CharacterBase>().FirstOrDefault(c => c.Id == caster.Id);
+            var character = GetComponentsInChildren<Character.CharacterBase>()
+                .FirstOrDefault(c => c.Id == caster.Id);
             if (!(character is null))
                 character.Set(caster);
             return character;
@@ -885,47 +1062,51 @@ namespace Nekoyume.Game
 
         private void PlayBGVFX(bool isBoss)
         {
-            if (isBoss)
+            if (isBoss && bosswaveBGVFX)
             {
                 if (defaultBGVFX)
                     defaultBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-                if (bosswaveBGVFX)
-                    bosswaveBGVFX.Play(true);
+                bosswaveBGVFX.Play(true);
             }
             else
             {
                 if (bosswaveBGVFX)
                     bosswaveBGVFX.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-                if (defaultBGVFX)
+                if (defaultBGVFX && !defaultBGVFX.isPlaying)
                     defaultBGVFX.Play(true);
             }
         }
 
-        private IEnumerator CoUnlockAlert()
+        private IEnumerator CoUnlockMenu()
         {
-            if (waveNumber != waveCount || !newlyClearedStage)
-                yield break;
-
-            var key = string.Empty;
+            var menuNames = new List<string>();
             if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuCombination)
             {
-                key = "UI_UNLOCK_COMBINATION";
-            }
-            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
-            {
-                key = "UI_UNLOCK_SHOP";
-            }
-            else if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
-            {
-                key = "UI_UNLOCK_RANKING";
+                menuNames.Add(nameof(Combination));
             }
 
-            if (string.IsNullOrEmpty(key))
-                yield break;
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuShop)
+            {
+                menuNames.Add(nameof(UI.Shop));
+            }
 
-            var w = Widget.Find<Alert>();
-            w.Show("UI_UNLOCK_TITLE", key);
-            yield return new WaitWhile(() => w.isActiveAndEnabled);
+            if (stageId == GameConfig.RequireClearedStageLevel.UIMainMenuRankingBoard)
+            {
+                menuNames.Add(nameof(RankingBoard));
+            }
+
+            var celebratesPopup = Widget.Find<CelebratesPopup>();
+            foreach (var menuName in menuNames)
+            {
+                celebratesPopup.Show(menuName);
+                yield return new WaitWhile(() => celebratesPopup.IsActive());
+            }
+        }
+
+        private static void RunAndChasePlayer(Character.Player player)
+        {
+            player.StartRun();
+            ActionCamera.instance.ChaseX(player.transform);
         }
     }
 }

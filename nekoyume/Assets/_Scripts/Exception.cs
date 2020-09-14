@@ -161,8 +161,22 @@ public class SpineAttachmentNotFoundException : Exception
     }
 }
 
+public class SerializeFieldException : Exception
+{
+    public SerializeFieldException(string message) : base(message)
+    {
+    }
+}
+
 public class SerializeFieldNullException : Exception
 {
+    public SerializeFieldNullException()
+    {
+    }
+
+    public SerializeFieldNullException(string message) : base(message)
+    {
+    }
 }
 
 public class AddOutOfSpecificRangeException<T> : Exception
@@ -235,8 +249,21 @@ public class FailedToInstantiateStateException<T> : Exception where T : State
     public FailedToInstantiateStateException() : base(string.Format(MessageFormat, typeof(T).Name))
     {
     }
-    
+
     public FailedToInstantiateStateException(Address address) : base(string.Format(MessageFormatWithAddress, typeof(T).Name, address))
     {
+    }
+}
+
+public class InvalidSellingPriceException : Exception
+{
+    private const string MessageFormat = "Selling price of `{0}` is invaild. `{1}`.";
+
+    public InvalidSellingPriceException(Nekoyume.UI.Model.ItemCountAndPricePopup popup) :
+        base(string.Format(MessageFormat,
+            popup.Item.Value.ItemBase.Value.GetLocalizedName(),
+            popup.Price.Value))
+    {
+
     }
 }

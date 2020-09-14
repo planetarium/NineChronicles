@@ -7,10 +7,10 @@ namespace Nekoyume.UI
     public static class StageSheetExtension
     {
         private static readonly Dictionary<int, List<MaterialItemSheet.Row>> GetRewardItemRowsCache = new Dictionary<int, List<MaterialItemSheet.Row>>();
-        
+
         public static string GetLocalizedDescription(this StageWaveSheet.Row stageRow)
         {
-            // todo: return LocalizationManager.Localize($"{stageRow.Key}");
+            // todo: return L10nManager.Localize($"{stageRow.Key}");
             return $"{stageRow.Key}: Description";
         }
 
@@ -18,7 +18,7 @@ namespace Nekoyume.UI
         {
             if (GetRewardItemRowsCache.ContainsKey(stageRow.Key))
                 return GetRewardItemRowsCache[stageRow.Key];
-            
+
             var tableSheets = Game.Game.instance.TableSheets;
             var itemRows = new List<MaterialItemSheet.Row>();
             foreach (var itemId in stageRow.Rewards.Select(rewardData => rewardData.ItemId))

@@ -1,22 +1,42 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Nekoyume.Game.Controller;
-using Assets.SimpleLocalization;
+using Nekoyume.L10n;
+using UniRx;
 
 namespace Nekoyume.UI.Module
 {
     public class TabButton : MonoBehaviour, IToggleable
     {
-        public Button button;
-        public GameObject disabledContent;
-        public Image disabledImage;
-        public GameObject enabledContent;
-        public Image enabledImage;
+        [SerializeField]
+        protected Button button = null;
 
-        public TextMeshProUGUI enabledText;
-        public TextMeshProUGUI disabledText;
-        public string localizationKey;
+        [SerializeField]
+        protected GameObject disabledContent = null;
+
+        [SerializeField]
+        protected Image disabledImage = null;
+
+        [SerializeField]
+        protected GameObject enabledContent = null;
+
+        [SerializeField]
+        protected Image enabledImage = null;
+
+        [SerializeField]
+        protected Image hasNotificationImage = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI enabledText = null;
+
+        [SerializeField]
+        protected TextMeshProUGUI disabledText = null;
+
+        [SerializeField]
+        protected string localizationKey = null;
+
+        public readonly ReactiveProperty<bool> HasNotification = new ReactiveProperty<bool>(false);
 
         #region IToggleable
 
@@ -50,8 +70,13 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             button.onClick.AddListener(SubscribeOnClick);
-            enabledText.text = LocalizationManager.Localize(localizationKey);
-            disabledText.text = LocalizationManager.Localize(localizationKey);
+            HasNotification.SubscribeTo(hasNotificationImage)
+                .AddTo(gameObject);
+            if (!string.IsNullOrEmpty(localizationKey))
+            {
+                enabledText.text = L10nManager.Localize(localizationKey);
+                disabledText.text = L10nManager.Localize(localizationKey);
+            }
         }
 
         private void SubscribeOnClick()

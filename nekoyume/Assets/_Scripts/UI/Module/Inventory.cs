@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
-using EnhancedUI.EnhancedScroller;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.Item;
 using Nekoyume.State;
-using Nekoyume.UI.Model;
 using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
@@ -16,46 +14,49 @@ namespace Nekoyume.UI.Module
 {
     public class Inventory : MonoBehaviour
     {
-        private static readonly Vector2 BtnHighlightSize = new Vector2(157f, 60f);
-        private static readonly Vector2 BtnSize = new Vector2(130f, 36f);
+        [Serializable]
+        private struct ButtonSet
+        {
+#pragma warning disable 0649
+            public Button button;
+            public Image image;
+            public TextMeshProUGUI text;
+            public TextMeshProUGUI selectedText;
+#pragma warning restore 0649
+        }
 
-        public TextMeshProUGUI titleText;
-        public Button equipmentsButton;
-        public Image equipmentsButtonImage;
-        public Image equipmentsButtonIconImage;
-        public TextMeshProUGUI equipmentsButtonText;
-        public TextMeshProUGUI equipmentsButtonSelectedText;
-        public Button consumablesButton;
-        public Image consumablesButtonImage;
-        public Image consumablesButtonIconImage;
-        public TextMeshProUGUI consumablesButtonText;
-        public TextMeshProUGUI consumablesButtonSelectedText;
-        public Button materialsButton;
-        public Image materialsButtonImage;
-        public Image materialsButtonIconImage;
-        public TextMeshProUGUI materialsButtonText;
-        public TextMeshProUGUI materialsButtonSelectedText;
-        public InventoryScrollerController scrollerController;
+        private static readonly Vector2 BtnHighlightSize = new Vector2(122f, 60f);
+        private static readonly Vector2 BtnSize = new Vector2(95f, 36f);
+
+        [SerializeField]
+        private ButtonSet equipmentsButton = default;
+
+        [SerializeField]
+        private ButtonSet consumablesButton = default;
+
+        [SerializeField]
+        private ButtonSet costumesButton = default;
+
+        [SerializeField]
+        private ButtonSet materialsButton = default;
+
+        [SerializeField]
+        private InventoryScroll scroll = null;
 
         private Sprite _selectedButtonSprite;
         private Sprite _deselectedButtonSprite;
-        private Sprite _equipmentsButtonIconSpriteBlack;
-        private Sprite _equipmentsButtonIconSpriteHighlighted;
-        private Sprite _consumablesButtonIconSpriteBlack;
-        private Sprite _consumablesButtonIconSpriteHighlighted;
-        private Sprite _materialsButtonIconSpriteBlack;
-        private Sprite _materialsButtonIconSpriteHighlighted;
 
         private readonly Dictionary<ItemType, RectTransform> _switchButtonTransforms =
             new Dictionary<ItemType, RectTransform>(ItemTypeComparer.Instance);
 
         private readonly List<IDisposable> _disposablesAtOnEnable = new List<IDisposable>();
 
-        public RectTransform RectTransform { get; private set; }
-
-        public Model.Inventory SharedModel { get; private set; }
-
         public readonly Subject<Inventory> OnResetItems = new Subject<Inventory>();
+
+        public readonly Subject<InventoryItemView> OnDoubleClickItemView =
+            new Subject<InventoryItemView>();
+
+        public Model.Inventory SharedModel { get; set; }
 
         #region Mono
 
@@ -63,55 +64,56 @@ namespace Nekoyume.UI.Module
         {
             _selectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_yellow_02");
             _deselectedButtonSprite = Resources.Load<Sprite>("UI/Textures/button_brown_01");
-            _consumablesButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_black");
-            _consumablesButtonIconSpriteHighlighted = Resources.Load<Sprite>("UI/Textures/icon_inventory_02_yellow");
-            // TODO: 인벤토리에 코스튬 대응하기
-            // _costumesButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_black");
-            // _costumesButtonIconSpriteHighlighted = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_yellow");
-            _equipmentsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_black");
-            _equipmentsButtonIconSpriteHighlighted = Resources.Load<Sprite>("UI/Textures/icon_inventory_01_yellow");
-            _materialsButtonIconSpriteBlack = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_black");
-            _materialsButtonIconSpriteHighlighted = Resources.Load<Sprite>("UI/Textures/icon_inventory_03_yellow");
-            _switchButtonTransforms.Add(ItemType.Equipment, equipmentsButton.GetComponent<RectTransform>());
-            _switchButtonTransforms.Add(ItemType.Consumable, consumablesButton.GetComponent<RectTransform>());
-            _switchButtonTransforms.Add(ItemType.Material, materialsButton.GetComponent<RectTransform>());
-            // TODO: 인벤토리에 코스튬 대응하기
-            // _switchButtonTransforms.Add(ItemType.Costume, costumesButton.GetComponent<RectTransform>());
+            _switchButtonTransforms.Add(ItemType.Equipment,
+                equipmentsButton.button.GetComponent<RectTransform>());
+            _switchButtonTransforms.Add(ItemType.Consumable,
+                consumablesButton.button.GetComponent<RectTransform>());
+            _switchButtonTransforms.Add(ItemType.Costume,
+                costumesButton.button.GetComponent<RectTransform>());
+            _switchButtonTransforms.Add(ItemType.Material,
+                materialsButton.button.GetComponent<RectTransform>());
 
-            titleText.text = LocalizationManager.Localize("UI_INVENTORY");
-            consumablesButtonText.text = LocalizationManager.Localize("UI_CONSUMABLES");
-            consumablesButtonSelectedText.text = LocalizationManager.Localize("UI_CONSUMABLES");
-            // TODO: 인벤토리에 코스튬 대응하기
-            // costumesButtonText.text = LocalizationManager.Localize("UI_COSTUME");
-            // costumesButtonSelectedText.text = LocalizationManager.Localize("UI_COSTUME");
-            equipmentsButtonText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
-            equipmentsButtonSelectedText.text = LocalizationManager.Localize("UI_EQUIPMENTS");
-            materialsButtonText.text = LocalizationManager.Localize("UI_MATERIALS");
-            materialsButtonSelectedText.text = LocalizationManager.Localize("UI_MATERIALS");
-
-            RectTransform = GetComponent<RectTransform>();
+            consumablesButton.text.text = L10nManager.Localize("UI_CONSUMABLES");
+            consumablesButton.selectedText.text = L10nManager.Localize("UI_CONSUMABLES");
+            costumesButton.text.text = L10nManager.Localize("UI_COSTUME");
+            costumesButton.selectedText.text = L10nManager.Localize("UI_COSTUME");
+            equipmentsButton.text.text = L10nManager.Localize("UI_EQUIPMENTS");
+            equipmentsButton.selectedText.text = L10nManager.Localize("UI_EQUIPMENTS");
+            materialsButton.text.text = L10nManager.Localize("UI_MATERIALS");
+            materialsButton.selectedText.text = L10nManager.Localize("UI_MATERIALS");
 
             SharedModel = new Model.Inventory();
             SharedModel.State.Subscribe(SubscribeState).AddTo(gameObject);
             SharedModel.SelectedItemView.Subscribe(SubscribeSelectedItemView).AddTo(gameObject);
 
-            consumablesButton.OnClickAsObservable().Subscribe(_ =>
+            scroll.OnClick
+                .Subscribe(cell => SharedModel.SubscribeItemOnClick(cell.View))
+                .AddTo(gameObject);
+
+            scroll.OnDoubleClick
+                .Subscribe(cell =>
+                {
+                    SharedModel.DeselectItemView();
+                    OnDoubleClickItemView.OnNext(cell.View);
+                })
+                .AddTo(gameObject);
+
+            consumablesButton.button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 SharedModel.State.Value = ItemType.Consumable;
             }).AddTo(gameObject);
-            // TODO: 인벤토리에 코스튬 대응하기
-            // costumesButton.OnClickAsObservable().Subscribe(_ =>
-            // {
-            //     AudioController.PlayClick();
-            //     SharedModel.State.Value = ItemType.Costume;
-            // }).AddTo(gameObject);
-            equipmentsButton.OnClickAsObservable().Subscribe(_ =>
+            costumesButton.button.OnClickAsObservable().Subscribe(_ =>
+            {
+                AudioController.PlayClick();
+                SharedModel.State.Value = ItemType.Costume;
+            }).AddTo(gameObject);
+            equipmentsButton.button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 SharedModel.State.Value = ItemType.Equipment;
             }).AddTo(gameObject);
-            materialsButton.OnClickAsObservable().Subscribe(_ =>
+            materialsButton.button.OnClickAsObservable().Subscribe(_ =>
             {
                 AudioController.PlayClick();
                 SharedModel.State.Value = ItemType.Material;
@@ -120,13 +122,11 @@ namespace Nekoyume.UI.Module
 
         private void OnEnable()
         {
-            ReactiveAvatarState.Inventory.Subscribe(value =>
-                {
-                    scrollerController.DisposeAddedAtSetData();
-                    SharedModel.ResetItems(value);
-                    OnResetItems.OnNext(this);
-                })
-                .AddTo(_disposablesAtOnEnable);
+            ReactiveAvatarState.Inventory.Subscribe(inventoryState =>
+            {
+                SharedModel.ResetItems(inventoryState);
+                OnResetItems.OnNext(this);
+            }).AddTo(_disposablesAtOnEnable);
         }
 
         private void OnDisable()
@@ -139,7 +139,6 @@ namespace Nekoyume.UI.Module
         {
             SharedModel.Dispose();
             SharedModel = null;
-            OnResetItems.Dispose();
         }
 
         #endregion
@@ -148,55 +147,59 @@ namespace Nekoyume.UI.Module
 
         private void SubscribeState(ItemType stateType)
         {
-            consumablesButtonText.gameObject.SetActive(false);
-            consumablesButtonSelectedText.gameObject.SetActive(false);
-            // TODO: 인벤토리에 코스튬 대응하기
-            // costumesButtonText.gameObject.SetActive(false);
-            // costumesButtonSelectedText.gameObject.SetActive(false);
-            equipmentsButtonText.gameObject.SetActive(false);
-            equipmentsButtonSelectedText.gameObject.SetActive(false);
-            materialsButtonText.gameObject.SetActive(false);
-            materialsButtonSelectedText.gameObject.SetActive(false);
+            consumablesButton.text.gameObject.SetActive(false);
+            consumablesButton.selectedText.gameObject.SetActive(false);
+            costumesButton.text.gameObject.SetActive(false);
+            costumesButton.selectedText.gameObject.SetActive(false);
+            equipmentsButton.text.gameObject.SetActive(false);
+            equipmentsButton.selectedText.gameObject.SetActive(false);
+            materialsButton.text.gameObject.SetActive(false);
+            materialsButton.selectedText.gameObject.SetActive(false);
             switch (stateType)
             {
                 case ItemType.Consumable:
-                    equipmentsButtonImage.sprite = _deselectedButtonSprite;
-                    equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteBlack;
-                    consumablesButtonImage.sprite = _selectedButtonSprite;
-                    consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteHighlighted;
-                    materialsButtonImage.sprite = _deselectedButtonSprite;
-                    materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlack;
-                    scrollerController.SetData(SharedModel.Consumables);
-                    equipmentsButtonText.gameObject.SetActive(true);
-                    consumablesButtonSelectedText.gameObject.SetActive(true);
-                    materialsButtonText.gameObject.SetActive(true);
+                    equipmentsButton.image.sprite = _deselectedButtonSprite;
+                    costumesButton.image.sprite = _deselectedButtonSprite;
+                    consumablesButton.image.sprite = _selectedButtonSprite;
+                    materialsButton.image.sprite = _deselectedButtonSprite;
+                    scroll.UpdateData(SharedModel.Consumables, true);
+                    equipmentsButton.text.gameObject.SetActive(true);
+                    costumesButton.text.gameObject.SetActive(true);
+                    consumablesButton.selectedText.gameObject.SetActive(true);
+                    materialsButton.text.gameObject.SetActive(true);
                     break;
-                // TODO: 인벤토리에 코스튬 대응하기
-                // case ItemType.Costume:
-                //     break;
+                case ItemType.Costume:
+                    equipmentsButton.image.sprite = _deselectedButtonSprite;
+                    costumesButton.image.sprite = _selectedButtonSprite;
+                    consumablesButton.image.sprite = _deselectedButtonSprite;
+                    materialsButton.image.sprite = _deselectedButtonSprite;
+                    scroll.UpdateData(SharedModel.Costumes, true);
+                    equipmentsButton.text.gameObject.SetActive(true);
+                    costumesButton.selectedText.gameObject.SetActive(true);
+                    consumablesButton.text.gameObject.SetActive(true);
+                    materialsButton.text.gameObject.SetActive(true);
+                    break;
                 case ItemType.Equipment:
-                    equipmentsButtonImage.sprite = _selectedButtonSprite;
-                    equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteHighlighted;
-                    consumablesButtonImage.sprite = _deselectedButtonSprite;
-                    consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteBlack;
-                    materialsButtonImage.sprite = _deselectedButtonSprite;
-                    materialsButtonIconImage.sprite = _materialsButtonIconSpriteBlack;
-                    scrollerController.SetData(SharedModel.Equipments);
-                    equipmentsButtonSelectedText.gameObject.SetActive(true);
-                    consumablesButtonText.gameObject.SetActive(true);
-                    materialsButtonText.gameObject.SetActive(true);
+                    equipmentsButton.image.sprite = _selectedButtonSprite;
+                    costumesButton.image.sprite = _deselectedButtonSprite;
+                    consumablesButton.image.sprite = _deselectedButtonSprite;
+                    materialsButton.image.sprite = _deselectedButtonSprite;
+                    scroll.UpdateData(SharedModel.Equipments, true);
+                    equipmentsButton.selectedText.gameObject.SetActive(true);
+                    costumesButton.text.gameObject.SetActive(true);
+                    consumablesButton.text.gameObject.SetActive(true);
+                    materialsButton.text.gameObject.SetActive(true);
                     break;
                 case ItemType.Material:
-                    equipmentsButtonImage.sprite = _deselectedButtonSprite;
-                    equipmentsButtonIconImage.sprite = _equipmentsButtonIconSpriteBlack;
-                    consumablesButtonImage.sprite = _deselectedButtonSprite;
-                    consumablesButtonIconImage.sprite = _consumablesButtonIconSpriteBlack;
-                    materialsButtonImage.sprite = _selectedButtonSprite;
-                    materialsButtonIconImage.sprite = _materialsButtonIconSpriteHighlighted;
-                    scrollerController.SetData(SharedModel.Materials);
-                    equipmentsButtonText.gameObject.SetActive(true);
-                    consumablesButtonText.gameObject.SetActive(true);
-                    materialsButtonSelectedText.gameObject.SetActive(true);
+                    equipmentsButton.image.sprite = _deselectedButtonSprite;
+                    costumesButton.image.sprite = _deselectedButtonSprite;
+                    consumablesButton.image.sprite = _deselectedButtonSprite;
+                    materialsButton.image.sprite = _selectedButtonSprite;
+                    scroll.UpdateData(SharedModel.Materials, true);
+                    equipmentsButton.text.gameObject.SetActive(true);
+                    costumesButton.text.gameObject.SetActive(true);
+                    consumablesButton.text.gameObject.SetActive(true);
+                    materialsButton.selectedText.gameObject.SetActive(true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateType), stateType, null);
@@ -226,30 +229,13 @@ namespace Nekoyume.UI.Module
         private void SubscribeSelectedItemView(InventoryItemView view)
         {
             if (view is null)
+            {
                 return;
+            }
 
-            AdjustmentScrollPosition(view);
+            scroll.ScrollTo(view.Model);
         }
 
         #endregion
-
-        private void AdjustmentScrollPosition(InventoryItemView view)
-        {
-            var scroller = scrollerController.scroller;
-            var cellHeight = scrollerController.GetCellViewSize(scroller, 0);
-            var skipCount = Mathf.FloorToInt(scrollerController.scrollRectTransform.rect.height / cellHeight) - 1;
-            var index = -Mathf.CeilToInt(view.InventoryCellView.transform.localPosition.y / cellHeight);
-
-            if (scroller.StartCellViewIndex + skipCount < index)
-            {
-                scroller.ScrollPosition = scroller.GetScrollPositionForCellViewIndex(index - skipCount,
-                    EnhancedScroller.CellViewPositionEnum.Before);
-            }
-            else if (scroller.StartCellViewIndex == index)
-            {
-                scroller.ScrollPosition =
-                    scroller.GetScrollPositionForCellViewIndex(index, EnhancedScroller.CellViewPositionEnum.Before);
-            }
-        }
     }
 }

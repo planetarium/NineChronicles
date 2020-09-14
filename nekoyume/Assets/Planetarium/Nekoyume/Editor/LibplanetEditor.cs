@@ -1,5 +1,12 @@
+using System.Collections.Generic;
 using System.IO;
+using Libplanet;
+using Libplanet.Crypto;
+using Nekoyume;
 using Nekoyume.BlockChain;
+using Nekoyume.Game;
+using Nekoyume.Model;
+using Nekoyume.Model.State;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,14 +18,14 @@ namespace Planetarium.Nekoyume.Editor
         public static void DeleteAllEditorAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Development));
-            MakeGenesisBlock(BlockHelper.GenesisBlockPath);
+            MakeGenesisBlock(BlockManager.GenesisBlockPath);
         }
 
         [MenuItem("Tools/Libplanet/Delete All(Player) - Make Genesis Block For Prod To StreamingAssets Folder")]
         public static void DeleteAllPlayerAndMakeGenesisBlock()
         {
             DeleteAll(StorePath.GetDefaultStoragePath(StorePath.Env.Production));
-            MakeGenesisBlock(BlockHelper.GenesisBlockPath);
+            MakeGenesisBlock(BlockManager.GenesisBlockPath);
         }
 
         [MenuItem("Tools/Libplanet/Make Genesis Block")]
@@ -27,7 +34,7 @@ namespace Planetarium.Nekoyume.Editor
             var path = EditorUtility.SaveFilePanel(
                 "Choose path to export the new genesis block",
                 Application.streamingAssetsPath,
-                BlockHelper.GenesisBlockName,
+                BlockManager.GenesisBlockName,
                 ""
             );
 
@@ -49,8 +56,33 @@ namespace Planetarium.Nekoyume.Editor
 
         private static void MakeGenesisBlock(string path)
         {
-            var block = BlockHelper.MineGenesisBlock();
-            BlockHelper.ExportBlock(block, path);
+            CreateActivationKey(
+                out List<PendingActivationState> pendingActivationStates,
+                out List<ActivationKey> activationKeys,
+                10);
+            activationKeys.ForEach(x => Debug.Log(x.Encode()));
+
+            var block = BlockManager.MineGenesisBlock(pendingActivationStates.ToArray());
+            BlockManager.ExportBlock(block, path);
+        }
+
+        private static void CreateActivationKey(
+            out List<PendingActivationState> pendingActivationStates,
+            out List<ActivationKey> activationKeys,
+            int countOfKeys)
+        {
+            pendingActivationStates = new List<PendingActivationState>();
+            activationKeys = new List<ActivationKey>();
+
+             for (int i = 0; i < countOfKeys; i++)
+             {
+                 var pendingKey = new PrivateKey();
+                 var nonce = pendingKey.PublicKey.ToAddress().ToByteArray();
+                 (ActivationKey ak, PendingActivationState s) =
+                     ActivationKey.Create(pendingKey, nonce);
+                 pendingActivationStates.Add(s);
+                 activationKeys.Add(ak);
+             }
         }
     }
 }

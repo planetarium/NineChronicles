@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 if [[ "$#" != "1" ]]; then
   {
@@ -13,17 +13,29 @@ build_target="$1"
 
 # install dependencies
 if command -v apt-get; then
-  apt-get update || true && \
-    apt-get install -y libxml2-utils xsltproc git && \
-    rm -rf /var/lib/apt/lists/*
+  apt-get update || true
+  if ! command -v dotnet; then
+    apt-get install -y apt-transport-https software-properties-common
+    wget -O /tmp/ms.deb \
+      https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+    dpkg -i /tmp/ms.deb
+    add-apt-repository universe
+    apt-get update
+    apt-get install -y dotnet-sdk-3.1
+  fi
+
+  apt-get install -y libxml2-utils xsltproc git
+  rm -rf /var/lib/apt/lists/*
 fi
 
-source "$(dirname $0)/_common.sh"
+# shellcheck disable=SC1090
+source "$(dirname "$0")/_common.sh"
 
 title "Unity license"
 install_license
 
 title "Build binary"
+DOTNET_PATH="$(command -v dotnet)" \
 /opt/Unity/Editor/Unity \
   -quit \
   -batchmode \

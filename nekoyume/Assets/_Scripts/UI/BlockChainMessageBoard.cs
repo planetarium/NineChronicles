@@ -1,7 +1,6 @@
-using System.Collections;
 using System.Threading.Tasks;
-using Assets.SimpleLocalization;
 using Nekoyume.BlockChain;
+using Nekoyume.L10n;
 using TMPro;
 using UnityEngine;
 
@@ -41,7 +40,7 @@ namespace Nekoyume.UI
             base.Initialize();
 
             panel.SetActive(false);
-            messageText.text = LocalizationManager.Localize("BLOCK_CHAIN_MINING_TX");
+            messageText.text = L10nManager.Localize("BLOCK_CHAIN_MINING_TX");
 
             _currentPanelAnimationState = PanelAnimationState.Off;
             _nextPanelAnimationState = PanelAnimationState.Off;

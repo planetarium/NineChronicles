@@ -1,19 +1,50 @@
-﻿using Nekoyume.Game.Controller;
+using System;
+using Nekoyume.Game.Controller;
 using Nekoyume.Game.Item;
 using Nekoyume.Game.VFX;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
+using UniRx;
 using UnityEngine;
 namespace Nekoyume.UI
 {
     public class Battle : Widget, IToggleListener
     {
-        public StageTitle stageTitle;
-        public BossStatus bossStatus;
-        public ToggleableButton repeatButton;
-        public BossStatus enemyPlayerStatus;
-        public StageProgressBar stageProgressBar;
-        public ComboText comboText;
+        [SerializeField]
+        private StageTitle stageTitle = null;
+
+        [SerializeField]
+        private GuidedQuest guidedQuest = null;
+
+        [SerializeField]
+        private BossStatus bossStatus = null;
+
+        [SerializeField]
+        private ToggleableButton repeatButton = null;
+
+        [SerializeField]
+        private HelpButton helpButton = null;
+
+        [SerializeField]
+        private BossStatus enemyPlayerStatus = null;
+
+        [SerializeField]
+        private StageProgressBar stageProgressBar = null;
+
+        [SerializeField]
+        private ComboText comboText = null;
+
+        public BossStatus BossStatus => bossStatus;
+
+        public ToggleableButton RepeatButton => repeatButton;
+
+        public HelpButton HelpButton => helpButton;
+
+        public BossStatus EnemyPlayerStatus => enemyPlayerStatus;
+
+        public StageProgressBar StageProgressBar => stageProgressBar;
+
+        public ComboText ComboText => comboText;
 
         protected override void Awake()
         {
@@ -26,8 +57,13 @@ namespace Nekoyume.UI
 
         public void Show(int stageId, bool isRepeat, bool isExitReserved)
         {
+            guidedQuest.Hide(true);
             base.Show();
             stageTitle.Show(stageId);
+            guidedQuest.Show(States.Instance.CurrentAvatarState, () =>
+            {
+                guidedQuest.SetWorldQuestToInProgress(stageId);
+            });
             stageProgressBar.Show();
             bossStatus.Close();
             enemyPlayerStatus.Close();
@@ -55,15 +91,38 @@ namespace Nekoyume.UI
                     BottomMenu.ToggleableType.Quest,
                     BottomMenu.ToggleableType.Chat,
                     BottomMenu.ToggleableType.IllustratedBook,
-                    BottomMenu.ToggleableType.Character,
-                    BottomMenu.ToggleableType.Inventory);
+                    BottomMenu.ToggleableType.Character);
 
                 bottomMenu.exitButton.SetToggleListener(this);
                 bottomMenu.exitButton.SharedModel.IsEnabled.Value = isExitReserved;
             }
         }
 
-        public void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
+        public override void Close(bool ignoreCloseAnimation = false)
+        {
+            guidedQuest.Hide(ignoreCloseAnimation);
+            Find<BottomMenu>().Close(ignoreCloseAnimation);
+            enemyPlayerStatus.Close(ignoreCloseAnimation);
+            base.Close(ignoreCloseAnimation);
+        }
+
+        public void ClearStage(int stageId, System.Action<bool> onComplete)
+        {
+            guidedQuest.ClearWorldQuest(stageId, cleared =>
+            {
+                if (!cleared)
+                {
+                    onComplete(false);
+                    return;
+                }
+
+                guidedQuest.UpdateList(
+                    States.Instance.CurrentAvatarState,
+                    () => onComplete(true));
+            });
+        }
+
+        private void SubscribeOnExitButtonClick(BottomMenu bottomMenu)
         {
             if (!CanClose)
             {
@@ -92,22 +151,13 @@ namespace Nekoyume.UI
                     {
                         stage.isExitReserved = true;
                         bottomMenu.exitButton.SharedModel.IsEnabled.Value = true;
-                        bottomMenu.exitButton.SetToggledOn();
                         repeatButton.SetToggledOff();
                     }
                 };
             }
         }
 
-        public override void Close(bool ignoreCloseAnimation = false)
-        {
-            Find<BottomMenu>().Close(ignoreCloseAnimation);
-            Find<Status>().Close(ignoreCloseAnimation);
-            enemyPlayerStatus.Close(ignoreCloseAnimation);
-            base.Close(ignoreCloseAnimation);
-        }
-
-        private void SetExitButtonToggledOff()
+        private static void SetExitButtonToggledOff()
         {
             Game.Game.instance.Stage.isExitReserved = false;
             Find<BottomMenu>().exitButton.SharedModel.IsEnabled.Value = false;
@@ -126,7 +176,7 @@ namespace Nekoyume.UI
             {
                 throw new WidgetNotFoundException<BottomMenu>();
             }
-            VFXController.instance.Create<DropItemInventoryVFX>(bottomMenu.inventoryButton.button.transform, Vector3.zero);
+            VFXController.instance.CreateAndChase<DropItemInventoryVFX>(bottomMenu.characterButton.transform, Vector3.zero);
         }
 
         protected override void OnCompleteOfCloseAnimationInternal()
@@ -169,6 +219,24 @@ namespace Nekoyume.UI
             }
         }
 
+        #endregion
+
+        #region tutorial
+
+        public void ShowForTutorial()
+        {
+            stageTitle.gameObject.SetActive(false);
+            guidedQuest.gameObject.SetActive(false);
+            bossStatus.gameObject.SetActive(false);
+            repeatButton.gameObject.SetActive(false);
+            helpButton.gameObject.SetActive(false);
+            bossStatus.gameObject.SetActive(false);
+            stageProgressBar.gameObject.SetActive(false);
+            comboText.gameObject.SetActive(false);
+            enemyPlayerStatus.gameObject.SetActive(false);
+            comboText.comboMax = 5;
+            gameObject.SetActive(true);
+        }
         #endregion
     }
 }

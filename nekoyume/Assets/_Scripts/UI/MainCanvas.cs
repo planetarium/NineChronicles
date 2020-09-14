@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using _Scripts.UI;
+using System.Linq;
 using Nekoyume.EnumType;
 using Nekoyume.Pattern;
 using Nekoyume.UI.Module;
@@ -13,35 +13,59 @@ namespace Nekoyume.UI
      RequireComponent(typeof(RectTransform))]
     public class MainCanvas : MonoSingleton<MainCanvas>
     {
+        [Serializable]
+        public class CanvasLayer
+        {
+            public Canvas root;
+
+            public void SetSortingOrder(int sortingOrder)
+            {
+                var rootSortingOrderBackup = root.sortingOrder;
+                if (rootSortingOrderBackup == sortingOrder)
+                {
+                    return;
+                }
+
+                root.sortingOrder = sortingOrder;
+
+                foreach (var childCanvas in root.GetComponentsInChildren<Canvas>(true)
+                    .Where(canvas => !canvas.Equals(root))
+                    .ToList())
+                {
+                    childCanvas.sortingOrder =
+                        sortingOrder + (childCanvas.sortingOrder - rootSortingOrderBackup);
+                }
+            }
+        }
+
         [SerializeField]
         private CanvasGroup canvasGroup = null;
 
         [SerializeField]
-        private GameObject hudLayer = null;
+        private CanvasLayer hudLayer = default;
 
         [SerializeField]
-        private GameObject popupLayer = null;
+        private CanvasLayer popupLayer = default;
 
         [SerializeField]
-        private GameObject screenLayer = null;
+        private CanvasLayer screenLayer = default;
 
         [SerializeField]
-        private GameObject tooltipLayer = null;
+        private CanvasLayer tooltipLayer = default;
 
         [SerializeField]
-        private GameObject widgetLayer = null;
+        private CanvasLayer widgetLayer = default;
 
         [SerializeField]
-        private GameObject animationLayer = null;
+        private CanvasLayer animationLayer = default;
 
         [SerializeField]
-        private GameObject systemInfoLayer = null;
+        private CanvasLayer systemInfoLayer = default;
 
         [SerializeField]
-        private GameObject developmentLayer = null;
+        private CanvasLayer developmentLayer = default;
 
-        private List<Widget> _firstWidgets;
-        private List<Widget> _secondWidgets;
+        private List<CanvasLayer> _layers;
 
         public RectTransform RectTransform { get; private set; }
         public Canvas Canvas { get; private set; }
@@ -52,29 +76,34 @@ namespace Nekoyume.UI
             set => canvasGroup.interactable = value;
         }
 
-        public Transform GetTransform(WidgetType widgetType)
+        public CanvasLayer GetLayer(WidgetType widgetType)
         {
             switch (widgetType)
             {
                 case WidgetType.Hud:
-                    return hudLayer.transform;
+                    return hudLayer;
                 case WidgetType.Popup:
-                    return popupLayer.transform;
+                    return popupLayer;
                 case WidgetType.Screen:
-                    return screenLayer.transform;
+                    return screenLayer;
                 case WidgetType.Tooltip:
-                    return tooltipLayer.transform;
+                    return tooltipLayer;
                 case WidgetType.Widget:
-                    return widgetLayer.transform;
+                    return widgetLayer;
                 case WidgetType.Animation:
-                    return animationLayer.transform;
+                    return animationLayer;
                 case WidgetType.SystemInfo:
-                    return systemInfoLayer.transform;
+                    return systemInfoLayer;
                 case WidgetType.Development:
-                    return developmentLayer.transform;
+                    return developmentLayer;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(widgetType), widgetType, null);
             }
+        }
+
+        public Transform GetLayerRootTransform(WidgetType widgetType)
+        {
+            return GetLayer(widgetType).root.transform;
         }
 
         protected override void Awake()
@@ -85,16 +114,43 @@ namespace Nekoyume.UI
             Canvas = GetComponent<Canvas>();
         }
 
+        private void UpdateLayers()
+        {
+            if (_layers is null)
+            {
+                _layers = new List<CanvasLayer>
+                {
+                    hudLayer,
+                    popupLayer,
+                    screenLayer,
+                    tooltipLayer,
+                    widgetLayer,
+                    animationLayer,
+                    systemInfoLayer,
+                    developmentLayer,
+                };
+            }
+
+            _layers = _layers.OrderBy(layer => layer.root.sortingOrder).ToList();
+        }
+
+        public void InitializeTitle()
+        {
+            var title = Widget.Create<Title>(true);
+            title.Initialize();
+
+            UpdateLayers();
+        }
+
         public void InitializeFirst()
         {
-            _firstWidgets = new List<Widget>
+            var firstWidgets = new List<Widget>
             {
                 // 스크린 영역. 로딩창류.
                 Widget.Create<GrayLoadingScreen>(),
                 Widget.Create<StageLoadingScreen>(),
                 Widget.Create<LoadingScreen>(),
-                Widget.Create<PreloadingScreen>(true),
-                Widget.Create<Title>(true),
+                Widget.Create<PreloadingScreen>(),
 
                 // 팝업 영역.
                 Widget.Create<Settings>(),
@@ -112,94 +168,112 @@ namespace Nekoyume.UI
                 Widget.Create<Notification>(true),
             };
 
-            foreach (var value in _firstWidgets)
+            foreach (var value in firstWidgets)
             {
                 value.Initialize();
             }
 
-            Notification.RegisterWidgetTypeForUX<Mail>();
+            UpdateLayers();
         }
 
         public IEnumerator InitializeSecond()
         {
-            _secondWidgets = new List<Widget>();
+            var secondWidgets = new List<Widget>();
 
-            _secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
+            secondWidgets.Add(Widget.Create<ItemInformationTooltip>());
             yield return null;
             // 일반.
-            _secondWidgets.Add(Widget.Create<Synopsis>());
+            secondWidgets.Add(Widget.Create<Synopsis>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Login>());
+            secondWidgets.Add(Widget.Create<Login>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<LoginDetail>());
+            secondWidgets.Add(Widget.Create<LoginDetail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Menu>());
+            secondWidgets.Add(Widget.Create<Menu>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<RankingBattleLoadingScreen>());
+            secondWidgets.Add(Widget.Create<RankingBattleLoadingScreen>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<ArenaBattleLoadingScreen>());
             yield return null;
             // 메뉴보단 더 앞에 나와야 합니다.
-            _secondWidgets.Add(Widget.Create<VanilaTooltip>());
+            secondWidgets.Add(Widget.Create<VanilaTooltip>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Battle>());
+            secondWidgets.Add(Widget.Create<Battle>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Blind>());
+            secondWidgets.Add(Widget.Create<Blind>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Shop>());
+            secondWidgets.Add(Widget.Create<Shop>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<QuestPreparation>());
+            secondWidgets.Add(Widget.Create<QuestPreparation>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<WorldMap>());
+            secondWidgets.Add(Widget.Create<WorldMap>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Status>());
+            secondWidgets.Add(Widget.Create<StageInformation>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Combination>());
+            secondWidgets.Add(Widget.Create<Status>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<RankingBoard>());
+            secondWidgets.Add(Widget.Create<Combination>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<EnhanceEquipment>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<RankingBoard>());
             yield return null;
 
             // 모듈류.
-            _secondWidgets.Add(Widget.Create<StatusDetail>());
+            secondWidgets.Add(Widget.Create<Mail>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Inventory>());
+            secondWidgets.Add(Widget.Create<Quest>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Mail>());
+            secondWidgets.Add(Widget.Create<CombinationSlots>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Quest>());
-            yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationSlots>());
+            secondWidgets.Add(Widget.Create<AvatarInfo>());
             yield return null;
 
             // 팝업류.
-            _secondWidgets.Add(Widget.Create<BattleResult>());
+            secondWidgets.Add(Widget.Create<BattleResult>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<RankingBattleResult>());
+            secondWidgets.Add(Widget.Create<RankingBattleResult>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
+            secondWidgets.Add(Widget.Create<ItemCountAndPricePopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationResultPopup>());
+            secondWidgets.Add(Widget.Create<CombinationResultPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<StageTitle>());
+            secondWidgets.Add(Widget.Create<StageTitle>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Alert>());
+            secondWidgets.Add(Widget.Create<Alert>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<InputBox>());
+            secondWidgets.Add(Widget.Create<InputBox>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
+            secondWidgets.Add(Widget.Create<CombinationSlotPopup>());
             yield return null;
-            // 임시로 팝업보다 상단에 배치
-            _secondWidgets.Add(Widget.Create<BottomMenu>());
+            secondWidgets.Add(Widget.Create<RedeemRewardPopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<Dialog>());
+            secondWidgets.Add(Widget.Create<LevelUpCelebratePopup>());
             yield return null;
-            _secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
+            // 임시로 팝업보다 상단에 배치합니다.
+            secondWidgets.Add(Widget.Create<BottomMenu>());
             yield return null;
+            secondWidgets.Add(Widget.Create<FriendInfoPopup>());
+            yield return null;
+            // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
+            secondWidgets.Add(Widget.Create<Dialog>());
+            // 팝업이지만 하단 메뉴보다 위에 그려져야 하는 것들입니다.
+            secondWidgets.Add(Widget.Create<PrologueDialog>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CombinationLoadingScreen>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<CelebratesPopup>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<HelpPopup>());
 
             // 툴팁류.
-            _secondWidgets.Add(Widget.Create<MessageCatManager>(true));
+            secondWidgets.Add(Widget.Create<AvatarTooltip>());
+            yield return null;
+            secondWidgets.Add(Widget.Create<MessageCatManager>(true));
             yield return null;
 
             Widget last = null;
-            foreach (var value in _secondWidgets)
+            foreach (var value in secondWidgets)
             {
                 if (value is null)
                 {
@@ -208,86 +282,60 @@ namespace Nekoyume.UI
                 }
 
                 value.Initialize();
+                yield return null;
                 last = value;
             }
 
-            Notification.RegisterWidgetTypeForUX<Mail>();
+            UpdateLayers();
         }
 
-        public void SetSiblingOrderNext(WidgetType fromWidgetType, WidgetType targetWidgetType)
+        public void SetLayerSortingOrderToTarget(
+            WidgetType fromWidgetType,
+            WidgetType toWidgetType,
+            bool checkFromIsSmallerThanTo = true)
         {
-            GameObject from;
-            switch (fromWidgetType)
+            if (fromWidgetType == toWidgetType)
             {
-                case WidgetType.Hud:
-                    from = hudLayer;
-                    break;
-                case WidgetType.Popup:
-                    from = popupLayer;
-                    break;
-                case WidgetType.Screen:
-                    from = screenLayer;
-                    break;
-                case WidgetType.Tooltip:
-                    from = tooltipLayer;
-                    break;
-                case WidgetType.Widget:
-                    from = widgetLayer;
-                    break;
-                case WidgetType.SystemInfo:
-                    from = systemInfoLayer;
-                    break;
-                case WidgetType.Development:
-                    from = developmentLayer;
-                    break;
-                case WidgetType.Animation:
-                    from = animationLayer;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(fromWidgetType), fromWidgetType, null);
+                return;
             }
 
-            GameObject target;
-            switch (targetWidgetType)
+            var from = GetLayer(fromWidgetType);
+            var fromSortingOrder = from.root.sortingOrder;
+            var to = GetLayer(toWidgetType);
+            var toSortingOrder = to.root.sortingOrder;
+            if (fromSortingOrder == toSortingOrder)
             {
-                case WidgetType.Hud:
-                    target = hudLayer;
-                    break;
-                case WidgetType.Popup:
-                    target = popupLayer;
-                    break;
-                case WidgetType.Screen:
-                    target = screenLayer;
-                    break;
-                case WidgetType.Tooltip:
-                    target = tooltipLayer;
-                    break;
-                case WidgetType.Widget:
-                    target = widgetLayer;
-                    break;
-                case WidgetType.SystemInfo:
-                    target = systemInfoLayer;
-                    break;
-                case WidgetType.Development:
-                    target = developmentLayer;
-                    break;
-                case WidgetType.Animation:
-                    target = animationLayer;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(targetWidgetType), targetWidgetType, null);
+                return;
             }
 
-            var fromIndex = from.transform.GetSiblingIndex();
-            var targetIndex = target.transform.GetSiblingIndex();
-            if (fromIndex > targetIndex)
+            if (checkFromIsSmallerThanTo &&
+                fromSortingOrder > toSortingOrder)
             {
-                from.transform.SetSiblingIndex(targetIndex + 1);
+                return;
+            }
+
+            var fromIndex = fromSortingOrder == 0 ? 0 : fromSortingOrder / 10;
+            var toIndex = toSortingOrder == 0 ? 0 : toSortingOrder / 10;
+            from.SetSortingOrder(toSortingOrder);
+
+            if (fromIndex < toIndex)
+            {
+                for (var i = fromIndex + 1; i < toIndex + 1; i++)
+                {
+                    var layer = _layers[i];
+                    layer.SetSortingOrder(layer.root.sortingOrder - 10);
+                }
             }
             else
             {
-                from.transform.SetSiblingIndex(targetIndex);
+                for (var i = toIndex; i < fromIndex; i++)
+                {
+                    var layer = _layers[i];
+                    layer.SetSortingOrder(layer.root.sortingOrder + 10);
+                }
             }
+
+            UpdateLayers();
         }
     }
 }

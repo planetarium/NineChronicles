@@ -1,8 +1,8 @@
 using System;
-using Assets.SimpleLocalization;
-using Nekoyume.TableData;
+using System.Numerics;
+using Libplanet.Assets;
+using Nekoyume.State;
 using UniRx;
-using UnityEngine;
 
 namespace Nekoyume.UI.Model
 {
@@ -19,15 +19,18 @@ namespace Nekoyume.UI.Model
         public readonly ReactiveProperty<string> SubmitButtonText = new ReactiveProperty<string>(null);
 
         public readonly ReactiveProperty<bool> PriceEnabled = new ReactiveProperty<bool>(false);
-        public readonly ReactiveProperty<decimal> Price = new ReactiveProperty<decimal>(0m);
+        public readonly ReactiveProperty<FungibleAssetValue> Price;
 
         public readonly Subject<UI.ItemInformationTooltip> OnSubmitClick = new Subject<UI.ItemInformationTooltip>();
         public readonly Subject<UI.ItemInformationTooltip> OnCloseClick = new Subject<UI.ItemInformationTooltip>();
-        
+
         public readonly ReadOnlyReactiveProperty<bool> FooterRootActive;
 
         public ItemInformationTooltip(CountableItem countableItem = null)
         {
+            var currency = States.Instance.GoldBalanceState.Gold.Currency;
+            Price = new ReactiveProperty<FungibleAssetValue>(new FungibleAssetValue(currency));
+
             ItemInformation = new ItemInformation(countableItem);
             ItemInformation.item.Subscribe(item =>
             {
@@ -79,7 +82,7 @@ namespace Nekoyume.UI.Model
             OnCloseClick.Dispose();
 
             FooterRootActive.Dispose();
-            
+
             base.Dispose();
         }
 

@@ -1,8 +1,4 @@
-using System.Collections.Generic;
-using DG.Tweening;
-using Nekoyume.Manager;
 using Nekoyume.Game.Character;
-using Nekoyume.Game.Controller;
 using Nekoyume.State;
 using Nekoyume.UI.Module;
 using Nekoyume.UI.Module.Timer;
@@ -10,27 +6,40 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UniRx;
-using Nekoyume.Model.Buff;
 
 namespace Nekoyume.UI
 {
     public class Status : Widget
     {
-        public TextMeshProUGUI textLvName;
-        public TextMeshProUGUI textHp;
-        public TextMeshProUGUI textExp;
-        public Image hpBar;
-        public Image expBar;
-        public BuffLayout buffLayout;
-        public BuffTooltip buffTooltip;
-        public BattleTimerView battleTimerView;
+        [SerializeField]
+        private FramedCharacterView characterView = null;
+
+        [SerializeField]
+        private TextMeshProUGUI textLvName = null;
+
+        [SerializeField]
+        private TextMeshProUGUI textHp = null;
+
+        [SerializeField]
+        private TextMeshProUGUI textExp = null;
+
+        [SerializeField]
+        private Image hpBar = null;
+
+        [SerializeField]
+        private Image expBar = null;
+
+        [SerializeField]
+        private BuffLayout buffLayout = null;
+
+        [SerializeField]
+        private BuffTooltip buffTooltip = null;
+
+        [SerializeField]
+        private BattleTimerView battleTimerView = null;
 
         private string _avatarName = "";
         private Player _player;
-
-        private StatusDetail _statusDetail;
-        private Inventory _inventory;
-        private Quest _quest;
 
         #region Mono
 
@@ -39,6 +48,9 @@ namespace Nekoyume.UI
             base.Awake();
 
             Game.Event.OnRoomEnter.AddListener(b => Show());
+            Game.Event.OnUpdatePlayerEquip
+                .Subscribe(characterView.SetByPlayer)
+                .AddTo(gameObject);
             Game.Event.OnUpdatePlayerStatus.Subscribe(SubscribeOnUpdatePlayerStatus)
                 .AddTo(gameObject);
 
@@ -51,61 +63,21 @@ namespace Nekoyume.UI
         {
             base.Show(ignoreStartAnimation);
             battleTimerView.Close();
-
-            _statusDetail = Find<StatusDetail>();
-            if (_statusDetail is null)
-            {
-                throw new NotFoundComponentException<StatusDetail>();
-            }
-
-            _inventory = Find<Inventory>();
-            if (_inventory is null)
-            {
-                throw new NotFoundComponentException<Inventory>();
-            }
-
-            _quest = Find<Quest>();
-            if (_quest is null)
-            {
-                throw new NotFoundComponentException<Quest>();
-            }
-
             hpBar.transform.parent.gameObject.SetActive(false);
             buffLayout.SetBuff(null);
         }
 
-        private void SubscribeOnUpdatePlayerStatus(Player player)
+        public void ShowBattleStatus()
         {
-            if (!player ||
-                player is EnemyPlayer ||
-                player.Model is null)
-            {
-                return;
-            }
-
-            UpdateExp();
-            SetBuffs(player.Model.Buffs);
+            hpBar.transform.parent.gameObject.SetActive(true);
         }
 
-        public void UpdatePlayer(Player player)
+        public void ShowBattleTimer(int timeLimit)
         {
-            Show();
-
-            if (player)
-            {
-                _player = player;
-            }
-
-            UpdateExp();
+            battleTimerView.Show(timeLimit);
         }
 
-        #region Buff
-
-        public void SetBuffs(IReadOnlyDictionary<int, Buff> value)
-        {
-            buffLayout.SetBuff(value);
-        }
-
+        // NOTE: call from Hierarchy
         public void ShowBuffTooltip(GameObject sender)
         {
             var icon = sender.GetComponent<BuffIcon>();
@@ -117,12 +89,37 @@ namespace Nekoyume.UI
                 iconRectTransform.anchoredPosition + Vector2.down * iconRectTransform.sizeDelta.y;
         }
 
+        // NOTE: call from Hierarchy
         public void HideBuffTooltip()
         {
             buffTooltip.gameObject.SetActive(false);
         }
 
-        #endregion
+        public void UpdatePlayer(Player player)
+        {
+            characterView.SetByPlayer(player);
+            Show();
+
+            if (player)
+            {
+                _player = player;
+            }
+
+            UpdateExp();
+        }
+
+        private void SubscribeOnUpdatePlayerStatus(Player player)
+        {
+            if (player is null ||
+                player is EnemyPlayer ||
+                player.Model is null)
+            {
+                return;
+            }
+
+            UpdateExp();
+            buffLayout.SetBuff(player.Model.Buffs);
+        }
 
         private void UpdateExp()
         {
@@ -151,71 +148,6 @@ namespace Nekoyume.UI
             expBar.gameObject.SetActive(expValue > 0.0f);
             expValue = Mathf.Min(Mathf.Max(expValue, 0.1f), 1.0f);
             expBar.fillAmount = expValue;
-        }
-
-        public void ToggleInventory()
-        {
-            Toggle(_inventory);
-
-            AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
-                ? AnalyticsManager.EventName.ClickMainInventory
-                : AnalyticsManager.EventName.ClickBattleInventory);
-        }
-
-        public void CloseInventory()
-        {
-            if (!_inventory.IsActive())
-            {
-                return;
-            }
-
-            _inventory.Close();
-        }
-
-        public void ToggleStatus()
-        {
-            Toggle(_statusDetail);
-
-            AnalyticsManager.Instance.OnEvent(Find<Menu>().gameObject.activeSelf
-                ? AnalyticsManager.EventName.ClickMainEquipment
-                : AnalyticsManager.EventName.ClickBattleEquipment);
-        }
-
-        public void CloseStatusDetail()
-        {
-            if (!_statusDetail.IsActive())
-            {
-                return;
-            }
-
-            _statusDetail.Close();
-        }
-
-        public void ShowBattleStatus()
-        {
-            hpBar.transform.parent.gameObject.SetActive(true);
-        }
-
-        public void ToggleQuest()
-        {
-            Toggle(_quest);
-        }
-
-        private void Toggle(Widget selected)
-        {
-            AudioController.PlayClick();
-
-            selected.Toggle();
-            if (!selected.IsActive())
-            {
-                return;
-            }
-
-            foreach (var widget in new Widget[] {_inventory, _statusDetail, _quest})
-            {
-                if (selected != widget)
-                    widget.Close();
-            }
         }
     }
 }

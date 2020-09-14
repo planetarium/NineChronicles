@@ -1,6 +1,6 @@
 namespace Nekoyume.UI.Module
 {
-    public interface IToggleGroup
+    public interface IToggleGroup : IToggleListener
     {
         void RegisterToggleable(IToggleable toggleable);
         void SetToggledOn(IToggleable toggleable);

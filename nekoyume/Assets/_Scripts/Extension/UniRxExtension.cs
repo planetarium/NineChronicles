@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
+using Libplanet.Assets;
 using Nekoyume.UI.Module;
 using TMPro;
 using UniRx;
@@ -28,7 +30,12 @@ namespace Nekoyume
         {
             foreach (var item in collection)
             {
-                item.Dispose();
+                if (!(item is IDisposable disposable))
+                {
+                    continue;
+                }
+
+                disposable.Dispose();
             }
 
             collection.Dispose();
@@ -76,10 +83,10 @@ namespace Nekoyume
             return source.SubscribeWithState(text, (x, t) => t.SetSubmitText(x));
         }
 
-        public static IDisposable SubscribeToPrice(this IObservable<decimal> source,
+        public static IDisposable SubscribeToPrice(this IObservable<FungibleAssetValue> source,
             TextMeshProUGUI text)
         {
-            return source.SubscribeWithState(text, (x, t) => t.text = x.ToString("N0"));
+            return source.SubscribeWithState(text, (x, t) => t.text = x.GetQuantityString());
         }
     }
 }

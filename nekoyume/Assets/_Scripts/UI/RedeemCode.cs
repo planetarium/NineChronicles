@@ -1,7 +1,10 @@
-using Assets.SimpleLocalization;
+using System;
+using Libplanet;
+using Libplanet.Crypto;
+using Nekoyume.L10n;
 using Nekoyume.Model.Mail;
-using Nekoyume.Model.State;
 using TMPro;
+using UnityEngine.Events;
 
 namespace Nekoyume.UI
 {
@@ -11,20 +14,24 @@ namespace Nekoyume.UI
         public TextMeshProUGUI placeHolder;
         public TextMeshProUGUI cancelButtonText;
         public TextMeshProUGUI submitButtonText;
+        public TMP_InputField codeField;
+
+        public UnityEvent OnRequested = new UnityEvent();
 
         protected override void Awake()
         {
             base.Awake();
-            title.text = LocalizationManager.Localize("UI_REDEEM_CODE");
-            placeHolder.text = LocalizationManager.Localize("UI_REDEEM_CODE_PLACEHOLDER");
-            cancelButtonText.text = LocalizationManager.Localize("UI_CANCEL");
-            submitButtonText.text = LocalizationManager.Localize("UI_OK");
+            title.text = L10nManager.Localize("UI_REDEEM_CODE");
+            placeHolder.text = L10nManager.Localize("UI_REDEEM_CODE_PLACEHOLDER");
+            cancelButtonText.text = L10nManager.Localize("UI_CANCEL");
+            submitButtonText.text = L10nManager.Localize("UI_OK");
         }
 
         public void RequestRedeemCode()
         {
-            Game.Game.instance.ActionManager.RedeemCode(RedeemCodeState.Address);
+            Game.Game.instance.ActionManager.RedeemCode(codeField.text.Trim());
             Notification.Push(MailType.System, "Request Redeem Code.");
+            OnRequested.Invoke();
             Close();
         }
     }

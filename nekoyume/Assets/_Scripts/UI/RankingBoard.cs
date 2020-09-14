@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Assets.SimpleLocalization;
 using Libplanet;
 using Nekoyume.Action;
-using Nekoyume.BlockChain;
+using Nekoyume.EnumType;
 using Nekoyume.Game.Character;
 using Nekoyume.Game.Controller;
+using Nekoyume.L10n;
 using Nekoyume.Model.State;
 using Nekoyume.State;
 using Nekoyume.State.Subjects;
@@ -15,8 +15,6 @@ using Nekoyume.UI.Scroller;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
-using RankingInfo = Nekoyume.UI.Scroller.RankingInfo;
 
 namespace Nekoyume.UI
 {
@@ -32,30 +30,51 @@ namespace Nekoyume.UI
         private const int NPCId = 300002;
         private static readonly Vector3 NPCPosition = new Vector3(1.2f, -1.72f);
 
-        public CategoryButton arenaButton;
-        public CategoryButton filteredButton;
-        public CategoryButton overallButton;
-        public GameObject arenaRankingHeader;
-        public GameObject expRankingHeader;
-        public ArenaCellView arenaCellViewPrefab;
-        public RankingInfo rankingCellViewPrefab;
-        public ScrollRect board;
-        public ArenaPendingNCG arenaPendingNCG;
-        public GameObject arenaRecordContainer;
-        public TextMeshProUGUI arenaRecordText;
-        public ArenaCellView currentAvatarCellView;
-        public SubmitButton arenaActivationButton;
-        public RankingRewards rankingRewards;
-        public SpeechBubble speechBubble;
+        [SerializeField]
+        private CategoryButton arenaButton = null;
 
-        private List<(int rank, ArenaInfo arenaInfo)> _arenaAvatarStates;
+        [SerializeField]
+        private CategoryButton filteredButton = null;
+
+        [SerializeField]
+        private CategoryButton overallButton = null;
+
+        [SerializeField]
+        private GameObject arenaRankingHeader = null;
+
+        [SerializeField]
+        private GameObject expRankingHeader = null;
+
+        [SerializeField]
+        private ArenaRankScroll arenaRankScroll = null;
+
+        [SerializeField]
+        private ExpRankScroll expRankScroll = null;
+
+        [SerializeField]
+        private ArenaRankCell currentAvatarCellView = null;
+
+        [SerializeField]
+        private SpeechBubble speechBubble = null;
+
+        [SerializeField]
+        private TextMeshProUGUI rewardText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI winText = null;
+
+        [SerializeField]
+        private TextMeshProUGUI loseText = null;
+
         private Nekoyume.Model.State.RankingInfo[] _avatarRankingStates;
         private NPC _npc;
+        private Player _player;
 
         private readonly ReactiveProperty<StateType> _state =
             new ReactiveProperty<StateType>(StateType.Arena);
 
         private readonly List<IDisposable> _disposablesAtClose = new List<IDisposable>();
+        private HashSet<Nekoyume.Model.State.RankingInfo> _rankingInfos = new HashSet<Nekoyume.Model.State.RankingInfo>();
 
         protected override void Awake()
         {
@@ -89,18 +108,26 @@ namespace Nekoyume.UI
                 })
                 .AddTo(gameObject);
 
-            arenaActivationButton.OnSubmitClick
-                .Subscribe(_ =>
-                {
-                    // todo: 아레나 참가하기.
-                    // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 골드를 깍지 못함.
-                    // LocalStateModifier.ModifyAgentGold(States.Instance.AgentState.address,
-                    //     -GameConfig.ArenaActivationCostNCG);
-                    // fixme: 지금 개발 단계에서는 참가 액션이 분리되어 있지 않기 때문에, 참가할 때 골드를 더하지 못함.
-                    // LocalStateModifier.ModifyWeeklyArenaGold(GameConfig.ArenaActivationCostNCG);
-                    LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets
-                        .CharacterSheet);
-                }).AddTo(gameObject);
+            arenaRankScroll.OnClickAvatarInfo
+                .Subscribe(cell => OnClickAvatarInfo(
+                    cell.RectTransform,
+                    cell.ArenaInfo.AvatarAddress))
+                .AddTo(gameObject);
+            arenaRankScroll.OnClickChallenge.Subscribe(OnClickChallenge).AddTo(gameObject);
+            expRankScroll.OnClick
+                .Subscribe(cell => OnClickAvatarInfo(
+                    cell.RectTransform,
+                    cell.RankingInfo.AvatarAddress))
+                .AddTo(gameObject);
+            currentAvatarCellView.OnClickAvatarInfo
+                .Subscribe(cell => OnClickAvatarInfo(
+                    cell.RectTransform,
+                    cell.ArenaInfo.AvatarAddress))
+                .AddTo(gameObject);
+
+            rewardText.text = L10nManager.Localize("UI_REWARDS");
+            winText.text = L10nManager.Localize("UI_WIN");
+            loseText.text = L10nManager.Localize("UI_LOSE");
 
             CloseWidget = null;
             SubmitWidget = null;
@@ -120,35 +147,38 @@ namespace Nekoyume.UI
 
             var stage = Game.Game.instance.Stage;
             stage.LoadBackground("ranking");
-            stage.GetPlayer().gameObject.SetActive(false);
+            _player = stage.GetPlayer();
+            _player.gameObject.SetActive(false);
 
             _state.SetValueAndForceNotify(stateType);
 
-            Find<BottomMenu>()?.Show(UINavigator.NavigationType.Back, SubscribeBackButtonClick);
+            Find<BottomMenu>()?.Show(
+                UINavigator.NavigationType.Back,
+                SubscribeBackButtonClick,
+                true,
+                BottomMenu.ToggleableType.Character);
 
-            var go = Game.Game.instance.Stage.npcFactory.Create(NPCId, NPCPosition);
+            var go = Game.Game.instance.Stage.npcFactory.Create(
+                NPCId,
+                NPCPosition,
+                LayerType.InGameBackground,
+                3);
             _npc = go.GetComponent<NPC>();
             _npc.gameObject.SetActive(false);
 
             AudioController.instance.PlayMusic(AudioController.MusicCode.Ranking);
 
-            // 구독.
-            ReactiveAgentState.Gold.Subscribe(gold =>
-                    arenaActivationButton.SetSubmittable(gold >= GameConfig.ArenaActivationCostNCG))
-                .AddTo(_disposablesAtClose);
             WeeklyArenaStateSubject.WeeklyArenaState.Subscribe(state => UpdateArena())
                 .AddTo(_disposablesAtClose);
+            RankingMapStatesSubject.RankingMapStates.Subscribe(SetRankingInfos).AddTo(_disposablesAtClose);
         }
 
         public override void Close(bool ignoreCloseAnimation = false)
         {
-            // 구독 취소.
+            // Cancel Subscriptions.
             _disposablesAtClose.DisposeAllAndClear();
 
             Find<BottomMenu>()?.Close();
-
-            _arenaAvatarStates = null;
-            ClearBoard();
 
             base.Close(ignoreCloseAnimation);
 
@@ -166,8 +196,6 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOn();
                     filteredButton.SetToggledOff();
                     overallButton.SetToggledOff();
-                    rankingRewards.Show();
-                    arenaPendingNCG.Show(false);
                     UpdateArena();
                     arenaRankingHeader.SetActive(true);
                     expRankingHeader.SetActive(false);
@@ -176,11 +204,7 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOff();
                     filteredButton.SetToggledOn();
                     overallButton.SetToggledOff();
-                    arenaActivationButton.Hide();
-                    rankingRewards.Hide();
-                    arenaPendingNCG.Hide();
                     currentAvatarCellView.Hide();
-                    arenaRecordContainer.SetActive(false);
                     arenaRankingHeader.SetActive(false);
                     expRankingHeader.SetActive(true);
                     UpdateBoard(stateType);
@@ -189,11 +213,7 @@ namespace Nekoyume.UI
                     arenaButton.SetToggledOff();
                     filteredButton.SetToggledOff();
                     overallButton.SetToggledOn();
-                    arenaActivationButton.Hide();
-                    rankingRewards.Hide();
-                    arenaPendingNCG.Hide();
                     currentAvatarCellView.Hide();
-                    arenaRecordContainer.SetActive(false);
                     arenaRankingHeader.SetActive(false);
                     expRankingHeader.SetActive(true);
                     UpdateBoard(stateType);
@@ -205,37 +225,44 @@ namespace Nekoyume.UI
 
         private void UpdateArena()
         {
-            if (States.Instance.CurrentAvatarState is null)
-                return;
-
             var weeklyArenaState = States.Instance.WeeklyArenaState;
-            arenaPendingNCG.Show(weeklyArenaState);
-
-            var avatarAddress = States.Instance.CurrentAvatarState.address;
-            var infos = weeklyArenaState.GetArenaInfos(avatarAddress, 0, 0);
-            try
+            if (weeklyArenaState is null)
             {
-                var (rank, arenaInfo) = infos.First(tuple =>
-                    tuple.arenaInfo.AvatarAddress.Equals(avatarAddress));
-                var record = arenaInfo.ArenaRecord;
-                if (arenaInfo.Active)
-                {
-                    arenaRecordContainer.SetActive(true);
-                    arenaRecordText.text = string.Format(
-                        LocalizationManager.Localize("UI_WIN_DRAW_LOSE_FORMAT"), record.Win,
-                        record.Draw, record.Lose);
-                    currentAvatarCellView.Show(rank, arenaInfo, false, true);
-                    currentAvatarCellView.onClickInfo = OnClickAvatarInfo;
-                    arenaActivationButton.Hide();
-                }
-                else
-                    throw new Exception();
+                return;
             }
-            catch
+
+            var avatarAddress = States.Instance.CurrentAvatarState?.address;
+            if (!avatarAddress.HasValue)
             {
-                arenaRecordContainer.SetActive(false);
+                return;
+            }
+
+            var arenaInfos = weeklyArenaState
+                .GetArenaInfos(avatarAddress.Value, 0, 0);
+            if (arenaInfos.Count == 0)
+            {
                 currentAvatarCellView.Hide();
-                arenaActivationButton.Show();
+
+                UpdateBoard(StateType.Arena);
+                return;
+            }
+
+            var (rank, arenaInfo) = arenaInfos[0];
+            var record = arenaInfo.ArenaRecord;
+            if (arenaInfo.Active)
+            {
+                currentAvatarCellView.Show((rank, arenaInfo, arenaInfo));
+            }
+            else
+            {
+                currentAvatarCellView.Hide();
+
+                var gold = Game.Game.instance.States.GoldBalanceState.Gold;
+                if (gold >= gold.Currency * GameConfig.ArenaActivationCostNCG)
+                {
+                    LocalStateModifier.AddWeeklyArenaInfoActivator(Game.Game.instance.TableSheets
+                        .CharacterSheet);
+                }
             }
 
             UpdateBoard(StateType.Arena);
@@ -243,131 +270,131 @@ namespace Nekoyume.UI
 
         private void UpdateBoard(StateType stateType)
         {
-            ClearBoard();
-
             if (stateType == StateType.Arena)
             {
-                SetArenaInfos();
-
-                if (States.Instance.CurrentAvatarState is null)
-                    return;
+                expRankScroll.Hide();
 
                 var weeklyArenaState = States.Instance.WeeklyArenaState;
-                var avatarAddress = States.Instance.CurrentAvatarState.address;
-                var currentAvatarArenaInfo = weeklyArenaState.GetArenaInfo(avatarAddress);
-
-                var canChallenge = (currentAvatarArenaInfo is null)
-                    ? false
-                    : currentAvatarArenaInfo.Active &&
-                      currentAvatarArenaInfo.DailyChallengeCount > 0;
-
-                for (var index = 0; index < _arenaAvatarStates.Count; index++)
+                if (weeklyArenaState is null)
                 {
-                    var avatarState = _arenaAvatarStates[index].arenaInfo;
-                    if (avatarState is null)
-                    {
-                        continue;
-                    }
-
-                    var rankingInfo = Instantiate(arenaCellViewPrefab, board.content);
-                    var bg = rankingInfo.GetComponent<Image>();
-                    if (index % 2 == 1)
-                    {
-                        bg.enabled = false;
-                    }
-
-                    bool isCurrentUser = avatarState.AvatarAddress.Equals(avatarAddress);
-
-                    rankingInfo.Show(index + 1, avatarState, canChallenge, isCurrentUser);
-                    rankingInfo.onClickChallenge = OnClickChallenge;
-                    rankingInfo.onClickInfo = OnClickAvatarInfo;
-                    rankingInfo.gameObject.SetActive(true);
+                    arenaRankScroll.ClearData();
+                    arenaRankScroll.Show();
+                    return;
                 }
+
+                var currentAvatarAddress = States.Instance.CurrentAvatarState?.address;
+                if (!currentAvatarAddress.HasValue ||
+                    !weeklyArenaState.ContainsKey(currentAvatarAddress.Value))
+                {
+                    currentAvatarCellView.Hide();
+
+                    var rank = 1;
+                    arenaRankScroll.Show(weeklyArenaState.OrderedArenaInfos
+                        .Select(arenaInfo => new ArenaRankCell.ViewModel
+                        {
+                            rank = rank++,
+                            arenaInfo = arenaInfo,
+                            currentAvatarArenaInfo = null
+                        }).ToList(), true);
+
+                    return;
+                }
+
+                var (currentAvatarRank, currentAvatarArenaInfo) = weeklyArenaState
+                    .GetArenaInfos(currentAvatarAddress.Value, 0, 0)
+                    .FirstOrDefault(info =>
+                        info.arenaInfo.AvatarAddress.Equals(currentAvatarAddress));
+
+                currentAvatarCellView.Show((
+                    currentAvatarRank,
+                    currentAvatarArenaInfo,
+                    currentAvatarArenaInfo));
+
+                arenaRankScroll.Show(weeklyArenaState
+                    .GetArenaInfos(1, 100)
+                    .Where(tuple =>
+                        tuple.arenaInfo.Level >=
+                        GameConfig.RequireClearedStageLevel.ActionsInRankingBoard)
+                    .Select(tuple => new ArenaRankCell.ViewModel
+                    {
+                        rank = tuple.rank,
+                        arenaInfo = tuple.arenaInfo,
+                        currentAvatarArenaInfo = currentAvatarArenaInfo
+                    }).ToList(), true);
             }
             else
             {
-                if (stateType == StateType.Filtered)
+                arenaRankScroll.Hide();
+
+                var rankingState = States.Instance.RankingMapStates;
+                if (rankingState is null)
                 {
-                    SetAvatars(DateTimeOffset.UtcNow);
+                    expRankScroll.ClearData();
+                    expRankScroll.Show();
+                    return;
                 }
-                else
+                SetRankingInfos(rankingState);
+
+                var rank = 1;
+                var dt = stateType == StateType.Filtered
+                    ? DateTimeOffset.UtcNow
+                    : (DateTimeOffset?) null;
+                var rankingInfos = _rankingInfos
+                    .OrderByDescending(c => c.Exp)
+                    .ThenBy(c => c.StageClearedBlockIndex)
+                    .ToList();
+                if (!(dt is null))
                 {
-                    SetAvatars(null);
+                    rankingInfos = rankingInfos
+                        .Where(context => ((TimeSpan) (dt - context.UpdatedAt)).Days <= 1)
+                        .ToList();
                 }
 
-                for (var index = 0; index < _avatarRankingStates.Length; index++)
-                {
-                    var avatarState = _avatarRankingStates[index];
-                    if (avatarState is null)
+                expRankScroll.Show(rankingInfos
+                    .Select(rankingInfo => new ExpRankCell.ViewModel
                     {
-                        continue;
-                    }
-
-                    RankingInfo rankingInfo = Instantiate(rankingCellViewPrefab, board.content);
-                    var bg = rankingInfo.GetComponent<Image>();
-                    if (index % 2 == 1)
-                    {
-                        bg.enabled = false;
-                    }
-
-                    rankingInfo.Set(index + 1, avatarState);
-                    rankingInfo.onClick = OnClickAvatarInfo;
-                    rankingInfo.gameObject.SetActive(true);
-                }
+                        rank = rank++,
+                        rankingInfo = rankingInfo
+                    }).ToList());
             }
         }
 
-        private void OnClickAvatarInfo(Address avatarAddress)
+        private static void OnClickAvatarInfo(RectTransform rectTransform, Address address)
         {
-            Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, avatarAddress));
+            // NOTE: 블록 익스플로러 연결 코드. 이후에 참고하기 위해 남겨 둡니다.
+            // Application.OpenURL(string.Format(GameConfig.BlockExplorerLinkFormat, avatarAddress));
+            Find<AvatarTooltip>().Show(rectTransform, address);
         }
 
-        private void OnClickChallenge(ArenaCellView info)
+        private void OnClickChallenge(ArenaRankCell arenaRankCell)
         {
-            Game.Game.instance.ActionManager.RankingBattle(info.ArenaInfo.AvatarAddress);
-            Find<LoadingScreen>().Show();
-            Find<RankingBattleLoadingScreen>().Show(info.ArenaInfo);
-        }
-
-        private void SetAvatars(DateTimeOffset? dt)
-        {
-            _avatarRankingStates = States.Instance.RankingState?.GetAvatars(dt) ??
-                                   new Nekoyume.Model.State.RankingInfo[0];
-        }
-
-        private void SetArenaInfos()
-        {
-            var currentAvatarState = States.Instance.CurrentAvatarState;
-
-            if (currentAvatarState is null)
-            {
-                _arenaAvatarStates = new List<(int rank, ArenaInfo arenaInfo)>();
-                return;
-            }
-
-            var avatarAddress = currentAvatarState.address;
-
-            _arenaAvatarStates = States.Instance.WeeklyArenaState?.GetArenaInfos(avatarAddress)
-                                 ?? new List<(int rank, ArenaInfo arenaInfo)>();
-        }
-
-        private void ClearBoard()
-        {
-            foreach (Transform child in board.content.transform)
-            {
-                Destroy(child.gameObject);
-            }
+            //TODO 소모품장착
+            Game.Game.instance.ActionManager.RankingBattle(
+                arenaRankCell.ArenaInfo.AvatarAddress,
+                _player.Costumes.Select(i => i.Id).ToList(),
+                _player.Equipments.Select(i => i.ItemId).ToList(),
+                new List<Guid>()
+            );
+            Find<ArenaBattleLoadingScreen>().Show(arenaRankCell.ArenaInfo);
         }
 
         private void SubscribeBackButtonClick(BottomMenu bottomMenu)
         {
-            if (!CanClose)
+            var avatarInfo = Find<AvatarInfo>();
+            if (avatarInfo.gameObject.activeSelf)
             {
-                return;
+                avatarInfo.Close();
             }
+            else
+            {
+                if (!CanClose)
+                {
+                    return;
+                }
 
-            Close(true);
-            Game.Event.OnRoomEnter.Invoke(true);
+                Close(true);
+                Game.Event.OnRoomEnter.Invoke(true);
+            }
         }
 
         private void ShowSpeech(string key,
@@ -392,9 +419,18 @@ namespace Nekoyume.UI
         public void GoToStage(ActionBase.ActionEvaluation<RankingBattle> eval)
         {
             Game.Event.OnRankingBattleStart.Invoke(eval.Action.Result);
-            Find<LoadingScreen>().Close();
-            Find<RankingBattleLoadingScreen>().Close();
             Close();
+        }
+
+        private void SetRankingInfos(Dictionary<Address, RankingMapState> states)
+        {
+            var rankingInfos = new HashSet<Nekoyume.Model.State.RankingInfo>();
+            foreach (var pair in states)
+            {
+                rankingInfos.UnionWith(pair.Value.GetRankingInfos(null));
+            }
+
+            _rankingInfos = rankingInfos;
         }
     }
 }

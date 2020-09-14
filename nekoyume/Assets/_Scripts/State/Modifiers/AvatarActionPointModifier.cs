@@ -20,7 +20,9 @@ namespace Nekoyume.State.Modifiers
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarActionPointModifier m))
+            {
                 return;
+            }
 
             actionPoint += m.actionPoint;
         }
@@ -28,7 +30,9 @@ namespace Nekoyume.State.Modifiers
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarActionPointModifier m))
+            {
                 return;
+            }
 
             actionPoint -= m.actionPoint;
         }
@@ -36,7 +40,9 @@ namespace Nekoyume.State.Modifiers
         public override AvatarState Modify(AvatarState state)
         {
             if (state is null)
+            {
                 return null;
+            }
 
             state.actionPoint += actionPoint;
             return state;

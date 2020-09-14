@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 492990368580939089}
   - component: {fileID: 492990368596142097}
   - component: {fileID: 492990368596169137}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: ob_fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4673,7 +4673,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -14266,7 +14266,7 @@ GameObject:
   - component: {fileID: 5802554001828888869}
   - component: {fileID: 3401263409050045299}
   - component: {fileID: 1952410525977139205}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: star_03_water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19059,7 +19059,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 3
@@ -19095,7 +19095,7 @@ GameObject:
   - component: {fileID: 7282720043603513253}
   - component: {fileID: 7484940340607224595}
   - component: {fileID: 7483775081750958059}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: glow_water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -23869,7 +23869,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -23905,7 +23905,7 @@ GameObject:
   - component: {fileID: 7282881431711175847}
   - component: {fileID: 7484096877945049223}
   - component: {fileID: 7484229203168011943}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: ray_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28679,7 +28679,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 1
   m_SortMode: 0
@@ -28715,7 +28715,7 @@ GameObject:
   - component: {fileID: 6247256319028559243}
   - component: {fileID: 7191163364503531299}
   - component: {fileID: 4234098215344451007}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: star_03_water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33440,7 +33440,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 4
+  m_SortingLayer: 6
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 3
@@ -33477,7 +33477,7 @@ GameObject:
   - component: {fileID: 7868304385673501513}
   - component: {fileID: 3657880590745770194}
   - component: {fileID: -7289372708808022941}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: casting_water
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38229,8 +38229,8 @@ ParticleSystemRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -317291175
-  m_SortingLayer: 4
+  m_SortingLayerID: -1590795947
+  m_SortingLayer: 2
   m_SortingOrder: 10
   m_RenderMode: 0
   m_SortMode: 0
@@ -38268,3 +38268,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+  go: {fileID: 0}

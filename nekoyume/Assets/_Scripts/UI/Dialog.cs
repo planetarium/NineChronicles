@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Assets.SimpleLocalization;
+using System.Globalization;
 using Nekoyume.EnumType;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
+using Nekoyume.L10n;
 using Nekoyume.State;
 using TMPro;
 using UnityEngine;
@@ -15,10 +16,17 @@ namespace Nekoyume.UI
     {
         public float textInterval = 0.06f;
         public Color itemTextColor;
+        private const string TimerFormat = "<voffset=0.1em><size=14>({0})</size></voffset>";
 
         public TextMeshProUGUI txtName;
         public TextMeshProUGUI txtDialog;
         public Image imgCharacter;
+        [SerializeField]
+        private float time = default;
+        [SerializeField]
+        private TextMeshProUGUI textArrow = null;
+        [SerializeField]
+        private TextMeshProUGUI textTimer = null;
 
         private string _playerPrefsKey;
         private string _dialogKey;
@@ -27,11 +35,12 @@ namespace Nekoyume.UI
         private int _characterId;
         private string _npc;
         private Coroutine _coroutine = null;
+        private Coroutine _timerCoroutine = null;
         private string _text;
         private string _itemTextColor;
         private Dictionary<int, DialogEffect> _effects = new Dictionary<int, DialogEffect>();
 
-        protected override WidgetType WidgetType => WidgetType.Popup;
+        public override WidgetType WidgetType => WidgetType.Popup;
 
         public static string GetPlayerPrefsKeyOfCurrentAvatarState(int dialogId)
         {
@@ -63,18 +72,24 @@ namespace Nekoyume.UI
 
             _dialogKey = $"DIALOG_{dialogId}_{1}_";
             _dialogIndex = 0;
-            _dialogNum = LocalizationManager.LocalizedCount(_dialogKey);
+            _dialogNum = L10nManager.LocalizedCount(_dialogKey);
 
             _coroutine = StartCoroutine(CoShowText());
         }
 
         public void Skip()
         {
+            if (!CanHandleInputEvent)
+            {
+                return;
+            }
+
             if (_coroutine != null)
             {
                 StopCoroutine(_coroutine);
                 _coroutine = null;
                 txtDialog.text = _text;
+                _timerCoroutine = StartCoroutine(CoTimer(time));
                 return;
             }
 
@@ -83,6 +98,7 @@ namespace Nekoyume.UI
             if (_dialogIndex >= _dialogNum)
             {
                 PlayerPrefs.SetInt(_playerPrefsKey, 1);
+                StopTimer();
                 Close();
                 return;
             }
@@ -92,7 +108,7 @@ namespace Nekoyume.UI
 
         public IEnumerator CoShowText()
         {
-            var text = LocalizationManager.Localize($"{_dialogKey}{_dialogIndex}");
+            var text = L10nManager.Localize($"{_dialogKey}{_dialogIndex}");
             if (string.IsNullOrEmpty(text))
                 yield break;
 
@@ -100,10 +116,11 @@ namespace Nekoyume.UI
             _npc = null;
             _effects.Clear();
             _text = ParseText(text);
+            StopTimer();
 
             if (Game.Game.instance.TableSheets.CharacterSheet.TryGetValue(_characterId, out var characterData))
             {
-                var localizedName = LocalizationManager.LocalizeCharacterName(_characterId);
+                var localizedName = L10nManager.LocalizeCharacterName(_characterId);
                 var res = Resources.Load<Sprite>($"Images/character_{characterData.Id}");
                 imgCharacter.overrideSprite = res;
                 imgCharacter.SetNativeSize();
@@ -117,7 +134,7 @@ namespace Nekoyume.UI
                 string localizedName;
                 try
                 {
-                    localizedName = LocalizationManager.Localize($"NPC_{_npc}_NAME");
+                    localizedName = L10nManager.Localize($"NPC_{_npc}_NAME");
                 }
                 catch (KeyNotFoundException)
                 {
@@ -169,6 +186,7 @@ namespace Nekoyume.UI
 
                 yield return new WaitForSeconds(textInterval);
             }
+            _timerCoroutine = StartCoroutine(CoTimer(time));
 
             _coroutine = null;
         }
@@ -242,6 +260,41 @@ namespace Nekoyume.UI
             }
 
             return text;
+        }
+
+        private IEnumerator CoTimer(float timer)
+        {
+            textArrow.gameObject.SetActive(false);
+            textTimer.text = string.Format(TimerFormat, timer.ToString(CultureInfo.InvariantCulture));
+            textTimer.gameObject.SetActive(true);
+            var prevFlooredTime = Mathf.Round(timer);
+            yield return new WaitForSeconds(1f);
+            while (timer >= .3f)
+            {
+                // 텍스트 업데이트 횟수를 줄이기 위해 소숫점을 내림해
+                // 정수부만 체크 후 텍스트 업데이트 여부를 결정합니다.
+                var flooredTime = Mathf.Floor(timer);
+                if (flooredTime < prevFlooredTime)
+                {
+                    prevFlooredTime = flooredTime;
+                    textTimer.text = string.Format(TimerFormat, flooredTime.ToString(CultureInfo.InvariantCulture));
+                }
+
+                timer -= Time.deltaTime;
+                yield return null;
+            }
+
+            Skip();
+        }
+
+        private void StopTimer()
+        {
+            textArrow.gameObject.SetActive(true);
+            textTimer.gameObject.SetActive(false);
+            if (!(_timerCoroutine is null))
+            {
+                StopCoroutine(_timerCoroutine);
+            }
         }
     }
 }

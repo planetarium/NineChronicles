@@ -52,7 +52,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 0
   useRigidbodyForVelocity: 1
@@ -4826,7 +4826,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 8
   m_RenderMode: 0
   m_SortMode: 0
@@ -9639,7 +9639,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 8
   m_RenderMode: 0
   m_SortMode: 0
@@ -14436,7 +14436,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 8
   m_RenderMode: 0
   m_SortMode: 0
@@ -19197,7 +19197,7 @@ ParticleSystemRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -317291175
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 8
   m_RenderMode: 0
   m_SortMode: 0

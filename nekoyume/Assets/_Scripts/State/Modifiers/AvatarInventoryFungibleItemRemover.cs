@@ -35,7 +35,6 @@ namespace Nekoyume.State.Modifiers
             if (count is 0)
             {
                 idAndCountDictionary = new InnerDictionary();
-
                 return;
             }
 
@@ -49,7 +48,9 @@ namespace Nekoyume.State.Modifiers
             foreach (var pair in idAndCountDictionary)
             {
                 if (pair.Value is 0)
+                {
                     continue;
+                }
 
                 this.idAndCountDictionary.Value.Add(new InnerHashDigest(pair.Key), pair.Value);
             }
@@ -58,7 +59,9 @@ namespace Nekoyume.State.Modifiers
         public override void Add(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarInventoryFungibleItemRemover m))
+            {
                 return;
+            }
 
             foreach (var pair in m.idAndCountDictionary.Value)
             {
@@ -77,24 +80,32 @@ namespace Nekoyume.State.Modifiers
         public override void Remove(IAccumulatableStateModifier<AvatarState> modifier)
         {
             if (!(modifier is AvatarInventoryFungibleItemRemover m))
+            {
                 return;
+            }
 
             foreach (var pair in m.idAndCountDictionary.Value)
             {
                 var key = pair.Key;
                 if (!idAndCountDictionary.Value.ContainsKey(key))
+                {
                     continue;
+                }
 
                 idAndCountDictionary.Value[key] -= pair.Value;
                 if (idAndCountDictionary.Value[key] <= 0)
+                {
                     idAndCountDictionary.Value.Remove(key);
+                }
             }
         }
 
         public override AvatarState Modify(AvatarState state)
         {
             if (state is null)
+            {
                 return null;
+            }
 
             foreach (var pair in idAndCountDictionary.Value)
             {
