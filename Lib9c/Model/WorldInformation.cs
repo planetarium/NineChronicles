@@ -240,24 +240,16 @@ namespace Nekoyume.Model
             return true;
         }
 
-        public bool TryUpdateWorld(WorldSheet.Row worldRow, out World world)
+        public void UpdateWorld(WorldSheet.Row worldRow)
         {
-            if (worldRow is null ||
-                !_worlds.ContainsKey(worldRow.Id))
-            {
-                world = default;
-                return false;
-            }
-
             var originWorld = _worlds[worldRow.Id];
-            world = new World(
+            var world = new World(
                 worldRow,
                 originWorld.UnlockedBlockIndex,
                 originWorld.StageClearedBlockIndex,
                 originWorld.StageClearedId
             );
             _worlds[worldRow.Id] = world;
-            return true;
         }
 
         /// <summary>
@@ -397,6 +389,21 @@ namespace Nekoyume.Model
             _worlds[worldId] = new World(world, clearedAt, stageId);
         }
 
+        public void AddAndUnlockNewWorld(WorldSheet.Row worldRow, long unlockedAt, WorldSheet worldSheet)
+        {
+            var worldId = worldRow.Id;
+            if (IsStageCleared(worldRow.StageBegin - 1))
+            {
+                var world = new World(worldRow);
+                _worlds.Add(worldId, world);
+                UnlockWorld(worldId, unlockedAt, worldSheet);
+            }
+            else
+            {
+                throw new FailedAddWorldException($"Failed to add {worldId} world to WorldInformation.");
+            }
+        }
+
         /// <summary>
         /// Unlock a specific world.
         /// </summary>
@@ -435,6 +442,18 @@ namespace Nekoyume.Model
 
         protected FailedToUnlockWorldException(SerializationInfo info, StreamingContext context) :
             base(info, context)
+        {
+        }
+    }
+
+    [Serializable]
+    public class FailedAddWorldException : Exception
+    {
+        public FailedAddWorldException(string message) : base(message)
+        {
+        }
+
+        protected FailedAddWorldException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

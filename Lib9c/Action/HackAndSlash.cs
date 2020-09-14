@@ -85,10 +85,7 @@ namespace Nekoyume.Action
                 out AgentState agentState,
                 out AvatarState avatarState))
             {
-                // FIXME we should create dedicated type for this exception.
-                throw new InvalidOperationException(
-                    "Aborted as the avatar state of the signer was failed to load."
-                );
+                throw new FailedLoadStateException("Aborted as the avatar state of the signer was failed to load.");
             }
 
             sw.Stop();
@@ -106,96 +103,56 @@ namespace Nekoyume.Action
 
             if (!worldSheet.TryGetValue(worldId, out var worldRow, false))
             {
-                // FIXME we should create dedicated type for this exception.
-                throw new InvalidOperationException(
-                    $"Not fount {worldId} in TableSheets.WorldSheet."
-                );
+                throw new SheetRowNotFoundException(nameof(WorldSheet), worldId);
             }
 
             if (stageId < worldRow.StageBegin ||
                 stageId > worldRow.StageEnd)
             {
-                // FIXME we should create dedicated type for this exception.
-                throw new InvalidOperationException(
+                throw new SheetRowColumnException(
                     $"{worldId} world is not contains {worldRow.Id} stage: " +
-                    $"{worldRow.StageBegin}-{worldRow.StageEnd}"
-                );
+                    $"{worldRow.StageBegin}-{worldRow.StageEnd}");
             }
 
             var stageSheet = states.GetSheet<StageSheet>();
             if (!stageSheet.TryGetValue(stageId, out var stageRow))
             {
-                // FIXME we should create dedicated type for this exception.
-                throw new InvalidOperationException(
-                    $"Not fount stage id in TableSheets.StageSheet: {stageId}"
-                );
+                throw new SheetRowNotFoundException(nameof(StageSheet), stageId);
             }
 
             var worldInformation = avatarState.worldInformation;
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
-                // NOTE: 이 경우는 아바타 생성 시에는 WorldSheet에 없던 worldId가 새로 추가된 경우로 볼 수 있습니다.
-                if (!worldInformation.TryAddWorld(worldRow, out world))
-                {
-                    // FIXME we should create dedicated type for this exception.
-                    throw new InvalidOperationException(
-                        $"Failed to add {worldId} world to WorldInformation."
-                    );
-                }
+                // NOTE: Add new World from WorldSheet
+                worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
             }
 
             if (!world.IsUnlocked)
             {
-                // FIXME we should create dedicated type for this exception.
-                throw new InvalidOperationException(
-                    $"Aborted as the world {worldId} is locked."
-                );
+                throw new InvalidWorldException($"{worldId} is locked.");
             }
 
             if (world.StageBegin != worldRow.StageBegin ||
                 world.StageEnd != worldRow.StageEnd)
             {
-                // NOTE: 이 경우는 아바타 생성 이후에 worldId가 포함하는 stageId의 범위가 바뀐 경우로 볼 수 있습니다.
-                if (!worldInformation.TryUpdateWorld(worldRow, out world))
-                {
-                    // FIXME we should create dedicated type for this exception.
-                    throw new InvalidOperationException(
-                        $"Failed to update {worldId} world in WorldInformation."
-                    );
-                }
-
-                if (world.StageBegin != worldRow.StageBegin ||
-                    world.StageEnd != worldRow.StageEnd)
-                {
-                    // FIXME we should create dedicated type for this exception.
-                    throw new InvalidOperationException(
-                        $"Failed to update {worldId} world in WorldInformation."
-                    );
-                }
+                worldInformation.UpdateWorld(worldRow);
             }
 
             if (world.IsStageCleared && stageId > world.StageClearedId + 1 ||
                 !world.IsStageCleared && stageId != world.StageBegin)
             {
-                // FIXME we should create dedicated type for this exception.
-                throw new InvalidOperationException(
+                throw new InvalidStageException(
                     $"Aborted as the stage ({worldId}/{stageId}) is not cleared; " +
                     $"cleared stage: {world.StageClearedId}"
                 );
             }
 
-            // 장비가 유효한지 검사한다.
-            if (!avatarState.ValidateEquipments(equipments, context.BlockIndex))
-            {
-                // FIXME we should create dedicated type for this exception.
-                throw new InvalidOperationException("Aborted as the equipment is invalid.");
-            }
+            avatarState.ValidateEquipments(equipments, context.BlockIndex);
 
             sw.Restart();
             if (avatarState.actionPoint < stageRow.CostAP)
             {
-                // FIXME we should create dedicated type for this exception.
-                throw new InvalidOperationException(
+                throw new NotEnoughActionPointException(
                     $"Aborted due to insufficient action point: " +
                     $"{avatarState.actionPoint} < {stageRow.CostAP}"
                 );
