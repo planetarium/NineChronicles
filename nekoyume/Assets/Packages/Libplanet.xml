@@ -2236,15 +2236,15 @@
             </summary>
             <example>
             With object initializers, you can easily make an one-use action renderer:
-            <code>
-            var actionRenderer = new AnonymousActionRenderer&lt;ExampleAction&gt;
+            <code><![CDATA[
+            var actionRenderer = new AnonymousActionRenderer<ExampleAction>
             {
                 ActionRenderer = (action, context, nextStates) =>
                 {
                     // Implement RenderAction() here.
                 };
             };
-            </code>
+            ]]></code>
             </example>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
@@ -2273,6 +2273,12 @@
             <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>.
             </summary>
         </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.BlockEndRenderer">
+            <summary>
+            A callback function to be invoked together with
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>.
+            </summary>
+        </member>
         <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc
             cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
@@ -2288,6 +2294,9 @@
         <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
             <inheritdoc
             cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.AnonymousRenderer`1">
             <summary>
@@ -2322,11 +2331,20 @@
             <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>.
             </summary>
         </member>
+        <member name="P:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.ReorgEndRenderer">
+            <summary>
+            A callback function to be invoked together with
+            <see cref="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>.
+            </summary>
+        </member>
         <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.AnonymousRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1">
             <summary>
@@ -2374,11 +2392,19 @@
             delayed events.
             </summary>
         </member>
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
         <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
+            <inheritdoc
+            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc
@@ -2388,13 +2414,8 @@
             <inheritdoc
             cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
-            <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
-        </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)">
-            <inheritdoc
-            cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/>
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.LocateBlockPath(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <summary>
@@ -2410,8 +2431,8 @@
             <exception cref="T:System.ArgumentException">Thrown when <paramref name="upper"/> block's index
             is not greater than <paramref name="lower"/> block's index.</exception>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.OnTipChanged(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
-            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.OnTipChanged(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedActionRenderer`1.OnTipChanged(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.OnTipChanged(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.DelayedRenderer`1">
             <summary>
@@ -2489,15 +2510,18 @@
         <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
-        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.OnTipChanged(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.DelayedRenderer`1.OnTipChanged(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <summary>
             The callback method which is invoked when the new <see cref="P:Libplanet.Blockchain.Renderers.DelayedRenderer`1.Tip"/> is recognized and
             changed.
             </summary>
             <param name="oldTip">The previously recognized topmost block.</param>
             <param name="newTip">The topmost block recognized this time.</param>
-            <returns>A branchpoint between <paramref name="oldTip"/> and <paramref name="newTip"/>
-            if the tip change is a reorg.  Otherwise returns <c>null</c>.</returns>
+            <param name="branchpoint">A branchpoint between <paramref name="oldTip"/> and
+            <paramref name="newTip"/> if the tip change is a reorg.  Otherwise <c>null</c>.</param>
         </member>
         <member name="T:Libplanet.Blockchain.Renderers.IActionRenderer`1">
             <summary>
@@ -2505,18 +2529,24 @@
             on a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             If you need more fine-grained events than <see cref="T:Libplanet.Blockchain.Renderers.IRenderer`1"/>,
             implement this interface instead.
-            <para>The invocation order of methods are:</para>
+            <para>The invocation order of methods for each <see cref="T:Libplanet.Blocks.Block`1"/> are:</para>
             <list type="number">
             <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
-            </description></item>
+            (one time)</description></item>
             <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
-            &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/></description>
+            &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.UnrenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> (zero or more
+            times)</description>
             </item>
-            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> (one time)
             </description></item>
             <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)"/>
-            &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/></description>
+            &amp; <see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderActionError(Libplanet.Action.IAction,Libplanet.Action.IActionContext,System.Exception)"/> (zero or more
+            times)</description>
             </item>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> (one time)</description>
+            </item>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+            (one time)</description></item>
             </list>
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
@@ -2621,12 +2651,30 @@
             block actions (<see cref="P:Libplanet.Blockchain.Policies.IBlockPolicy`1.BlockAction"/>) besides transaction
             actions (<see cref="P:Libplanet.Tx.Transaction`1.Actions"/>).</remarks>
         </member>
+        <member name="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <summary>
+            Does things that should be done right all actions in a new <see cref="T:Libplanet.Blocks.Block`1"/> are
+            rendered.
+            </summary>
+            <remarks>It is guaranteed to be called only once for a block.</remarks>
+            <param name="oldTip">The previous <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.</param>
+            <param name="newTip">The current <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/>.</param>
+        </member>
         <member name="T:Libplanet.Blockchain.Renderers.IRenderer`1">
             <summary>
             Listens state changes on a <see cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             <para>Usually, implementations of this interface purpose to update the in-memory game states
             (if exist), or send a signal to the UI thread (usually the main thread) so that the graphics
             on the display is redrawn.</para>
+            <para>The invocation order of methods for each <see cref="T:Libplanet.Blocks.Block`1"/> are:</para>
+            <list type="number">
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> (one time)
+            </description></item>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> (one time)</description>
+            </item>
+            <item><description><see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> (one time)
+            </description></item>
+            </list>
             </summary>
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
@@ -2647,11 +2695,26 @@
             Does things that should be done right before reorg happens to a <see
             cref="T:Libplanet.Blockchain.BlockChain`1"/>.
             </summary>
-            <remarks>For every call to this method, a call to <see
-            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> method with the same <paramref name="newTip"/>
-            is made too.  Note that this method is guaranteed to be called before <see
-            cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> method for the same <paramref name="newTip"/>.
-            </remarks>
+            <remarks>For every call to this method, calls to
+            <see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> and
+            <see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})" /> methods with the same
+            <paramref name="newTip"/> is made too.  Note that this method is guaranteed to be called
+            before <see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> method for the same
+            <paramref name="newTip"/>.</remarks>
+            <param name="oldTip">The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> right before reorg.</param>
+            <param name="newTip">The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> after reorg.</param>
+            <param name="branchpoint">The highest common <see cref="T:Libplanet.Blocks.Block`1"/> between
+            <paramref name="oldTip"/> and <paramref name="newTip"/>.</param>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <summary>
+            Does things that should be done right after reorg happens to a <see
+            cref="T:Libplanet.Blockchain.BlockChain`1"/>.
+            </summary>
+            <remarks>Note that this method is guaranteed to be called after
+            <see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> and
+            <see cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/> methods for the same
+            <paramref name="newTip"/>.</remarks>
             <param name="oldTip">The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> right before reorg.</param>
             <param name="newTip">The <see cref="P:Libplanet.Blockchain.BlockChain`1.Tip"/> after reorg.</param>
             <param name="branchpoint">The highest common <see cref="T:Libplanet.Blocks.Block`1"/> between
@@ -2670,15 +2733,15 @@
             <typeparam name="T">An <see cref="T:Libplanet.Action.IAction"/> type.  It should match to
             <see cref="T:Libplanet.Blockchain.BlockChain`1"/>'s type parameter.</typeparam>
             <example>
-            <code>
-            IActionRenderer&lt;ExampleAction&gt; actionRenderer = new SomeActionRenderer();
+            <code><![CDATA[
+            IActionRenderer<ExampleAction> actionRenderer = new SomeActionRenderer();
             // Wraps the action renderer with LoggedActionRenderer:
-            actionRenderer = new LoggedActionRenderer&lt;ExampleAction&gt;(
+            actionRenderer = new LoggedActionRenderer<ExampleAction>(
                 actionRenderer,
                 Log.Logger,
                 LogEventLevel.Information,
             );
-            </code>
+            ]]></code>
             </example>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1.#ctor(Libplanet.Blockchain.Renderers.IActionRenderer{`0},Serilog.ILogger,Serilog.Events.LogEventLevel)">
@@ -2697,6 +2760,9 @@
             <summary>
             The inner action renderer to forward all event messages to and actually render things.
             </summary>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IActionRenderer`1.RenderBlockEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.LoggedActionRenderer`1.RenderAction(Libplanet.Action.IAction,Libplanet.Action.IActionContext,Libplanet.Action.IAccountStateDelta)">
             <inheritdoc
@@ -2774,6 +2840,9 @@
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderBlock(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
+            <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
+        </member>
+        <member name="M:Libplanet.Blockchain.Renderers.LoggedRenderer`1.RenderReorgEnd(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})">
             <inheritdoc cref="M:Libplanet.Blockchain.Renderers.IRenderer`1.RenderReorg(Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0},Libplanet.Blocks.Block{`0})"/>
         </member>
         <member name="T:Libplanet.Blockchain.StateCompleter`1">
