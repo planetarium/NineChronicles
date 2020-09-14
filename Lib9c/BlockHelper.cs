@@ -6,8 +6,10 @@ using Libplanet.Blockchain;
 using Libplanet.Blocks;
 using Libplanet.Crypto;
 using Nekoyume.Action;
+using Nekoyume.BlockChain;
 using Nekoyume.Model.State;
 using Nekoyume.TableData;
+using Serilog;
 
 namespace Nekoyume
 {
@@ -52,8 +54,12 @@ namespace Nekoyume
             {
                 initialStatesAction,
             };
+            var blockAction = new BlockPolicySource(Log.Logger).GetPolicy(5000000).BlockAction;
             return
-                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(actions, privateKey: minterKey);
+                BlockChain<PolymorphicAction<ActionBase>>.MakeGenesisBlock(
+                    actions,
+                    privateKey: minterKey,
+                    blockAction: blockAction);
         }
     }
 }
