@@ -110,6 +110,7 @@ namespace Nekoyume.BlockChain
                     {
                         new TPStashEvent().CharacterCurrencyGet(
                             player_uuid: agentAddress.ToHex(),
+                            character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                             currency_slug: "gold",
                             currency_quantity: float.Parse((balance - ReactiveAgentState.Gold.Value).GetQuantityString()),
                             currency_total_quantity: float.Parse(balance.GetQuantityString()),
@@ -225,6 +226,7 @@ namespace Nekoyume.BlockChain
                                                 new FungibleAssetValue(balance.Currency, gold, 0);
                                     new TPStashEvent().CharacterCurrencyGet(
                                         player_uuid: agentAddress.ToHex(),
+                                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                                         currency_slug: "gold",
                                         currency_quantity: (float) gold,
                                         currency_total_quantity: float.Parse(total.GetQuantityString()),
@@ -362,6 +364,7 @@ namespace Nekoyume.BlockChain
                 .Count(i => i.ItemSubType == ItemSubType.Hourglass);
             new TPStashEvent().CharacterCurrencyUse(
                 player_uuid: agentAddress.ToHex(),
+                character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                 currency_slug: "hourglass",
                 currency_quantity: (float) (prevQty - qty),
                 currency_total_quantity: (float) qty,
@@ -408,6 +411,7 @@ namespace Nekoyume.BlockChain
                 var total = balance - new FungibleAssetValue(balance.Currency, result.gold, 0);
                 new TPStashEvent().CharacterCurrencyUse(
                     player_uuid: agentAddress.ToHex(),
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                     currency_slug: "gold",
                     currency_quantity: (float) result.gold,
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
@@ -493,6 +497,7 @@ namespace Nekoyume.BlockChain
                 var total = balance - new FungibleAssetValue(balance.Currency, result.gold, 0);
                 new TPStashEvent().CharacterCurrencyUse(
                     player_uuid: agentAddress.ToHex(),
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                     currency_slug: "gold",
                     currency_quantity: (float)result.gold,
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
@@ -564,6 +569,7 @@ namespace Nekoyume.BlockChain
                     var total = buyerAgentBalance - price;
                     new TPStashEvent().CharacterCurrencyUse(
                         player_uuid: States.Instance.AgentState.address.ToHex(),
+                        character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                         currency_slug: "gold",
                         currency_quantity: float.Parse(price.GetQuantityString()),
                         currency_total_quantity: float.Parse(total.GetQuantityString()),
@@ -601,6 +607,7 @@ namespace Nekoyume.BlockChain
                 var total = sellerAgentBalance + gold;
                 new TPStashEvent().CharacterCurrencyGet(
                     player_uuid: sellerAgentAddress.ToHex(), // seller == 본인인지 확인필요
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                     currency_slug: "gold",
                     currency_quantity: float.Parse(gold.GetQuantityString()),
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
@@ -707,6 +714,7 @@ namespace Nekoyume.BlockChain
                             new FungibleAssetValue(outAgentBalance.Currency, result.gold, 0);
                 new TPStashEvent().CharacterCurrencyUse(
                     player_uuid: agentAddress.ToHex(),
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                     currency_slug: "gold",
                     currency_quantity: (float) result.gold,
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
@@ -740,6 +748,7 @@ namespace Nekoyume.BlockChain
                     Nekoyume.GameConfig.ArenaActivationCostNCG, 0);
                 new TPStashEvent().CharacterCurrencyUse(
                     player_uuid: agentAddress.ToHex(),
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                     currency_slug: "gold",
                     currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
