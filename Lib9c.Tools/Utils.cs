@@ -19,12 +19,7 @@ namespace Lib9c.Tools
             var files = Directory.GetFiles(dir, "*.csv", SearchOption.AllDirectories);
             foreach (var filePath in files)
             {
-                var fileName = Path.GetFileName(filePath);
-                if (fileName.EndsWith(".csv"))
-                {
-                    fileName = fileName.Split(".csv")[0];
-                }
-
+                var fileName = Path.GetFileNameWithoutExtension(filePath);
                 sheets[fileName] = File.ReadAllText(filePath);
             }
 
