@@ -389,7 +389,7 @@ namespace Nekoyume.Model
             _worlds[worldId] = new World(world, clearedAt, stageId);
         }
 
-        public void AddNewWorld(WorldSheet.Row worldRow, long unlockedAt, WorldSheet worldSheet)
+        public void AddAndUnlockNewWorld(WorldSheet.Row worldRow, long unlockedAt, WorldSheet worldSheet)
         {
             var worldId = worldRow.Id;
             if (IsStageCleared(worldRow.StageBegin - 1))

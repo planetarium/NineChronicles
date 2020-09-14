@@ -124,7 +124,7 @@ namespace Nekoyume.Action
             if (!worldInformation.TryGetWorld(worldId, out var world))
             {
                 // NOTE: Add new World from WorldSheet
-                worldInformation.AddNewWorld(worldRow, ctx.BlockIndex, worldSheet);
+                worldInformation.AddAndUnlockNewWorld(worldRow, ctx.BlockIndex, worldSheet);
             }
 
             if (!world.IsUnlocked)
