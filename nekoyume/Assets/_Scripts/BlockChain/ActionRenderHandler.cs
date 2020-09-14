@@ -663,15 +663,16 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<BattleResult>().NextStage(eval);
                 }
-
-                return;
             }
-
-            if (eval.Exception is FailedToUnlockWorldException)
+            else
             {
-                Widget
-                    .Find<ActionFailPopup>()
-                    .Show<HackAndSlash>(L10nManager.Localize("ERROR_FAILED_TO_UNLOCK_WORLD"));
+                Event.OnRoomEnter.Invoke(true);
+                if (eval.Exception is FailedToUnlockWorldException)
+                {
+                    Widget
+                        .Find<ActionFailPopup>()
+                        .Show<HackAndSlash>(L10nManager.Localize("ERROR_FAILED_TO_UNLOCK_WORLD"));
+                }
             }
         }
 
