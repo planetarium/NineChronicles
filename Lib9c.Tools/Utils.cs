@@ -13,17 +13,6 @@ namespace Lib9c.Tools
 {
     public static class Utils
     {
-        public static void ExportBlock(Block<PolymorphicAction<ActionBase>> block, string path)
-        {
-            byte[] encoded = block.Serialize();
-            File.WriteAllBytes(path, encoded);
-        }
-
-        public static void ExportKeys(List<ActivationKey> keys, string path)
-        {
-            File.WriteAllLines(path, keys.Select(v => v.Encode()));
-        }
-
         public static Dictionary<string, string> ImportSheets(string dir)
         {
             var sheets = new Dictionary<string, string>();

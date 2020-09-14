@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using Cocona;
 using Libplanet;
 using Libplanet.Action;
@@ -30,8 +32,19 @@ namespace Lib9c.Tools.SubCommend
                 goldDistributions,
                 pendingActivationStates.ToArray());
             
-            Utils.ExportBlock(block, "genesis-block");
-            Utils.ExportKeys(activationKeys, "keys.txt");
+            ExportBlock(block, "genesis-block");
+            ExportKeys(activationKeys, "keys.txt");
+        }
+
+        private static void ExportBlock(Block<PolymorphicAction<ActionBase>> block, string path)
+        {
+            byte[] encoded = block.Serialize();
+            File.WriteAllBytes(path, encoded);
+        }
+
+        private static void ExportKeys(List<ActivationKey> keys, string path)
+        {
+            File.WriteAllLines(path, keys.Select(v => v.Encode()));
         }
     }
 }
