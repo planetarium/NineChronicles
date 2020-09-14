@@ -195,6 +195,17 @@ namespace Nekoyume.Game.Character
             ColorTween();
         }
 
+        public void TurnOver()
+        {
+            if (!ValidateAnimator())
+            {
+                return;
+            }
+
+            Animator.Play(nameof(CharacterAnimation.Type.TurnOver_02), BaseLayerIndex, 0f);
+            ColorTween();
+        }
+
         public void Die()
         {
             if (!ValidateAnimator())
