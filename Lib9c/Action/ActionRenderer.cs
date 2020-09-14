@@ -25,6 +25,9 @@ namespace Nekoyume.Action
         public Subject<ActionEvaluation<ActionBase>> ActionUnrenderSubject { get; }
             = new Subject<ActionEvaluation<ActionBase>>();
 
+        public readonly Subject<(NCBlock OldTip, NCBlock NewTip)> BlockEndSubject =
+            new Subject<(NCBlock OldTip, NCBlock NewTip)>();
+
         public void RenderAction(
             IAction action,
             IActionContext context,
@@ -100,6 +103,14 @@ namespace Nekoyume.Action
             // RenderBlock should be handled by BlockRenderer
         }
 
+        public void RenderBlockEnd(
+            NCBlock oldTip,
+            NCBlock newTip
+        )
+        {
+            BlockEndSubject.OnNext((oldTip, newTip));
+        }
+
         public void RenderReorg(
             NCBlock oldTip,
             NCBlock newTip,
@@ -107,6 +118,15 @@ namespace Nekoyume.Action
         )
         {
             // RenderReorg should be handled by BlockRenderer
+        }
+
+        public void RenderReorgEnd(
+            NCBlock oldTip,
+            NCBlock newTip,
+            NCBlock branchpoint
+        )
+        {
+            // RenderReorgEnd should be handled by BlockRenderer
         }
 
         public IObservable<ActionEvaluation<T>> EveryRender<T>()
@@ -170,6 +190,9 @@ namespace Nekoyume.Action
                 PreviousStates = eval.PreviousStates,
             });
         }
+
+        public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlockEnd() =>
+            BlockEndSubject.AsObservable();
 
         private static ActionBase GetActionBase(IAction action)
         {
