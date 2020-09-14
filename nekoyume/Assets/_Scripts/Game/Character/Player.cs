@@ -589,8 +589,7 @@ namespace Nekoyume.Game.Character
                 //[TentuPlay] 아바타 레벨업 기록
                 new TPStashEvent().CharacterLevelUp(
                     player_uuid: Game.instance.Agent.Address.ToHex(),
-                    characterarchetype_slug: States.Instance.CurrentAvatarState.address.ToHex()
-                        .Substring(0, 4),
+                    character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                     level_from: (int) level,
                     level_to: (int) Level
                 );

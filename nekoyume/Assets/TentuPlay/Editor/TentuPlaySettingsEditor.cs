@@ -13,12 +13,12 @@ namespace TentuPlay
     [CustomEditor(typeof(TentuPlaySettings))]
     public class TentuPlaySettingsEditor : UnityEditor.Editor
     {
-        GUIContent apiKeyLabel = new GUIContent("Api Key [?]:", "For TentuPlay Api Key, contact us at contact@tentuplay.io");
-        GUIContent secretLabel = new GUIContent("Secret [?]:", "For TentuPlay Secret, contact us at contact@tentuplay.io");
+        GUIContent apiKeyLabel = new GUIContent("Api Key [?]:", "Create or get your project credential from Project Settings at https://console.tentuplay.io");
+        GUIContent secretLabel = new GUIContent("Secret [?]:", "Create or get your project credential from Project Settings at https://console.tentuplay.io");
         GUIContent debugLabel = new GUIContent("TentuPlay Debug Mode [?]:", "Run TentuPlay in debug mode");
-        GUIContent usePersistDBConnLabel = new GUIContent("Use Persistent DB Connection [?]:", "Use persistent client database connection. Default value is false.");
         GUIContent autoUploadLabel = new GUIContent("Auto Upload [?]:", "Check to automatically upload the data from the client to the server.");
         GUIContent deferredSendIntervalSecLabel = new GUIContent("Upload Interval (sec) [?]:", "Minimum server upload interval (1200 seconds recommended)");
+        GUIContent advicesGetInterval = new GUIContent("Advice Sync Interval (sec) [?]:", "Minimum advice sync interval (600 seconds recommended)");
 
 
         const string UnityAssetFolder = "Assets";
@@ -60,6 +60,11 @@ namespace TentuPlay
             Application.OpenURL("https://tentuplay.io/");
         }
 
+        [MenuItem("TentuPlay/TentuPlay Documentation")]
+        public static void OpenDoc()
+        {
+            Application.OpenURL("https://tentuplay.io/docs/");
+        }
 
         void OnDisable()
         {
@@ -100,6 +105,8 @@ namespace TentuPlay
             TentuPlaySettings settings = (TentuPlaySettings)target;
             TentuPlaySettings.SetInstance(settings);
 
+            EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
+
             EditorGUILayout.BeginHorizontal();
             TentuPlaySettings.ApiKey = EditorGUILayout.TextField(apiKeyLabel, TentuPlaySettings.ApiKey).Trim();
             EditorGUILayout.EndHorizontal();
@@ -113,10 +120,6 @@ namespace TentuPlay
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.BeginHorizontal();
-            TentuPlaySettings.UsePersistDBConn = EditorGUILayout.Toggle(usePersistDBConnLabel, TentuPlaySettings.UsePersistDBConn);
-            EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.BeginHorizontal();
             TentuPlaySettings.AutoUpload = EditorGUILayout.Toggle(autoUploadLabel, TentuPlaySettings.AutoUpload);
             EditorGUILayout.EndHorizontal();
 
@@ -127,6 +130,12 @@ namespace TentuPlay
                 //trim 
                 EditorGUILayout.EndHorizontal();
             }
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Advanced Settings", EditorStyles.boldLabel);
+
+            EditorGUILayout.BeginHorizontal();
+            TentuPlaySettings.AdvicesGetInterval = EditorGUILayout.IntField(advicesGetInterval, TentuPlaySettings.AdvicesGetInterval);
+            EditorGUILayout.EndHorizontal();
 
             if (GUI.changed)
             {
