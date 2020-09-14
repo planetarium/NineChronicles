@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6906572812747041227}
   - component: {fileID: 3440386683609794241}
   - component: {fileID: 7016187563049540283}
+  - component: {fileID: 4746780952003505611}
   m_Layer: 5
   m_Name: SubmitTextForSubmittable
   m_TagString: Untagged
@@ -157,6 +158,22 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4746780952003505611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2876928644498477785}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontSizeOffset: 0
+  fontMaterialType: 2
+  l10nKey: 
 --- !u!1 &6622336358430781605
 GameObject:
   m_ObjectHideFlags: 0
@@ -168,6 +185,7 @@ GameObject:
   - component: {fileID: 5383271504602870283}
   - component: {fileID: 7725727282447206713}
   - component: {fileID: 6171963424519086264}
+  - component: {fileID: 8804429028567751081}
   m_Layer: 5
   m_Name: SubmitText
   m_TagString: Untagged
@@ -314,6 +332,22 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &8804429028567751081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6622336358430781605}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontSizeOffset: 0
+  fontMaterialType: 1
+  l10nKey: 
 --- !u!1 &7143845125576437734
 GameObject:
   m_ObjectHideFlags: 0

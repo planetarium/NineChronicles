@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3009957829555313361}
   - component: {fileID: 2187704011905343107}
   - component: {fileID: 3653946311265903130}
+  - component: {fileID: 5086177519829549603}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -157,6 +158,22 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5086177519829549603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 394377786064470300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontSizeOffset: 0
+  fontMaterialType: 2
+  l10nKey: 
 --- !u!1 &745143056409196023
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,6 +337,7 @@ GameObject:
   - component: {fileID: 855680711893374071}
   - component: {fileID: 855680711893374057}
   - component: {fileID: 855680711893374056}
+  - component: {fileID: 1584493418718902044}
   m_Layer: 5
   m_Name: TitleText
   m_TagString: Untagged
@@ -467,6 +485,22 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1584493418718902044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 855680711893374070}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontSizeOffset: 0
+  fontMaterialType: 0
+  l10nKey: 
 --- !u!1 &855680711906279035
 GameObject:
   m_ObjectHideFlags: 0
@@ -649,6 +683,11 @@ MonoBehaviour:
   cancelButtonText: {fileID: 3614508146313237508}
   submitButtonText: {fileID: 3653946311265903130}
   codeField: {fileID: 4015267432913579826}
+  OnRequested:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &855680712170424686
 GameObject:
   m_ObjectHideFlags: 0
@@ -1232,6 +1271,7 @@ GameObject:
   - component: {fileID: 676761525079208697}
   - component: {fileID: 8730431483163893827}
   - component: {fileID: 3614508146313237508}
+  - component: {fileID: 5996756557560092925}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -1378,6 +1418,22 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5996756557560092925
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4960927995512887307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontSizeOffset: 0
+  fontMaterialType: 1
+  l10nKey: 
 --- !u!1 &5630412385605327989
 GameObject:
   m_ObjectHideFlags: 0
@@ -1514,6 +1570,7 @@ GameObject:
   - component: {fileID: 6313606171937381419}
   - component: {fileID: 2239027520165782974}
   - component: {fileID: 688588761675298058}
+  - component: {fileID: 2930137805172017208}
   m_Layer: 5
   m_Name: Text
   m_TagString: Untagged
@@ -1661,6 +1718,22 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &2930137805172017208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6499239171986804657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fixedFontAsset: 0
+  fixedFontSizeOffset: 0
+  fontMaterialType: 0
+  l10nKey: 
 --- !u!1 &7442596369955937154
 GameObject:
   m_ObjectHideFlags: 0

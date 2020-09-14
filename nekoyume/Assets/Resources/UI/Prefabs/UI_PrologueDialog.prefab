@@ -121,6 +121,7 @@ GameObject:
   - component: {fileID: 6041438307427830794}
   - component: {fileID: 6043055664321431776}
   - component: {fileID: 3054745048649352052}
+  - component: {fileID: 5911154756331619048}
   m_Layer: 5
   m_Name: TextDialog
   m_TagString: Untagged
@@ -268,6 +269,19 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5911154756331619048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5822109550706197566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  l10nKey: 
 --- !u!1 &5822307659921831362
 GameObject:
   m_ObjectHideFlags: 0
@@ -527,6 +541,7 @@ GameObject:
   - component: {fileID: 7993151576203402939}
   - component: {fileID: 7272635868842268708}
   - component: {fileID: 9160188618776690928}
+  - component: {fileID: 5714253868570075945}
   m_Layer: 5
   m_Name: TextNext
   m_TagString: Untagged
@@ -674,6 +689,19 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5714253868570075945
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6426165716721983109}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  l10nKey: 
 --- !u!1 &6644430734090974502
 GameObject:
   m_ObjectHideFlags: 0
@@ -720,6 +748,7 @@ GameObject:
   - component: {fileID: 8958640410488377556}
   - component: {fileID: 8958640410488377551}
   - component: {fileID: 3129280787550516413}
+  - component: {fileID: 3470887658393132544}
   m_Layer: 5
   m_Name: TextName
   m_TagString: Untagged
@@ -867,3 +896,16 @@ MonoBehaviour:
   - {fileID: 0}
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &3470887658393132544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8958640410488377557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d668203cf6645c0bb09a4991d4bbe06, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  l10nKey: 
