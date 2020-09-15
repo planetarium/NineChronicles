@@ -377,6 +377,8 @@ namespace Nekoyume.UI
             if (!submitButton.interactable)
                 yield break;
 
+            var isNext = !SharedModel.ShouldRepeat;
+
             closeButton.interactable = false;
             submitButton.interactable = false;
 
@@ -384,7 +386,7 @@ namespace Nekoyume.UI
             StartCoroutine(CoFadeOut());
             var stage = Game.Game.instance.Stage;
             var stageLoadingScreen = Find<StageLoadingScreen>();
-            stageLoadingScreen.Show(stage.zone, SharedModel.WorldName, SharedModel.StageID + 1);
+            stageLoadingScreen.Show(stage.zone, SharedModel.WorldName, isNext ? SharedModel.StageID : SharedModel.StageID + 1);
             Find<Status>().Close();
 
             StopVFX();
