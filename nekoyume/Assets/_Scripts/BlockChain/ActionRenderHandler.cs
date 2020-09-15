@@ -110,7 +110,8 @@ namespace Nekoyume.BlockChain
                     {
                         new TPStashEvent().CharacterCurrencyGet(
                             player_uuid: agentAddress.ToHex(),
-                            character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                            // FIXME: Sometimes `States.Instance.CurrentAvatarState` is null.
+                            character_uuid: States.Instance.CurrentAvatarState?.address.ToHex().Substring(0, 4) ?? string.Empty,
                             currency_slug: "gold",
                             currency_quantity: float.Parse((balance - ReactiveAgentState.Gold.Value).GetQuantityString()),
                             currency_total_quantity: float.Parse(balance.GetQuantityString()),
