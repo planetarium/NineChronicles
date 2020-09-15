@@ -110,11 +110,12 @@ namespace Nekoyume.BlockChain
                     {
                         new TPStashEvent().CharacterCurrencyGet(
                             player_uuid: agentAddress.ToHex(),
-                            character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
+                            // FIXME: Sometimes `States.Instance.CurrentAvatarState` is null.
+                            character_uuid: States.Instance.CurrentAvatarState?.address.ToHex().Substring(0, 4) ?? string.Empty,
                             currency_slug: "gold",
                             currency_quantity: float.Parse((balance - ReactiveAgentState.Gold.Value).GetQuantityString()),
                             currency_total_quantity: float.Parse(balance.GetQuantityString()),
-                            reference_entity: "bonuses",
+                            reference_entity: entity.Bonuses,
                             reference_category_slug: "reward_gold",
                             reference_slug: "RewardGold");
                     }
@@ -230,7 +231,7 @@ namespace Nekoyume.BlockChain
                                         currency_slug: "gold",
                                         currency_quantity: (float) gold,
                                         currency_total_quantity: float.Parse(total.GetQuantityString()),
-                                        reference_entity: "quests",
+                                        reference_entity: entity.Quests,
                                         reference_category_slug: "arena",
                                         reference_slug: "RankingRewardIndex" + index
                                     );
@@ -368,7 +369,7 @@ namespace Nekoyume.BlockChain
                 currency_slug: "hourglass",
                 currency_quantity: (float) (prevQty - qty),
                 currency_total_quantity: (float) qty,
-                reference_entity: "items_consumables",
+                reference_entity: entity.Items,
                 reference_category_slug: "consumables_rapid_combination",
                 reference_slug: slot.Result.itemUsable.Id.ToString());
 
@@ -415,7 +416,7 @@ namespace Nekoyume.BlockChain
                     currency_slug: "gold",
                     currency_quantity: (float) result.gold,
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
-                    reference_entity: "items_equipments",
+                    reference_entity: entity.Items,
                     reference_category_slug: "equipments_combination",
                     reference_slug: result.itemUsable.Id.ToString());
             }
@@ -501,7 +502,7 @@ namespace Nekoyume.BlockChain
                     currency_slug: "gold",
                     currency_quantity: (float)result.gold,
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
-                    reference_entity: "items_consumables",
+                    reference_entity: entity.Items,
                     reference_category_slug: "consumables_combination",
                     reference_slug: result.itemUsable.Id.ToString());
             }
@@ -573,7 +574,7 @@ namespace Nekoyume.BlockChain
                         currency_slug: "gold",
                         currency_quantity: float.Parse(price.GetQuantityString()),
                         currency_total_quantity: float.Parse(total.GetQuantityString()),
-                        reference_entity: "trades",
+                        reference_entity: entity.Trades,
                         reference_category_slug: "buy",
                         reference_slug: result.itemUsable.Id.ToString() //아이템 품번
                     );
@@ -611,7 +612,7 @@ namespace Nekoyume.BlockChain
                     currency_slug: "gold",
                     currency_quantity: float.Parse(gold.GetQuantityString()),
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
-                    reference_entity: "trades",
+                    reference_entity: entity.Trades,
                     reference_category_slug: "sell",
                     reference_slug: result.itemUsable.Id.ToString() //아이템 품번
                 );
@@ -718,7 +719,7 @@ namespace Nekoyume.BlockChain
                     currency_slug: "gold",
                     currency_quantity: (float) result.gold,
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
-                    reference_entity: "items_equipments", //강화가 가능하므로 장비
+                    reference_entity: entity.Items, //강화가 가능하므로 장비
                     reference_category_slug: "item_enhancement",
                     reference_slug: itemUsable.Id.ToString());
             }
@@ -752,7 +753,7 @@ namespace Nekoyume.BlockChain
                     currency_slug: "gold",
                     currency_quantity: (float)Nekoyume.GameConfig.ArenaActivationCostNCG,
                     currency_total_quantity: float.Parse(total.GetQuantityString()),
-                    reference_entity: "quests",
+                    reference_entity: entity.Quests,
                     reference_category_slug: "arena",
                     reference_slug: "WeeklyArenaEntryFee"
                 );
