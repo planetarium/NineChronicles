@@ -28,6 +28,8 @@ namespace Nekoyume.Game.Character
             Emotion,
             Skill_01,
             Skill_02,
+            TurnOver_01,
+            TurnOver_02
         }
 
         public static readonly List<Type> List = new List<Type>();

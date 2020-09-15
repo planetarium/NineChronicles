@@ -205,6 +205,14 @@ namespace Planetarium.Nekoyume.Editor
                             asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
                                 assetPath);
                             break;
+                        case CharacterAnimation.Type.TurnOver_01:
+                        case CharacterAnimation.Type.TurnOver_02:
+                            assetPath = Path.Combine(
+                                animationAssetsPath,
+                                $"{nameof(CharacterAnimation.Type.Die)}.asset");
+                            asset = AssetDatabase.LoadAssetAtPath<AnimationReferenceAsset>(
+                                assetPath);
+                            break;
                     }
 
                     if (asset is null)

@@ -479,6 +479,11 @@ namespace Nekoyume.Game
             }
             else
             {
+                if (log.result == BattleLog.Result.TimeOver)
+                {
+                    _stageRunningPlayer.Animator.TurnOver();
+                    yield return new WaitForSeconds(2f);
+                }
                 ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
                 objectPool.ReleaseExcept(ReleaseWhiteList);
             }
