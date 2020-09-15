@@ -305,11 +305,20 @@ namespace Nekoyume.BlockChain
 
         public void OnReorged(byte[] oldTip, byte[] newTip, byte[] branchpoint)
         {
-            BlockRenderer.ReorgSubject.OnNext((
+            BlockRenderer.RenderReorg(
                 Block<PolymorphicAction<ActionBase>>.Deserialize(oldTip),
                 Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
                 Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
-            ));
+            );
+        }
+
+        public void OnReorgEnd(byte[] oldTip, byte[] newTip, byte[] branchpoint)
+        {
+            BlockRenderer.RenderReorgEnd(
+                Block<PolymorphicAction<ActionBase>>.Deserialize(oldTip),
+                Block<PolymorphicAction<ActionBase>>.Deserialize(newTip),
+                Block<PolymorphicAction<ActionBase>>.Deserialize(branchpoint)
+            );
         }
     }
 }
