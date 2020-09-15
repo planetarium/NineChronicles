@@ -48,7 +48,7 @@ namespace Nekoyume.Action
             NCBlock newTip,
             NCBlock branchpoint
         ) =>
-            ReorgSubject.OnNext((oldTip, newTip, branchpoint));
+            ReorgEndSubject.OnNext((oldTip, newTip, branchpoint));
 
         public IObservable<(NCBlock OldTip, NCBlock NewTip)> EveryBlock() =>
             BlockSubject.AsObservable();
