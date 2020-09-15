@@ -6,7 +6,8 @@ namespace Nekoyume.Game.Character
         {
             return animationName == nameof(CharacterAnimation.Type.Idle)
                    || animationName == nameof(CharacterAnimation.Type.Run)
-                   || animationName == nameof(CharacterAnimation.Type.Casting);
+                   || animationName == nameof(CharacterAnimation.Type.Casting)
+                   || animationName == nameof(CharacterAnimation.Type.TurnOver_01);
         }
     }
 }
