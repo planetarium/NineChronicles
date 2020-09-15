@@ -27,7 +27,8 @@ namespace Nekoyume.Model.State
         public long exp;
         public Inventory inventory;
         public WorldInformation worldInformation;
-        public DateTimeOffset updatedAt;
+        // FIXME: it seems duplicated with blockIndex.
+        public long updatedAt;
         public Address agentAddress;
         public QuestList questList;
         public MailBox mailBox;
@@ -73,7 +74,7 @@ namespace Nekoyume.Model.State
             exp = 0;
             inventory = new Inventory();
             worldInformation = new WorldInformation(blockIndex, avatarSheets.WorldSheet, GameConfig.IsEditor);
-            updatedAt = DateTimeOffset.UtcNow;
+            updatedAt = blockIndex;
             this.agentAddress = agentAddress;
             questList = new QuestList(
                 avatarSheets.QuestSheet,
@@ -156,7 +157,7 @@ namespace Nekoyume.Model.State
             exp = (long)((Integer)serialized["exp"]).Value;
             inventory = new Inventory((List)serialized["inventory"]);
             worldInformation = new WorldInformation((Dictionary)serialized["worldInformation"]);
-            updatedAt = serialized["updatedAt"].ToDateTimeOffset();
+            updatedAt = serialized["updatedAt"].ToLong();
             agentAddress = new Address(((Binary)serialized["agentAddress"]).Value);
             questList = new QuestList((Dictionary) serialized["questList"]);
             mailBox = new MailBox((List)serialized["mailBox"]);

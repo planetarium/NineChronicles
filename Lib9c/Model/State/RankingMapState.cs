@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Bencodex.Types;
@@ -41,15 +40,15 @@ namespace Nekoyume.Model.State
             }
         }
 
-        public List<RankingInfo> GetRankingInfos(DateTimeOffset? dt)
+        public List<RankingInfo> GetRankingInfos(long? blockOffset)
         {
             var list = _map.Values
                 .OrderByDescending(c => c.Exp)
                 .ThenBy(c => c.StageClearedBlockIndex)
                 .ToList();
-            return dt != null
+            return blockOffset != null
                 ? list
-                    .Where(context => ((TimeSpan)(dt - context.UpdatedAt)).Days <= 1)
+                    .Where(context => blockOffset <= context.UpdatedAt)
                     .ToList()
                 : list;
         }
@@ -109,7 +108,7 @@ namespace Nekoyume.Model.State
         public readonly string AvatarName;
         public readonly long Exp;
         public readonly long StageClearedBlockIndex;
-        public readonly DateTimeOffset UpdatedAt;
+        public readonly long UpdatedAt;
 
         public RankingInfo(AvatarState avatarState)
         {
@@ -133,7 +132,7 @@ namespace Nekoyume.Model.State
             AvatarName = serialized.GetString("avatarName");
             Exp = serialized.GetLong("exp");
             StageClearedBlockIndex = serialized.GetLong("stageClearedBlockIndex");
-            UpdatedAt = serialized.GetDateTimeOffset("updatedAt");
+            UpdatedAt = serialized.GetLong("updatedAt");
         }
         public IValue Serialize() =>
             new Dictionary(new Dictionary<IKey, IValue>

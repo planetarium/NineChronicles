@@ -218,7 +218,7 @@ namespace Nekoyume.Action
             var materialSheet = states.GetSheet<MaterialItemSheet>();
             avatarState.UpdateQuestRewards(materialSheet);
 
-            avatarState.updatedAt = DateTimeOffset.UtcNow;
+            avatarState.updatedAt = ctx.BlockIndex;
             states = states.SetState(avatarAddress, avatarState.Serialize());
 
             sw.Stop();
