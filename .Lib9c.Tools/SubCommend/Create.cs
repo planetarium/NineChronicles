@@ -18,7 +18,7 @@ namespace Lib9c.Tools.SubCommend
         public void Genesis(
             [Option('g')] string gameConfigDir,
             [Option('d')] string goldDistributedPath,
-            [Option('c')] int activationKeyCount)
+            [Option('a')] int activationKeyCount)
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
             Utils.CreateActivationKey(
