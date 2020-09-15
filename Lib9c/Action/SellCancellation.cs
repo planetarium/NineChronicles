@@ -128,7 +128,7 @@ namespace Nekoyume.Action
 
             avatarState.Update(mail);
             avatarState.UpdateFromAddItem(result.itemUsable, true);
-            avatarState.updatedAt = DateTimeOffset.UtcNow;
+            avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;
             sw.Stop();
             Log.Debug($"Sell Cancel Update AvatarState: {sw.Elapsed}");

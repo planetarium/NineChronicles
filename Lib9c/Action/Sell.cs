@@ -142,7 +142,7 @@ namespace Nekoyume.Action
             Log.Debug("Sell Get Register Item: {Elapsed}", sw.Elapsed);
             sw.Restart();
 
-            avatarState.updatedAt = DateTimeOffset.UtcNow;
+            avatarState.updatedAt = ctx.BlockIndex;
             avatarState.blockIndex = ctx.BlockIndex;
 
             states = states.SetState(sellerAvatarAddress, avatarState.Serialize());

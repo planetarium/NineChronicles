@@ -260,10 +260,9 @@ namespace Nekoyume.Action
             buyerAvatarState.questList.UpdateTradeQuest(TradeType.Buy, shopItem.Price);
             sellerAvatarState.questList.UpdateTradeQuest(TradeType.Sell, shopItem.Price);
 
-            var timestamp = DateTimeOffset.UtcNow;
-            buyerAvatarState.updatedAt = timestamp;
+            buyerAvatarState.updatedAt = ctx.BlockIndex;
             buyerAvatarState.blockIndex = ctx.BlockIndex;
-            sellerAvatarState.updatedAt = timestamp;
+            sellerAvatarState.updatedAt = ctx.BlockIndex;
             sellerAvatarState.blockIndex = ctx.BlockIndex;
 
             var materialSheet = states.GetSheet<MaterialItemSheet>();
