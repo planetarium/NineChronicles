@@ -336,17 +336,15 @@ namespace Nekoyume.UI
                 SetRankingInfos(rankingState);
 
                 var rank = 1;
-                var dt = stateType == StateType.Filtered
-                    ? DateTimeOffset.UtcNow
-                    : (DateTimeOffset?) null;
                 var rankingInfos = _rankingInfos
                     .OrderByDescending(c => c.Exp)
                     .ThenBy(c => c.StageClearedBlockIndex)
                     .ToList();
-                if (!(dt is null))
+                if (stateType == StateType.Filtered)
                 {
+                    var currentBlockIndex = Game.Game.instance.Agent.BlockIndex;
                     rankingInfos = rankingInfos
-                        .Where(context => ((TimeSpan) (dt - context.UpdatedAt)).Days <= 1)
+                        .Where(context => currentBlockIndex - context.UpdatedAt <= GameConfig.DailyRewardInterval)
                         .ToList();
                 }
 

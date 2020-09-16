@@ -77,6 +77,7 @@ namespace Nekoyume.Game.Entrance
             );
 
             Destroy(this);
+            stage.OnRoomEnterEnd.OnNext(stage);
         }
     }
 }

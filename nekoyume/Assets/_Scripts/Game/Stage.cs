@@ -90,6 +90,8 @@ namespace Nekoyume.Game
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
         public IObservable<Stage> onEnterToStageEnd => _onEnterToStageEnd;
 
+        public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
+
         #endregion
 
         protected void Awake()
@@ -479,6 +481,11 @@ namespace Nekoyume.Game
             }
             else
             {
+                if (log.result == BattleLog.Result.TimeOver)
+                {
+                    _stageRunningPlayer.Animator.TurnOver();
+                    yield return new WaitForSeconds(2f);
+                }
                 ReleaseWhiteList.Remove(_stageRunningPlayer.gameObject);
                 objectPool.ReleaseExcept(ReleaseWhiteList);
             }
