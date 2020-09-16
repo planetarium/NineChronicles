@@ -11,8 +11,15 @@ namespace Nekoyume.L10n
     {
         /// <summary>
         /// font file: Assets/Resources/Font/TTF/PoorStory-Regular.ttf
-        /// character file: Assets/Resources/Font/CharacterFiles/KS1001.txt
         /// font asset file: Assets/Resources/Font/SDF/PoorStory-Regular SDF.asset
+        ///     - Sampling Font Size: Auto Sizing
+        ///     - Padding: 9
+        ///     - Packing Method: Fast
+        ///     - Atlas Resolution: 4096x4096
+        ///     - Character Set: Characters From File
+        ///     - Character File: Assets/Resources/Font/CharacterFiles/KS1001.txt
+        ///     - Render Mode: SDFAA
+        ///     - Get Kerning Pairs: true
         /// </summary>
         English,
 
@@ -23,10 +30,16 @@ namespace Nekoyume.L10n
 
         /// <summary>
         /// font file: Assets/Resources/Font/TTF/PoorStory-Latin.otf
-        /// unicode hex range:
-        ///     1. 00C0-00D6,00D8-00F6,00F8-00FF
-        ///         https://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)
         /// font asset file: Assets/Resources/Font/SDF/PoorStory-Latin SDF.asset
+        ///     - Sampling Font Size: Auto Sizing
+        ///     - Padding: 9
+        ///     - Packing Method: Fast
+        ///     - Atlas Resolution: 516x516
+        ///     - Character Set: Unicode Range (Hex)
+        ///     - Character Sequence (Hex): 00C0-00D6,00D8-00F6,00F8-00FF
+        ///           https://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)
+        ///     - Render Mode: SDFAA
+        ///     - Get Kerning Pairs: true
         /// </summary>
         PortugueseBrazil,
 
@@ -37,32 +50,73 @@ namespace Nekoyume.L10n
 
         /// <summary>
         /// font file: Assets/Resources/Font/TTF/NotoSansCJKjp-Regular.otf
-        /// unicode hex range:
-        ///     1. 20-7E,A0,2026,25A1
-        ///     2. ascii・ひらがな・カタカナ・頻出漢字(custom range)
-        ///         https://www.youtube.com/watch?v=Dj4XaZJTEQM
-        ///         https://gist.github.com/boscohyun/9ca2fc65b0e042bab999c9adce4d4094
-        /// font asset file: Assets/Resources/Font/SDF/NotoSansCJKjp-Regular-00-ASCII(98) SDF.asset
+        /// font asset file 1: Assets/Resources/Font/SDF/Hanazome-00-ASCII(99) SDF.asset
+        ///     - Sampling Font Size: Auto Sizing
+        ///     - Padding: 7
+        ///     - Packing Method: Fast
+        ///     - Atlas Resolution: 516x516
+        ///     - Character Set: ASCII
+        ///     - Render Mode: SDFAA
+        ///     - Get Kerning Pairs: true
+        /// font asset file 2: Assets/Resources/Font/SDF/Hanazome-01-2538(2339) SDF SDF.asset
+        ///     - Sampling Font Size: Auto Sizing
+        ///     - Padding: 7
+        ///     - Packing Method: Fast
+        ///     - Atlas Resolution: 4096x4096
+        ///     - Character Set: Custom Range
+        ///     - Character Sequence (Decimal): Assets/Resources/Font/CharacterFiles/japanese-custom-range-01-2538.txt
+        ///           https://www.youtube.com/watch?v=Dj4XaZJTEQM
+        ///           https://gist.github.com/boscohyun/9ca2fc65b0e042bab999c9adce4d4094
+        ///     - Render Mode: SDFAA
+        ///     - Get Kerning Pairs: true
         /// </summary>
         Japanese,
 
         /// <summary>
         /// font file: Assets/Resources/Font/TTF/NotoSansCJKsc-Regular.otf
-        /// unicode hex range:
-        ///     1. 20-7E,A0,2026,25A1,3001,3002
-        ///     2. Assets/Resources/Font/CharacterFiles/simplified-chinese-8105-unicode-range-{00}-{0000}.txt
-        ///         http://hanzidb.org/character-list/general-standard
         /// font asset file: Assets/Resources/Font/SDF/NotoSansCJKsc-Regular-00-ASCII(98) SDF.asset
+        ///     - Sampling Font Size: Auto Sizing
+        ///     - Padding: 7
+        ///     - Packing Method: Fast
+        ///     - Atlas Resolution: 512x512
+        ///     - Character Set: Unicode Range (Hex)
+        ///     - Character Sequence (Hex): 20-7E,A0,2026,25A1,3001,3002
+        ///           ASCII + @
+        ///     - Render Mode: SDFAA
+        ///     - Get Kerning Pairs: true
+        /// font asset files: Assets/Resources/Font/SDF/NotoSansCJKsc-Regular-{00}-{0000}({0000}) SDF.asset
+        ///     - Sampling Font Size: Auto Sizing
+        ///     - Padding: 7
+        ///     - Packing Method: Fast
+        ///     - Atlas Resolution: 4096x4096
+        ///     - Character Set: Unicode Range (Hex)
+        ///     - Character Sequence (Hex): Assets/Resources/Font/CharacterFiles/simplified-chinese-8105-unicode-range-{00}-{0000}.txt
+        ///           http://hanzidb.org/character-list/general-standard
+        ///     - Render Mode: SDFAA
+        ///     - Get Kerning Pairs: true
         /// </summary>
         ChineseSimplified,
 
         /// <summary>
         /// font file: Assets/Resources/Font/TTF/kanit-regular.otf
-        /// unicode hex range:
-        ///     1. 20-7E,A0,2026,25A1
-        ///     2. 0E01-0E3A,0E3F-0E5B
-        ///         https://en.wikipedia.org/wiki/Thai_(Unicode_block)
         /// font asset file: Assets/Resources/Font/SDF/kanit-regular-00-ASCII(97) SDF.asset
+        ///     - Sampling Font Size: Auto Sizing
+        ///     - Padding: 7
+        ///     - Packing Method: Fast
+        ///     - Atlas Resolution: 516x516
+        ///     - Character Set: ASCII
+        ///     - Render Mode: SDFAA
+        ///     - Get Kerning Pairs: true
+        /// font asset file: Assets/Resources/Font/SDF/kanit-regular-01-87(87) SDF.asset
+        ///     - Sampling Font Size: Auto Sizing
+        ///     - Padding: 7
+        ///     - Packing Method: Fast
+        ///     - Atlas Resolution: 516x516
+        ///     - Character Set: Unicode Range (Hex)
+        ///     - Character Sequence (Hex): 0E01-0E3A,0E3F-0E5B
+        ///           https://en.wikipedia.org/wiki/Thai_(Unicode_block)
+        ///     - Render Mode: SDFAA
+        ///     - Get Kerning Pairs: true
         /// </summary>
         Thai,
     }
