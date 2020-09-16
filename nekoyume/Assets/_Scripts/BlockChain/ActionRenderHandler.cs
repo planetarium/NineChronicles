@@ -54,7 +54,7 @@ namespace Nekoyume.BlockChain
             CreateAvatar();
             DeleteAvatar();
             HackAndSlash();
-            Combination();
+            CombinationConsumable();
             Sell();
             SellCancellation();
             Buy();
@@ -157,12 +157,12 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
         }
 
-        private void Combination()
+        private void CombinationConsumable()
         {
             _renderer.EveryRender<CombinationConsumable>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseCombination).AddTo(_disposables);
+                .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
         }
 
         private void Sell()
@@ -463,7 +463,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
+        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
