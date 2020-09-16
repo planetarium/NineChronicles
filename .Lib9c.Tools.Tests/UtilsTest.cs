@@ -12,13 +12,13 @@ namespace Lib9c.Tools.Tests
         [Fact]
         public void CreateActivationKeyTest()
         {
-            int countOfKeys = 10;
+            uint countOfKeys = 10;
             Utils.CreateActivationKey(
                 out var pendingActivationState,
                 out var activationKeys,
                 countOfKeys);
             
-            Assert.Equal(countOfKeys, activationKeys.Count);
+            Assert.Equal(countOfKeys, (uint)activationKeys.Count);
             Assert.Equal(activationKeys.Count, pendingActivationState.Count);
 
             foreach (var item in activationKeys.Select(((key, index) => (key, index))))

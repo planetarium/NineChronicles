@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Libplanet;
 using Libplanet.Action;
 using Libplanet.Assets;
@@ -19,7 +20,9 @@ namespace Nekoyume
             IDictionary<string, string> tableSheets,
             GoldDistribution[] goldDistributions,
             PendingActivationState[] pendingActivationStates,
-            AuthorizedMinersState authorizedMinersState = null
+            Address adminAddress,
+            AuthorizedMinersState authorizedMinersState = null,
+            bool isActivateAdminAddress = false
         )
         {
             if (!tableSheets.TryGetValue(nameof(GameConfigSheet), out var csv))
@@ -40,11 +43,11 @@ namespace Nekoyume
                 TableSheets = (Dictionary<string, string>) tableSheets,
                 GameConfigState = gameConfigState,
                 RedeemCodeState = new RedeemCodeState(redeemCodeListSheet),
-                AdminAddressState = new AdminState(
-                    new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
-                    1500000
-                ),
-                ActivatedAccountsState = new ActivatedAccountsState(),
+                AdminAddressState = new AdminState(adminAddress, 1500000),
+                ActivatedAccountsState = new ActivatedAccountsState(
+                    isActivateAdminAddress
+                    ? ImmutableHashSet<Address>.Empty.Add(adminAddress)
+                    : ImmutableHashSet<Address>.Empty),
                 GoldCurrencyState = new GoldCurrencyState(ncg),
                 GoldDistributions = goldDistributions,
                 PendingActivationStates = pendingActivationStates,

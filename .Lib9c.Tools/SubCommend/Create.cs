@@ -18,7 +18,7 @@ namespace Lib9c.Tools.SubCommend
         public void Genesis(
             [Option('g')] string gameConfigDir,
             [Option('d')] string goldDistributedPath,
-            [Option('a')] int activationKeyCount)
+            [Option('a')] uint activationKeyCount)
         {
             Dictionary<string, string> tableSheets = Utils.ImportSheets(gameConfigDir);
             Utils.CreateActivationKey(
@@ -27,10 +27,13 @@ namespace Lib9c.Tools.SubCommend
                 activationKeyCount);
             GoldDistribution[] goldDistributions = GoldDistribution
                 .LoadInDescendingEndBlockOrder(goldDistributedPath);
+            
             Block<PolymorphicAction<ActionBase>> block = BlockHelper.MineGenesisBlock(
                 tableSheets,
                 goldDistributions,
-                pendingActivationStates.ToArray());
+                pendingActivationStates.ToArray(),
+                new Address("F9A15F870701268Bd7bBeA6502eB15F4997f32f9"),
+                isActivateAdminAddress: activationKeyCount != 0);
             
             ExportBlock(block, "genesis-block");
             ExportKeys(activationKeys, "keys.txt");
