@@ -6,7 +6,6 @@ using Libplanet.Assets;
 using Nekoyume.Model.State;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Runtime.Serialization;
 
 namespace Nekoyume.Action
@@ -19,12 +18,11 @@ namespace Nekoyume.Action
         {
         }
 
-        public TransferAsset(Address sender, Address recipient, BigInteger amount, Currency currency)
+        public TransferAsset(Address sender, Address recipient, FungibleAssetValue amount)
         {
             Sender = sender;
             Recipient = recipient;
             Amount = amount;
-            Currency = currency;
         }
 
         protected TransferAsset(SerializationInfo info, StreamingContext context)
@@ -37,8 +35,7 @@ namespace Nekoyume.Action
 
         public Address Sender { get; private set; }
         public Address Recipient { get; private set; }
-        public BigInteger Amount { get; private set; }
-        public Currency Currency { get; private set; }
+        public FungibleAssetValue Amount { get; private set; }
 
         public override IValue PlainValue => new Dictionary(
             new[]
@@ -46,7 +43,6 @@ namespace Nekoyume.Action
                 new KeyValuePair<IKey, IValue>((Text) "sender", Sender.Serialize()),
                 new KeyValuePair<IKey, IValue>((Text) "recipient", Recipient.Serialize()),
                 new KeyValuePair<IKey, IValue>((Text) "amount", Amount.Serialize()),
-                new KeyValuePair<IKey, IValue>((Text) "currency", Currency.Serialize()),
             }
         );
 
@@ -55,7 +51,7 @@ namespace Nekoyume.Action
             var state = context.PreviousStates;
             if (context.Rehearsal)
             {
-                return state.MarkBalanceChanged(Currency, new[] { Sender, Recipient });
+                return state.MarkBalanceChanged(Amount.Currency, new[] { Sender, Recipient });
             }
 
             if (Sender != context.Signer)
@@ -63,17 +59,18 @@ namespace Nekoyume.Action
                 throw new InvalidTransferSignerException(context.Signer, Sender, Recipient);
             }
 
-            if (!(Currency.Minters is null) &&
-                (Currency.Minters.Contains(Sender) || Currency.Minters.Contains(Recipient)))
+            Currency currency = Amount.Currency;
+            if (!(currency.Minters is null) &&
+                (currency.Minters.Contains(Sender) || currency.Minters.Contains(Recipient)))
             {
                 throw new InvalidTransferMinterException(
-                    Currency.Minters,
+                    currency.Minters,
                     Sender,
                     Recipient
                );
             }
 
-            return state.TransferAsset(Sender, Recipient, Currency * Amount);
+            return state.TransferAsset(Sender, Recipient, Amount);
         }
 
         public override void LoadPlainValue(IValue plainValue)
@@ -82,8 +79,7 @@ namespace Nekoyume.Action
 
             Sender = asDict["sender"].ToAddress();
             Recipient = asDict["recipient"].ToAddress();
-            Amount = asDict["amount"].ToBigInteger();
-            Currency = CurrencyExtensions.Deserialize((Dictionary)asDict["currency"]);
+            Amount = asDict["amount"].ToFungibleAssetValue();
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
