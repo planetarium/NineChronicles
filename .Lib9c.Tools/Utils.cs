@@ -29,12 +29,12 @@ namespace Lib9c.Tools
         public static void CreateActivationKey(
             out List<PendingActivationState> pendingActivationStates,
             out List<ActivationKey> activationKeys,
-            int countOfKeys)
+            uint countOfKeys)
         {
             pendingActivationStates = new List<PendingActivationState>();
             activationKeys = new List<ActivationKey>();
 
-            for (int i = 0; i < countOfKeys; i++)
+            for (uint i = 0; i < countOfKeys; i++)
             {
                 var pendingKey = new PrivateKey();
                 var nonce = pendingKey.PublicKey.ToAddress().ToByteArray();
