@@ -80,7 +80,7 @@ namespace Nekoyume.L10n
         ///     - Packing Method: Fast
         ///     - Atlas Resolution: 512x512
         ///     - Character Set: Unicode Range (Hex)
-        ///     - Character Sequence (Hex): 20-7E,A0,2026,25A1,3001,3002
+        ///     - Character Sequence (Hex): 20-7E,A0,2026,25A1,3001,3002,FF08,FF09,FF0C,FF1F
         ///           ASCII + @
         ///     - Render Mode: SDFAA
         ///     - Get Kerning Pairs: true
