@@ -268,6 +268,9 @@ namespace Nekoyume.Action
             enhancementEquipment.Unequip();
 
             enhancementEquipment = UpgradeEquipment(enhancementEquipment);
+
+            var requiredBlockIndex = ctx.BlockIndex + 1;
+            enhancementEquipment.Update(requiredBlockIndex);
             sw.Stop();
             Log.Debug("ItemEnhancement Upgrade Equipment: {Elapsed}", sw.Elapsed);
             sw.Restart();
@@ -281,7 +284,7 @@ namespace Nekoyume.Action
             sw.Stop();
             Log.Debug("ItemEnhancement Remove Materials: {Elapsed}", sw.Elapsed);
             sw.Restart();
-            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), ctx.BlockIndex);
+            var mail = new ItemEnhanceMail(result, ctx.BlockIndex, ctx.Random.GenerateRandomGuid(), requiredBlockIndex);
             result.id = mail.id;
 
             avatarState.inventory.RemoveNonFungibleItem(enhancementEquipment);
@@ -291,7 +294,7 @@ namespace Nekoyume.Action
             var materialSheet = states.GetSheet<MaterialItemSheet>();
             avatarState.UpdateQuestRewards(materialSheet);
 
-            slotState.Update(result, ctx.BlockIndex, ctx.BlockIndex);
+            slotState.Update(result, ctx.BlockIndex, requiredBlockIndex);
 
             sw.Stop();
             Log.Debug("ItemEnhancement Update AvatarState: {Elapsed}", sw.Elapsed);
