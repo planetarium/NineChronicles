@@ -549,16 +549,14 @@ namespace Nekoyume.UI
                     LocalStateModifier.SetCostumeEquip(
                         States.Instance.CurrentAvatarState.address,
                         itemBase.Id,
-                        equip,
-                        false);
+                        equip);
                     break;
                 case ItemType.Equipment:
                     var equipment = (Equipment) itemBase;
                     LocalStateModifier.SetEquipmentEquip(
                         States.Instance.CurrentAvatarState.address,
                         equipment.ItemId,
-                        equip,
-                        false);
+                        equip);
                     break;
             }
         }
