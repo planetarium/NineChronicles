@@ -20,6 +20,8 @@ namespace Nekoyume.Action
     [ActionType("item_enhancement")]
     public class ItemEnhancement : GameAction
     {
+        public const int RequiredBlockCount = 1;
+
         public static readonly Address BlacksmithAddress = Addresses.Blacksmith;
 
         public Guid itemId;
@@ -269,7 +271,7 @@ namespace Nekoyume.Action
 
             enhancementEquipment = UpgradeEquipment(enhancementEquipment);
 
-            var requiredBlockIndex = ctx.BlockIndex + 1;
+            var requiredBlockIndex = ctx.BlockIndex + RequiredBlockCount;
             enhancementEquipment.Update(requiredBlockIndex);
             sw.Stop();
             Log.Debug("ItemEnhancement Upgrade Equipment: {Elapsed}", sw.Elapsed);
