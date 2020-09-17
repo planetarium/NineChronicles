@@ -23,8 +23,7 @@ namespace Lib9c.Tests.Action
             var action = new TransferAsset(
                 sender: default,
                 recipient: default,
-                amount: 100,
-                currency
+                amount: currency * 100
             );
 
             var evaluation = new ActionBase.ActionEvaluation<ActionBase>()

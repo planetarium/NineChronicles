@@ -46,8 +46,7 @@ namespace Lib9c.Tests.Action
             var action = new TransferAsset(
                 sender: _sender,
                 recipient: _recipient,
-                amount: 100,
-                currency: _currency
+                amount: _currency * 100
             );
             IAccountStateDelta nextState = action.Execute(new ActionContext()
             {
@@ -73,8 +72,7 @@ namespace Lib9c.Tests.Action
             var action = new TransferAsset(
                 sender: _sender,
                 recipient: _recipient,
-                amount: 100,
-                currency: _currency
+                amount: _currency * 100
             );
 
             var exc = Assert.Throws<InvalidTransferSignerException>(() =>
@@ -106,8 +104,7 @@ namespace Lib9c.Tests.Action
             var action = new TransferAsset(
                 sender: _sender,
                 recipient: _recipient,
-                amount: 100000,
-                currency: _currency
+                amount: _currency * 100000
             );
 
             Assert.Throws<InsufficientBalanceException>(() =>
@@ -135,8 +132,7 @@ namespace Lib9c.Tests.Action
             var action = new TransferAsset(
                 sender: _sender,
                 recipient: _recipient,
-                amount: 100,
-                currency: currencyBySender
+                amount: currencyBySender * 100
             );
             var ex = Assert.Throws<InvalidTransferMinterException>(() =>
             {
@@ -167,8 +163,7 @@ namespace Lib9c.Tests.Action
             var action = new TransferAsset(
                 sender: _sender,
                 recipient: _recipient,
-                amount: 100,
-                currency: currencyByRecipient
+                amount: currencyByRecipient * 100
             );
             var ex = Assert.Throws<InvalidTransferMinterException>(() =>
             {
@@ -192,8 +187,7 @@ namespace Lib9c.Tests.Action
             var action = new TransferAsset(
                 sender: _sender,
                 recipient: _recipient,
-                amount: 100,
-                currency: _currency
+                amount: _currency * 100
             );
 
             IAccountStateDelta nextState = action.Execute(new ActionContext()
@@ -219,13 +213,12 @@ namespace Lib9c.Tests.Action
         [Fact]
         public void PlainValue()
         {
-            var action = new TransferAsset(_sender, _recipient, 100, _currency);
+            var action = new TransferAsset(_sender, _recipient, _currency * 100);
             Dictionary plainValue = (Dictionary)action.PlainValue;
 
             Assert.Equal(_sender, plainValue["sender"].ToAddress());
             Assert.Equal(_recipient, plainValue["recipient"].ToAddress());
-            Assert.Equal(_currency, CurrencyExtensions.Deserialize((Dictionary)plainValue["currency"]));
-            Assert.Equal(100, plainValue["amount"].ToBigInteger());
+            Assert.Equal(_currency * 100, plainValue["amount"].ToFungibleAssetValue());
         }
 
         [Fact]
@@ -236,8 +229,7 @@ namespace Lib9c.Tests.Action
                 {
                     new KeyValuePair<IKey, IValue>((Text)"sender", _sender.Serialize()),
                     new KeyValuePair<IKey, IValue>((Text)"recipient", _recipient.Serialize()),
-                    new KeyValuePair<IKey, IValue>((Text)"currency", _currency.Serialize()),
-                    new KeyValuePair<IKey, IValue>((Text)"amount", new BigInteger(100).Serialize()),
+                    new KeyValuePair<IKey, IValue>((Text)"amount", (_currency * 100).Serialize()),
                 }
             );
             var action = new TransferAsset();
@@ -245,15 +237,14 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(_sender, action.Sender);
             Assert.Equal(_recipient, action.Recipient);
-            Assert.Equal(_currency, action.Currency);
-            Assert.Equal(100, action.Amount);
+            Assert.Equal(_currency * 100, action.Amount);
         }
 
         [Fact]
         public void SerializeWithDotnetAPI()
         {
             var formatter = new BinaryFormatter();
-            var action = new TransferAsset(_sender, _recipient, 100, _currency);
+            var action = new TransferAsset(_sender, _recipient, _currency * 100);
 
             using var ms = new MemoryStream();
             formatter.Serialize(ms, action);
@@ -263,8 +254,7 @@ namespace Lib9c.Tests.Action
 
             Assert.Equal(_sender, deserialized.Sender);
             Assert.Equal(_recipient, deserialized.Recipient);
-            Assert.Equal(_currency, deserialized.Currency);
-            Assert.Equal(100, deserialized.Amount);
+            Assert.Equal(_currency * 100, deserialized.Amount);
         }
     }
 }
