@@ -90,6 +90,8 @@ namespace Nekoyume.Game
         private readonly ISubject<Stage> _onEnterToStageEnd = new Subject<Stage>();
         public IObservable<Stage> onEnterToStageEnd => _onEnterToStageEnd;
 
+        public readonly ISubject<Stage> OnRoomEnterEnd = new Subject<Stage>();
+
         #endregion
 
         protected void Awake()

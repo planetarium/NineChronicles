@@ -662,15 +662,46 @@ namespace Nekoyume.BlockChain
                 {
                     Widget.Find<BattleResult>().NextStage(eval);
                 }
-
-                return;
             }
-
-            if (eval.Exception is FailedToUnlockWorldException)
+            else
             {
-                Widget
-                    .Find<ActionFailPopup>()
-                    .Show<HackAndSlash>(L10nManager.Localize("ERROR_FAILED_TO_UNLOCK_WORLD"));
+                var showLoadingScreen = false;
+                if (Widget.Find<StageLoadingScreen>().IsActive())
+                {
+                    Widget.Find<StageLoadingScreen>().Close();
+                }
+                if (Widget.Find<BattleResult>().IsActive())
+                {
+                    showLoadingScreen = true;
+                    Widget.Find<BattleResult>().Close();
+                }
+
+                Event.OnRoomEnter.Invoke(showLoadingScreen);
+                Game.Game.instance.Stage.OnRoomEnterEnd
+                    .First()
+                    .Subscribe(_ =>
+                    {
+                        var exc = eval.Exception.InnerException;
+                        var key = "ERROR_UNKNOWN";
+                        switch (exc)
+                        {
+                            case RequiredBlockIndexException _:
+                                key = "ERROR_REQUIRE_BLOCK";
+                                break;
+                            case EquipmentSlotUnlockException _:
+                                key = "ERROR_SLOT_UNLOCK";
+                                break;
+                            case NotEnoughActionPointException _:
+                                key = "ERROR_ACTION_POINT";
+                                break;
+                        }
+                        var errorMsg = string.Format(L10nManager.Localize("UI_ERROR_RETRY_FORMAT"),
+                            L10nManager.Localize(key));
+                        Widget
+                            .Find<Alert>()
+                            .Show(L10nManager.Localize("UI_ERROR"), errorMsg,
+                                L10nManager.Localize("UI_OK"), false);
+                    });
             }
         }
 
