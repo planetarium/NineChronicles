@@ -1,4 +1,5 @@
 using System;
+using Nekoyume.Battle;
 using Nekoyume.Game.Controller;
 using Nekoyume.Helper;
 using Nekoyume.Model.State;
@@ -113,7 +114,13 @@ namespace Nekoyume.UI.Scroller
 
             Game.Event.OnUpdatePlayerEquip
                 .Where(_ => _isCurrentUser)
-                .Subscribe(characterView.SetByPlayer)
+                .Subscribe(player =>
+                {
+                    characterView.SetByPlayer(player);
+                    cpText.text = CPHelper.GetCP(
+                        States.Instance.CurrentAvatarState,
+                        Game.Game.instance.TableSheets.CharacterSheet).ToString();
+                })
                 .AddTo(gameObject);
         }
 
@@ -145,10 +152,14 @@ namespace Nekoyume.UI.Scroller
             }
 
             UpdateRank(rank);
-            levelText.text = arenaInfo.Level.ToString();
-            nameText.text = arenaInfo.AvatarName;
-            cpText.text = arenaInfo.CombatPoint.ToString();
-            scoreText.text = arenaInfo.Score.ToString();
+            levelText.text = ArenaInfo.Level.ToString();
+            nameText.text = ArenaInfo.AvatarName;
+            scoreText.text = ArenaInfo.Score.ToString();
+            cpText.text = (_isCurrentUser
+                ? CPHelper.GetCP(
+                    States.Instance.CurrentAvatarState,
+                    Game.Game.instance.TableSheets.CharacterSheet)
+                : arenaInfo.CombatPoint).ToString();
             challengeCountTextContainer.SetActive(_isCurrentUser);
             challengeButton.gameObject.SetActive(!_isCurrentUser);
 
@@ -168,11 +179,11 @@ namespace Nekoyume.UI.Scroller
 
                 rank = 1;
                 challengeCountText.text =
-                    $"<color=orange>{arenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
+                    $"<color=orange>{ArenaInfo.DailyChallengeCount}</color>/{GameConfig.ArenaChallengeCountMax}";
             }
             else
             {
-                characterView.SetByAvatarAddress(arenaInfo.AvatarAddress);
+                characterView.SetByAvatarAddress(ArenaInfo.AvatarAddress);
                 challengeButton.SetSubmittable(!(currentAvatarArenaInfo is null) &&
                                                currentAvatarArenaInfo.Active &&
                                                currentAvatarArenaInfo.DailyChallengeCount > 0);
