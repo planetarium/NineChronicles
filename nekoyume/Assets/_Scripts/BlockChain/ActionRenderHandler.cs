@@ -132,6 +132,18 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
+                    //[TentuPlay] 캐릭터 획득
+                    Address agentAddress = States.Instance.AgentState.address;
+                    new TPStashEvent().PlayerCharacterGet(
+                            player_uuid: agentAddress.ToHex(),
+                            character_uuid: eval.Action.avatarAddress.ToHex().Substring(0, 4),
+                            characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
+                            //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
+                            reference_entity: entity.Etc,
+                            reference_category_slug: null,
+                            reference_slug: null
+                        );
+
                     UpdateAgentState(eval);
                     UpdateAvatarState(eval, eval.Action.index);
                 }).AddTo(_disposables);
@@ -144,6 +156,18 @@ namespace Nekoyume.BlockChain
                 .ObserveOnMainThread()
                 .Subscribe(eval =>
                 {
+                    //[TentuPlay] 캐릭터 삭제
+                    Address agentAddress = States.Instance.AgentState.address;
+                    new TPStashEvent().PlayerCharacterDismiss(
+                            player_uuid: agentAddress.ToHex(),
+                            character_uuid: eval.Action.avatarAddress.ToHex().Substring(0, 4),
+                            characterarchetype_slug: Nekoyume.GameConfig.DefaultAvatarCharacterId.ToString(), //100010 for now.
+                            //-> WARRIOR, ARCHER, MAGE, ACOLYTE를 구분할 수 있는 구분자여야한다.
+                            reference_entity: entity.Etc,
+                            reference_category_slug: null,
+                            reference_slug: null
+                        );
+
                     UpdateAgentState(eval);
                     UpdateAvatarState(eval, eval.Action.index);
                 }).AddTo(_disposables);
@@ -363,15 +387,16 @@ namespace Nekoyume.BlockChain
                 .Count(i => i.ItemSubType == ItemSubType.Hourglass);
             var prevQty = eval.PreviousStates.GetAvatarState(avatarAddress).inventory.Materials
                 .Count(i => i.ItemSubType == ItemSubType.Hourglass);
-            new TPStashEvent().CharacterCurrencyUse(
+            new TPStashEvent().CharacterItemUse(
                 player_uuid: agentAddress.ToHex(),
                 character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
-                currency_slug: "hourglass",
-                currency_quantity: (float) (prevQty - qty),
-                currency_total_quantity: (float) qty,
+                item_category: itemCategory.Consumable,
+                item_slug: "hourglass",
+                item_quantity: (float)(prevQty - qty),
                 reference_entity: entity.Items,
                 reference_category_slug: "consumables_rapid_combination",
-                reference_slug: slot.Result.itemUsable.Id.ToString());
+                reference_slug: slot.Result.itemUsable.Id.ToString()
+                );
 
             UpdateAgentState(eval);
             UpdateCurrentAvatarState(eval);
@@ -634,10 +659,89 @@ namespace Nekoyume.BlockChain
                     .First()
                     .Subscribe(_ =>
                     {
-                        UpdateCurrentAvatarState(eval);
-                        UpdateWeeklyArenaState(eval);
+                        Address agentAddress = States.Instance.AgentState.address;
                         var avatarState =
                             eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
+
+                        TPStashEvent myStashEvent = new TPStashEvent();
+                        //[TentuPlay] 전투 입장 시 사용하는 Action Point
+                        myStashEvent.CharacterCurrencyUse(
+                            player_uuid: agentAddress.ToHex(),
+                            character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                            currency_slug: "action_point",
+                            currency_quantity: 5,
+                            currency_total_quantity: (float)avatarState.actionPoint,
+                            reference_entity: entity.Stages,
+                            reference_category_slug: "HackAndSlash",
+                            reference_slug: "HackAndSlash" + "_" + eval.Action.worldId + "_" + eval.Action.stageId
+                            );
+
+                        //[TentuPlay] 전투 입장 시 사용하는 아이템 - 장비
+                        List<int> allEquippedEquipmentsId = new List<int>();
+                        List<int> weapon = avatarState.inventory.Items.Select(i => i.item).OfType<Weapon>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                        List<int> armor = avatarState.inventory.Items.Select(i => i.item).OfType<Armor>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                        List<int> belt = avatarState.inventory.Items.Select(i => i.item).OfType<Belt>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                        List<int> necklace = avatarState.inventory.Items.Select(i => i.item).OfType<Necklace>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                        List<int> ring = avatarState.inventory.Items.Select(i => i.item).OfType<Ring>().Where(e => e.equipped).Select(r => r.Id).ToList();
+                        allEquippedEquipmentsId.AddRange(weapon);
+                        allEquippedEquipmentsId.AddRange(armor);
+                        allEquippedEquipmentsId.AddRange(belt);
+                        allEquippedEquipmentsId.AddRange(necklace);
+                        allEquippedEquipmentsId.AddRange(ring); //need some fancier way than this...
+                        foreach (int id in allEquippedEquipmentsId)
+                        {
+                            myStashEvent.CharacterItemPlay(
+                                player_uuid: agentAddress.ToHex(),
+                                character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                                item_category: itemCategory.Equipment,
+                                item_slug: id.ToString(),
+                                reference_entity: entity.Stages,
+                                reference_category_slug: "HackAndSlash",
+                                reference_slug: "HackAndSlash" + "_" + eval.Action.worldId + "_" + eval.Action.stageId
+                                );
+                        }
+                        //[TentuPlay] 전투 입장 시 사용하는 아이템 - 코스튬
+                        List<int> allEquippedCostumeIds = avatarState.inventory.Items.Select(i => i.item).OfType<Costume>().Where(e => e.equipped)
+                        .Where(s => s.ItemSubType == ItemSubType.FullCostume || s.ItemSubType == ItemSubType.Title)
+                        .Select(r => r.Id).ToList();
+                        foreach (int id in allEquippedCostumeIds)
+                        {
+                            myStashEvent.CharacterItemPlay(
+                                player_uuid: agentAddress.ToHex(),
+                                character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                                item_category: itemCategory.Cosmetics,
+                                item_slug: id.ToString(),
+                                reference_entity: entity.Stages,
+                                reference_category_slug: "HackAndSlash",
+                                reference_slug: "HackAndSlash" + "_" + eval.Action.worldId + "_" + eval.Action.stageId
+                                );
+                        }
+
+                        //[TentuPlay] 전투 입장 시 사용하는 아이템 - 소모품
+                        List<Guid> consumableGuid = eval.Action.foods;
+                        // TODO: this doesn't work
+                        var consumableIds = avatarState.inventory.Items
+                            .Select(i => i.item)
+                            .OfType<Consumable>()
+                            .Where(i => consumableGuid.Contains(i.ItemId))
+                            .ToList();
+                        foreach (var food in consumableIds)
+                        {
+                            myStashEvent.CharacterItemPlay(
+                                player_uuid: agentAddress.ToHex(),
+                                character_uuid: avatarState.address.ToHex().Substring(0, 4),
+                                item_category: itemCategory.Consumable,
+                                item_slug: food.Id.ToString(),
+                                reference_entity: entity.Stages,
+                                reference_category_slug: "HackAndSlash",
+                                reference_slug: "HackAndSlash" + "_" + eval.Action.worldId + "_" + eval.Action.stageId
+                                );
+                        }
+
+                        UpdateCurrentAvatarState(eval);
+                        UpdateWeeklyArenaState(eval);
+                        //var avatarState =
+                        //    eval.OutputStates.GetAvatarState(eval.Action.avatarAddress);
                         States.Instance.SetCombinationSlotStates(avatarState);
                         RenderQuest(eval.Action.avatarAddress,
                             avatarState.questList.completedQuestIds);

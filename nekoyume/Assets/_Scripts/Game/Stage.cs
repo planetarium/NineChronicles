@@ -294,8 +294,10 @@ namespace Nekoyume.Game
         private IEnumerator CoPlayStage(BattleLog log)
         {
             //[TentuPlay] PlayStage 시작 기록
-            new TPStashEvent().PlayerStage(
+            AvatarState avatarState = States.Instance.CurrentAvatarState;
+            new TPStashEvent().CharacterStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
+                character_uuid: avatarState.address.ToHex().Substring(0, 4),
                 stage_category_slug: "HackAndSlash",
                 stage_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId,
                 stage_status: stageStatus.Start,
@@ -317,8 +319,9 @@ namespace Nekoyume.Game
         private IEnumerator CoPlayRankingBattle(BattleLog log)
         {
             //[TentuPlay] RankingBattle 시작 기록
-            new TPStashEvent().PlayerStage(
+            new TPStashEvent().CharacterStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
+                character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                 stage_category_slug: "RankingBattle",
                 stage_slug: "RankingBattle",
                 stage_status: stageStatus.Start,
@@ -564,8 +567,9 @@ namespace Nekoyume.Game
                     break;
             }
 
-            new TPStashEvent().PlayerStage(
+            new TPStashEvent().CharacterStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
+                character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                 stage_category_slug: "HackAndSlash",
                 stage_slug: "HackAndSlash" + "_" + log.worldId + "_" + log.stageId,
                 stage_status: stage_status,
@@ -574,6 +578,7 @@ namespace Nekoyume.Game
                 stage_playtime: null,
                 is_autocombat_committed: isAutocombat.AutocombatOn
             );
+
             var props = new Value
             {
                 ["StageId"] = log.stageId
@@ -625,8 +630,9 @@ namespace Nekoyume.Game
                     break;
             }
 
-            new TPStashEvent().PlayerStage(
+            new TPStashEvent().CharacterStage(
                 player_uuid: Game.instance.Agent.Address.ToHex(),
+                character_uuid: States.Instance.CurrentAvatarState.address.ToHex().Substring(0, 4),
                 stage_category_slug: "RankingBattle",
                 stage_slug: "RankingBattle",
                 stage_status: stage_status,
