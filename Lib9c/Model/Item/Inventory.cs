@@ -88,8 +88,6 @@ namespace Nekoyume.Model.Item
             }
         }
 
-        private const int MaxRingEquippedCount = 2;
-
         private readonly List<Item> _items = new List<Item>();
 
         public IReadOnlyList<Item> Items => _items;
@@ -425,119 +423,35 @@ namespace Nekoyume.Model.Item
 
         #endregion
 
-        public bool HasNotification(int currentLevel)
+        public bool HasNotification(int level)
         {
-            foreach (var subType in new [] {ItemSubType.Weapon, ItemSubType.Armor, ItemSubType.Belt, ItemSubType.Necklace})
-            {
-                var requiredLevel = GetRequiredLevelOfSlot(subType);
-                if (currentLevel < requiredLevel)
-                {
-                    continue;
-                }
+            var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
 
-                var equipments = Equipments.Where(e => e.ItemSubType == subType).ToList();
-                var current = equipments.FirstOrDefault(e => e.equipped);
+            foreach (var (type, slotCount) in availableSlots)
+            {
+                var equipments = Equipments.Where(e => e.ItemSubType == type).ToList();
+                var current = equipments.Where(e => e.equipped);
                 // When an equipment slot is empty.
-                if (current is null && equipments.Any())
+                if (current.Count() < slotCount)
                 {
                     return true;
                 }
 
-                var hasNotification = equipments.Any(e => CPHelper.GetCP(e) > CPHelper.GetCP(current));
                 // When any other equipments are stronger than current one.
-                if (hasNotification)
+                foreach (var equipment in equipments)
                 {
-                    return true;
-                }
-            }
+                    if (equipment.equipped)
+                        continue;
 
-            // Seperate case because rings can be equipped more than one.
-            var rings = Equipments.Where(e => e.ItemSubType == ItemSubType.Ring).ToList();
-            var currentRings = rings.Where(e => e.equipped);
-            if (!currentRings.Any() && rings.Any())
-            {
-                return true;
-            }
-
-            if (rings.Count >= MaxRingEquippedCount &&
-                currentRings.Count() < MaxRingEquippedCount)
-            {
-                return true;
-            }
-
-            int index = 1;
-            foreach (var ring in currentRings)
-            {
-                var requiredLevel = GetRequiredLevelOfSlot(ItemSubType.Ring, index++);
-                if (currentLevel < requiredLevel)
-                {
-                    continue;
-                }
-
-                var hasNotification =
-                    rings.Any(e => !e.equipped && CPHelper.GetCP(e) > CPHelper.GetCP(ring));
-
-                if (hasNotification)
-                {
-                    return true;
+                    var cp = CPHelper.GetCP(equipment);
+                    if (current.Any(i => CPHelper.GetCP(i) < cp))
+                    {
+                        return true;
+                    }
                 }
             }
 
             return false;
-        }
-
-        private int GetRequiredLevelOfSlot(ItemSubType itemSubType, int index = 1)
-        {
-            switch (itemSubType)
-            {
-                case ItemSubType.FullCostume:
-                    return GameConfig.RequireCharacterLevel.CharacterFullCostumeSlot;
-                case ItemSubType.HairCostume:
-                    return GameConfig.RequireCharacterLevel.CharacterHairCostumeSlot;
-                case ItemSubType.EarCostume:
-                    return GameConfig.RequireCharacterLevel.CharacterEarCostumeSlot;
-                case ItemSubType.EyeCostume:
-                    return GameConfig.RequireCharacterLevel.CharacterEyeCostumeSlot;
-                case ItemSubType.TailCostume:
-                    return GameConfig.RequireCharacterLevel.CharacterTailCostumeSlot;
-                case ItemSubType.Title:
-                    return GameConfig.RequireCharacterLevel.CharacterTitleSlot;
-                case ItemSubType.Weapon:
-                    return GameConfig.RequireCharacterLevel.CharacterEquipmentSlotWeapon;
-                case ItemSubType.Armor:
-                    return GameConfig.RequireCharacterLevel.CharacterEquipmentSlotArmor;
-                case ItemSubType.Belt:
-                    return GameConfig.RequireCharacterLevel.CharacterEquipmentSlotBelt;
-                case ItemSubType.Necklace:
-                    return GameConfig.RequireCharacterLevel.CharacterEquipmentSlotNecklace;
-                case ItemSubType.Ring:
-                    return index == 1
-                        ? GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing1
-                        : GameConfig.RequireCharacterLevel.CharacterEquipmentSlotRing2;
-                case ItemSubType.Food:
-                    switch (index)
-                    {
-                        case 1:
-                            return GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot1;
-                        case 2:
-                            return GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot2;
-                        case 3:
-                            return GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot3;
-                        case 4:
-                            return GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot4;
-                        case 5:
-                            return GameConfig.RequireCharacterLevel
-                                .CharacterConsumableSlot5;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
     }
 }
