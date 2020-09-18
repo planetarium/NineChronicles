@@ -850,6 +850,7 @@ namespace Nekoyume.Game.Character
                 yield return coroutine;
                 actions.Remove(action);
                 action = null;
+                _forceStop = false;
             }
         }
 
