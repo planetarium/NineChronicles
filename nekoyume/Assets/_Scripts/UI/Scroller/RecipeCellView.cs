@@ -90,6 +90,7 @@ namespace Nekoyume.UI.Scroller
         private void Awake()
         {
             button.OnClickAsObservable()
+                .ThrottleFirst(new TimeSpan(0, 0, 1))
                 .Subscribe(_ =>
                 {
                     if (IsLocked && !tempLocked)
@@ -280,6 +281,7 @@ namespace Nekoyume.UI.Scroller
             {
                 HasNotification.Value = false;
                 SetLocked(true, EquipmentRowData.UnlockStage);
+                tempLocked = false;
                 return;
             }
 
