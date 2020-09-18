@@ -39,14 +39,6 @@ namespace Nekoyume.BlockChain
 
         public BlockPolicySource(ILogger logger, LogEventLevel logEventLevel = LogEventLevel.Verbose)
         {
-            BlockRenderer
-                .EveryBlock()
-                .Subscribe(_ => UpdateActivationSet());
-
-            BlockRenderer
-                .EveryReorg()
-                .Subscribe(_ => UpdateActivationSet());
-
             LoggedActionRenderer =
                 new LoggedActionRenderer<NCAction>(ActionRenderer, logger, logEventLevel);
 
@@ -54,21 +46,11 @@ namespace Nekoyume.BlockChain
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
-        public Func<IValue> ActivatedAccountsStateGetter { get; set; }
-
-        public IImmutableSet<Address> ActivatedAccounts { get; private set; }
-
         public AuthorizedMinersState AuthorizedMinersState { get; set; }
-
-        public void UpdateActivationSet(IValue state)
-        {
-            ActivatedAccounts = new ActivatedAccountsState((Dictionary)state).Accounts;
-        }
 
         // FIXME 남은 설정들도 설정화 해야 할지도?
         public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty)
         {
-            ActivatedAccounts = ActivatedAccounts?.Clear();
 #if UNITY_EDITOR
             return new DebugPolicy();
 #else
@@ -88,24 +70,27 @@ namespace Nekoyume.BlockChain
         public IEnumerable<IRenderer<NCAction>> GetRenderers() =>
             new IRenderer<NCAction>[] { BlockRenderer, LoggedActionRenderer };
 
-        private bool IsSignerAuthorized(Transaction<PolymorphicAction<ActionBase>> transaction)
+        private bool IsSignerAuthorized(
+            Transaction<NCAction> transaction,
+            BlockChain<NCAction> blockChain
+        )
         {
-            bool isActivateAccountAction =
-                transaction.Actions.Count == 1
-                && transaction.Actions.First().InnerAction is ActivateAccount;
-
-            return isActivateAccountAction
-                   || ActivatedAccounts is null
-                   || !ActivatedAccounts.Any()
-                   || ActivatedAccounts.Contains(transaction.Signer);
-        }
-
-        private void UpdateActivationSet()
-        {
-            if (!(ActivatedAccountsStateGetter is null))
+            if (transaction.Actions.Count == 1 && 
+                transaction.Actions.First().InnerAction is ActivateAccount)
             {
-                IValue state = ActivatedAccountsStateGetter();
-                UpdateActivationSet(state);
+                return true;
+            }
+            
+            if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
+            {
+                IImmutableSet<Address> activatedAccounts = 
+                    new ActivatedAccountsState(asDict).Accounts;
+                return !activatedAccounts.Any() || 
+                    activatedAccounts.Contains(transaction.Signer);
+            }
+            else
+            {
+                return true;
             }
         }
 
