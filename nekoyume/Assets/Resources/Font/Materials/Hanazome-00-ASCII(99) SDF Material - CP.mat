@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 1357918648318827636, guid: 8afd336e1a8814407892bb84b94f6805,
+        m_Texture: {fileID: -1007816618029832578, guid: 8afd336e1a8814407892bb84b94f6805,
           type: 2}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -59,7 +59,7 @@ Material:
     - _GlowOffset: 1
     - _GlowOuter: 1
     - _GlowPower: 1
-    - _GradientScale: 6
+    - _GradientScale: 8
     - _LightAngle: 6.28
     - _MaskSoftnessX: 0
     - _MaskSoftnessY: 0
@@ -71,9 +71,9 @@ Material:
     - _Padding: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
-    - _ScaleRatioA: 0.8333333
-    - _ScaleRatioB: 0.359375
-    - _ScaleRatioC: 0.51339287
+    - _ScaleRatioA: 0.875
+    - _ScaleRatioB: 0.37734374
+    - _ScaleRatioC: 0.5390625
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -84,8 +84,8 @@ Material:
     - _StencilOp: 0
     - _StencilReadMask: 255
     - _StencilWriteMask: 255
-    - _TextureHeight: 4096
-    - _TextureWidth: 4096
+    - _TextureHeight: 512
+    - _TextureWidth: 512
     - _UnderlayDilate: 1
     - _UnderlayOffsetX: 0
     - _UnderlayOffsetY: -0.4
