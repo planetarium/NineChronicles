@@ -81,8 +81,20 @@ namespace Nekoyume.Game.Character
         protected Vector3 HUDOffset => Animator.GetHUDPosition();
         protected bool AttackEndCalled { get; set; }
 
-        private bool _forceQuit = false;
-        protected virtual bool CanRun => !Mathf.Approximately(RunSpeed, 0f);
+        private bool _forceQuit;
+        protected virtual bool CanRun
+        {
+            get
+            {
+                if (_forceStop)
+                {
+                    return false;
+                }
+
+                return !Mathf.Approximately(RunSpeed, 0f);
+
+            }
+        }
 
         protected BoxCollider HitPointBoxCollider { get; private set; }
         protected Vector3 HitPointLocalOffset { get; set; }
@@ -90,6 +102,9 @@ namespace Nekoyume.Game.Character
         public List<ActionParams> actions = new List<ActionParams>();
 
         public ActionParams action;
+
+
+        private bool _forceStop = false;
 
         #region Mono
 
@@ -381,7 +396,15 @@ namespace Nekoyume.Game.Character
             if (target.IsDead || !TargetInAttackRange(target))
                 return;
 
+            _forceStop = true;
+            StartCoroutine(CoStop(target));
             StopRun();
+        }
+
+        private IEnumerator CoStop(CharacterBase target)
+        {
+            yield return new WaitUntil(() => IsDead || target.IsDead);
+            _forceStop = false;
         }
 
         #endregion
