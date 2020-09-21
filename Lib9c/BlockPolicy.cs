@@ -11,40 +11,28 @@ using NCAction = Libplanet.Action.PolymorphicAction<Nekoyume.Action.ActionBase>;
 
 namespace Nekoyume.BlockChain
 {
-    public class BlockPolicy : IBlockPolicy<NCAction>
+    public class BlockPolicy : BlockPolicy<NCAction>
     {
-        private readonly IBlockPolicy<NCAction> _impl;
-        
         private readonly Func<Block<NCAction>, InvalidBlockException> _blockValidator;
 
         public BlockPolicy(
-            IBlockPolicy<NCAction> impl, 
-            Func<Block<NCAction>, InvalidBlockException> blockValidator
-        )
+            IAction blockAction,
+            TimeSpan blockInterval,
+            long minimumDifficulty,
+            int difficultyBoundDivisor,
+            Func<Transaction<NCAction>, BlockChain<NCAction>, bool> doesTransactionFollowPolicy = null,
+            Func<Block<NCAction>, InvalidBlockException> blockValidator)
+            : base(
+                blockAction,
+                blockInterval,
+                minimumDifficulty,
+                difficultyBoundDivisor,
+                doesTransactionFollowPolicy)
         {
-            _impl = impl;
             _blockValidator = blockValidator;
         }
 
-        public IAction BlockAction => _impl.BlockAction;
-
-        public bool DoesTransactionFollowsPolicy(
-            Transaction<NCAction> transaction, 
-            BlockChain<NCAction> blockChain
-        ) => _impl.DoesTransactionFollowsPolicy(transaction, blockChain);
-
-        public long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
-            => _impl.GetNextBlockDifficulty(blocks);
-
-        public InvalidBlockException ValidateNextBlock(BlockChain<NCAction> blocks, Block<NCAction> nextBlock)
-        {
-            InvalidBlockException excFromValidator = _blockValidator(nextBlock);
-            if (!(excFromValidator is null))
-            {
-                return excFromValidator;
-            }
-
-            return _impl.ValidateNextBlock(blocks, nextBlock);
-        }
+        public override InvalidBlockException ValidateNextBlock(BlockChain<NCAction> blocks, Block<NCAction> nextBlock)
+            => _blockValidator(nextBlock);
     }
 }

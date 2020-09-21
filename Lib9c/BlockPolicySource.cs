@@ -55,14 +55,12 @@ namespace Nekoyume.BlockChain
             return new DebugPolicy();
 #else
             return new BlockPolicy(
-                new BlockPolicy<NCAction>(
-                    new RewardGold(),
-                    _blockInterval,
-                    minimumDifficulty,
-                    2048,
-                    doesTransactionFollowPolicy: IsSignerAuthorized
-                ),
-                ValidateBlock
+                new RewardGold(),
+                _blockInterval,
+                minimumDifficulty,
+                2048,
+                IsSignerAuthorized,
+                ValidateMinerAuthority
             );
 #endif
         }
@@ -94,7 +92,7 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private InvalidBlockException ValidateBlock(Block<NCAction> block)
+        private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
         {
             if (AuthorizedMinersState is null)
             {
@@ -106,20 +104,26 @@ namespace Nekoyume.BlockChain
                 return null;
             }
 
-            bool targetBlock =
-                0 < block.Index && block.Index <= AuthorizedMinersState.ValidUntil &&
-                block.Index % AuthorizedMinersState.Interval == 0;
+            bool targetBlock = 0 < block.Index
+                               && block.Index <= AuthorizedMinersState.ValidUntil
+                               && block.Index % AuthorizedMinersState.Interval == 0;
+
             bool minedByAuthorities = AuthorizedMinersState.Miners.Contains(miner);
-            
-            if (targetBlock && !minedByAuthorities)
+
+            if (!targetBlock)
             {
-                return new InvalidMinerException(
-                    $"The given block[{block}] isn't mined by authorities.",
-                    miner
-                );
+                return null;
             }
 
-            return null;
+            if (minedByAuthorities)
+            {
+                return null;
+            }
+
+            return new InvalidMinerException(
+                $"The given block[{block}] isn't mined by authorities.",
+                miner
+            );
         }
     }
 }
