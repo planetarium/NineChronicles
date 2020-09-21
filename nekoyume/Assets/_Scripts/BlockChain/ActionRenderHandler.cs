@@ -54,7 +54,7 @@ namespace Nekoyume.BlockChain
             CreateAvatar();
             DeleteAvatar();
             HackAndSlash();
-            Combination();
+            CombinationConsumable();
             Sell();
             SellCancellation();
             Buy();
@@ -181,12 +181,12 @@ namespace Nekoyume.BlockChain
                 .Subscribe(ResponseHackAndSlash).AddTo(_disposables);
         }
 
-        private void Combination()
+        private void CombinationConsumable()
         {
             _renderer.EveryRender<CombinationConsumable>()
                 .Where(ValidateEvaluationForCurrentAvatarState)
                 .ObserveOnMainThread()
-                .Subscribe(ResponseCombination).AddTo(_disposables);
+                .Subscribe(ResponseCombinationConsumable).AddTo(_disposables);
         }
 
         private void Sell()
@@ -418,7 +418,7 @@ namespace Nekoyume.BlockChain
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
-            LocalStateModifier.RemoveItem(avatarAddress, result.itemUsable.ItemId);
+
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -488,13 +488,12 @@ namespace Nekoyume.BlockChain
             }
         }
 
-        private void ResponseCombination(ActionBase.ActionEvaluation<CombinationConsumable> eval)
+        private void ResponseCombinationConsumable(ActionBase.ActionEvaluation<CombinationConsumable> eval)
         {
             var agentAddress = eval.Signer;
             var avatarAddress = eval.Action.AvatarAddress;
             var slot = eval.OutputStates.GetCombinationSlotState(avatarAddress, eval.Action.slotIndex);
             var result = (CombinationConsumable.ResultModel) slot.Result;
-            var itemUsable = result.itemUsable;
             var avatarState = eval.OutputStates.GetAvatarState(avatarAddress);
 
             LocalStateModifier.ModifyAgentGold(agentAddress, result.gold);
@@ -504,7 +503,7 @@ namespace Nekoyume.BlockChain
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
                 LocalStateModifier.AddItem(avatarAddress, pair.Key.ItemId, pair.Value, false);
             }
-            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             var format = L10nManager.Localize("NOTIFICATION_COMBINATION_COMPLETE");
@@ -835,7 +834,7 @@ namespace Nekoyume.BlockChain
                 // NOTE: 최종적으로 UpdateCurrentAvatarState()를 호출한다면, 그곳에서 상태를 새로 설정할 것이다.
                 LocalStateModifier.AddItem(avatarAddress, itemId, false);
             }
-            LocalStateModifier.RemoveItem(avatarAddress, itemUsable.ItemId);
+
             LocalStateModifier.AddNewAttachmentMail(avatarAddress, result.id);
 
             var format = L10nManager.Localize("NOTIFICATION_ITEM_ENHANCEMENT_COMPLETE");

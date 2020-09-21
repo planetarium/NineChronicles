@@ -37,29 +37,33 @@ namespace Nekoyume.UI.Module
         private void Awake()
         {
             Game.Game.instance.Agent.BlockIndexSubject.ObserveOnMainThread()
-                .Subscribe(SubscribeOnBlockIndex).AddTo(gameObject);
-            touchHandler.OnClick.Subscribe(pointerEventData =>
-            {
-                AudioController.PlayClick();
-                SelectSlot();
-            }).AddTo(gameObject);
-            resultView.OnClick.Subscribe(pointerEventData =>
-            {
-                AudioController.PlayClick();
-                SelectSlot();
-            }).AddTo(gameObject);
+                .Subscribe(SubscribeOnBlockIndex)
+                .AddTo(gameObject);
+            touchHandler.OnClick
+                .Subscribe(pointerEventData =>
+                {
+                    AudioController.PlayClick();
+                    SelectSlot();
+                }).AddTo(gameObject);
+            resultView.OnClick
+                .Subscribe(pointerEventData =>
+                {
+                    AudioController.PlayClick();
+                    SelectSlot();
+                }).AddTo(gameObject);
             unlockText.text = L10nManager.Localize("UI_COMBINATION_SLOT_AVAILABLE");
             HasNotification.SubscribeTo(hasNotificationImage).AddTo(gameObject);
         }
 
         public void SetData(CombinationSlotState state, long blockIndex, int slotIndex)
         {
-            lockText.text = string.Format(L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
+            lockText.text = string.Format(
+                L10nManager.Localize("UI_UNLOCK_CONDITION_STAGE"),
                 state.UnlockStage);
             _data = state;
             _slotIndex = slotIndex;
-            var unlock = States.Instance.CurrentAvatarState?.worldInformation.IsStageCleared(state.UnlockStage)
-                ?? false;
+            var unlock = States.Instance.CurrentAvatarState?.worldInformation
+                .IsStageCleared(state.UnlockStage) ?? false;
             lockText.gameObject.SetActive(!unlock);
             lockImage.gameObject.SetActive(!unlock);
             unlockText.gameObject.SetActive(false);
