@@ -25,7 +25,8 @@ namespace Lib9c
         }
 
         public bool DoesTransactionFollowsPolicy(
-            Transaction<PolymorphicAction<ActionBase>> transaction
+            Transaction<PolymorphicAction<ActionBase>> transaction,
+            BlockChain<PolymorphicAction<ActionBase>> blockChain
         ) =>
             true;
     }

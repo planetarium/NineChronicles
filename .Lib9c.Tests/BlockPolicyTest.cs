@@ -38,15 +38,13 @@ namespace Lib9c.Tests
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
-            blockPolicySource.ActivatedAccountsStateGetter = () => blockChain.GetState(ActivatedAccountsState.Address);
-            blockPolicySource.UpdateActivationSet(blockPolicySource.ActivatedAccountsStateGetter());
             Transaction<PolymorphicAction<ActionBase>> tx = Transaction<PolymorphicAction<ActionBase>>.Create(
                 0,
                 new PrivateKey(),
                 genesis.Hash,
                 new PolymorphicAction<ActionBase>[] { });
 
-            Assert.True(policy.DoesTransactionFollowsPolicy(tx));
+            Assert.True(policy.DoesTransactionFollowsPolicy(tx, blockChain));
         }
 
         [Fact]
@@ -71,8 +69,6 @@ namespace Lib9c.Tests
                 genesis,
                 renderers: new[] { blockPolicySource.BlockRenderer }
             );
-            blockPolicySource.ActivatedAccountsStateGetter = () => blockChain.GetState(ActivatedAccountsState.Address);
-            blockPolicySource.UpdateActivationSet(blockPolicySource.ActivatedAccountsStateGetter());
             Transaction<PolymorphicAction<ActionBase>> txByStranger =
                 Transaction<PolymorphicAction<ActionBase>>.Create(
                     0,
@@ -82,7 +78,7 @@ namespace Lib9c.Tests
                 );
 
             // 새로 만든 키는 활성화 유저 리스트에 없기 때문에 차단됩니다.
-            Assert.False(policy.DoesTransactionFollowsPolicy(txByStranger));
+            Assert.False(policy.DoesTransactionFollowsPolicy(txByStranger, blockChain));
 
             var newActivatedPrivateKey = new PrivateKey();
             var newActivatedAddress = newActivatedPrivateKey.ToAddress();
@@ -104,7 +100,7 @@ namespace Lib9c.Tests
                 );
 
             // 활성화 된 계정이기 때문에 테스트에 성공합니다.
-            Assert.True(policy.DoesTransactionFollowsPolicy(txByNewActivated));
+            Assert.True(policy.DoesTransactionFollowsPolicy(txByNewActivated, blockChain));
         }
 
         [Fact]

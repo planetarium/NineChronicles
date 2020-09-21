@@ -28,8 +28,10 @@ namespace Nekoyume.BlockChain
 
         public IAction BlockAction => _impl.BlockAction;
 
-        public bool DoesTransactionFollowsPolicy(Transaction<NCAction> transaction)
-            => _impl.DoesTransactionFollowsPolicy(transaction);
+        public bool DoesTransactionFollowsPolicy(
+            Transaction<NCAction> transaction, 
+            BlockChain<NCAction> blockChain
+        ) => _impl.DoesTransactionFollowsPolicy(transaction, blockChain);
 
         public long GetNextBlockDifficulty(BlockChain<NCAction> blocks)
             => _impl.GetNextBlockDifficulty(blocks);
