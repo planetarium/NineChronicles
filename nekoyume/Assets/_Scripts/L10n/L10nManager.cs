@@ -40,17 +40,16 @@ namespace Nekoyume.L10n
         {
             get
             {
-                var chineseLanguages = new List<SystemLanguage>()
+                switch (Application.systemLanguage)
                 {
-                    UnityEngine.SystemLanguage.Chinese,
-                    UnityEngine.SystemLanguage.ChineseSimplified,
-                    UnityEngine.SystemLanguage.ChineseTraditional,
-                };
-
-                if (chineseLanguages.Contains(Application.systemLanguage))
-                {
-                    return LanguageType.ChineseSimplified;
+                    case UnityEngine.SystemLanguage.Chinese:
+                    case UnityEngine.SystemLanguage.ChineseSimplified:
+                    case UnityEngine.SystemLanguage.ChineseTraditional:
+                        return LanguageType.ChineseSimplified;
+                    case UnityEngine.SystemLanguage.Portuguese:
+                        return LanguageType.PortugueseBrazil;
                 }
+
                 var systemLang = Application.systemLanguage.ToString();
                 return !Enum.TryParse<LanguageType>(systemLang, out var languageType)
                     ? default
