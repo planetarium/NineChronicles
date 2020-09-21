@@ -46,8 +46,6 @@ namespace Nekoyume.BlockChain
                 new LoggedRenderer<NCAction>(BlockRenderer, logger, logEventLevel);
         }
 
-        public AuthorizedMinersState AuthorizedMinersState { get; set; }
-
         // FIXME 남은 설정들도 설정화 해야 할지도?
         public IBlockPolicy<NCAction> GetPolicy(int minimumDifficulty)
         {
@@ -59,8 +57,7 @@ namespace Nekoyume.BlockChain
                 _blockInterval,
                 minimumDifficulty,
                 2048,
-                IsSignerAuthorized,
-                ValidateMinerAuthority
+                IsSignerAuthorized
             );
 #endif
         }
@@ -73,57 +70,23 @@ namespace Nekoyume.BlockChain
             BlockChain<NCAction> blockChain
         )
         {
-            if (transaction.Actions.Count == 1 && 
+            if (transaction.Actions.Count == 1 &&
                 transaction.Actions.First().InnerAction is ActivateAccount)
             {
                 return true;
             }
-            
+
             if (blockChain.GetState(ActivatedAccountsState.Address) is Dictionary asDict)
             {
-                IImmutableSet<Address> activatedAccounts = 
+                IImmutableSet<Address> activatedAccounts =
                     new ActivatedAccountsState(asDict).Accounts;
-                return !activatedAccounts.Any() || 
+                return !activatedAccounts.Any() ||
                     activatedAccounts.Contains(transaction.Signer);
             }
             else
             {
                 return true;
             }
-        }
-
-        private InvalidBlockException ValidateMinerAuthority(Block<NCAction> block)
-        {
-            if (AuthorizedMinersState is null)
-            {
-                return null;
-            }
-
-            if (!(block.Miner is Address miner))
-            {
-                return null;
-            }
-
-            bool targetBlock = 0 < block.Index
-                               && block.Index <= AuthorizedMinersState.ValidUntil
-                               && block.Index % AuthorizedMinersState.Interval == 0;
-
-            bool minedByAuthorities = AuthorizedMinersState.Miners.Contains(miner);
-
-            if (!targetBlock)
-            {
-                return null;
-            }
-
-            if (minedByAuthorities)
-            {
-                return null;
-            }
-
-            return new InvalidMinerException(
-                $"The given block[{block}] isn't mined by authorities.",
-                miner
-            );
         }
     }
 }
