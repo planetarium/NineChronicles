@@ -552,6 +552,10 @@ namespace Nekoyume.UI.Model
 
         public void UpdateEquipmentNotification()
         {
+            var currentAvatarState = Game.Game.instance.States.CurrentAvatarState;
+            if (currentAvatarState is null)
+                return;
+
             if (State.Value != ItemType.Equipment)
                 return;
 
@@ -562,9 +566,11 @@ namespace Nekoyume.UI.Model
                 item.HasNotification.Value = false;
             }
 
-            foreach (var type in _itemSubTypesForNotification)
+            var level = currentAvatarState.level;
+            var availableSlots = UnlockHelper.GetAvailableEquipmentSlots(level);
+
+            foreach (var (type, slotCount) in availableSlots)
             {
-                var itemCount = type != ItemSubType.Ring ? 1 : 2;
                 var matchedEquipments = Equipments
                     .Where(e => e.ItemBase.Value.ItemSubType == type);
                 var equippedEquipments =
@@ -575,9 +581,9 @@ namespace Nekoyume.UI.Model
 
                 var equippedCount = equippedEquipments.Count();
 
-                if (equippedCount < itemCount)
+                if (equippedCount < slotCount)
                 {
-                    var itemsToNotify = unequippedEquipments.Take(itemCount - equippedCount);
+                    var itemsToNotify = unequippedEquipments.Take(slotCount - equippedCount);
 
                     foreach (var item in itemsToNotify)
                     {
@@ -591,7 +597,7 @@ namespace Nekoyume.UI.Model
                         {
                             var cp = CPHelper.GetCP(e.ItemBase.Value as Equipment);
                             return equippedEquipments.Any(i => CPHelper.GetCP(i.ItemBase.Value as Equipment) < cp);
-                        }).Take(itemCount);
+                        }).Take(slotCount);
                     foreach (var item in itemsToNotify)
                     {
                         item.HasNotification.Value = true;
