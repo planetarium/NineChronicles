@@ -429,7 +429,7 @@ namespace Nekoyume.Model.Item
 
             foreach (var (type, slotCount) in availableSlots)
             {
-                var equipments = Equipments.Where(e => e.ItemSubType == type).ToList();
+                var equipments = Equipments.Where(e => e.ItemSubType == type);
                 var current = equipments.Where(e => e.equipped);
                 // When an equipment slot is empty.
                 if (current.Count() < Math.Min(equipments.Count(), slotCount))
